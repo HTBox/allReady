@@ -1,0 +1,45 @@
+@model PrepOps.ViewModels.TaskViewModel
+
+@{  ViewData["Title"] = "Delete task " + Model.Name; }
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Are you sure you want to delete this?</h3>
+        <h4>@ViewData["Title"]</h4>
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.EndDateTime)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.EndDateTime)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.StartDateTime)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.StartDateTime)
+            </dd>
+        </dl>
+
+        @using (Html.BeginForm()) {
+            @Html.AntiForgeryToken()
+
+            <div class="form-actions no-color">
+                <button type="submit" class="btn">Delete</button>
+                @Html.ActionLink("Back to List", "Index", "Task", null, new { @class = "btn" })
+            </div>
+        }
+    </div>
+</div>
+

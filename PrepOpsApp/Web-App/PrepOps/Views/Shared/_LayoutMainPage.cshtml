@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PrepOps</title>
+
+    <environment names="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/css/mainPage.css" />
+    </environment>
+    <environment names="Staging,Production">
+        <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/bootstrap/3.0.0/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/site.css" asp-file-version="true" />
+        <link rel="stylesheet" href="~/css/mainPage.css" asp-file-version="true" />
+    </environment>
+    @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
+</head>
+<body>
+    <div class="row navbar">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            @await Html.PartialAsync("_Navigation")
+        </div>
+    </div>
+    <div class="row home-banner">
+        <div class="col-md-12 text-center">
+            <img src="~/images/Web-Logo.png" alt="Logo image for the project" />
+            <h3 class="text-center sub-title">Get connected. Work together. Be prepared.</h3>
+        </div>
+    </div>
+    <div class="row">
+
+        @RenderBody()
+
+    </div>
+    <footer class="main-page-footer">
+        <p class="text-center"><img src="~/images/fb.png" alt="Like Humanitarian Toolbox on Facebook" /> <img src="~/images/twitter.png" alt="Follow Humanitarian Toolbox on Twitter" /> <img src="~/images/instagram.png" alt="Instagram account" /> <img src="~/images/youtube.png" alt="YouTube" /></p>
+        <p class="text-center">Powered by <br /><a href="#">Humanitarian Toolbox</a></p>
+    </footer>
+    <environment names="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/knockout/dist/knockout.js"></script>
+        <script src="~/js/tota11y.min.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="//ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery">
+        </script>
+        <script src="//ajax.aspnetcdn.com/ajax/knockout/knockout-3.3.0.js"></script>
+    </environment>
+    <script src="~/js/site.js"></script>
+    <script src="~/js/index.js"></script>
+    @*<script type="text/javascript">
+            $(function () {
+                $('#doGeo').click(function () {
+                    var geo = new geoHelper(function (position) {
+
+                        // TODO: replace with your own functionality
+                        console.log(position.coords.latitude + ',' + position.coords.longitude);
+
+                    });
+                    geo.getMyLocation();
+                });
+            });
+        </script>*@
+    @*<script type="text/javascript">
+            $(document).ready(function () {
+                var positionCoordsList = [
+                    { latitude: '47.662471771240234', longitude: '-122.12596893310547' },
+                    { latitude: '47.64004938304424', longitude: '-122.12979689240456' }
+                ];
+                renderBingMap('bingMap', positionCoordsList);
+            });
+        </script>
+        <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>*@
+</body>
+</html>

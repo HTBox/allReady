@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_LayoutMainPage";
+    @addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
+}
+<div class="row search-banner">
+    <div class="col-md-12 text-center">
+        <input type="search"
+               class="main-search"
+               placeholder="Search for activities using your zipcode"
+               data-bind="{ value: searchTerm, valueUpdate: 'afterkeydown', event: { keypress: handleEnter } }" /><a class="main-search-button" data-bind="click: searchActivities" title="Search for activities"><img src="~/images/search_button.png" alt="Search for activities" /></a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 text-center">
+        <div data-bind="if: status() === 'noresults'">
+            <strong>No results were found. Try again, or <a href="#" style="color:#FFFFFF; text-decoration:underline">see more activities</a>.</strong>
+        </div>
+        <div data-bind="if: status() === 'fail'">
+            <strong>There was an error. Please try again later!</strong>
+        </div>
+        <div class="login-text" data-bind="if: !loadingDone">
+            <a href="/Login" style="color:#FFFFFF; text-decoration:underline">Login to your account</a>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 text-center">
+        <div class="activity-results" data-bind="if: loadingDone">
+            <h3>Activites near <span data-bind="text: searchTerm"></span></h3>
+            <div class="activity-wrapper" data-bind="foreach: activities">
+                <p><a data-bind="attr: { href: '/Activity/' + Id }, text: Title"></a></p>
+            </div>
+            <a data-bind="attr: { href: '/Activity'}">See more activities</a>
+        </div>
+    </div>
+</div>

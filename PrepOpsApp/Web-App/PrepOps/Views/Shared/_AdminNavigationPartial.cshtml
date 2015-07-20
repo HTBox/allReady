@@ -1,0 +1,12 @@
+﻿@using System.Security.Claims
+
+@if (User.Claims.Where(c => c.Type.Equals("UserType")).Where(c => c.Value == "SiteAdmin" || c.Value == "TenantAdmin").Any())
+{
+    <li> Admin:</li>
+    <li><a asp-route-area="Admin" asp-route-controller="Activity" asp-route-action="Index">Activities</a></li>
+    <li><a asp-route-area="Admin" asp-route-controller="Campaign" asp-route-action="Index">Campaigns</a></li>
+    <li><a asp-route-area="Admin" asp-route-controller="Task" asp-route-action="Index">Tasks</a></li>
+    <li><a asp-route-area="Admin" asp-route-controller="Tenant" asp-route-action="Index">Tenant</a></li>
+
+    <li> User:</li>
+}

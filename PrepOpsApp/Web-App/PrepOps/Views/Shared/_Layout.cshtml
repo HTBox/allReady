@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@ViewData["Title"] - PrepOps</title>
+
+        <environment names="Development">
+            <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+            <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
+            <link rel="stylesheet" href="~/css/site.css" />
+        </environment>
+        <environment names="Staging,Production">
+            <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/bootstrap/3.0.0/css/bootstrap.min.css"
+                  asp-fallback-href="~/lib/bootstrap/css/bootstrap.min.css" />
+            <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+            <link rel="stylesheet" href="~/css/site.css" asp-file-version="true" />
+        </environment>
+        @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
+    </head>
+    <body>
+        <div class="navbar">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a asp-controller="Home" asp-action="Index" class="navbar-brand"><img src="~/images/Web-Logo-small.png" alt="Web Logo" /></a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right main-nav">
+                        @await Html.PartialAsync("_AdminNavigationPartial")
+                        <li><a asp-controller="Home" asp-action="About">About</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
+                        <li><a asp-controller="Tenant" asp-action="Index">Tenants</a></li>
+                        @await Html.PartialAsync("_LoginPartial")
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid body-content">
+            @RenderBody()
+            <footer>
+                <p class="text-center">
+                    <img src="~/images/fb-small.png" alt="Like Humanitarian Toolbox on Facebook" /> 
+                    <img src="~/images/twitter-small.png" alt="Follow Humanitarian Toolbox on Twitter" /> 
+                    <img src="~/images/instagram-small.png" alt="Instagram account" /> 
+                    <img src="~/images/youtube-small.png" alt="YouTube" />
+                </p>
+                <p class="text-center">Powered by <br /><a href="#">Humanitarian Toolbox</a></p>
+            </footer>
+        </div>
+
+        <environment names="Development">
+            <script src="~/lib/jquery/dist/jquery.js"></script>
+            <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+            <script src="~/lib/knockout/dist/knockout.js"></script>
+            <script src="~/js/site.js" asp-file-version="true"></script>
+            <script src="~/js/tota11y.min.js"></script>
+            <script src="~/js/tota11y.min.js"></script>
+        </environment>
+        <environment names="Staging,Production">
+            <script src="//ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.min.js"
+                    asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                    asp-fallback-test="window.jQuery">
+            </script>
+            <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.3.0.js"></script>
+            <script src="//ajax.aspnetcdn.com/ajax/bootstrap/3.0.0/bootstrap.min.js"
+                    asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                    asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
+            </script>
+
+            <script src="//ajax.aspnetcdn.com/ajax/bootstrap-touch-carousel/0.8.0/js/bootstrap-touch-carousel.js"
+                    asp-fallback-src="~/lib/bootstrap-touch-carousel/dist/js/bootstrap-touch-carousel.js"
+                    asp-fallback-test="window.Hammer && window.Hammer.Instance">
+            </script>
+            <script src="~/js/site.js" asp-file-version="true"></script>
+        </environment>
+
+        @RenderSection("scripts", required: false)
+    </body>
+</html>

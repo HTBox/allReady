@@ -1,0 +1,45 @@
+@model IEnumerable<PrepOps.Models.Tenant>
+
+@{
+    ViewData["Title"] = "Currently active tenants";
+}
+
+<doiv class="row">
+    <div class="col-md-12">
+        <h2>@ViewData["Title"]</h2>
+    </div>
+</doiv>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.WebUrl)
+                </th>
+                <th></th>
+            </tr>
+            @foreach (var item in Model) {
+                <tr>
+                    <td>
+                        <a href="@Url.Action("Details", "Tenant", new { id = item.Id })"><img src="@item.LogoUrl" /></a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.WebUrl)
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Edit", "Tenant", new { id = item.Id })" class="btn btn-sm" ><span class="fa fa-edit"></span> Edit</a>
+                        <a href="@Url.Action("Delete", "Tenant", new { id = item.Id })" class="btn btn-sm"><span class="fa fa-trash"></span> Delete</a>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @Html.ActionLink("Create New", "Create", "Tenant", null, new { @class = "btn" })
+    </div>
+</div>

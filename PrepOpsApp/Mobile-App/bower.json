@@ -1,0 +1,7 @@
+{
+  "name": "PrepOpsApp",
+  "dependencies": {
+    "ionic": "~1.0.1",
+    "moment": "~2.10.3"
+  }
+}

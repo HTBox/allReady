@@ -1,0 +1,39 @@
+﻿/* TEAM */
+	UX Developer: Travis Lowdermilk
+	Twitter: 
+	From: Seattle, USA
+
+	Web Developer: Zlatko Knezevic
+	Twitter: @blackdwarph
+	From: Seattle, USA
+
+	Web Developer: Pravan Rastogi
+
+	Web Developer: Brady Gaster
+
+	Azure developer: Dan Fernandez
+
+	Web Developer: Connie Yau
+
+	Mobile Developer Lead: Kirupa Chinnathambi
+	URL: http:www.kirupa.com/
+	Twitter: @kirupa
+	From: Seattle, USA
+
+	The Grandmaster: Dmitry Lyalin
+	Twitter: @LyalinDotCom
+	From: Seattle, USA
+
+	Build master: Dmitry Blotsky
+	Twitter: @dblotsky
+	From: Canada! 
+
+	Web Developer: Matt Galbraith
+	Twitter: @SuperDuperExtrm
+	From: Seattle, USA
+
+	Web Developer: Daniel "Jimmy" Plaisted
+	Twitter: @DsPlaisted
+	From: Seattle, USA
+
+/* THANKS */

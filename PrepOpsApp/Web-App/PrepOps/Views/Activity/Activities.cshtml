@@ -1,0 +1,28 @@
+﻿@model List<PrepOps.ViewModels.ActivityViewModel>
+@{
+    ViewData["Title"] = "Activities";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>@ViewData["Title"]</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table">
+            <tr>
+                <th><span title="Title of the activity">Title</span></th>
+                <th><span title="Description of the activity">Description</span></th>
+                <th><span title="Time period of the activity">When</span></th>
+            </tr>
+            @foreach (var activity in Model) {
+                <tr>
+                    <td>@Html.ActionLink(@activity.Title, "ShowActivity", "Activity", new { id = @activity.Id }, null)</td>
+                    <td>@activity.Description</td>
+                    <td>@activity.StartDateTime.ToString("F") - @activity.EndDateTime.ToString("F")</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

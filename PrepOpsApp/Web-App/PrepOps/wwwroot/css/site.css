@@ -1,0 +1,137 @@
+﻿body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+/* Set widths on the form inputs since otherwise they're 100% wide */
+input,
+select,
+textarea {
+    max-width: 380px;
+}
+
+/* Wrapping element */
+/* Set some basic padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+a:not(.unvolunteer) {
+    text-decoration: none;
+    color: #ab6627;
+}
+a:hover, a:focus {
+    text-decoration: underline;
+    color: #efab6c;
+}
+
+.navbar {
+    background-color: #d58033;
+    border-radius:0;
+}
+
+footer, footer a {
+    margin-top: 50px;
+    color: #ab6627;
+}
+footer a:hover {
+    text-decoration: none;
+    color: #efab6c;
+}
+footer > p > img {
+    margin-left: 20px;
+    /*margin-right: 10px;*/
+}
+.date-address {
+    color: #555555;
+}
+.btn, a.btn {
+    background-color: #ab6627;
+    border-radius: 0;
+    color: #fff;
+}
+.btn-volunteer {
+    width: 100%;
+    height: 100%;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.navbar-brand {
+    padding: 0;
+}
+.navbar-nav > li > a {
+    font-size: 20.51px;
+    color:#FFFFFF;
+}
+ul.nav a:hover,
+ul.nav a:focus
+ {
+    background-color: transparent !important;
+    color: white;
+    text-decoration: underline;
+}
+.btn:hover, .btn:focus {
+    color: #fff;
+    background-color: #efab6c;
+}
+.campaign-sponsor {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+.activity-list > a {
+    display: block;
+}
+.share-buttons > img {
+    margin-top: 30px;
+}
+.collapsible-panel-header {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #efab6c;
+    border: 1px solid #CC7A33;
+    color: #fff;
+    font-weight: bold;
+}
+.collapsible-panel-body {
+    display: none;
+    border-left: 1px solid #CC7A33;
+    border-right: 1px solid #CC7A33;
+    border-bottom: 1px solid #CC7A33;
+    padding: 10px;
+
+}
+.collapsible-panel-wrapper {
+    margin-bottom: 10px;
+    width: 60%;
+}
+/* Text classes*/
+.text-small {
+    font-size: small;
+}
+
+.unvolunteer {
+    width: 100%;
+    text-align: center;
+    font-size: 9.5pt;
+}
+
+.volunteered {
+    margin-top: 20px;
+}
+
+/* Some overrides for Bootstrap classes */
+.table {
+    margin-top: 20px;
+}
+
+/* Login page */
+
+.btn-authenticator-txt {
+    margin-left:20px;
+    padding-right:20px;
+    font-size:24pt;
+    font-family:sans-serif;
+}

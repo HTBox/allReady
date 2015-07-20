@@ -1,0 +1,29 @@
+﻿@model IList<CampaignViewModel>
+@{
+    ViewData["Title"] = "All registered campaigns";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>@ViewData["Title"]</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div id="campaignGrid" class="table-responsive">
+            <table class="table">
+                <tr>
+                    <th><span title="Name of the campaign">Title</span></th>
+                    <th><span title="Description of the campaign">Description</span></th>
+                </tr>
+
+                @foreach (var campaign in Model) {
+                    <tr>
+                        <td><span class="campaignId">@Html.ActionLink(@campaign.Name, "Details", "Campaign", new { id = @campaign.Id }, null)</span></td>
+                        <td>@campaign.Description</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>

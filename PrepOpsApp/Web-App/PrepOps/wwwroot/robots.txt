@@ -1,0 +1,8 @@
+﻿#Initially just disallowing views that don't make sense, leaving others like Activity in.
+User-Agent: *
+Disallow: /Admin
+Disallow: /Account
+Disallow: /ClosestLocation
+Disallow: /Manage
+Disallow: /Tenant
+Disallow: /Task

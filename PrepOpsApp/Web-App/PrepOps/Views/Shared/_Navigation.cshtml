@@ -1,0 +1,10 @@
+﻿<div class="navbar-collapse collapse">
+    <ul class="nav navbar-nav navbar-right main-nav">
+        @await Html.PartialAsync("_AdminNavigationPartial")
+        <li><a asp-controller="Home" asp-action="About">About</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
+        <li><a asp-controller="Tenant" asp-action="Index">Tenants</a></li>
+        @await Html.PartialAsync("_LoginPartial")
+    </ul>
+</div>

@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0-*",
+  "description": "PrepOps.UnitTests",
+  "authors": [ "mattgal" ],
+
+  "compilationOptions": {
+    "warningsAsErrors": true
+  },
+
+  "dependencies": {
+    "EntityFramework.InMemory": "7.0.0-beta5",
+    "Microsoft.AspNet.Mvc": "6.0.0-*",
+    "PrepOps": "1.0.0-*",
+    "PrepOps.MobileViewModels": "1.0.0-*",
+    "Microsoft.Framework.TestHost": "1.0.0-beta5",
+    "Microsoft.Framework.Logging.Testing": "1.0.0-*",
+    "xunit.runner.dnx": "2.1.0-beta3-build99",
+    "xunit.core": "2.1.0-beta3-build3029"
+  },
+
+  "commands": {
+    "Test": "xunit.runner.dnx"
+  },
+
+  "frameworks": {
+    "dnx451": { }
+  }
+}

@@ -1,0 +1,40 @@
+﻿@model CampaignViewModel
+<div class="row">
+    <div id="col-main" class="cold-md-12">
+        <div class="col-md-3"><h2>@Model.Name</h2></div>
+        <div class="col-md-9 share-buttons">
+            <img src="~/images/share-shareaholic.png" alt="Share via Shareaholic" />
+            <img src="~/images/share-twitter.png" alt="Share via Twitter" />
+            <img src="~/images/share-fb.png" alt="Share via Facebook" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <p class="date-address">@Model.StartDate.ToString("D") - @Model.EndDate.ToString("D")</p>
+    </div>
+</div>
+<div class="row">
+    <div id="col-main" class="col-md-12">
+        @Model.Description
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="campaign-sponsor">
+            <strong><a asp-controller="Tenant" asp-action="ShowTenant" asp-route-id="@Model.ManagingTenantId">@Model.ManagingTenantName</a></strong>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+    <h3>Activities for this campaign</h3>
+    @foreach (var activity in Model.Activities) {
+        <div class="activity-list">
+            <a href="/Activity/@activity.Id">@activity.Title</a>
+            <span class="text-small">@activity.Description</span>
+        </div>
+
+    }
+    </div>
+</div>

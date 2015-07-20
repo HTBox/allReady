@@ -1,0 +1,88 @@
+﻿body {
+
+}
+
+/* Main page CSS */
+.home-banner {
+    background-color: #d58033;
+}
+
+.search-banner {
+    background-color: #d58033;
+    padding-bottom:55px;
+}
+
+input.main-search {
+    width: 400px;
+    display: inline-block;
+    border: 0;
+    font-size: 18px;
+    height: 50px;
+    padding: 0px 5px;
+    /*padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 11px;
+    padding-bottom: 16px;*/
+}
+.main-search-button {
+    margin: 0;
+    cursor: pointer;
+}
+.main-search-button > img {
+    vertical-align: top;
+}
+::-webkit-input-placeholder,
+:-moz-placeholder,
+::-moz-placeholder,
+:-ms-input-placeholder
+ {
+   color: #999999;
+}
+
+.sub-title {
+    margin-bottom: 50px;
+    color: #FFFFFF;
+}
+
+.main-heading {
+    color: #fff;
+}
+.activity-results > h3 {
+    color: #fff;
+}
+.activity-results a {
+    text-decoration: none;
+    font-size: 16px;
+}
+.activity-results a:hover {
+    text-decoration: underline;
+}
+.activity-results h3 {
+    color: #333333;
+    padding-top:20px;
+    padding-bottom:10px;
+}
+.col-md-12 h4 {
+    margin-top:50px;
+}
+.main-page-footer {
+    color:#ab6627;
+    font-size:small;
+    width:100%;
+    margin-top:50px;
+    margin-bottom: 20px;
+    height:100px;    
+}
+
+.navbar {
+    margin-bottom:0px;
+    background-color:#ab6627;
+    border-radius:0px;
+}
+
+.row {
+    margin-right:auto;
+    margin-left: auto;
+}
+/* End main page CSS */
+
