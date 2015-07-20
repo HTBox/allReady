@@ -103,7 +103,7 @@ This section will help you get up-and-running with the allReady solution.
 
 You will need the following to be able to run the allReady solution locally:
 
-+ Visual Studio 2015, including the tools for Apache Cordova, and optionally the emulator for Android apps. [link to download at release event site](http://aka.ms/vs2015event).
++ Visual Studio 2015, including the tools for Apache Cordova, and optionally the emulator for Android apps.  All of the needed tools are supported by all versions of Visual Studio 2015 including the free Community Edition  [Download Visual Studio 2015](https://www.visualstudio.com/downloads/download-visual-studio-vs)
 
 You will need the following to be able to run the allReady solution in Azure:
 + An active Microsoft Azure account to deploy the web app. You can sign-up for a free trial of Azure [here](https://azure.microsoft.com/en-us/pricing/free-trial/).
