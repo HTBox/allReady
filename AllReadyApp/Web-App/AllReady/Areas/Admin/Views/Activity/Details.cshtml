@@ -1,0 +1,59 @@
+@model AllReady.ViewModels.AdminActivityViewModel
+
+<div class="row">
+    @if (!String.IsNullOrEmpty(Model.ImageUrl))
+    {
+        <div data-bind="if: @Model.ImageUrl" class="col-sm-1">
+            <h2></h2>
+            <img src="@Model.ImageUrl" class="img-responsive" />
+        </div>
+    }
+    <div class="col-md-10">
+        <h2>@Model.Title</h2>
+            <p>@Model.Description</p>
+            <p><strong>Duration: </strong> @Model.StartDateTime.ToString("d") - @Model.EndDateTime.ToString("d")</p>
+                
+        @*<p><strong>Campaign: </strong>@Model.CampaignName</p>*@
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <h3>Volunteers</h3>
+        @if (Model.Volunteers == null || Model.Volunteers.Count == 0)
+        {
+            <text>No volunteers yet. </text>
+        }
+        else
+        {
+            <ul>
+            @foreach (var volunteer in Model.Volunteers)
+            {
+                <li><strong>@volunteer</strong></li>
+            }
+            </ul>
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <h3>Tasks</h3>
+        <ul>
+            @foreach (var task in Model.Tasks) {
+                <li><strong>@task.Name</strong></li>
+            }
+        </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <p>
+            <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn"><span class="fa fa-edit"></span> Edit</a> 
+            <a href="@Url.Action("Assign", new { id = Model.Id })" class="btn"><span class="fa fa-user"></span> Assign tasks</a>
+        </p>
+        
+    </div>
+</div>
+@section scripts {
+    <script src="~/lib/bootstrap/js/modal.js"></script>
+    <script src="~/js/activityDetails.js"></script>
+}

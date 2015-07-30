@@ -1,0 +1,40 @@
+﻿@model ActivityViewModel
+@{
+ ViewData["Title"] = "Assign volunteers to tasks";
+}
+<h2>@ViewData["Title"]</h2>
+@using (Html.BeginForm("Assign", "Activity", FormMethod.Post)) {
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    @for (int i = 0; i < Model.Tasks.Count; i++) {
+    <div class="row">
+        <div class="col-md-4">
+            <input type="hidden" name="tasks[@i].Id" value="@Model.Tasks[i].Id" />
+            <input type="hidden" name="tasks[@i].Name" value="@Model.Tasks[i].Name" />
+            <input type="hidden" name="tasks[@i].ActivityId" value="@Model.Id" />
+            <p><strong>@Model.Tasks[i].Name</strong></p>
+        </div>
+        <div class="col-md-8">
+            <select  name="tasks[@i].AssignedVolunteers[0].UserId">
+                <option value="">Select a volunteer</option>
+                @for (int j=0; j < Model.Volunteers.Count; j++) {
+                    var user = Model.Volunteers[j];
+                    if (Model.Tasks[i].AssignedVolunteers != null && Model.Tasks[i].AssignedVolunteers.SingleOrDefault(av => av.UserId == user.Id) != null)
+                    {
+                    <option value="@user.Id" selected>@user.UserName</option>
+                    }
+                    else
+                    {
+                        <option value="@user.Id" >@user.UserName</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    }
+    <div class="row">
+        <div class="col-md-12">
+            <button type="submit" class="btn"><span class="fa fa-save"></span> Assign users</button>
+        </div>
+    </div>
+}

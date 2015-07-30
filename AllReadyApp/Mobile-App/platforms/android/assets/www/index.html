@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html ng-app="prepOpsApp">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'unsafe-eval' 'self' data: http: https: gap: https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *">
+    <title>All Ready</title>
+
+    <link href="lib/ionic/css/ionic.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body ng-controller="MainPageCtrl" ng-cloak>
+    <ion-side-menus>
+
+        <ion-side-menu-content>
+            <ion-nav-bar class="bar-positive bar-prepops">
+            </ion-nav-bar>
+            <ion-nav-view>
+                <!-- Main Content View, populated using app/*  -->
+            </ion-nav-view>
+        </ion-side-menu-content>
+
+        <ion-side-menu side="left">
+            <ion-header-bar class="bar-dark">
+                <h1 class="title">Menu</h1>
+            </ion-header-bar>
+            <ion-content>
+                <ion-list>
+                    <ion-item nav-clear menu-close ng-href=#/activities class="item">Login</ion-item>
+                </ion-list>
+            </ion-content>
+        </ion-side-menu>
+
+    </ion-side-menus>
+
+    <!-- Cordova -->
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="platformOverrides.js"></script>
+
+    <!-- Bower Components -->
+    <script type="text/javascript" src="lib/ionic/js/ionic.bundle.min.js"></script>
+    <script type="text/javascript" src="lib/moment/moment.min.js"></script>
+
+    <!-- App modules -->
+    <script type="text/javascript" src="app/app.js"></script>
+    <script type="text/javascript" src="app/login/login.js"></script>
+    <script type="text/javascript" src="app/activity/activity-details.js"></script>
+    <script type="text/javascript" src="app/activity/activity-details.js"></script>
+    <script type="text/javascript" src="app/activity/activity-list.js"></script>
+    <script type="text/javascript" src="app/checkin/checkin.js"></script>
+    <script type="text/javascript" src="app/services.js"></script>
+</body>
+</html>

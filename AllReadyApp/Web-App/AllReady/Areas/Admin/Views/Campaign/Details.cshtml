@@ -1,0 +1,59 @@
+@model AllReady.Models.Campaign
+
+@{ ViewData["Title"] = "Campaign details " + Model.Name; }
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>@ViewData["Title"]</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Description)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.StartDateTimeUtc)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.StartDateTimeUtc)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.EndDateTimeUtc)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.EndDateTimeUtc)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.ImageUrl)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ImageUrl)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.ManagingTenantId)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ManagingTenant.Name)
+            </dd>
+        </dl>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <p>
+            @Html.ActionLink("Edit", "Edit", "Campaigns", new { id = Model.Id }, new { @class = "btn" }) 
+            @Html.ActionLink("Back to List", "Index", "Campaigns", null, new { @class = "btn" })
+        </p>
+    </div>
+</div>

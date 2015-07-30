@@ -1,0 +1,28 @@
+﻿@model IEnumerable<TaskViewModel>
+
+<h1>Tasks</h1>
+
+<table class="table table-condensed table-responsive table-bordered table-hover table-striped">
+    <tr>
+        <th><span title="Tenant Name">Tenant</span></th>
+        <th><span title="Campaign Name">Campaign</span></th>
+        <th><span title="Activity Name">Activity</span></th>
+        <th><span title="Task Name">Task</span></th>
+        <th><span title="When the task starts">Start Time</span></th>
+        <th><span title="When the task ends">End Time</span></th>
+        <th><span title="Description of the task">Description</span></th>
+    </tr>
+
+    @foreach (var task in Model)
+    {
+        <tr>
+            <td><a asp-controller="Tenant" asp-action="ShowTenant" asp-route-id="@task.TenantId">@task.TenantName</a> </td>
+            <td><a asp-controller="Campaign" asp-action="Details" asp-route-id="@task.CampaignId">@task.CampaignName</a></td>
+            <td><a asp-controller="Activity" asp-action="ShowActivity" asp-route-id="@task.ActivityId">@task.ActivityName</a></td>
+            <td><a asp-controller="TaskApi" asp-action="ShowTask" asp-route-id="@task.Id">@task.Name</a></td>
+            <td>@task.StartDateTime</td>
+            <td>@task.EndDateTime</td>
+            <td>@task.Description</td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,92 @@
+﻿@model AllReady.ViewModels.ActivityViewModel
+<div class="row">
+    <div class="col-sm-8">
+        <div class="row">
+@if (!String.IsNullOrEmpty(Model.ImageUrl))
+{
+            <div  class="col-sm-2" >
+                <h2></h2>
+                <img src="@Model.ImageUrl" class="img-responsive"   />
+            </div>
+}
+            <div class="col-sm-7">
+                <h2>@Model.Title</h2>
+                <p class="date-address">@Model.StartDateTime.ToString("F") - @Model.EndDateTime.ToString("F")</p>
+            </div>
+            <div class="col-sm-3">
+                <h2 data-bind="visible: !@(Model.IsUserVolunteeredForActivity)"><a href="@Url.Action("Signup","Activity", new { id = Model.Id })" class="btn btn-volunteer">Volunteer</a></h2>
+                <div data-bind="visible: @(Model.IsUserVolunteeredForActivity)" class="volunteered">
+                    <center>
+                        Thanks for volunteering!
+                        <br />
+                        <a href="#" class="unvolunteer text-center" data-bind="click: function() {unenroll(@Model.Id);}">Unenroll</a>
+                    </center>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <p>@Model.Description</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <h3>Campaign</h3>
+                <p><a href="@Url.Action("Details","Campaign", new { id = Model.CampaignId })">@Model.CampaignName</a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <h3>Campaign Organizer</h3>
+                <h4><a asp-controller="Tenant" asp-action="ShowTenant" asp-route-id="@Model.TenantId">@Model.TenantName</a></h4>
+            </div>
+        </div> 
+        <div class="row">
+            <div class="col-sm-12">
+                <h3>Tasks</h3>
+            </div>
+            <ul>
+                @foreach (var task in Model.Tasks)
+                {
+                    <li>@task.Name - @task.Description</li>
+                }   
+            </ul>
+        </div>
+    
+    </div>
+    <div class="col-sm-4">
+        <h3>Location</h3>
+        <div id="bingMap" style="position:relative"></div>
+        <h3>Address</h3>
+        <p>
+            @Model.Location?.Address1<br />
+            @if (!string.IsNullOrEmpty(Model.Location?.Address2)) {
+                @Model.Location.Address2
+            }
+            @Model.Location?.City @Model.Location?.State @Model.Location?.PostalCode?.PostalCode
+        </p>
+    </div>
+</div>
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            getGeoCoordinates('@Model.Location?.Address1',
+                '@Model.Location?.Address2',
+                '@Model.Location?.City',
+                '@Model.Location?.State',
+                '@Model.Location?.PostalCode?.PostalCode',
+                '@Model.Location?.Country',
+                function (result) {
+                    var positionCoordsList = [
+                    { latitude: result.latitude, longitude: result.longitude }
+                    ];
+                    $("#bingMap").css("width", "300px").css("height", "300px");
+                    renderBingMap('bingMap', positionCoordsList);
+                });
+        });
+
+
+    </script>
+    <script type="text/javascript" src="~/js/activity.js"></script>
+    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+}
