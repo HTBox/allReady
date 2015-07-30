@@ -1,5 +1,5 @@
 {
-  "name": "PrepOpsApp",
+  "name": "AllReadyApp",
   "version": "1.0.0",
   "dependencies": {
     "cordova": "^5.1.1",

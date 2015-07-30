@@ -1,7 +1,7 @@
 "use strict";
 
 angular
-    .module("prepOpsApp", ["ionic", "activity-list", "activity-details", "login", "checkin"])
+    .module("allReadyApp", ["ionic", "activity-list", "activity-details", "login", "checkin"])
     .config(function ($urlRouterProvider, $ionicConfigProvider) {
         $ionicConfigProvider.backButton.previousTitleText(false).text("");
 

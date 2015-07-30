@@ -3,7 +3,7 @@
 angular
     .module("Backend", []) //TODO get a better name for factory and module
     .factory("CacheManager", [function () {
-        var rootKey = "prepOpsActivities";
+        var rootKey = "allReadyActivities";
         var svc = {};
 
         function getRoot() {
