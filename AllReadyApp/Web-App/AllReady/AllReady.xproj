@@ -7,14 +7,14 @@
   <Import Project="$(VSToolsPath)\DNX\Microsoft.DNX.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>d00de040-2254-4118-b172-f14e6fe56d44</ProjectGuid>
-    <RootNamespace>PrepOps</RootNamespace>
+    <RootNamespace>AllReady</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">..\artifacts\bin\$(MSBuildProjectName)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
     <DevelopmentServerPort>33310</DevelopmentServerPort>
-    <ApplicationInsightsResourceId>/subscriptions/934c4b88-202a-4ddf-b7eb-80eedccb5b3b/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/PrepOps</ApplicationInsightsResourceId>
+    <ApplicationInsightsResourceId>/subscriptions/934c4b88-202a-4ddf-b7eb-80eedccb5b3b/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/AllReady</ApplicationInsightsResourceId>
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DNX\Microsoft.DNX.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>

@@ -1,14 +1,14 @@
 ﻿using Microsoft.Data.Entity;
 using Microsoft.Framework.DependencyInjection;
-using PrepOps.Models;
-using PrepOps.ViewModels;
+using AllReady.Models;
+using AllReady.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace PrepOps.Controllers
+namespace AllReady.Controllers
 {
     public class ActivityApiControllerTest
     {
@@ -24,7 +24,7 @@ namespace PrepOps.Controllers
 
                 services.AddEntityFramework()
                           .AddInMemoryStore()
-                          .AddDbContext<PrepOpsContext>(options => options.UseInMemoryStore());
+                          .AddDbContext<AllReadyContext>(options => options.UseInMemoryStore());
                 _serviceProvider = services.BuildServiceProvider();
             }
         }
@@ -33,9 +33,9 @@ namespace PrepOps.Controllers
         public void GetAllActivities()
         {
             // Arrange
-            var PrepOpsContext = _serviceProvider.GetService<PrepOpsContext>();
-            var controller = new ActivityApiController(PrepOpsContext, null, null);
-            PopulateData(PrepOpsContext);
+            var AllReadyContext = _serviceProvider.GetService<AllReadyContext>();
+            var controller = new ActivityApiController(AllReadyContext, null, null);
+            PopulateData(AllReadyContext);
 
             // Act
             var result = new List<ActivityViewModel>(controller.Get().AsEnumerable());
@@ -49,9 +49,9 @@ namespace PrepOps.Controllers
         public void GetSingleActivity()
         {
             // Arrange
-            var PrepOpsContext = _serviceProvider.GetService<PrepOpsContext>();
-            var controller = new ActivityApiController(PrepOpsContext, null, null);
-            PopulateData(PrepOpsContext);
+            var AllReadyContext = _serviceProvider.GetService<AllReadyContext>();
+            var controller = new ActivityApiController(AllReadyContext, null, null);
+            PopulateData(AllReadyContext);
 
             // Act
             var result = controller.Get(5);
@@ -70,9 +70,9 @@ namespace PrepOps.Controllers
         public void PostSingleActivity()
         {
             // Arrange
-            var PrepOpsContext = _serviceProvider.GetService<PrepOpsContext>();
-            var controller = new ActivityApiController(PrepOpsContext, null, null);
-            PopulateData(PrepOpsContext);
+            var AllReadyContext = _serviceProvider.GetService<AllReadyContext>();
+            var controller = new ActivityApiController(AllReadyContext, null, null);
+            PopulateData(AllReadyContext);
 
             // Act
             //ActivityViewModel toPost = new ActivityViewModel()

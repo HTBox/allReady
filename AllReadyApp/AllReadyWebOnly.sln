@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23103.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "PrepOps.MobileViewModels", "Web-App\PrepOps.MobileViewModels\PrepOps.MobileViewModels.xproj", "{7D9B6D79-B66D-406E-986B-92F7ADA13B2C}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "AllReady.MobileViewModels", "Web-App\AllReady.MobileViewModels\AllReady.MobileViewModels.xproj", "{7D9B6D79-B66D-406E-986B-92F7ADA13B2C}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "PrepOps", "Web-App\PrepOps\PrepOps.xproj", "{D00DE040-2254-4118-B172-F14E6FE56D44}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "AllReady", "Web-App\AllReady\AllReady.xproj", "{D00DE040-2254-4118-B172-F14E6FE56D44}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{2C1DD2C4-73FF-4D1D-9E88-6B413317FC29}"
 EndProject

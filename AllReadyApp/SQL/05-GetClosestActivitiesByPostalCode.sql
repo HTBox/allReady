@@ -1,4 +1,4 @@
-USE [PrepOps-Dev]
+USE [AllReady-Dev]
 GO
 
 /****** Object:  StoredProcedure [GetClosestActivitiesByPostalCode]    Script Date: 07/10/2015 09:04:01 ******/
@@ -6,7 +6,7 @@ IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[GetClosestA
 DROP PROCEDURE [GetClosestActivitiesByPostalCode]
 GO
 
-USE [PrepOps-Dev]
+USE [AllReady-Dev]
 GO
 
 /****** Object:  StoredProcedure [GetClosestActivitiesByPostalCode]    Script Date: 07/10/2015 09:04:01 ******/

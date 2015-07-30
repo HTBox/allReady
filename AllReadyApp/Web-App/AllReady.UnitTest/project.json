@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-*",
-  "description": "PrepOps.UnitTests",
+  "description": "AllReady.UnitTests",
   "authors": [ "mattgal" ],
 
   "compilationOptions": {
@@ -10,8 +10,8 @@
   "dependencies": {
     "EntityFramework.InMemory": "7.0.0-beta5",
     "Microsoft.AspNet.Mvc": "6.0.0-*",
-    "PrepOps": "1.0.0-*",
-    "PrepOps.MobileViewModels": "1.0.0-*",
+    "AllReady": "1.0.0-*",
+    "AllReady.MobileViewModels": "1.0.0-*",
     "Microsoft.Framework.TestHost": "1.0.0-beta5",
     "Microsoft.Framework.Logging.Testing": "1.0.0-*",
     "xunit.runner.dnx": "2.1.0-beta3-build99",

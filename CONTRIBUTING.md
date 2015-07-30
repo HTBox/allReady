@@ -112,7 +112,7 @@ You will need the following to be able to run the allReady solution in Azure:
 
 ###Configure the web project
 
-The PrepOps project relies on configuration settings at runtime, such as whether to use a local database or a Azure SQL Database for data storage, whether to load sample data, default accounts information, and credentials for connecting to other services. These setting values can be stored in the project's config.json file. However, doing this makes it easier to accidentally expose secrets. ASP.NET 5 includes a secrets manager tool, and you should instead use this to locally store settings in your user account. When you publish the project to Azure Web Apps, you will need to set these same values as app settings in your web app.
+The AllReady project relies on configuration settings at runtime, such as whether to use a local database or a Azure SQL Database for data storage, whether to load sample data, default accounts information, and credentials for connecting to other services. These setting values can be stored in the project's config.json file. However, doing this makes it easier to accidentally expose secrets. ASP.NET 5 includes a secrets manager tool, and you should instead use this to locally store settings in your user account. When you publish the project to Azure Web Apps, you will need to set these same values as app settings in your web app.
 
 **Note:** currently the codebase includes no values for any 'secret' values in configuration.  As we deploy a dev and live site for this via HTBox we will configure 'production' values for testing and production.  We are also working on how to best support open development with the identity providers below for all contributors and will update this information when a full solution is found.
 
@@ -176,7 +176,7 @@ All of these settings should be stored in the secrets manager.
 
 ###Configure the mobile app project
 
-The URL of the PrepOps web site is set in the **domainUrl** variable in the /www/app/services.js file.
+The URL of the AllReady web site is set in the **domainUrl** variable in the /www/app/services.js file.
 
 ###Run and test locally
 
@@ -184,13 +184,13 @@ Once you have set the required settings either in the config.json file or in the
 
 ###Deploy to Azure
 
-The PrepOps project is designed to run hosted in Azure. The following sections describes the steps needed to get PrepOps web app running in Azure as you develop. Note that App Service Mobile Apps is currently available in the [Azure Preview Portal](https://portal.azure.com/).
+The AllReady project is designed to run hosted in Azure. The following sections describes the steps needed to get AllReady web app running in Azure as you develop. Note that App Service Mobile Apps is currently available in the [Azure Preview Portal](https://portal.azure.com/).
 
 **Note:** Again as with config, we will be hosting test and production instances of the application in the near future for tester contributors looking for instances of the application to test against and for others to reference.  The instructions here are for self hosting in your own trial instance if you choose during development.  However our goal is for all development to be able to be performed locally with alternatives or emulators for the online pieces.
 
 ####Create an Azure Web app
 
-To be able to publish the PrepOps project to Azure, you must first create a new web app in an Azure App Service environment. To learn how to do this, see [How to Create a Web App in an App Service Environment](https://azure.microsoft.com/en-us/documentation/articles/app-service-web-how-to-create-a-web-app-in-an-ase/).
+To be able to publish the AllReady project to Azure, you must first create a new web app in an Azure App Service environment. To learn how to do this, see [How to Create a Web App in an App Service Environment](https://azure.microsoft.com/en-us/documentation/articles/app-service-web-how-to-create-a-web-app-in-an-ase/).
 
 Once you have created your web app, you must create the required app settings. To run the site, you must create a connection string setting for `Data:DefaultConnection:AzureConnectionString`. To learn how to do this, see [Configure web apps in Azure App Service](https://azure.microsoft.com/en-us/documentation/articles/web-sites-configure/#application-settings).
 
