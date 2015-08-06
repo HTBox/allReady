@@ -5,6 +5,9 @@
 *.min.js
 *.min.css
 
+#Ignore any leftover PrepOpsApp files
+PrepOpsApp
+
 #Ignore the /plugins and /platforms folders of the app; these should be generated automatically.
 AllReadyApp/Web-App/AllReady/node_modules
 AllReadyApp/Mobile-App/plugins
