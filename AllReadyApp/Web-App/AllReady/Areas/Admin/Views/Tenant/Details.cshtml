@@ -1,0 +1,41 @@
+@model AllReady.Models.Tenant
+
+@{ 
+    ViewData["Title"] = Model.Name;
+}
+<div class="row">
+    <div class="col-md-12">
+        <h2>@ViewData["Title"]</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.LogoUrl)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.LogoUrl)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.WebUrl)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.WebUrl)
+            </dd>
+        </dl>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @Html.ActionLink("Edit", "Edit", "Tenant", new { id = Model.Id }, new { @class = "btn" }) 
+        @Html.ActionLink("Back to list", "Index", "Tenant", null, new { @class = "btn" })
+    </div>
+</div>
+

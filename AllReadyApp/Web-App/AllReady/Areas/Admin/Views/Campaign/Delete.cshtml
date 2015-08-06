@@ -1,0 +1,59 @@
+@model AllReady.Models.Campaign
+@{ ViewData["Title"] = "Delete campaign " + Model.Name; }
+<div class="row">
+    <div class="col-md-12">
+        <h3>Are you sure you want to delete this?</h3>
+        <div>
+            <h4>@ViewData["Title"]</h4>
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Description)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Description)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.StartDateTimeUtc)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.StartDateTimeUtc)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.EndDateTimeUtc)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.EndDateTimeUtc)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.ImageUrl)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ImageUrl)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.ManagingTenantId)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.ManagingTenant.Name)
+                </dd>
+            </dl>
+
+            @using (Html.BeginForm()) {
+                @Html.AntiForgeryToken()
+
+                <div class="form-actions no-color">
+                    <button type="submit" value="Delete" class="btn">Delete campaign</button> 
+                    @Html.ActionLink("Back to List", "Index", "Campaigns", null, new { @class = "btn" })
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+
