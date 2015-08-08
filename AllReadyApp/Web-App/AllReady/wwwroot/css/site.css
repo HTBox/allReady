@@ -48,9 +48,16 @@ footer > p > img {
     color: #555555;
 }
 .btn, a.btn {
-    background-color: #ab6627;
+    background-color: hsl(28.6, 62.9%, 41.2%);
     border-radius: 0;
     color: #fff;
+}
+.btn.active, a.btn.active {
+    background-color: hsl(28.9, 80.4%, 50%);
+    color: #fff;
+}
+.btn.active:hover, .btn.active:focus {
+    background-color: hsl(28.9, 80.4%, 60%);
 }
 .btn-volunteer {
     width: 100%;
@@ -75,7 +82,7 @@ ul.nav a:focus
 }
 .btn:hover, .btn:focus {
     color: #fff;
-    background-color: #efab6c;
+    background-color: hsl(28.9, 80.4%, 68%);
 }
 .campaign-sponsor {
     margin-top: 30px;
