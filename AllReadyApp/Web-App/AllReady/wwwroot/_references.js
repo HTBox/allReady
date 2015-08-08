@@ -5,4 +5,3 @@
 /// <reference path="js/index.js" />
 /// <reference path="js/myactivities.js" />
 /// <reference path="js/site.js" />
-/// <reference path="js/tota11y.min.js" />

@@ -135,7 +135,7 @@ namespace AllReady.ViewModels
                 newTask = false;
             }
 
-            // dbtask.Id = task.Id;
+            dbtask.Id = task.Id;
             dbtask.Description = task.Description;
             dbtask.Activity = activity;
             dbtask.EndDateTimeUtc = task.EndDateTime.HasValue ? task.EndDateTime.Value.UtcDateTime : new Nullable<DateTime>();

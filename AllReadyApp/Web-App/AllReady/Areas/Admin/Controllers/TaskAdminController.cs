@@ -145,6 +145,28 @@ namespace AllReady.Areas.Admin.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [Route("Admin/Task/Details/{activityId}/{id}")]
+        public IActionResult Details(int activityId, int id)
+        {
+
+            var dbTask = _dataAccess.GetTask(id);
+            if (dbTask == null)
+            {
+                return new HttpStatusCodeResult(404);
+            }
+
+            var model = new TaskViewModel
+            {
+                Id = dbTask.Id,
+                ActivityId = activityId,
+                Name = dbTask.Name,
+                StartDateTime = dbTask.StartDateTimeUtc,
+                EndDateTime = dbTask.EndDateTimeUtc
+            };
+
+            return View(model);
+        }
         // POST: Activity/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

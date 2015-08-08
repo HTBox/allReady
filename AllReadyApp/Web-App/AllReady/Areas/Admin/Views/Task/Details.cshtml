@@ -1,0 +1,45 @@
+﻿@model AllReady.ViewModels.TaskViewModel
+@{
+    ViewData["Title"] = "Tasks Details";
+}
+<div class="row">
+    <div class="cold-md-12">
+        <h2>@ViewData["Title"]</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.EndDateTime)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.EndDateTime)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.StartDateTime)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.StartDateTime)
+            </dd>
+            <dd>
+                @Html.DisplayFor(model => model.ActivityId)
+            </dd>
+        </dl>
+
+            @Html.AntiForgeryToken()
+            <div class="form-actions no-color">
+                <a href="@Url.Action("Details", "Activity", new { area="Admin", id = Model.ActivityId })" class="btn">
+                    <span class="fa fa-backward"> Back to Tasks</span>
+                </a>
+            </div>
+        
+    </div>
+</div>
