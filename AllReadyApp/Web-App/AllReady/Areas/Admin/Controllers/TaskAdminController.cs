@@ -160,6 +160,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 Id = dbTask.Id,
                 ActivityId = activityId,
+                Description = dbTask.Description,
                 Name = dbTask.Name,
                 StartDateTime = dbTask.StartDateTimeUtc,
                 EndDateTime = dbTask.EndDateTimeUtc

@@ -82,7 +82,12 @@ namespace AllReady.Areas.Admin.Controllers
                 StartDateTime = activity.StartDateTimeUtc,
                 EndDateTime = activity.EndDateTimeUtc,
                 Volunteers = _dataAccess.ActivitySignups.Where(asup => asup.Activity.Id == id).Select(u => u.User.UserName).ToList(),
-                Tasks = activity.Tasks.Select(t => new TaskViewModel { Id = t.Id, ActivityId=id, Name = t.Name }).OrderBy(t => t.StartDateTime).ThenBy(t=> t.Name).ToList(),
+                Tasks = activity.Tasks.Select(t => new TaskViewModel
+                { Id = t.Id,
+                    ActivityId =id,
+                    Name = t.Name,
+                    Description = t.Description })
+                    .OrderBy(t => t.StartDateTime).ThenBy(t=> t.Name).ToList(),
                 ImageUrl = activity.ImageUrl
             };
 

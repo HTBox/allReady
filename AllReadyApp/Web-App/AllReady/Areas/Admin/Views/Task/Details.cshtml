@@ -12,26 +12,30 @@
     <div class="col-md-12">
         <dl class="dl-horizontal">
             <dt>
-                @Html.DisplayNameFor(model => model.EndDateTime)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.EndDateTime)
-            </dd>
-            <dt>
                 @Html.DisplayNameFor(model => model.Name)
             </dt>
             <dd>
                 @Html.DisplayFor(model => model.Name)
             </dd>
             <dt>
+                @Html.DisplayNameFor(model => model.Description)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+            <dt>
                 @Html.DisplayNameFor(model => model.StartDateTime)
             </dt>
             <dd>
                 @Html.DisplayFor(model => model.StartDateTime)
-            </dd>
+            </dd>  
+            <dt>
+                @Html.DisplayNameFor(model => model.EndDateTime)
+            </dt>
             <dd>
-                @Html.DisplayFor(model => model.ActivityId)
-            </dd>
+                @Html.DisplayFor(model => model.EndDateTime)
+            </dd>   
+        
         </dl>
 
             @Html.AntiForgeryToken()
