@@ -14,6 +14,7 @@ namespace AllReady.UnitTests
     {
         private static IServiceProvider _serviceProvider;
         private static bool populatedData = false;
+        private static int activitiesAdded = 0;
         
         public ActivityApiControllerTest()
         {
@@ -38,7 +39,7 @@ namespace AllReady.UnitTests
             var activities = new List<ActivityViewModel>(controller.Get());
 
             // Assert
-            Assert.Equal(10, activities.Count());
+            Assert.Equal(activitiesAdded, activities.Count());
         }
 
         [Fact]
@@ -86,6 +87,7 @@ namespace AllReady.UnitTests
             };
 
             controller.Post(toPost);
+            activitiesAdded++;
             var viewModelFromDb = controller.Get(toPost.Id);
 
             // Assert
@@ -123,6 +125,7 @@ namespace AllReady.UnitTests
                     context.Add(activity);
                     context.Add(activity.Campaign);
                     context.Add(activity.Tenant);
+                    activitiesAdded++;
                 }
                 context.SaveChanges();
                 populatedData = true;
