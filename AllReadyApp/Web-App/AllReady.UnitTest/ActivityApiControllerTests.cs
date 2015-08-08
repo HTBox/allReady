@@ -1,21 +1,20 @@
-﻿using Microsoft.Data.Entity;
-using Microsoft.Framework.DependencyInjection;
-using AllReady.Models;
+﻿using AllReady.Models;
 using AllReady.ViewModels;
+using AllReady.Controllers;
+using Microsoft.Data.Entity;
+using Microsoft.Framework.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace AllReady.Controllers
+namespace AllReady.UnitTests
 {
     public class ActivityApiControllerTest
     {
         private static IServiceProvider _serviceProvider;
         private static bool populatedData = false;
-
-
+        
         public ActivityApiControllerTest()
         {
             if (_serviceProvider == null)
@@ -23,8 +22,8 @@ namespace AllReady.Controllers
                 var services = new ServiceCollection();
 
                 services.AddEntityFramework()
-                          .AddInMemoryStore()
-                          .AddDbContext<AllReadyContext>(options => options.UseInMemoryStore());
+                    .AddInMemoryStore()
+                    .AddDbContext<AllReadyContext>(options => options.UseInMemoryStore());
                 _serviceProvider = services.BuildServiceProvider();
             }
         }
@@ -33,67 +32,86 @@ namespace AllReady.Controllers
         public void GetAllActivities()
         {
             // Arrange
-            var AllReadyContext = _serviceProvider.GetService<AllReadyContext>();
-            var controller = new ActivityApiController(AllReadyContext, null, null);
-            PopulateData(AllReadyContext);
+            ActivityApiController controller = GetActivityController();
 
             // Act
-            var result = new List<ActivityViewModel>(controller.Get().AsEnumerable());
+            var activities = new List<ActivityViewModel>(controller.Get());
 
             // Assert
-            var viewResult = Assert.IsType<List<ActivityViewModel>>(result);
-            Assert.Equal(result.Count(), 10);
+            Assert.Equal(10, activities.Count());
         }
 
         [Fact]
         public void GetSingleActivity()
         {
             // Arrange
-            var AllReadyContext = _serviceProvider.GetService<AllReadyContext>();
-            var controller = new ActivityApiController(AllReadyContext, null, null);
-            PopulateData(AllReadyContext);
+            ActivityApiController controller = GetActivityController();
 
             // Act
-            var result = controller.Get(5);
+            int recordId = 5;
+            var activityViewModel = controller.Get(recordId);
 
             // Assert
-            var viewResult = Assert.IsType<ActivityViewModel>(result);
-            Assert.Equal(viewResult.Id, 5);
-            Assert.Equal(viewResult.CampaignName, "Campaign 4");
-            Assert.Equal(viewResult.CampaignId, 4);
-            Assert.Equal(viewResult.Description, "ActivityViewModel.cs: Needs a Description");
-            Assert.Equal(viewResult.EndDateTime, DateTime.MaxValue.ToUniversalTime());
-            Assert.Equal(viewResult.StartDateTime, DateTime.MinValue.ToUniversalTime());
+            Assert.Equal(activityViewModel.Id, recordId);
+            Assert.Equal(activityViewModel.CampaignName, string.Format(TestActivityModelProvider.CampaignNameFormat, recordId));
+            Assert.Equal(activityViewModel.CampaignId, recordId);
+            Assert.Equal(activityViewModel.Description, string.Format(TestActivityModelProvider.ActivityDescriptionFormat, recordId));
+            Assert.Equal(activityViewModel.EndDateTime, DateTime.MaxValue.ToUniversalTime());
+            Assert.Equal(activityViewModel.StartDateTime, DateTime.MinValue.ToUniversalTime());
         }
 
         [Fact]
         public void PostSingleActivity()
         {
             // Arrange
-            var AllReadyContext = _serviceProvider.GetService<AllReadyContext>();
-            var controller = new ActivityApiController(AllReadyContext, null, null);
-            PopulateData(AllReadyContext);
+            ActivityApiController controller = GetActivityController();
 
-            // Act
-            //ActivityViewModel toPost = new ActivityViewModel()
-            //{
+            //Act
+            ActivityViewModel toPost = new ActivityViewModel()
+            {
+                Id = 11,
+                Title = "the answer to life the universe and everything",
+                CampaignId = 1,
+                TenantId = 1,
+                StartDateTime = DateTime.Today,
+                EndDateTime = DateTime.Today.AddMonths(1),
+                Location = new LocationViewModel()
+                {
+                    Address1 = "123 Happy Street",
+                    City = "Madison",
+                    State = "WI",
+                    PostalCode = new PostalCodeGeo() { PostalCode = "53711" },
+                    Country = "country gets ignored right now"
+                }
+            };
 
-
-            //}
-
-            var result = controller.Get(5);
+            controller.Post(toPost);
+            var viewModelFromDb = controller.Get(toPost.Id);
 
             // Assert
-            var viewResult = Assert.IsType<ActivityViewModel>(result);
-            Assert.Equal(viewResult.Id, 5);
-            Assert.Equal(viewResult.CampaignName, "Campaign 4");
-            Assert.Equal(viewResult.CampaignId, 4);
-            Assert.Equal(viewResult.Description, "ActivityViewModel.cs: Needs a Description");
-            Assert.Equal(viewResult.EndDateTime, DateTime.MaxValue.ToUniversalTime());
-            Assert.Equal(viewResult.StartDateTime, DateTime.MinValue.ToUniversalTime());
+            Assert.NotEqual(viewModelFromDb, toPost);
+            Assert.Equal(toPost.Id, viewModelFromDb.Id);
+            Assert.Equal(toPost.CampaignId, viewModelFromDb.CampaignId);
+            Assert.Equal(string.Format(TestActivityModelProvider.CampaignNameFormat, toPost.CampaignId), viewModelFromDb.CampaignName);
+            Assert.Null(viewModelFromDb.Description);
+            Assert.Equal(toPost.EndDateTime, viewModelFromDb.EndDateTime);
+            Assert.Equal(toPost.StartDateTime, viewModelFromDb.StartDateTime);
+            Assert.Equal("US", viewModelFromDb.Location.Country);
+            Assert.Equal(toPost.Location.Address1, viewModelFromDb.Location.Address1);
+            Assert.Equal(toPost.Location.City, viewModelFromDb.Location.City);
         }
 
         #region Helper Methods
+
+        private ActivityApiController GetActivityController()
+        {
+            var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
+            var allReadyDataAccess = new AllReadyDataAccessEF7(allReadyContext);
+            var controller = new ActivityApiController(allReadyDataAccess, null, null);
+            PopulateData(allReadyContext);
+            return controller;
+        }
+
         private void PopulateData(DbContext context)
         {
             if (!populatedData)
@@ -103,6 +121,8 @@ namespace AllReady.Controllers
                 foreach (var activity in activities)
                 {
                     context.Add(activity);
+                    context.Add(activity.Campaign);
+                    context.Add(activity.Tenant);
                 }
                 context.SaveChanges();
                 populatedData = true;
@@ -111,32 +131,39 @@ namespace AllReady.Controllers
 
         private class TestActivityModelProvider
         {
+            public const string CampaignNameFormat = "Campaign {0}";
+            public const string CampaignDescriptionFormat = "Description for campaign {0}";
+            public const string TenantNameFormat = "Test Tenant {0}";
+            public const string ActivityNameFormat = "Activity {0}";
+            public const string ActivityDescriptionFormat = "Description for activity {0}";
+
             private static int id = 1;
-            public static Activity []  GetActivities()
+            public static Activity[] GetActivities()
             {
-                var campaigns = Enumerable.Range(0, 10).Select(n =>
+                var campaigns = Enumerable.Range(1, 10).Select(n =>
                     new Campaign()
                     {
-                        Description = string.Format("Description # {0}", n),
-                        Name = string.Format("Campaign {0}", n),
+                        Description = string.Format(CampaignDescriptionFormat, n),
+                        Name = string.Format(CampaignNameFormat, n),
                         Id = n
                     }).ToArray();
 
-                var tenants = Enumerable.Range(0, 10).Select(n =>
+                var tenants = Enumerable.Range(1, 10).Select(n =>
                     new Tenant()
                     {
-                        Name = string.Format("Test Tenant {0}", n),
-                        Campaigns = new List<Campaign> (new [] { campaigns[n]})
+                        Name = string.Format(TenantNameFormat, n),
+                        Campaigns = new List<Campaign>(new[] { campaigns[n - 1] })
                     }).ToArray();
 
-                var activities = Enumerable.Range(0, 10).Select(n =>
+                var activities = Enumerable.Range(1, 10).Select(n =>
                     new Activity()
                     {
-                        Campaign = campaigns[n],
+                        Campaign = campaigns[n - 1],
                         EndDateTimeUtc = DateTime.MaxValue.ToUniversalTime(),
                         StartDateTimeUtc = DateTime.MinValue.ToUniversalTime(),
-                        Name = string.Format("Activity # {0}", n),
-                        Tenant = tenants[n],
+                        Name = string.Format(ActivityNameFormat, n),
+                        Description = string.Format(ActivityDescriptionFormat, n),
+                        Tenant = tenants[n - 1],
                         Id = id++
                     }).ToArray();
                 return activities;
