@@ -10,13 +10,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Threading;
+using AllReady.DataAccess;
 
 namespace AllReady.Models
 {
     public static class SampleData
     {
+        private static ITaskIdProvider _taskIdProvider = new TaskIdProvider();
         public static void InsertTestData(AllReadyContext dbContext)
         {
+            _taskIdProvider.Reset();
             // Avoid polluting the database if there's already something in there.
             if (dbContext.Locations.Any() ||
                 dbContext.Tenants.Any() ||
@@ -280,11 +284,13 @@ namespace AllReady.Models
             List<AllReadyTask> value = new List<AllReadyTask>();
             for (int i = 0; i < 5; i++)
             {
+                var tempId = _taskIdProvider.NextValue();
                 value.Add(new AllReadyTask()
-                {
+                {   
+                    Id = tempId,
                     Activity = activity,
                     Description = "Description of a very important task # " + i,
-                    Name = "Task # " + i,
+                    Name = "Task # " + tempId,
                     EndDateTimeUtc = DateTime.Now.AddDays(i),
                     StartDateTimeUtc = DateTime.Now.AddDays(i - 1),
                     Tenant = tenant
