@@ -4,25 +4,60 @@
 }
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-6">
         <h2>@ViewData["Title"]</h2>
+    </div>
+    <div class="col-md-6">
+        <div class="pull-right">
+            <button type="button" class="btn" data-bind="css: { active: showOld }, click: toggle(showOld)">
+                <i class="fa" data-bind="css: { 'fa-square-o': !showOld(), 'fa-check-square-o': showOld }"></i>
+                Show Old
+            </button>
+        </div>
     </div>
 </div>
 <div class="row">
     <div class="col-md-12">
-        <table class="table">
-            <tr>
-                <th><span title="Title of the activity">Title</span></th>
-                <th><span title="Description of the activity">Description</span></th>
-                <th><span title="Time period of the activity">When</span></th>
-            </tr>
-            @foreach (var activity in Model) {
+        <div class="alert alert-info text-center" role="alert" data-bind="css: { hide: !loading() }">
+            <strong>Loading...</strong>
+            <i class="fa fa-circle-o-notch fa-spin"></i>
+        </div>
+        <div class="hide text-center" data-bind="css: { hide: loading() || selectedActivities().length }">
+            <div class="alert alert-warning" role="alert">
+                <strong>No activities to show.</strong>
+                <span data-bind="visible: !showOld()">Maybe try showing old activities.</span>
+            </div>
+        </div>
+        <div class="hide" data-bind="css: { hide: loading() || !selectedActivities().length }">
+            <table class="table">
                 <tr>
-                    <td>@Html.ActionLink(@activity.Title, "ShowActivity", "Activity", new { id = @activity.Id }, null)</td>
-                    <td>@activity.Description</td>
-                    <td>@activity.StartDateTime.ToString("F") - @activity.EndDateTime.ToString("F")</td>
+                    <th><span title="Title of the activity">Title</span></th>
+                    <th><span title="Description of the activity">Description</span></th>
+                    <th><span title="Time period of the activity">When</span></th>
                 </tr>
-            }
-        </table>
+                <!-- ko foreach: selectedActivities -->
+                <tr>
+                    <td>
+                        <a data-bind="attr: { href: '/Activity/' + Id }, text: Title"></a>
+                    </td>
+                    <td>
+                        <span data-bind="text: Description"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: moment(StartDateTime).format('ddd, MMM D, YYYY, h:mm A')"></span>
+                        to
+                        <span data-bind="text: moment(EndDateTime).format('ddd, MMM D, YYYY, h:mm A')"></span>
+                    </td>
+                </tr>
+                <!-- /ko -->
+            </table>
+        </div>
     </div>
 </div>
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/moment/moment.js"></script>
+    <script type="text/javascript" src="~/js/activities.js"></script>
+}
+
+

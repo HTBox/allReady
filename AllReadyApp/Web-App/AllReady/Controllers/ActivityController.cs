@@ -76,9 +76,7 @@ namespace AllReady.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            // TODO: we need to make sure this is geo-filtered
-            var activities = _allReadyDataAccess.Activities.Select(a => new ActivityViewModel(a)).ToList();
-            return View("Activities", activities);
+            return View("Activities");
         }
 
         [Route("[controller]/{id}/")]
