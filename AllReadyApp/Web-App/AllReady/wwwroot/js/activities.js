@@ -30,6 +30,9 @@
 
     getActivities.done(function (activities) {
         viewModel.loading(false);
+        activities.sort(function (a1, a2) {
+            return moment(a1.StartDateTime).toDate().valueOf() - moment(a2.StartDateTime).toDate().valueOf();
+        });
         viewModel.activities(activities);
     });
 })(ko, $);
