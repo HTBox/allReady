@@ -50,6 +50,7 @@ namespace AllReady.Models
                                 .Include(a => a.Campaign)
                                 .Include(a => a.Tasks)
                                 .Include(x => x.UsersSignedUp)
+                                .OrderBy(x => x.EndDateTimeUtc)
                                 .ToList();
             }
         }
