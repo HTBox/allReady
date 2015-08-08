@@ -182,6 +182,12 @@ The URL of the AllReady web site is set in the **domainUrl** variable in the /ww
 
 Once you have set the required settings either in the config.json file or in the secrets manager, you can run and locally debug the projects. If you have not yet created a SQL Database in Azure, you should use either the in-memory data storage option or use `Data:DefaultConnection:LocalConnectionString` as the **connectionStringPath** value in Startup.cs.
 
+Currently there are hardcoded user accounts for limited testing (this will of course be changed soon)  For now:
+"DefaultAdminUsername": "Administrator@test.com", 
+"DefaultAdminPassword": "YouShouldChangeThisPassword1!", 
+"DefaultUsername": "User@test.com", 
+"DefaultTenantUsername": "tenant@test.com", 
+
 ###Deploy to Azure
 
 The AllReady project is designed to run hosted in Azure. The following sections describes the steps needed to get AllReady web app running in Azure as you develop. Note that App Service Mobile Apps is currently available in the [Azure Preview Portal](https://portal.azure.com/).
