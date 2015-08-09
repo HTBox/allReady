@@ -7,6 +7,7 @@ using AllReady.Models;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AllReady.Services;
 
 namespace AllReady.Areas.SiteAdmin.Controllers
 {
@@ -15,10 +16,12 @@ namespace AllReady.Areas.SiteAdmin.Controllers
     public class SiteController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IEmailSender _emailSender;
 
-        public SiteController(UserManager<ApplicationUser> userManager)
+        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender)
         {
             _userManager = userManager;
+            _emailSender = emailSender;
         }
         // GET: /<controller>/
         public IActionResult Index()
@@ -63,12 +66,13 @@ namespace AllReady.Areas.SiteAdmin.Controllers
                 var result = await _userManager.AddClaimAsync(user, new Claim("UserType", "TenantAdmin"));
                 if(result.Succeeded)
                 {
-                    ViewData["result"] = "Successfully approved user";
+                    ViewData["result"] = "Successfully made user a tenant admin";
+                    var callbackUrl = Url.Action("Login", "Admin", new { Email = model.Email }, protocol: Context.Request.Scheme);
+                    await _emailSender.SendEmailAsync(model.Email, "Account Approval", "Your account has been approved by an administrator. Please <a href=" + callbackUrl + ">Click here to Log in</a>");
                     return View();
                 }
                 else
                 {
-                    ViewData["result"] = "Successfully approved user";
                     return Redirect("Error");
                 }
 
