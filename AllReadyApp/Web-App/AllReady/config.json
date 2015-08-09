@@ -1,45 +1,47 @@
 {
-  "DefaultAdminUsername": "Administrator@test.com",
-  "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
-  "DefaultUsername": "User@test.com",
-  "DefaultTenantUsername": "tenant@test.com",
+    "DefaultAdminUsername": "Administrator@test.com",
+    "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
+    "DefaultUsername": "User@test.com",
+    "DefaultTenantUsername": "tenant@test.com",
+    "DefaultFromEmailAddress": "Administrator@test.com",
+    "DefaultFromDisplayName": "allReady.com Administrator",
 
-  "ApplicationInsights": {
-    "InstrumentationKey": "[instrumentationkey]"
-  },
-  "Data": {
-    "DefaultConnection": {
-      "UseInMemory": "true",
-      "AzureConnectionString": "Server=[server],1433;Database=[database];User ID=[userid];Password=[password];Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
-      "LocalConnectionString": "Server=(localdb)\\mssqllocaldb;Database=AllReady;Integrated Security=true;"
+    "ApplicationInsights": {
+        "InstrumentationKey": "[instrumentationkey]"
     },
-    "InsertSampleData": "true",
-    "InsertTestUsers": "true",
-    "Storage": {
-      "AzureStorage": "[storagekey]"
+    "Data": {
+        "DefaultConnection": {
+            "UseInMemory": "true",
+            "AzureConnectionString": "Server=[server],1433;Database=[database];User ID=[userid];Password=[password];Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+            "LocalConnectionString": "Server=(localdb)\\mssqllocaldb;Database=AllReady;Integrated Security=true;"
+        },
+        "InsertSampleData": "true",
+        "InsertTestUsers": "true",
+        "Storage": {
+            "AzureStorage": "[storagekey]"
+        }
+    },
+    "Authentication": {
+        "Facebook": {
+            "AppId": "[facebookappId]",
+            "AppSecret": "[facebookappsecret]"
+        },
+        "Twitter": {
+            "ConsumerKey": "[twitterkey]",
+            "ConsumerSecret": "[twittersecret]"
+        },
+        "MicrosoftAccount": {
+            "ClientId": "[twitterclient]",
+            "ClientSecret": "[twittersecret]"
+        },
+        "SendGrid": {
+            "UserName": "[sendgriduser]",
+            "Password": "[sendgridpassword]"
+        },
+        "Twilio": {
+            "Sid": "[twiliosid]",
+            "Token": "[twiliotoken]",
+            "PhoneNo": "[twilionumber]"
+        }
     }
-  },
-  "Authentication": {
-    "Facebook": {
-      "AppId": "[facebookappId]",
-      "AppSecret": "[facebookappsecret]"
-    },
-    "Twitter": {
-      "ConsumerKey": "[twitterkey]",
-      "ConsumerSecret": "[twittersecret]"
-    },
-    "MicrosoftAccount": {
-      "ClientId": "[twitterclient]",
-      "ClientSecret": "[twittersecret]"
-    },
-    "SendGrid": {
-      "UserName": "[sendgriduser]",
-      "Password": "[sendgridpassword]"
-    },
-     "Twilio": {
-      "Sid": "[twiliosid]",
-      "Token": "[twiliotoken]",
-      "PhoneNo": "[twilionumber]"
-    }
-  }
 }

@@ -24,7 +24,7 @@ namespace AllReady.Services
             // Plug in your email service here to send an email.
             var myMessage = new SendGridMessage();
             myMessage.AddTo(email);
-            myMessage.From = new System.Net.Mail.MailAddress("Joe@contoso.com", "Joe S.");
+            myMessage.From = new System.Net.Mail.MailAddress(_config.Get("DefaultFromEmailAddress"), _config.Get("DefaultFromDisplayName"));
             myMessage.Subject = subject;
             myMessage.Text = message;
             myMessage.Html = message;
@@ -32,7 +32,10 @@ namespace AllReady.Services
                 _config["Authentication:SendGrid:UserName"],
                 _config["Authentication:SendGrid:Password"]);
             // Create a Web transport for sending email.
-            var transportWeb = new Web(credentials);
+            ITransportAdapter.Credentials = credentials;
+            ITransportAdapter.Config = _config;
+            var transportWeb = ITransportAdapter.Create();
+            
             // Send the email.
             if (transportWeb != null)
             {
