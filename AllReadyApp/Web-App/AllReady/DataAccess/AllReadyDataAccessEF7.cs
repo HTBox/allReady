@@ -132,8 +132,12 @@ namespace AllReady.Models
 
             return finalTasks;
         }
-
-
+        IEnumerable<Resource> IAllReadyDataAccess.GetResourcesByCategory(string category)
+        {
+            var resources = from c in _dbContext.Resources
+                            select c;
+            return resources;
+        }
         #endregion
 
         #region Campaign CRUD

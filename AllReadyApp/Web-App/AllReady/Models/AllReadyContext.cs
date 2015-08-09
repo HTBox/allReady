@@ -30,6 +30,8 @@ namespace AllReady.Models
 
         public DbSet<TaskUsers> TaskSignup { get; set; }
 
+        public DbSet<Resource> Resources { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -105,6 +107,9 @@ namespace AllReady.Models
 
             //modelBuilder.Entity<UserSecurity>()
             //	.Key(k => k.UserId);
+
+            modelBuilder.Entity<Resource>()
+                .Key(k => k.Id);
         }
     }
 }

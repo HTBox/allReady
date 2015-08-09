@@ -24,6 +24,8 @@ namespace AllReady.Models
         Task UpdateActivity(Activity value);
         IEnumerable<Activity> ActivitiesByPostalCode(string postalCode, int distance);
         IEnumerable<Activity> ActivitiesByGeography(double latitude, double longitude, int distance);
+        IEnumerable<Resource> GetResourcesByCategory(string category);
+
         #endregion
 
         #region Campaign CRUD
