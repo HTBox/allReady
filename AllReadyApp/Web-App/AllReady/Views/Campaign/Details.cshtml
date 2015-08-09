@@ -28,13 +28,30 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-    <h3>Activities for this campaign</h3>
-    @foreach (var activity in Model.Activities) {
-        <div class="activity-list">
-            <a href="/Activity/@activity.Id">@activity.Title</a>
-            <span class="text-small">@activity.Description</span>
-        </div>
-
-    }
+        <h3>
+            Activities for this campaign
+            <button type="button" class="btn" data-bind="css: { active: activities.showOld }, click: activities.showOld.toggle">
+                <i class="fa" data-bind="css: { 'fa-square-o': !activities.showOld(), 'fa-check-square-o': activities.showOld }"></i>
+                Show Old
+            </button>
+        </h3>
+        <span data-bind="visible: !activities.filtered().length">
+            No current activities. Maybe look at an old activity.
+        </span>
+        <!-- ko foreach: activities.filtered -->
+            <div class="activity-list">
+                <a data-bind="attr: { href: '/Activity/' + Id }, text: Title"></a>
+                <span class="text-small" data-bind="text: Description"></span>
+            </div>
+        <!-- /ko -->
     </div>
 </div>
+
+@section scripts {
+    <script>
+        var modelActivities = @Json.Serialize(Model.Activities);
+    </script>
+    <script type="text/javascript" src="~/js/ko.filterableList.js"></script>
+    <script type="text/javascript" src="~/js/campaign.js"></script>
+
+}
