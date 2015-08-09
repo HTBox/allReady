@@ -7,23 +7,9 @@
     var getActivities = $.getJSON("/api/activity");
 
     function ActivitiesViewModel() {
-        this.showOld = ko.observable(false);
-        this.activities = ko.observableArray([]);
-        this.selectedActivities = ko.computed(function () {
-            var self = this;
-            return ko.utils.arrayFilter(this.activities(), function (activity) {
-                return self.showOld() || moment(activity.EndDateTime).isAfter(moment());
-            })
-        }, this);
+        this.activities = ko.observableArray([]).filterBeforeDate("EndDateTime");
         this.loading = ko.observable(true);
     }
-    ActivitiesViewModel.prototype = {
-        toggle: function (observable) {
-            return function toggleObservable() {
-                observable(!observable());
-            }
-        }
-    };
 
     var viewModel = new ActivitiesViewModel();
     ko.applyBindings(viewModel);

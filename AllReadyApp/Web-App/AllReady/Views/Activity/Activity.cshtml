@@ -43,13 +43,19 @@
         </div> 
         <div class="row">
             <div class="col-sm-12">
-                <h3>Tasks</h3>
+                <h3>
+                    Tasks
+                    <button type="button" class="btn" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
+                        <i class="fa" data-bind="css: { 'fa-square-o': !tasks.showOld(), 'fa-check-square-o': tasks.showOld }"></i>
+                        Show Old
+                    </button>
+                </h3>
             </div>
-            <ul>
-                @foreach (var task in Model.Tasks)
-                {
-                    <li>@task.Name - @task.Description</li>
-                }   
+            <ul data-bind="foreach: tasks.filtered">
+                <li>
+                    <span data-bind="text: Name"></span>
+                    <span data-bind="text: Description"></span>
+                </li>
             </ul>
         </div>
     
@@ -85,8 +91,9 @@
                 });
         });
 
-
+        var modelTasks = @Json.Serialize(Model.Tasks);
     </script>
+    <script type="text/javascript" src="~/js/ko.filterableList.js"></script>
     <script type="text/javascript" src="~/js/activity.js"></script>
     <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
 }
