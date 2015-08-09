@@ -1,7 +1,14 @@
-﻿(function (ko, $, navigator) {
+﻿///<reference path="../lib/jquery/dist/jquery.js" />
+///<reference path="../lib/knockout/dist/knockout.js" />
 
-    var activityViewModel = {
-        enrolled: ko.observable(false),
+(function (ko, $, tasks) {
+
+    function ActivityViewModel(tasks) {
+        this.tasks = ko.observableArray(tasks).filterBeforeDate("EndDateTime");
+        this.enrolled = ko.observable(false);
+    }
+
+    ActivityViewModel.prototype = {
         enroll: function (activity) {
             // TODO: set up a spinner
             $.ajax({
@@ -27,5 +34,6 @@
             });
         }
     };
-    ko.applyBindings(activityViewModel);
-})(ko, $, window.navigator);
+    
+    ko.applyBindings(new ActivityViewModel(tasks));
+})(ko, $, modelTasks);
