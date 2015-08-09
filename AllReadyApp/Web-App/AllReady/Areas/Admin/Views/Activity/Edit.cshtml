@@ -1,6 +1,10 @@
 @model AllReady.Models.Activity
 
 @{  ViewData["Title"] = "Edit activity: " + Model.Name; }
+@section scripts {
+    <script src="~/js/admin/activity.js"></script>
+}
+
 
 <h2>@ViewData["Title"]</h2>
 
@@ -60,6 +64,76 @@
     </div>
 }
 
+<h2>Edit Skills Required</h2>
+<div class="form-horizontal">
+    <div class="form-group">
+        <table class="table">
+            <thead>
+                <tr>
+                    <td>Skill Name</td>
+                    <td>Description</td>
+                    <td>Start date</td>
+                    <td>End date</td>
+                    <td>Location needed</td>
+                    <td>Number needed</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: skills">
+                <tr>
+                    <td><input type="text" name="skillName" data-bind="value: Name"/></td>
+                    <td><input type="text" name="skillDescription" data-bind="value: Description"/></td>
+                    <td><input type="text" name="skillStartDate" data-bind="value: StartDate" /></td>
+                    <td><input type="text" name="skillEndDate" data-bind="value: EndDate" /></td>
+                    <td><input type="text" name="skillLocationNeeded" data-bind="value: LocationNeeded" /></td>
+                    <td><input type="text" name="skillNumberRequired" data-bind="value: NumberRequired" /></td>
+                    <td><a href="#" data-bind="click: removeSkill">[delete]</a></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <button data-bind="click: addSkill">Add a skill</button>
+    </div>
+</div>
+
+<h2>Edit Resources Required</h2>
+<div class="form-horizontal">
+    <div class="form-group">
+        <table class="table">
+            <thead>
+                <tr>
+                    <td>Resource Name</td>
+                    <td>Description</td>
+                    <td>Start date</td>
+                    <td>End date</td>
+                    <td>Location needed</td>
+                    <td>Number needed</td>
+                    <td>Current location</td>
+                    <td>Number at current location</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var resource in Model.RequiredResources ?? new List<Resource>())
+                {
+                    <tr>
+                        <td>@resource.Name</td>
+                        <td>@resource.Description</td>
+                        <td>@resource.StartDateTimeUtc</td>
+                        <td>@resource.EndDateTimeUtc</td>
+                        <td>@resource.LocationNeeded</td>
+                        <td>@resource.NumberRequired</td>
+                        <td>@resource.CurrentLocation</td>
+                        <td>@resource.NumberInLocation</td>
+                        <td>[delete]</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <h2>Image for @Model.Name</h2>
 <div class="form-horizontal">
     <div class="form-group">
@@ -79,7 +153,6 @@
         </div>
     </div>
 </div>
-
 
 <div>
     @Html.ActionLink("Back to List", "Index", "Activity", null, new { @class = "btn" })
