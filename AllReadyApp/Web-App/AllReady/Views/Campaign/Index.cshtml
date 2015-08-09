@@ -1,8 +1,34 @@
 ﻿@model IList<CampaignViewModel>
 @{
     ViewData["Title"] = "All registered campaigns";
+    @addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
 }
+<environment names="Development">
+        <link rel="stylesheet" href="~/css/campaignStyle.css" />
+</environment>
+<environment names="Staging,Production">
+    <link rel="stylesheet" href="~/css/campaignStyle.css"  asp-file-version="true"  />
+</environment>
 
+<div class="row search-banner">
+    <div class="col-md-12 text-center">
+        <input type="search"
+               class="campaign-search "
+               placeholder="Search for campaigns using your zipcode"
+               data-bind="{ value: searchTerm, valueUpdate: 'afterkeydown', event: { keypress: handleEnter } }" /><a class="main-search-button" data-bind="click: searchCampaigns" title="Search for campaigns"><img class="campaign-search-button" src="~/images/search-icon.png" alt="Search for campaigns" /></a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 text-center">
+        <div class="activity-results" data-bind="if: loadingDone">
+            <h3>Campaigns near <span data-bind="text: searchTerm"></span></h3>
+            <div class="activity-wrapper" data-bind="foreach: campaigns">
+                <p><a data-bind="attr: { href: '/Campaign/' + CampaignId }, text: Title"></a></p>
+            </div>
+            <a data-bind="attr: { href: '/Campaign'}">See more campaigns</a>
+        </div>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-6">
         <h2>@ViewData["Title"]</h2>
@@ -49,6 +75,19 @@
             </table>
         </div>
     </div>
+    <environment names="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/knockout/dist/knockout.js"></script>
+        <script src="~/js/tota11y.min.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="//ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery">
+        </script>
+        <script src="//ajax.aspnetcdn.com/ajax/knockout/knockout-3.3.0.js"></script>
+    </environment>
+    <script src="~/js/site.js"></script>
 </div>
 
 @section scripts {
@@ -56,5 +95,5 @@
         var modelCampaigns = @Json.Serialize(Model);
     </script>
     <script type="text/javascript" src="~/js/ko.filterableList.js"></script>
-    <script type="text/javascript" src="~/js/campaigns.js"></script>
+    <script src="~/js/campaigns.js"></script>
 }
