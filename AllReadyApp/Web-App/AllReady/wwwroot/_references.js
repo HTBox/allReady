@@ -7,3 +7,4 @@
 /// <reference path="js/ko.filterablelist.js" />
 /// <reference path="js/myactivities.js" />
 /// <reference path="js/site.js" />
+/// <reference path="js/tenant.js" />
