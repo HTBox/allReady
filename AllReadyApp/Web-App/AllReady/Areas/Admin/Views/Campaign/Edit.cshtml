@@ -1,5 +1,17 @@
 @model AllReady.Models.Campaign
-@{  ViewData["Title"] = string.Format("Edit Campaign - {0}", Model.Name);}
+@{
+    var isEdit = Model != null && Model.Id > 0;
+    if (isEdit)
+    {
+        ViewData["Title"] = string.Format("Edit Campaign - {0}", Model.Name);
+        ViewData["Action"] = "Save";
+    }
+    else
+    {
+        ViewData["Title"] = "Create Campaign";
+        ViewData["Action"] = "Create";
+    }
+}
 
 <h2>@ViewData["Title"]</h2>
 
@@ -11,7 +23,10 @@
     <div class="form-horizontal">
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Id)
+        @if (isEdit)
+        {
+            Html.HiddenFor(model => model.Id);
+        }
         <div class="form-group">
             @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -58,7 +73,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <button type="submit" value="Save" class="btn">Save</button>
+            <button type="submit" value="@ViewData["Action"]" class="btn">@ViewData["Action"]</button>
             @Html.ActionLink("Cancel", "Index", new { controller = "Campaign", area = "Admin" }, new { @class = "btn" })
         </div>
     </div>

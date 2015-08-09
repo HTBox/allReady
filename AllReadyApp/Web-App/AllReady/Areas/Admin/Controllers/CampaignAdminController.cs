@@ -39,7 +39,7 @@ namespace AllReady.Controllers
         // GET: Campaign/Create
         public async Task<IActionResult> Create()
         {
-            return await Task.Run(() => WithTenants(View()));
+            return await Task.Run(() => WithTenants(View("Edit")));
         }
 
         // POST: Campaign/Create
@@ -66,7 +66,7 @@ namespace AllReady.Controllers
                 return RedirectToAction("Index", new { area = "Admin" });
             }
 
-            return WithTenants(View(campaign));
+            return WithTenants(View("Edit", campaign));
         }
 
         // GET: Campaign/Edit/5
