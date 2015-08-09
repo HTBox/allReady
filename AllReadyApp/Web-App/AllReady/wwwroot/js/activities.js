@@ -7,7 +7,7 @@
     var getActivities = $.getJSON("/api/activity");
 
     function ActivitiesViewModel() {
-        this.activities = ko.observableArray([]).filterBeforeDate("EndDateTime");
+        this.activities = ko.observableArray([]).filterBeforeDate("EndDateTime").textFilter(["Title","Description"]);
         this.loading = ko.observable(true);
     }
 

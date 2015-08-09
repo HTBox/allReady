@@ -4,26 +4,57 @@
 }
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-6">
         <h2>@ViewData["Title"]</h2>
+    </div>
+    <div class="col-md-6">
+        <div class="pull-right">
+            <div class="form-inline">
+                <div class="form-group">
+                    <input type="text" class="form-control input-sm" data-bind="textInput: campaigns.searchTerm" placeholder="Search campaigns" />
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-sm" data-bind="css: { active: campaigns.showOld }, click: campaigns.showOld.toggle">
+                        <i class="fa" data-bind="css: { 'fa-square-o': !campaigns.showOld(), 'fa-check-square-o': campaigns.showOld }"></i>
+                        Show Old
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="row">
+    <div class="hide text-center" data-bind="css: { hide: campaigns.filtered().length }">
+        <div class="alert alert-warning" role="alert">
+            <strong>No matching campaigns.</strong>
+        </div>
+    </div>
     <div class="col-md-12">
         <div id="campaignGrid" class="table-responsive">
-            <table class="table">
+            <table class="table" data-bind="css: { hide: !campaigns.filtered().length }">
                 <tr>
                     <th><span title="Name of the campaign">Title</span></th>
                     <th><span title="Description of the campaign">Description</span></th>
                 </tr>
-
-                @foreach (var campaign in Model) {
-                    <tr>
-                        <td><span class="campaignId">@Html.ActionLink(@campaign.Name, "Details", "Campaign", new { id = @campaign.Id }, null)</span></td>
-                        <td>@campaign.Description</td>
-                    </tr>
-                }
+                <!-- ko foreach: campaigns.filtered -->
+                <tr>
+                    <td>
+                        <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
+                    </td>
+                    <td>
+                        <span data-bind="text: Description"></span>
+                    </td>
+                </tr>
+                <!-- /ko -->
             </table>
         </div>
     </div>
 </div>
+
+@section scripts {
+    <script>
+        var modelCampaigns = @Json.Serialize(Model);
+    </script>
+    <script type="text/javascript" src="~/js/ko.filterableList.js"></script>
+    <script type="text/javascript" src="~/js/campaigns.js"></script>
+}

@@ -4,7 +4,7 @@
 (function (ko, $, activities) {
 
     function CampaignViewModel(activities) {
-        this.activities = ko.observableArray(activities).filterBeforeDate("EndDateTimeUtc");
+        this.activities = ko.observableArray(activities).filterBeforeDate("EndDateTimeUtc").textFilter(["Title","Description"]);
     }
 
     ko.applyBindings(new CampaignViewModel(activities));
