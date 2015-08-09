@@ -3,9 +3,6 @@
   "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
   "DefaultUsername": "User@test.com",
   "DefaultTenantUsername": "tenant@test.com",
-  "Auth0:ClientId": "[Auth0ClientId]", 
-  "Auth0:ClientSecret": "[Auth0ClientSecret]",
-  "Auth0:Domain": "[Auth0Domain",
 
   "ApplicationInsights": {
     "InstrumentationKey": "[instrumentationkey]"
@@ -23,6 +20,9 @@
     }
   },
   "Authentication": {
+    "Auth0:ClientId": "[Auth0ClientId]", 
+    "Auth0:ClientSecret": "[Auth0ClientSecret]",
+    "Auth0:Domain": "[Auth0Domain",
     "SendGrid": {
       "UserName": "[sendgriduser]",
       "Password": "[sendgridpassword]"

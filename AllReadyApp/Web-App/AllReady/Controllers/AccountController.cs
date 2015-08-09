@@ -1,15 +1,18 @@
-﻿using Auth0;
+﻿using AllReady.Models;
+using Auth0;
 using Microsoft.AspNet.Authentication.Cookies;
 using Microsoft.AspNet.Authentication.OpenIdConnect;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Authentication;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Framework.Configuration;
 using Microsoft.Framework.OptionsModel;
 using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace AllReady.Controllers
 {
@@ -75,7 +78,7 @@ namespace AllReady.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Callback(string access_token, string id_token, string state)
+        public async Task<IActionResult> Callback(string access_token, string id_token, string state)
         {
             if (Context.User.IsSignedIn())
             {
@@ -83,9 +86,9 @@ namespace AllReady.Controllers
             }
 
             var client = new Auth0.Client(
-                _config.Get("Auth0:ClientId"),
-                _config.Get("Auth0:ClientSecret"),
-                _config.Get("Auth0:Domain"));
+                _config.Get("Authentication:Auth0:ClientId"),
+                _config.Get("Authentication:Auth0:ClientSecret"),
+                _config.Get("Authentication:Auth0:Domain"));
 
             var profile = client.GetUserInfo(new TokenResult { AccessToken = access_token, IdToken = id_token });
 
@@ -98,7 +101,7 @@ namespace AllReady.Controllers
             //}
             //AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = false }, CreateIdentity(externalIdentity));
 
-            var user = new ClaimsPrincipal(
+            var userCP = new ClaimsPrincipal(
                 new ClaimsIdentity(
                     new[] {
                         new Claim(ClaimTypes.Name, profile.Name),
@@ -106,7 +109,17 @@ namespace AllReady.Controllers
                     },
                     CookieAuthenticationDefaults.AuthenticationScheme));
 
-            Context.Authentication.SignIn(CookieAuthenticationDefaults.AuthenticationScheme, user);
+            Context.Authentication.SignIn(CookieAuthenticationDefaults.AuthenticationScheme, userCP);
+
+            var userManager = (UserManager<ApplicationUser>)Context.ApplicationServices.GetService(typeof(UserManager<ApplicationUser>));
+            var existingUser = userManager.FindByIdAsync(profile.UserId).Result;
+            if (existingUser == null)
+            {
+                var user = new ApplicationUser { Email = profile.Email, Id = profile.UserId, UserName = profile.Name };
+                user.EmailConfirmed = true;
+                await userManager.CreateAsync(user);
+                await userManager.AddClaimAsync(user, new Claim("UserType", profile.ExtraProperties.First(x => x.Key == "allReadyUserType").Value.ToString()));
+            }
 
             return Redirect("/");
         }

@@ -9,6 +9,7 @@ using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Diagnostics;
 using Microsoft.AspNet.Diagnostics.Entity;
 using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Data.Entity;
 using Microsoft.Framework.Configuration;
 using Microsoft.Framework.DependencyInjection;
@@ -82,9 +83,9 @@ namespace AllReady
             });
 
             //// Add Identity services to the services container.
-            //services.AddIdentity<ApplicationUser, IdentityRole>()
-            //    .AddEntityFrameworkStores<AllReadyContext>()
-            //    .AddDefaultTokenProviders();
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+               .AddEntityFrameworkStores<AllReadyContext>()
+               .AddDefaultTokenProviders();
 
             // OpenID Connect Authentication Requires Cookie Auth
             services.Configure<ExternalAuthenticationOptions>(options =>
@@ -159,8 +160,8 @@ namespace AllReady
 
             app.UseOpenIdConnectAuthentication(options =>
             {
-                options.ClientId = Configuration.Get("Auth0:ClientId");
-                options.Authority = "https://" + Configuration.Get("Auth0:Domain");
+                options.ClientId = Configuration.Get("Authentication:Auth0:ClientId");
+                options.Authority = "https://" + Configuration.Get("Authentication:Auth0:Domain");
                 options.AuthenticationScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.Notifications = new OpenIdConnectAuthenticationNotifications
                 {

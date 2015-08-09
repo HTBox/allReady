@@ -1,8 +1,8 @@
 ﻿@inject Microsoft.Framework.Configuration.IConfiguration Config
 @{
     ViewData["Title"] = "Log in";
-    var clientId = Config.Get("Auth0:ClientId");
-    var domain = Config.Get("Auth0:Domain");
+    var clientId = Config.Get("Authentication:Auth0:ClientId");
+    var domain = Config.Get("Authentication:Auth0:Domain");
 }
 
 <div class="row">
@@ -22,7 +22,7 @@
                 {
                     <script src="https://cdn.auth0.com/js/lock-7.5.min.js"></script>
                     <script>
-                        var lock = new Auth0Lock('@Config.Get("Auth0:ClientId")', '@Config.Get("Auth0:Domain")');
+                        var lock = new Auth0Lock('@Config.Get("Authentication:Auth0:ClientId")', '@Config.Get("Authentication:Auth0:Domain")');
                         $.ready(function (){
                             $.post('@Url.Action("Prepare", "Account")', { '.redirect': window.location.pathname }, function (data) {
                                 lock.show({
