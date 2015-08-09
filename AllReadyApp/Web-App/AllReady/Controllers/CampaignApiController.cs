@@ -36,16 +36,20 @@ namespace AllReady.Controllers
         }
 
         [Route("search")]
-        public IEnumerable<CampaignViewModel> GetCampaignsByZip(string zip, int miles)
+        public IEnumerable<ActivityViewModel> GetCampaignsByZip(string zip, int miles)
         {
-            List<CampaignViewModel> ret = new List<CampaignViewModel>();
+            List<ActivityViewModel> ret = new List<ActivityViewModel>();
 
             var campaigns = (from c in _allReadyDataAccess.ActivitiesByPostalCode(zip, miles)
-                            select c.Campaign).Distinct().ToList();
+                              select c.Campaign).Distinct();
 
-            foreach (Campaign campaign in campaigns)
+            var activities = (from c in campaigns
+                              from p in c.Activities
+                              select p);                           
+
+            foreach (Activity activity in activities)
             {
-                ret.Add(new CampaignViewModel(campaign));
+                ret.Add(new ActivityViewModel(activity));
             }
 
             return ret;
