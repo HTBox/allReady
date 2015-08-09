@@ -10,3 +10,4 @@
 /// <reference path="js/myactivities.js" />
 /// <reference path="js/site.js" />
 /// <reference path="js/tenant.js" />
+/// <reference path="js/tenants.js" />

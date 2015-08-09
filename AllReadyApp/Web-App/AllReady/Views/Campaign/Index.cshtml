@@ -24,9 +24,14 @@
     </div>
 </div>
 <div class="row">
+    <div class="hide text-center" data-bind="css: { hide: campaigns.filtered().length }">
+        <div class="alert alert-warning" role="alert">
+            <strong>No matching campaigns.</strong>
+        </div>
+    </div>
     <div class="col-md-12">
         <div id="campaignGrid" class="table-responsive">
-            <table class="table">
+            <table class="table" data-bind="css: { hide: !campaigns.filtered().length }">
                 <tr>
                     <th><span title="Name of the campaign">Title</span></th>
                     <th><span title="Description of the campaign">Description</span></th>

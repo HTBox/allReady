@@ -9,10 +9,17 @@
     </div>
     <div class="col-md-6">
         <div class="pull-right">
-            <button type="button" class="btn" data-bind="css: { active: activities.showOld }, click: activities.showOld.toggle">
-                <i class="fa" data-bind="css: { 'fa-square-o': !activities.showOld(), 'fa-check-square-o': activities.showOld }"></i>
-                Show Old
-            </button>
+            <div class="form-inline">
+                <div class="form-group">
+                    <input type="text" class="form-control input-sm" data-bind="textInput: activities.searchTerm" placeholder="Search activities" />
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-sm" data-bind="css: { active: activities.showOld }, click: activities.showOld.toggle">
+                        <i class="fa" data-bind="css: { 'fa-square-o': !activities.showOld(), 'fa-check-square-o': activities.showOld }"></i>
+                        Show Old
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -24,8 +31,7 @@
         </div>
         <div class="hide text-center" data-bind="css: { hide: loading() || activities.filtered().length }">
             <div class="alert alert-warning" role="alert">
-                <strong>No activities to show.</strong>
-                <span data-bind="visible: !activities.showOld()">Maybe try showing old activities.</span>
+                <strong>No matching activities.</strong>
             </div>
         </div>
         <div class="hide" data-bind="css: { hide: loading() || !activities.filtered().length }">
