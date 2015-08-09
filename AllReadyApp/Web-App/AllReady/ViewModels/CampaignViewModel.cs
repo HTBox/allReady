@@ -20,6 +20,8 @@ namespace AllReady.ViewModels
             Id = campaign.Id;
             Name = campaign.Name;
             Description = campaign.Description;
+            ///TODO: Commented out as campaign.ManagingTenant is null from sample data;
+            /// Fix sample provider to ensure that property is not null
             //ManagingTenantName = campaign.ManagingTenant.Name;
             //ManagingTenantId = campaign.ManagingTenant.Id;
             StartDate = new DateTimeOffset(campaign.StartDateTimeUtc, TimeSpan.Zero);
