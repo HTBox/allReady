@@ -58,7 +58,9 @@ namespace AllReady.Models
             Campaign smokeDet = new Campaign()
             {
                 Name = "Working Smoke Detectors Save Lives",
-                ManagingTenant = htb
+                ManagingTenant = htb,
+                StartDateTimeUtc = DateTime.Today.AddMonths(-1).ToUniversalTime(),
+                EndDateTimeUtc = DateTime.Today.AddMonths(1).ToUniversalTime()
             };
             htb.Campaigns.Add(smokeDet);
             Campaign financial = new Campaign()
