@@ -40,16 +40,23 @@
                 <h3>Campaign Organizer</h3>
                 <h4><a asp-controller="Tenant" asp-action="ShowTenant" asp-route-id="@Model.TenantId">@Model.TenantName</a></h4>
             </div>
-        </div> 
+        </div>
         <div class="row">
             <div class="col-sm-12">
-                <h3>
-                    Tasks
-                    <button type="button" class="btn" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
-                        <i class="fa" data-bind="css: { 'fa-square-o': !tasks.showOld(), 'fa-check-square-o': tasks.showOld }"></i>
-                        Show Old
-                    </button>
-                </h3>
+                <h3>Tasks</h3>
+            </div>
+            <div class="col-sm-12">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
+                            <i class="fa" data-bind="css: { 'fa-square-o': !tasks.showOld(), 'fa-check-square-o': tasks.showOld }"></i>
+                            Show Old
+                        </button>
+                    </div>
+                </div>
             </div>
             <ul data-bind="foreach: tasks.filtered">
                 <li>

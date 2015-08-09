@@ -4,7 +4,7 @@
 (function (ko, $, tasks) {
 
     function ActivityViewModel(tasks) {
-        this.tasks = ko.observableArray(tasks).filterBeforeDate("EndDateTime");
+        this.tasks = ko.observableArray(tasks).filterBeforeDate("EndDateTime").textFilter(["Name","Description"]);
         this.enrolled = ko.observable(false);
     }
 
