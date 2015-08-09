@@ -80,7 +80,8 @@ namespace AllReady.Models
 
         IEnumerable<Activity> IAllReadyDataAccess.ActivitiesByPostalCode(string postalCode, int distance)
         {
-            return _dbContext.Activities.FromSql("EXEC GetClosestActivitiesByPostalCode '{0}', {1}, {2}", postalCode, 50, distance);
+            return _dbContext.Activities.FromSql("EXEC GetClosestActivitiesByPostalCode '{0}', {1}, {2}", postalCode, 50, distance)
+                .Include(a => a.Campaign);
         }
 
         IEnumerable<Activity> IAllReadyDataAccess.ActivitiesByGeography(double latitude, double longitude, int distance)

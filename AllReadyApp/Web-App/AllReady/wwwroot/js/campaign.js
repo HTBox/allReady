@@ -1,4 +1,4 @@
-﻿///<reference path="../lib/jquery/dist/jquery.js" />
+///<reference path="../lib/jquery/dist/jquery.js" />
 ///<reference path="../lib/knockout/dist/knockout.js" />
 
 (function (ko, $, activities) {

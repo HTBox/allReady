@@ -32,11 +32,13 @@ namespace AllReady.Models
             }
 
             List<Tenant> tenants = new List<Tenant>();
+            dbContext.PostalCodes.AddRange(GetPostalCodes(dbContext));
+            dbContext.SaveChanges();
             List<Location> locations = GetLocations(dbContext);
             List<TaskUsers> users = new List<TaskUsers>();
             List<Activity> activities = new List<Activity>();
             List<Campaign> campaigns = new List<Campaign>();
-            List<AllReadyTask> tasks = new List<AllReadyTask>();
+            List<AllReadyTask> tasks = new List<AllReadyTask>();          
 
             #region Tenant
             Tenant htb = new Tenant()
@@ -304,7 +306,7 @@ namespace AllReady.Models
         }
 
         private static Location CreateLocation(string address1, string city, string state, string postalCode, AllReadyContext ctx)
-        {
+        {  
             Location ret = new Location();
             ret.Address1 = address1;
             ret.City = city;
@@ -314,6 +316,20 @@ namespace AllReady.Models
             ret.Name = "Humanitarian Toolbox location";
             ret.PhoneNumber = "1-425-555-1212";
             return ret;
+        }
+
+        private static List<PostalCodeGeo> GetPostalCodes(AllReadyContext ctx)
+        {
+            var postalCodes = new List<PostalCodeGeo>();
+            postalCodes.Add(new PostalCodeGeo() { City="Remond", State="WA", PostalCode = "98052" });
+            postalCodes.Add(new PostalCodeGeo() { City = "Bellevue", State = "WA", PostalCode = "98004" });
+            postalCodes.Add(new PostalCodeGeo() { City = "Seattle", State = "WA", PostalCode = "98116" });
+            postalCodes.Add(new PostalCodeGeo() { City = "Seattle", State = "WA", PostalCode = "98117" });
+            postalCodes.Add(new PostalCodeGeo() { City = "Bellevue", State = "WA", PostalCode = "98007" });
+            postalCodes.Add(new PostalCodeGeo() { City = "Issaquah", State = "WA", PostalCode = "98027" });
+            postalCodes.Add(new PostalCodeGeo() { City = "Kirkland", State = "WA", PostalCode = "98034" });
+            postalCodes.Add(new PostalCodeGeo() { City = "Kirkland", State = "WA", PostalCode = "98033" });
+            return postalCodes;
         }
 
         private static List<Location> GetLocations(AllReadyContext ctx)
