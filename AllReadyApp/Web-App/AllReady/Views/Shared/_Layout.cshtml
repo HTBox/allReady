@@ -7,6 +7,7 @@
 
         <environment names="Development">
             <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+            <link rel="stylesheet" href="~/lib/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css" />
             <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
             <link rel="stylesheet" href="~/css/site.css" />
         </environment>
@@ -59,6 +60,7 @@
             <script src="~/lib/jquery/dist/jquery.js"></script>
             <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
             <script src="~/lib/knockout/dist/knockout.js"></script>
+            <script src="~/lib/moment/moment.js"></script>
             <script src="~/js/site.js" asp-file-version="true"></script>
             <script src="~/js/tota11y.min.js"></script>
             <script src="~/js/tota11y.min.js"></script>
@@ -73,7 +75,10 @@
                     asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
                     asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
             </script>
-
+            <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"
+                    asp-fallback-src="~/lib/moment/moment.js"
+                    asp-fallback-test="window.moment">
+            </script>
             <script src="//ajax.aspnetcdn.com/ajax/bootstrap-touch-carousel/0.8.0/js/bootstrap-touch-carousel.js"
                     asp-fallback-src="~/lib/bootstrap-touch-carousel/dist/js/bootstrap-touch-carousel.js"
                     asp-fallback-test="window.Hammer && window.Hammer.Instance">

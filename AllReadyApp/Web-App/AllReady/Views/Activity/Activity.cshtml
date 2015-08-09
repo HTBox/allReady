@@ -2,13 +2,13 @@
 <div class="row">
     <div class="col-sm-8">
         <div class="row">
-@if (!String.IsNullOrEmpty(Model.ImageUrl))
-{
-            <div  class="col-sm-2" >
-                <h2></h2>
-                <img src="@Model.ImageUrl" class="img-responsive"   />
-            </div>
-}
+            @if (!String.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <div class="col-sm-2">
+                    <h2></h2>
+                    <img src="@Model.ImageUrl" class="img-responsive" />
+                </div>
+            }
             <div class="col-sm-7">
                 <h2>@Model.Title</h2>
                 <p class="date-address">@Model.StartDateTime.ToString("F") - @Model.EndDateTime.ToString("F")</p>
@@ -40,19 +40,35 @@
                 <h3>Campaign Organizer</h3>
                 <h4><a asp-controller="Tenant" asp-action="ShowTenant" asp-route-id="@Model.TenantId">@Model.TenantName</a></h4>
             </div>
-        </div> 
+        </div>
         <div class="row">
             <div class="col-sm-12">
                 <h3>Tasks</h3>
             </div>
-            <ul>
-                @foreach (var task in Model.Tasks)
-                {
-                    <li>@task.Name - @task.Description</li>
-                }   
-            </ul>
+            <div class="col-sm-12">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
+                            <i class="fa" data-bind="css: { 'fa-square-o': !tasks.showOld(), 'fa-check-square-o': tasks.showOld }"></i>
+                            Show Old
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <span class="label-warning label hide" data-bind="css: { hide: tasks.filtered().length }">No matching tasks.</span>
+                <ul data-bind="foreach: tasks.filtered">
+                    <li>
+                        <span data-bind="text: Name"></span>
+                        <span data-bind="text: Description"></span>
+                    </li>
+                </ul>
+            </div>
         </div>
-    
+
     </div>
     <div class="col-sm-4">
         <h3>Location</h3>
@@ -60,7 +76,8 @@
         <h3>Address</h3>
         <p>
             @Model.Location?.Address1<br />
-            @if (!string.IsNullOrEmpty(Model.Location?.Address2)) {
+            @if (!string.IsNullOrEmpty(Model.Location?.Address2))
+            {
                 @Model.Location.Address2
             }
             @Model.Location?.City @Model.Location?.State @Model.Location?.PostalCode?.PostalCode
@@ -85,8 +102,9 @@
                 });
         });
 
-
+        var modelTasks = @Json.Serialize(Model.Tasks);
     </script>
+    <script type="text/javascript" src="~/js/ko.filterableList.js"></script>
     <script type="text/javascript" src="~/js/activity.js"></script>
     <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
 }

@@ -11,6 +11,7 @@ namespace AllReady.Models
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [Required]
         public string Name { get; set; }
 
         public string Description { get; set; }
@@ -32,12 +33,14 @@ namespace AllReady.Models
         /// The date the campaign starts
         /// </summary>
         [Display(Name = "Start date")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
         public DateTime StartDateTimeUtc { get; set; }
 
         /// <summary>
         /// The date the campaign ends
         /// </summary>
         [Display(Name = "End date")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
         public DateTime EndDateTimeUtc { get; set; }
 
         public List<Activity> Activities { get; set; }

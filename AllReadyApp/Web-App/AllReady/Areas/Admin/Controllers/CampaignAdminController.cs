@@ -36,28 +36,10 @@ namespace AllReady.Controllers
             return await Task.Run(() => View(_dataAccess.Campaigns));
         }
 
-        // GET: Campaign/Details/5
-        public async Task<IActionResult> Details(System.Int32? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(404);
-            }
-
-            Campaign campaign = _dataAccess.GetCampaign((int)id);
-
-            if (campaign == null)
-            {
-                return new HttpStatusCodeResult(404);
-            }
-
-            return View(campaign);
-        }
-
         // GET: Campaign/Create
         public async Task<IActionResult> Create()
         {
-            return WithTenants(View());
+            return await Task.Run(() => WithTenants(View()));
         }
 
         // POST: Campaign/Create
@@ -81,14 +63,14 @@ namespace AllReady.Controllers
             if (ModelState.IsValid)
             {
                 await _dataAccess.AddCampaign(campaign);
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { area = "Admin" });
             }
 
             return WithTenants(View(campaign));
         }
 
         // GET: Campaign/Edit/5
-        public async Task<IActionResult> Edit(System.Int32? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             var currentUser = await _userManager.GetCurrentUser(Context);
             if (currentUser == null)
@@ -125,7 +107,7 @@ namespace AllReady.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            if (_dataAccess.GetUser(currentUser.Id).AssociatedTenant.Id != campaign.ManagingTenantId)
+            if (!await UserIsTenantAdminOfCampaign(currentUser, campaign))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -133,14 +115,13 @@ namespace AllReady.Controllers
             if (ModelState.IsValid)
             {
                 await _dataAccess.UpdateCampaign(campaign);
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { area = "Admin" });
             }
             return View(campaign);
         }
 
         // GET: Campaign/Delete/5
-        [ActionName("Delete")]
-        public async Task<IActionResult> Delete(System.Int32? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -170,7 +151,7 @@ namespace AllReady.Controllers
         // POST: Campaign/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(System.Int32 id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var currentUser = await _userManager.GetCurrentUser(Context);
             if (currentUser == null || !await UserIsTenantAdminOfCampaign(currentUser, id))
@@ -179,7 +160,7 @@ namespace AllReady.Controllers
             }   
 
             await _dataAccess.DeleteCampaign(id);
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { area = "Admin" });
         }
 
         private async Task<bool> UserIsTenantAdminOfCampaign(ApplicationUser user, Campaign campaignToCheck)

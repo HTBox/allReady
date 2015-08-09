@@ -27,14 +27,38 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-12">
-    <h3>Activities for this campaign</h3>
-    @foreach (var activity in Model.Activities) {
-        <div class="activity-list">
-            <a href="/Activity/@activity.Id">@activity.Title</a>
-            <span class="text-small">@activity.Description</span>
+    <div class="col-sm-12">
+        <h3>Activities for this campaign</h3>
+    </div>
+    <div class="col-sm-12">
+        <div class="form-inline">
+            <div class="form-group">
+                <input type="text" class="form-control input-sm" data-bind="textInput: activities.searchTerm" placeholder="Search activities" />
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-sm" data-bind="css: { active: activities.showOld }, click: activities.showOld.toggle">
+                    <i class="fa" data-bind="css: { 'fa-square-o': !activities.showOld(), 'fa-check-square-o': activities.showOld }"></i>
+                    Show Old
+                </button>
+            </div>
         </div>
+    </div>
 
-    }
+    <div class="col-md-12">
+        <span class="label-warning label hide" data-bind="css: { hide: activities.filtered().length }">No matching activities.</span>
+        <!-- ko foreach: activities.filtered -->
+        <div class="activity-list">
+            <a data-bind="attr: { href: '/Activity/' + Id }, text: Title"></a>
+            <span class="text-small" data-bind="text: Description"></span>
+        </div>
+        <!-- /ko -->
     </div>
 </div>
+
+@section scripts {
+    <script>
+        var modelActivities = @Json.Serialize(Model.Activities);
+    </script>
+    <script type="text/javascript" src="~/js/ko.filterableList.js"></script>
+    <script type="text/javascript" src="~/js/campaign.js"></script>
+}

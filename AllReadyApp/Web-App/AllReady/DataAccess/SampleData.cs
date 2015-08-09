@@ -62,7 +62,9 @@ namespace AllReady.Models
             Campaign smokeDet = new Campaign()
             {
                 Name = "Working Smoke Detectors Save Lives",
-                ManagingTenant = htb
+                ManagingTenant = htb,
+                StartDateTimeUtc = DateTime.Today.AddMonths(-1).ToUniversalTime(),
+                EndDateTimeUtc = DateTime.Today.AddMonths(1).ToUniversalTime()
             };
             htb.Campaigns.Add(smokeDet);
             Campaign financial = new Campaign()
@@ -144,7 +146,8 @@ namespace AllReady.Models
             tasks.AddRange(northLoopSmoke.Tasks);
             Activity rentersInsurance = new Activity()
             {
-                Name = "Renters Insurance Education Door to Door",
+                Name = "Renters Insurance Education Door to Door and a bag of chips",
+                Description = "description for the win",
                 StartDateTimeUtc = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 7, 11, 17, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
@@ -154,7 +157,8 @@ namespace AllReady.Models
             tasks.AddRange(rentersInsurance.Tasks);
             Activity rentersInsuranceEd = new Activity()
             {
-                Name = "Renters Insurance Education Door to Door",
+                Name = "Renters Insurance Education Door to Door (woop woop)",
+                Description = "another great description",
                 StartDateTimeUtc = new DateTime(2015, 7, 12, 8, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 7, 12, 17, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
