@@ -9,8 +9,8 @@
     </div>
     <div class="col-md-6">
         <div class="pull-right">
-            <button type="button" class="btn" data-bind="css: { active: showOld }, click: toggle(showOld)">
-                <i class="fa" data-bind="css: { 'fa-square-o': !showOld(), 'fa-check-square-o': showOld }"></i>
+            <button type="button" class="btn" data-bind="css: { active: activities.showOld }, click: activities.showOld.toggle">
+                <i class="fa" data-bind="css: { 'fa-square-o': !activities.showOld(), 'fa-check-square-o': activities.showOld }"></i>
                 Show Old
             </button>
         </div>
@@ -22,20 +22,20 @@
             <strong>Loading...</strong>
             <i class="fa fa-circle-o-notch fa-spin"></i>
         </div>
-        <div class="hide text-center" data-bind="css: { hide: loading() || selectedActivities().length }">
+        <div class="hide text-center" data-bind="css: { hide: loading() || activities.filtered().length }">
             <div class="alert alert-warning" role="alert">
                 <strong>No activities to show.</strong>
-                <span data-bind="visible: !showOld()">Maybe try showing old activities.</span>
+                <span data-bind="visible: !activities.showOld()">Maybe try showing old activities.</span>
             </div>
         </div>
-        <div class="hide" data-bind="css: { hide: loading() || !selectedActivities().length }">
+        <div class="hide" data-bind="css: { hide: loading() || !activities.filtered().length }">
             <table class="table">
                 <tr>
                     <th><span title="Title of the activity">Title</span></th>
                     <th><span title="Description of the activity">Description</span></th>
                     <th><span title="Time period of the activity">When</span></th>
                 </tr>
-                <!-- ko foreach: selectedActivities -->
+                <!-- ko foreach: activities.filtered -->
                 <tr>
                     <td>
                         <a data-bind="attr: { href: '/Activity/' + Id }, text: Title"></a>
@@ -56,7 +56,7 @@
 </div>
 
 @section scripts {
-    <script type="text/javascript" src="~/lib/moment/moment.js"></script>
+    <script type="text/javascript" src="~/js/ko.filterableList.js"></script>
     <script type="text/javascript" src="~/js/activities.js"></script>
 }
 
