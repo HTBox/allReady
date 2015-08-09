@@ -43,7 +43,6 @@
             </div>
         </div>
     </div>
-
     <div class="col-md-12">
         <span class="label-warning label hide" data-bind="css: { hide: activities.filtered().length }">No matching activities.</span>
         <!-- ko foreach: activities.filtered -->
@@ -53,8 +52,17 @@
         </div>
         <!-- /ko -->
     </div>
+    <div class="col-sm-12">
+        <h3>Resources for this campaign</h3>
+    </div>
+    <div class="col-md-12 text-center">
+        <div class="activity-results">
+            <div class="activity-wrapper" data-bind="foreach: resources">
+                <p><label data-bind="text: Name"></label></p>
+            </div>            
+        </div>
+    </div>
 </div>
-
 @section scripts {
     <script>
         var modelActivities = @Json.Serialize(Model.Activities);
