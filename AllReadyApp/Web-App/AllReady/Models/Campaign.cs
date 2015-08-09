@@ -32,12 +32,14 @@ namespace AllReady.Models
         /// The date the campaign starts
         /// </summary>
         [Display(Name = "Start date")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
         public DateTime StartDateTimeUtc { get; set; }
 
         /// <summary>
         /// The date the campaign ends
         /// </summary>
         [Display(Name = "End date")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
         public DateTime EndDateTimeUtc { get; set; }
 
         public List<Activity> Activities { get; set; }
