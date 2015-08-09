@@ -58,17 +58,15 @@
                     </div>
                 </div>
             </div>
-            <ul class="hide" data-bind="css: { hide: tasks.filtered().length }">
-                <li>
-                    <span class="label-warning label">No matching tasks.</span>
-                </li>
-            </ul>
-            <ul data-bind="foreach: tasks.filtered">
-                <li>
-                    <span data-bind="text: Name"></span>
-                    <span data-bind="text: Description"></span>
-                </li>
-            </ul>
+            <div class="col-sm-12">
+                <span class="label-warning label hide" data-bind="css: { hide: tasks.filtered().length }">No matching tasks.</span>
+                <ul data-bind="foreach: tasks.filtered">
+                    <li>
+                        <span data-bind="text: Name"></span>
+                        <span data-bind="text: Description"></span>
+                    </li>
+                </ul>
+            </div>
         </div>
 
     </div>
