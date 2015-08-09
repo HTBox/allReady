@@ -33,8 +33,7 @@
                 });
             }
         },
-        campaigns : ko.observableArray(campaigns).filterBeforeDate("EndDate").textFilter(["Name", "Description"]);
-
+        campaigns : ko.observableArray(campaigns).filterBeforeDate("EndDate").textFilter(["Name", "Description"])
     };
     ko.applyBindings(campaignViewModel);
 })(ko, $, modelCampaigns);

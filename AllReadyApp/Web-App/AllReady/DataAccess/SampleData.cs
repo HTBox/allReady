@@ -26,7 +26,8 @@ namespace AllReady.Models
                 dbContext.Tenants.Any() ||
                 dbContext.Tasks.Any() ||
                 dbContext.Campaigns.Any() ||
-                dbContext.Activities.Any())
+                dbContext.Activities.Any() ||
+                dbContext.Resources.Any())
             {
                 return;
             }
@@ -38,7 +39,8 @@ namespace AllReady.Models
             List<TaskUsers> users = new List<TaskUsers>();
             List<Activity> activities = new List<Activity>();
             List<Campaign> campaigns = new List<Campaign>();
-            List<AllReadyTask> tasks = new List<AllReadyTask>();          
+            List<AllReadyTask> tasks = new List<AllReadyTask>();
+            List<Resource> resources = new List<Resource>();       
 
             #region Tenant
             Tenant htb = new Tenant()
@@ -269,12 +271,39 @@ namespace AllReady.Models
             activities.AddRange(safetyKit.Activities);
             activities.AddRange(carSafe.Activities);
             #endregion
+
+            #region Insert Resource items into Resources
+            resources.Add(new Resource
+            {
+                Id = 1,
+                Name = "allReady Partner Name",
+                Description = "allready Partner Description",
+                PublishDateBegin = DateTime.Today,
+                PublishDateEnd = DateTime.Today.AddDays(14),
+                MediaUrl = "",
+                ResourceUrl = "",
+                CategoryTag = "Partners"
+            });
+            resources.Add(new Resource
+            {
+                Id = 2,
+                Name = "allReady Partner Name 2",
+                Description = "allready Partner Description 2",
+                PublishDateBegin = DateTime.Today.AddDays(-3),
+                PublishDateEnd = DateTime.Today.AddDays(-1),
+                MediaUrl = "",
+                ResourceUrl = "",
+                CategoryTag = "Partners"
+            });
+            #endregion
+
             #region Insert into DB
             dbContext.Locations.AddRange(locations);
             dbContext.Tenants.AddRange(tenants);
             dbContext.Tasks.AddRange(tasks);
             dbContext.Campaigns.AddRange(campaigns);
             dbContext.Activities.AddRange(activities);
+            dbContext.Resources.AddRange(resources);
             dbContext.SaveChanges();
             #endregion
         }
