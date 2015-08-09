@@ -23,7 +23,7 @@
         <div class="activity-results" data-bind="if: loadingDone">
             <h3>Campaigns near <span data-bind="text: searchTerm"></span></h3>
             <div class="activity-wrapper" data-bind="foreach: campaigns">
-                <p><a data-bind="attr: { href: '/Campaign/' + Id }, text: Title"></a></p>
+                <p><a data-bind="attr: { href: '/Campaign/' + CampaignId }, text: Title"></a></p>
             </div>
             <a data-bind="attr: { href: '/Campaign'}">See more campaigns</a>
         </div>
