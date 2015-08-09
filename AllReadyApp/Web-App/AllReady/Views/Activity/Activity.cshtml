@@ -2,13 +2,13 @@
 <div class="row">
     <div class="col-sm-8">
         <div class="row">
-@if (!String.IsNullOrEmpty(Model.ImageUrl))
-{
-            <div  class="col-sm-2" >
-                <h2></h2>
-                <img src="@Model.ImageUrl" class="img-responsive"   />
-            </div>
-}
+            @if (!String.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <div class="col-sm-2">
+                    <h2></h2>
+                    <img src="@Model.ImageUrl" class="img-responsive" />
+                </div>
+            }
             <div class="col-sm-7">
                 <h2>@Model.Title</h2>
                 <p class="date-address">@Model.StartDateTime.ToString("F") - @Model.EndDateTime.ToString("F")</p>
@@ -58,6 +58,11 @@
                     </div>
                 </div>
             </div>
+            <ul class="hide" data-bind="css: { hide: tasks.filtered().length }">
+                <li>
+                    <span class="label-warning label">No matching tasks.</span>
+                </li>
+            </ul>
             <ul data-bind="foreach: tasks.filtered">
                 <li>
                     <span data-bind="text: Name"></span>
@@ -65,7 +70,7 @@
                 </li>
             </ul>
         </div>
-    
+
     </div>
     <div class="col-sm-4">
         <h3>Location</h3>
@@ -73,7 +78,8 @@
         <h3>Address</h3>
         <p>
             @Model.Location?.Address1<br />
-            @if (!string.IsNullOrEmpty(Model.Location?.Address2)) {
+            @if (!string.IsNullOrEmpty(Model.Location?.Address2))
+            {
                 @Model.Location.Address2
             }
             @Model.Location?.City @Model.Location?.State @Model.Location?.PostalCode?.PostalCode
