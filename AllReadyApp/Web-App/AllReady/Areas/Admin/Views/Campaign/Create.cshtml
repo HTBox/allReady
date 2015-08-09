@@ -25,14 +25,14 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
-                        @Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control datepicker" } })
                         @Html.ValidationMessageFor(model => model.StartDateTimeUtc, "", new { @class = "text-danger" })
                     </div>
                 </div>
                 <div class="form-group">
                     @Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
-                        @Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control datepicker" } })
                         @Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -44,7 +44,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    @Html.LabelFor(model => model.ManagingTenantId, "ManagingTenantId", htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(model => model.ManagingTenantId, htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
                         @*@Html.DropDownList("ManagingTenantId", null, htmlAttributes: new { @class = "form-control" })*@
                         @Html.DropDownListFor(model => model.ManagingTenantId, (IEnumerable<SelectListItem>)ViewData["Tenants"], htmlAttributes: new { @class = "form-control" })
@@ -53,9 +53,19 @@
             </div>
 <div class="row">
     <div class="col-md-12">
-        <button type="submit" value="Create" class="btn">Create campaign</button> 
-        @Html.ActionLink("Back to list", "Index", "Campaigns", null, new { @class = "btn" })
+        <button type="submit" value="Create" class="btn">Create</button> 
+        @Html.ActionLink("Cancel", "Index", new { controller = "Campaign", area = "Admin" }, new { @class = "btn" })
     </div>
 </div>
 }
+
+@section scripts {
+    <script type="text/javascript" src="~/lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
+    <script>
+        $(".datepicker").datepicker({ format: "m/d/yyyy", autoclose: true });
+    </script>
+}
+
+
+
 
