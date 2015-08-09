@@ -346,27 +346,27 @@ namespace AllReady.Models
 
             var configuration = builder.Build();
 
-            var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
+            //var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
 
-            var user = await userManager.FindByNameAsync(configuration.Get("DefaultAdminUsername"));
-            if (user == null)
-            {
-                user = new ApplicationUser { UserName = configuration.Get("DefaultAdminUsername"), Email = configuration.Get("DefaultAdminUsername") };
-                user.EmailConfirmed = true;
-                await userManager.CreateAsync(user, configuration.Get("DefaultAdminPassword"));
-                await userManager.AddClaimAsync(user, new Claim("UserType", "SiteAdmin"));
+            //var user = await userManager.FindByNameAsync(configuration.Get("DefaultAdminUsername"));
+            //if (user == null)
+            //{
+            //    user = new ApplicationUser { UserName = configuration.Get("DefaultAdminUsername"), Email = configuration.Get("DefaultAdminUsername") };
+            //    user.EmailConfirmed = true;
+            //    await userManager.CreateAsync(user, configuration.Get("DefaultAdminPassword"));
+            //    await userManager.AddClaimAsync(user, new Claim("UserType", "SiteAdmin"));
 
-                user = new ApplicationUser { UserName = configuration.Get("DefaultTenantUsername"), Email = configuration.Get("DefaultTenantUsername") };
-                // For the sake of being able to exercise Tenant-specific stuff, we need to associate a tenant.
-                user.EmailConfirmed = true;
-                user.AssociatedTenant = dbContext.Tenants.First();
-                await userManager.CreateAsync(user, configuration.Get("DefaultAdminPassword"));
-                await userManager.AddClaimAsync(user, new Claim("UserType", "TenantAdmin"));
+            //    user = new ApplicationUser { UserName = configuration.Get("DefaultTenantUsername"), Email = configuration.Get("DefaultTenantUsername") };
+            //    // For the sake of being able to exercise Tenant-specific stuff, we need to associate a tenant.
+            //    user.EmailConfirmed = true;
+            //    user.AssociatedTenant = dbContext.Tenants.First();
+            //    await userManager.CreateAsync(user, configuration.Get("DefaultAdminPassword"));
+            //    await userManager.AddClaimAsync(user, new Claim("UserType", "TenantAdmin"));
 
-                user = new ApplicationUser { UserName = configuration.Get("DefaultUsername"), Email = configuration.Get("DefaultUsername") };
-                user.EmailConfirmed = true;
-                await userManager.CreateAsync(user, configuration.Get("DefaultAdminPassword"));
-            }
+            //    user = new ApplicationUser { UserName = configuration.Get("DefaultUsername"), Email = configuration.Get("DefaultUsername") };
+            //    user.EmailConfirmed = true;
+            //    await userManager.CreateAsync(user, configuration.Get("DefaultAdminPassword"));
+            //}
         }
     }
 }

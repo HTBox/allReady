@@ -1,16 +1,35 @@
-﻿@using System.Security.Claims
+﻿@inject Microsoft.Framework.Configuration.IConfiguration Config
+@using System.Security.Claims
 
 @if (User.Identity.IsAuthenticated)
 {
-    <form asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm" class="navbar-right">
-            <li>
-                <a asp-controller="Manage" asp-action="Index" title="Manage">Hello @User.GetUserName()!</a>
-            </li>
-            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
-    </form>
+        <form asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm" class="navbar-right"></form>
+        <li>
+            <a asp-controller="Manage" asp-action="Index" title="Manage">Hello @User.Identity.Name!</a>
+        </li>
+        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
 }
 else
 {
-        <li><a asp-controller="Account" asp-action="Login">Log in</a></li>
-        <li><a asp-controller="Admin" asp-action="Login">Administrator Log in</a></li>
+    <ul class="nav navbar-nav navbar-right">
+        <li><a href="javascript:showLock()">Log in</a></li>
+    </ul>
+    <script src="https://cdn.auth0.com/js/lock-7.5.min.js"></script>
+    <script>
+        var lock = new Auth0Lock('@Config.Get("Auth0:ClientId")', '@Config.Get("Auth0:Domain")');
+        function showLock() {
+            $.post('@Url.Action("Prepare", "Account")', { '.redirect': window.location.pathname }, function (data) {
+                lock.show({
+                    callbackURL: window.location.origin + '@Url.Action("Callback", "Account")',
+                    authParams: {
+                        nonce: data.nonce,
+                        state: data.state,
+                        scope: 'openid email name',
+                        response_mode: 'form_post',
+                        response_type: 'token'
+                    }
+                });
+            });
+        }
+    </script>
 }

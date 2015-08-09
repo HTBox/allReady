@@ -1,184 +1,128 @@
-﻿using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
+﻿using Auth0;
+using Microsoft.AspNet.Authentication.Cookies;
+using Microsoft.AspNet.Authentication.OpenIdConnect;
+using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Http.Authentication;
 using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
-
-using AllReady.Models;
-using AllReady.Services;
-
+using Microsoft.Framework.Configuration;
+using Microsoft.Framework.OptionsModel;
+using System;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace AllReady.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private IConfiguration _config;
 
-        public AccountController(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager
-            )
+        public AccountController(IConfiguration config)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _config = config;
+        }
+
+        /// <summary>
+        /// When authenticating using the OpenID Connect middleware the nonce is required by default (but this can be turned off) 
+        /// and the state is always required. These values are always generated server side and the following action exposes this
+        /// logic to your javascript code.
+        /// 
+        /// This is useful when the authentication flow needs to start from the auth0 Lock.
+        /// </summary>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpPost]
+        public IActionResult Prepare()
+        {
+            var middlewareOptions = (IOptions<OpenIdConnectAuthenticationOptions>)Context.ApplicationServices.GetService(typeof(IOptions<OpenIdConnectAuthenticationOptions>));
+
+            // Generate the nonce.
+            var nonce = middlewareOptions.Options.ProtocolValidator.GenerateNonce();
+
+            // Store it in the cache or in a cookie.
+            if (middlewareOptions.Options.NonceCache != null)
+            {
+                middlewareOptions.Options.NonceCache.TryAddNonce(nonce);
+            }
+            else
+            {
+                Response.Cookies.Append(
+                    ".AspNet.OpenIdConnect.Nonce." + middlewareOptions.Options.StringDataFormat.Protect(nonce), "N",
+                        new CookieOptions { HttpOnly = true, Secure = Request.IsHttps, Expires = DateTime.Now.AddMinutes(10) });
+            }
+
+            // Generate the state.
+            var state = "OpenIdConnect.AuthenticationProperties=" +
+                        Uri.EscapeDataString(middlewareOptions.Options.StateDataFormat.Protect(new AuthenticationProperties(
+                            Request.Form.ToDictionary(i => i.Key, i => i.Value?.FirstOrDefault()))));
+
+            // Return nonce to the Lock.
+            return Json(new { nonce, state });
         }
 
         // GET: /Account/Login
-        [HttpGet]
         [AllowAnonymous]
+        [HttpGet]
         public IActionResult Login(string returnUrl = null)
         {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
-        }
-
-        // POST: /Account/Login
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
-        {
-            ViewData["ReturnUrl"] = returnUrl;
-            if (ModelState.IsValid)
+            if (Context.User == null || !Context.User.Identity.IsAuthenticated)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    return RedirectToLocal(returnUrl);
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return View(model);
-                }
+                return new ChallengeResult(CookieAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = "/" });
             }
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
+            return RedirectToAction("Index", "Home");
         }
 
-        //
+        [AllowAnonymous]
+        public IActionResult Callback(string access_token, string id_token, string state)
+        {
+            if (Context.User.IsSignedIn())
+            {
+                Context.Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationScheme);
+            }
+
+            var client = new Auth0.Client(
+                _config.Get("Auth0:ClientId"),
+                _config.Get("Auth0:ClientSecret"),
+                _config.Get("Auth0:Domain"));
+
+            var profile = client.GetUserInfo(new TokenResult { AccessToken = access_token, IdToken = id_token });
+
+            //var externalIdentity = AuthenticationManager.GetExternalIdentityAsync(DefaultAuthenticationTypes.ExternalCookie);
+            //if (externalIdentity == null)
+            //{
+            //    throw new Exception("Could not get the external identity. Please check your Auth0 configuration settings and ensure that " +
+            //                        "you configured UseCookieAuthentication and UseExternalSignInCookie in the OWIN Startup class. " +
+            //                        "Also make sure you are not calling setting the callbackOnLocationHash option on the JavaScript login widget.");
+            //}
+            //AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = false }, CreateIdentity(externalIdentity));
+
+            var user = new ClaimsPrincipal(
+                new ClaimsIdentity(
+                    new[] {
+                        new Claim(ClaimTypes.Name, profile.Name),
+                        new Claim("UserType", profile.ExtraProperties.First(x => x.Key == "allReadyUserType").Value.ToString())
+                    },
+                    CookieAuthenticationDefaults.AuthenticationScheme));
+
+            Context.Authentication.SignIn(CookieAuthenticationDefaults.AuthenticationScheme, user);
+
+            return Redirect("/");
+        }
+
         // POST: /Account/LogOff
+        [AllowAnonymous]
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult LogOff()
         {
-            _signInManager.SignOut();
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            if (Context.User.Identity.IsAuthenticated)
+            {
+                Context.Response.HttpContext.Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationScheme);
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
-        //
-        // POST: /Account/ExternalLogin
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public IActionResult ExternalLogin(string provider, string returnUrl = null)
-        {
-            // Request a redirect to the external login provider.
-            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-            return new ChallengeResult(provider, properties);
-        }
-
-        //
-        // GET: /Account/ExternalLoginCallback
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
-        {
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
-            {
-                return RedirectToAction(nameof(Login));
-            }
-
-            // Sign in the user with this external login provider if the user already has a login.
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
-            if (result.Succeeded)
-            {
-                return RedirectToLocal(returnUrl);
-            }
-            else
-            {
-                // If the user does not have an account, then ask the user to create an account.
-                ViewData["ReturnUrl"] = returnUrl;
-                ViewData["LoginProvider"] = info.LoginProvider;
-                var email = info.ExternalPrincipal.FindFirstValue(ClaimTypes.Email);
-                return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
-            }
-        }
-
-        //
-        // POST: /Account/ExternalLoginConfirmation
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl = null)
-        {
-            if (User.IsSignedIn())
-            {
-                return RedirectToAction(nameof(ManageController.Index), "Manage");
-            }
-
-            if (ModelState.IsValid)
-            {
-                // Get the information about the user from the external login provider
-                var info = await _signInManager.GetExternalLoginInfoAsync();
-                if (info == null)
-                {
-                    return View("ExternalLoginFailure");
-                }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await _userManager.CreateAsync(user);
-                if (result.Succeeded)
-                {
-                    result = await _userManager.AddLoginAsync(user, info);
-                    if (result.Succeeded)
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return RedirectToLocal(returnUrl);
-                    }
-                }
-                AddErrors(result);
-            }
-
-            ViewData["ReturnUrl"] = returnUrl;
-            return View(model);
-        }
-
-        #region Helpers
-
-        private void AddErrors(IdentityResult result)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-        }
-
-        private async Task<ApplicationUser> GetCurrentUserAsync()
-        {
-            return await _userManager.FindByIdAsync(Context.User.GetUserId());
-        }
-
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
-        }
-
-        #endregion
     }
 }
