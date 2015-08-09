@@ -10,29 +10,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Threading;
+using AllReady.DataAccess;
 
 namespace AllReady.Models
 {
     public static class SampleData
     {
+        private static ITaskIdProvider _taskIdProvider = new TaskIdProvider();
         public static void InsertTestData(AllReadyContext dbContext)
         {
+            _taskIdProvider.Reset();
             // Avoid polluting the database if there's already something in there.
             if (dbContext.Locations.Any() ||
                 dbContext.Tenants.Any() ||
                 dbContext.Tasks.Any() ||
                 dbContext.Campaigns.Any() ||
-                dbContext.Activities.Any())
+                dbContext.Activities.Any() ||
+                dbContext.Resources.Any())
             {
                 return;
             }
 
             List<Tenant> tenants = new List<Tenant>();
+            dbContext.PostalCodes.AddRange(GetPostalCodes(dbContext));
+            dbContext.SaveChanges();
             List<Location> locations = GetLocations(dbContext);
             List<TaskUsers> users = new List<TaskUsers>();
             List<Activity> activities = new List<Activity>();
             List<Campaign> campaigns = new List<Campaign>();
             List<AllReadyTask> tasks = new List<AllReadyTask>();
+            List<Resource> resources = new List<Resource>();       
 
             #region Tenant
             Tenant htb = new Tenant()
@@ -54,7 +62,9 @@ namespace AllReady.Models
             Campaign smokeDet = new Campaign()
             {
                 Name = "Working Smoke Detectors Save Lives",
-                ManagingTenant = htb
+                ManagingTenant = htb,
+                StartDateTimeUtc = DateTime.Today.AddMonths(-1).ToUniversalTime(),
+                EndDateTimeUtc = DateTime.Today.AddMonths(1).ToUniversalTime()
             };
             htb.Campaigns.Add(smokeDet);
             Campaign financial = new Campaign()
@@ -136,7 +146,8 @@ namespace AllReady.Models
             tasks.AddRange(northLoopSmoke.Tasks);
             Activity rentersInsurance = new Activity()
             {
-                Name = "Renters Insurance Education Door to Door",
+                Name = "Renters Insurance Education Door to Door and a bag of chips",
+                Description = "description for the win",
                 StartDateTimeUtc = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 7, 11, 17, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
@@ -146,7 +157,8 @@ namespace AllReady.Models
             tasks.AddRange(rentersInsurance.Tasks);
             Activity rentersInsuranceEd = new Activity()
             {
-                Name = "Renters Insurance Education Door to Door",
+                Name = "Renters Insurance Education Door to Door (woop woop)",
+                Description = "another great description",
                 StartDateTimeUtc = new DateTime(2015, 7, 12, 8, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 7, 12, 17, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
@@ -259,12 +271,39 @@ namespace AllReady.Models
             activities.AddRange(safetyKit.Activities);
             activities.AddRange(carSafe.Activities);
             #endregion
+
+            #region Insert Resource items into Resources
+            resources.Add(new Resource
+            {
+                Id = 1,
+                Name = "allReady Partner Name",
+                Description = "allready Partner Description",
+                PublishDateBegin = DateTime.Today,
+                PublishDateEnd = DateTime.Today.AddDays(14),
+                MediaUrl = "",
+                ResourceUrl = "",
+                CategoryTag = "Partners"
+            });
+            resources.Add(new Resource
+            {
+                Id = 2,
+                Name = "allReady Partner Name 2",
+                Description = "allready Partner Description 2",
+                PublishDateBegin = DateTime.Today.AddDays(-3),
+                PublishDateEnd = DateTime.Today.AddDays(-1),
+                MediaUrl = "",
+                ResourceUrl = "",
+                CategoryTag = "Partners"
+            });
+            #endregion
+
             #region Insert into DB
             dbContext.Locations.AddRange(locations);
             dbContext.Tenants.AddRange(tenants);
             dbContext.Tasks.AddRange(tasks);
             dbContext.Campaigns.AddRange(campaigns);
             dbContext.Activities.AddRange(activities);
+            dbContext.Resources.AddRange(resources);
             dbContext.SaveChanges();
             #endregion
         }
@@ -280,11 +319,13 @@ namespace AllReady.Models
             List<AllReadyTask> value = new List<AllReadyTask>();
             for (int i = 0; i < 5; i++)
             {
+                var tempId = _taskIdProvider.NextValue();
                 value.Add(new AllReadyTask()
-                {
+                {   
+                    Id = tempId,
                     Activity = activity,
                     Description = "Description of a very important task # " + i,
-                    Name = "Task # " + i,
+                    Name = "Task # " + tempId,
                     EndDateTimeUtc = DateTime.Now.AddDays(i),
                     StartDateTimeUtc = DateTime.Now.AddDays(i - 1),
                     Tenant = tenant
@@ -294,7 +335,7 @@ namespace AllReady.Models
         }
 
         private static Location CreateLocation(string address1, string city, string state, string postalCode, AllReadyContext ctx)
-        {
+        {  
             Location ret = new Location();
             ret.Address1 = address1;
             ret.City = city;
@@ -304,6 +345,20 @@ namespace AllReady.Models
             ret.Name = "Humanitarian Toolbox location";
             ret.PhoneNumber = "1-425-555-1212";
             return ret;
+        }
+
+        private static List<PostalCodeGeo> GetPostalCodes(AllReadyContext ctx)
+        {
+            var postalCodes = new List<PostalCodeGeo>();
+            postalCodes.Add(new PostalCodeGeo() { City="Remond", State="WA", PostalCode = "98052" });
+            postalCodes.Add(new PostalCodeGeo() { City = "Bellevue", State = "WA", PostalCode = "98004" });
+            postalCodes.Add(new PostalCodeGeo() { City = "Seattle", State = "WA", PostalCode = "98116" });
+            postalCodes.Add(new PostalCodeGeo() { City = "Seattle", State = "WA", PostalCode = "98117" });
+            postalCodes.Add(new PostalCodeGeo() { City = "Bellevue", State = "WA", PostalCode = "98007" });
+            postalCodes.Add(new PostalCodeGeo() { City = "Issaquah", State = "WA", PostalCode = "98027" });
+            postalCodes.Add(new PostalCodeGeo() { City = "Kirkland", State = "WA", PostalCode = "98034" });
+            postalCodes.Add(new PostalCodeGeo() { City = "Kirkland", State = "WA", PostalCode = "98033" });
+            return postalCodes;
         }
 
         private static List<Location> GetLocations(AllReadyContext ctx)

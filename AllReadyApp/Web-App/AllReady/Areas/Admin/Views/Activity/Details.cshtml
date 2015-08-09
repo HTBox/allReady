@@ -38,8 +38,10 @@
     <div class="col-md-12">
         <h3>Tasks</h3>
         <ul>
-            @foreach (var task in Model.Tasks) {
-                <li><strong>@task.Name</strong></li>
+            
+            @foreach (var task in Model.Tasks)
+            {
+                <li><a href="~/Admin/Task/Details/@task.ActivityId/@task.Id"/><strong>@task.Name</strong></li>
             }
         </ul>
     </div>
@@ -47,6 +49,9 @@
 <div class="row">
     <div class="col-md-12">
         <p>
+            <a href="@Url.Action("Index", "Activity")" class="btn">
+                <span class="fa fa-backward"> Back to Activities</span>
+            </a>
             <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn"><span class="fa fa-edit"></span> Edit</a> 
             <a href="@Url.Action("Assign", new { id = Model.Id })" class="btn"><span class="fa fa-user"></span> Assign tasks</a>
         </p>

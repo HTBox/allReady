@@ -1,29 +1,99 @@
 ﻿@model IList<CampaignViewModel>
 @{
     ViewData["Title"] = "All registered campaigns";
+    @addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
 }
+<environment names="Development">
+        <link rel="stylesheet" href="~/css/campaignStyle.css" />
+</environment>
+<environment names="Staging,Production">
+    <link rel="stylesheet" href="~/css/campaignStyle.css"  asp-file-version="true"  />
+</environment>
 
-<div class="row">
-    <div class="col-md-12">
-        <h2>@ViewData["Title"]</h2>
+<div class="row search-banner">
+    <div class="col-md-12 text-center">
+        <input type="search"
+               class="campaign-search "
+               placeholder="Search for campaigns using your zipcode"
+               data-bind="{ value: searchTerm, valueUpdate: 'afterkeydown', event: { keypress: handleEnter } }" /><a class="main-search-button" data-bind="click: searchCampaigns" title="Search for campaigns"><img class="campaign-search-button" src="~/images/search-icon.png" alt="Search for campaigns" /></a>
     </div>
 </div>
 <div class="row">
+    <div class="col-md-12 text-center">
+        <div class="activity-results" data-bind="if: loadingDone">
+            <h3>Campaigns near <span data-bind="text: searchTerm"></span></h3>
+            <div class="activity-wrapper" data-bind="foreach: campaigns">
+                <p><a data-bind="attr: { href: '/Campaign/' + CampaignId }, text: Title"></a></p>
+            </div>
+            <a data-bind="attr: { href: '/Campaign'}">See more campaigns</a>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h2>@ViewData["Title"]</h2>
+    </div>
+    <div class="col-md-6">
+        <div class="pull-right">
+            <div class="form-inline">
+                <div class="form-group">
+                    <input type="text" class="form-control input-sm" data-bind="textInput: campaigns.searchTerm" placeholder="Search campaigns" />
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-sm" data-bind="css: { active: campaigns.showOld }, click: campaigns.showOld.toggle">
+                        <i class="fa" data-bind="css: { 'fa-square-o': !campaigns.showOld(), 'fa-check-square-o': campaigns.showOld }"></i>
+                        Show Old
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="hide text-center" data-bind="css: { hide: campaigns.filtered().length }">
+        <div class="alert alert-warning" role="alert">
+            <strong>No matching campaigns.</strong>
+        </div>
+    </div>
     <div class="col-md-12">
         <div id="campaignGrid" class="table-responsive">
-            <table class="table">
+            <table class="table" data-bind="css: { hide: !campaigns.filtered().length }">
                 <tr>
                     <th><span title="Name of the campaign">Title</span></th>
                     <th><span title="Description of the campaign">Description</span></th>
                 </tr>
-
-                @foreach (var campaign in Model) {
-                    <tr>
-                        <td><span class="campaignId">@Html.ActionLink(@campaign.Name, "Details", "Campaign", new { id = @campaign.Id }, null)</span></td>
-                        <td>@campaign.Description</td>
-                    </tr>
-                }
+                <!-- ko foreach: campaigns.filtered -->
+                <tr>
+                    <td>
+                        <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
+                    </td>
+                    <td>
+                        <span data-bind="text: Description"></span>
+                    </td>
+                </tr>
+                <!-- /ko -->
             </table>
         </div>
     </div>
+    <environment names="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/knockout/dist/knockout.js"></script>
+        <script src="~/js/tota11y.min.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="//ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery">
+        </script>
+        <script src="//ajax.aspnetcdn.com/ajax/knockout/knockout-3.3.0.js"></script>
+    </environment>
+    <script src="~/js/site.js"></script>
 </div>
+
+@section scripts {
+    <script>
+        var modelCampaigns = @Json.Serialize(Model);
+    </script>
+    <script type="text/javascript" src="~/js/ko.filterableList.js"></script>
+    <script src="~/js/campaigns.js"></script>
+}

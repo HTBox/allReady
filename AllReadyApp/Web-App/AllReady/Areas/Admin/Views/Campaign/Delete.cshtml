@@ -49,7 +49,7 @@
 
                 <div class="form-actions no-color">
                     <button type="submit" value="Delete" class="btn">Delete campaign</button> 
-                    @Html.ActionLink("Back to List", "Index", "Campaigns", null, new { @class = "btn" })
+                    @Html.ActionLink("Cancel", "Index", new { controller = "Campaign", area = "Admin" }, new { @class = "btn" })
                 </div>
             }
         </div>

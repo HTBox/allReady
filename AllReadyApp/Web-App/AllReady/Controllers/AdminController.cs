@@ -170,7 +170,7 @@ namespace AllReady.Controllers
             // this user as a Tenant Admin
             if(result.Succeeded)
             {
-                var callbackUrl = Url.Action(nameof(SiteController.MakeUserTenantAdmin), "Site", new { area = "Admin", Email=user.Email, TenantAdmin=false }, protocol: Context.Request.Scheme);
+                var callbackUrl = Url.Action(nameof(SiteController.MakeUserTenantAdmin), "Site", new { area = "Admin", Email=user.Email, TenantAdmin=true }, protocol: Context.Request.Scheme);
                 await _emailSender.SendEmailAsync(_config["DefaultAdminUsername"], "Approve Tenant user account",
                     "Please approve this account by clicking this <a href=\"" + callbackUrl + "\">link</a>");
             }
