@@ -4,7 +4,7 @@
 (function (ko, $, campaigns) {
 
     function TenantViewModel(campaigns) {
-        this.campaigns = ko.observableArray(campaigns).filterBeforeDate("EndDateTimeUtc");
+        this.campaigns = ko.observableArray(campaigns).filterBeforeDate("EndDate").textFilter(["Name","Description"]);
     }
 
     ko.applyBindings(new TenantViewModel(campaigns));

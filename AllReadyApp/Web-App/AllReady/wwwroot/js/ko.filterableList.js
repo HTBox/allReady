@@ -33,7 +33,7 @@ ko.observableArray.fn.textFilter = function (searchProperties, initialTerm) {
     return this.filterList(function (observableArray) {
         return ko.utils.arrayFilter(observableArray(), function (item) {
             for (var i = 0; i < searchProperties.length; i++) {
-                if (~item[searchProperties[i]].toLowerCase().indexOf(searchTerm().toLowerCase())) {
+                if (typeof item[searchProperties[i]] === "string" && ~item[searchProperties[i]].toLowerCase().indexOf(searchTerm().toLowerCase())) {
                     return true;
                 }
             }
