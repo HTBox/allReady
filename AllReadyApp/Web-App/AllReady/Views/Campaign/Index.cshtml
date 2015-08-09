@@ -1,15 +1,21 @@
 ﻿@model IList<CampaignViewModel>
 @{
     ViewData["Title"] = "All registered campaigns";
-    Layout = "_LayoutMainPage";
     @addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
 }
+<environment names="Development">
+        <link rel="stylesheet" href="~/css/campaignStyle.css" />
+</environment>
+<environment names="Staging,Production">
+    <link rel="stylesheet" href="~/css/campaignStyle.css"  asp-file-version="true"  />
+</environment>
+
 <div class="row search-banner">
     <div class="col-md-12 text-center">
         <input type="search"
-               class="main-search"
+               class="campaign-search "
                placeholder="Search for campaigns using your zipcode"
-               data-bind="{ value: searchTerm, valueUpdate: 'afterkeydown', event: { keypress: handleEnter } }" /><a class="main-search-button" data-bind="click: searchCampaigns" title="Search for campaigns"><img src="~/images/search_button.png" alt="Search for campaigns" /></a>
+               data-bind="{ value: searchTerm, valueUpdate: 'afterkeydown', event: { keypress: handleEnter } }" /><a class="main-search-button" data-bind="click: searchCampaigns" title="Search for campaigns"><img class="campaign-search-button" src="~/images/search-icon.png" alt="Search for campaigns" /></a>
     </div>
 </div>
 <div class="row">
