@@ -33,13 +33,13 @@ namespace AllReady.Controllers
         // GET: Campaign
         public async Task<IActionResult> Index()
         {
-            return await Task.Run(() => View(_dataAccess.Campaigns));
+            return await Task.FromResult(View(_dataAccess.Campaigns));
         }
 
         // GET: Campaign/Create
         public async Task<IActionResult> Create()
         {
-            return await Task.Run(() => WithTenants(View()));
+            return await Task.FromResult(WithTenants(View("Edit")));
         }
 
         // POST: Campaign/Create
@@ -63,10 +63,10 @@ namespace AllReady.Controllers
             if (ModelState.IsValid)
             {
                 await _dataAccess.AddCampaign(campaign);
-                return RedirectToAction("Index", new { area = "Admin" });
+                return await Task.FromResult(RedirectToAction("Index", new { area = "Admin" }));
             }
 
-            return WithTenants(View(campaign));
+            return await Task.FromResult(WithTenants(View("Edit", campaign)));
         }
 
         // GET: Campaign/Edit/5
@@ -93,7 +93,7 @@ namespace AllReady.Controllers
                 return new HttpStatusCodeResult(404);
             }
 
-            return WithTenants(View(campaign));
+            return await Task.FromResult(WithTenants(View(campaign)));
         }
 
         // POST: Campaign/Edit/5
@@ -115,9 +115,9 @@ namespace AllReady.Controllers
             if (ModelState.IsValid)
             {
                 await _dataAccess.UpdateCampaign(campaign);
-                return RedirectToAction("Index", new { area = "Admin" });
+                return await Task.FromResult(RedirectToAction("Index", new { area = "Admin" }));
             }
-            return View(campaign);
+            return await Task.FromResult(View(campaign));
         }
 
         // GET: Campaign/Delete/5
@@ -145,7 +145,7 @@ namespace AllReady.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            return View(campaign);
+            return await Task.FromResult(View(campaign));
         }
 
         // POST: Campaign/Delete/5
@@ -160,7 +160,7 @@ namespace AllReady.Controllers
             }   
 
             await _dataAccess.DeleteCampaign(id);
-            return RedirectToAction("Index", new { area = "Admin" });
+            return await Task.FromResult(RedirectToAction("Index", new { area = "Admin" }));
         }
 
         private async Task<bool> UserIsTenantAdminOfCampaign(ApplicationUser user, Campaign campaignToCheck)
