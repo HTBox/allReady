@@ -94,8 +94,27 @@ angular
     .factory("Backend", ["$http", "$q", "CacheManager", function ($http, $q, CacheManager) {
         var svc = {};
         var protocol = "https://";
-        var domainUrl = "allready-dev.azurewebsites.net"; // NOTE: Update when the site is deployed for real
-        var baseUrl = protocol + domainUrl + "/";
+        var domainUrl;
+        var baseUrl;
+
+        var readStringFromFileAtPath = function (pathOfFileToReadFrom) {
+            var request = new XMLHttpRequest();
+            request.open("GET", pathOfFileToReadFrom, false);
+            request.send(null);
+            var returnValue = request.responseText;
+
+            return returnValue;
+        }
+
+        var getDomainUrl = function readDomainUrl() {
+            var config = readStringFromFileAtPath(cordova.file.applicationDirectory + "config.xml");
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(config, "application/xml");
+            domainUrl = doc.getElementsByTagName("preference").item(1).nodeValue;
+            baseUrl = protocol + domainUrl + "/";
+        };
+
+        getDomainUrl();
 
         svc.getActivities = function (forceWebQuery) {
             forceWebQuery = typeof forceWebQuery !== "undefined" ? forceWebQuery : false;
