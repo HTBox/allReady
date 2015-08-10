@@ -20,10 +20,12 @@ namespace AllReady.Controllers
     public class AccountController : Controller
     {
         private IConfiguration _config;
+        private readonly IAllReadyDataAccess _dataAccess;
 
-        public AccountController(IConfiguration config)
+        public AccountController(IConfiguration config, IAllReadyDataAccess dataAccess)
         {
             _config = config;
+            _dataAccess = dataAccess;
         }
 
         /// <summary>
@@ -108,18 +110,22 @@ namespace AllReady.Controllers
                         new Claim("UserType", profile.ExtraProperties.First(x => x.Key == "allReadyUserType").Value.ToString())
                     },
                     CookieAuthenticationDefaults.AuthenticationScheme));
+            var userManager = (UserManager<ApplicationUser>)Context.ApplicationServices.GetService(typeof(UserManager<ApplicationUser>));
+            var user = await userManager.FindByIdAsync(profile.UserId);
+            if (user == null)
+            {
+                user = new ApplicationUser { UserName = profile.UserId, Email = profile.Email };
+                user.EmailConfirmed = true;
+
+                await userManager.CreateAsync(user);
+                await _dataAccess.AddUser(user); // CreateAsync doesn't seem to be persisting the user
+                if (profile.ExtraProperties.Any(x => x.Key == "allReadyUserType"))
+                {
+                    await userManager.AddClaimAsync(user, new Claim("UserType", profile.ExtraProperties.First(x => x.Key == "allReadyUserType").Value.ToString()));
+                }
+            }
 
             Context.Authentication.SignIn(CookieAuthenticationDefaults.AuthenticationScheme, userCP);
-
-            var userManager = (UserManager<ApplicationUser>)Context.ApplicationServices.GetService(typeof(UserManager<ApplicationUser>));
-            var existingUser = userManager.FindByIdAsync(profile.UserId).Result;
-            if (existingUser == null)
-            {
-                var user = new ApplicationUser { Email = profile.Email, Id = profile.UserId, UserName = profile.Name };
-                user.EmailConfirmed = true;
-                await userManager.CreateAsync(user);
-                await userManager.AddClaimAsync(user, new Claim("UserType", profile.ExtraProperties.First(x => x.Key == "allReadyUserType").Value.ToString()));
-            }
 
             return Redirect("/");
         }
@@ -129,6 +135,7 @@ namespace AllReady.Controllers
         [HttpPost]
         public IActionResult LogOff()
         {
+            // TODO: why doesn't the redirect work until the second time this method is hit?
             if (Context.User.Identity.IsAuthenticated)
             {
                 Context.Response.HttpContext.Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationScheme);

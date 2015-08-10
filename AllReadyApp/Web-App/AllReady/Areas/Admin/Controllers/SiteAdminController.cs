@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Services;
+using System.Collections.Generic;
 
 namespace AllReady.Areas.SiteAdmin.Controllers
 {
@@ -34,6 +35,12 @@ namespace AllReady.Areas.SiteAdmin.Controllers
         {
             // Get the user and the UserType claim
             var user = await _userManager.FindByEmailAsync(model.Email);
+            if(user == null)
+            {
+                ViewBag.UserSearchError = string.Format("Sorry, no accounts were found with the address {0}", model.Email);
+                return View(model);
+            }
+
             var claims = await _userManager.GetClaimsAsync(user);
             if (claims.Count <= 0)
             {

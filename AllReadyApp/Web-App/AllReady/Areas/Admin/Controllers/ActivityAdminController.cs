@@ -12,6 +12,7 @@ using AllReady.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -95,13 +96,8 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Activity/Create
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            var currentUser = await _userManager.GetCurrentUser(Context);
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
             return View();
         }
 
@@ -111,11 +107,6 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Create(Activity activity)
         {
             var currentUser = await _userManager.GetCurrentUser(Context);
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
             if (activity.TenantId != _dataAccess.GetUser(currentUser.Id).AssociatedTenant.Id)
             {
                 return new HttpUnauthorizedResult();
@@ -133,7 +124,7 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(System.Int32 id)
         {
             var currentUser = await _userManager.GetCurrentUser(Context);
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
+            if (currentUser == null)
             {
                 return new HttpUnauthorizedResult();
             }
@@ -159,7 +150,7 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(Activity activity)
         {
             var currentUser = await _userManager.GetCurrentUser(Context);
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
+            if (currentUser == null)
             {
                 return new HttpUnauthorizedResult();
             }
@@ -179,7 +170,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var currentUser = await _userManager.GetCurrentUser(Context);
 
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
+            if (currentUser == null)
             {
                 return new HttpUnauthorizedResult();
             }
@@ -209,7 +200,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var currentUser = await _userManager.GetCurrentUser(Context);
 
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
+            if (currentUser == null)
             {
                 return new HttpUnauthorizedResult();
             }
@@ -228,7 +219,7 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Assign(int id)
         {
             var currentUser = await _userManager.GetCurrentUser(Context);
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
+            if (currentUser == null)
             {
                 return new HttpUnauthorizedResult();
             }
@@ -257,7 +248,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var currentUser = await _userManager.GetCurrentUser(Context);
 
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
+            if (currentUser == null)
             {
                 return new HttpUnauthorizedResult();
             }

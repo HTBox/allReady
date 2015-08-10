@@ -11,6 +11,8 @@
         <section>
             <form asp-controller="SiteAdmin" asp-action="Index" method="post" class="form-horizontal" role="form">
                 <h4>Search for a user.</h4>
+                @if (ViewBag.UserSearchError != null)
+                {<h5>@ViewBag.UserSearchError</h5>}
                 <hr />
                 <div asp-validation-summary="ValidationSummary.All" class="text-danger"></div>
                 <div class="form-group">
