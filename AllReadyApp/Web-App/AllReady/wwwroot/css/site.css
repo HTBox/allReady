@@ -71,6 +71,8 @@ footer > p > img {
 }
 .navbar-nav > li > a {
     font-size: 20.51px;
+}
+.navbar-nav a{
     color:#FFFFFF;
 }
 ul.nav a:hover,
