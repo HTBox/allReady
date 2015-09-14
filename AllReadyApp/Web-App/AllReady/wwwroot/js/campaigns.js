@@ -3,37 +3,29 @@
 
 (function (ko, $, campaigns) {
     function CampaignsViewModel(campaigns) {
-    }
-
-    var campaignViewModel = {
-        status: ko.observable(),
-        searchTerm: ko.observable(),
-        campaigns: ko.observableArray(),
-        loadingDone: ko.observable(false),
-        handleEnter: function (data, event) {
+        this.searchTerm = ko.observable();
+        this.campaignsNearZip = ko.observableArray();
+        this.loadingDone = ko.observable(false);
+        this.handleEnter = function (data, event) {
             if (event.keyCode === 13) {
                 this.searchCampaigns();
             }
             return true;
-        },
-        searchCampaigns: function () {
+        };
+        this.searchCampaigns = function () {
             var self = this;
             var term = this.searchTerm();
-            if (term !== undefined) {
+            if (term) {
                 $.get('/api/campaign/search/?zip=' + term + '&miles=10')
                 .done(function (data) {
                     if (data) {
-                        campaignViewModel.campaigns(data.slice(0, 3));
-                        campaignViewModel.loadingDone(true);
-                    } else {
-                        self.status('noresults');
+                        self.campaignsNearZip(data);
                     }
-                }).fail(function () {
-                    self.status('fail');
+                    self.loadingDone(true);
                 });
             }
-        },
-        campaigns : ko.observableArray(campaigns).filterBeforeDate("EndDate").textFilter(["Name", "Description"])
-    };
-    ko.applyBindings(campaignViewModel);
+        };
+        this.campaigns = ko.observableArray(campaigns).filterBeforeDate("EndDate").textFilter(["Name", "Description"]);
+    }
+    ko.applyBindings(new CampaignsViewModel(campaigns));
 })(ko, $, modelCampaigns);
