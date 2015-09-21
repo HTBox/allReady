@@ -1,28 +1,24 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Authentication.Facebook;
-using Microsoft.AspNet.Authentication.Google;
-using Microsoft.AspNet.Authentication.MicrosoftAccount;
-using Microsoft.AspNet.Authentication.Twitter;
+using AllReady.Models;
+using AllReady.Services;
+using Microsoft.AspNet.Authentication;
+using Microsoft.AspNet.Authentication.Cookies;
+using Microsoft.AspNet.Authentication.Notifications;
+using Microsoft.AspNet.Authentication.OpenIdConnect;
+using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Diagnostics;
 using Microsoft.AspNet.Diagnostics.Entity;
 using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Routing;
 using Microsoft.Data.Entity;
 using Microsoft.Framework.Configuration;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
-using Microsoft.Framework.Logging.Console;
 using Microsoft.Framework.Runtime;
-using AllReady.Models;
-using AllReady.Services;
-using Microsoft.AspNet.Authorization;
+using Microsoft.IdentityModel.Protocols;
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace AllReady
 {
@@ -86,10 +82,16 @@ namespace AllReady
                     );
             });
 
-            // Add Identity services to the services container.
+            //// Add Identity services to the services container.
             services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<AllReadyContext>()
-                .AddDefaultTokenProviders();
+               .AddEntityFrameworkStores<AllReadyContext>()
+               .AddDefaultTokenProviders();
+
+            // OpenID Connect Authentication Requires Cookie Auth
+            services.Configure<ExternalAuthenticationOptions>(options =>
+            {
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            });
 
             // Add Authorization rules for the app
             services.Configure<AuthorizationOptions>(options =>
@@ -97,42 +99,6 @@ namespace AllReady
                 options.AddPolicy("TenantAdmin", new AuthorizationPolicyBuilder().RequireClaim("UserType", new string[] { "TenantAdmin", "SiteAdmin" }).Build());
                 options.AddPolicy("SiteAdmin", new AuthorizationPolicyBuilder().RequireClaim("UserType", "SiteAdmin").Build());
             });
-
-            services.ConfigureCookieAuthentication(options =>
-             {
-                 options.AccessDeniedPath = new PathString("/Home/AccessDenied");
-             });
-
-            // Configure the options for the authentication middleware.
-            // You can add options for Google, Twitter and other middleware as shown below.
-            // For more information see http://go.microsoft.com/fwlink/?LinkID=532715
-            if (Configuration["Authentication:Facebook:AppId"] != null)
-            {
-                services.Configure<FacebookAuthenticationOptions>(options =>
-                {
-                    options.AppId = Configuration["Authentication:Facebook:AppId"];
-                    options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-                });
-            }
-
-            //Enable Twitter Auth, only id key set
-            if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
-            {
-                services.Configure<TwitterAuthenticationOptions>(options =>
-                {
-                    options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
-                    options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
-                });
-            }
-
-            if (Configuration["Authentication:MicrosoftAccount:ClientId"] != null)
-            {
-                services.Configure<MicrosoftAccountAuthenticationOptions>(options =>
-                {
-                    options.ClientId = Configuration["Authentication:MicrosoftAccount:ClientId"];
-                    options.ClientSecret = Configuration["Authentication:MicrosoftAccount:ClientSecret"];
-                });
-            }
 
             // Add MVC services to the services container.
             services.AddMvc();
@@ -186,26 +152,38 @@ namespace AllReady
             // Add static files to the request pipeline.
             app.UseStaticFiles();
 
-            // Add cookie-based authentication to the request pipeline.
-            app.UseIdentity();
+            // Configure the OWIN Pipeline to use OpenID Connect Authentication
+            app.UseCookieAuthentication(options => {
+                options.AutomaticAuthentication = true;
+                options.LoginPath = "/Account/Login";
+            });
 
-            // Add authentication middleware to the request pipeline. You can configure options such as Id and Secret in the ConfigureServices method.
-            // For more information see http://go.microsoft.com/fwlink/?LinkID=532715
-            if (Configuration["Authentication:Facebook:AppId"] != null)
+            app.UseOpenIdConnectAuthentication(options =>
             {
-                app.UseFacebookAuthentication();
-            }
-            // app.UseGoogleAuthentication();
+                options.ClientId = Configuration.Get("Authentication:Auth0:ClientId");
+                options.Authority = "https://" + Configuration.Get("Authentication:Auth0:Domain");
+                options.AuthenticationScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.Notifications = new OpenIdConnectAuthenticationNotifications
+                {
+                    AuthenticationFailed = OnAuthenticationFailed,
+                    
+                    // read/modify the claims that are populated based on the JWT
+                    SecurityTokenValidated = context =>
+                    {
+                        var claimsIdentity = context.AuthenticationTicket.Principal.Identity as ClaimsIdentity;
 
-            if (Configuration["Authentication:MicrosoftAccount:ClientId"] != null)
-            {
-                app.UseMicrosoftAccountAuthentication();
-            }
+                        // add Auth0 access_token as claim
+                        claimsIdentity.AddClaim(new Claim("access_token", context.ProtocolMessage.AccessToken));
 
-            if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
-            {
-                app.UseTwitterAuthentication();
-            }
+                        // ensure name claim
+                        claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, claimsIdentity.FindFirst("name").Value));
+
+                        return Task.FromResult(0);
+                    }
+                };
+            });
+
+
             // Add MVC to the request pipeline.
             app.UseMvc(routes =>
             {
@@ -229,6 +207,11 @@ namespace AllReady
                 SampleData.CreateAdminUser(serviceProvider, dbContext).Wait();
             }
         }
-
+        private Task OnAuthenticationFailed(AuthenticationFailedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> notification)
+        {
+            notification.HandleResponse();
+            notification.Response.Redirect("/Home/Error?message=" + notification.Exception.Message);
+            return Task.FromResult(0);
+        }
     }
 }

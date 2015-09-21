@@ -1,47 +1,38 @@
 {
-    "DefaultAdminUsername": "Administrator@test.com",
-    "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
-    "DefaultUsername": "User@test.com",
-    "DefaultTenantUsername": "tenant@test.com",
-    "DefaultFromEmailAddress": "Administrator@test.com",
-    "DefaultFromDisplayName": "allReady.com Administrator",
+  "DefaultAdminUsername": "Administrator@test.com",
+  "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
+  "DefaultUsername": "User@test.com",
+  "DefaultTenantUsername": "tenant@test.com",
+  "DefaultFromEmailAddress": "Administrator@test.com",
+  "DefaultFromDisplayName": "allReady.com Administrator",
 
-    "ApplicationInsights": {
-        "InstrumentationKey": "[instrumentationkey]"
+  "ApplicationInsights": {
+    "InstrumentationKey": "[instrumentationkey]"
+  },
+  "Authentication": {
+    "Auth0:ClientId": "[Auth0ClientId]",
+    "Auth0:ClientSecret": "[Auth0ClientSecret]",
+    "Auth0:Domain": "[Auth0Domain",
+    "SendGrid": {
+      "UserName": "[sendgriduser]",
+      "Password": "[sendgridpassword]"
     },
-    "Data": {
-        "DefaultConnection": {
-            "UseInMemory": "true",
-            "AzureConnectionString": "Server=[server],1433;Database=[database];User ID=[userid];Password=[password];Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
-            "LocalConnectionString": "Server=(localdb)\\mssqllocaldb;Database=AllReady;Integrated Security=true;"
-        },
-        "InsertSampleData": "true",
-        "InsertTestUsers": "true",
-        "Storage": {
-            "AzureStorage": "[storagekey]"
-        }
-    },
-    "Authentication": {
-        "Facebook": {
-            "AppId": "[facebookappId]",
-            "AppSecret": "[facebookappsecret]"
-        },
-        "Twitter": {
-            "ConsumerKey": "[twitterkey]",
-            "ConsumerSecret": "[twittersecret]"
-        },
-        "MicrosoftAccount": {
-            "ClientId": "[twitterclient]",
-            "ClientSecret": "[twittersecret]"
-        },
-        "SendGrid": {
-            "UserName": "[sendgriduser]",
-            "Password": "[sendgridpassword]"
-        },
-        "Twilio": {
-            "Sid": "[twiliosid]",
-            "Token": "[twiliotoken]",
-            "PhoneNo": "[twilionumber]"
-        }
+    "Twilio": {
+      "Sid": "[twiliosid]",
+      "Token": "[twiliotoken]",
+      "PhoneNo": "[twilionumber]"
     }
+  },
+    "Data": {
+      "DefaultConnection": {
+        "UseInMemory": "true",
+        "AzureConnectionString": "Server=[server],1433;Database=[database];User ID=[userid];Password=[password];Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+        "LocalConnectionString": "Server=(localdb)\\mssqllocaldb;Database=AllReady;Integrated Security=true;"
+      },
+      "InsertSampleData": "true",
+      "InsertTestUsers": "true",
+      "Storage": {
+        "AzureStorage": "[storagekey]"
+      }
+  }
 }
