@@ -58,7 +58,7 @@ namespace AllReady.Controllers
         public async Task<IActionResult> UpdateMyTasks(int id, [FromBody]List<TaskSignupViewModel> model) {
             var currentUser = await GetCurrentUserAsync();
             foreach (var taskSignup in model) {
-                await _allReadyDataAccess.UpdateTaskSignup(new TaskUsers {
+                await _allReadyDataAccess.UpdateTaskSignupAsync(new TaskUsers {
                     Id = taskSignup.Id,
                     StatusDateTimeUtc = DateTime.UtcNow,
                     StatusDescription = taskSignup.StatusDescription,

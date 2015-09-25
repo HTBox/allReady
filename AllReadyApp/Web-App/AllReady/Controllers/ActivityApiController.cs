@@ -174,7 +174,7 @@ namespace AllReady.Controllers
             if (userSignup != null && userSignup.CheckinDateTime == null)
             {
                 userSignup.CheckinDateTime = DateTime.UtcNow;
-                _allReadyDataAccess.AddActivitySignup(userSignup);
+                await _allReadyDataAccess.AddActivitySignupAsync(userSignup);
                 return Json(new { Activity = new { Name = dbActivity.Name, Description = dbActivity.Description } });
             }
             else
@@ -223,7 +223,7 @@ namespace AllReady.Controllers
             {
                 return HttpNotFound();
             }
-            _allReadyDataAccess.DeleteActivitySignup(signedUp.Id);
+            await _allReadyDataAccess.DeleteActivitySignupAsync(signedUp.Id);
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 

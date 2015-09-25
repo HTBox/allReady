@@ -21,7 +21,7 @@ namespace AllReady.Services
             var client = new SmtpClient();
             var resultObject = new object();
             client.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
-            client.PickupDirectoryLocation = _config.Get("DevelopmentEmailFolder");
+            client.PickupDirectoryLocation = _config["DevelopmentEmailFolder"];
             client.SendAsync(new MailMessage(message.From.Address, message.To.FirstOrDefault().Address, message.Subject, message.Html), resultObject);
             return Task.FromResult(resultObject);
         }

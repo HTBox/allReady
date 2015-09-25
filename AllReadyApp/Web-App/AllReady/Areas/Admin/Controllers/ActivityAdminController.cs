@@ -271,7 +271,7 @@ namespace AllReady.Areas.Admin.Controllers
             //TODO: Replacement for API like Tasks.UpdateRange(updates);
             foreach (var item in updates)
             {
-                await _dataAccess.UpdateTask(item);
+                await _dataAccess.UpdateTaskAsync(item);
             }
             return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Details", id = id });
         }

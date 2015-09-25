@@ -24,7 +24,7 @@ namespace AllReady.Services
             // Plug in your email service here to send an email.
             var myMessage = new SendGridMessage();
             myMessage.AddTo(email);
-            myMessage.From = new System.Net.Mail.MailAddress(_config.Get("DefaultFromEmailAddress"), _config.Get("DefaultFromDisplayName"));
+            myMessage.From = new System.Net.Mail.MailAddress(_config["DefaultFromEmailAddress"], _config["DefaultFromDisplayName"]);
             myMessage.Subject = subject;
             myMessage.Text = message;
             myMessage.Html = message;

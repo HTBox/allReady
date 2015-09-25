@@ -94,7 +94,7 @@ namespace AllReady.Controllers
                 HttpBadRequest("Should have found a matching activity Id");
             }
 
-            await _allReadyDataAccess.AddTask(model);
+            await _allReadyDataAccess.AddTaskAsync(model);
         }
 
         [HttpPut("{id}")]
@@ -119,7 +119,7 @@ namespace AllReady.Controllers
             task.StartDateTimeUtc = value.StartDateTime.Value.UtcDateTime;
             task.EndDateTimeUtc = value.EndDateTime.Value.UtcDateTime;
 
-            await _allReadyDataAccess.UpdateTask(task);
+            await _allReadyDataAccess.UpdateTaskAsync(task);
         }
 
         [HttpDelete("{id}")]
@@ -134,7 +134,7 @@ namespace AllReady.Controllers
                 {
                     HttpUnauthorized();
                 }
-                await _allReadyDataAccess.DeleteTask(matchingTask.Id);
+                await _allReadyDataAccess.DeleteTaskAsync(matchingTask.Id);
             }
         }
 
@@ -164,7 +164,7 @@ namespace AllReady.Controllers
                 StatusDateTimeUtc = DateTime.UtcNow
             });
 
-            await _allReadyDataAccess.UpdateTask(task);
+            await _allReadyDataAccess.UpdateTaskAsync(task);
         }
     }
 }
