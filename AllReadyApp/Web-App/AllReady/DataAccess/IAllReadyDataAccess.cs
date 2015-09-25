@@ -8,11 +8,6 @@ namespace AllReady.Models
 {
     public interface IAllReadyDataAccess
     {
-        #region Setup and Administration
-
-        void EnsureDatabaseCreated();
-
-        #endregion
 
         #region Activity CRUD
         IEnumerable<Activity> Activities { get; }
@@ -68,11 +63,11 @@ namespace AllReady.Models
 
         ActivitySignup GetActivitySignup(int activityId, string userId);
 
-        Task AddActivitySignup(ActivitySignup userSignup);
+        Task AddActivitySignupAsync(ActivitySignup userSignup);
 
-        Task DeleteActivitySignup(int activitySignupId);
+        Task DeleteActivitySignupAsync(int activitySignupId);
 
-        Task UpdateActivitySignup(ActivitySignup value);
+        Task UpdateActivitySignupAsync(ActivitySignup value);
 
         #endregion
 
@@ -81,11 +76,11 @@ namespace AllReady.Models
 
         TaskUsers GetTaskSignup(int taskId, string userId);
 
-        Task AddTaskSignup(TaskUsers taskSignup);
+        Task AddTaskSignupAsync(TaskUsers taskSignup);
 
-        Task DeleteTaskSignup(int taskSignupId);
+        Task DeleteTaskSignupAsync(int taskSignupId);
 
-        Task UpdateTaskSignup(TaskUsers value);
+        Task UpdateTaskSignupAsync(TaskUsers value);
         #endregion
 
         #region AllReadyTask CRUD
@@ -95,11 +90,11 @@ namespace AllReady.Models
 
         AllReadyTask GetTask(int taskId);
 
-        Task AddTask(AllReadyTask task);
+        Task AddTaskAsync(AllReadyTask task);
 
-        Task DeleteTask(int taskId);
+        Task DeleteTaskAsync(int taskId);
 
-        Task UpdateTask(AllReadyTask value);
+        Task UpdateTaskAsync(AllReadyTask value);
         IEnumerable<TaskUsers> GetTasksAssignedToUser(int activityId, ApplicationUser user);
 
         #endregion

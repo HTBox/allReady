@@ -85,7 +85,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Task/Create")]
         public IActionResult Create(TaskViewModel model) {
             if (ModelState.IsValid) {
-                _dataAccess.AddTask(model.ToModel(_dataAccess));
+                _dataAccess.AddTaskAsync(model.ToModel(_dataAccess));
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -114,7 +114,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _dataAccess.UpdateTask(model.ToModel(_dataAccess));
+                await _dataAccess.UpdateTaskAsync(model.ToModel(_dataAccess));
                 if (ViewBag.ActivityId != null)
                 {
                     return RedirectToAction("Index", new { activityId = ViewBag.ActivityId });
@@ -172,7 +172,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
-            await _dataAccess.DeleteTask(id);
+            await _dataAccess.DeleteTaskAsync(id);
 
             return RedirectToAction("Index");
         }

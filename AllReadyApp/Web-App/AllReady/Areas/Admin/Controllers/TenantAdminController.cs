@@ -30,7 +30,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Tenant/Details/5
-        public async Task<IActionResult> Details(System.Int32? id)
+        public IActionResult Details(System.Int32? id)
         {
             if (id == null)
             {
@@ -67,7 +67,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Tenant/Edit/5
-        public async Task<IActionResult> Edit(System.Int32? id)
+        public IActionResult Edit(System.Int32? id)
         {
             if (id == null)
             {
@@ -99,7 +99,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         // GET: Tenant/Delete/5
         [ActionName("Delete")]
-        public async Task<IActionResult> Delete(System.Int32? id)
+        public IActionResult Delete(System.Int32? id)
         {
             // Needs comments:  This method doesn't delete things.
             if (id == null)
