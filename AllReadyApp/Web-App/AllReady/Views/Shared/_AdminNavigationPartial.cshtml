@@ -2,11 +2,21 @@
 
 @if (User.Claims.Where(c => c.Type.Equals("UserType")).Where(c => c.Value == "SiteAdmin" || c.Value == "TenantAdmin").Any())
 {
-    <li> Admin:</li>
-    <li><a asp-route-area="Admin" asp-route-controller="Activity" asp-route-action="Index">Activities</a></li>
-    <li><a asp-route-area="Admin" asp-route-controller="Campaign" asp-route-action="Index">Campaigns</a></li>
-    <li><a asp-route-area="Admin" asp-route-controller="Task" asp-route-action="Index">Tasks</a></li>
-    <li><a asp-route-area="Admin" asp-route-controller="Tenant" asp-route-action="Index">Tenant</a></li>
+    <ul class="nav nav-pills">
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                Admin <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li> Admin:</li>
+                <li><a asp-route-area="Admin" asp-route-controller="Activity" asp-route-action="Index">Activities</a></li>
+                <li><a asp-route-area="Admin" asp-route-controller="Campaign" asp-route-action="Index">Campaigns</a></li>
+                <li><a asp-route-area="Admin" asp-route-controller="Task" asp-route-action="Index">Tasks</a></li>
+                <li><a asp-route-area="Admin" asp-route-controller="Tenant" asp-route-action="Index">Tenant</a></li>
+            </ul>
+        </li>
+    </ul>
+    
 
-    <li> User:</li>
+    @*<li class="header"> User:</li>*@
 }
