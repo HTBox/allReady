@@ -13,6 +13,7 @@
     "jquery-validation-unobtrusive": "3.2.2",
     "font-awesome": "4.3.0",
     "knockout": "3.3.0",
-    "moment": "2.10.6"
+    "moment": "2.10.6",
+    "tota11y": "0.1.2"
   }
 }
