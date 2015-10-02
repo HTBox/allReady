@@ -86,25 +86,11 @@ ul.nav a:focus
 Navigation
 ===========================*/
 .navbar-default {
-    background: #d58033;
     border: none;
-    -moz-border-radius: 0;
-    -webkit-border-radius: 0;
-    border-radius: 0;
-    padding: 4px 0;
-    width: 100%;
-    left: 0;
-    z-index: 999;
-    margin-bottom: 0;
 }
 
-.navbar-brand {
-    float: none;
-}
 .navbar-nav {
-    /*background-color: #ab6627;*/
     margin-top: 1px;
-    /*float: right;*/
 }
 .navbar-nav > li.header {
     background-color: #78481b;
