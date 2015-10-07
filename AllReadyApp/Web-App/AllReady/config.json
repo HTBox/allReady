@@ -1,9 +1,9 @@
 {
-    "DefaultAdminUsername": "Administrator@test.com",
+    "DefaultAdminUsername": "Administrator@example.com",
     "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
-    "DefaultUsername": "User@test.com",
-    "DefaultTenantUsername": "tenant@test.com",
-    "DefaultFromEmailAddress": "Administrator@test.com",
+    "DefaultUsername": "User@example.com",
+    "DefaultTenantUsername": "tenant@example.com",
+    "DefaultFromEmailAddress": "Administrator@example.com",
     "DefaultFromDisplayName": "allReady.com Administrator",
 
     "ApplicationInsights": {
