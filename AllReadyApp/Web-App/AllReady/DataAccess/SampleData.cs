@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.Framework.Configuration;
 using Microsoft.Framework.DependencyInjection;
-
 using AllReady.Services;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Threading;
 using AllReady.DataAccess;
 using Microsoft.Dnx.Runtime;
 
@@ -17,8 +14,9 @@ namespace AllReady.Models
 {
     public static class SampleData
     {
+        private static IConfigurationRoot _configuration;
         private static ITaskIdProvider _taskIdProvider = new TaskIdProvider();
-        public static void InsertTestData(AllReadyContext dbContext)
+        public static async Task InsertTestData(IServiceProvider serviceProvider, AllReadyContext dbContext)
         {
             _taskIdProvider.Reset();
             // Avoid polluting the database if there's already something in there.
@@ -32,6 +30,11 @@ namespace AllReady.Models
                 return;
             }
 
+            // load config
+            var configuration = BuildConfiguration(serviceProvider);
+            var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
+
+            // new up some data
             List<Tenant> tenants = new List<Tenant>();
             dbContext.PostalCodes.AddRange(GetPostalCodes(dbContext));
             dbContext.SaveChanges();
@@ -41,6 +44,7 @@ namespace AllReady.Models
             List<Campaign> campaigns = new List<Campaign>();
             List<AllReadyTask> tasks = new List<AllReadyTask>();
             List<Resource> resources = new List<Resource>();
+            List<ActivitySignup> activitySignups = new List<ActivitySignup>();
 
             #region Tenant
             Tenant htb = new Tenant()
@@ -306,6 +310,31 @@ namespace AllReady.Models
             dbContext.Resources.AddRange(resources);
             dbContext.SaveChanges();
             #endregion
+            
+            #region Users for Activities
+            var username1 = $"{configuration["DefaultUsername"]}1";
+            var username2 = $"{configuration["DefaultUsername"]}2";
+            var username3 = $"{configuration["DefaultUsername"]}3";
+
+            var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true };
+            await userManager.CreateAsync(user1, configuration["DefaultAdminPassword"]);
+            var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true };
+            await userManager.CreateAsync(user2, configuration["DefaultAdminPassword"]);
+            var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true };
+            await userManager.CreateAsync(user3, configuration["DefaultAdminPassword"]);
+            #endregion
+
+            #region ActvitySignups
+            activitySignups.Add(new ActivitySignup { Activity = madrona, User = user1, SignupDateTime = DateTime.UtcNow });
+            activitySignups.Add(new ActivitySignup { Activity = madrona, User = user2, SignupDateTime = DateTime.UtcNow });
+            activitySignups.Add(new ActivitySignup { Activity = madrona, User = user3, SignupDateTime = DateTime.UtcNow });
+            #endregion
+
+            #region Wrap Up DB  
+            dbContext.ActivitySignup.AddRange(activitySignups);
+            dbContext.SaveChanges();
+            #endregion
+
         }
         #region Sample Data Helper methods
         private static T GetRandom<T>(List<T> list)
@@ -392,15 +421,7 @@ namespace AllReady.Models
         /// <returns></returns>
         public static async Task CreateAdminUser(IServiceProvider serviceProvider, AllReadyContext dbContext)
         {
-            var appEnv = serviceProvider.GetService<IApplicationEnvironment>();
-
-            var builder = new ConfigurationBuilder(appEnv.ApplicationBasePath)
-                        .AddJsonFile("config.json")
-                        .AddUserSecrets()
-                        .AddEnvironmentVariables();
-
-            var configuration = builder.Build();
-
+            var configuration = BuildConfiguration(serviceProvider);
             var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
 
             var user = await userManager.FindByNameAsync(configuration["DefaultAdminUsername"]);
@@ -422,6 +443,23 @@ namespace AllReady.Models
                 user.EmailConfirmed = true;
                 await userManager.CreateAsync(user, configuration["DefaultAdminPassword"]);
             }
+        }
+
+        private static IConfigurationRoot BuildConfiguration(IServiceProvider serviceProvider)
+        {
+            if (_configuration == null)
+            {
+                var appEnv = serviceProvider.GetService<IApplicationEnvironment>();
+
+                var builder = new ConfigurationBuilder(appEnv.ApplicationBasePath)
+                    .AddJsonFile("config.json")
+                    .AddUserSecrets()
+                    .AddEnvironmentVariables();
+
+                _configuration = builder.Build();
+
+            }
+            return _configuration;
         }
     }
 }
