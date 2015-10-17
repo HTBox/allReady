@@ -209,7 +209,7 @@ namespace AllReady
       // for production applications, this should either be set to false or deleted.
       if (Configuration["Data:InsertSampleData"] == "true")
       {
-        SampleData.InsertTestData(dbContext);
+        SampleData.InsertTestData(serviceProvider, dbContext);
       }
       if (Configuration["Data:InsertTestUsers"] == "true")
       {
