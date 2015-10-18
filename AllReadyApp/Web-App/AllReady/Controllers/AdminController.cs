@@ -131,7 +131,7 @@ namespace AllReady.Controllers
                 if (result.Succeeded)
                 {
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Admin", new { userId = user.Id, code = code }, protocol: Context.Request.Scheme);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Admin", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
                         "Please confirm your account by clicking this <a href=\"" + callbackUrl + "\">link</a>");
                     return RedirectToAction(nameof(AdminController.DisplayEmail), "Admin");
@@ -170,7 +170,7 @@ namespace AllReady.Controllers
             // this user as a Tenant Admin
             if(result.Succeeded)
             {
-                var callbackUrl = Url.Action(nameof(SiteController.MakeUserTenantAdmin), "Site", new { area = "Admin", Email=user.Email, TenantAdmin=true }, protocol: Context.Request.Scheme);
+                var callbackUrl = Url.Action(nameof(SiteController.MakeUserTenantAdmin), "Site", new { area = "Admin", Email=user.Email, TenantAdmin=true }, protocol: HttpContext.Request.Scheme);
                 await _emailSender.SendEmailAsync(_config["DefaultAdminUsername"], "Approve Tenant user account",
                     "Please approve this account by clicking this <a href=\"" + callbackUrl + "\">link</a>");
             }
@@ -206,7 +206,7 @@ namespace AllReady.Controllers
                 // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                 // Send an email with this link
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = Url.Action("ResetPassword", "Admin", new { userId = user.Id, code = code }, protocol: Context.Request.Scheme);
+                var callbackUrl = Url.Action("ResetPassword", "Admin", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
                 await _emailSender.SendEmailAsync(model.Email, "Reset Password",
                    "Please reset your password by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
                 return View("ForgotPasswordConfirmation");
@@ -374,7 +374,7 @@ namespace AllReady.Controllers
 
         private async Task<ApplicationUser> GetCurrentUserAsync()
         {
-            return await _userManager.FindByIdAsync(Context.User.GetUserId());
+            return await _userManager.FindByIdAsync(HttpContext.User.GetUserId());
         }
 
         private IActionResult RedirectToLocal(string returnUrl)
