@@ -16,7 +16,7 @@ namespace AllReady.Models
     {
         private static IConfigurationRoot _configuration;
         private static ITaskIdProvider _taskIdProvider = new TaskIdProvider();
-        public static async Task InsertTestData(IServiceProvider serviceProvider, AllReadyContext dbContext)
+        public static void InsertTestData(IServiceProvider serviceProvider, AllReadyContext dbContext)
         {
             _taskIdProvider.Reset();
             // Avoid polluting the database if there's already something in there.
@@ -451,7 +451,8 @@ namespace AllReady.Models
             {
                 var appEnv = serviceProvider.GetService<IApplicationEnvironment>();
 
-                var builder = new ConfigurationBuilder(appEnv.ApplicationBasePath)
+                var builder = new ConfigurationBuilder()
+                    .SetBasePath(appEnv.ApplicationBasePath)
                     .AddJsonFile("config.json")
                     .AddUserSecrets()
                     .AddEnvironmentVariables();
