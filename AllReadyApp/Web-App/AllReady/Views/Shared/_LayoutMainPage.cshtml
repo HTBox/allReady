@@ -19,18 +19,21 @@
     @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
 </head>
 <body>
-    <div class="row navbar">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
+    <header>
+        <nav class="navbar">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                @await Html.PartialAsync("_Navigation")
             </div>
-            @await Html.PartialAsync("_Navigation")
-        </div>
-    </div>
+        </nav>
+    </header>
+
     <div class="row home-banner">
         <div class="col-md-12">
           <div class="center"><img src="~/images/Web-Logo.png" alt="Logo image for the project" class="img-responsive center-block" /></div>
@@ -48,8 +51,9 @@
     </footer>
     <environment names="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/lib/knockout/dist/knockout.js"></script>
-        <script src="~/js/tota11y.min.js"></script>
+        <script src="~/lib/tota11y/build/tota11y.js"></script>
     </environment>
     <environment names="Staging,Production">
         <script src="//ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.min.js"
@@ -57,6 +61,10 @@
                 asp-fallback-test="window.jQuery">
         </script>
         <script src="//ajax.aspnetcdn.com/ajax/knockout/knockout-3.3.0.js"></script>
+        <script src="//ajax.aspnetcdn.com/ajax/bootstrap/3.0.0/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
+        </script>
     </environment>
     <script src="~/js/site.js"></script>
     <script src="~/js/index.js"></script>
