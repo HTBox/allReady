@@ -30,7 +30,8 @@ namespace AllReady
     {
       // Setup configuration sources.
 
-      var builder = new ConfigurationBuilder(appEnv.ApplicationBasePath)
+      var builder = new ConfigurationBuilder()
+          .SetBasePath(appEnv.ApplicationBasePath)
           .AddJsonFile("config.json")
           .AddJsonFile($"config.{env.EnvironmentName}.json", optional: true);
 
@@ -71,8 +72,7 @@ namespace AllReady
       ef.AddDbContext<AllReadyContext>();
 
       // Add CORS support
-      services.AddCors();
-      services.ConfigureCors(options =>
+      services.AddCors(options =>
       {
         options.AddPolicy("allReady",
             builder => builder.AllowAnyOrigin()
@@ -83,9 +83,12 @@ namespace AllReady
       });
 
       // Add Identity services to the services container.
-      services.AddIdentity<ApplicationUser, IdentityRole>()
-          .AddEntityFrameworkStores<AllReadyContext>()
-          .AddDefaultTokenProviders();
+      services.AddIdentity<ApplicationUser, IdentityRole>(config =>
+      {
+        config.Cookies.ApplicationCookie.AccessDeniedPath = new PathString("/Home/AccessDenied");
+      })
+      .AddEntityFrameworkStores<AllReadyContext>()
+      .AddDefaultTokenProviders();
 
       // Add Authorization rules for the app
       services.Configure<AuthorizationOptions>(options =>
@@ -93,42 +96,6 @@ namespace AllReady
         options.AddPolicy("TenantAdmin", new AuthorizationPolicyBuilder().RequireClaim("UserType", new string[] { "TenantAdmin", "SiteAdmin" }).Build());
         options.AddPolicy("SiteAdmin", new AuthorizationPolicyBuilder().RequireClaim("UserType", "SiteAdmin").Build());
       });
-
-      services.ConfigureCookieAuthentication(options =>
-       {
-         options.AccessDeniedPath = new PathString("/Home/AccessDenied");
-       });
-
-      // Configure the options for the authentication middleware.
-      // You can add options for Google, Twitter and other middleware as shown below.
-      // For more information see http://go.microsoft.com/fwlink/?LinkID=532715
-      if (Configuration["Authentication:Facebook:AppId"] != null)
-      {
-        services.Configure<FacebookAuthenticationOptions>(options =>
-        {
-          options.AppId = Configuration["Authentication:Facebook:AppId"];
-          options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-        });
-      }
-
-      //Enable Twitter Auth, only id key set
-      if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
-      {
-        services.Configure<TwitterAuthenticationOptions>(options =>
-        {
-          options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
-          options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
-        });
-      }
-
-      if (Configuration["Authentication:MicrosoftAccount:ClientId"] != null)
-      {
-        services.Configure<MicrosoftAccountAuthenticationOptions>(options =>
-        {
-          options.ClientId = Configuration["Authentication:MicrosoftAccount:ClientId"];
-          options.ClientSecret = Configuration["Authentication:MicrosoftAccount:ClientSecret"];
-        });
-      }
 
       // Add MVC services to the services container.
       services.AddMvc();
@@ -194,14 +161,14 @@ namespace AllReady
       if (env.IsDevelopment())
       {
         app.UseBrowserLink();
-        app.UseErrorPage();
+        app.UseDeveloperExceptionPage();
         app.UseDatabaseErrorPage();
       }
       else
       {
         // Add Error handling middleware which catches all application specific errors and
         // sends the request to the following path or controller action.
-        app.UseErrorHandler("/Home/Error");
+        app.UseExceptionHandler("/Home/Error");
       }
 
       // Track data about exceptions from the application. Should be configured after all error handling middleware in the request pipeline.
@@ -217,19 +184,32 @@ namespace AllReady
       // For more information see http://go.microsoft.com/fwlink/?LinkID=532715
       if (Configuration["Authentication:Facebook:AppId"] != null)
       {
-        app.UseFacebookAuthentication();
+        app.UseFacebookAuthentication(options => 
+        {
+          options.AppId = Configuration["Authentication:Facebook:AppId"];
+          options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+        });
       }
       // app.UseGoogleAuthentication();
 
       if (Configuration["Authentication:MicrosoftAccount:ClientId"] != null)
       {
-        app.UseMicrosoftAccountAuthentication();
+        app.UseMicrosoftAccountAuthentication(options =>
+        {
+          options.ClientId = Configuration["Authentication:MicrosoftAccount:ClientId"];
+          options.ClientSecret = Configuration["Authentication:MicrosoftAccount:ClientSecret"];
+        });
       }
 
       if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
       {
-        app.UseTwitterAuthentication();
+        app.UseTwitterAuthentication(options =>
+        {
+          options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
+          options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
+        });
       }
+
       // Add MVC to the request pipeline.
       app.UseMvc(routes =>
       {
@@ -246,7 +226,7 @@ namespace AllReady
       // for production applications, this should either be set to false or deleted.
       if (Configuration["Data:InsertSampleData"] == "true")
       {
-        SampleData.InsertTestData(serviceProvider, dbContext).Wait();
+        SampleData.InsertTestData(serviceProvider, dbContext);
       }
       if (Configuration["Data:InsertTestUsers"] == "true")
       {
