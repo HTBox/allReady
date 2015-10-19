@@ -12,6 +12,9 @@ using AllReady.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Features.Notifications;
+using MediatR;
+using Microsoft.Framework.Configuration;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -22,12 +25,14 @@ namespace AllReady.Areas.Admin.Controllers
         private readonly IAllReadyDataAccess _dataAccess;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IImageService _imageService;
+        private readonly IMediator _bus;
 
-        public ActivityController(IAllReadyDataAccess dataAccess, UserManager<ApplicationUser> userManager, IImageService imageService)
+        public ActivityController(IAllReadyDataAccess dataAccess, UserManager<ApplicationUser> userManager, IImageService imageService, IMediator bus)
         {
             _dataAccess = dataAccess;
             _userManager = userManager;
             _imageService = imageService;
+            _bus = bus;
         }
 
         ViewResult AddDropdownData(ViewResult view)
@@ -273,6 +278,34 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 await _dataAccess.UpdateTaskAsync(item);
             }
+
+            // send all notifications to the queue
+            var smsRecipients = new List<string>();
+            var emailRecipients = new List<string>();
+
+            foreach (var allReadyTask in updates)
+            {
+                // get all confirmed contact points for the broadcast
+                smsRecipients.AddRange(allReadyTask.AssignedVolunteers.Where(u => u.User.PhoneNumberConfirmed).Select(v => v.User.PhoneNumber));
+                emailRecipients.AddRange(allReadyTask.AssignedVolunteers.Where(u => u.User.EmailConfirmed).Select(v => v.User.Email));
+            }
+
+            var command = new NotifyVolunteersCommand
+            {
+                // todo: what information do we add about the task?
+                // todo: should we use a template from the email service provider?
+                // todo: what about non-English volunteers?
+                ViewModel = new NotifyVolunteersViewModel
+                {
+                    SmsMessage = "You've been assigned a task from AllReady.",
+                    SmsRecipients = smsRecipients,
+                    EmailMessage = "You've been assigned a task from AllReady.",
+                    EmailRecipients = emailRecipients
+                }
+            };
+
+            _bus.Send(command);
+
             return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Details", id = id });
         }
 

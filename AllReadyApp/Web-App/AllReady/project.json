@@ -34,6 +34,9 @@
     "Microsoft.AspNet.Mvc.WebApiCompatShim": "6.0.0-beta7",
     "ZXing.Net": "0.14.0.1",
     "WindowsAzure.Storage": "4.4.1-preview",
+    "Autofac": "4.0.0-beta6-110",
+    "Autofac.Framework.DependencyInjection": "4.0.0-beta6-110",
+    "MediatR": "2.0.2",
     "Sendgrid": "6.1.0",
     "Twilio": "4.0.3"
   },

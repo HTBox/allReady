@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNet.Authentication.Facebook;
 using Microsoft.AspNet.Authentication.MicrosoftAccount;
 using Microsoft.AspNet.Authentication.Twitter;
@@ -14,6 +15,10 @@ using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using AllReady.Models;
 using AllReady.Services;
+using Autofac;
+using Autofac.Features.Variance;
+using Autofac.Framework.DependencyInjection;
+using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.Dnx.Runtime;
 
@@ -46,7 +51,7 @@ namespace AllReady
     public IConfiguration Configuration { get; set; }
 
     // This method gets called by the runtime. Use this method to add services to the container.
-    public void ConfigureServices(IServiceCollection services)
+    public IServiceProvider ConfigureServices(IServiceCollection services)
     {
       // Add Application Insights data collection services to the services container.
       services.AddApplicationInsightsTelemetry(Configuration);
@@ -128,17 +133,49 @@ namespace AllReady
       // Add MVC services to the services container.
       services.AddMvc();
 
-      // Register application services.
-      services.AddSingleton((x) => Configuration);
-      services.AddTransient<IEmailSender, AuthMessageSender>();
-      services.AddTransient<ISmsSender, AuthMessageSender>();
-      services.AddSingleton<IClosestLocations, SqlClosestLocations>();
-      services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
-      services.AddSingleton<IImageService, ImageService>();
-      //services.AddSingleton<GeoService>();
+      // configure IoC support
+      var container = CreateIoCContainer(services);
+      return container.Resolve<IServiceProvider>();
+
     }
 
-    // Configure is called after ConfigureServices is called.
+      private IContainer CreateIoCContainer(IServiceCollection services)
+      {
+          // todo: move these to a proper autofac module
+          // Register application services.
+          services.AddSingleton((x) => Configuration);
+          services.AddTransient<IEmailSender, AuthMessageSender>();
+          services.AddTransient<ISmsSender, AuthMessageSender>();
+          services.AddTransient<IQueueStorageService, QueueStorageService>();
+          services.AddSingleton<IClosestLocations, SqlClosestLocations>();
+          services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
+          services.AddSingleton<IImageService, ImageService>();
+          //services.AddSingleton<GeoService>();
+
+          var containerBuilder = new ContainerBuilder();
+
+          containerBuilder.RegisterSource(new ContravariantRegistrationSource());
+            containerBuilder.RegisterAssemblyTypes(typeof(IMediator).Assembly).AsImplementedInterfaces();
+            containerBuilder.RegisterAssemblyTypes(typeof(Startup).Assembly).AsImplementedInterfaces();
+            containerBuilder.Register<SingleInstanceFactory>(ctx =>
+          {
+              var c = ctx.Resolve<IComponentContext>();
+              return t => c.Resolve(t);
+          });
+          containerBuilder.Register<MultiInstanceFactory>(ctx =>
+          {
+              var c = ctx.Resolve<IComponentContext>();
+              return t => (IEnumerable<object>) c.Resolve(typeof (IEnumerable<>).MakeGenericType(t));
+          });
+
+          //Populate the container with services that were previously registered
+          containerBuilder.Populate(services);
+
+          var container = containerBuilder.Build();
+          return container;
+      }
+
+      // Configure is called after ConfigureServices is called.
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, AllReadyContext dbContext, IServiceProvider serviceProvider)
     {
 
@@ -209,7 +246,7 @@ namespace AllReady
       // for production applications, this should either be set to false or deleted.
       if (Configuration["Data:InsertSampleData"] == "true")
       {
-        SampleData.InsertTestData(serviceProvider, dbContext);
+        SampleData.InsertTestData(serviceProvider, dbContext).Wait();
       }
       if (Configuration["Data:InsertTestUsers"] == "true")
       {
