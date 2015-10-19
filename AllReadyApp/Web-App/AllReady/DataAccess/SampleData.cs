@@ -312,16 +312,16 @@ namespace AllReady.Models
             #endregion
             
             #region Users for Activities
-            var username1 = $"{configuration["DefaultUsername"]}1";
-            var username2 = $"{configuration["DefaultUsername"]}2";
-            var username3 = $"{configuration["DefaultUsername"]}3";
+            var username1 = $"{configuration["DefaultUsername"]}1.com";
+            var username2 = $"{configuration["DefaultUsername"]}2.com";
+            var username3 = $"{configuration["DefaultUsername"]}3.com";
 
             var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true };
-            await userManager.CreateAsync(user1, configuration["DefaultAdminPassword"]);
+            userManager.CreateAsync(user1, configuration["DefaultAdminPassword"]).Wait();
             var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true };
-            await userManager.CreateAsync(user2, configuration["DefaultAdminPassword"]);
+            userManager.CreateAsync(user2, configuration["DefaultAdminPassword"]).Wait();
             var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true };
-            await userManager.CreateAsync(user3, configuration["DefaultAdminPassword"]);
+            userManager.CreateAsync(user3, configuration["DefaultAdminPassword"]).Wait();
             #endregion
 
             #region ActvitySignups
@@ -429,19 +429,19 @@ namespace AllReady.Models
             {
                 user = new ApplicationUser { UserName = configuration["DefaultAdminUsername"], Email = configuration["DefaultAdminUsername"] };
                 user.EmailConfirmed = true;
-                await userManager.CreateAsync(user, configuration["DefaultAdminPassword"]);
-                await userManager.AddClaimAsync(user, new Claim("UserType", "SiteAdmin"));
+                userManager.CreateAsync(user, configuration["DefaultAdminPassword"]).Wait();
+                userManager.AddClaimAsync(user, new Claim("UserType", "SiteAdmin")).Wait();
 
-                user = new ApplicationUser { UserName = configuration["DefaultTenantUsername"], Email = configuration["DefaultTenantUsername"] };
+                var user2 = new ApplicationUser { UserName = configuration["DefaultTenantUsername"], Email = configuration["DefaultTenantUsername"] };
                 // For the sake of being able to exercise Tenant-specific stuff, we need to associate a tenant.
-                user.EmailConfirmed = true;
-                user.AssociatedTenant = dbContext.Tenants.First();
-                await userManager.CreateAsync(user, configuration["DefaultAdminPassword"]);
-                await userManager.AddClaimAsync(user, new Claim("UserType", "TenantAdmin"));
+                user2.EmailConfirmed = true;
+                user2.AssociatedTenant = dbContext.Tenants.First();
+                userManager.CreateAsync(user2, configuration["DefaultAdminPassword"]).Wait();
+                userManager.AddClaimAsync(user2, new Claim("UserType", "TenantAdmin")).Wait();
 
-                user = new ApplicationUser { UserName = configuration["DefaultUsername"], Email = configuration["DefaultUsername"] };
-                user.EmailConfirmed = true;
-                await userManager.CreateAsync(user, configuration["DefaultAdminPassword"]);
+                var user3 = new ApplicationUser { UserName = configuration["DefaultUsername"], Email = configuration["DefaultUsername"] };
+                user3.EmailConfirmed = true;
+                userManager.CreateAsync(user3, configuration["DefaultAdminPassword"]).Wait();
             }
         }
 
