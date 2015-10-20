@@ -39,6 +39,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             view.ViewData["Campaigns"] = _dataAccess.Campaigns.Select(c => new SelectListItem() { Value = c.Id.ToString(), Text = c.Name }).ToList();
             view.ViewData["Tenants"] = _dataAccess.Tenants.Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = t.Name }).ToList();
+            //view.ViewData["Skills"] = _dataAccess.Tenants.Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = t.Name }).ToList();
             return view;
         }
 
@@ -135,7 +136,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Activity/Edit/5
-        public async Task<IActionResult> Edit(System.Int32 id)
+        public async Task<IActionResult> Edit(int id)
         {
             var currentUser = await _userManager.GetCurrentUser(HttpContext);
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))

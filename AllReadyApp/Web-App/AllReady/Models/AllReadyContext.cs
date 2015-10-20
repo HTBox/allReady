@@ -54,6 +54,7 @@ namespace AllReady.Models
     public DbSet<AllReadyTask> Tasks { get; set; }
     public DbSet<TaskUsers> TaskSignup { get; set; }
     public DbSet<Resource> Resources { get; set; }
+    public DbSet<Skill> Skills { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -92,6 +93,7 @@ namespace AllReady.Models
       builder.HasOne(t => t.Activity);
       builder.HasOne(t => t.Tenant);
       builder.HasMany(t => t.AssignedVolunteers);
+      builder.HasMany(t => t.RequiredSkills);
     }
 
     private void Map(EntityTypeBuilder<ActivitySignup> builder)
