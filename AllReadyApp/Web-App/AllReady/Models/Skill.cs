@@ -1,9 +1,18 @@
-﻿namespace AllReady.Models
-{
-    public class Skill : Capability
-    {
-        //TODO: fill in skill feature functionality
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-        //Hierarchy, etc.
+namespace AllReady.Models
+{
+    public class Skill
+    {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public Skill ParentSkill { get; set; }
+
+        public List<Skill> ChildSkills { get; set; }
     }
 }

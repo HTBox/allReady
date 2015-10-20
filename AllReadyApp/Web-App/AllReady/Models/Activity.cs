@@ -42,7 +42,5 @@ namespace AllReady.Models
     public string ImageUrl { get; set; }
 
         public List<Skill> RequiredSkills { get; set; }
-
-        public List<Resource> RequiredResources { get; set; }
   }
 }

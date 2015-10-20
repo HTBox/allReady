@@ -14,5 +14,7 @@ namespace AllReady.Models
   public class ApplicationUser : IdentityUser
   {
     public Tenant AssociatedTenant { get; set; }
+        public List<Skill> AssociatedSkills { get; set; }
+
   }
 }

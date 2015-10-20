@@ -15,5 +15,6 @@ namespace AllReady.Models
     public DateTime? StartDateTimeUtc { get; set; }
     public DateTime? EndDateTimeUtc { get; set; }
     public List<TaskUsers> AssignedVolunteers { get; set; }
+        public List<Skill> RequiredSkills { get; set; }
   }
 }
