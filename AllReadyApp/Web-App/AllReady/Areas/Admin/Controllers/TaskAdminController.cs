@@ -61,7 +61,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
             else
             {
-                var currentUser = await _userManager.GetCurrentUser(HttpContext);
+                var currentUser = await _userManager.GetCurrentUser(Context);
                 if (currentUser == null)
                 {
                     return new HttpUnauthorizedResult();

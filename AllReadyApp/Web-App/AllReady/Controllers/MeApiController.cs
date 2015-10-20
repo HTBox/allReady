@@ -12,7 +12,7 @@ namespace AllReady.Controllers
         [Route("api/me")]
         public string Index()
         {
-            return Request.Cookies[".AspNet.ApplicationCookie"];
+            return Request.Cookies.Get(".AspNet.ApplicationCookie");
         }
     }
 }

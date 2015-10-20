@@ -28,8 +28,8 @@ namespace AllReady.Controllers
 
         private async Task<bool> HasTaskEditPermissions(AllReadyTask task)
         {
-            ApplicationUser currentUser = await _userManager.GetCurrentUser(HttpContext);
-            IList<Claim> claims = await _userManager.GetClaimsForCurrentUser(HttpContext);
+            ApplicationUser currentUser = await _userManager.GetCurrentUser(Context);
+            IList<Claim> claims = await _userManager.GetClaimsForCurrentUser(Context);
             if (claims.IsUserType(UserType.SiteAdmin))
             {
                 return true;
@@ -62,7 +62,7 @@ namespace AllReady.Controllers
             }
             else
             {
-                ApplicationUser currentUser = await _userManager.GetCurrentUser(HttpContext);
+                ApplicationUser currentUser = await _userManager.GetCurrentUser(Context);
                 if (task.AssignedVolunteers != null && task.AssignedVolunteers.FirstOrDefault(x => x.User.Id == currentUser.Id) != null)
                 {
                     return true;
@@ -150,7 +150,7 @@ namespace AllReady.Controllers
                 HttpNotFound();
             }
 
-            ApplicationUser user = await _userManager.GetCurrentUser(HttpContext);
+            ApplicationUser user = await _userManager.GetCurrentUser(Context);
 
             if (task.AssignedVolunteers == null)
             {

@@ -47,7 +47,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Campaign campaign)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
+            var currentUser = await _userManager.GetCurrentUser(Context);
             if (currentUser == null)
             {
                 return new HttpUnauthorizedResult();
@@ -72,7 +72,7 @@ namespace AllReady.Controllers
         // GET: Campaign/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
+            var currentUser = await _userManager.GetCurrentUser(Context);
             if (currentUser == null)
             {
                 return new HttpUnauthorizedResult();
@@ -101,7 +101,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Campaign campaign)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
+            var currentUser = await _userManager.GetCurrentUser(Context);
             if (currentUser == null)
             {
                 return new HttpUnauthorizedResult();
@@ -128,7 +128,7 @@ namespace AllReady.Controllers
                 return new HttpStatusCodeResult(404);
             }
 
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
+            var currentUser = await _userManager.GetCurrentUser(Context);
             if (currentUser == null)
             {
                 return new HttpUnauthorizedResult();
@@ -153,7 +153,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
+            var currentUser = await _userManager.GetCurrentUser(Context);
             if (currentUser == null || !await UserIsTenantAdminOfCampaign(currentUser, id))
             {
                 return new HttpUnauthorizedResult();

@@ -59,59 +59,59 @@ namespace AllReady.Models
       modelBuilder.UseSqlServerIdentityColumns();
 
       modelBuilder.Entity<Campaign>()
-        .HasOne<Tenant>(c => c.ManagingTenant);
+          .Reference<Tenant>(c => c.ManagingTenant);
 
       modelBuilder.Entity<Campaign>()
-        .HasMany<Activity>(c => c.Activities);
+          .Collection<Activity>(c => c.Activities);
 
       modelBuilder.Entity<CampaignSponsors>()
-          .HasOne<Campaign>(s => s.Campaign)
-          .WithMany(c => c.ParticipatingTenants);
+          .Reference<Campaign>(s => s.Campaign)
+          .InverseCollection(c => c.ParticipatingTenants);
 
       modelBuilder.Entity<CampaignSponsors>()
-          .HasOne<Tenant>(s => s.Tenant);
+          .Reference<Tenant>(s => s.Tenant);
 
       modelBuilder.Entity<Activity>()
-          .HasOne(a => a.Tenant);
+          .Reference(a => a.Tenant);
 
       modelBuilder.Entity<Activity>()
-          .HasOne(a => a.Campaign);
+          .Reference(a => a.Campaign);
 
       modelBuilder.Entity<Activity>()
-          .HasOne(a => a.Location);
+          .Reference(a => a.Location);
 
       modelBuilder.Entity<Activity>()
-          .HasMany<AllReadyTask>(a => a.Tasks);
+          .Collection<AllReadyTask>(a => a.Tasks);
 
       modelBuilder.Entity<Activity>()
-          .HasMany<ActivitySignup>(a => a.UsersSignedUp);
+          .Collection<ActivitySignup>(a => a.UsersSignedUp);
 
       modelBuilder.Entity<ActivitySignup>()
-          .HasOne<ApplicationUser>(t => t.User);
+          .Reference<ApplicationUser>(t => t.User);
 
       modelBuilder.Entity<ActivitySignup>()
-          .HasOne<Activity>(t => t.Activity);
+          .Reference<Activity>(t => t.Activity);
 
       modelBuilder.Entity<AllReadyTask>()
-          .HasOne(t => t.Activity);
+          .Reference(t => t.Activity);
 
       modelBuilder.Entity<AllReadyTask>()
-          .HasOne(t => t.Tenant);
+          .Reference(t => t.Tenant);
 
       modelBuilder.Entity<AllReadyTask>()
-          .HasMany(t => t.AssignedVolunteers);
+          .Collection(t => t.AssignedVolunteers);
 
       modelBuilder.Entity<TaskUsers>()
-          .HasOne(u => u.Task);
+          .Reference(u => u.Task);
 
       modelBuilder.Entity<Location>()
-          .HasOne(l => l.PostalCode);
+          .Reference(l => l.PostalCode);
 
       modelBuilder.Entity<PostalCodeGeo>()
-          .HasKey(k => k.PostalCode);
+          .Key(k => k.PostalCode);
 
       modelBuilder.Entity<Resource>()
-          .HasKey(k => k.Id);
+          .Key(k => k.Id);
     }
 
   }

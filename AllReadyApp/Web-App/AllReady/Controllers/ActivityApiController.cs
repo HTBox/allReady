@@ -229,7 +229,7 @@ namespace AllReady.Controllers
 
         private async Task<ApplicationUser> GetCurrentUserAsync()
         {
-            return await _userManager.FindByIdAsync(HttpContext.User.GetUserId());
+            return await _userManager.FindByIdAsync(Context.User.GetUserId());
         }
 
     }

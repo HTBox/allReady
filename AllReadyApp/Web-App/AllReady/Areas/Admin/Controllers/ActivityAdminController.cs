@@ -102,7 +102,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Activity/Create
         public async Task<IActionResult> Create()
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
+            var currentUser = await _userManager.GetCurrentUser(Context);
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {
                 return new HttpUnauthorizedResult();
@@ -115,7 +115,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Activity activity)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
+            var currentUser = await _userManager.GetCurrentUser(Context);
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {
                 return new HttpUnauthorizedResult();
@@ -137,7 +137,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Activity/Edit/5
         public async Task<IActionResult> Edit(System.Int32 id)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
+            var currentUser = await _userManager.GetCurrentUser(Context);
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {
                 return new HttpUnauthorizedResult();
@@ -163,7 +163,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Activity activity)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
+            var currentUser = await _userManager.GetCurrentUser(Context);
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {
                 return new HttpUnauthorizedResult();
@@ -182,7 +182,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ActionName("Delete")]
         public async Task<IActionResult> Delete(System.Int32? id)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
+            var currentUser = await _userManager.GetCurrentUser(Context);
 
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {
@@ -212,7 +212,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(System.Int32 id)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
+            var currentUser = await _userManager.GetCurrentUser(Context);
 
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {
@@ -232,7 +232,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Assign(int id)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
+            var currentUser = await _userManager.GetCurrentUser(Context);
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {
                 return new HttpUnauthorizedResult();
@@ -260,7 +260,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Assign(int id, List<TaskViewModel> tasks)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
+            var currentUser = await _userManager.GetCurrentUser(Context);
 
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {

@@ -67,7 +67,7 @@ namespace AllReady.Areas.SiteAdmin.Controllers
                 if(result.Succeeded)
                 {
                     ViewData["result"] = "Successfully made user a tenant admin";
-                    var callbackUrl = Url.Action("Login", "Admin", new { Email = model.Email }, protocol: HttpContext.Request.Scheme);
+                    var callbackUrl = Url.Action("Login", "Admin", new { Email = model.Email }, protocol: Context.Request.Scheme);
                     await _emailSender.SendEmailAsync(model.Email, "Account Approval", "Your account has been approved by an administrator. Please <a href=" + callbackUrl + ">Click here to Log in</a>");
                     return View();
                 }
