@@ -28,7 +28,8 @@ namespace AllReady.UnitTests
                     .AddInMemoryDatabase()
                     .AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase());
 
-                var builder = new ConfigurationBuilder(Directory.GetCurrentDirectory())
+                var builder = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("testConfig.json");
                 IConfiguration configuration = builder.Build();
                 services.AddSingleton(x => configuration);
