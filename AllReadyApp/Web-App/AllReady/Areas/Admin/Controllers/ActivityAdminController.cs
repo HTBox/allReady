@@ -172,6 +172,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+                activity.RequiredSkills.ForEach(acsk => acsk.ActivityId = activity.Id);
                 await _dataAccess.UpdateActivity(activity);
                 return RedirectToAction("Index");
             }
