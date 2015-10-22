@@ -181,10 +181,10 @@ The URL of the AllReady web site is set in the **domainUrl** variable in the /ww
 Once you have set the required settings either in the config.json file or in the secrets manager, you can run and locally debug the projects. If you have not yet created a SQL Database in Azure, you should use either the in-memory data storage option or use `Data:DefaultConnection:LocalConnectionString` as the **connectionStringPath** value in Startup.cs.
 
 Currently there are hardcoded user accounts for limited testing (this will of course be changed soon)  For now:
-"DefaultAdminUsername": "Administrator@test.com", 
+"DefaultAdminUsername": "Administrator@example.com", 
 "DefaultAdminPassword": "YouShouldChangeThisPassword1!", 
-"DefaultUsername": "User@test.com", 
-"DefaultTenantUsername": "tenant@test.com", 
+"DefaultUsername": "User@example.com", 
+"DefaultTenantUsername": "tenant@example.com", 
 
 ###Deploy to Azure
 
