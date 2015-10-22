@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Data.Entity.Migrations;
-using Microsoft.Data.Entity.SqlServer.Metadata;
+using Microsoft.Data.Entity.Metadata;
 
 namespace AllReady.Migrations
 {
-    public partial class InitialDropBeta7 : Migration
+    public partial class InitialCreateBeta8 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,9 +13,9 @@ namespace AllReady.Migrations
                 name: "PostalCodeGeo",
                 columns: table => new
                 {
-                    PostalCode = table.Column<string>(isNullable: false),
-                    City = table.Column<string>(isNullable: true),
-                    State = table.Column<string>(isNullable: true)
+                    PostalCode = table.Column<string>(nullable: false),
+                    City = table.Column<string>(nullable: true),
+                    State = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -25,15 +25,15 @@ namespace AllReady.Migrations
                 name: "Resource",
                 columns: table => new
                 {
-                    Id = table.Column<int>(isNullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerIdentityStrategy.IdentityColumn),
-                    CategoryTag = table.Column<string>(isNullable: true),
-                    Description = table.Column<string>(isNullable: true),
-                    MediaUrl = table.Column<string>(isNullable: true),
-                    Name = table.Column<string>(isNullable: true),
-                    PublishDateBegin = table.Column<DateTime>(isNullable: false),
-                    PublishDateEnd = table.Column<DateTime>(isNullable: false),
-                    ResourceUrl = table.Column<string>(isNullable: true)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    CategoryTag = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    MediaUrl = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    PublishDateBegin = table.Column<DateTime>(nullable: false),
+                    PublishDateEnd = table.Column<DateTime>(nullable: false),
+                    ResourceUrl = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -43,11 +43,11 @@ namespace AllReady.Migrations
                 name: "Tenant",
                 columns: table => new
                 {
-                    Id = table.Column<int>(isNullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerIdentityStrategy.IdentityColumn),
-                    LogoUrl = table.Column<string>(isNullable: true),
-                    Name = table.Column<string>(isNullable: true),
-                    WebUrl = table.Column<string>(isNullable: true)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    LogoUrl = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    WebUrl = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -57,10 +57,10 @@ namespace AllReady.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(isNullable: false),
-                    ConcurrencyStamp = table.Column<string>(isNullable: true),
-                    Name = table.Column<string>(isNullable: true),
-                    NormalizedName = table.Column<string>(isNullable: true)
+                    Id = table.Column<string>(nullable: false),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    NormalizedName = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -70,16 +70,16 @@ namespace AllReady.Migrations
                 name: "Location",
                 columns: table => new
                 {
-                    Id = table.Column<int>(isNullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerIdentityStrategy.IdentityColumn),
-                    Address1 = table.Column<string>(isNullable: true),
-                    Address2 = table.Column<string>(isNullable: true),
-                    City = table.Column<string>(isNullable: true),
-                    Country = table.Column<string>(isNullable: true),
-                    Name = table.Column<string>(isNullable: true),
-                    PhoneNumber = table.Column<string>(isNullable: true),
-                    PostalCodePostalCode = table.Column<string>(isNullable: true),
-                    State = table.Column<string>(isNullable: true)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Address1 = table.Column<string>(nullable: true),
+                    Address2 = table.Column<string>(nullable: true),
+                    City = table.Column<string>(nullable: true),
+                    Country = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true),
+                    PostalCodePostalCode = table.Column<string>(nullable: true),
+                    State = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -94,22 +94,22 @@ namespace AllReady.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(isNullable: false),
-                    AccessFailedCount = table.Column<int>(isNullable: false),
-                    AssociatedTenantId = table.Column<int>(isNullable: true),
-                    ConcurrencyStamp = table.Column<string>(isNullable: true),
-                    Email = table.Column<string>(isNullable: true),
-                    EmailConfirmed = table.Column<bool>(isNullable: false),
-                    LockoutEnabled = table.Column<bool>(isNullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(isNullable: true),
-                    NormalizedEmail = table.Column<string>(isNullable: true),
-                    NormalizedUserName = table.Column<string>(isNullable: true),
-                    PasswordHash = table.Column<string>(isNullable: true),
-                    PhoneNumber = table.Column<string>(isNullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(isNullable: false),
-                    SecurityStamp = table.Column<string>(isNullable: true),
-                    TwoFactorEnabled = table.Column<bool>(isNullable: false),
-                    UserName = table.Column<string>(isNullable: true)
+                    Id = table.Column<string>(nullable: false),
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    AssociatedTenantId = table.Column<int>(nullable: true),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: true),
+                    EmailConfirmed = table.Column<bool>(nullable: false),
+                    LockoutEnabled = table.Column<bool>(nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
+                    NormalizedEmail = table.Column<string>(nullable: true),
+                    NormalizedUserName = table.Column<string>(nullable: true),
+                    PasswordHash = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
+                    SecurityStamp = table.Column<string>(nullable: true),
+                    TwoFactorEnabled = table.Column<bool>(nullable: false),
+                    UserName = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -124,11 +124,11 @@ namespace AllReady.Migrations
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(isNullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerIdentityStrategy.IdentityColumn),
-                    ClaimType = table.Column<string>(isNullable: true),
-                    ClaimValue = table.Column<string>(isNullable: true),
-                    RoleId = table.Column<string>(isNullable: true)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ClaimType = table.Column<string>(nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true),
+                    RoleId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -143,15 +143,15 @@ namespace AllReady.Migrations
                 name: "Campaign",
                 columns: table => new
                 {
-                    Id = table.Column<int>(isNullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerIdentityStrategy.IdentityColumn),
-                    Description = table.Column<string>(isNullable: true),
-                    EndDateTimeUtc = table.Column<DateTime>(isNullable: false),
-                    ImageUrl = table.Column<string>(isNullable: true),
-                    ManagingTenantId = table.Column<int>(isNullable: false),
-                    Name = table.Column<string>(isNullable: false),
-                    OrganizerId = table.Column<string>(isNullable: true),
-                    StartDateTimeUtc = table.Column<DateTime>(isNullable: false)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Description = table.Column<string>(nullable: true),
+                    EndDateTimeUtc = table.Column<DateTime>(nullable: false),
+                    ImageUrl = table.Column<string>(nullable: true),
+                    ManagingTenantId = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    OrganizerId = table.Column<string>(nullable: true),
+                    StartDateTimeUtc = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -171,11 +171,11 @@ namespace AllReady.Migrations
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(isNullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerIdentityStrategy.IdentityColumn),
-                    ClaimType = table.Column<string>(isNullable: true),
-                    ClaimValue = table.Column<string>(isNullable: true),
-                    UserId = table.Column<string>(isNullable: true)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ClaimType = table.Column<string>(nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -190,10 +190,10 @@ namespace AllReady.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(isNullable: false),
-                    ProviderKey = table.Column<string>(isNullable: false),
-                    ProviderDisplayName = table.Column<string>(isNullable: true),
-                    UserId = table.Column<string>(isNullable: true)
+                    LoginProvider = table.Column<string>(nullable: false),
+                    ProviderKey = table.Column<string>(nullable: false),
+                    ProviderDisplayName = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -208,8 +208,8 @@ namespace AllReady.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(isNullable: false),
-                    RoleId = table.Column<string>(isNullable: false)
+                    UserId = table.Column<string>(nullable: false),
+                    RoleId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -229,17 +229,17 @@ namespace AllReady.Migrations
                 name: "Activity",
                 columns: table => new
                 {
-                    Id = table.Column<int>(isNullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerIdentityStrategy.IdentityColumn),
-                    CampaignId = table.Column<int>(isNullable: false),
-                    Description = table.Column<string>(isNullable: true),
-                    EndDateTimeUtc = table.Column<DateTime>(isNullable: false),
-                    ImageUrl = table.Column<string>(isNullable: true),
-                    LocationId = table.Column<int>(isNullable: true),
-                    Name = table.Column<string>(isNullable: true),
-                    OrganizerId = table.Column<string>(isNullable: true),
-                    StartDateTimeUtc = table.Column<DateTime>(isNullable: false),
-                    TenantId = table.Column<int>(isNullable: false)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    CampaignId = table.Column<int>(nullable: false),
+                    Description = table.Column<string>(nullable: true),
+                    EndDateTimeUtc = table.Column<DateTime>(nullable: false),
+                    ImageUrl = table.Column<string>(nullable: true),
+                    LocationId = table.Column<int>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    OrganizerId = table.Column<string>(nullable: true),
+                    StartDateTimeUtc = table.Column<DateTime>(nullable: false),
+                    TenantId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -269,10 +269,10 @@ namespace AllReady.Migrations
                 name: "CampaignSponsors",
                 columns: table => new
                 {
-                    Id = table.Column<int>(isNullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerIdentityStrategy.IdentityColumn),
-                    CampaignId = table.Column<int>(isNullable: true),
-                    TenantId = table.Column<int>(isNullable: true)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    CampaignId = table.Column<int>(nullable: true),
+                    TenantId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -292,12 +292,12 @@ namespace AllReady.Migrations
                 name: "ActivitySignup",
                 columns: table => new
                 {
-                    Id = table.Column<int>(isNullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerIdentityStrategy.IdentityColumn),
-                    ActivityId = table.Column<int>(isNullable: true),
-                    CheckinDateTime = table.Column<DateTime>(isNullable: true),
-                    SignupDateTime = table.Column<DateTime>(isNullable: false),
-                    UserId = table.Column<string>(isNullable: true)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ActivityId = table.Column<int>(nullable: true),
+                    CheckinDateTime = table.Column<DateTime>(nullable: true),
+                    SignupDateTime = table.Column<DateTime>(nullable: false),
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -317,14 +317,14 @@ namespace AllReady.Migrations
                 name: "AllReadyTask",
                 columns: table => new
                 {
-                    Id = table.Column<int>(isNullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerIdentityStrategy.IdentityColumn),
-                    ActivityId = table.Column<int>(isNullable: true),
-                    Description = table.Column<string>(isNullable: true),
-                    EndDateTimeUtc = table.Column<DateTime>(isNullable: true),
-                    Name = table.Column<string>(isNullable: true),
-                    StartDateTimeUtc = table.Column<DateTime>(isNullable: true),
-                    TenantId = table.Column<int>(isNullable: true)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ActivityId = table.Column<int>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    EndDateTimeUtc = table.Column<DateTime>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    StartDateTimeUtc = table.Column<DateTime>(nullable: true),
+                    TenantId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -344,13 +344,13 @@ namespace AllReady.Migrations
                 name: "TaskUsers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(isNullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerIdentityStrategy.IdentityColumn),
-                    Status = table.Column<string>(isNullable: true),
-                    StatusDateTimeUtc = table.Column<DateTime>(isNullable: false),
-                    StatusDescription = table.Column<string>(isNullable: true),
-                    TaskId = table.Column<int>(isNullable: true),
-                    UserId = table.Column<string>(isNullable: true)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Status = table.Column<string>(nullable: true),
+                    StatusDateTimeUtc = table.Column<DateTime>(nullable: false),
+                    StatusDescription = table.Column<string>(nullable: true),
+                    TaskId = table.Column<int>(nullable: true),
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

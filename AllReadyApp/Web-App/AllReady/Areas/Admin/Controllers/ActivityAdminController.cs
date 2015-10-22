@@ -12,6 +12,9 @@ using AllReady.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Features.Notifications;
+using MediatR;
+using Microsoft.Framework.Configuration;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -22,12 +25,14 @@ namespace AllReady.Areas.Admin.Controllers
         private readonly IAllReadyDataAccess _dataAccess;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IImageService _imageService;
+        private readonly IMediator _bus;
 
-        public ActivityController(IAllReadyDataAccess dataAccess, UserManager<ApplicationUser> userManager, IImageService imageService)
+        public ActivityController(IAllReadyDataAccess dataAccess, UserManager<ApplicationUser> userManager, IImageService imageService, IMediator bus)
         {
             _dataAccess = dataAccess;
             _userManager = userManager;
             _imageService = imageService;
+            _bus = bus;
         }
 
         ViewResult AddDropdownData(ViewResult view)
@@ -97,7 +102,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Activity/Create
         public async Task<IActionResult> Create()
         {
-            var currentUser = await _userManager.GetCurrentUser(Context);
+            var currentUser = await _userManager.GetCurrentUser(HttpContext);
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {
                 return new HttpUnauthorizedResult();
@@ -110,7 +115,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Activity activity)
         {
-            var currentUser = await _userManager.GetCurrentUser(Context);
+            var currentUser = await _userManager.GetCurrentUser(HttpContext);
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {
                 return new HttpUnauthorizedResult();
@@ -132,7 +137,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Activity/Edit/5
         public async Task<IActionResult> Edit(System.Int32 id)
         {
-            var currentUser = await _userManager.GetCurrentUser(Context);
+            var currentUser = await _userManager.GetCurrentUser(HttpContext);
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {
                 return new HttpUnauthorizedResult();
@@ -158,7 +163,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Activity activity)
         {
-            var currentUser = await _userManager.GetCurrentUser(Context);
+            var currentUser = await _userManager.GetCurrentUser(HttpContext);
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {
                 return new HttpUnauthorizedResult();
@@ -177,7 +182,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ActionName("Delete")]
         public async Task<IActionResult> Delete(System.Int32? id)
         {
-            var currentUser = await _userManager.GetCurrentUser(Context);
+            var currentUser = await _userManager.GetCurrentUser(HttpContext);
 
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {
@@ -207,7 +212,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(System.Int32 id)
         {
-            var currentUser = await _userManager.GetCurrentUser(Context);
+            var currentUser = await _userManager.GetCurrentUser(HttpContext);
 
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {
@@ -227,7 +232,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Assign(int id)
         {
-            var currentUser = await _userManager.GetCurrentUser(Context);
+            var currentUser = await _userManager.GetCurrentUser(HttpContext);
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {
                 return new HttpUnauthorizedResult();
@@ -255,7 +260,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Assign(int id, List<TaskViewModel> tasks)
         {
-            var currentUser = await _userManager.GetCurrentUser(Context);
+            var currentUser = await _userManager.GetCurrentUser(HttpContext);
 
             if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
             {
@@ -273,6 +278,34 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 await _dataAccess.UpdateTaskAsync(item);
             }
+
+            // send all notifications to the queue
+            var smsRecipients = new List<string>();
+            var emailRecipients = new List<string>();
+
+            foreach (var allReadyTask in updates)
+            {
+                // get all confirmed contact points for the broadcast
+                smsRecipients.AddRange(allReadyTask.AssignedVolunteers.Where(u => u.User.PhoneNumberConfirmed).Select(v => v.User.PhoneNumber));
+                emailRecipients.AddRange(allReadyTask.AssignedVolunteers.Where(u => u.User.EmailConfirmed).Select(v => v.User.Email));
+            }
+
+            var command = new NotifyVolunteersCommand
+            {
+                // todo: what information do we add about the task?
+                // todo: should we use a template from the email service provider?
+                // todo: what about non-English volunteers?
+                ViewModel = new NotifyVolunteersViewModel
+                {
+                    SmsMessage = "You've been assigned a task from AllReady.",
+                    SmsRecipients = smsRecipients,
+                    EmailMessage = "You've been assigned a task from AllReady.",
+                    EmailRecipients = emailRecipients
+                }
+            };
+
+            _bus.Send(command);
+
             return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Details", id = id });
         }
 
