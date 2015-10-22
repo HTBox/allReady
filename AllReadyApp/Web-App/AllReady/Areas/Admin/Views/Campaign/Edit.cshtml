@@ -37,7 +37,17 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                <input type="text" asp-for="Description" class="form-control" />
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="control-label col-md-2">
+                @Html.LabelFor(model => model.FullDescription)
+                <p><cite>This formatted text will be used as your landing page content</cite></p>
+            </div>
+            <div class="col-md-10">
+                <textarea asp-for="FullDescription" class="form-control" rows="6"></textarea>
                 @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -81,7 +91,17 @@
 
 @section scripts {
     <script type="text/javascript" src="~/lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
+    <script src="~/lib/tinymce/tinymce.min.js"></script>
     <script>
         $(".datepicker").datepicker({ format: "m/d/yyyy", autoclose: true });
+        tinymce.init({
+            selector: "#FullDescription",
+            plugins: [
+                "autolink lists link image charmap preview anchor",
+                "searchreplace visualblocks fullscreen",
+                "insertdatetime media contextmenu paste"
+            ],
+            toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+        });
     </script>
 }

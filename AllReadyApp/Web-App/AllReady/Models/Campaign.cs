@@ -14,7 +14,13 @@ namespace AllReady.Models
         [Required]
         public string Name { get; set; }
 
+        /// <summary>
+        /// Short synopsis of this campaign, displayed within grids.
+        /// </summary>
         public string Description { get; set; }
+
+        [Display(Name = "Full Description")]
+        public string FullDescription { get; set; }
 
         [Display(Name = "Managing Tenant")]
         public int ManagingTenantId { get; set; }

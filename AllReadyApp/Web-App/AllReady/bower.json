@@ -14,6 +14,7 @@
     "font-awesome": "4.3.0",
     "knockout": "3.3.0",
     "moment": "2.10.6",
-    "tota11y": "0.1.2"
+    "tota11y": "0.1.2",
+    "tinymce": "4.2.6"
   }
 }
