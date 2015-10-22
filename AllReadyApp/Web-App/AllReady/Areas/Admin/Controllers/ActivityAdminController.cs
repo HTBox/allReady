@@ -14,7 +14,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using MediatR;
-using Microsoft.Framework.Configuration;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -102,11 +101,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Activity/Create
         public async Task<IActionResult> Create()
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
+            var currentUser = await _userManager.GetCurrentUser(HttpContext);            
             return View();
         }
 
@@ -114,12 +109,8 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Activity activity)
-        {
+        {            
             var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
 
             if (activity.TenantId != _dataAccess.GetUser(currentUser.Id).AssociatedTenant.Id)
             {
@@ -138,11 +129,6 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(System.Int32 id)
         {
             var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
             Activity activity = await Task.Run(() => _dataAccess.GetActivity(id));
 
             if (activity == null)
@@ -164,11 +150,6 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(Activity activity)
         {
             var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
             if (ModelState.IsValid)
             {
                 await _dataAccess.UpdateActivity(activity);
@@ -183,11 +164,6 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Delete(System.Int32? id)
         {
             var currentUser = await _userManager.GetCurrentUser(HttpContext);
-
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
             if (id == null)
             {
                 return new HttpStatusCodeResult(404);
@@ -214,11 +190,6 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var currentUser = await _userManager.GetCurrentUser(HttpContext);
 
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
             if (!await UserIsTenantAdminOfActivity(currentUser, id))
             {
                 return new HttpUnauthorizedResult();
@@ -233,10 +204,6 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Assign(int id)
         {
             var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
 
             var activity = _dataAccess.GetActivity(id);
 
@@ -261,11 +228,6 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Assign(int id, List<TaskViewModel> tasks)
         {
             var currentUser = await _userManager.GetCurrentUser(HttpContext);
-
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
 
             if (!await UserIsTenantAdminOfActivity(currentUser, id))
             {
