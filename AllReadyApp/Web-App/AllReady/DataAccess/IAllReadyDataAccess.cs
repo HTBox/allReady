@@ -98,5 +98,9 @@ namespace AllReady.Models
         IEnumerable<TaskUsers> GetTasksAssignedToUser(int activityId, ApplicationUser user);
 
         #endregion
+
+        #region Skill CRUD
+        IEnumerable<Skill> Skills { get; }
+        #endregion
     }
 }

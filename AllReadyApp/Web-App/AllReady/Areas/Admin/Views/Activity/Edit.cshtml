@@ -53,12 +53,12 @@
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.RequiredSkills, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.RequiredSkillIds, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @for (int i = 0; Model.RequiredSkills != null && i < Model.RequiredSkills.Count; i++)
-                {
-                    Html.DropDownListFor(model => model.RequiredSkills[i], (IEnumerable<SelectListItem>)ViewData["Skills"], new { htmlAttributes = new { @class = "form-control" } });
-                }
+                <div data-bind="foreach: requiredSkillIds">
+                    <select class="form-control" data-bind="attr: { name: 'RequiredSkillsIds[' + $index() + ']' }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: $data"></select>
+                </div>
+                @Html.ValidationMessageFor(model => model.RequiredSkillIds, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
@@ -88,9 +88,21 @@
         </div>
     </div>
 </div>
-
-
 <div>
     @Html.ActionLink("Back to List", "Index", "Activity", null, new { @class = "btn" })
 </div>
+
+@section scripts {
+    <script type="text/javascript">
+        (function (ko, $, requiredSkillIds, availableSkills) {
+
+            function AdminActivityViewModel(requiredSkillIds, availableSkills) {
+                this.requiredSkillIds = ko.observableArray(requiredSkillIds);
+                this.availableSkills = ko.observableArray(availableSkills);
+            }
+
+            ko.applyBindings(new AdminActivityViewModel(requiredSkillIds, availableSkills));
+        })(ko, $, @Json.Serialize(Model.RequiredSkillIds), @Json.Serialize(ViewData["Skills"]));
+    </script>
+}
 

@@ -42,6 +42,8 @@ namespace AllReady.Models
     public string ImageUrl { get; set; }
 
         [Display(Name = "Required skills")]
+        public List<int> RequiredSkillIds { get; set; }
+
         public List<Skill> RequiredSkills { get; set; }
   }
 }

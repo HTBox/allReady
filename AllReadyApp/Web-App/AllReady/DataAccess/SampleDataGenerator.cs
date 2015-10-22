@@ -34,6 +34,7 @@ namespace AllReady.Models
           _context.Tasks.Any() ||
           _context.Campaigns.Any() ||
           _context.Activities.Any() ||
+          _context.Skills.Any() ||
           _context.Resources.Any())
       {
         return;
@@ -51,6 +52,7 @@ namespace AllReady.Models
       List<AllReadyTask> tasks = new List<AllReadyTask>();
       List<Resource> resources = new List<Resource>();
       List<ActivitySignup> activitySignups = new List<ActivitySignup>();
+      List<Skill> skills = new List<Skill>();
 
       #region Tenant
       Tenant htb = new Tenant()
@@ -102,6 +104,12 @@ namespace AllReady.Models
       };
       htb.Campaigns.Add(escapePlan);
       #endregion
+      #region Skills
+      var medical = new Skill() { Name = "Medical" }; skills.Add(medical);
+      var cprCertified = new Skill() { Name = "CPR Certified", ParentSkill = medical }; skills.Add(cprCertified);
+      var md = new Skill() { Name = "MD", ParentSkill = medical }; skills.Add(md);
+      var surgeon = new Skill() { Name = "Surgeon", ParentSkill = md }; skills.Add(surgeon);
+      #endregion
       #region Activity
       Activity queenAnne = new Activity()
       {
@@ -109,7 +117,8 @@ namespace AllReady.Models
         StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
         EndDateTimeUtc = new DateTime(2015, 7, 4, 15, 0, 0).ToUniversalTime(),
         Location = GetRandom<Location>(locations),
-        Tenant = htb
+        Tenant = htb,
+        RequiredSkills = new List<Skill>() { surgeon, cprCertified }
       };
       queenAnne.Tasks = GetSomeTasks(queenAnne, htb);
       tasks.AddRange(queenAnne.Tasks);
@@ -306,6 +315,7 @@ namespace AllReady.Models
       #endregion
 
       #region Insert into DB
+      _context.Skills.AddRange(skills);
       _context.Locations.AddRange(locations);
       _context.Tenants.AddRange(tenants);
       _context.Tasks.AddRange(tasks);

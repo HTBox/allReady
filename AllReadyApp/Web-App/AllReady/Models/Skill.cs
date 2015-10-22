@@ -12,7 +12,5 @@ namespace AllReady.Models
         public string Name { get; set; }
 
         public Skill ParentSkill { get; set; }
-
-        public List<Skill> ChildSkills { get; set; }
     }
 }
