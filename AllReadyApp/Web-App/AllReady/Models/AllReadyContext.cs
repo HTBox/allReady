@@ -49,6 +49,7 @@ namespace AllReady.Models
     public DbSet<ActivitySignup> ActivitySignup { get; set; }
     public DbSet<Campaign> Campaigns { get; set; }
     public DbSet<Activity> Activities { get; set; }
+    public DbSet<ActivitySkill> ActivitySkills { get; set; }
     public DbSet<Location> Locations { get; set; }
     public DbSet<PostalCodeGeo> PostalCodes { get; set; }
     public DbSet<AllReadyTask> Tasks { get; set; }
@@ -65,6 +66,7 @@ namespace AllReady.Models
       Map(modelBuilder.Entity<Campaign>());
       Map(modelBuilder.Entity<CampaignSponsors>());
       Map(modelBuilder.Entity<Activity>());
+      Map(modelBuilder.Entity<ActivitySkill>());
       Map(modelBuilder.Entity<ActivitySignup>());
       Map(modelBuilder.Entity<AllReadyTask>());
       Map(modelBuilder.Entity<TaskUsers>());
@@ -111,6 +113,12 @@ namespace AllReady.Models
       builder.HasOne(a => a.Location);
       builder.HasMany(a => a.Tasks);
       builder.HasMany(a => a.UsersSignedUp);
+      builder.HasMany(a => a.RequiredSkills).WithOne(acsk => acsk.Activity);
+    }
+
+    private void Map(EntityTypeBuilder<ActivitySkill> builder)
+    {
+      builder.HasKey(acsk => new { acsk.ActivityId, acsk.SkillId });
     }
 
     private void Map(EntityTypeBuilder<CampaignSponsors> builder)
@@ -118,7 +126,6 @@ namespace AllReady.Models
       builder.HasOne(s => s.Campaign)
              .WithMany(c => c.ParticipatingTenants);
       builder.HasOne(s => s.Tenant);
-
     }
 
     private void Map(EntityTypeBuilder<Campaign> builder)

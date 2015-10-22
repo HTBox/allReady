@@ -53,12 +53,12 @@
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.RequiredSkillIds, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.RequiredSkills, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <div data-bind="foreach: requiredSkillIds">
-                    <select class="form-control" data-bind="attr: { name: 'RequiredSkillsIds[' + $index() + ']' }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: $data"></select>
+                <div data-bind="foreach: requiredSkills">
+                    <select class="form-control" data-bind="attr: { name: 'RequiredSkills[' + $index() + '].SkillId' }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
                 </div>
-                @Html.ValidationMessageFor(model => model.RequiredSkillIds, "", new { @class = "text-danger" })
+                @Html.ValidationMessageFor(model => model.RequiredSkills, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
@@ -94,15 +94,15 @@
 
 @section scripts {
     <script type="text/javascript">
-        (function (ko, $, requiredSkillIds, availableSkills) {
+        (function (ko, $, requiredSkills, availableSkills) {
 
-            function AdminActivityViewModel(requiredSkillIds, availableSkills) {
-                this.requiredSkillIds = ko.observableArray(requiredSkillIds);
+            function AdminActivityViewModel(requiredSkills, availableSkills) {
+                this.requiredSkills = ko.observableArray(requiredSkills);
                 this.availableSkills = ko.observableArray(availableSkills);
             }
 
-            ko.applyBindings(new AdminActivityViewModel(requiredSkillIds, availableSkills));
-        })(ko, $, @Json.Serialize(Model.RequiredSkillIds), @Json.Serialize(ViewData["Skills"]));
+            ko.applyBindings(new AdminActivityViewModel(requiredSkills, availableSkills));
+        })(ko, $, @Json.Serialize(Model.RequiredSkills.Select(rs => rs.Skill)), @Json.Serialize(ViewData["Skills"]));
     </script>
 }
 
