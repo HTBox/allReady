@@ -4,23 +4,18 @@ using Microsoft.Data.Entity.Infrastructure;
 using Microsoft.Data.Entity.Metadata;
 using Microsoft.Data.Entity.Migrations;
 using AllReady.Models;
-using Microsoft.Data.Entity.SqlServer.Metadata;
 
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    partial class InitialDropBeta7
+    [Migration("20151018163534_InitialCreateBeta8")]
+    partial class InitialCreateBeta8
     {
-        public override string Id
-        {
-            get { return "20150925070212_InitialDropBeta7"; }
-        }
-
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .Annotation("ProductVersion", "7.0.0-beta7-15540")
-                .Annotation("SqlServer:ValueGenerationStrategy", SqlServerIdentityStrategy.IdentityColumn);
+                .Annotation("ProductVersion", "7.0.0-beta8-15964")
+                .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("AllReady.Models.Activity", b =>
                 {
@@ -45,7 +40,7 @@ namespace AllReady.Migrations
 
                     b.Property<int>("TenantId");
 
-                    b.Key("Id");
+                    b.HasKey("Id");
                 });
 
             modelBuilder.Entity("AllReady.Models.ActivitySignup", b =>
@@ -61,7 +56,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("UserId");
 
-                    b.Key("Id");
+                    b.HasKey("Id");
                 });
 
             modelBuilder.Entity("AllReady.Models.AllReadyTask", b =>
@@ -81,7 +76,7 @@ namespace AllReady.Migrations
 
                     b.Property<int?>("TenantId");
 
-                    b.Key("Id");
+                    b.HasKey("Id");
                 });
 
             modelBuilder.Entity("AllReady.Models.ApplicationUser", b =>
@@ -93,7 +88,7 @@ namespace AllReady.Migrations
                     b.Property<int?>("AssociatedTenantId");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .ConcurrencyToken();
+                        .IsConcurrencyToken();
 
                     b.Property<string>("Email")
                         .Annotation("MaxLength", 256);
@@ -123,7 +118,7 @@ namespace AllReady.Migrations
                     b.Property<string>("UserName")
                         .Annotation("MaxLength", 256);
 
-                    b.Key("Id");
+                    b.HasKey("Id");
 
                     b.Index("NormalizedEmail")
                         .Annotation("Relational:Name", "EmailIndex");
@@ -148,13 +143,13 @@ namespace AllReady.Migrations
                     b.Property<int>("ManagingTenantId");
 
                     b.Property<string>("Name")
-                        .Required();
+                        .IsRequired();
 
                     b.Property<string>("OrganizerId");
 
                     b.Property<DateTime>("StartDateTimeUtc");
 
-                    b.Key("Id");
+                    b.HasKey("Id");
                 });
 
             modelBuilder.Entity("AllReady.Models.CampaignSponsors", b =>
@@ -166,7 +161,7 @@ namespace AllReady.Migrations
 
                     b.Property<int?>("TenantId");
 
-                    b.Key("Id");
+                    b.HasKey("Id");
                 });
 
             modelBuilder.Entity("AllReady.Models.Location", b =>
@@ -190,7 +185,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("State");
 
-                    b.Key("Id");
+                    b.HasKey("Id");
                 });
 
             modelBuilder.Entity("AllReady.Models.PostalCodeGeo", b =>
@@ -202,7 +197,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("State");
 
-                    b.Key("PostalCode");
+                    b.HasKey("PostalCode");
                 });
 
             modelBuilder.Entity("AllReady.Models.Resource", b =>
@@ -224,7 +219,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("ResourceUrl");
 
-                    b.Key("Id");
+                    b.HasKey("Id");
                 });
 
             modelBuilder.Entity("AllReady.Models.TaskUsers", b =>
@@ -242,7 +237,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("UserId");
 
-                    b.Key("Id");
+                    b.HasKey("Id");
                 });
 
             modelBuilder.Entity("AllReady.Models.Tenant", b =>
@@ -256,7 +251,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("WebUrl");
 
-                    b.Key("Id");
+                    b.HasKey("Id");
                 });
 
             modelBuilder.Entity("Microsoft.AspNet.Identity.EntityFramework.IdentityRole", b =>
@@ -264,7 +259,7 @@ namespace AllReady.Migrations
                     b.Property<string>("Id");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .ConcurrencyToken();
+                        .IsConcurrencyToken();
 
                     b.Property<string>("Name")
                         .Annotation("MaxLength", 256);
@@ -272,7 +267,7 @@ namespace AllReady.Migrations
                     b.Property<string>("NormalizedName")
                         .Annotation("MaxLength", 256);
 
-                    b.Key("Id");
+                    b.HasKey("Id");
 
                     b.Index("NormalizedName")
                         .Annotation("Relational:Name", "RoleNameIndex");
@@ -291,7 +286,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("RoleId");
 
-                    b.Key("Id");
+                    b.HasKey("Id");
 
                     b.Annotation("Relational:TableName", "AspNetRoleClaims");
                 });
@@ -307,7 +302,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("UserId");
 
-                    b.Key("Id");
+                    b.HasKey("Id");
 
                     b.Annotation("Relational:TableName", "AspNetUserClaims");
                 });
@@ -322,7 +317,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("UserId");
 
-                    b.Key("LoginProvider", "ProviderKey");
+                    b.HasKey("LoginProvider", "ProviderKey");
 
                     b.Annotation("Relational:TableName", "AspNetUserLogins");
                 });
@@ -333,128 +328,128 @@ namespace AllReady.Migrations
 
                     b.Property<string>("RoleId");
 
-                    b.Key("UserId", "RoleId");
+                    b.HasKey("UserId", "RoleId");
 
                     b.Annotation("Relational:TableName", "AspNetUserRoles");
                 });
 
             modelBuilder.Entity("AllReady.Models.Activity", b =>
                 {
-                    b.Reference("AllReady.Models.Campaign")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.Campaign")
+                        .WithMany()
                         .ForeignKey("CampaignId");
 
-                    b.Reference("AllReady.Models.Location")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.Location")
+                        .WithMany()
                         .ForeignKey("LocationId");
 
-                    b.Reference("AllReady.Models.ApplicationUser")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.ApplicationUser")
+                        .WithMany()
                         .ForeignKey("OrganizerId");
 
-                    b.Reference("AllReady.Models.Tenant")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.Tenant")
+                        .WithMany()
                         .ForeignKey("TenantId");
                 });
 
             modelBuilder.Entity("AllReady.Models.ActivitySignup", b =>
                 {
-                    b.Reference("AllReady.Models.Activity")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.Activity")
+                        .WithMany()
                         .ForeignKey("ActivityId");
 
-                    b.Reference("AllReady.Models.ApplicationUser")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.ApplicationUser")
+                        .WithMany()
                         .ForeignKey("UserId");
                 });
 
             modelBuilder.Entity("AllReady.Models.AllReadyTask", b =>
                 {
-                    b.Reference("AllReady.Models.Activity")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.Activity")
+                        .WithMany()
                         .ForeignKey("ActivityId");
 
-                    b.Reference("AllReady.Models.Tenant")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.Tenant")
+                        .WithMany()
                         .ForeignKey("TenantId");
                 });
 
             modelBuilder.Entity("AllReady.Models.ApplicationUser", b =>
                 {
-                    b.Reference("AllReady.Models.Tenant")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.Tenant")
+                        .WithMany()
                         .ForeignKey("AssociatedTenantId");
                 });
 
             modelBuilder.Entity("AllReady.Models.Campaign", b =>
                 {
-                    b.Reference("AllReady.Models.Tenant")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.Tenant")
+                        .WithMany()
                         .ForeignKey("ManagingTenantId");
 
-                    b.Reference("AllReady.Models.ApplicationUser")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.ApplicationUser")
+                        .WithMany()
                         .ForeignKey("OrganizerId");
                 });
 
             modelBuilder.Entity("AllReady.Models.CampaignSponsors", b =>
                 {
-                    b.Reference("AllReady.Models.Campaign")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.Campaign")
+                        .WithMany()
                         .ForeignKey("CampaignId");
 
-                    b.Reference("AllReady.Models.Tenant")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.Tenant")
+                        .WithMany()
                         .ForeignKey("TenantId");
                 });
 
             modelBuilder.Entity("AllReady.Models.Location", b =>
                 {
-                    b.Reference("AllReady.Models.PostalCodeGeo")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.PostalCodeGeo")
+                        .WithMany()
                         .ForeignKey("PostalCodePostalCode");
                 });
 
             modelBuilder.Entity("AllReady.Models.TaskUsers", b =>
                 {
-                    b.Reference("AllReady.Models.AllReadyTask")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.AllReadyTask")
+                        .WithMany()
                         .ForeignKey("TaskId");
 
-                    b.Reference("AllReady.Models.ApplicationUser")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.ApplicationUser")
+                        .WithMany()
                         .ForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNet.Identity.EntityFramework.IdentityRoleClaim<string>", b =>
                 {
-                    b.Reference("Microsoft.AspNet.Identity.EntityFramework.IdentityRole")
-                        .InverseCollection()
+                    b.HasOne("Microsoft.AspNet.Identity.EntityFramework.IdentityRole")
+                        .WithMany()
                         .ForeignKey("RoleId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNet.Identity.EntityFramework.IdentityUserClaim<string>", b =>
                 {
-                    b.Reference("AllReady.Models.ApplicationUser")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.ApplicationUser")
+                        .WithMany()
                         .ForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNet.Identity.EntityFramework.IdentityUserLogin<string>", b =>
                 {
-                    b.Reference("AllReady.Models.ApplicationUser")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.ApplicationUser")
+                        .WithMany()
                         .ForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNet.Identity.EntityFramework.IdentityUserRole<string>", b =>
                 {
-                    b.Reference("Microsoft.AspNet.Identity.EntityFramework.IdentityRole")
-                        .InverseCollection()
+                    b.HasOne("Microsoft.AspNet.Identity.EntityFramework.IdentityRole")
+                        .WithMany()
                         .ForeignKey("RoleId");
 
-                    b.Reference("AllReady.Models.ApplicationUser")
-                        .InverseCollection()
+                    b.HasOne("AllReady.Models.ApplicationUser")
+                        .WithMany()
                         .ForeignKey("UserId");
                 });
         }
