@@ -56,9 +56,12 @@
             @Html.LabelFor(model => model.RequiredSkills, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div data-bind="foreach: requiredSkills">
-                    <select class="form-control" data-bind="attr: { name: 'RequiredSkills[' + $index() + '].SkillId' }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                    <div class="form-inline">
+                        <select class="form-control" data-bind="attr: { name: 'RequiredSkills[' + $index() + '].SkillId' }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                        <a data-bind="click: $root.deleteSkill">Delete</a>
+                    </div>
                 </div>
-                @Html.ValidationMessageFor(model => model.RequiredSkills, "", new { @class = "text-danger" })
+                <a data-bind="click: addSkill">Add Skill</a>
             </div>
         </div>
         <div class="form-group">
@@ -67,7 +70,7 @@
             </div>
         </div>
     </div>
-                    }
+}
 
 <h2>Image for @Model.Name</h2>
 <div class="form-horizontal">
@@ -97,8 +100,15 @@
         (function (ko, $, requiredSkills, availableSkills) {
 
             function AdminActivityViewModel(requiredSkills, availableSkills) {
+                var self = this;
                 this.requiredSkills = ko.observableArray(requiredSkills);
                 this.availableSkills = ko.observableArray(availableSkills);
+                this.addSkill = function() {
+                    self.requiredSkills.push({ Id: "" });
+                };
+                this.deleteSkill = function(skill) {
+                    self.requiredSkills.remove(skill);
+                };
             }
 
             ko.applyBindings(new AdminActivityViewModel(requiredSkills, availableSkills));
