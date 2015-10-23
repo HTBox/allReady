@@ -20,6 +20,9 @@ namespace AllReady.Models
     {
       _configuration = configuration;
       _environment = environment;
+
+      // Create DB and do migrations if necessary
+      Database.EnsureCreated();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -28,8 +28,6 @@ namespace AllReady.Models
     //private static ITaskIdProvider _taskIdProvider = new TaskIdProvider();
     public void InsertTestData()
     {
-      //_taskIdProvider.Reset();
-
       // Avoid polluting the database if there's already something in there.
       if (_context.Locations.Any() ||
           _context.Tenants.Any() ||
