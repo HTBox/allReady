@@ -11,6 +11,8 @@ namespace AllReady.Models
 
         public string Name { get; set; }
 
+        public int ParentSkillId { get; set; }
+
         public Skill ParentSkill { get; set; }
     }
 }

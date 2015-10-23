@@ -72,7 +72,7 @@ namespace AllReady.Models
       Map(modelBuilder.Entity<TaskUsers>());
       Map(modelBuilder.Entity<Location>());
       Map(modelBuilder.Entity<PostalCodeGeo>());
-
+      Map(modelBuilder.Entity<Skill>());
     }
 
     private void Map(EntityTypeBuilder<PostalCodeGeo> builder)
@@ -119,6 +119,11 @@ namespace AllReady.Models
     private void Map(EntityTypeBuilder<ActivitySkill> builder)
     {
       builder.HasKey(acsk => new { acsk.ActivityId, acsk.SkillId });
+    }
+
+    private void Map(EntityTypeBuilder<Skill> builder)
+    {
+      builder.HasOne(s => s.ParentSkill);
     }
 
     private void Map(EntityTypeBuilder<CampaignSponsors> builder)
