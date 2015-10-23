@@ -190,6 +190,7 @@ namespace AllReady
         {
             options.AppId = Configuration["Authentication:Facebook:AppId"];
             options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+			options.Scope.Add("email");
         });
       }
       // app.UseGoogleAuthentication();
