@@ -7,19 +7,13 @@ using System.Threading.Tasks;
 
 namespace AllReady.Models
 {
-    public class ActivitySignup
-    {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+  public class ActivitySignup
+  {
+    public int Id { get; set; }
+    public ApplicationUser User { get; set; }
+    public Activity Activity { get; set; }
+    public DateTime SignupDateTime { get; set; }
+    public DateTime? CheckinDateTime { get; set; }
 
-        public ApplicationUser User { get; set; }
-
-        public Activity Activity { get; set; }
-
-        [Required]
-        public DateTime SignupDateTime { get; set; }
-
-        public DateTime? CheckinDateTime { get; set; }
-
-    }
+  }
 }

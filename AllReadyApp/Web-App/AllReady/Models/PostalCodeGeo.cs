@@ -10,9 +10,7 @@ namespace AllReady.Models
 
     public class PostalCodeGeo
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string PostalCode { get; set; }
-
         public string City { get; set; }
         public string State { get; set; }
     }

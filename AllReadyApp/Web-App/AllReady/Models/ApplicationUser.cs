@@ -10,10 +10,9 @@ using Microsoft.Framework.OptionsModel;
 
 namespace AllReady.Models
 {
-    // Add profile data for application users by adding properties to the ApplicationUser class
-    public class ApplicationUser : IdentityUser
-    {
-        public Tenant AssociatedTenant { get; set; }
-
-    }
+  // Add profile data for application users by adding properties to the ApplicationUser class
+  public class ApplicationUser : IdentityUser
+  {
+    public Tenant AssociatedTenant { get; set; }
+  }
 }
