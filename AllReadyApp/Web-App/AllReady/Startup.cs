@@ -202,9 +202,11 @@ namespace AllReady
       {
         app.UseMicrosoftAccountAuthentication(options =>
         {
-          options.ClientId = Configuration["Authentication:MicrosoftAccount:ClientId"];
-          options.ClientSecret = Configuration["Authentication:MicrosoftAccount:ClientSecret"];
-        });
+            options.ClientId = Configuration["Authentication:MicrosoftAccount:ClientId"];
+            options.ClientSecret = Configuration["Authentication:MicrosoftAccount:ClientSecret"];
+			options.Scope.Add("wl.basic");
+			options.Scope.Add("wl.signin");
+		});
       }
 
       if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
