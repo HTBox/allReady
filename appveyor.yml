@@ -1,0 +1,27 @@
+version: 1.0.0.{build}.{branch}
+
+nuget:
+  account_feed: true
+  
+init:
+  - git config --global core.autocrlf true
+  
+install:
+ - cmd: nuget sources add -Name api.nuget.org -Source https://api.nuget.org/v3/index.json
+
+before_build:
+ - ps: "&{$Branch='dev';iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.ps1'))}"
+ - cmd: dnvm install 1.0.0-beta8
+ - cmd: dnvm upgrade
+ - cmd: dnvm update-self
+ - cmd: dnvm list
+ - cmd: dnvm use 1.0.0-beta8
+ - cmd: dnu restore
+
+build_script:
+ - cmd: dnu build AllReadyApp\Web-App\AllReady\project.json
+ - cmd: dnu build AllReadyApp\Web-App\AllReady.UnitTest\project.json
+ 
+test_script:
+ - ps: cd .\AllReadyApp\Web-App\AllReady.UnitTest
+ - cmd: dnx test 
