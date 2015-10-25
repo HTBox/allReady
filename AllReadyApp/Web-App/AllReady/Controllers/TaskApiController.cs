@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 
-using AllReady.Extensions;
+using AllReady.Security;
 using AllReady.Models;
 using AllReady.ViewModels;
 
@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace AllReady.Controllers
 {
@@ -26,27 +25,26 @@ namespace AllReady.Controllers
             _allReadyDataAccess = allReadyDataAccess;
         }
 
-        private async Task<bool> HasTaskEditPermissions(AllReadyTask task)
+        private bool HasTaskEditPermissions(AllReadyTask task)
         {
-            ApplicationUser currentUser = await _userManager.GetCurrentUser(HttpContext);
-            IList<Claim> claims = await _userManager.GetClaimsForCurrentUser(HttpContext);
-            if (claims.IsUserType(UserType.SiteAdmin))
+            var userId = User.GetUserId();
+            if (User.IsUserType(UserType.SiteAdmin))
             {
                 return true;
             }
 
-            if (claims.IsUserType(UserType.TenantAdmin))
+            if (User.IsUserType(UserType.TenantAdmin))
             {
                 //TODO: Modify to check that user is tenant admin for tenant of task
                 return true;
             }
 
-            if (task.Activity != null && task.Activity.Organizer != null && task.Activity.Organizer.Id == currentUser.Id)
+            if (task.Activity != null && task.Activity.Organizer != null && task.Activity.Organizer.Id == userId)
             {
                 return true;
             }
 
-            if (task.Activity != null && task.Activity.Campaign != null && task.Activity.Campaign.Organizer != null && task.Activity.Campaign.Organizer.Id == currentUser.Id)
+            if (task.Activity != null && task.Activity.Campaign != null && task.Activity.Campaign.Organizer != null && task.Activity.Campaign.Organizer.Id == userId)
             {
                 return true;
             }
@@ -54,16 +52,16 @@ namespace AllReady.Controllers
             return false;
         }
 
-        private async Task<bool> HasTaskSignupEditPermissions(AllReadyTask task)
+        private bool HasTaskSignupEditPermissions(AllReadyTask task)
         {
-            if (await HasTaskEditPermissions(task))
+            if (HasTaskEditPermissions(task))
             {
                 return true;
             }
             else
             {
-                ApplicationUser currentUser = await _userManager.GetCurrentUser(HttpContext);
-                if (task.AssignedVolunteers != null && task.AssignedVolunteers.FirstOrDefault(x => x.User.Id == currentUser.Id) != null)
+                var userId = User.GetUserId();                
+                if (task.AssignedVolunteers != null && task.AssignedVolunteers.FirstOrDefault(x => x.User.Id == userId) != null)
                 {
                     return true;
                 }
@@ -75,7 +73,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async void Post([FromBody]TaskViewModel task)
         {
-            bool hasPermissions = await HasTaskEditPermissions(task.ToModel(_allReadyDataAccess));
+            bool hasPermissions = HasTaskEditPermissions(task.ToModel(_allReadyDataAccess));
             if (!hasPermissions)
             {
                 HttpUnauthorized();
@@ -102,7 +100,7 @@ namespace AllReady.Controllers
         {
             var task = _allReadyDataAccess.GetTask(id);
 
-            bool hasPermissions = await HasTaskEditPermissions(task);
+            bool hasPermissions = HasTaskEditPermissions(task);
             if (!hasPermissions)
             {
                 HttpUnauthorized();
@@ -129,7 +127,7 @@ namespace AllReady.Controllers
 
             if (matchingTask != null)
             {
-                bool hasPermissions = await HasTaskEditPermissions(matchingTask);
+                bool hasPermissions = HasTaskEditPermissions(matchingTask);
                 if (!hasPermissions)
                 {
                     HttpUnauthorized();
@@ -150,7 +148,7 @@ namespace AllReady.Controllers
                 HttpNotFound();
             }
 
-            ApplicationUser user = await _userManager.GetCurrentUser(HttpContext);
+            ApplicationUser user = await _userManager.FindByIdAsync(User.GetUserId());
 
             if (task.AssignedVolunteers == null)
             {
