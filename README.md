@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/69iwhe2g11t30sj8/branch/master?svg=true)](https://ci.appveyor.com/project/HTBox/allready/branch/master)
+
 ![allReady project banner](./docs/media/all-ready-project-banner.jpg)
 
 # Welcome to allReady
