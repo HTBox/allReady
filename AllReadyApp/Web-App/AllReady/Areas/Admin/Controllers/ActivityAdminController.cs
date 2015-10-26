@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
 
-using AllReady.Extensions;
+using AllReady.Security;
 using AllReady.Models;
 using AllReady.Services;
 using AllReady.ViewModels;
@@ -14,7 +13,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using MediatR;
-using Microsoft.Framework.Configuration;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -23,14 +21,12 @@ namespace AllReady.Areas.Admin.Controllers
     public class ActivityController : Controller
     {
         private readonly IAllReadyDataAccess _dataAccess;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IImageService _imageService;
         private readonly IMediator _bus;
 
-        public ActivityController(IAllReadyDataAccess dataAccess, UserManager<ApplicationUser> userManager, IImageService imageService, IMediator bus)
+        public ActivityController(IAllReadyDataAccess dataAccess, IImageService imageService, IMediator bus)
         {
             _dataAccess = dataAccess;
-            _userManager = userManager;
             _imageService = imageService;
             _bus = bus;
         }
@@ -100,13 +96,8 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Activity/Create
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
             return View();
         }
 
@@ -114,14 +105,8 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Activity activity)
-        {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
-            if (activity.TenantId != _dataAccess.GetUser(currentUser.Id).AssociatedTenant.Id)
+        {            
+            if (activity.TenantId != User.GetTenantId())
             {
                 return new HttpUnauthorizedResult();
             }
@@ -135,22 +120,15 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Activity/Edit/5
-        public async Task<IActionResult> Edit(System.Int32 id)
+        public IActionResult Edit(int id)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
-            Activity activity = await Task.Run(() => _dataAccess.GetActivity(id));
-
+            Activity activity = _dataAccess.GetActivity(id);
             if (activity == null)
             {
                 return new HttpStatusCodeResult(404);
             }
 
-            if (!await UserIsTenantAdminOfActivity(currentUser, activity))
+            if (!UserIsTenantAdminOfActivity(activity))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -163,12 +141,6 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Activity activity)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
             if (ModelState.IsValid)
             {
                 await _dataAccess.UpdateActivity(activity);
@@ -180,14 +152,8 @@ namespace AllReady.Areas.Admin.Controllers
 
         // GET: Activity/Delete/5
         [ActionName("Delete")]
-        public async Task<IActionResult> Delete(System.Int32? id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
             if (id == null)
             {
                 return new HttpStatusCodeResult(404);
@@ -199,7 +165,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return new HttpStatusCodeResult(404);
             }
 
-            if (!await UserIsTenantAdminOfActivity(currentUser, activity))
+            if (!UserIsTenantAdminOfActivity(activity))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -212,14 +178,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(System.Int32 id)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
-            if (!await UserIsTenantAdminOfActivity(currentUser, id))
+            if (!UserIsTenantAdminOfActivity( id))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -230,21 +189,15 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Assign(int id)
+        public IActionResult Assign(int id)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
             var activity = _dataAccess.GetActivity(id);
 
             if (activity == null)
             {
                 return new HttpStatusCodeResult(404);
             }
-            if (!await UserIsTenantAdminOfActivity(currentUser, activity))
+            if (!UserIsTenantAdminOfActivity(activity))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -260,14 +213,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Assign(int id, List<TaskViewModel> tasks)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-
-            if (currentUser == null || !await _userManager.IsTenantAdmin(currentUser))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
-            if (!await UserIsTenantAdminOfActivity(currentUser, id))
+            if (!UserIsTenantAdminOfActivity(id))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -322,18 +268,22 @@ namespace AllReady.Areas.Admin.Controllers
 
         }
 
-        private async Task<bool> UserIsTenantAdminOfActivity(ApplicationUser user, Activity activity)
+        private bool UserIsTenantAdminOfActivity(Activity activity)
         {
-            return await _userManager.IsSiteAdmin(user) ||
-                ((user.AssociatedTenant != null) &&
-                    (from campaign in user.AssociatedTenant.Campaigns
-                     where campaign.Id == activity.CampaignId
-                     select campaign).Any());
+            int? tenantId = User.GetTenantId();
+            if (tenantId.HasValue)
+            {
+                Tenant tenant = _dataAccess.GetTenant(tenantId.Value);
+                return User.IsUserType(UserType.SiteAdmin) || tenant.Campaigns.Any(c => c.Id == activity.CampaignId);
+            } else
+            {
+                return false;
+            }
         }
 
-        private async Task<bool> UserIsTenantAdminOfActivity(ApplicationUser user, int activityId)
+        private bool UserIsTenantAdminOfActivity(int activityId)
         {
-            return await UserIsTenantAdminOfActivity(user, _dataAccess.GetActivity(activityId));
+            return UserIsTenantAdminOfActivity(_dataAccess.GetActivity(activityId));
         }
 
     }

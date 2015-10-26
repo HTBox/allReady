@@ -76,7 +76,7 @@ namespace AllReady.Controllers
                     var claims = await _userManager.GetClaimsAsync(user);
                     if (claims.Count > 0)
                     {
-                        var claimValue = claims.FirstOrDefault(c => c.Type.Equals("UserType")).Value;
+                        var claimValue = claims.FirstOrDefault(c => c.Type.Equals(Security.ClaimTypes.UserType)).Value;
 
                         if (claimValue.Equals("TenantAdmin"))
                         {

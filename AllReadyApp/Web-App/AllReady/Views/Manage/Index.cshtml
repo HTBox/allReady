@@ -9,7 +9,7 @@
     <h4>Change your account settings</h4>
     <hr />
     <dl class="dl-horizontal">
-        @if (AuthorizationService.Authorize(User, "", "TenantAdmin"))
+        @if (await AuthorizationService.AuthorizeAsync(User, "", "TenantAdmin"))
         {
             <dt>Phone Number:</dt>
             <dd>
@@ -26,7 +26,7 @@
                 }
                 ]
             </dd>
-            @if (AuthorizationService.Authorize(User, "", "SiteAdmin"))
+            @if (await AuthorizationService.AuthorizeAsync(User, "", "SiteAdmin"))
             {
                 <dt>Approve Users:</dt>
                 <dd>

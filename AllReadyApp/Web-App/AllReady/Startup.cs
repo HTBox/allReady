@@ -90,8 +90,8 @@ namespace AllReady
       // Add Authorization rules for the app
       services.Configure<AuthorizationOptions>(options =>
       {
-        options.AddPolicy("TenantAdmin", new AuthorizationPolicyBuilder().RequireClaim("UserType", new string[] { "TenantAdmin", "SiteAdmin" }).Build());
-        options.AddPolicy("SiteAdmin", new AuthorizationPolicyBuilder().RequireClaim("UserType", "SiteAdmin").Build());
+        options.AddPolicy("TenantAdmin", new AuthorizationPolicyBuilder().RequireClaim(Security.ClaimTypes.UserType, new string[] { "TenantAdmin", "SiteAdmin" }).Build());
+        options.AddPolicy("SiteAdmin", new AuthorizationPolicyBuilder().RequireClaim(Security.ClaimTypes.UserType, "SiteAdmin").Build());
       });
 
       services.AddCookieAuthentication(options =>
