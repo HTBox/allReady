@@ -16,12 +16,10 @@ namespace AllReady.Controllers
     [Produces("application/json")]
     public class TaskApiController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IAllReadyDataAccess _allReadyDataAccess;
 
-        public TaskApiController(IAllReadyDataAccess allReadyDataAccess, UserManager<ApplicationUser> userManager)
+        public TaskApiController(IAllReadyDataAccess allReadyDataAccess)
         {
-            _userManager = userManager;
             _allReadyDataAccess = allReadyDataAccess;
         }
 
@@ -148,7 +146,7 @@ namespace AllReady.Controllers
                 HttpNotFound();
             }
 
-            ApplicationUser user = await _userManager.FindByIdAsync(User.GetUserId());
+            ApplicationUser user = _allReadyDataAccess.GetUser(User.GetUserId());
 
             if (task.AssignedVolunteers == null)
             {

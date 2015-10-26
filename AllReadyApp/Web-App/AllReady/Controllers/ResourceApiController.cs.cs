@@ -15,13 +15,10 @@ namespace AllReady.Controllers
     public class ResourceApiController :Controller
     {
         private readonly IAllReadyDataAccess _allReadyDataAccess;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ResourceApiController(IAllReadyDataAccess allReadyDataAccess,
-               UserManager<ApplicationUser> userManager)
+        public ResourceApiController(IAllReadyDataAccess allReadyDataAccess)
         {
             _allReadyDataAccess = allReadyDataAccess;
-            _userManager = userManager;
         }
 
         [Route("search")]

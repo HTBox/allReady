@@ -71,27 +71,27 @@ namespace AllReady.Models
                 .SingleOrDefault(a => a.Id == activityId);
         }
 
-        IEnumerable<ActivitySignup> IAllReadyDataAccess.GetActivitySignups(int activityId, ApplicationUser user)
+        IEnumerable<ActivitySignup> IAllReadyDataAccess.GetActivitySignups(int activityId, string userId)
         {
             return _dbContext.ActivitySignup
                         .Include(x => x.User)
                         .Include(x => x.Activity)
                         .ToArray()
-                        .Where(x => x.Activity.Id == activityId && x.User.Id == user.Id)
+                        .Where(x => x.Activity.Id == activityId && x.User.Id == userId)
                         .OrderBy(x => x.Activity.StartDateTimeUtc);
         }
 
-        IEnumerable<ActivitySignup> IAllReadyDataAccess.GetActivitySignups(ApplicationUser user)
+        IEnumerable<ActivitySignup> IAllReadyDataAccess.GetActivitySignups(string userId)
         {
             return _dbContext.ActivitySignup
                         .Include(x => x.User)
                         .Include(x => x.Activity)
                         .ToArray()
-                        .Where(x => x.User.Id == user.Id)
+                        .Where(x => x.User.Id == userId)
                         .OrderBy(x => x.Activity.StartDateTimeUtc);
         }
 
-        IEnumerable<TaskUsers> IAllReadyDataAccess.GetTasksAssignedToUser(int activityId, ApplicationUser user)
+        IEnumerable<TaskUsers> IAllReadyDataAccess.GetTasksAssignedToUser(int activityId, string userId)
         {
             var unfilteredTasks = _dbContext.TaskSignup
                 .Include(ts => ts.Task)
@@ -99,7 +99,7 @@ namespace AllReady.Models
                 .Include(ts => ts.User)
                 .ToList();
 
-            var finalTasks = unfilteredTasks.Where(ts => ts.Task.Activity.Id == activityId && ts.User.Id == user.Id).ToList();
+            var finalTasks = unfilteredTasks.Where(ts => ts.Task.Activity.Id == activityId && ts.User.Id == userId).ToList();
 
             return finalTasks;
         }

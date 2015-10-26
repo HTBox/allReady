@@ -19,12 +19,10 @@ namespace AllReady.Areas.Admin.Controllers
     public class TaskController : Controller
     {
         private readonly IAllReadyDataAccess _dataAccess;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public TaskController(IAllReadyDataAccess dataAccess, UserManager<ApplicationUser> usermanager)
+        public TaskController(IAllReadyDataAccess dataAccess)
         {
             _dataAccess = dataAccess;
-            _userManager = usermanager;
         }
 
         ViewResult AddDropdownData(ViewResult view)

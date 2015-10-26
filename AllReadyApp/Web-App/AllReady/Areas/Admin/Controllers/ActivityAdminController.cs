@@ -96,7 +96,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Activity/Create
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
             return View();
         }
@@ -120,7 +120,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Activity/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public IActionResult Edit(int id)
         {
             Activity activity = _dataAccess.GetActivity(id);
             if (activity == null)
@@ -189,7 +189,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Assign(int id)
+        public IActionResult Assign(int id)
         {
             var activity = _dataAccess.GetActivity(id);
 
