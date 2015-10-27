@@ -42,7 +42,7 @@ namespace AllReady.Areas.SiteAdmin.Controllers
                 model.TenantAdmin = false;
                 return View("MakeUserTenantAdmin", model);
             }
-            var claimValue = claims.FirstOrDefault(c => c.Type.Equals("UserType")).Value;
+            var claimValue = claims.FirstOrDefault(c => c.Type.Equals(Security.ClaimTypes.UserType)).Value;
             if (!claimValue.Equals("TenantAdmin"))
             {
                 model.TenantAdmin = false;
@@ -63,7 +63,9 @@ namespace AllReady.Areas.SiteAdmin.Controllers
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (model.TenantAdmin)
             {
-                var result = await _userManager.AddClaimAsync(user, new Claim("UserType", "TenantAdmin"));
+                var userTypeClaim = new Claim(Security.ClaimTypes.UserType, "TenantAdmin");
+                //TODO: Also need to set the TenantId claim
+                var result = await _userManager.AddClaimsAsync(user, new[] { userTypeClaim} ); 
                 if(result.Succeeded)
                 {
                     ViewData["result"] = "Successfully made user a tenant admin";
