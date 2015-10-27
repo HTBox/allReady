@@ -107,7 +107,8 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Activity activity)
         {            
-            if (activity.TenantId != User.GetTenantId())
+            if (!User.IsUserType(UserType.SiteAdmin) &&
+                  activity.TenantId != User.GetTenantId())
             {
                 return new HttpUnauthorizedResult();
             }

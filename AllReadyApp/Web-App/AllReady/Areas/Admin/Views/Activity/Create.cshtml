@@ -1,68 +1,56 @@
 @model AllReady.Models.Activity
 
-@{  ViewData["Title"] = "Create activity"; }
+@{  ViewBag.Title = "Create activity"; }
 
-<h2>@ViewData["Title"]</h2>
-
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-
+<h2>@ViewBag.Title</h2>
+<form asp-action="Create" asp-controller="Activity">
     <div class="form-horizontal">
         <h4>Activity</h4>
         <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div asp-validation-summary="ValidationSummary.ModelOnly" class="text-danger"></div>
         <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="Name" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.CampaignId, "CampaignId", htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="CampaignId" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.CampaignId, (IEnumerable<SelectListItem>)ViewData["Campaigns"], htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.CampaignId, "", new { @class = "text-danger" })
+                <select asp-for="CampaignId" asp-items="ViewBag.Campaigns" class="form-control" ></select>
+                <span asp-validation-for="CampaignId" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.TenantId, "TenantId", htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="TenantId" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.TenantId, (IEnumerable<SelectListItem>)ViewData["Tenants"], htmlAttributes: new { @class = "form-control" })
-                @*@Html.DropDownList("TenantId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.TenantId, "", new { @class = "text-danger" })*@
+                <select asp-for="TenantId" asp-items="ViewBag.Tenants" class="form-control"></select>
+                <span asp-validation-for="TenantId" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="StartDateTimeUtc" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.StartDateTimeUtc, "", new { @class = "text-danger" })
+                <input asp-for="StartDateTimeUtc" class="form-control datepicker"/>
+                <span asp-validation-for="StartDateTimeUtc" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="EndDateTimeUtc" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
+                <input asp-for="EndDateTimeUtc" class="form-control datepicker" />
+                <span asp-validation-for="EndDateTimeUtc" class="text-danger"></span>
             </div>
         </div>
-        @*<div class="form-group">
-            @Html.LabelFor(model => model.LocationId, "LocationId", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("LocationId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.LocationId, "", new { @class = "text-danger" })
-            </div>
-        </div>*@
-
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" value="Create" class="btn">Create</button>
             </div>
         </div>
     </div>
-}
+</form>
 
 <div>
-    @Html.ActionLink("Back to List", "Index", "Activity", null, new { @class = "btn" })
+    <a class="btn" asp-controller="Activity" asp-action="Index">Back to List</a>
+</div>
