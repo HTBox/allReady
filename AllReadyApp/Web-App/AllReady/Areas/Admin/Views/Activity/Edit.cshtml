@@ -58,10 +58,16 @@
                 <div data-bind="foreach: requiredSkills">
                     <div class="form-inline">
                         <select class="form-control" data-bind="attr: { name: 'RequiredSkills[' + $index() + '].SkillId' }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
-                        <a data-bind="click: $root.deleteSkill">Delete</a>
+                        <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            Delete
+                        </a>
                     </div>
                 </div>
-                <a data-bind="click: addSkill">Add Skill</a>
+                <a href="#" data-bind="click: addSkill" title="Add required skill">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    Add
+                </a>
             </div>
         </div>
         <div class="form-group">

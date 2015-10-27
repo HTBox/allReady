@@ -45,7 +45,8 @@ namespace AllReady.Models
         Task IAllReadyDataAccess.UpdateActivity(Activity value)
         {
             //First remove any skills that are no longer associated with this activity
-            var acsksToRemove = _dbContext.ActivitySkills.Where(acsk => acsk.ActivityId == value.Id && !value.RequiredSkills.Any(acsk1 => acsk1.SkillId == acsk.SkillId));
+            var acsksToRemove = _dbContext.ActivitySkills.Where(acsk => acsk.ActivityId == value.Id && (value.RequiredSkills == null ||
+                !value.RequiredSkills.Any(acsk1 => acsk1.SkillId == acsk.SkillId)));
             _dbContext.ActivitySkills.RemoveRange(acsksToRemove);
             _dbContext.Activities.Update(value);
             return _dbContext.SaveChangesAsync();
