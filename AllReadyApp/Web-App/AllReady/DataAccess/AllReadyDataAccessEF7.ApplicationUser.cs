@@ -13,12 +13,12 @@ namespace AllReady.Models
         {
             get
             {
-                return _dbContext.Users.Include(u => u.AssociatedTenant).ToList();
+                return _dbContext.Users.ToList();
             }
         }
         ApplicationUser IAllReadyDataAccess.GetUser(string userId)
         {
-            return _dbContext.Users.Where(u => u.Id == userId).Include(u => u.AssociatedTenant).SingleOrDefault();
+            return _dbContext.Users.Where(u => u.Id == userId).SingleOrDefault();
         }
 
         Task IAllReadyDataAccess.AddUser(ApplicationUser value)
