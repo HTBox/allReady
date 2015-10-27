@@ -34,8 +34,8 @@ namespace AllReady.Models
                 _context.Tasks.Any() ||
                 _context.Campaigns.Any() ||
                 _context.Activities.Any() ||
-          _context.ActivitySkills.Any() ||
-          _context.Skills.Any() ||
+                _context.ActivitySkills.Any() ||
+                _context.Skills.Any() ||
                 _context.Resources.Any())
             {
                 return;
@@ -49,12 +49,12 @@ namespace AllReady.Models
             List<Location> locations = GetLocations();
             List<TaskUsers> users = new List<TaskUsers>();
             List<Activity> activities = new List<Activity>();
-      List<ActivitySkill> activitySkills = new List<ActivitySkill>();
+            List<ActivitySkill> activitySkills = new List<ActivitySkill>();
             List<Campaign> campaigns = new List<Campaign>();
             List<AllReadyTask> tasks = new List<AllReadyTask>();
             List<Resource> resources = new List<Resource>();
             List<ActivitySignup> activitySignups = new List<ActivitySignup>();
-      List<Skill> skills = new List<Skill>();
+            List<Skill> skills = new List<Skill>();
 
             #region Tenant
             Tenant htb = new Tenant()
@@ -106,12 +106,12 @@ namespace AllReady.Models
             };
             htb.Campaigns.Add(escapePlan);
             #endregion
-      #region Skills
-      var medical = new Skill() { Name = "Medical" }; skills.Add(medical);
-      var cprCertified = new Skill() { Name = "CPR Certified", ParentSkill = medical }; skills.Add(cprCertified);
-      var md = new Skill() { Name = "MD", ParentSkill = medical }; skills.Add(md);
-      var surgeon = new Skill() { Name = "Surgeon", ParentSkill = md }; skills.Add(surgeon);
-      #endregion
+            #region Skills
+            var medical = new Skill() { Name = "Medical" }; skills.Add(medical);
+            var cprCertified = new Skill() { Name = "CPR Certified", ParentSkill = medical }; skills.Add(cprCertified);
+            var md = new Skill() { Name = "MD", ParentSkill = medical }; skills.Add(md);
+            var surgeon = new Skill() { Name = "Surgeon", ParentSkill = md }; skills.Add(surgeon);
+            #endregion
             #region Activity
             Activity queenAnne = new Activity()
             {
