@@ -53,6 +53,7 @@ namespace AllReady.Models
         public DbSet<Location> Locations { get; set; }
         public DbSet<PostalCodeGeo> PostalCodes { get; set; }
         public DbSet<AllReadyTask> Tasks { get; set; }
+        public DbSet<TaskSkill> TaskSkills { get; set; }
         public DbSet<TaskUsers> TaskSignup { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<Skill> Skills { get; set; }
@@ -69,6 +70,7 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<ActivitySkill>());
             Map(modelBuilder.Entity<ActivitySignup>());
             Map(modelBuilder.Entity<AllReadyTask>());
+            Map(modelBuilder.Entity<TaskSkill>());
             Map(modelBuilder.Entity<TaskUsers>());
             Map(modelBuilder.Entity<Location>());
             Map(modelBuilder.Entity<PostalCodeGeo>());
@@ -95,7 +97,12 @@ namespace AllReady.Models
             builder.HasOne(t => t.Activity);
             builder.HasOne(t => t.Tenant);
             builder.HasMany(t => t.AssignedVolunteers);
-            builder.HasMany(t => t.RequiredSkills);
+            builder.HasMany(t => t.RequiredSkills).WithOne(ts => ts.Task);
+        }
+
+        private void Map(EntityTypeBuilder<TaskSkill> builder)
+        {
+            builder.HasKey(acsk => new { acsk.TaskId, acsk.SkillId });
         }
 
         private void Map(EntityTypeBuilder<ActivitySignup> builder)

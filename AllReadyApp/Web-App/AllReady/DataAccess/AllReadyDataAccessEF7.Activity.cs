@@ -19,8 +19,9 @@ namespace AllReady.Models
                                 .Include(a => a.Tenant)
                                 .Include(a => a.Campaign)
                                 .Include(a => a.Tasks)
-                                .Include(x => x.UsersSignedUp)
-                                .OrderBy(x => x.EndDateTimeUtc)
+                                .Include(a => a.RequiredSkills)
+                                .Include(a => a.UsersSignedUp)
+                                .OrderBy(a => a.EndDateTimeUtc)
                                 .ToList();
             }
         }
