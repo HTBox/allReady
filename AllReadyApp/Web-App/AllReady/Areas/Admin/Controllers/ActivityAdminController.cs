@@ -276,18 +276,9 @@ namespace AllReady.Areas.Admin.Controllers
         private bool UserIsTenantAdminOfActivity(Activity activity)
         {
             int? tenantId = User.GetTenantId();
-            if (User.IsUserType(UserType.SiteAdmin))
-            {
-                return true;
-            }
-            else if (tenantId.HasValue)
-            {
-                Campaign campaign = _dataAccess.GetCampaign(activity.CampaignId);
-                return tenantId.Value == campaign.ManagingTenantId;    
-            } else
-            {
-                return false;
-            }
+
+            return User.IsUserType(UserType.SiteAdmin) ||
+                  (tenantId.HasValue && tenantId.Value == activity.TenantId);
         }
 
         private bool UserIsTenantAdminOfActivity(int activityId)
