@@ -72,7 +72,8 @@
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <button type="submit" class="btn">Save</button>
+                <button type="submit" class="btn" data-bind="enable: requiredSkills.isValid">Save</button>
+                <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">Required skills must be unique</span>
             </div>
         </div>
     </div>
@@ -102,19 +103,30 @@
 </div>
 
 @section scripts {
+    <script type="text/javascript" src="~/js/ko.validation.js"></script>
     <script type="text/javascript">
         (function (ko, $, requiredSkills, availableSkills) {
 
             function AdminActivityViewModel(requiredSkills, availableSkills) {
+                
+                function RequiredSkillObservable(skillModel) {
+                    var ret = ko.utils.extend({}, skillModel);
+                    ret.Id = ko.observable(ret.Id);
+                    return ret;
+                }
+                requiredSkills = (requiredSkills || []).map(RequiredSkillObservable);
+                
                 var self = this;
-                this.requiredSkills = ko.observableArray(requiredSkills);
+                this.requiredSkills = ko.observableArray(requiredSkills).uniqueValidator("Id");
                 this.availableSkills = ko.observableArray(availableSkills);
                 this.addSkill = function() {
-                    self.requiredSkills.push({ Id: "" });
+                    self.requiredSkills.push(RequiredSkillObservable());
                 };
                 this.deleteSkill = function(skill) {
                     self.requiredSkills.remove(skill);
                 };
+
+                
             }
 
             ko.applyBindings(new AdminActivityViewModel(requiredSkills, availableSkills));
