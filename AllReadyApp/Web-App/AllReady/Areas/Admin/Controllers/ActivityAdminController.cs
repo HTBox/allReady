@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using MediatR;
 using AllReady.Areas.Admin.ViewModels;
+using System;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -62,8 +63,19 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Index(int campaignId)
         {
             Campaign campaign = _dataAccess.GetCampaign(campaignId);
+            if (!UserIsTenantAdmin(campaign.ManagingTenantId))
+            {
+                return HttpUnauthorized();
+            }
+
             ViewBag.Title = "Activities for " + campaign.Name;
-            return View(campaign.Activities);
+            var viewModel = new CampaignActivitiesViewModel
+            {
+                CampaignId = campaign.Id,
+                CampaignName = campaign.Name,
+                Activities = campaign.Activities
+            };
+            return View(viewModel);
         }
 
         // GET: Activity/Details/5
@@ -101,24 +113,43 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Activity/Create
-        public IActionResult Create()
+        [Route("Admin/Activity/Create/{campaignId}")]
+        public IActionResult Create(int campaignId)
         {
-            return View();
+            Campaign campaign = _dataAccess.GetCampaign(campaignId);
+            if (!UserIsTenantAdmin(campaign.ManagingTenantId))
+            {
+                return new HttpUnauthorizedResult();
+            }
+
+            Activity activity = new Activity
+            {
+                CampaignId = campaign.Id,
+                Campaign = campaign,
+                TenantId = campaign.ManagingTenantId,
+                StartDateTimeUtc = DateTime.Today,
+                EndDateTimeUtc = DateTime.Today.AddMonths(1)
+            };
+            return View(activity);
         }
 
         // POST: Activity/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Activity activity)
-        {            
-            if (!User.IsUserType(UserType.SiteAdmin) &&
-                  activity.TenantId != User.GetTenantId())
-            {
-                return new HttpUnauthorizedResult();
-            }
-
+        [Route("Admin/Activity/Create/{campaignId}")]
+        public async Task<IActionResult> Create(int campaignId, Activity activity)
+        {
+            Campaign campaign = _dataAccess.GetCampaign(campaignId);
+            activity.Campaign = campaign;
+            activity.CampaignId = campaignId;
             if (ModelState.IsValid)
+        {            
+                if (campaign == null || 
+                    !UserIsTenantAdmin(campaign.ManagingTenantId))
             {
+                    return HttpUnauthorized();
+            }
+                activity.TenantId = campaign.ManagingTenantId;
                 await _dataAccess.AddActivity(activity);
                 return RedirectToAction("Index", new { campaignId = activity.CampaignId });
             }
@@ -281,10 +312,14 @@ namespace AllReady.Areas.Admin.Controllers
 
         private bool UserIsTenantAdminOfActivity(Activity activity)
         {
-            int? tenantId = User.GetTenantId();
+            return UserIsTenantAdmin(activity.TenantId);
+        }
+
+        private bool UserIsTenantAdmin(int tenantId) {
+            int? userTenantId = User.GetTenantId();
 
             return User.IsUserType(UserType.SiteAdmin) ||
-                  (tenantId.HasValue && tenantId.Value == activity.TenantId);
+                  (userTenantId.HasValue && userTenantId.Value == tenantId);
         }
 
         private bool UserIsTenantAdminOfActivity(int activityId)
