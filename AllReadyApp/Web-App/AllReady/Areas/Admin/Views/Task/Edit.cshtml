@@ -104,7 +104,9 @@
             }
 
             ko.applyBindings(new AdminTaskViewModel(requiredSkills, availableSkills));
-        })(ko, $, @Json.Serialize(Model.RequiredSkills), @Json.Serialize(ViewData["Skills"]));
+        })(ko, $, 
+            @Json.Serialize(Model.RequiredSkills),
+            @Json.Serialize(ViewData["Skills"]));
     </script>
 }
 

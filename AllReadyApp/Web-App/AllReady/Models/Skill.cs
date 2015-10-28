@@ -10,5 +10,19 @@ namespace AllReady.Models
         public string Name { get; set; }
         public int ParentSkillId { get; set; }
         public Skill ParentSkill { get; set; }
+        public string HierarchicalName
+        {
+            get
+            {
+                var retStr = Name;
+                var parent = ParentSkill;
+                while (parent != null)
+                {
+                    retStr = string.Format("{0} > {1}", parent.Name, retStr);
+                    parent = parent.ParentSkill;
+                }
+                return retStr;
+            }
+        }
     }
 }
