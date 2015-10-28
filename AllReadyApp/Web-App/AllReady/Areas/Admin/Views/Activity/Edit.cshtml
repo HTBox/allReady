@@ -128,7 +128,9 @@
             }
 
             ko.applyBindings(new AdminActivityViewModel(requiredSkills, availableSkills));
-        })(ko, $, @Json.Serialize(Model.RequiredSkills.Select(rs => rs.Skill)), @Json.Serialize(ViewData["Skills"]));
+        })(ko, $, 
+            @Json.Serialize(Model.RequiredSkills.Select(rs => new { Id = rs.SkillId })), 
+            @Json.Serialize(ViewData["Skills"]));
     </script>
 }
 

@@ -43,7 +43,7 @@ namespace AllReady.Models
                 .Include(x => x.Activity)
                 .Include(x => x.Activity.Campaign)
                 .Include(x => x.AssignedVolunteers)
-                .Include(x => x.RequiredSkills).ThenInclude(x => x.Skill).ThenInclude(x => x.ParentSkill)
+                .Include(x => x.RequiredSkills)
                 .Where(t => t.Id == taskId).SingleOrDefault();
         }
 
