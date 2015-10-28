@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using MediatR;
+using AllReady.Areas.Admin.ViewModels;
 
 namespace AllReady.Areas.Admin.Controllers
 {
