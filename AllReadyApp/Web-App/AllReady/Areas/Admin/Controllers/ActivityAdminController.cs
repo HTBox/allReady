@@ -34,9 +34,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         ViewResult AddDropdownData(ViewResult view)
-        {
-            view.ViewData["Campaigns"] = _dataAccess.Campaigns.Select(c => new SelectListItem() { Value = c.Id.ToString(), Text = c.Name }).ToList();
-            view.ViewData["Tenants"] = _dataAccess.Tenants.Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = t.Name }).ToList();
+        {           
             view.ViewData["Skills"] = _dataAccess.Skills.Select(s => new { Name = s.HierarchicalName, Id = s.Id }).ToList();
             return view;
         }
@@ -143,12 +141,12 @@ namespace AllReady.Areas.Admin.Controllers
             activity.Campaign = campaign;
             activity.CampaignId = campaignId;
             if (ModelState.IsValid)
-        {            
+            {                
                 if (campaign == null || 
                     !UserIsTenantAdmin(campaign.ManagingTenantId))
-            {
+                {
                     return HttpUnauthorized();
-            }
+                }                
                 activity.TenantId = campaign.ManagingTenantId;
                 await _dataAccess.AddActivity(activity);
                 return RedirectToAction("Index", new { campaignId = activity.CampaignId });
@@ -193,14 +191,14 @@ namespace AllReady.Areas.Admin.Controllers
 
         // GET: Activity/Delete/5
         [ActionName("Delete")]
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(404);
             }
 
-            Activity activity = await Task.Run(() => _dataAccess.GetActivity((int)id));
+            Activity activity = _dataAccess.GetActivity((int)id);
             if (activity == null)
             {
                 return new HttpStatusCodeResult(404);
@@ -321,7 +319,7 @@ namespace AllReady.Areas.Admin.Controllers
             return User.IsUserType(UserType.SiteAdmin) ||
                   (userTenantId.HasValue && userTenantId.Value == tenantId);
         }
-
+        
         private bool UserIsTenantAdminOfActivity(int activityId)
         {
             return UserIsTenantAdminOfActivity(_dataAccess.GetActivity(activityId));

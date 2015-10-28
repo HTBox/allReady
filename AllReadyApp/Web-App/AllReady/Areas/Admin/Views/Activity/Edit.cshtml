@@ -25,19 +25,8 @@
                 @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
             </div>
         </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.CampaignId, "Campaign", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.CampaignId, (IEnumerable<SelectListItem>)ViewData["Campaigns"], htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.CampaignId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.TenantId, "Tenant", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.TenantId, (IEnumerable<SelectListItem>)ViewData["Tenants"], htmlAttributes: new { @class = "form-control" })
-            </div>
-        </div>
+        @Html.HiddenFor(m => m.CampaignId)
+        @Html.HiddenFor(m => m.TenantId)
         <div class="form-group">
             @Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
