@@ -18,6 +18,7 @@ namespace AllReady.Models
                   .Include(x => x.Activity)
                   .Include(x => x.Activity.Campaign)
                   .Include(x => x.AssignedVolunteers)
+                  .Include(x => x.RequiredSkills)
                   .ToList();
             }
         }
@@ -42,6 +43,7 @@ namespace AllReady.Models
                 .Include(x => x.Activity)
                 .Include(x => x.Activity.Campaign)
                 .Include(x => x.AssignedVolunteers)
+                .Include(x => x.RequiredSkills).ThenInclude(x => x.Skill).ThenInclude(x => x.ParentSkill)
                 .Where(t => t.Id == taskId).SingleOrDefault();
         }
 
@@ -69,6 +71,10 @@ namespace AllReady.Models
 
         Task IAllReadyDataAccess.UpdateTaskAsync(AllReadyTask value)
         {
+            //First remove any skills that are no longer associated with this task
+            var tsToRemove = _dbContext.TaskSkills.Where(ts => ts.TaskId == value.Id && (value.RequiredSkills == null ||
+                !value.RequiredSkills.Any(ts1 => ts1.SkillId == ts.SkillId)));
+            _dbContext.TaskSkills.RemoveRange(tsToRemove);
             _dbContext.Tasks.Update(value);
             return _dbContext.SaveChangesAsync();
         }

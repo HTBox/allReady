@@ -35,6 +35,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             view.ViewData["Campaigns"] = _dataAccess.Campaigns.Select(c => new SelectListItem() { Value = c.Id.ToString(), Text = c.Name }).ToList();
             view.ViewData["Tenants"] = _dataAccess.Tenants.Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = t.Name }).ToList();
+            view.ViewData["Skills"] = _dataAccess.Skills.ToList();
             return view;
         }
 
@@ -143,6 +144,10 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (activity.RequiredSkills != null && activity.RequiredSkills.Count > 0)
+                {
+                    activity.RequiredSkills.ForEach(acsk => acsk.ActivityId = activity.Id);
+                }
                 await _dataAccess.UpdateActivity(activity);
                 return RedirectToAction("Index");
             }

@@ -30,6 +30,7 @@ namespace AllReady.Areas.Admin.Controllers
             view.ViewData["Campaigns"] = _dataAccess.Campaigns.Select(c => new SelectListItem() { Value = c.Id.ToString(), Text = c.Name }).ToList();
             view.ViewData["Tenants"] = _dataAccess.Tenants.Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = t.Name }).ToList();
             view.ViewData["Activities"] = _dataAccess.Activities.Select(a => new SelectListItem { Value = a.Id.ToString(), Text = a.Name }).ToList();
+            view.ViewData["Skills"] = _dataAccess.Skills.ToList();
             return view;
         }
 
@@ -71,15 +72,18 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpGet]
         [Route("Admin/Task/Create")]
-        public IActionResult Create() {
+        public IActionResult Create()
+        {
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Task/Create")]
-        public IActionResult Create(TaskViewModel model) {
-            if (ModelState.IsValid) {
+        public IActionResult Create(TaskViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
                 _dataAccess.AddTaskAsync(model.ToModel(_dataAccess));
                 return RedirectToAction("Index");
             }
@@ -91,14 +95,16 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Edit(int id)
         {
             var dbTask = _dataAccess.GetTask(id);
-            var model = new TaskViewModel {
+            var model = new TaskViewModel
+            {
                 Id = dbTask.Id,
                 Name = dbTask.Name,
                 Description = dbTask.Description,
                 ActivityId = dbTask.Activity.Id,
                 ActivityName = dbTask.Activity.Name,
                 StartDateTime = dbTask.StartDateTimeUtc,
-                EndDateTime = dbTask.EndDateTimeUtc
+                EndDateTime = dbTask.EndDateTimeUtc,
+                RequiredSkills = dbTask.RequiredSkills.Select(rs => rs.Skill)
             };
             return View(model);
         }
@@ -117,20 +123,23 @@ namespace AllReady.Areas.Admin.Controllers
                 else
                 {
                     return RedirectToAction("Index");
-                }                
+                }
             }
 
             return View(model);
         }
 
-        public IActionResult Delete(int id) {
+        public IActionResult Delete(int id)
+        {
 
             var dbTask = _dataAccess.GetTask(id);
-            if (dbTask == null) {
+            if (dbTask == null)
+            {
                 return new HttpStatusCodeResult(404);
             }
 
-            var model = new TaskViewModel {
+            var model = new TaskViewModel
+            {
                 Id = dbTask.Id,
                 Name = dbTask.Name,
                 StartDateTime = dbTask.StartDateTimeUtc,
@@ -166,7 +175,8 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Activity/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id) {
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
             await _dataAccess.DeleteTaskAsync(id);
 
             return RedirectToAction("Index");
