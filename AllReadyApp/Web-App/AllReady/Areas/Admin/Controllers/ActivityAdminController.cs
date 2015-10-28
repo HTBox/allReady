@@ -57,9 +57,9 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Activity
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return await Task.Run(() => View(_dataAccess.Activities));
+            return View(_dataAccess.Activities);
         }
 
         // GET: Activity/Details/5
