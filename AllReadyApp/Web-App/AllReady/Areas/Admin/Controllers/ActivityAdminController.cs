@@ -57,17 +57,20 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Activity
-        public IActionResult Index()
+        [Route("Admin/Activity/{campaignId}")]
+        public IActionResult Index(int campaignId)
         {
-            return View(_dataAccess.Activities);
+            Campaign campaign = _dataAccess.GetCampaign(campaignId);
+            ViewBag.Title = "Activities for " + campaign.Name;
+            return View(campaign.Activities);
         }
 
         // GET: Activity/Details/5
         [HttpGet]
         [Route("Admin/Activity/Details/{id}")]
-        public async Task<IActionResult> Details(int id)
+        public IActionResult Details(int id)
         {
-            var activity = await Task.Run(() => _dataAccess.GetActivity(id));
+            var activity = _dataAccess.GetActivity(id);
 
             if (activity == null)
             {
@@ -116,7 +119,7 @@ namespace AllReady.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 await _dataAccess.AddActivity(activity);
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { campaignId = activity.CampaignId });
             }
             return View(activity);
         }
@@ -150,7 +153,7 @@ namespace AllReady.Areas.Admin.Controllers
                     activity.RequiredSkills.ForEach(acsk => acsk.ActivityId = activity.Id);
                 }
                 await _dataAccess.UpdateActivity(activity);
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { campaignId = activity.CampaignId });
             }
 
             return View(activity);
@@ -184,14 +187,15 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(System.Int32 id)
         {
-            if (!UserIsTenantAdminOfActivity( id))
+            Activity activity = _dataAccess.GetActivity(id);
+            if (!UserIsTenantAdminOfActivity(activity))
             {
                 return new HttpUnauthorizedResult();
             }
 
             await _dataAccess.DeleteActivity(id);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { campaignId = activity.CampaignId });
         }
 
         [HttpGet]
