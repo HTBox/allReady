@@ -1,0 +1,69 @@
+﻿@model Skill
+@{
+    var isEdit = Model != null && Model.Id > 0;
+    if (isEdit)
+    {
+        ViewData["Title"] = string.Format("Edit Skill - {0}", Model.Name);
+        ViewData["Action"] = "Save";
+    }
+    else
+    {
+        ViewData["Title"] = "Create Skill";
+        ViewData["Action"] = "Create";
+    }
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @if (isEdit)
+        {
+            Html.HiddenFor(model => model.Id);
+        }
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.ParentSkill, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="form-inline">
+                    <select class="form-control" name="ParentSkillId" data-bind="options: availableSkills, optionsText: 'HierarchicalName', optionsValue: 'Id', value: parentSkillId"></select>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button type="submit" value="@ViewData["Action"]" class="btn">@ViewData["Action"]</button>
+            @Html.ActionLink("Cancel", "Index", new { controller = "Skill", area = "Admin" }, new { @class = "btn" })
+        </div>
+    </div>
+}
+
+@section scripts {
+    <script type="text/javascript">
+        (function (ko, $, parentSkill, availableSkills) {
+
+            function AdminSkillViewModel(parentSkill, availableSkills) {
+                this.parentSkillId = ko.observable(parentSkill.Id);
+                this.availableSkills = ko.observableArray(availableSkills);
+            }
+
+            ko.applyBindings(new AdminSkillViewModel(parentSkill, availableSkills));
+        })(ko, $,
+            @Json.Serialize(Model.ParentSkill),
+            @Json.Serialize(ViewData["Skills"]));
+    </script>
+}
+
