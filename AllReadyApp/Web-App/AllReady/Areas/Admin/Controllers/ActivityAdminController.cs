@@ -125,10 +125,11 @@ namespace AllReady.Areas.Admin.Controllers
                 CampaignId = campaign.Id,
                 Campaign = campaign,
                 TenantId = campaign.ManagingTenantId,
+                RequiredSkills = new List<ActivitySkill>(),
                 StartDateTimeUtc = DateTime.Today,
                 EndDateTimeUtc = DateTime.Today.AddMonths(1)
             };
-            return View(activity);
+            return View("Edit", activity);
         }
 
         // POST: Activity/Create
