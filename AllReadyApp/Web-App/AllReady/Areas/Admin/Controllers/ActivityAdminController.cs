@@ -13,6 +13,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using MediatR;
+using AllReady.Areas.Admin.ViewModels;
+using System;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -32,9 +34,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         ViewResult AddDropdownData(ViewResult view)
-        {
-            view.ViewData["Campaigns"] = _dataAccess.Campaigns.Select(c => new SelectListItem() { Value = c.Id.ToString(), Text = c.Name }).ToList();
-            view.ViewData["Tenants"] = _dataAccess.Tenants.Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = t.Name }).ToList();
+        {           
             view.ViewData["Skills"] = _dataAccess.Skills.Select(s => new { Name = s.HierarchicalName, Id = s.Id }).ToList();
             return view;
         }
@@ -57,17 +57,29 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Activity
-        public async Task<IActionResult> Index()
+        [Route("Admin/Activity/{campaignId}")]
+        public IActionResult Index(int campaignId)
         {
-            return await Task.Run(() => View(_dataAccess.Activities));
+            Campaign campaign = _dataAccess.GetCampaign(campaignId);
+            if (campaign == null || !UserIsTenantAdmin(campaign.ManagingTenantId))
+            {
+                return HttpUnauthorized();
+            }
+            var viewModel = new CampaignActivitiesViewModel
+            {
+                CampaignId = campaign.Id,
+                CampaignName = campaign.Name,
+                Activities = campaign.Activities
+            };
+            return View(viewModel);
         }
 
         // GET: Activity/Details/5
         [HttpGet]
         [Route("Admin/Activity/Details/{id}")]
-        public async Task<IActionResult> Details(int id)
+        public IActionResult Details(int id)
         {
-            var activity = await Task.Run(() => _dataAccess.GetActivity(id));
+            var activity = _dataAccess.GetActivity(id);
 
             if (activity == null)
             {
@@ -97,25 +109,46 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Activity/Create
-        public IActionResult Create()
+        [Route("Admin/Activity/Create/{campaignId}")]
+        public IActionResult Create(int campaignId)
         {
-            return View();
+            Campaign campaign = _dataAccess.GetCampaign(campaignId);
+            if (campaign == null || !UserIsTenantAdmin(campaign.ManagingTenantId))
+            {
+                return new HttpUnauthorizedResult();
+            }
+
+            Activity activity = new Activity
+            {
+                CampaignId = campaign.Id,
+                Campaign = campaign,
+                TenantId = campaign.ManagingTenantId,
+                RequiredSkills = new List<ActivitySkill>(),
+                StartDateTimeUtc = DateTime.Today,
+                EndDateTimeUtc = DateTime.Today.AddMonths(1)
+            };
+            return View("Edit", activity);
         }
 
         // POST: Activity/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Activity activity)
-        {            
-            if (activity.TenantId != User.GetTenantId())
-            {
-                return new HttpUnauthorizedResult();
-            }
-
+        [Route("Admin/Activity/Create/{campaignId}")]
+        public async Task<IActionResult> Create(int campaignId, Activity activity)
+        {
+            Campaign campaign = _dataAccess.GetCampaign(campaignId);
+            activity.Campaign = campaign;
+            activity.CampaignId = campaignId;
             if (ModelState.IsValid)
-            {
+            {                
+                if (campaign == null || 
+                    !UserIsTenantAdmin(campaign.ManagingTenantId))
+                {
+                    return HttpUnauthorized();
+                }                
+                activity.TenantId = campaign.ManagingTenantId;
                 await _dataAccess.AddActivity(activity);
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { campaignId = activity.CampaignId });
             }
             return View(activity);
         }
@@ -149,7 +182,7 @@ namespace AllReady.Areas.Admin.Controllers
                     activity.RequiredSkills.ForEach(acsk => acsk.ActivityId = activity.Id);
                 }
                 await _dataAccess.UpdateActivity(activity);
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { campaignId = activity.CampaignId });
             }
 
             return View(activity);
@@ -157,14 +190,14 @@ namespace AllReady.Areas.Admin.Controllers
 
         // GET: Activity/Delete/5
         [ActionName("Delete")]
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(404);
             }
 
-            Activity activity = await Task.Run(() => _dataAccess.GetActivity((int)id));
+            Activity activity = _dataAccess.GetActivity((int)id);
             if (activity == null)
             {
                 return new HttpStatusCodeResult(404);
@@ -183,14 +216,15 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(System.Int32 id)
         {
-            if (!UserIsTenantAdminOfActivity( id))
+            Activity activity = _dataAccess.GetActivity(id);
+            if (!UserIsTenantAdminOfActivity(activity))
             {
                 return new HttpUnauthorizedResult();
             }
 
             await _dataAccess.DeleteActivity(id);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { campaignId = activity.CampaignId });
         }
 
         [HttpGet]
@@ -275,17 +309,16 @@ namespace AllReady.Areas.Admin.Controllers
 
         private bool UserIsTenantAdminOfActivity(Activity activity)
         {
-            int? tenantId = User.GetTenantId();
-            if (tenantId.HasValue)
-            {
-                Tenant tenant = _dataAccess.GetTenant(tenantId.Value);
-                return User.IsUserType(UserType.SiteAdmin) || tenant.Campaigns.Any(c => c.Id == activity.CampaignId);
-            } else
-            {
-                return false;
-            }
+            return UserIsTenantAdmin(activity.TenantId);
         }
 
+        private bool UserIsTenantAdmin(int tenantId) {
+            int? userTenantId = User.GetTenantId();
+
+            return User.IsUserType(UserType.SiteAdmin) ||
+                  (userTenantId.HasValue && userTenantId.Value == tenantId);
+        }
+        
         private bool UserIsTenantAdminOfActivity(int activityId)
         {
             return UserIsTenantAdminOfActivity(_dataAccess.GetActivity(activityId));
