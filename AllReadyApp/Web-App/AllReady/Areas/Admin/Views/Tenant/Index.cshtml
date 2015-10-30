@@ -24,15 +24,16 @@
             @foreach (var item in Model) {
                 <tr>
                     <td>
+                        <a href="@Url.Action("Details", "Tenant", new { id = item.Id })">
                         @if (String.IsNullOrEmpty(item.LogoUrl))
                         {
-                            <a href="@Url.Action("Details", "Tenant", new { id = item.Id })">@item.Name</a>
+                            @item.Name
                         }
                         else
                         {
-                        <a href="@Url.Action("Details", "Tenant", new { id = item.Id })"><img src="@item.LogoUrl" /></a>
+                            <img src="@item.LogoUrl" alt="@item.Name" />
                         }
-
+                        </a>
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.WebUrl)
