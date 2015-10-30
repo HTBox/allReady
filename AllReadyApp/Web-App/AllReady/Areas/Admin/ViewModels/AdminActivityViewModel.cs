@@ -1,9 +1,10 @@
-﻿using System;
+﻿using AllReady.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AllReady.ViewModels
+namespace AllReady.Areas.Admin.ViewModels
 {
     public class AdminActivityViewModel
     {
