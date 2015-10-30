@@ -65,8 +65,6 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpUnauthorized();
             }
-
-            ViewBag.Title = "Activities for " + campaign.Name;
             var viewModel = new CampaignActivitiesViewModel
             {
                 CampaignId = campaign.Id,
