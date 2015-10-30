@@ -113,7 +113,12 @@
             </script>
         </environment>
         <script src="~/js/site.js" asp-file-version="true"></script>
-
+        <script type="text/javascript" src="~/lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
+        <script>
+            $(function () {
+                $(".datepicker").datepicker({ format: "m/d/yyyy", autoclose: true });
+            });
+        </script>
         @RenderSection("scripts", required: false)
     </body>
 </html>

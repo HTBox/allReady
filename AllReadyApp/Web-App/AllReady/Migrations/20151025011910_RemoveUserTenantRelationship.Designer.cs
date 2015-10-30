@@ -8,9 +8,10 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    partial class AllReadyContextModelSnapshot : ModelSnapshot
+    [Migration("20151025011910_RemoveUserTenantRelationship")]
+    partial class RemoveUserTenantRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .Annotation("ProductVersion", "7.0.0-beta8-15964")
@@ -56,15 +57,6 @@ namespace AllReady.Migrations
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
-                });
-
-            modelBuilder.Entity("AllReady.Models.ActivitySkill", b =>
-                {
-                    b.Property<int>("ActivityId");
-
-                    b.Property<int>("SkillId");
-
-                    b.HasKey("ActivityId", "SkillId");
                 });
 
             modelBuilder.Entity("AllReady.Models.AllReadyTask", b =>
@@ -229,27 +221,6 @@ namespace AllReady.Migrations
                     b.HasKey("Id");
                 });
 
-            modelBuilder.Entity("AllReady.Models.Skill", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Name");
-
-                    b.Property<int>("ParentSkillId");
-
-                    b.HasKey("Id");
-                });
-
-            modelBuilder.Entity("AllReady.Models.TaskSkill", b =>
-                {
-                    b.Property<int>("TaskId");
-
-                    b.Property<int>("SkillId");
-
-                    b.HasKey("TaskId", "SkillId");
-                });
-
             modelBuilder.Entity("AllReady.Models.TaskUsers", b =>
                 {
                     b.Property<int>("Id")
@@ -391,17 +362,6 @@ namespace AllReady.Migrations
                         .ForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("AllReady.Models.ActivitySkill", b =>
-                {
-                    b.HasOne("AllReady.Models.Activity")
-                        .WithMany()
-                        .ForeignKey("ActivityId");
-
-                    b.HasOne("AllReady.Models.Skill")
-                        .WithMany()
-                        .ForeignKey("SkillId");
-                });
-
             modelBuilder.Entity("AllReady.Models.AllReadyTask", b =>
                 {
                     b.HasOne("AllReady.Models.Activity")
@@ -447,24 +407,6 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.PostalCodeGeo")
                         .WithMany()
                         .ForeignKey("PostalCodePostalCode");
-                });
-
-            modelBuilder.Entity("AllReady.Models.Skill", b =>
-                {
-                    b.HasOne("AllReady.Models.Skill")
-                        .WithMany()
-                        .ForeignKey("ParentSkillId");
-                });
-
-            modelBuilder.Entity("AllReady.Models.TaskSkill", b =>
-                {
-                    b.HasOne("AllReady.Models.Skill")
-                        .WithMany()
-                        .ForeignKey("SkillId");
-
-                    b.HasOne("AllReady.Models.AllReadyTask")
-                        .WithMany()
-                        .ForeignKey("TaskId");
                 });
 
             modelBuilder.Entity("AllReady.Models.TaskUsers", b =>

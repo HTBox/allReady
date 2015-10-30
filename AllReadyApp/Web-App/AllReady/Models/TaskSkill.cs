@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace AllReady.Models
 {
-
-    public class PostalCodeGeo
+    public class TaskSkill
     {
-        public string PostalCode { get; set; }
-        public string City { get; set; }
-        public string State { get; set; }
+        public int TaskId { get; set; }
+        public AllReadyTask Task { get; set; }
+
+        public int SkillId { get; set; }
+        public Skill Skill { get; set; }
+
     }
 }

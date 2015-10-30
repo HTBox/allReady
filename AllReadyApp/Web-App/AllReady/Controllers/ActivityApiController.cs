@@ -20,16 +20,13 @@ namespace AllReady.Controllers
     {
         private const double MILES_PER_METER = 0.00062137;
         private readonly IAllReadyDataAccess _allReadyDataAccess;
-        private readonly UserManager<ApplicationUser> _userManager;
         private IClosestLocations _closestLocations;
 
         public ActivityApiController(IAllReadyDataAccess allReadyDataAccess,
-            UserManager<ApplicationUser> userManager,
             //GeoService geoService,
             IClosestLocations closestLocations)
         {
             _allReadyDataAccess = allReadyDataAccess;
-            _userManager = userManager;
             //_geoService = geoService;
             _closestLocations = closestLocations;
         }
@@ -163,14 +160,14 @@ namespace AllReady.Controllers
         [Authorize()] 
         public async Task<ActionResult> PutCheckin(int id)
         {
-            var user = await GetCurrentUserAsync();
+            var userId = User.GetUserId();
             var dbActivity = _allReadyDataAccess.GetActivity(id);
             if (dbActivity == null || dbActivity.UsersSignedUp == null)
             {
                 return this.HttpNotFound();
             }
 
-            var userSignup = dbActivity.UsersSignedUp.FirstOrDefault(u => u.User.Id == user.Id);
+            var userSignup = dbActivity.UsersSignedUp.FirstOrDefault(u => u.User.Id == userId);
             if (userSignup != null && userSignup.CheckinDateTime == null)
             {
                 userSignup.CheckinDateTime = DateTime.UtcNow;
@@ -188,7 +185,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterActivity(int id)
         {
-            var user = await GetCurrentUserAsync();
+            var user = _allReadyDataAccess.GetUser(User.GetUserId());
 
             var activity = _allReadyDataAccess.GetActivity(id);
 
@@ -217,19 +214,13 @@ namespace AllReady.Controllers
         [Authorize]
         public async Task<IActionResult> UnregisterActivity(int id)
         {
-            var user = await GetCurrentUserAsync();
-            var signedUp = _allReadyDataAccess.GetActivitySignup(id, user.Id);
+            var signedUp = _allReadyDataAccess.GetActivitySignup(id, User.GetUserId());
             if (signedUp == null)
             {
                 return HttpNotFound();
             }
             await _allReadyDataAccess.DeleteActivitySignupAsync(signedUp.Id);
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
-        }
-
-        private async Task<ApplicationUser> GetCurrentUserAsync()
-        {
-            return await _userManager.FindByIdAsync(HttpContext.User.GetUserId());
         }
 
     }

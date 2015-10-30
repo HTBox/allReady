@@ -19,8 +19,9 @@ namespace AllReady.Models
                                 .Include(a => a.Tenant)
                                 .Include(a => a.Campaign)
                                 .Include(a => a.Tasks)
-                                .Include(x => x.UsersSignedUp)
-                                .OrderBy(x => x.EndDateTimeUtc)
+                                .Include(a => a.RequiredSkills)
+                                .Include(a => a.UsersSignedUp)
+                                .OrderBy(a => a.EndDateTimeUtc)
                                 .ToList();
             }
         }
@@ -44,6 +45,10 @@ namespace AllReady.Models
 
         Task IAllReadyDataAccess.UpdateActivity(Activity value)
         {
+            //First remove any skills that are no longer associated with this activity
+            var acsksToRemove = _dbContext.ActivitySkills.Where(acsk => acsk.ActivityId == value.Id && (value.RequiredSkills == null ||
+                !value.RequiredSkills.Any(acsk1 => acsk1.SkillId == acsk.SkillId)));
+            _dbContext.ActivitySkills.RemoveRange(acsksToRemove);
             _dbContext.Activities.Update(value);
             return _dbContext.SaveChangesAsync();
         }
@@ -66,32 +71,33 @@ namespace AllReady.Models
                 .Include(a => a.Location.PostalCode)
                 .Include(a => a.Tenant)
                 .Include(a => a.Campaign)
+                .Include(a => a.RequiredSkills)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(tu => tu.User)
                 .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
                 .SingleOrDefault(a => a.Id == activityId);
         }
 
-        IEnumerable<ActivitySignup> IAllReadyDataAccess.GetActivitySignups(int activityId, ApplicationUser user)
+        IEnumerable<ActivitySignup> IAllReadyDataAccess.GetActivitySignups(int activityId, string userId)
         {
             return _dbContext.ActivitySignup
                         .Include(x => x.User)
                         .Include(x => x.Activity)
                         .ToArray()
-                        .Where(x => x.Activity.Id == activityId && x.User.Id == user.Id)
+                        .Where(x => x.Activity.Id == activityId && x.User.Id == userId)
                         .OrderBy(x => x.Activity.StartDateTimeUtc);
         }
 
-        IEnumerable<ActivitySignup> IAllReadyDataAccess.GetActivitySignups(ApplicationUser user)
+        IEnumerable<ActivitySignup> IAllReadyDataAccess.GetActivitySignups(string userId)
         {
             return _dbContext.ActivitySignup
                         .Include(x => x.User)
                         .Include(x => x.Activity)
                         .ToArray()
-                        .Where(x => x.User.Id == user.Id)
+                        .Where(x => x.User.Id == userId)
                         .OrderBy(x => x.Activity.StartDateTimeUtc);
         }
 
-        IEnumerable<TaskUsers> IAllReadyDataAccess.GetTasksAssignedToUser(int activityId, ApplicationUser user)
+        IEnumerable<TaskUsers> IAllReadyDataAccess.GetTasksAssignedToUser(int activityId, string userId)
         {
             var unfilteredTasks = _dbContext.TaskSignup
                 .Include(ts => ts.Task)
@@ -99,7 +105,7 @@ namespace AllReady.Models
                 .Include(ts => ts.User)
                 .ToList();
 
-            var finalTasks = unfilteredTasks.Where(ts => ts.Task.Activity.Id == activityId && ts.User.Id == user.Id).ToList();
+            var finalTasks = unfilteredTasks.Where(ts => ts.Task.Activity.Id == activityId && ts.User.Id == userId).ToList();
 
             return finalTasks;
         }

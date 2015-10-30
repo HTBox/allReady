@@ -7,8 +7,6 @@ namespace AllReady.Models
 {
     public class Activity
     {
-
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Display(Name = "Tenant")]
@@ -39,8 +37,10 @@ namespace AllReady.Models
 
         public ApplicationUser Organizer { get; set; }
 
-        [Display(Name="Image")]
+        [Display(Name = "Image")]
         public string ImageUrl { get; set; }
 
+        [Display(Name = "Required skills")]
+        public List<ActivitySkill> RequiredSkills { get; set; }
     }
 }

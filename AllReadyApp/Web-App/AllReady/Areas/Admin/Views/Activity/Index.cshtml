@@ -1,9 +1,10 @@
-@model IEnumerable<Activity>
-@{  ViewData["Title"] = "Activities list"; }
+@model AllReady.Areas.Admin.ViewModels.CampaignActivitiesViewModel
+
+@{  ViewBag.Title = "Activities for " + Model.CampaignName; }
 
 <div class="row">
     <div class="cold-md-12">
-        <h2>@ViewData["Title"]</h2>
+        <h2>@ViewBag.Title</h2>
     </div>
 </div>
 <div class="row">
@@ -11,17 +12,17 @@
         <table class="table">
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Name)
+                    Name
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.StartDateTimeUtc)
+                    Start
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.EndDateTimeUtc)
+                    End
                 </th>
                 <th></th>
             </tr>
-            @foreach (var item in Model) {
+            @foreach (var item in Model.Activities) {
                 <tr>
                     <td>
                         @Html.DisplayFor(modelItem => item.Name)
@@ -45,7 +46,8 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        @Html.ActionLink("Create New", "Create", "Activity", null, new { @class = "btn" })
+        <a asp-controller="Activity" asp-action="Create"
+              class="btn">Create New</a>
     </div>
 </div>
 

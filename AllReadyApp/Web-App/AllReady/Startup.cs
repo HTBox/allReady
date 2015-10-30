@@ -90,8 +90,8 @@ namespace AllReady
       // Add Authorization rules for the app
       services.Configure<AuthorizationOptions>(options =>
       {
-        options.AddPolicy("TenantAdmin", new AuthorizationPolicyBuilder().RequireClaim("UserType", new string[] { "TenantAdmin", "SiteAdmin" }).Build());
-        options.AddPolicy("SiteAdmin", new AuthorizationPolicyBuilder().RequireClaim("UserType", "SiteAdmin").Build());
+        options.AddPolicy("TenantAdmin", new AuthorizationPolicyBuilder().RequireClaim(Security.ClaimTypes.UserType, new string[] { "TenantAdmin", "SiteAdmin" }).Build());
+        options.AddPolicy("SiteAdmin", new AuthorizationPolicyBuilder().RequireClaim(Security.ClaimTypes.UserType, "SiteAdmin").Build());
       });
 
       services.AddCookieAuthentication(options =>
@@ -108,44 +108,48 @@ namespace AllReady
 
     }
 
-      private IContainer CreateIoCContainer(IServiceCollection services)
+    private IContainer CreateIoCContainer(IServiceCollection services)
+    {
+      // todo: move these to a proper autofac module
+      // Register application services.
+      services.AddSingleton((x) => Configuration);
+      services.AddTransient<IEmailSender, AuthMessageSender>();
+      services.AddTransient<ISmsSender, AuthMessageSender>();
+      services.AddTransient<IQueueStorageService, QueueStorageService>();
+      services.AddSingleton<IClosestLocations, SqlClosestLocations>();
+      services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
+      services.AddSingleton<IImageService, ImageService>();
+      //services.AddSingleton<GeoService>();
+      services.AddTransient<SampleDataGenerator>();
+
+      var containerBuilder = new ContainerBuilder();
+
+      containerBuilder.RegisterSource(new ContravariantRegistrationSource());
+      containerBuilder.RegisterAssemblyTypes(typeof(IMediator).Assembly).AsImplementedInterfaces();
+      containerBuilder.RegisterAssemblyTypes(typeof(Startup).Assembly).AsImplementedInterfaces();
+      containerBuilder.Register<SingleInstanceFactory>(ctx =>
+    {
+      var c = ctx.Resolve<IComponentContext>();
+      return t => c.Resolve(t);
+    });
+      containerBuilder.Register<MultiInstanceFactory>(ctx =>
       {
-          // todo: move these to a proper autofac module
-          // Register application services.
-          services.AddSingleton((x) => Configuration);
-          services.AddTransient<IEmailSender, AuthMessageSender>();
-          services.AddTransient<ISmsSender, AuthMessageSender>();
-          services.AddTransient<IQueueStorageService, QueueStorageService>();
-          services.AddSingleton<IClosestLocations, SqlClosestLocations>();
-          services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
-          services.AddSingleton<IImageService, ImageService>();
-          //services.AddSingleton<GeoService>();
+        var c = ctx.Resolve<IComponentContext>();
+        return t => (IEnumerable<object>)c.Resolve(typeof(IEnumerable<>).MakeGenericType(t));
+      });
 
-          var containerBuilder = new ContainerBuilder();
+      //Populate the container with services that were previously registered
+      containerBuilder.Populate(services);
 
-          containerBuilder.RegisterSource(new ContravariantRegistrationSource());
-            containerBuilder.RegisterAssemblyTypes(typeof(IMediator).Assembly).AsImplementedInterfaces();
-            containerBuilder.RegisterAssemblyTypes(typeof(Startup).Assembly).AsImplementedInterfaces();
-            containerBuilder.Register<SingleInstanceFactory>(ctx =>
-          {
-              var c = ctx.Resolve<IComponentContext>();
-              return t => c.Resolve(t);
-          });
-          containerBuilder.Register<MultiInstanceFactory>(ctx =>
-          {
-              var c = ctx.Resolve<IComponentContext>();
-              return t => (IEnumerable<object>) c.Resolve(typeof (IEnumerable<>).MakeGenericType(t));
-          });
+      var container = containerBuilder.Build();
+      return container;
+    }
 
-          //Populate the container with services that were previously registered
-          containerBuilder.Populate(services);
-
-          var container = containerBuilder.Build();
-          return container;
-      }
-
-      // Configure is called after ConfigureServices is called.
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, AllReadyContext dbContext, IServiceProvider serviceProvider)
+    // Configure is called after ConfigureServices is called.
+    public async void Configure(IApplicationBuilder app,
+      IHostingEnvironment env,
+      ILoggerFactory loggerFactory,
+      SampleDataGenerator sampleData)
     {
 
       loggerFactory.MinimumLevel = LogLevel.Information;
@@ -188,8 +192,8 @@ namespace AllReady
       {
         app.UseFacebookAuthentication(options =>
         {
-            options.AppId = Configuration["Authentication:Facebook:AppId"];
-            options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+          options.AppId = Configuration["Authentication:Facebook:AppId"];
+          options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
         });
       }
       // app.UseGoogleAuthentication();
@@ -200,15 +204,17 @@ namespace AllReady
         {
             options.ClientId = Configuration["Authentication:MicrosoftAccount:ClientId"];
             options.ClientSecret = Configuration["Authentication:MicrosoftAccount:ClientSecret"];
-        });
+			options.Scope.Add("wl.basic");
+			options.Scope.Add("wl.signin");
+		});
       }
 
       if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
       {
         app.UseTwitterAuthentication(options =>
         {
-            options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
-            options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
+          options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
+          options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
         });
       }
       // Add MVC to the request pipeline.
@@ -227,11 +233,11 @@ namespace AllReady
       // for production applications, this should either be set to false or deleted.
       if (Configuration["Data:InsertSampleData"] == "true")
       {
-        SampleData.InsertTestData(serviceProvider, dbContext).Wait();
+        sampleData.InsertTestData();
       }
       if (Configuration["Data:InsertTestUsers"] == "true")
       {
-        SampleData.CreateAdminUser(serviceProvider, dbContext).Wait();
+        await sampleData.CreateAdminUser();
       }
     }
 

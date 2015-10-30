@@ -1,6 +1,6 @@
 ﻿@model AllReady.ViewModels.TaskViewModel
 
-@{  ViewData["Title"] = "Edit task \"" + Model.Name +"\""; }
+@{  ViewData["Title"] = "Edit task \"" + Model.Name + "\""; }
 
 <h2>@ViewData["Title"]</h2>
 
@@ -46,10 +46,29 @@
                 @Html.ValidationMessageFor(model => model.EndDateTime, "", new { @class = "text-danger" })
             </div>
         </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.RequiredSkills, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div data-bind="foreach: requiredSkills">
+                    <div class="form-inline">
+                        <select class="form-control" data-bind="attr: { name: 'RequiredSkills[' + $index() + '].Id' }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                        <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            Delete
+                        </a>
+                    </div>
+                </div>
+                <a href="#" data-bind="click: addSkill" title="Add required skill">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    Add
+                </a>
+            </div>
+        </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <button type="submit" class="btn">Save</button>
+                <button type="submit" class="btn" data-bind="enable: requiredSkills.isValid">Save</button>
+                <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">Required skills must be unique</span>
             </div>
         </div>
     </div>
@@ -58,4 +77,36 @@
 <div>
     @Html.ActionLink("Back to List", "Index", "Task", null, new { @class = "btn" })
 </div>
+
+@section scripts {
+    <script type="text/javascript" src="~/js/ko.validation.js"></script>
+    <script type="text/javascript">
+        (function (ko, $, requiredSkills, availableSkills) {
+
+            function AdminTaskViewModel(requiredSkills, availableSkills) {
+                
+                function RequiredSkillObservable(skillModel) {
+                    var ret = ko.utils.extend({}, skillModel);
+                    ret.Id = ko.observable(ret.Id);
+                    return ret;
+                }
+                requiredSkills = (requiredSkills || []).map(RequiredSkillObservable);
+                
+                var self = this;
+                this.requiredSkills = ko.observableArray(requiredSkills).uniqueValidator("Id");
+                this.availableSkills = ko.observableArray(availableSkills);
+                this.addSkill = function() {
+                    self.requiredSkills.push(RequiredSkillObservable());
+                };
+                this.deleteSkill = function(skill) {
+                    self.requiredSkills.remove(skill);
+                };
+            }
+
+            ko.applyBindings(new AdminTaskViewModel(requiredSkills, availableSkills));
+        })(ko, $, 
+            @Json.Serialize(Model.RequiredSkills.Select(rs => new { Id = rs.Id })),
+            @Json.Serialize(ViewData["Skills"]));
+    </script>
+}
 
