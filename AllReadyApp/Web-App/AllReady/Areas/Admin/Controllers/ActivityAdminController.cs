@@ -61,7 +61,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Index(int campaignId)
         {
             Campaign campaign = _dataAccess.GetCampaign(campaignId);
-            if (!UserIsTenantAdmin(campaign.ManagingTenantId))
+            if (campaign == null || !UserIsTenantAdmin(campaign.ManagingTenantId))
             {
                 return HttpUnauthorized();
             }
@@ -115,7 +115,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Create(int campaignId)
         {
             Campaign campaign = _dataAccess.GetCampaign(campaignId);
-            if (!UserIsTenantAdmin(campaign.ManagingTenantId))
+            if (campaign == null || !UserIsTenantAdmin(campaign.ManagingTenantId))
             {
                 return new HttpUnauthorizedResult();
             }
