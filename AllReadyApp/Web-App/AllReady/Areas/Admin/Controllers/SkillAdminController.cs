@@ -46,16 +46,12 @@ namespace AllReady.Areas.Admin.Controllers
             return WithSkills(View("Edit", skill));
         }
 
-        public IActionResult Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(404);
-            }
-            Skill skill = _dataAccess.GetSkill((int)id);
+            Skill skill = _dataAccess.GetSkill(id);
             if (skill == null)
             {
-                return new HttpStatusCodeResult(404);
+                return HttpNotFound();
             }
 
             return WithSkills(View(skill));
@@ -73,16 +69,12 @@ namespace AllReady.Areas.Admin.Controllers
             return WithSkills(View(skill));
         }
 
-        public IActionResult Delete(int? id)
+        public IActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(404);
-            }
-            Skill skill = _dataAccess.GetSkill((int)id);
+            Skill skill = _dataAccess.GetSkill(id);
             if (skill == null)
             {
-                return new HttpStatusCodeResult(404);
+                return HttpNotFound();
             }
 
             ViewBag.Children = _dataAccess.Skills.Where(s => s.ParentSkillId == id).ToList();
