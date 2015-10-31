@@ -176,7 +176,7 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(Activity activity)
         {
             Campaign campaign = _dataAccess.GetCampaign(activity.CampaignId);
-            if (campaign == null || !UserIsTenantAdmin(campaign.ManagingTenantId))
+            if (campaign == null || !User.IsTenantAdmin(campaign.ManagingTenantId))
             {
                 return HttpUnauthorized();
             }
