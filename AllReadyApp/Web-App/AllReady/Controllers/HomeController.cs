@@ -16,6 +16,13 @@ namespace AllReady.Controllers
             return View();
         }
 
+        public IActionResult Aesop()
+        {
+            ViewData["Message"] = "The backstory on why there are ants on the home page.";
+
+            return View();
+        }
+
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";

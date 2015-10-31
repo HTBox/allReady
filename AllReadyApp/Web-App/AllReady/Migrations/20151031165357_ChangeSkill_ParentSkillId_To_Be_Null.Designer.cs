@@ -8,9 +8,10 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    partial class AllReadyContextModelSnapshot : ModelSnapshot
+    [Migration("20151031165357_ChangeSkill_ParentSkillId_To_Be_Null")]
+    partial class ChangeSkill_ParentSkillId_To_Be_Null
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .Annotation("ProductVersion", "7.0.0-beta8-15964")
@@ -234,8 +235,7 @@ namespace AllReady.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Name")
-                        .IsRequired();
+                    b.Property<string>("Name");
 
                     b.Property<int?>("ParentSkillId");
 

@@ -52,10 +52,10 @@
         </div>
         <!-- /ko -->
     </div>
-    <div class="col-sm-12">
+    <div class="col-sm-12" data-bind="if: resources && resources.length > 0">
         <h3>Resources for this campaign</h3>
     </div>
-    <div class="col-md-12 text-center">
+    <div class="col-md-12 text-center" data-bind="if: resources && resources.length > 0">
         <div class="activity-results">
             <div class="activity-wrapper" data-bind="foreach: resources">
                 <p><label data-bind="text: Name"></label></p>
