@@ -32,7 +32,8 @@ function ResourcesViewModel(category)
 (function (ko, $, activities) {
 
     function CampaignViewModel(activities) {
-        this.activities = ko.observableArray(activities).filterBeforeDate("EndDateTimeUtc").textFilter(["Title","Description"]);
+        this.activities = ko.observableArray(activities).filterBeforeDate("EndDateTimeUtc").textFilter(["Title", "Description"]);
+        this.resources = ko.observableArray([]);
     }
 
     ko.applyBindings(new CampaignViewModel(activities));
