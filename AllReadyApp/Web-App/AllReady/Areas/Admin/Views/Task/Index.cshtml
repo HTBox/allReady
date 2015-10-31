@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Activity>
+﻿@model AllReady.Models.Activity
 @{
     ViewData["Title"] = "Tasks List";
 }
@@ -7,14 +7,14 @@
         <h2>@ViewData["Title"]</h2>
     </div>
 </div>
-@foreach (var activity in Model) {
+
 
     <div class="row">
             <div class="col-md-12">
                 <div class="collapsible-panel-wrapper">
-                    <div class="collapsible-panel-header" data-bind="click: function (d,e) { expand(@activity.Id, d, e) }">@activity.Name <span class="fa fa-chevron-down"></span></div>
+                    <div class="collapsible-panel-header" data-bind="click: function (d,e) { expand(@Model.Id, d, e) }">@Model.Name <span class="fa fa-chevron-down"></span></div>
                     <div class="collapsible-panel-body">
-                        <h4>@activity.Description</h4>
+                        <h4>@Model.Description</h4>
                         <table class="table">
                             <tr>
                                 <th>
@@ -29,7 +29,7 @@
                                 <th></th>
                             </tr>
 
-                            @foreach (var item in (activity.Tasks.OrderBy(t => t.StartDateTimeUtc).ThenBy(t => t.Name))) {
+                            @foreach (var item in (Model.Tasks.OrderBy(t => t.StartDateTimeUtc).ThenBy(t => t.Name))) {
                                 <tr>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Name)
