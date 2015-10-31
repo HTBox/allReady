@@ -8,7 +8,7 @@ namespace AllReady.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int ParentSkillId { get; set; }
+        public int? ParentSkillId { get; set; }
         public Skill ParentSkill { get; set; }
         public string HierarchicalName
         {
