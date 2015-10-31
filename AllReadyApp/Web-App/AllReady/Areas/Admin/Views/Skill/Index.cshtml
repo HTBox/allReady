@@ -1,0 +1,37 @@
+﻿@model IEnumerable<Skill>
+@{ ViewData["Title"] = "Skills"; }
+
+<div class="row">
+    <div class="cold-md-12">
+        <h2>@ViewData["Title"]</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="cold-md-12">
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th></th>
+            </tr>
+            @foreach (var item in Model.OrderBy(s => s.HierarchicalName)) {
+            <tr>
+                <td>
+                    @item.HierarchicalName
+                </td>
+                <td>
+                    <a class="btn" asp-route-area="Admin" asp-controller="Skill" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <a class="btn" asp-route-area="Admin" asp-controller="Skill" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+            }
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <a class="btn" asp-route-area="Admin" asp-controller="Skill" asp-action="Create">Create New</a>
+    </div>
+</div>
+

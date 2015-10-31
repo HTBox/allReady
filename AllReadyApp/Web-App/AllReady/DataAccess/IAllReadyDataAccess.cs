@@ -101,6 +101,10 @@ namespace AllReady.Models
 
         #region Skill CRUD
         IEnumerable<Skill> Skills { get; }
+        Skill GetSkill(int skillId);
+        Task AddSkill(Skill value);
+        Task DeleteSkill(int id);
+        Task UpdateSkill(Skill value);
         #endregion
     }
 }
