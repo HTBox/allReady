@@ -33,7 +33,6 @@ namespace AllReady.Models
                 _context.Activities.Any() ||
                 _context.ActivitySkills.Any() ||
                 _context.Skills.Any() ||
-
                 _context.Resources.Any())
             {
                 return;
@@ -50,15 +49,13 @@ namespace AllReady.Models
             #region Skills
             var skills = new List<Skill>();
             var existingSkills = _context.Skills.ToList();
-            var medical = GetSkill(skills, existingSkills, "Medical", null);
+            var medical = GetSkill(skills, existingSkills, "Medical");
             var cprCertified = GetSkill(skills, existingSkills, "CPR Certified", medical);
             var md = GetSkill(skills, existingSkills, "MD", medical);
-            var surgeon = GetSkill(skills, existingSkills, "Surgeon", medical);
+            var surgeon = GetSkill(skills, existingSkills, "Surgeon", md);
             _context.Skills.AddRange(skills);
             _context.SaveChanges();
             #endregion
-
-
 
             List<Location> locations = GetLocations();
             List<TaskUsers> users = new List<TaskUsers>();
