@@ -68,35 +68,40 @@ namespace AllReady.ViewModels
         }
 
         public int Id { get; set; }
-        [Display(Name = "Task name")]
+        public bool IsNew { get; set; }
+
+        [Display(Name = "Task Name")]
         [Required]
         public string Name { get; set; }
-        [Display(Name = "Task description")]
+        [Display(Name = "Task Description")]
         public string Description { get; set; }
 
         [Required]
         [Display(Name = "Activity")]
         public int ActivityId { get; set; }
 
+        [Display(Name = "Activity")]
         public string ActivityName { get; set; }
 
         public int CampaignId { get; set; }
+
+        [Display(Name="Campaign")]
         public string CampaignName { get; set; }
 
         public int TenantId { get; set; }
         public string TenantName { get; set; }
 
-        [Display(Name = "Required skills")]
-        public IEnumerable<Skill> RequiredSkills { get; set; }
+        [Display(Name = "Required Skills")]
+        public IEnumerable<Skill> RequiredSkills { get; set; } = new List<Skill>();
 
-        [Display(Name = "Task starting time")]
+        [Display(Name = "Starting time")]
         public DateTimeOffset? StartDateTime { get; set; }
-        [Display(Name = "Task ending time")]
+        [Display(Name = "Ending time")]
         public DateTimeOffset? EndDateTime { get; set; }
 
         public bool IsUserSignedUpForTask { get; private set; }
 
-        public List<TaskSignupViewModel> AssignedVolunteers { get; set; }
+        public List<TaskSignupViewModel> AssignedVolunteers { get; set; } = new List<TaskSignupViewModel>();
 
         public TaskViewModel(AllReadyTask task, bool isUserSignedupForTask)
             : this(task)

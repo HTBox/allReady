@@ -27,9 +27,6 @@ namespace AllReady.Areas.Admin.Controllers
 
         ViewResult AddDropdownData(ViewResult view)
         {
-            view.ViewData["Campaigns"] = _dataAccess.Campaigns.Select(c => new SelectListItem() { Value = c.Id.ToString(), Text = c.Name }).ToList();
-            view.ViewData["Tenants"] = _dataAccess.Tenants.Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = t.Name }).ToList();
-            view.ViewData["Activities"] = _dataAccess.Activities.Select(a => new SelectListItem { Value = a.Id.ToString(), Text = a.Name }).ToList();
             view.ViewData["Skills"] = _dataAccess.Skills.Select(s => new { Name = s.HierarchicalName, Id = s.Id }).ToList();
             return view;
         }
@@ -51,7 +48,7 @@ namespace AllReady.Areas.Admin.Controllers
             return AddDropdownData(base.View(viewName, model));
         }
 
-        [Route("Admin/Task/{activityId?}")]
+        [Route("Admin/Task/{activityId}")]
         public IActionResult Index(int activityId)
         {
             ViewBag.ActivityId = activityId;
@@ -60,27 +57,48 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpUnauthorized();
             }
-            return View(new List<Activity>() { activity });
+            return View(activity);
         }
 
         [HttpGet]
-        [Route("Admin/Task/Create")]
-        public IActionResult Create()
+        [Route("Admin/Task/Create/{activityId}")]
+        public IActionResult Create(int activityId)
         {
-            return View();
+            var activity = _dataAccess.GetActivity(activityId);
+            if (activity == null || !User.IsTenantAdmin(activity.TenantId))
+            {
+                return HttpUnauthorized();
+            }
+            var viewModel = new TaskViewModel()
+            {
+                IsNew = true,
+                ActivityId = activity.Id,
+                ActivityName = activity.Name,
+                CampaignId = activity.CampaignId,
+                CampaignName = activity.Campaign.Name,
+                TenantId = activity.TenantId,
+                TenantName = activity.Tenant.Name
+            };
+            return View("Edit", viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("Admin/Task/Create")]
-        public IActionResult Create(TaskViewModel model)
+        [Route("Admin/Task/Create/{activityId}")]
+        public IActionResult Create(int activityId, TaskViewModel model)
         {
             if (ModelState.IsValid)
             {
+                var activity = _dataAccess.GetActivity(model.ActivityId);
+                if (activity == null || !User.IsTenantAdmin(activity.TenantId))
+                {
+                    return HttpUnauthorized();
+                }
                 _dataAccess.AddTaskAsync(model.ToModel(_dataAccess));
                 return RedirectToAction("Index");
             }
-            return View(model);
+            model.IsNew = true;
+            return View("Edit", model);
         }
 
         [HttpGet]
@@ -88,17 +106,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Edit(int id)
         {
             var dbTask = _dataAccess.GetTask(id);
-            var model = new TaskViewModel
-            {
-                Id = dbTask.Id,
-                Name = dbTask.Name,
-                Description = dbTask.Description,
-                ActivityId = dbTask.Activity.Id,
-                ActivityName = dbTask.Activity.Name,
-                StartDateTime = dbTask.StartDateTimeUtc,
-                EndDateTime = dbTask.EndDateTimeUtc,
-                RequiredSkills = dbTask.RequiredSkills.Select(rs => rs.Skill)
-            };
+            var model = new TaskViewModel(dbTask);
             return View(model);
         }
 
