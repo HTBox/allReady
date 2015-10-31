@@ -29,7 +29,7 @@
             @Html.AntiForgeryToken()
             <div class="form-actions no-color">
                 <button type="submit" class="btn">Delete</button>
-                @Html.ActionLink("Back to List", "Index", "Skill", null, new { @class = "btn" })
+                <a class="btn" asp-route-area="Admin" asp-controller="Skill" asp-action="Index">Back to List</a>
             </div>
         }
     </div>
