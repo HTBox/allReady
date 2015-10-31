@@ -36,6 +36,13 @@ namespace AllReady.Areas.SiteAdmin.Controllers
         {
             // Get the user and the UserType claim
             var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError("Email", "No users matching this email address");
+                return View();
+            }
+            
+            //TODO: Simplify this logic
             var claims = await _userManager.GetClaimsAsync(user);
             if (claims.Count <= 0)
             {
