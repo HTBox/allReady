@@ -21,48 +21,60 @@
 
     <div class="form-horizontal">
         <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div asp-validation-summary="ValidationSummary.ModelOnly" class="text-danger"></div>
         @if (isEdit)
         {
-            Html.HiddenFor(model => model.Id);
+            <input asp-for="Id" type="hidden" />
         }
         <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="Name" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.ParentSkill, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="ParentSkill" class="control-label col-md-2"></label>
             <div class="col-md-10">
                 <div class="form-inline">
                     <select class="form-control" name="ParentSkillId" data-bind="options: availableSkills, optionsText: 'HierarchicalName', optionsValue: 'Id', value: parentSkillId"></select>
-                    
+                    <span class="label label-danger" data-bind="visible: !isValidParent()">A skill can't be its own ancestor!</span>
                 </div>
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
-            <button type="submit" value="@ViewData["Action"]" class="btn">@ViewData["Action"]</button>
-            @Html.ActionLink("Cancel", "Index", new { controller = "Skill", area = "Admin" }, new { @class = "btn" })
+            <button type="submit" value="@ViewData["Action"]" class="btn" data-bind="enable: isValidParent">@ViewData["Action"]</button>
+            <a class="btn" asp-controller="Skill" asp-action="Index">Back to List</a>
         </div>
     </div>
 }
 
 @section scripts {
     <script type="text/javascript">
-        (function (ko, $, parentSkill, availableSkills) {
+        (function (ko, $, parentSkillId, availableSkills) {
 
-            function AdminSkillViewModel(parentSkill, availableSkills) {
-                this.parentSkillId = ko.observable(parentSkill.Id);
+            function AdminSkillViewModel(parentSkillId, availableSkills) {
+                this.parentSkillId = ko.observable(parentSkillId);
                 this.availableSkills = ko.observableArray(availableSkills);
+                this.availableSkills.unshift({ HierarchicalName: "<None>", Id: "0" });
+                this.isValidParent = ko.computed(function () {
+                    var id = @(Model != null ? Model.Id : 0);
+                    var parentId = this.parentSkillId();
+                    var parent = this.availableSkills().find(function(skill) { return skill.Id === parentId; });
+                    var parentIsValid = true;
+                    while (parentIsValid && parent) {
+                        parentIsValid = parent.Id !== id;
+                        parent = parent.ParentSkill;
+                    }
+                    return parentIsValid;
+                }, this);
             }
 
-            ko.applyBindings(new AdminSkillViewModel(parentSkill, availableSkills));
+            ko.applyBindings(new AdminSkillViewModel(parentSkillId, availableSkills));
         })(ko, $,
-            @Json.Serialize(Model.ParentSkill),
+            @(Model != null ? Model.ParentSkillId : 0),
             @Json.Serialize(ViewData["Skills"]));
     </script>
 }

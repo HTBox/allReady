@@ -71,7 +71,6 @@ namespace AllReady.Areas.Admin.Controllers
             return WithSkills(View(skill));
         }
 
-        // POST: Campaign/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Skill skill)
@@ -89,38 +88,37 @@ namespace AllReady.Areas.Admin.Controllers
             return WithSkills(View(skill));
         }
 
-        // GET: Campaign/Delete/5
-        public IActionResult Delete(int? skillId)
+        public IActionResult Delete(int? id)
         {
             if (!User.IsUserType(UserType.SiteAdmin))
             {
                 return new HttpUnauthorizedResult();
             }
 
-            if (skillId == null)
+            if (id == null)
             {
                 return new HttpStatusCodeResult(404);
             }
-            Skill skill = _dataAccess.GetSkill((int)skillId);
+            Skill skill = _dataAccess.GetSkill((int)id);
             if (skill == null)
             {
                 return new HttpStatusCodeResult(404);
             }
 
+            ViewBag.Children = _dataAccess.Skills.Where(s => s.ParentSkillId == id).ToList();
             return View(skill);
         }
 
-        // POST: Campaign/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int skillId)
+        public IActionResult DeleteConfirmed(int id)
         {
             if (!User.IsUserType(UserType.SiteAdmin))
             {
                 return new HttpUnauthorizedResult();
             }
 
-            _dataAccess.DeleteSkill(skillId);
+            _dataAccess.DeleteSkill(id);
             return RedirectToAction("Index", new { area = "Admin" });
         }
 
