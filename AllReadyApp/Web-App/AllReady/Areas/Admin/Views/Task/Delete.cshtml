@@ -37,7 +37,7 @@
 
             <div class="form-actions no-color">
                 <button type="submit" class="btn">Delete</button>
-                @Html.ActionLink("Back to List", "Index", "Task", null, new { @class = "btn" })
+                <a asp-controller="Task" asp-action="Index" asp-route-activityId="@Model.ActivityId" class="btn">Back to List</a>
             </div>
         }
     </div>

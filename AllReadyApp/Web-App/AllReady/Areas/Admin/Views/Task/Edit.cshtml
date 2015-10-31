@@ -63,7 +63,7 @@
             <div class="col-md-10">
                 <div data-bind="foreach: requiredSkills">
                     <div class="form-inline">
-                        <select class="form-control" data-bind="attr: { name: 'RequiredSkills[' + $index() + '].Id' }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                        <select class="form-control" data-bind="attr: { name: 'RequiredSkills[' + $index() + '].SkillId' }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
                         <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                             Delete

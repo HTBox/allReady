@@ -106,6 +106,14 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Edit(int id)
         {
             var dbTask = _dataAccess.GetTask(id);
+            if (dbTask == null || dbTask.Activity == null)
+            {
+                return HttpNotFound();
+            }            
+            if (!User.IsTenantAdmin(dbTask.Activity.TenantId))
+            {
+                return HttpUnauthorized();
+            }
             var model = new TaskViewModel(dbTask);
             return View(model);
         }
@@ -116,15 +124,13 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                var activity = _dataAccess.GetActivity(model.ActivityId);
+                if (activity == null || !User.IsTenantAdmin(activity.TenantId))
+                {
+                    return HttpUnauthorized();
+                }
                 await _dataAccess.UpdateTaskAsync(model.ToModel(_dataAccess));
-                if (ViewBag.ActivityId != null)
-                {
-                    return RedirectToAction("Index", new { activityId = ViewBag.ActivityId });
-                }
-                else
-                {
-                    return RedirectToAction("Index");
-                }
+                return RedirectToAction("Index", new { activityId = model.ActivityId });
             }
 
             return View(model);
@@ -134,15 +140,21 @@ namespace AllReady.Areas.Admin.Controllers
         {
 
             var dbTask = _dataAccess.GetTask(id);
-            if (dbTask == null)
+            if (dbTask == null || dbTask.Activity == null)
             {
-                return new HttpStatusCodeResult(404);
+                return new HttpNotFoundResult();
+            }
+            
+            if (!User.IsTenantAdmin(dbTask.Activity.TenantId))
+            {
+                return HttpUnauthorized();
             }
 
             var model = new TaskViewModel
             {
                 Id = dbTask.Id,
                 Name = dbTask.Name,
+                ActivityId = dbTask.Activity.Id,
                 StartDateTime = dbTask.StartDateTimeUtc,
                 EndDateTime = dbTask.EndDateTimeUtc
             };
@@ -158,7 +170,7 @@ namespace AllReady.Areas.Admin.Controllers
             var dbTask = _dataAccess.GetTask(id);
             if (dbTask == null)
             {
-                return new HttpStatusCodeResult(404);
+                return new HttpNotFoundResult();
             }
 
             var model = new TaskViewModel
@@ -178,9 +190,20 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var dbTask = _dataAccess.GetTask(id);
+            if (dbTask == null || dbTask.Activity == null)
+            {
+                return new HttpNotFoundResult();
+            }
+
+            if (!User.IsTenantAdmin(dbTask.Activity.TenantId))
+            {
+                return HttpUnauthorized();
+            }
+
             await _dataAccess.DeleteTaskAsync(id);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { activityId = dbTask.Activity.Id});
         }
 
     }
