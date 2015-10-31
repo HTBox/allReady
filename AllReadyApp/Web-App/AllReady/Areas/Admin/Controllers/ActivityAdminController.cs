@@ -150,7 +150,7 @@ namespace AllReady.Areas.Admin.Controllers
                 await _dataAccess.AddActivity(activity);
                 return RedirectToAction("Index", new { campaignId = activity.CampaignId });
             }
-            return View(activity);
+            return View("Edit", activity);
         }
 
         // GET: Activity/Edit/5

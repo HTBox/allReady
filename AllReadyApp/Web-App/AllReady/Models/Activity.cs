@@ -7,6 +7,13 @@ namespace AllReady.Models
 {
     public class Activity
     {
+        public Activity()
+        {
+            Tasks = new List<AllReadyTask>();
+            UsersSignedUp = new List<ActivitySignup>();
+            RequiredSkills = new List<ActivitySkill>();
+        }
+
         public int Id { get; set; }
 
         [Display(Name = "Tenant")]
