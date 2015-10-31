@@ -10,7 +10,7 @@
         <ul class="dropdown-menu">
             <li><a asp-route-area="Admin" asp-route-controller="Campaign" asp-route-action="Index">Campaigns</a></li>
             <li><a asp-route-area="Admin" asp-route-controller="Task" asp-route-action="Index">Tasks</a></li>
-            <li><a asp-route-area="Admin" asp-route-controller="Tenant" asp-route-action="Index">Tenants</a></li>
+            <li><a asp-route-area="Admin" asp-route-controller="Tenant" asp-route-action="Index">Organizations</a></li>
             @if (User.IsUserType(UserType.SiteAdmin))
             {
                 <li><a asp-route-area="Admin" asp-route-controller="Skill" asp-route-action="Index">Skills</a></li>
