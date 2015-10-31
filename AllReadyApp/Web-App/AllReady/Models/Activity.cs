@@ -7,13 +7,6 @@ namespace AllReady.Models
 {
     public class Activity
     {
-        public Activity()
-        {
-            Tasks = new List<AllReadyTask>();
-            UsersSignedUp = new List<ActivitySignup>();
-            RequiredSkills = new List<ActivitySkill>();
-        }
-
         public int Id { get; set; }
 
         [Display(Name = "Tenant")]
@@ -38,9 +31,9 @@ namespace AllReady.Models
 
         public Location Location { get; set; }
 
-        public List<AllReadyTask> Tasks { get; set; }
+        public List<AllReadyTask> Tasks { get; set; } = new List<AllReadyTask>();
 
-        public List<ActivitySignup> UsersSignedUp { get; set; }
+        public List<ActivitySignup> UsersSignedUp { get; set; } = new List<ActivitySignup>();
 
         public ApplicationUser Organizer { get; set; }
 
@@ -48,6 +41,6 @@ namespace AllReady.Models
         public string ImageUrl { get; set; }
 
         [Display(Name = "Required skills")]
-        public List<ActivitySkill> RequiredSkills { get; set; }
+        public List<ActivitySkill> RequiredSkills { get; set; } = new List<ActivitySkill>();
     }
 }
