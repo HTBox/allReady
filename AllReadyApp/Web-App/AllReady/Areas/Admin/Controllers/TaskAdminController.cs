@@ -52,22 +52,15 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [Route("Admin/Task/{activityId?}")]
-        public IActionResult Index(int? activityId)
+        public IActionResult Index(int activityId)
         {
-            if (activityId != null)
+            ViewBag.ActivityId = activityId;
+            var activity = _dataAccess.GetActivity(activityId);
+            if (activity == null || !User.IsTenantAdmin(activity.TenantId))
             {
-                ViewBag.ActivityId = activityId;
-                return View(new List<Activity>() { _dataAccess.GetActivity((int)activityId) });
+                return HttpUnauthorized();
             }
-            else
-            {
-                var tenantId = User.GetTenantId();
-                var thisTenantsActivities = (from activity in _dataAccess.Activities
-                                             where activity.Campaign.ManagingTenantId == tenantId
-                                             select activity).ToList();
-
-                return View(thisTenantsActivities);
-            }
+            return View(new List<Activity>() { activity });
         }
 
         [HttpGet]
