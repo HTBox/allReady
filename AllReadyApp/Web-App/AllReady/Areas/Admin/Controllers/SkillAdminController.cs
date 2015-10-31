@@ -37,11 +37,6 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Skill skill)
         {
-            if (!User.IsUserType(UserType.SiteAdmin))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
             if (ModelState.IsValid)
             {
                 _dataAccess.AddSkill(skill);
@@ -53,11 +48,6 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Edit(int? id)
         {
-            if (!User.IsUserType(UserType.SiteAdmin))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
             if (id == null)
             {
                 return new HttpStatusCodeResult(404);
@@ -75,11 +65,6 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Skill skill)
         {
-            if (!User.IsUserType(UserType.SiteAdmin))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
             if (ModelState.IsValid)
             {
                 _dataAccess.UpdateSkill(skill);
@@ -90,11 +75,6 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Delete(int? id)
         {
-            if (!User.IsUserType(UserType.SiteAdmin))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
             if (id == null)
             {
                 return new HttpStatusCodeResult(404);
@@ -113,11 +93,6 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            if (!User.IsUserType(UserType.SiteAdmin))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
             _dataAccess.DeleteSkill(id);
             return RedirectToAction("Index", new { area = "Admin" });
         }
