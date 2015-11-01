@@ -77,6 +77,11 @@ namespace AllReady.Models
                 .SingleOrDefault(a => a.Id == activityId);
         }
 
+        int IAllReadyDataAccess.GetManagingTenantId(int activityId)
+        {
+            return _dbContext.Activities.Where(a => a.Id == activityId).Select(a => a.Campaign.ManagingTenantId).FirstOrDefault();
+        }
+
         IEnumerable<ActivitySignup> IAllReadyDataAccess.GetActivitySignups(int activityId, string userId)
         {
             return _dbContext.ActivitySignup
