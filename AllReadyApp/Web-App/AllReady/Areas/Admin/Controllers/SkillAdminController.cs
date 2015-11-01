@@ -39,7 +39,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _dataAccess.AddSkill(skill);
+                _dataAccess.AddSkill(skill).Wait();
                 return RedirectToAction("Index", new { area = "Admin" });
             }
 
@@ -63,7 +63,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _dataAccess.UpdateSkill(skill);
+                _dataAccess.UpdateSkill(skill).Wait();
                 return RedirectToAction("Index", new { area = "Admin" });
             }
             return WithSkills(View(skill));
@@ -85,7 +85,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            _dataAccess.DeleteSkill(id);
+            _dataAccess.DeleteSkill(id).Wait();
             return RedirectToAction("Index", new { area = "Admin" });
         }
 

@@ -58,7 +58,7 @@
             function AdminSkillViewModel(parentSkillId, availableSkills) {
                 this.parentSkillId = ko.observable(parentSkillId);
                 this.availableSkills = ko.observableArray(availableSkills);
-                this.availableSkills.unshift({ HierarchicalName: "<None>", Id: "0" });
+                this.availableSkills.unshift({ HierarchicalName: "<None>", Id: null });
                 this.isValidParent = ko.computed(function () {
                     var id = @(Model != null ? Model.Id : 0);
                     var parentId = this.parentSkillId();
@@ -74,7 +74,7 @@
 
             ko.applyBindings(new AdminSkillViewModel(parentSkillId, availableSkills));
         })(ko, $,
-            @(Model != null ? Model.ParentSkillId : 0),
+            @Json.Serialize(Model != null ? Model.ParentSkillId : null),
             @Json.Serialize(ViewData["Skills"]));
     </script>
 }
