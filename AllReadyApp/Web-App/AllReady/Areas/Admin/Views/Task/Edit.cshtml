@@ -63,7 +63,7 @@
             <div class="col-md-10">
                 <div data-bind="foreach: requiredSkills">
                     <div class="form-inline">
-                        <select class="form-control" data-bind="attr: { name: 'RequiredSkills[' + $index() + '].SkillId' }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                        <select class="form-control" data-bind="attr: { name: 'RequiredSkills[' + $index() + ']' }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
                         <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                             Delete
@@ -99,8 +99,7 @@
                 
                 function RequiredSkillObservable(skillModel) {
                     var ret = ko.utils.extend({}, skillModel);
-                    ret.Id = ko.observable(ret.Id);
-                    ret.Name = ko.observable(ret.Name);
+                    ret.Id = ko.observable(skillModel);
                     return ret;
                 }
                 requiredSkills = (requiredSkills || []).map(RequiredSkillObservable);
@@ -118,7 +117,7 @@
 
             ko.applyBindings(new AdminTaskViewModel(requiredSkills, availableSkills));
         })(ko, $, 
-            @Json.Serialize(Model.RequiredSkills.Select(rs => new { Id = rs.Id })),
+            @Json.Serialize(Model.RequiredSkills),
             @Json.Serialize(ViewData["Skills"]));
     </script>
 }

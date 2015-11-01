@@ -65,6 +65,11 @@ namespace AllReady.ViewModels
                 }
             }
 
+            if (task.RequiredSkills != null)
+            {
+                this.RequiredSkills = task.RequiredSkills.Select(t => t.SkillId);
+            }
+
         }
 
         public int Id { get; set; }
@@ -92,7 +97,7 @@ namespace AllReady.ViewModels
         public string TenantName { get; set; }
 
         [Display(Name = "Required Skills")]
-        public IEnumerable<Skill> RequiredSkills { get; set; } = new List<Skill>();
+        public IEnumerable<int> RequiredSkills { get; set; } = new List<int>();
 
         [Display(Name = "Starting time")]
         public DateTimeOffset? StartDateTime { get; set; }
@@ -150,13 +155,13 @@ namespace AllReady.ViewModels
             dbtask.StartDateTimeUtc = taskViewModel.EndDateTime.HasValue ? taskViewModel.StartDateTime.Value.UtcDateTime : new Nullable<DateTime>();
             dbtask.Name = taskViewModel.Name;
             dbtask.RequiredSkills = dbtask.RequiredSkills ?? new List<TaskSkill>();
-            taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<Skill>();
+            taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();
             //Remove old skills
-            dbtask.RequiredSkills.RemoveAll(ts => !taskViewModel.RequiredSkills.Any(s => ts.SkillId == s.Id));
+            dbtask.RequiredSkills.RemoveAll(ts => !taskViewModel.RequiredSkills.Any(s => ts.SkillId == s));
             //Add new skills
             dbtask.RequiredSkills.AddRange(taskViewModel.RequiredSkills
-                .Where(rs => !dbtask.RequiredSkills.Any(ts => ts.SkillId == rs.Id))
-                .Select(rs => new TaskSkill() { SkillId = rs.Id, TaskId = taskViewModel.Id }));
+                .Where(rs => !dbtask.RequiredSkills.Any(ts => ts.SkillId == rs))
+                .Select(rs => new TaskSkill() { SkillId = rs, TaskId = taskViewModel.Id }));
 
             // Workaround:  POST is bringing in empty AssignedVolunteers.  Clean this up. Discussing w/ Kiran Challa.
             // Workaround: the if statement is superflous, and should go away once we have the proper fix referenced above.
