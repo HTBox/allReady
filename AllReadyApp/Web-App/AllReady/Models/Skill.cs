@@ -20,7 +20,7 @@ namespace AllReady.Models
                 var parent = ParentSkill;
                 while (parent != null)
                 {
-                    retStr = string.Format("{0} > {1}", parent.Name, retStr);
+                    retStr = $"{parent.Name} > {retStr}";
                     parent = parent.ParentSkill;
                 }
                 return retStr;

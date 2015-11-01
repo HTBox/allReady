@@ -3,7 +3,7 @@
     var isEdit = Model != null && Model.Id > 0;
     if (isEdit)
     {
-        ViewData["Title"] = string.Format("Edit Skill - {0}", Model.Name);
+        ViewData["Title"] = $"Edit Skill - {Model.Name}";
         ViewData["Action"] = "Save";
     }
     else
