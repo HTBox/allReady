@@ -61,7 +61,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Index(int campaignId)
         {
             Campaign campaign = _dataAccess.GetCampaign(campaignId);
-            if (campaign == null || !UserIsTenantAdmin(campaign.ManagingTenantId))
+            if (campaign == null || !User.IsTenantAdmin(campaign.ManagingTenantId))
             {
                 return HttpUnauthorized();
             }
@@ -113,7 +113,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Create(int campaignId)
         {
             Campaign campaign = _dataAccess.GetCampaign(campaignId);
-            if (campaign == null || !UserIsTenantAdmin(campaign.ManagingTenantId))
+            if (campaign == null || !User.IsTenantAdmin(campaign.ManagingTenantId))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -142,7 +142,7 @@ namespace AllReady.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {                
                 if (campaign == null || 
-                    !UserIsTenantAdmin(campaign.ManagingTenantId))
+                    !User.IsTenantAdmin(campaign.ManagingTenantId))
                 {
                     return HttpUnauthorized();
                 }                
@@ -176,7 +176,7 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(Activity activity)
         {
             Campaign campaign = _dataAccess.GetCampaign(activity.CampaignId);
-            if (campaign == null || !UserIsTenantAdmin(campaign.ManagingTenantId))
+            if (campaign == null || !User.IsTenantAdmin(campaign.ManagingTenantId))
             {
                 return HttpUnauthorized();
             }
@@ -315,14 +315,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         private bool UserIsTenantAdminOfActivity(Activity activity)
         {
-            return UserIsTenantAdmin(activity.TenantId);
-        }
-
-        private bool UserIsTenantAdmin(int tenantId) {
-            int? userTenantId = User.GetTenantId();
-
-            return User.IsUserType(UserType.SiteAdmin) ||
-                  (userTenantId.HasValue && userTenantId.Value == tenantId);
+            return User.IsTenantAdmin(activity.TenantId);
         }
         
         private bool UserIsTenantAdminOfActivity(int activityId)

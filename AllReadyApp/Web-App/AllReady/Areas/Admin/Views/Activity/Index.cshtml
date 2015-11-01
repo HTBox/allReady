@@ -37,6 +37,7 @@
                         @Html.ActionLink("Edit", "Edit", "Activity", new { id = item.Id }, new { @class = "btn" })
                         @Html.ActionLink("Details", "Details", "Activity", new { id = item.Id }, new { @class = "btn" }) 
                         @Html.ActionLink("Delete", "Delete", "Activity", new { id = item.Id }, new { @class = "btn" })
+                        <a asp-controller="Task" asp-action="Index" asp-route-activityId="@item.Id" class="btn">Tasks</a>
                         @Html.ActionLink("Assign Volunteers", "Assign", new { id = item.Id }, new { @class = "btn" })
                     </td>
                 </tr>
