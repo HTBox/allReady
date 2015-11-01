@@ -179,5 +179,19 @@ namespace AllReady.UnitTest.Security
             Assert.False(principal.IsTenantAdmin(1));
         }
 
+        [Fact]
+        public void WhenTenantIdIsSetNonTenantAdminShouldNotBeAdminOfTenant()
+        {
+            ClaimsPrincipal principal = new ClaimsPrincipal(
+                new ClaimsIdentity(
+                        new[]
+                        {
+                            new Claim(AllReady.Security.ClaimTypes.Tenant, "2")
+                        }
+                    ));
+
+            Assert.False(principal.IsTenantAdmin(2));
+        }
+
     }
 }

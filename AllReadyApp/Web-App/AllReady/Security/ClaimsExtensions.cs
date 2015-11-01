@@ -16,8 +16,9 @@ namespace AllReady.Security
         public static bool IsTenantAdmin(this ClaimsPrincipal user, int tenantId)
         {
             int? userTenantId = user.GetTenantId();
-            return user.IsUserType(UserType.SiteAdmin) ||
-                  (userTenantId.HasValue && userTenantId.Value == tenantId);
+            return user.IsUserType(UserType.SiteAdmin) ||                   
+                  (user.IsUserType(UserType.TenantAdmin) &&
+                   userTenantId.HasValue && userTenantId.Value == tenantId);
         }
 
         public static int? GetTenantId(this ClaimsPrincipal user)
