@@ -175,12 +175,16 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Activity activity)
         {
-            Campaign campaign = _dataAccess.GetCampaign(activity.CampaignId);
-            if (campaign == null || !User.IsTenantAdmin(campaign.ManagingTenantId))
+            if (activity == null)
+            {
+                return HttpBadRequest();
+            }
+
+            int campaignId = _dataAccess.GetManagingTenantId(activity.Id);            
+            if (!User.IsTenantAdmin(campaignId))
             {
                 return HttpUnauthorized();
             }
-            activity.Campaign = campaign;
             if (ModelState.IsValid)
             {
                 if (activity.RequiredSkills != null && activity.RequiredSkills.Count > 0)
@@ -190,7 +194,8 @@ namespace AllReady.Areas.Admin.Controllers
                 await _dataAccess.UpdateActivity(activity);
                 return RedirectToAction("Index", new { campaignId = activity.CampaignId });
             }
-
+            Campaign campaign = _dataAccess.GetCampaign(activity.CampaignId);
+            activity.Campaign = campaign;
             return View(activity);
         }
 
