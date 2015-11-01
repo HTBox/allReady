@@ -45,7 +45,7 @@
                 <div class="form-group">
                     <button type="button" class="btn btn-sm" data-bind="css: { active: campaigns.showOld }, click: campaigns.showOld.toggle">
                         <i class="fa" data-bind="css: { 'fa-square-o': !campaigns.showOld(), 'fa-check-square-o': campaigns.showOld }"></i>
-                        Show Old
+                        Show Completed Campaigns
                     </button>
                 </div>
             </div>
@@ -64,6 +64,7 @@
                 <tr>
                     <th><span title="Name of the campaign">Title</span></th>
                     <th><span title="Description of the campaign">Description</span></th>
+                    <th><span title="Date of the campaign">Start Date</span></th>
                 </tr>
                 <!-- ko foreach: campaigns.filtered -->
                 <tr>
@@ -72,6 +73,9 @@
                     </td>
                     <td>
                         <span data-bind="text: Description"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: displayDate()"></span>
                     </td>
                 </tr>
                 <!-- /ko -->

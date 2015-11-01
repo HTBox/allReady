@@ -2,6 +2,17 @@
 ///<reference path="../lib/knockout/dist/knockout.js" />
 
 (function (ko, $, campaigns) {
+    function Campaign(item) {
+        for (var prop in item) {
+            this[prop] = item[prop];
+        }
+        this.displayDate = function () {
+            var start = this.StartDate.split('T')[0];
+            var end = this.EndDate.split('T')[0];
+            return start + ' : ' + end;
+        }
+        return this;
+    }
     function CampaignsViewModel(campaigns) {
         this.searchTerm = ko.observable();
         this.campaignsNearZip = ko.observableArray();
@@ -25,7 +36,10 @@
                 });
             }
         };
-        this.campaigns = ko.observableArray(campaigns).filterBeforeDate("EndDate").textFilter(["Name", "Description"]);
+
+        var list = campaigns.map(function (item) { return new Campaign(item); })
+
+        this.campaigns = ko.observableArray(list).filterBeforeDate("EndDate").textFilter(["Name", "Description"]);
     }
     ko.applyBindings(new CampaignsViewModel(campaigns));
 })(ko, $, modelCampaigns);
