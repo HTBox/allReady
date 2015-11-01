@@ -7,9 +7,10 @@ namespace AllReady.Models
     public class Skill
     {
         public int Id { get; set; }
+        [Required]
         public string Name { get; set; }
-        public int ParentSkillId { get; set; }
-        public Skill ParentSkill { get; set; }
+        [Display(Name = "Parent skill")]
+        public int? ParentSkillId { get; set; }
         public string HierarchicalName
         {
             get
