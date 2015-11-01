@@ -20,6 +20,9 @@ namespace AllReady.Models
         public bool TwoFactor { get; set; }
 
         public bool BrowserRemembered { get; set; }
+
+        [Display(Name = "Associated skills")]
+        public List<UserSkill> AssociatedSkills { get; set; }
     }
 
     public class ManageLoginsViewModel
