@@ -121,5 +121,77 @@ namespace AllReady.UnitTest.Security
         }
 
 
+        [Fact]
+        public void SiteAdminShouldBeAdminOfAnyTenantId()
+        {
+            ClaimsPrincipal principal = new ClaimsPrincipal(
+                new ClaimsIdentity(
+                        new[]
+                        {
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "SiteAdmin")
+                        }
+                    ));
+
+            Assert.True(principal.IsTenantAdmin(12));
+        }
+
+        [Fact]
+        public void WhenTenantIdIsNotSetTenantAdminShouldNotBeAdminOfTenant()
+        {
+            ClaimsPrincipal principal = new ClaimsPrincipal(
+                new ClaimsIdentity(
+                        new[]
+                        {
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "TenantAdmin")
+                        }
+                    ));
+
+            Assert.False(principal.IsTenantAdmin(1));
+        }
+
+        [Fact]
+        public void WhenTenantIdIsSetTenantAdminShouldBeAdminOfTenant()
+        {
+            ClaimsPrincipal principal = new ClaimsPrincipal(
+                new ClaimsIdentity(
+                        new[]
+                        {
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "TenantAdmin"),
+                            new Claim(AllReady.Security.ClaimTypes.Tenant, "2")
+                        }
+                    ));
+
+            Assert.True(principal.IsTenantAdmin(2));
+        }
+
+        [Fact]
+        public void WhenTenantIdIsSetTenantAdminShouldNotBeAdminOfAnotherTenant()
+        {
+            ClaimsPrincipal principal = new ClaimsPrincipal(
+                new ClaimsIdentity(
+                        new[]
+                        {
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "TenantAdmin"),
+                            new Claim(AllReady.Security.ClaimTypes.Tenant, "2")
+                        }
+                    ));
+
+            Assert.False(principal.IsTenantAdmin(1));
+        }
+
+        [Fact]
+        public void WhenTenantIdIsSetNonTenantAdminShouldNotBeAdminOfTenant()
+        {
+            ClaimsPrincipal principal = new ClaimsPrincipal(
+                new ClaimsIdentity(
+                        new[]
+                        {
+                            new Claim(AllReady.Security.ClaimTypes.Tenant, "2")
+                        }
+                    ));
+
+            Assert.False(principal.IsTenantAdmin(2));
+        }
+
     }
 }

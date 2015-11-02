@@ -61,7 +61,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Index(int campaignId)
         {
             Campaign campaign = _dataAccess.GetCampaign(campaignId);
-            if (campaign == null || !UserIsTenantAdmin(campaign.ManagingTenantId))
+            if (campaign == null || !User.IsTenantAdmin(campaign.ManagingTenantId))
             {
                 return HttpUnauthorized();
             }
@@ -113,7 +113,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Create(int campaignId)
         {
             Campaign campaign = _dataAccess.GetCampaign(campaignId);
-            if (campaign == null || !UserIsTenantAdmin(campaign.ManagingTenantId))
+            if (campaign == null || !User.IsTenantAdmin(campaign.ManagingTenantId))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -142,7 +142,7 @@ namespace AllReady.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {                
                 if (campaign == null || 
-                    !UserIsTenantAdmin(campaign.ManagingTenantId))
+                    !User.IsTenantAdmin(campaign.ManagingTenantId))
                 {
                     return HttpUnauthorized();
                 }                
@@ -150,7 +150,7 @@ namespace AllReady.Areas.Admin.Controllers
                 await _dataAccess.AddActivity(activity);
                 return RedirectToAction("Index", new { campaignId = activity.CampaignId });
             }
-            return View(activity);
+            return View("Edit", activity);
         }
 
         // GET: Activity/Edit/5
@@ -175,6 +175,16 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Activity activity)
         {
+            if (activity == null)
+            {
+                return HttpBadRequest();
+            }
+
+            int campaignId = _dataAccess.GetManagingTenantId(activity.Id);            
+            if (!User.IsTenantAdmin(campaignId))
+            {
+                return HttpUnauthorized();
+            }
             if (ModelState.IsValid)
             {
                 if (activity.RequiredSkills != null && activity.RequiredSkills.Count > 0)
@@ -184,7 +194,8 @@ namespace AllReady.Areas.Admin.Controllers
                 await _dataAccess.UpdateActivity(activity);
                 return RedirectToAction("Index", new { campaignId = activity.CampaignId });
             }
-
+            Campaign campaign = _dataAccess.GetCampaign(activity.CampaignId);
+            activity.Campaign = campaign;
             return View(activity);
         }
 
@@ -309,14 +320,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         private bool UserIsTenantAdminOfActivity(Activity activity)
         {
-            return UserIsTenantAdmin(activity.TenantId);
-        }
-
-        private bool UserIsTenantAdmin(int tenantId) {
-            int? userTenantId = User.GetTenantId();
-
-            return User.IsUserType(UserType.SiteAdmin) ||
-                  (userTenantId.HasValue && userTenantId.Value == tenantId);
+            return User.IsTenantAdmin(activity.TenantId);
         }
         
         private bool UserIsTenantAdminOfActivity(int activityId)

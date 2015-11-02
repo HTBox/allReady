@@ -12,6 +12,7 @@ namespace AllReady.Models
         #region Activity CRUD
         IEnumerable<Activity> Activities { get; }
         Activity GetActivity(int activityId);
+        int GetManagingTenantId(int activityId);
         Task AddActivity(Activity value);
         Task DeleteActivity(int id);
         IEnumerable<ActivitySignup> GetActivitySignups(string userId);
@@ -101,6 +102,10 @@ namespace AllReady.Models
 
         #region Skill CRUD
         IEnumerable<Skill> Skills { get; }
+        Skill GetSkill(int skillId);
+        Task AddSkill(Skill value);
+        Task DeleteSkill(int id);
+        Task UpdateSkill(Skill value);
         #endregion
     }
 }

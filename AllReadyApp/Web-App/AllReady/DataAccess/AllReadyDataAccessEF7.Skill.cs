@@ -13,8 +13,41 @@ namespace AllReady.Models
         {
             get
             {
-                return _dbContext.Skills.Include(x => x.ParentSkill).ToList();
+                return _dbContext.Skills.ToList();
             }
+        }
+
+        Skill IAllReadyDataAccess.GetSkill(int skillId)
+        {
+            return _dbContext.Skills.ToList().SingleOrDefault(x => x.Id == skillId);
+        }
+
+        Task IAllReadyDataAccess.AddSkill(Skill value)
+        {
+            _dbContext.Skills.Add(value);
+            return _dbContext.SaveChangesAsync();
+        }
+
+        Task IAllReadyDataAccess.DeleteSkill(int skillId)
+        {
+            var toDelete = _dbContext.Skills.Where(c => c.Id == skillId).SingleOrDefault();
+
+            if (toDelete != null)
+            {
+                //Orphan child skills before deleting
+                _dbContext.Skills
+                    .Where(s => s.ParentSkillId == toDelete.Id)
+                    .ForEachAsync(s => { s.ParentSkill = null; s.ParentSkillId = null; }).Wait();
+                _dbContext.Skills.Remove(toDelete);
+                return _dbContext.SaveChangesAsync();
+            }
+            return null;
+        }
+
+        Task IAllReadyDataAccess.UpdateSkill(Skill value)
+        {
+            _dbContext.Skills.Update(value);
+            return _dbContext.SaveChangesAsync();
         }
     }
 }
