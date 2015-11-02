@@ -34,6 +34,10 @@ namespace AllReady.Models
 
             if (toDelete != null)
             {
+                //Orphan child skills before deleting
+                _dbContext.Skills
+                    .Where(s => s.ParentSkillId == toDelete.Id)
+                    .ForEachAsync(s => { s.ParentSkill = null; s.ParentSkillId = null; }).Wait();
                 _dbContext.Skills.Remove(toDelete);
                 return _dbContext.SaveChangesAsync();
             }
