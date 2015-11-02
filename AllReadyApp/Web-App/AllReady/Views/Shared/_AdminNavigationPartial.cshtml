@@ -1,19 +1,20 @@
 ﻿@using System.Security.Claims
+@using AllReady.Security
 
-@if (User.Claims.Where(c => c.Type.Equals("UserType")).Where(c => c.Value == "SiteAdmin" || c.Value == "TenantAdmin").Any())
+@if (User.IsUserType(UserType.SiteAdmin) || User.IsUserType(UserType.TenantAdmin))
 {
     <li class="dropdown dropdown-admin">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
             Admin <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
-            <li><a asp-route-area="Admin" asp-route-controller="Activity" asp-route-action="Index">Activities</a></li>
             <li><a asp-route-area="Admin" asp-route-controller="Campaign" asp-route-action="Index">Campaigns</a></li>
-            <li><a asp-route-area="Admin" asp-route-controller="Task" asp-route-action="Index">Tasks</a></li>
-            <li><a asp-route-area="Admin" asp-route-controller="Tenant" asp-route-action="Index">Tenant</a></li>
+            <li><a asp-route-area="Admin" asp-route-controller="Tenant" asp-route-action="Index">Organizations</a></li>
+            @if (User.IsUserType(UserType.SiteAdmin))
+            {
+                <li><a asp-route-area="Admin" asp-route-controller="Skill" asp-route-action="Index">Skills</a></li>
+            }
         </ul>
     </li>
-    
-
-    @*<li class="header"> User:</li>*@
+   
 }

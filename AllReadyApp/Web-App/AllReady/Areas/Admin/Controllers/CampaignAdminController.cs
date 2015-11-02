@@ -2,11 +2,10 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
 
-using AllReady.Extensions;
+using AllReady.Security;
 using AllReady.Models;
 
 namespace AllReady.Controllers
@@ -16,12 +15,10 @@ namespace AllReady.Controllers
     public class CampaignController : Controller
     {
         private IAllReadyDataAccess _dataAccess;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CampaignController(IAllReadyDataAccess dataAccess, UserManager<ApplicationUser> userManager)
+        public CampaignController(IAllReadyDataAccess dataAccess)
         {
             _dataAccess = dataAccess;
-            _userManager = userManager;
         }
 
         private ViewResult WithTenants(ViewResult view)
@@ -47,15 +44,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Campaign campaign)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null)
-            {
-                return new HttpUnauthorizedResult();
-            }
-
-            // Workaround: Sometimes AssociatedTenant is missing when using UserManager
-            var currentUserWithAssociatedTenant = _dataAccess.GetUser(currentUser.Id);
-            if (!await UserIsTenantAdminOfCampaign(currentUserWithAssociatedTenant, campaign))
+            if (!UserIsTenantAdminOfCampaign(campaign))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -72,19 +61,13 @@ namespace AllReady.Controllers
         // GET: Campaign/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null)
-            {
-                return new HttpUnauthorizedResult();
-            }
-
             if (id == null)
             {
                 return new HttpStatusCodeResult(404);
             }
             Campaign campaign = _dataAccess.GetCampaign((int)id);
 
-            if (!await UserIsTenantAdminOfCampaign(currentUser, campaign))
+            if (!UserIsTenantAdminOfCampaign(campaign))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -101,13 +84,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Campaign campaign)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null)
-            {
-                return new HttpUnauthorizedResult();
-            }
-
-            if (!await UserIsTenantAdminOfCampaign(currentUser, campaign))
+            if (!UserIsTenantAdminOfCampaign(campaign))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -128,19 +105,13 @@ namespace AllReady.Controllers
                 return new HttpStatusCodeResult(404);
             }
 
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null)
-            {
-                return new HttpUnauthorizedResult();
-            }
-
             Campaign campaign = _dataAccess.GetCampaign((int)id);
 
             if (campaign == null)
             {
                 return new HttpStatusCodeResult(404);
             }
-            if (!await UserIsTenantAdminOfCampaign(currentUser, campaign))
+            if (!UserIsTenantAdminOfCampaign(campaign))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -153,8 +124,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null || !await UserIsTenantAdminOfCampaign(currentUser, id))
+            if (!UserIsTenantAdminOfCampaign(id))
             {
                 return new HttpUnauthorizedResult();
             }   
@@ -163,15 +133,15 @@ namespace AllReady.Controllers
             return await Task.FromResult(RedirectToAction("Index", new { area = "Admin" }));
         }
 
-        private async Task<bool> UserIsTenantAdminOfCampaign(ApplicationUser user, Campaign campaignToCheck)
+        private bool UserIsTenantAdminOfCampaign(Campaign campaignToCheck)
         {
-            return await _userManager.IsSiteAdmin(user) ||
-                ((user.AssociatedTenant != null) && (campaignToCheck.ManagingTenantId == user.AssociatedTenant.Id));
+            return User.IsUserType(UserType.SiteAdmin) ||
+                campaignToCheck.ManagingTenantId == User.GetTenantId();
         }
 
-        private async Task<bool> UserIsTenantAdminOfCampaign(ApplicationUser user, int campaignId)
+        private bool UserIsTenantAdminOfCampaign(int campaignId)
         {
-            return await UserIsTenantAdminOfCampaign(user, _dataAccess.GetCampaign(campaignId));
+            return UserIsTenantAdminOfCampaign(_dataAccess.GetCampaign(campaignId));
         }
     }
 }

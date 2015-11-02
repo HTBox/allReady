@@ -1,0 +1,76 @@
+﻿[
+  {
+    "Id": 1,
+    "Name": "Humanitarian Toolbox",
+    "LogoUrl": "http://www.htbox.org/upload/home/ht-hero.png",
+    "WebUrl": "http://www.htbox.org",
+    "Campaigns": [
+      {
+        "Id": 1,
+        "Name": "Neighborhood Fire Prevention Days",
+        "Description": null,
+        "ManagingTenantId": 0,
+        "ManagingTenantName": null,
+        "ParticipatingTenants": null,
+        "StartDate": "0001-01-01T00:00:00+00:00",
+        "EndDate": "0001-01-01T00:00:00+00:00",
+        "Activities": [ ]
+      },
+      {
+        "Id": 3,
+        "Name": "Everyday Financial Safety",
+        "Description": null,
+        "ManagingTenantId": 0,
+        "ManagingTenantName": null,
+        "ParticipatingTenants": null,
+        "StartDate": "0001-01-01T00:00:00+00:00",
+        "EndDate": "0001-01-01T00:00:00+00:00",
+        "Activities": [ ]
+      },
+      {
+        "Id": 2,
+        "Name": "Working Smoke Detectors Save Lives",
+        "Description": null,
+        "ManagingTenantId": 0,
+        "ManagingTenantName": null,
+        "ParticipatingTenants": null,
+        "StartDate": "2015-10-01T04:00:00+00:00",
+        "EndDate": "2015-12-01T05:00:00+00:00",
+        "Activities": [ ]
+      },
+      {
+        "Id": 5,
+        "Name": "Family Safety In the Car",
+        "Description": null,
+        "ManagingTenantId": 0,
+        "ManagingTenantName": null,
+        "ParticipatingTenants": null,
+        "StartDate": "0001-01-01T00:00:00+00:00",
+        "EndDate": "0001-01-01T00:00:00+00:00",
+        "Activities": [ ]
+      },
+      {
+        "Id": 4,
+        "Name": "Simple Safety Kit Building",
+        "Description": null,
+        "ManagingTenantId": 0,
+        "ManagingTenantName": null,
+        "ParticipatingTenants": null,
+        "StartDate": "0001-01-01T00:00:00+00:00",
+        "EndDate": "0001-01-01T00:00:00+00:00",
+        "Activities": [ ]
+      },
+      {
+        "Id": 6,
+        "Name": "Be Ready to Get Out: Have a Home Escape Plan",
+        "Description": null,
+        "ManagingTenantId": 0,
+        "ManagingTenantName": null,
+        "ParticipatingTenants": null,
+        "StartDate": "0001-01-01T00:00:00+00:00",
+        "EndDate": "0001-01-01T00:00:00+00:00",
+        "Activities": [ ]
+      }
+    ]
+  }
+];

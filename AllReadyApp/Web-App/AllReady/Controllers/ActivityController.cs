@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using AllReady.Models;
 using AllReady.ViewModels;
-using Microsoft.Data.Entity;
 using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
 using System.Security.Claims;
 using AllReady.Services;
 
@@ -16,23 +14,19 @@ namespace AllReady.Controllers
     public class ActivityController : Controller
     {
         private readonly IAllReadyDataAccess _allReadyDataAccess;
-        private readonly UserManager<ApplicationUser> _userManager;
 
         public ActivityController(
             IAllReadyDataAccess allReadyDataAccess,
-            UserManager<ApplicationUser> userManager,
             IClosestLocations closestLocations)
         {
             _allReadyDataAccess = allReadyDataAccess;
-            _userManager = userManager;
         }
 
         [Route("~/MyActivities")]
         [Authorize]
-        public async Task<IActionResult> GetMyActivities()
+        public IActionResult GetMyActivities()
         {
-            var user = await GetCurrentUserAsync();
-            var myActivities = _allReadyDataAccess.GetActivitySignups(user);
+            var myActivities = _allReadyDataAccess.GetActivitySignups(User.GetUserId());
             var signedUp = myActivities.Select(a => new ActivityViewModel(a.Activity));
             var viewModel = new MyActivitiesResultsScreenViewModel("My Activities", signedUp);
             return View("MyActivities", viewModel);
@@ -40,11 +34,9 @@ namespace AllReady.Controllers
 
         [Route("~/MyActivities/{id}/tasks")]
         [Authorize]
-        public async Task<IActionResult> GetMyTasks(int id)
+        public IActionResult GetMyTasks(int id)
         {
-            var user = await GetCurrentUserAsync();
-
-            var tasks = _allReadyDataAccess.GetTasksAssignedToUser(id, user);
+            var tasks = _allReadyDataAccess.GetTasksAssignedToUser(id, User.GetUserId());
 
             var taskView = tasks.Select(t => new TaskSignupViewModel(t));
 
@@ -56,7 +48,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         [Route("~/MyActivities/{id}/tasks")]
         public async Task<IActionResult> UpdateMyTasks(int id, [FromBody]List<TaskSignupViewModel> model) {
-            var currentUser = await GetCurrentUserAsync();
+            var currentUser = _allReadyDataAccess.GetUser(User.GetUserId());
             foreach (var taskSignup in model) {
                 await _allReadyDataAccess.UpdateTaskSignupAsync(new TaskUsers {
                     Id = taskSignup.Id,
@@ -81,7 +73,7 @@ namespace AllReady.Controllers
 
         [Route("[controller]/{id}/")]
         [AllowAnonymous]
-        public async Task<IActionResult> ShowActivity(int id)
+        public IActionResult ShowActivity(int id)
         {
             var activity = _allReadyDataAccess.GetActivity(id);
 
@@ -97,8 +89,7 @@ namespace AllReady.Controllers
                 return View("Activity", new ActivityViewModel(activity, false));
             }
 
-            var user = await GetCurrentUserAsync();
-            var signedUp = _allReadyDataAccess.GetActivitySignups(id, user);
+            var signedUp = _allReadyDataAccess.GetActivitySignups(id, User.GetUserId());
 
             isUserSignedUpForActivity = signedUp.Any();
 
@@ -117,7 +108,7 @@ namespace AllReady.Controllers
                 return RedirectToAction(nameof(AccountController.Login), "Account", new { ReturnUrl = returnUrl });
             }
 
-            var user = await GetCurrentUserAsync();
+            var user = _allReadyDataAccess.GetUser(User.GetUserId());
 
             // Maybe it wasn't logged in properly.
             if (user == null)
@@ -153,11 +144,6 @@ namespace AllReady.Controllers
             }
 
             return RedirectToAction(nameof(GetMyActivities));
-        }
-
-        private async Task<ApplicationUser> GetCurrentUserAsync()
-        {
-            return await _userManager.FindByIdAsync(HttpContext.User.GetUserId());
-        }
+        }        
     }
 }

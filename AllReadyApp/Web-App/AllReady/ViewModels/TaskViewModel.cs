@@ -65,35 +65,48 @@ namespace AllReady.ViewModels
                 }
             }
 
+            if (task.RequiredSkills != null)
+            {
+                this.RequiredSkills = task.RequiredSkills.Select(t => t.SkillId);
+            }
+
         }
 
         public int Id { get; set; }
-        [Display(Name = "Task name")]
+        public bool IsNew { get; set; }
+
+        [Display(Name = "Task Name")]
         [Required]
         public string Name { get; set; }
-        [Display(Name = "Task description")]
+        [Display(Name = "Task Description")]
         public string Description { get; set; }
 
         [Required]
         [Display(Name = "Activity")]
         public int ActivityId { get; set; }
 
+        [Display(Name = "Activity")]
         public string ActivityName { get; set; }
 
         public int CampaignId { get; set; }
+
+        [Display(Name="Campaign")]
         public string CampaignName { get; set; }
 
         public int TenantId { get; set; }
         public string TenantName { get; set; }
 
-        [Display(Name = "Task starting time")]
+        [Display(Name = "Required Skills")]
+        public IEnumerable<int> RequiredSkills { get; set; } = new List<int>();
+
+        [Display(Name = "Starting time")]
         public DateTimeOffset? StartDateTime { get; set; }
-        [Display(Name = "Task ending time")]
+        [Display(Name = "Ending time")]
         public DateTimeOffset? EndDateTime { get; set; }
 
         public bool IsUserSignedUpForTask { get; private set; }
 
-        public List<TaskSignupViewModel> AssignedVolunteers { get; set; }
+        public List<TaskSignupViewModel> AssignedVolunteers { get; set; } = new List<TaskSignupViewModel>();
 
         public TaskViewModel(AllReadyTask task, bool isUserSignedupForTask)
             : this(task)
@@ -115,9 +128,9 @@ namespace AllReady.ViewModels
             return tasks.Select(task => task.ToViewModel());
         }
 
-        public static AllReadyTask ToModel(this TaskViewModel task, IAllReadyDataAccess dataAccess)
+        public static AllReadyTask ToModel(this TaskViewModel taskViewModel, IAllReadyDataAccess dataAccess)
         {
-            var activity = dataAccess.GetActivity(task.ActivityId);
+            var activity = dataAccess.GetActivity(taskViewModel.ActivityId);
 
             if (activity == null)
                 return null;
@@ -125,41 +138,49 @@ namespace AllReady.ViewModels
             bool newTask = true;
             AllReadyTask dbtask;
 
-            if (task.Id == 0)
+            if (taskViewModel.Id == 0)
             {
                 dbtask = new AllReadyTask();
             }
             else
             {
-                dbtask = dataAccess.GetTask(task.Id);
+                dbtask = dataAccess.GetTask(taskViewModel.Id);
                 newTask = false;
             }
 
-            dbtask.Id = task.Id;
-            dbtask.Description = task.Description;
+            dbtask.Id = taskViewModel.Id;
+            dbtask.Description = taskViewModel.Description;
             dbtask.Activity = activity;
-            dbtask.EndDateTimeUtc = task.EndDateTime.HasValue ? task.EndDateTime.Value.UtcDateTime : new Nullable<DateTime>();
-            dbtask.StartDateTimeUtc = task.EndDateTime.HasValue ? task.StartDateTime.Value.UtcDateTime : new Nullable<DateTime>();
-            dbtask.Name = task.Name;
+            dbtask.EndDateTimeUtc = taskViewModel.EndDateTime.HasValue ? taskViewModel.EndDateTime.Value.UtcDateTime : new Nullable<DateTime>();
+            dbtask.StartDateTimeUtc = taskViewModel.EndDateTime.HasValue ? taskViewModel.StartDateTime.Value.UtcDateTime : new Nullable<DateTime>();
+            dbtask.Name = taskViewModel.Name;
+            dbtask.RequiredSkills = dbtask.RequiredSkills ?? new List<TaskSkill>();
+            taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();
+            //Remove old skills
+            dbtask.RequiredSkills.RemoveAll(ts => !taskViewModel.RequiredSkills.Any(s => ts.SkillId == s));
+            //Add new skills
+            dbtask.RequiredSkills.AddRange(taskViewModel.RequiredSkills
+                .Where(rs => !dbtask.RequiredSkills.Any(ts => ts.SkillId == rs))
+                .Select(rs => new TaskSkill() { SkillId = rs, TaskId = taskViewModel.Id }));
 
             // Workaround:  POST is bringing in empty AssignedVolunteers.  Clean this up. Discussing w/ Kiran Challa.
             // Workaround: the if statement is superflous, and should go away once we have the proper fix referenced above.
-            if (task.AssignedVolunteers != null)
+            if (taskViewModel.AssignedVolunteers != null)
             {
-                var bogusAssignedVolunteers = (from assignedVolunteer in task.AssignedVolunteers
+                var bogusAssignedVolunteers = (from assignedVolunteer in taskViewModel.AssignedVolunteers
                                                where string.IsNullOrEmpty(assignedVolunteer.UserId)
                                                select assignedVolunteer).ToList();
                 foreach (var bogus in bogusAssignedVolunteers)
                 {
-                    task.AssignedVolunteers.Remove(bogus);
+                    taskViewModel.AssignedVolunteers.Remove(bogus);
                 }
             }
             // end workaround
 
 
-            if (task.AssignedVolunteers != null && task.AssignedVolunteers.Count > 0)
+            if (taskViewModel.AssignedVolunteers != null && taskViewModel.AssignedVolunteers.Count > 0)
             {
-                var taskUsersList = task.AssignedVolunteers.Select(tvm => new TaskUsers
+                var taskUsersList = taskViewModel.AssignedVolunteers.Select(tvm => new TaskUsers
                 {
                     Task = dbtask,
                     User = dataAccess.GetUser(tvm.UserId)
