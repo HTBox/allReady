@@ -85,6 +85,7 @@
                 <div data-bind="foreach: requiredSkills">
                     <div class="form-inline">
                         <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Text', optionsValue: 'Value', value: Id"></select>
+                        <span class="glyphicon glyphicon-info-sign" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
                         <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                             Delete
@@ -134,6 +135,17 @@
     <script type="text/javascript">
         (function (ko, $, requiredSkills, availableSkills) {
 
+            ko.bindingHandlers.tooltip = {
+                update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+                    $(element).tooltip('destroy');
+                    var options = ko.unwrap(valueAccessor());
+                    ko.utils.objectForEach(options, function (property) {
+                        options[property] = ko.unwrap(options[property]);
+                    });
+                    $(element).tooltip(options);
+                }
+            }
+            
             function AdminActivityViewModel(requiredSkills, availableSkills) {
 
                 function RequiredSkillObservable(skillModel) {
@@ -142,6 +154,10 @@
                     ret.ControlName = function (index) {
                         return 'RequiredSkills[' + ko.unwrap(index) + '].SkillId';
                     };
+                    ret.Description = ko.computed(function () {
+                        var skill = availableSkills.find(function (skill) { return skill.Id === ret.Id(); });
+                        return (skill && skill.Description) || "";
+                    });
                     return ret;
                 }
                 requiredSkills = (requiredSkills || []).map(RequiredSkillObservable);
