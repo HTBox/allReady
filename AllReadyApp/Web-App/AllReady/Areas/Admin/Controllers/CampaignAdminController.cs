@@ -101,7 +101,7 @@ namespace AllReady.Controllers
                 return RedirectToAction("Index", new { area = "Admin" });
             }
             return View(campaign);
-        }
+        }        
 
         // GET: Campaign/Delete/5
         public IActionResult Delete(int id)
@@ -110,7 +110,7 @@ namespace AllReady.Controllers
 
             if (campaign == null)
             {
-                return HttpBadRequest();
+                return HttpNotFound();
             }
             if (!User.IsTenantAdmin(campaign.ManagingTenantId))
             {
