@@ -21,7 +21,7 @@ namespace AllReady.Models
 
         public bool BrowserRemembered { get; set; }
 
-        [Display(Name = "Associated skills")]
+        [Display(Name = "My skills")]
         public List<UserSkill> AssociatedSkills { get; set; }
     }
 

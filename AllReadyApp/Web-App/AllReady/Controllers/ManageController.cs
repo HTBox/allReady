@@ -79,7 +79,11 @@ namespace AllReady.Controllers
                 return WithSkills(View(model));
             }
             var user = GetCurrentUser();
-            user.AssociatedSkills = model.AssociatedSkills;
+            user.AssociatedSkills.RemoveAll(usk => model.AssociatedSkills == null || !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
+            if (model.AssociatedSkills != null)
+            {
+                user.AssociatedSkills.AddRange(model.AssociatedSkills.Where(msk => !user.AssociatedSkills.Any(usk => usk.SkillId == msk.SkillId)));
+            }
             if (user.AssociatedSkills != null && user.AssociatedSkills.Count > 0)
             {
                 user.AssociatedSkills.ForEach(usk => usk.UserId = user.Id);
