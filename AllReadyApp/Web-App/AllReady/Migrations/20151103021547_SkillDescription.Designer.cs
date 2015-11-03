@@ -8,9 +8,10 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    partial class AllReadyContextModelSnapshot : ModelSnapshot
+    [Migration("20151103021547_SkillDescription")]
+    partial class SkillDescription
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .Annotation("ProductVersion", "7.0.0-beta8-15964")
@@ -146,8 +147,6 @@ namespace AllReady.Migrations
 
                     b.Property<DateTime>("EndDateTimeUtc");
 
-                    b.Property<string>("FullDescription");
-
                     b.Property<string>("ImageUrl");
 
                     b.Property<int>("ManagingTenantId");
@@ -158,33 +157,6 @@ namespace AllReady.Migrations
                     b.Property<string>("OrganizerId");
 
                     b.Property<DateTime>("StartDateTimeUtc");
-
-                    b.HasKey("Id");
-                });
-
-            modelBuilder.Entity("AllReady.Models.CampaignImpact", b =>
-                {
-                    b.Property<int>("Id");
-
-                    b.Property<int?>("CampaignImpactTypeId");
-
-                    b.Property<int>("CurrentImpactLevel");
-
-                    b.Property<bool>("Display");
-
-                    b.Property<int>("NumericImpactGoal");
-
-                    b.Property<string>("TextualImpactGoal");
-
-                    b.HasKey("Id");
-                });
-
-            modelBuilder.Entity("AllReady.Models.CampaignImpactType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ImpactType");
 
                     b.HasKey("Id");
                 });
@@ -312,15 +284,6 @@ namespace AllReady.Migrations
                     b.Property<string>("WebUrl");
 
                     b.HasKey("Id");
-                });
-
-            modelBuilder.Entity("AllReady.Models.UserSkill", b =>
-                {
-                    b.Property<string>("UserId");
-
-                    b.Property<int>("SkillId");
-
-                    b.HasKey("UserId", "SkillId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNet.Identity.EntityFramework.IdentityRole", b =>
@@ -472,17 +435,6 @@ namespace AllReady.Migrations
                         .ForeignKey("OrganizerId");
                 });
 
-            modelBuilder.Entity("AllReady.Models.CampaignImpact", b =>
-                {
-                    b.HasOne("AllReady.Models.CampaignImpactType")
-                        .WithMany()
-                        .ForeignKey("CampaignImpactTypeId");
-
-                    b.HasOne("AllReady.Models.Campaign")
-                        .WithOne()
-                        .ForeignKey("AllReady.Models.CampaignImpact", "Id");
-                });
-
             modelBuilder.Entity("AllReady.Models.CampaignSponsors", b =>
                 {
                     b.HasOne("AllReady.Models.Campaign")
@@ -524,17 +476,6 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.AllReadyTask")
                         .WithMany()
                         .ForeignKey("TaskId");
-
-                    b.HasOne("AllReady.Models.ApplicationUser")
-                        .WithMany()
-                        .ForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("AllReady.Models.UserSkill", b =>
-                {
-                    b.HasOne("AllReady.Models.Skill")
-                        .WithMany()
-                        .ForeignKey("SkillId");
 
                     b.HasOne("AllReady.Models.ApplicationUser")
                         .WithMany()
