@@ -18,20 +18,32 @@ namespace AllReady.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
+        private readonly IAllReadyDataAccess _dataAccess;
 
         public ManageController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
-            ISmsSender smsSender)
+            ISmsSender smsSender,
+            IAllReadyDataAccess dataAccess)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
+            _dataAccess = dataAccess;
         }
 
-        // GET: /Account/Index
+        private ViewResult WithSkills(ViewResult view)
+        {
+            view.ViewData["Skills"] = _dataAccess.Skills
+                .Select(s => new { Name = s.HierarchicalName, Id = s.Id })
+                .OrderBy(a => a.Name)
+                .ToList();
+            return view;
+        }
+
+        // GET: /Manage/Index
         [HttpGet]
         public async Task<IActionResult> Index(ManageMessageId? message = null)
         {
@@ -44,23 +56,47 @@ namespace AllReady.Controllers
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
 
-            var user = await GetCurrentUserAsync();
+            var user = GetCurrentUser();
             var model = new IndexViewModel
             {
                 HasPassword = await _userManager.HasPasswordAsync(user),
                 PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
                 TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
                 Logins = await _userManager.GetLoginsAsync(user),
-                BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user)
+                BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
+                AssociatedSkills = user.AssociatedSkills
             };
-            return View(model);
+            return WithSkills(View(model));
+        }
+
+        // POST: /Manage/Index
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(IndexViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return WithSkills(View(model));
+            }
+            var user = GetCurrentUser();
+            user.AssociatedSkills.RemoveAll(usk => model.AssociatedSkills == null || !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
+            if (model.AssociatedSkills != null)
+            {
+                user.AssociatedSkills.AddRange(model.AssociatedSkills.Where(msk => !user.AssociatedSkills.Any(usk => usk.SkillId == msk.SkillId)));
+            }
+            if (user.AssociatedSkills != null && user.AssociatedSkills.Count > 0)
+            {
+                user.AssociatedSkills.ForEach(usk => usk.UserId = user.Id);
+            }
+            await _dataAccess.UpdateUser(user);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: /Account/RemoveLogin
         [HttpGet]
         public async Task<IActionResult> RemoveLogin()
         {
-            var user = await GetCurrentUserAsync();
+            var user = GetCurrentUser();
             var linkedAccounts = await _userManager.GetLoginsAsync(user);
             ViewData["ShowRemoveButton"] = await _userManager.HasPasswordAsync(user) || linkedAccounts.Count > 1;
             return View(linkedAccounts);
@@ -72,7 +108,7 @@ namespace AllReady.Controllers
         public async Task<IActionResult> RemoveLogin(string loginProvider, string providerKey)
         {
             ManageMessageId? message = ManageMessageId.Error;
-            var user = await GetCurrentUserAsync();
+            var user = GetCurrentUser();
             if (user != null)
             {
                 var result = await _userManager.RemoveLoginAsync(user, loginProvider, providerKey);
@@ -101,7 +137,7 @@ namespace AllReady.Controllers
                 return View(model);
             }
             // Generate the token and send it
-            var user = await GetCurrentUserAsync();
+            var user = GetCurrentUser();
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
             await _smsSender.SendSmsAsync(model.PhoneNumber, "Your security code is: " + code);
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = model.PhoneNumber });
@@ -112,7 +148,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EnableTwoFactorAuthentication()
         {
-            var user = await GetCurrentUserAsync();
+            var user = GetCurrentUser();
             if (user != null)
             {
                 await _userManager.SetTwoFactorEnabledAsync(user, true);
@@ -126,7 +162,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DisableTwoFactorAuthentication()
         {
-            var user = await GetCurrentUserAsync();
+            var user = GetCurrentUser();
             if (user != null)
             {
                 await _userManager.SetTwoFactorEnabledAsync(user, false);
@@ -139,7 +175,7 @@ namespace AllReady.Controllers
         [HttpGet]
         public async Task<IActionResult> VerifyPhoneNumber(string phoneNumber)
         {
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(await GetCurrentUserAsync(), phoneNumber);
+            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(GetCurrentUser(), phoneNumber);
             // Send an SMS to verify the phone number
             return phoneNumber == null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
@@ -153,7 +189,7 @@ namespace AllReady.Controllers
             {
                 return View(model);
             }
-            var user = await GetCurrentUserAsync();
+            var user = GetCurrentUser();
             if (user != null)
             {
                 var result = await _userManager.ChangePhoneNumberAsync(user, model.PhoneNumber, model.Code);
@@ -172,7 +208,7 @@ namespace AllReady.Controllers
         [HttpGet]
         public async Task<IActionResult> RemovePhoneNumber()
         {
-            var user = await GetCurrentUserAsync();
+            var user = GetCurrentUser();
             if (user != null)
             {
                 var result = await _userManager.SetPhoneNumberAsync(user, null);
@@ -201,7 +237,7 @@ namespace AllReady.Controllers
             {
                 return View(model);
             }
-            var user = await GetCurrentUserAsync();
+            var user = GetCurrentUser();
             if (user != null)
             {
                 var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
@@ -233,7 +269,7 @@ namespace AllReady.Controllers
                 return View(model);
             }
 
-            var user = await GetCurrentUserAsync();
+            var user = GetCurrentUser();
             if (user != null)
             {
                 var result = await _userManager.AddPasswordAsync(user, model.NewPassword);
@@ -257,7 +293,7 @@ namespace AllReady.Controllers
                 : message == ManageMessageId.AddLoginSuccess ? "The external login was added."
                 : message == ManageMessageId.Error ? "An error has occurred."
                 : "";
-            var user = await GetCurrentUserAsync();
+            var user = GetCurrentUser();
             if (user == null)
             {
                 return View("Error");
@@ -287,7 +323,7 @@ namespace AllReady.Controllers
         [HttpGet]
         public async Task<ActionResult> LinkLoginCallback()
         {
-            var user = await GetCurrentUserAsync();
+            var user = GetCurrentUser();
             if (user == null)
             {
                 return View("Error");
@@ -334,9 +370,9 @@ namespace AllReady.Controllers
             Error
         }
 
-        private async Task<ApplicationUser> GetCurrentUserAsync()
+        private ApplicationUser GetCurrentUser()
         {
-            return await _userManager.FindByIdAsync(HttpContext.User.GetUserId());
+            return _dataAccess.GetUser(User.GetUserId());
         }
 
         private IActionResult RedirectToLocal(string returnUrl)
