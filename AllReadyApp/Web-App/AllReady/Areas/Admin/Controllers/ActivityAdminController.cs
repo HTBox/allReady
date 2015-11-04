@@ -146,7 +146,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (activityParentViewModel.CreateEditViewModel.EndDateTime < activityParentViewModel.CreateEditViewModel.StartDateTime)
             {
-                ModelState.AddModelError("EndDateTime", "End date cannot be earlier than the start date");
+                ModelState.AddModelError("CreateEditViewModel.EndDateTime", "End date cannot be earlier than the start date");
             }
 
             Campaign campaign = _dataAccess.GetCampaign(campaignId);
@@ -246,7 +246,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (activityParentViewModel.CreateEditViewModel.EndDateTime < activityParentViewModel.CreateEditViewModel.StartDateTime)
             {
-                ModelState.AddModelError("EndDateTime", "End date cannot be earlier than the start date");
+                ModelState.AddModelError("CreateEditViewModel.EndDateTime", "End date cannot be earlier than the start date");
             }
 
             if (ModelState.IsValid)
