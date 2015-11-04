@@ -27,7 +27,10 @@ namespace AllReady.Areas.Admin.Controllers
 
         ViewResult AddDropdownData(ViewResult view)
         {
-            view.ViewData["Skills"] = _dataAccess.Skills.Select(s => new { Name = s.HierarchicalName, Id = s.Id }).ToList();
+            view.ViewData["Skills"] = _dataAccess.Skills
+                .Select(s => new { Name = s.HierarchicalName, Id = s.Id })
+                .OrderBy(a => a.Name)
+                .ToList();
             return view;
         }
 
