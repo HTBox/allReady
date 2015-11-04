@@ -1,5 +1,11 @@
 @model Campaign
 
+<div class="row">
+    <div class="col-md-12">
+        <a asp-controller="Activity" asp-action="Create" asp-route-area="Admin" asp-route-campaignId="@Model.Id"
+           class="btn">Create New</a>
+    </div>
+</div>
 
 <div class="row">
     <div class="cold-md-12">
@@ -19,7 +25,12 @@
             @foreach (var item in Model.Activities) {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Name)
+                        <a asp-controller="Activity" asp-action="Details" asp-route-area="Admin" asp-route-id="@item.Id">@item.Name</a> 
+                        @if (!string.IsNullOrEmpty(item.Description))
+                        {
+                            <br />
+                            <span class="text-muted">@item.Description</span>
+                        }
                     </td>
                     <td>
                         @item.StartDateTimeUtc.ToShortDateString()
@@ -28,21 +39,11 @@
                         @item.EndDateTimeUtc.ToShortDateString()
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "Edit", "Activity", new { id = item.Id }, new { @class = "btn" })
-                        @Html.ActionLink("Details", "Details", "Activity", new { id = item.Id }, new { @class = "btn" }) 
-                        @Html.ActionLink("Delete", "Delete", "Activity", new { id = item.Id }, new { @class = "btn" })
-                        <a asp-controller="Task" asp-action="Index" asp-route-activityId="@item.Id" class="btn">Tasks</a>
-                        @Html.ActionLink("Assign Volunteers", "Assign", new { id = item.Id }, new { @class = "btn" })
+                        <a class="btn" asp-controller="Activity" asp-action="Delete" asp-route-area="Admin" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash"></i></a>                        
                     </td>
                 </tr>
             }
         </table>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <a asp-controller="Activity" asp-action="Create" asp-route-area="Admin" asp-route-campaignId="@Model.Id"
-              class="btn">Create New</a>
     </div>
 </div>
 

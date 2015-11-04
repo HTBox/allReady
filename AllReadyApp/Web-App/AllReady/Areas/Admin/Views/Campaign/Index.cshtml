@@ -2,13 +2,20 @@
 @{ ViewData["Title"] = "Campaigns - Admin"; }
 
 <div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li>Campaigns</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
     <div class="col-md-12">
         <h2>@ViewData["Title"]</h2>
     </div>
 </div>
 <div class="row">
     <div class="col-md-12">
-        @Html.ActionLink("Create new", "Create", "Campaign", null, new { @class = "btn" })
+        <a asp-controller="Campaign" asp-action="Create" asp-route-area="Admin" class="btn">Create New</a>
     </div>
 </div>
 <div class="row">
@@ -27,7 +34,6 @@
                 <th>
                     @Html.DisplayNameFor(model => model.EndDateTimeUtc)
                 </th>
-                <th></th>
             </tr>
             @foreach (var item in Model) {
                 <tr>
@@ -46,9 +52,6 @@
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.EndDateTimeUtc)
-                    </td>
-                    <td>
-                        <a asp-controller="Campaign" asp-action="Delete" asp-route-area="Admin" asp-route-id="@item.Id" class="btn"><i class="glyphicon glyphicon-trash"></i></a>
                     </td>
                 </tr>
             }

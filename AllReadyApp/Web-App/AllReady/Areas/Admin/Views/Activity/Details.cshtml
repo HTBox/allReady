@@ -9,11 +9,9 @@
         </div>
     }
     <div class="col-md-10">
-        <h2>@Model.Title</h2>
+        <h2>@Model.Title <a asp-controller="Activity" asp-action="Edit" asp-route-id="@Model.Id" class="btn"><i class="glyphicon glyphicon-edit"></i></a></h2>
             <p>@Model.Description</p>
             <p><strong>Duration: </strong> @Model.StartDateTime.ToString("d") - @Model.EndDateTime.ToString("d")</p>
-                
-        @*<p><strong>Campaign: </strong>@Model.CampaignName</p>*@
     </div>
 </div>
 <div class="row">
@@ -49,9 +47,10 @@
 <div class="row">
     <div class="col-md-12">
         <p>
-            <a href="@Url.Action("Index", "Activity", new {campaignId = Model.CampaignId })" class="btn">
-                <span class="fa fa-backward"> Back to Activities</span>
+            <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin" class="btn">
+                <span class="fa fa-backward"> Back to Campaign</span>
             </a>
+            
             <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn"><span class="fa fa-edit"></span> Edit</a> 
             <a href="@Url.Action("Assign", new { id = Model.Id })" class="btn"><span class="fa fa-user"></span> Assign tasks</a>
         </p>

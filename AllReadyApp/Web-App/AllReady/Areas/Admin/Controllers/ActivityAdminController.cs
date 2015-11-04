@@ -50,24 +50,6 @@ namespace AllReady.Areas.Admin.Controllers
             return base.View(viewName, model).WithSkills(_dataAccess);
         }
 
-        // GET: Activity
-        [Route("Admin/Activity/{campaignId}")]
-        public IActionResult Index(int campaignId)
-        {
-            Campaign campaign = _dataAccess.GetCampaign(campaignId);
-            if (campaign == null || !User.IsTenantAdmin(campaign.ManagingTenantId))
-            {
-                return HttpUnauthorized();
-            }
-            var viewModel = new CampaignActivitiesViewModel
-            {
-                CampaignId = campaign.Id,
-                CampaignName = campaign.Name,
-                Activities = campaign.Activities
-            };
-            return View(viewModel);
-        }
-
         // GET: Activity/Details/5
         [HttpGet]
         [Route("Admin/Activity/Details/{id}")]
@@ -147,7 +129,7 @@ namespace AllReady.Areas.Admin.Controllers
                 }                
                 activity.TenantId = campaign.ManagingTenantId;
                 await _dataAccess.AddActivity(activity);
-                return RedirectToAction("Index", new { campaignId = activity.CampaignId });
+                return RedirectToAction("Details", "Campaign", new { area = "Admin", id = activity.CampaignId });
             }
             return View("Edit", activity);
         }
@@ -197,7 +179,7 @@ namespace AllReady.Areas.Admin.Controllers
                     activity.RequiredSkills.ForEach(acsk => acsk.ActivityId = activity.Id);
                 }
                 await _dataAccess.UpdateActivity(activity);
-                return RedirectToAction("Index", new { campaignId = activity.CampaignId });
+                return RedirectToAction("Details", "Campaign", new { area = "Admin", id = activity.CampaignId });
             }
             Campaign campaign = _dataAccess.GetCampaign(activity.CampaignId);
             activity.Campaign = campaign;
@@ -239,8 +221,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             await _dataAccess.DeleteActivity(id);
-
-            return RedirectToAction("Index", new { campaignId = activity.CampaignId });
+            return RedirectToAction("Details", "Campaign", new { area = "Admin", id = activity.CampaignId });
         }
 
         [HttpGet]

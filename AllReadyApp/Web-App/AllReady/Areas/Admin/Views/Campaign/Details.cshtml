@@ -1,7 +1,16 @@
 ﻿@model Campaign
 <div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li>@Model.Name</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
     <div id="col-main" >
-        <div class="col-md-9"><h2>@Model.Name <a asp-controller="Campaign" asp-action="Edit" asp-route-id="@Model.Id" class="btn"><i class="glyphicon glyphicon-edit"></i></a> </h2></div>
+        <div class="col-md-9"><h2>@Model.Name <a asp-controller="Campaign" asp-action="Edit" asp-route-id="@Model.Id" class="btn"><i class="glyphicon glyphicon-edit"></i></a> <a asp-controller="Campaign" asp-action="Delete" asp-route-area="Admin" asp-route-id="@Model.Id" class="btn"><i class="glyphicon glyphicon-trash"></i></a></h2></div>
     </div>
 </div>
 
@@ -27,7 +36,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <h3>Activities for this campaign</h3>
+        <h3>Activities</h3>
     </div>    
 </div>
 @Html.Partial("~/Areas/Admin/Views/Activity/_List.cshtml", Model)
