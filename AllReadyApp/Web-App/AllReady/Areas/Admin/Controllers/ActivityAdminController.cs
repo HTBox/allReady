@@ -34,11 +34,12 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         ViewResult AddDropdownData(ViewResult view)
-        {           
+        {
             view.ViewData["Skills"] = _dataAccess.Skills
                 .Select(s => new { Name = s.HierarchicalName, Id = s.Id })
                 .OrderBy(a => a.Name)
                 .ToList();
+
             return view;
         }
 
@@ -121,47 +122,68 @@ namespace AllReady.Areas.Admin.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            Activity activity = new Activity
+            ActivityCreateEditPostParentViewModel activityParentViewModel = new ActivityCreateEditPostParentViewModel
             {
                 CampaignId = campaign.Id,
-                Campaign = campaign,
-                TenantId = campaign.ManagingTenantId,
-                RequiredSkills = new List<ActivitySkill>(),
-                StartDateTimeUtc = DateTime.Today.Date,
-                EndDateTimeUtc = DateTime.Today.Date.AddMonths(1)
+                CampaignName = campaign.Name
             };
-            return View("Edit", activity);
+
+            activityParentViewModel.CreateEditViewModel = new ActivityCreateEditViewModel
+            {
+                RequiredSkills = new List<ActivitySkill>(),
+                StartDateTime = DateTime.Today.Date,
+                EndDateTime = DateTime.Today.Date.AddMonths(1)
+            };
+
+            return View("Edit", activityParentViewModel);
         }
 
         // POST: Activity/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Activity/Create/{campaignId}")]
-        public async Task<IActionResult> Create(int campaignId, Activity activity)
+        public async Task<IActionResult> Create(int campaignId, ActivityCreateEditPostParentViewModel activityParentViewModel)
         {
-            if (activity.EndDateTimeUtc < activity.StartDateTimeUtc)
+            if (activityParentViewModel.CreateEditViewModel.EndDateTime < activityParentViewModel.CreateEditViewModel.StartDateTime)
             {
-                ModelState.AddModelError("EndDateTimeUtc", "End date cannot be earlier than the start date");
+                ModelState.AddModelError("EndDateTime", "End date cannot be earlier than the start date");
             }
 
             Campaign campaign = _dataAccess.GetCampaign(campaignId);
-            activity.Campaign = campaign;
-            activity.CampaignId = campaignId;
+
             if (ModelState.IsValid)
             {                
                 if (campaign == null || 
                     !User.IsTenantAdmin(campaign.ManagingTenantId))
                 {
                     return HttpUnauthorized();
-                }                
-                activity.TenantId = campaign.ManagingTenantId;
+                }
+
+                Activity activity = new Activity
+                {
+                    Campaign = campaign,
+                    CampaignId = campaignId,
+                    TenantId = campaign.ManagingTenantId,
+                    Name = activityParentViewModel.CreateEditViewModel.Name,
+                    Description = activityParentViewModel.CreateEditViewModel.Description,
+                    StartDateTimeUtc = activityParentViewModel.CreateEditViewModel.StartDateTime.ToUniversalTime(),
+                    EndDateTimeUtc = activityParentViewModel.CreateEditViewModel.EndDateTime.ToUniversalTime(),
+                    RequiredSkills = activityParentViewModel.CreateEditViewModel.RequiredSkills
+                };
+
                 await _dataAccess.AddActivity(activity);
                 return RedirectToAction("Index", new { campaignId = activity.CampaignId });
             }
-            return View("Edit", activity);
+
+            // repopulate non-editable ViewModel values
+            activityParentViewModel.CampaignId = campaign.Id;
+            activityParentViewModel.CampaignName = campaign.Name;
+            
+            return View("Edit", activityParentViewModel);
         }
 
         // GET: Activity/Edit/5
+        [Route("Admin/Activity/Edit/{id}")]
         public IActionResult Edit(int id)
         {
             Activity activity = _dataAccess.GetActivity(id);
@@ -175,42 +197,93 @@ namespace AllReady.Areas.Admin.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            return View(activity);
+            ActivityCreateEditPostParentViewModel activityParentViewModel = new ActivityCreateEditPostParentViewModel
+            {
+                PageTitle = "Activity: " + activity.Name,
+                IsCreateView = false,
+
+                ActivityId = activity.Id,
+                ActivityName = activity.Name,
+                CampaignId = activity.Campaign.Id,
+                CampaignName = activity.Campaign.Name
+            };
+
+            activityParentViewModel.CreateEditViewModel = new ActivityCreateEditViewModel //(activityCreateEditPostVM)
+            {
+                Name = activity.Name,
+                Description = activity.Description,
+                StartDateTime = activity.StartDateTimeUtc.Date,
+                EndDateTime = activity.EndDateTimeUtc.Date,
+                RequiredSkills = activity.RequiredSkills
+            };
+
+            activityParentViewModel.UploadFileViewModel = new ActivityFileUploadViewModel
+            {
+                Name = activity.Name,
+                ImageUrl = activity.ImageUrl
+            };
+
+            return View(activityParentViewModel);
         }
 
         // POST: Activity/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Activity activity)
+        [Route("Admin/Activity/Edit/{id}")]
+        public async Task<IActionResult> Edit(int id, ActivityCreateEditPostParentViewModel activityParentViewModel)
         {
+            Activity activity = _dataAccess.GetActivity(id);
+
             if (activity == null)
             {
                 return HttpBadRequest();
             }
 
-            int campaignId = _dataAccess.GetManagingTenantId(activity.Id);            
-            if (!User.IsTenantAdmin(campaignId))
+            if (!User.IsTenantAdmin(activity.Campaign.ManagingTenantId))
             {
                 return HttpUnauthorized();
             }
 
-            if (activity.EndDateTimeUtc < activity.StartDateTimeUtc)
+            if (activityParentViewModel.CreateEditViewModel.EndDateTime < activityParentViewModel.CreateEditViewModel.StartDateTime)
             {
-                ModelState.AddModelError("EndDateTimeUtc", "End date cannot be earlier than the start date");
+                ModelState.AddModelError("EndDateTime", "End date cannot be earlier than the start date");
             }
 
             if (ModelState.IsValid)
             {
-                if (activity.RequiredSkills != null && activity.RequiredSkills.Count > 0)
+                if (activityParentViewModel.CreateEditViewModel.RequiredSkills != null && activityParentViewModel.CreateEditViewModel.RequiredSkills.Count > 0)
                 {
-                    activity.RequiredSkills.ForEach(acsk => acsk.ActivityId = activity.Id);
+                    activityParentViewModel.CreateEditViewModel.RequiredSkills.ForEach(acsk => acsk.ActivityId = activityParentViewModel.ActivityId);
                 }
+
+                activity.Name = activityParentViewModel.CreateEditViewModel.Name;
+                activity.Description = activityParentViewModel.CreateEditViewModel.Description;
+                activity.StartDateTimeUtc = activityParentViewModel.CreateEditViewModel.StartDateTime.ToUniversalTime();
+                activity.EndDateTimeUtc = activityParentViewModel.CreateEditViewModel.EndDateTime.ToUniversalTime();
+                activity.RequiredSkills = activityParentViewModel.CreateEditViewModel.RequiredSkills;
+
                 await _dataAccess.UpdateActivity(activity);
+
                 return RedirectToAction("Index", new { campaignId = activity.CampaignId });
             }
-            Campaign campaign = _dataAccess.GetCampaign(activity.CampaignId);
-            activity.Campaign = campaign;
-            return View(activity);
+
+            // repopulate ViewModels from trusted source
+            activityParentViewModel.PageTitle = "Activity: " + activity.Name;
+            activityParentViewModel.IsCreateView = false;
+
+            // needed for titles and links
+            activityParentViewModel.ActivityId = activity.Id;
+            activityParentViewModel.ActivityName = activity.Name;
+            activityParentViewModel.CampaignId = activity.Campaign.Id;
+            activityParentViewModel.CampaignName = activity.Campaign.Name;
+
+            activityParentViewModel.UploadFileViewModel = new ActivityFileUploadViewModel
+            {
+                Name = activity.Name,
+                ImageUrl = activity.ImageUrl
+            };
+
+            return View(activityParentViewModel);
         }
 
         // GET: Activity/Delete/5
@@ -321,15 +394,50 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PostActivityFile(int id, IFormFile file)
+        [Route("Admin/Activity/PostActivityFile/{id}")]
+        public async Task<IActionResult> PostActivityFile(int id, ActivityCreateEditPostParentViewModel activityParentViewModel)
         {
-            Activity a = _dataAccess.GetActivity(id);
+            Activity activity = _dataAccess.GetActivity(id);
 
-            a.ImageUrl = await _imageService.UploadActivityImageAsync(a.Id, a.Tenant.Id, file);
-            await _dataAccess.UpdateActivity(a);
+            if (activity == null)
+            {
+                return new HttpStatusCodeResult(404);
+            }
 
-            return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Edit", id = id });
+            if (!UserIsTenantAdminOfActivity(activity))
+            {
+                return new HttpUnauthorizedResult();
+            }
 
+            if (ModelState.IsValid) { 
+                activity.ImageUrl = await _imageService.UploadActivityImageAsync(activity.Id, activity.Tenant.Id, activityParentViewModel.UploadFileViewModel.UploadedFile);
+
+                await _dataAccess.UpdateActivity(activity);
+
+                return RedirectToAction("Index", new { campaignId = activity.CampaignId });
+            }
+
+            // repopulate ViewModels from trusted source
+            activityParentViewModel.PageTitle = "Activity: " + activity.Name;
+            activityParentViewModel.IsCreateView = false;
+
+            // needed for titles and links
+            activityParentViewModel.ActivityId = activity.Id;
+            activityParentViewModel.ActivityName = activity.Name;
+            activityParentViewModel.CampaignId = activity.Campaign.Id;
+            activityParentViewModel.CampaignName = activity.Campaign.Name;
+
+            // valdiation failed, so we need to repopulate the CreateEditViewModel so that both forms are populated
+            activityParentViewModel.CreateEditViewModel = new ActivityCreateEditViewModel
+            {
+                Name = activity.Name,
+                Description = activity.Description,
+                StartDateTime = activity.StartDateTimeUtc,
+                EndDateTime = activity.EndDateTimeUtc,
+                RequiredSkills = activity.RequiredSkills,
+            };
+
+            return View("Edit", activityParentViewModel);
         }
 
         private bool UserIsTenantAdminOfActivity(Activity activity)

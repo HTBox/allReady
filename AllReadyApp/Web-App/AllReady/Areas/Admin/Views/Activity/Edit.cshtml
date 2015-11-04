@@ -1,65 +1,49 @@
-@model AllReady.Models.Activity
+@model AllReady.Areas.Admin.ViewModels.ActivityCreateEditPostParentViewModel
 
-@{
-    //TODO: Need a better way of identifying Create vs Edit. Suggest not binding directly to model class, create view model instead
-    var isNew = Model.Id == 0;
+<h4>@Model.CampaignName</h4>
+<h2>@Model.PageTitle</h2>
 
-    if (isNew)
-    {
-        ViewBag.Title = "Create Activity";
-    }
-    else
-    {
-        ViewBag.Title = "Activity: " + Model.Name;
-    }
-}
-<h4>@Model.Campaign.Name</h4>
-<h2>@ViewBag.Title</h2>
-
-@using (Html.BeginForm())
+@using (Html.BeginForm((Model.IsCreateView ? "Create" : "Edit"), "Activity"))
 {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
-        <div asp-validation-summary="ValidationSummary.ModelOnly" class="text-danger"></div>
-        <input asp-for="Id" type="hidden" />
-        <input asp-for="CampaignId" type="hidden" />
-        <input asp-for="TenantId" type="hidden" />
+        <div asp-validation-summary="ValidationSummary.All" class="text-danger"></div>
         <div class="form-group">
-            <label asp-for="Name" class="control-label col-md-2"></label>
+            <label asp-for="CreateEditViewModel.Name" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <input asp-for="CreateEditViewModel.Name" class="form-control" />
+                <span asp-validation-for="CreateEditViewModel.Name" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="Description" class="control-label col-md-2"></label>
+            <label asp-for="CreateEditViewModel.Description" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <textarea asp-for="Description" class="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
+                <textarea asp-for="CreateEditViewModel.Description" class="form-control"></textarea>
+                <span asp-validation-for="CreateEditViewModel.Description" class="text-danger"></span>
             </div>
         </div>
 
         <div class="form-group">
-            <label asp-for="StartDateTimeUtc" class="control-label col-md-2"></label>
+            <label asp-for="CreateEditViewModel.StartDateTime" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="StartDateTimeUtc" class="form-control datepicker" />
-                <span asp-validation-for="StartDateTimeUtc" class="text-danger"></span>
+                <input asp-for="CreateEditViewModel.StartDateTime" class="form-control datepicker" />
+                <span asp-validation-for="CreateEditViewModel.StartDateTime" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="EndDateTimeUtc" class="control-label col-md-2"></label>
+            <label asp-for="CreateEditViewModel.EndDateTime" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="EndDateTimeUtc" class="form-control datepicker" />
-                <span asp-validation-for="EndDateTimeUtc" class="text-danger"></span>
+                <input asp-for="CreateEditViewModel.EndDateTime" class="form-control datepicker" />
+                <span asp-validation-for="CreateEditViewModel.EndDateTime" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="RequiredSkills" class="control-label col-md-2"></label>
+            <label asp-for="CreateEditViewModel.RequiredSkills" class="control-label col-md-2"></label>
             <div class="col-md-10">
                 <div data-bind="foreach: requiredSkills">
                     <div class="form-inline">
-                        <select class="form-control" data-bind="attr: { name: 'RequiredSkills[' + $index() + '].SkillId' }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                        <select class="form-control" data-bind="attr: { name: 'CreateEditViewModel.RequiredSkills[' + $index() + '].SkillId' }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
                         <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                             Delete
@@ -81,27 +65,35 @@
     </div>
 }
 
-@if (!isNew)
+@if (!Model.IsCreateView)
 {
-    <h2>Image for @Model.Name</h2>
+    <h2>Image for @Model.ActivityName</h2>
     <div class="form-horizontal">
         <div class="form-group">
-            @Html.LabelFor(model => model.ImageUrl, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.UploadFileViewModel.ImageUrl, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <img src="@Model.ImageUrl" class="img-thumbnail img-responsive col-md-4" />
-                <form action="~/Admin/Activity/PostActivityFile" method="post" enctype="multipart/form-data">
+                <img src="@Model.UploadFileViewModel.ImageUrl" class="img-thumbnail img-responsive col-md-4" />
+                <br /><br />
+                @using (@Html.BeginForm("PostActivityFile", "Activity", new { Area = "Admin", Id = Model.ActivityId }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
                     @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" id="activiteyId" value="@Model.Id" />
+
+                    <input asp-for="UploadFileViewModel.ImageUrl" type="hidden" />
+
                     <div class="form-group">
                         <div class="col-md-10">
-                            <input type="file" name="file" id="newFile" class="control-label col-md-4" />
+                            <input asp-for="UploadFileViewModel.UploadedFile" type="file" />
+                            <br />
+                            <span asp-validation-for="UploadFileViewModel.UploadedFile" class="text-danger"></span>
+
                             <button type="submit" class="btn col-md-1">Upload</button>
                         </div>
                     </div>
-                </form>
+                }
             </div>
         </div>
     </div>
+
 }
 
 <div>
@@ -135,7 +127,7 @@
 
             ko.applyBindings(new AdminActivityViewModel(requiredSkills, availableSkills));
         })(ko, $,
-            @Json.Serialize(Model.RequiredSkills.Select(rs => new { Id = rs.SkillId })),
+            @Json.Serialize(Model.CreateEditViewModel.RequiredSkills.Select(rs => new { Id = rs.SkillId })),
             @Json.Serialize(ViewData["Skills"]));
     </script>
 }
