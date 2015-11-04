@@ -32,7 +32,7 @@
             @foreach (var item in Model) {
                 <tr>
                     <td>
-                        @Html.ActionLink(item.Name, "Details", "Campaign", new { id = item.Id })                        
+                        <a asp-controller="Campaign" asp-action="Details" asp-route-area="Admin" asp-route-id="@item.Id">@item.Name</a>
                         @if (!string.IsNullOrEmpty(item.Description))
                         {
                             <br/><span class="text-muted">@item.Description</span>
@@ -48,9 +48,7 @@
                         @Html.DisplayFor(modelItem => item.EndDateTimeUtc)
                     </td>
                     <td>
-                        <a asp-controller="Campaign" asp-action="Edit" asp-route-id="@item.Id" class="btn"><i class="glyphicon glyphicon-edit"></i></a>
                         <a asp-controller="Campaign" asp-action="Delete" asp-route-area="Admin" asp-route-id="@item.Id" class="btn"><i class="glyphicon glyphicon-trash"></i></a>
-                        @Html.ActionLink("Activities", "Index", "Activity", new {area ="Admin", campaignId = item.Id }, new { @class = "btn" })
                     </td>
                 </tr>
             }

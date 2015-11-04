@@ -32,6 +32,23 @@ namespace AllReady.Controllers
             return View(_dataAccess.Campaigns);
         }
 
+        public IActionResult Details(int id)
+        {
+            Campaign campaign = _dataAccess.GetCampaign(id);
+
+            if (campaign == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (!User.IsTenantAdmin(campaign.ManagingTenantId))
+            {
+                return HttpUnauthorized();
+            }
+
+            return View(campaign);
+        }
+
         // GET: Campaign/Create
         public IActionResult Create()
         {

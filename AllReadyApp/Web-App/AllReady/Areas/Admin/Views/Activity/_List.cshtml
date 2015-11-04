@@ -1,12 +1,6 @@
-@model AllReady.Areas.Admin.ViewModels.CampaignActivitiesViewModel
+@model Campaign
 
-@{  ViewBag.Title = "Activities for " + Model.CampaignName; }
 
-<div class="row">
-    <div class="cold-md-12">
-        <h2>@ViewBag.Title</h2>
-    </div>
-</div>
 <div class="row">
     <div class="cold-md-12">
         <table class="table">
@@ -47,7 +41,7 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        <a asp-controller="Activity" asp-action="Create"
+        <a asp-controller="Activity" asp-action="Create" asp-route-area="Admin" asp-route-campaignId="@Model.Id"
               class="btn">Create New</a>
     </div>
 </div>
