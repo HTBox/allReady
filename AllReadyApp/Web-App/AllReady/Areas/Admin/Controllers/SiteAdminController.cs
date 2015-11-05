@@ -8,6 +8,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Services;
+using AllReady.Areas.Admin.ViewModels;
 
 namespace AllReady.Areas.SiteAdmin.Controllers
 {
@@ -17,17 +18,36 @@ namespace AllReady.Areas.SiteAdmin.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly IAllReadyDataAccess _dataAccess;
 
-        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender)
+        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IAllReadyDataAccess dataAccess)
         {
             _userManager = userManager;
             _emailSender = emailSender;
+            _dataAccess = dataAccess;
         }
-        // GET: /<controller>/
+        
         public IActionResult Index()
         {
-            // Get the list of Users and whether they are TenantAdmins or not
-            return View();
+            var viewModel = new SiteAdminViewModel()
+            {
+                Users = _dataAccess.Users.ToList()
+            };
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> EditUser(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            var claims = await _userManager.GetClaimsAsync(user);
+            var viewModel = new EditUserViewModel()
+            {
+                UserId = userId,
+                UserName = user.UserName,
+                AssociatedSkills = user.AssociatedSkills,
+                IsTenantAdmin = claims.FirstOrDefault(c => c.Type.Equals(Security.ClaimTypes.UserType)).Value == "TenantAdmin"
+            };
+            return View(viewModel);
         }
 
         [HttpPost]
