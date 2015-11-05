@@ -47,13 +47,17 @@ namespace AllReady.Areas.Admin.Controllers
                 AssociatedSkills = user.AssociatedSkills,
                 IsTenantAdmin = claims.Any(c => c.Type == Security.ClaimTypes.UserType && c.Value == "TenantAdmin")
             };
-            return View(viewModel);
+            return View(viewModel).WithSkills(_dataAccess);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EditUser(EditUserViewModel model)
+        public IActionResult EditUser(EditUserViewModel viewModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel).WithSkills(_dataAccess);
+            }
             return RedirectToAction(nameof(Index));
         }
 

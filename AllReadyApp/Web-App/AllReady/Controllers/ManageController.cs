@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using AllReady.Models;
 using AllReady.Services;
+using AllReady.Areas.Admin.Controllers;
 
 namespace AllReady.Controllers
 {
@@ -34,15 +35,6 @@ namespace AllReady.Controllers
             _dataAccess = dataAccess;
         }
 
-        private ViewResult WithSkills(ViewResult view)
-        {
-            view.ViewData["Skills"] = _dataAccess.Skills
-                .Select(s => new { Name = s.HierarchicalName, Id = s.Id })
-                .OrderBy(a => a.Name)
-                .ToList();
-            return view;
-        }
-
         // GET: /Manage/Index
         [HttpGet]
         public async Task<IActionResult> Index(ManageMessageId? message = null)
@@ -66,7 +58,7 @@ namespace AllReady.Controllers
                 BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
                 AssociatedSkills = user.AssociatedSkills
             };
-            return WithSkills(View(model));
+            return View(model).WithSkills(_dataAccess);
         }
 
         // POST: /Manage/Index
@@ -76,7 +68,7 @@ namespace AllReady.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return WithSkills(View(model));
+                return View(model).WithSkills(_dataAccess);
             }
             var user = GetCurrentUser();
             user.AssociatedSkills.RemoveAll(usk => model.AssociatedSkills == null || !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));

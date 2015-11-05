@@ -25,30 +25,21 @@ namespace AllReady.Areas.Admin.Controllers
             _dataAccess = dataAccess;
         }
 
-        ViewResult AddDropdownData(ViewResult view)
-        {
-            view.ViewData["Skills"] = _dataAccess.Skills
-                .Select(s => new { Name = s.HierarchicalName, Id = s.Id })
-                .OrderBy(a => a.Name)
-                .ToList();
-            return view;
-        }
-
         public override ViewResult View()
         {
-            return AddDropdownData(base.View());
+            return base.View().WithSkills(_dataAccess);
         }
         public override ViewResult View(object model)
         {
-            return AddDropdownData(base.View(model));
+            return base.View(model).WithSkills(_dataAccess);
         }
         public override ViewResult View(string viewName)
         {
-            return AddDropdownData(base.View(viewName));
+            return base.View(viewName).WithSkills(_dataAccess);
         }
         public override ViewResult View(string viewName, object model)
         {
-            return AddDropdownData(base.View(viewName, model));
+            return base.View(viewName, model).WithSkills(_dataAccess);
         }
 
         [Route("Admin/Task/{activityId}")]
