@@ -54,46 +54,29 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EditUser(EditUserViewModel viewModel)
+        public async Task<IActionResult> EditUser(EditUserViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
                 return View(viewModel).WithSkills(_dataAccess);
             }
+
+            //Skill associations
+            var user = _dataAccess.GetUser(viewModel.UserId);
+            user.AssociatedSkills.RemoveAll(usk => viewModel.AssociatedSkills == null || !viewModel.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
+            if (viewModel.AssociatedSkills != null)
+            {
+                user.AssociatedSkills.AddRange(viewModel.AssociatedSkills.Where(msk => !user.AssociatedSkills.Any(usk => usk.SkillId == msk.SkillId)));
+            }
+            if (user.AssociatedSkills != null && user.AssociatedSkills.Count > 0)
+            {
+                user.AssociatedSkills.ForEach(usk => usk.UserId = user.Id);
+            }
+            await _dataAccess.UpdateUser(user);
+
+            //TODO: Make user tenant admin part
+
             return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(SearchViewModel model)
-        {
-            // Get the user and the UserType claim
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
-            {
-                ModelState.AddModelError("Email", "No users matching this email address");
-                return View();
-            }
-            
-            //TODO: Simplify this logic
-            var claims = await _userManager.GetClaimsAsync(user);
-            if (claims.Count <= 0)
-            {
-                model.TenantAdmin = false;
-                return View("MakeUserTenantAdmin", model);
-            }
-            var claimValue = claims.FirstOrDefault(c => c.Type.Equals(Security.ClaimTypes.UserType)).Value;
-            if (!claimValue.Equals("TenantAdmin"))
-            {
-                model.TenantAdmin = false;
-            }
-            return View("MakeUserTenantAdmin", model);
-        }
-
-        [HttpGet]
-        public IActionResult MakeUserTenantAdmin(SearchViewModel model)
-        {
-            return View(model);
         }
 
         [HttpPost]
