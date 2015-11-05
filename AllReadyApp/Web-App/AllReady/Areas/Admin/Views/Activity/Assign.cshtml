@@ -2,6 +2,17 @@
 @{
  ViewData["Title"] = "Assign volunteers to tasks";
 }
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Title</a></li>
+            <li>Assign volunteers</li>
+        </ol>
+    </div>
+</div>
+
 <h2>@ViewData["Title"]</h2>
 @using (Html.BeginForm("Assign", "Activity", FormMethod.Post)) {
     @Html.AntiForgeryToken()
@@ -35,6 +46,7 @@
     <div class="row">
         <div class="col-md-12">
             <button type="submit" class="btn"><span class="fa fa-save"></span> Assign users</button>
+            <a class="btn" asp-controller="Activity" asp-action="Details" asp-route-area="Admin" asp-route-id="@Model.Id">Cancel</a>
         </div>
     </div>
 }

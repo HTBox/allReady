@@ -42,18 +42,6 @@ namespace AllReady.Areas.Admin.Controllers
             return base.View(viewName, model).WithSkills(_dataAccess);
         }
 
-        [Route("Admin/Task/{activityId}")]
-        public IActionResult Index(int activityId)
-        {
-            ViewBag.ActivityId = activityId;
-            var activity = _dataAccess.GetActivity(activityId);
-            if (activity == null || !User.IsTenantAdmin(activity.TenantId))
-            {
-                return HttpUnauthorized();
-            }
-            return View(activity);
-        }
-
         [HttpGet]
         [Route("Admin/Task/Create/{activityId}")]
         public IActionResult Create(int activityId)

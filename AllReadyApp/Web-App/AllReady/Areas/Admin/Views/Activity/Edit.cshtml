@@ -2,18 +2,39 @@
 
 @{
     //TODO: Need a better way of identifying Create vs Edit. Suggest not binding directly to model class, create view model instead
-    var isNew = Model.Id == 0;
-
-    if (isNew)
+    var isEdit = Model.Id != 0;
+    string cancelUrl;
+    if (isEdit)
     {
-        ViewBag.Title = "Create Activity";
+        ViewBag.Title = $"Edit Activity";
+        cancelUrl = Url.Action("Details", "Activity", new { id = Model.Id, area = "Admin" });
     }
     else
     {
-        ViewBag.Title = "Activity: " + Model.Name;
+        ViewBag.Title = "Create Activity";
+        cancelUrl = Url.Action("Details", "Campaign", new { id = Model.CampaignId, area = "Admin" });
     }
 }
-<h4>@Model.Campaign.Name</h4>
+
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.Campaign.Name</a></li>
+            @if (isEdit)
+            {
+                <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Name</a></li>
+                <li>Edit</li>
+            }
+            else
+            {
+                <li>Create New Activity</li>
+            }
+            
+        </ol>
+    </div>
+</div>
+
 <h2>@ViewBag.Title</h2>
 
 @using (Html.BeginForm())
@@ -75,15 +96,16 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn" data-bind="enable: requiredSkills.isValid">Save</button>
-                <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">"@Html.DisplayNameFor(m => m.RequiredSkills)" must be unique</span>
+                <a href="@cancelUrl" class="btn">Cancel</a>
+                <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">@Html.DisplayNameFor(m => m.RequiredSkills)" must be unique</span>
             </div>
         </div>
     </div>
 }
 
-@if (!isNew)
+@if (isEdit)
 {
-    <h2>Image for @Model.Name</h2>
+    <h2>Image</h2>
     <div class="form-horizontal">
         <div class="form-group">
             @Html.LabelFor(model => model.ImageUrl, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -103,10 +125,6 @@
         </div>
     </div>
 }
-
-<div>
-    <a class="btn" asp-controller="Activity" asp-action="Details" asp-route-area="Admin" asp-route-id="@Model.Id">Back to Details</a>
-</div>
 
 @section scripts {
     <script type="text/javascript">

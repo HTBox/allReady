@@ -20,7 +20,6 @@
                 <th>
                     End
                 </th>
-                <th></th>
             </tr>
             @foreach (var item in Model.Activities) {
                 <tr>
@@ -37,9 +36,6 @@
                     </td>
                     <td>
                         @item.EndDateTimeUtc.ToShortDateString()
-                    </td>
-                    <td>
-                        <a class="btn" asp-controller="Activity" asp-action="Delete" asp-route-area="Admin" asp-route-id="@item.Id"><i class="glyphicon glyphicon-trash"></i></a>                        
                     </td>
                 </tr>
             }
