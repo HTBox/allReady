@@ -18,5 +18,4 @@
 /// <reference path="lib/jquery/dist/jquery.js" />
 /// <reference path="lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js" />
 /// <reference path="lib/knockout/dist/knockout.js" />
-/// <reference path="lib/leaflet/dist/leaflet-src.js" />
 /// <reference path="lib/moment/moment.js" />
