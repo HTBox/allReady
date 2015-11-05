@@ -127,7 +127,9 @@
                 asp-fallback-test="window.Hammer && window.Hammer.Instance">
         </script>
     </environment>
-    <script src="~/js/site.js" asp-file-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/ko.filterableList.js" asp-append-version="true"></script>
+    <script src="~/js/ko.validation.js" asp-append-version="true"></script>
     <script>
         $(function () {
             $(".datepicker").datepicker({ format: "m/d/yyyy", autoclose: true });
