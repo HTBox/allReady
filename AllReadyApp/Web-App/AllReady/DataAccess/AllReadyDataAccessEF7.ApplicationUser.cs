@@ -15,6 +15,7 @@ namespace AllReady.Models
             {
                 return _dbContext.Users
                     .Include(u => u.AssociatedSkills)
+                    .Include(u => u.Claims)
                     .ToList();
             }
         }
@@ -23,6 +24,7 @@ namespace AllReady.Models
             return _dbContext.Users
                 .Where(u => u.Id == userId)
                 .Include(u => u.AssociatedSkills)
+                .Include(u => u.Claims)
                 .SingleOrDefault();
         }
 

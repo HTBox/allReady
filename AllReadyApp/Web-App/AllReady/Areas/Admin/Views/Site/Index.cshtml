@@ -20,7 +20,12 @@
                 <tr>
                     <td>
                         <a asp-action="EditUser" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id">@item.UserName</a>
+                        @if (item.IsTenantAdmin())
+                        {
+                            <span class="label label-default">Org Admin</span>
+                        }
                     </td>
+
                 </tr>
             }
         </table>

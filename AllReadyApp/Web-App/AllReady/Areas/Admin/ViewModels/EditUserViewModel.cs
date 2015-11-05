@@ -10,8 +10,10 @@ namespace AllReady.Areas.Admin.ViewModels
     public class EditUserViewModel
     {
         public string UserId { get; set; }
+        [Display(Name = "User name")]
         public string UserName { get; set; }
-        [Display(Name = "Is tenant admin?")]
+        public Tenant Tenant { get; set; }
+        [Display(Name = "Is organization admin?")]
         public bool IsTenantAdmin { get; set; }
         [Display(Name = "Associated skills")]
         public List<UserSkill> AssociatedSkills { get; set; }

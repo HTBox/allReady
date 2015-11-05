@@ -21,12 +21,21 @@
                 <p class="form-control-static">@Model.UserName</p>
             </div>
         </div>
-        <div class="form-group">
-            <label asp-for="IsTenantAdmin" class="control-label col-md-2"></label>
-            <div class="col-md-10">
-                <input type="checkbox" name="IsTenantAdmin" class="bootstrap-toggle" asp-for="IsTenantAdmin" />
+        @if (Model.Tenant != null)
+        {
+            <div class="form-group">
+                <label class="control-label col-md-2">Organization</label>
+                <div class="col-md-10">
+                    <p class="form-control-static">@Model.Tenant.Name</p>
+                </div>
             </div>
-        </div>
+            <div class="form-group">
+                <label asp-for="IsTenantAdmin" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    <input type="checkbox" name="IsTenantAdmin" class="bootstrap-toggle" asp-for="IsTenantAdmin" />
+                </div>
+            </div>
+        }
         <div class="form-group">
             <label asp-for="AssociatedSkills" class="control-label col-md-2"></label>
             <div class="col-md-10">

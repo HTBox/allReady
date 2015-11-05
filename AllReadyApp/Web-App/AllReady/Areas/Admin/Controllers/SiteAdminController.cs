@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Services;
 using AllReady.Areas.Admin.ViewModels;
+using AllReady.Security;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -36,16 +37,17 @@ namespace AllReady.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> EditUser(string userId)
+        public IActionResult EditUser(string userId)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            var claims = await _userManager.GetClaimsAsync(user);
+            var user = _dataAccess.GetUser(userId);
+            var tenantId = user.GetTenantId();
             var viewModel = new EditUserViewModel()
             {
                 UserId = userId,
                 UserName = user.UserName,
                 AssociatedSkills = user.AssociatedSkills,
-                IsTenantAdmin = claims.Any(c => c.Type == Security.ClaimTypes.UserType && c.Value == "TenantAdmin")
+                IsTenantAdmin = user.IsTenantAdmin(),
+                Tenant = tenantId != null ? _dataAccess.GetTenant(tenantId.Value) : null
             };
             return View(viewModel).WithSkills(_dataAccess);
         }
