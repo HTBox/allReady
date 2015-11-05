@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using AllReady.Services;
 using AllReady.Areas.Admin.ViewModels;
 
-namespace AllReady.Areas.SiteAdmin.Controllers
+namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize("SiteAdmin")]
@@ -26,7 +26,7 @@ namespace AllReady.Areas.SiteAdmin.Controllers
             _emailSender = emailSender;
             _dataAccess = dataAccess;
         }
-        
+
         public IActionResult Index()
         {
             var viewModel = new SiteAdminViewModel()
