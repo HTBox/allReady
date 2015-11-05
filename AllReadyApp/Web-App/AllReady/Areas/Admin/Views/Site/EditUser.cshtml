@@ -48,8 +48,8 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn" data-bind="enable: associatedSkills.isValid">Save</button>
+                <span class="label label-danger" data-bind="visible: !associatedSkills.isValid()">"@Html.DisplayNameFor(m => m.AssociatedSkills)" must be unique</span>
                 <a asp-controller="Site" asp-action="Index">Back to List</a>
-                <span class="label label-danger" data-bind="visible: !associatedSkills.isValid()">Required skills must be unique</span>
             </div>
         </div>
     </div>
