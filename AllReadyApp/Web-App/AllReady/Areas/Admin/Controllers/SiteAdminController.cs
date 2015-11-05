@@ -31,7 +31,7 @@ namespace AllReady.Areas.SiteAdmin.Controllers
         {
             var viewModel = new SiteAdminViewModel()
             {
-                Users = _dataAccess.Users.ToList()
+                Users = _dataAccess.Users.OrderBy(u => u.UserName).ToList()
             };
             return View(viewModel);
         }
@@ -45,9 +45,16 @@ namespace AllReady.Areas.SiteAdmin.Controllers
                 UserId = userId,
                 UserName = user.UserName,
                 AssociatedSkills = user.AssociatedSkills,
-                IsTenantAdmin = claims.FirstOrDefault(c => c.Type.Equals(Security.ClaimTypes.UserType)).Value == "TenantAdmin"
+                IsTenantAdmin = claims.Any(c => c.Type == Security.ClaimTypes.UserType && c.Value == "TenantAdmin")
             };
             return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditUser(EditUserViewModel model)
+        {
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
