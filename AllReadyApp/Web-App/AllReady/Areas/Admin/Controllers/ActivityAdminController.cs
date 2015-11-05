@@ -127,8 +127,8 @@ namespace AllReady.Areas.Admin.Controllers
                 Campaign = campaign,
                 TenantId = campaign.ManagingTenantId,
                 RequiredSkills = new List<ActivitySkill>(),
-                StartDateTimeUtc = DateTime.Today,
-                EndDateTimeUtc = DateTime.Today.AddMonths(1)
+                StartDateTimeUtc = DateTime.Today.Date,
+                EndDateTimeUtc = DateTime.Today.Date.AddMonths(1)
             };
             return View("Edit", activity);
         }
@@ -139,6 +139,11 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Activity/Create/{campaignId}")]
         public async Task<IActionResult> Create(int campaignId, Activity activity)
         {
+            if (activity.EndDateTimeUtc < activity.StartDateTimeUtc)
+            {
+                ModelState.AddModelError("EndDateTimeUtc", "End date cannot be earlier than the start date");
+            }
+
             Campaign campaign = _dataAccess.GetCampaign(campaignId);
             activity.Campaign = campaign;
             activity.CampaignId = campaignId;
@@ -188,6 +193,12 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpUnauthorized();
             }
+
+            if (activity.EndDateTimeUtc < activity.StartDateTimeUtc)
+            {
+                ModelState.AddModelError("EndDateTimeUtc", "End date cannot be earlier than the start date");
+            }
+
             if (ModelState.IsValid)
             {
                 if (activity.RequiredSkills != null && activity.RequiredSkills.Count > 0)

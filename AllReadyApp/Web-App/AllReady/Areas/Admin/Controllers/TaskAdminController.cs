@@ -90,6 +90,11 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Task/Create/{activityId}")]
         public IActionResult Create(int activityId, TaskViewModel model)
         {
+            if (model.EndDateTime < model.StartDateTime)
+            {
+                ModelState.AddModelError("EndDateTime", "Ending time cannot be earlier than the starting time");
+            }
+
             if (ModelState.IsValid)
             {
                 var activity = _dataAccess.GetActivity(model.ActivityId);
@@ -125,6 +130,11 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(TaskViewModel model)
         {
+            if (model.EndDateTime < model.StartDateTime)
+            {
+                ModelState.AddModelError("EndDateTime", "Ending time cannot be earlier than the starting time");
+            }
+
             if (ModelState.IsValid)
             {
                 var activity = _dataAccess.GetActivity(model.ActivityId);
