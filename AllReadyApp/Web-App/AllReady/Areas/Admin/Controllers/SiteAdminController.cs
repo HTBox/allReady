@@ -74,35 +74,32 @@ namespace AllReady.Areas.Admin.Controllers
             }
             await _dataAccess.UpdateUser(user);
 
-            //TODO: Make user tenant admin part
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MakeUserTenantAdmin(SearchViewModel model, bool diff)
-        {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (model.TenantAdmin)
+            var tenantAdminClaim = new Claim(Security.ClaimTypes.UserType, "TenantAdmin");
+            if (viewModel.IsTenantAdmin)
             {
-                var userTypeClaim = new Claim(Security.ClaimTypes.UserType, "TenantAdmin");
-                //TODO: Also need to set the TenantId claim
-                var result = await _userManager.AddClaimsAsync(user, new[] { userTypeClaim} ); 
-                if(result.Succeeded)
+                //add tenant admin claim
+                var result = await _userManager.AddClaimAsync(user, tenantAdminClaim);
+                if (result.Succeeded)
                 {
-                    ViewData["result"] = "Successfully made user a tenant admin";
-                    var callbackUrl = Url.Action("Login", "Admin", new { Email = model.Email }, protocol: HttpContext.Request.Scheme);
-                    await _emailSender.SendEmailAsync(model.Email, "Account Approval", "Your account has been approved by an administrator. Please <a href=" + callbackUrl + ">Click here to Log in</a>");
-                    return View();
+                    var callbackUrl = Url.Action("Login", "Admin", new { Email = user.Email }, protocol: HttpContext.Request.Scheme);
+                    await _emailSender.SendEmailAsync(user.Email, "Account Approval", "Your account has been approved by an administrator. Please <a href=" + callbackUrl + ">Click here to Log in</a>");
                 }
                 else
                 {
                     return Redirect("Error");
                 }
-
             }
-            return RedirectToAction("Index");
+            else if (user.IsTenantAdmin())
+            {
+                //remove tenant admin claim
+                var result = await _userManager.RemoveClaimAsync(user, tenantAdminClaim);
+                if (!result.Succeeded)
+                {
+                    return Redirect("Error");
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
