@@ -44,7 +44,21 @@
 
     $(document).ready(function () {
         initBingMap(elementId);
-        data.forEach(drawLocation);        
+        data.forEach(drawLocation);
+
+        var geo = new geoHelper(function (position) {
+            // TODO: replace with your own functionality
+
+            var myPosition = {
+                name: 'my loc',
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+            };
+
+            drawLocation(myPosition);
+        });
+
+        geo.getMyLocation();
     });
 
 })(ko, $, modelCampaign, 'bingMap');
