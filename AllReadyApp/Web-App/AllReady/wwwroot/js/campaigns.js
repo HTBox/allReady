@@ -13,6 +13,7 @@
         }
         return this;
     }
+
     function CampaignsViewModel(campaigns) {
         this.searchTerm = ko.observable();
         this.campaignsNearZip = ko.observableArray();

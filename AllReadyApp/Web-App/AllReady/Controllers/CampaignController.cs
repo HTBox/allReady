@@ -36,6 +36,18 @@ namespace AllReady.Areas.Admin.Controllers
             return View("Details", new CampaignViewModel(campaign));
         }
 
+        [HttpGet]
+        [Route("~/[controller]/map/{id}")]
+        public IActionResult LocationMap(int id)
+        {
+            var campaign = _dataAccess.GetCampaign(id);
+
+            if (campaign == null)
+                HttpNotFound();
+
+            return View("Map", new CampaignViewModel(campaign));
+        }
+
         // GET: api/values
         [HttpGet]
         public IEnumerable<CampaignViewModel> Get()
