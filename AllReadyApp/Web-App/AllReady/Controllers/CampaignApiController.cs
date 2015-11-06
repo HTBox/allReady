@@ -20,17 +20,14 @@ namespace AllReady.Controllers
     {        
         private const double MILES_PER_METER = 0.00062137;
         private readonly IAllReadyDataAccess _allReadyDataAccess;
-        private readonly UserManager<ApplicationUser> _userManager;
         private IClosestLocations _closestLocations;
 
 
         public CampaignApiController(IAllReadyDataAccess allReadyDataAccess,
-            UserManager<ApplicationUser> userManager,
             //GeoService geoService,
             IClosestLocations closestLocations)
         {
             _allReadyDataAccess = allReadyDataAccess;
-            _userManager = userManager;
             //_geoService = geoService;
             _closestLocations = closestLocations;
         }

@@ -12,10 +12,11 @@ namespace AllReady.Models
         #region Activity CRUD
         IEnumerable<Activity> Activities { get; }
         Activity GetActivity(int activityId);
+        int GetManagingTenantId(int activityId);
         Task AddActivity(Activity value);
         Task DeleteActivity(int id);
-        IEnumerable<ActivitySignup> GetActivitySignups(ApplicationUser user);
-        IEnumerable<ActivitySignup> GetActivitySignups(int activityId, ApplicationUser user);
+        IEnumerable<ActivitySignup> GetActivitySignups(string userId);
+        IEnumerable<ActivitySignup> GetActivitySignups(int activityId, string userId);
         Task UpdateActivity(Activity value);
         IEnumerable<Activity> ActivitiesByPostalCode(string postalCode, int distance);
         IEnumerable<Activity> ActivitiesByGeography(double latitude, double longitude, int distance);
@@ -95,8 +96,16 @@ namespace AllReady.Models
         Task DeleteTaskAsync(int taskId);
 
         Task UpdateTaskAsync(AllReadyTask value);
-        IEnumerable<TaskUsers> GetTasksAssignedToUser(int activityId, ApplicationUser user);
+        IEnumerable<TaskUsers> GetTasksAssignedToUser(int activityId, string userId);
 
+        #endregion
+
+        #region Skill CRUD
+        IEnumerable<Skill> Skills { get; }
+        Skill GetSkill(int skillId);
+        Task AddSkill(Skill value);
+        Task DeleteSkill(int id);
+        Task UpdateSkill(Skill value);
         #endregion
     }
 }

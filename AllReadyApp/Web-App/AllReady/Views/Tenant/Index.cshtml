@@ -13,6 +13,7 @@
                 <div class="form-group">
                     <input type="text" class="form-control input-sm" data-bind="textInput: tenants.searchTerm" placeholder="Search organizations" />
                 </div>
+                <span data-bind="text: '(' + total + ')' "></span>
             </div>
         </div>
     </div>
@@ -37,6 +38,5 @@
     <script>
         var modelTenants = @Json.Serialize(Model);
     </script>
-    <script type="text/javascript" src="~/js/ko.filterableList.js"></script>
     <script type="text/javascript" src="~/js/tenants.js"></script>
 }

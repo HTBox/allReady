@@ -9,6 +9,7 @@ using System.Linq;
 using Xunit;
 using Microsoft.Framework.Configuration;
 using System.IO;
+using Microsoft.AspNet.Hosting;
 
 namespace AllReady.UnitTests
 {
@@ -33,6 +34,9 @@ namespace AllReady.UnitTests
                     .AddJsonFile("testConfig.json");
                 IConfiguration configuration = builder.Build();
                 services.AddSingleton(x => configuration);
+                IHostingEnvironment hostingEnvironment = new HostingEnvironment();
+                hostingEnvironment.EnvironmentName = "Development";
+                services.AddSingleton(x => hostingEnvironment);
                 _serviceProvider = services.BuildServiceProvider();
             }
         }
@@ -117,7 +121,7 @@ namespace AllReady.UnitTests
         {
             var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
             var allReadyDataAccess = new AllReadyDataAccessEF7(allReadyContext);
-            var controller = new ActivityApiController(allReadyDataAccess, null, null);
+            var controller = new ActivityApiController(allReadyDataAccess, null);
             PopulateData(allReadyContext);
             return controller;
         }

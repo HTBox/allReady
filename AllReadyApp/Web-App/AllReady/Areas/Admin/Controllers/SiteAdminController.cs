@@ -8,8 +8,10 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Services;
+using AllReady.Areas.Admin.ViewModels;
+using AllReady.Security;
 
-namespace AllReady.Areas.SiteAdmin.Controllers
+namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize("SiteAdmin")]
@@ -17,67 +19,87 @@ namespace AllReady.Areas.SiteAdmin.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly IAllReadyDataAccess _dataAccess;
 
-        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender)
+        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IAllReadyDataAccess dataAccess)
         {
             _userManager = userManager;
             _emailSender = emailSender;
+            _dataAccess = dataAccess;
         }
-        // GET: /<controller>/
+
         public IActionResult Index()
         {
-            // Get the list of Users and whether they are TenantAdmins or not
-            return View();
+            var viewModel = new SiteAdminViewModel()
+            {
+                Users = _dataAccess.Users.OrderBy(u => u.UserName).ToList()
+            };
+            return View(viewModel);
+        }
+
+        public IActionResult EditUser(string userId)
+        {
+            var user = _dataAccess.GetUser(userId);
+            var tenantId = user.GetTenantId();
+            var viewModel = new EditUserViewModel()
+            {
+                UserId = userId,
+                UserName = user.UserName,
+                AssociatedSkills = user.AssociatedSkills,
+                IsTenantAdmin = user.IsTenantAdmin(),
+                Tenant = tenantId != null ? _dataAccess.GetTenant(tenantId.Value) : null
+            };
+            return View(viewModel).WithSkills(_dataAccess);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(SearchViewModel model)
+        public async Task<IActionResult> EditUser(EditUserViewModel viewModel)
         {
-            // Get the user and the UserType claim
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            var claims = await _userManager.GetClaimsAsync(user);
-            if (claims.Count <= 0)
+            if (!ModelState.IsValid)
             {
-                model.TenantAdmin = false;
-                return View("MakeUserTenantAdmin", model);
+                return View(viewModel).WithSkills(_dataAccess);
             }
-            var claimValue = claims.FirstOrDefault(c => c.Type.Equals("UserType")).Value;
-            if (!claimValue.Equals("TenantAdmin"))
+
+            //Skill associations
+            var user = _dataAccess.GetUser(viewModel.UserId);
+            user.AssociatedSkills.RemoveAll(usk => viewModel.AssociatedSkills == null || !viewModel.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
+            if (viewModel.AssociatedSkills != null)
             {
-                model.TenantAdmin = false;
+                user.AssociatedSkills.AddRange(viewModel.AssociatedSkills.Where(msk => !user.AssociatedSkills.Any(usk => usk.SkillId == msk.SkillId)));
             }
-            return View("MakeUserTenantAdmin", model);
-        }
-
-        [HttpGet]
-        public IActionResult MakeUserTenantAdmin(SearchViewModel model)
-        {
-            return View(model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MakeUserTenantAdmin(SearchViewModel model, bool diff)
-        {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (model.TenantAdmin)
+            if (user.AssociatedSkills != null && user.AssociatedSkills.Count > 0)
             {
-                var result = await _userManager.AddClaimAsync(user, new Claim("UserType", "TenantAdmin"));
-                if(result.Succeeded)
+                user.AssociatedSkills.ForEach(usk => usk.UserId = user.Id);
+            }
+            await _dataAccess.UpdateUser(user);
+
+            var tenantAdminClaim = new Claim(Security.ClaimTypes.UserType, "TenantAdmin");
+            if (viewModel.IsTenantAdmin)
+            {
+                //add tenant admin claim
+                var result = await _userManager.AddClaimAsync(user, tenantAdminClaim);
+                if (result.Succeeded)
                 {
-                    ViewData["result"] = "Successfully made user a tenant admin";
-                    var callbackUrl = Url.Action("Login", "Admin", new { Email = model.Email }, protocol: HttpContext.Request.Scheme);
-                    await _emailSender.SendEmailAsync(model.Email, "Account Approval", "Your account has been approved by an administrator. Please <a href=" + callbackUrl + ">Click here to Log in</a>");
-                    return View();
+                    var callbackUrl = Url.Action("Login", "Admin", new { Email = user.Email }, protocol: HttpContext.Request.Scheme);
+                    await _emailSender.SendEmailAsync(user.Email, "Account Approval", "Your account has been approved by an administrator. Please <a href=" + callbackUrl + ">Click here to Log in</a>");
                 }
                 else
                 {
                     return Redirect("Error");
                 }
-
             }
-            return RedirectToAction("Index");
+            else if (user.IsTenantAdmin())
+            {
+                //remove tenant admin claim
+                var result = await _userManager.RemoveClaimAsync(user, tenantAdminClaim);
+                if (!result.Succeeded)
+                {
+                    return Redirect("Error");
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

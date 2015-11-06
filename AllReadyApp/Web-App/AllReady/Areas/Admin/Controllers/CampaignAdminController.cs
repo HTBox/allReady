@@ -2,11 +2,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
-
-using AllReady.Extensions;
+using AllReady.Security;
 using AllReady.Models;
 
 namespace AllReady.Controllers
@@ -16,12 +14,10 @@ namespace AllReady.Controllers
     public class CampaignController : Controller
     {
         private IAllReadyDataAccess _dataAccess;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CampaignController(IAllReadyDataAccess dataAccess, UserManager<ApplicationUser> userManager)
+        public CampaignController(IAllReadyDataAccess dataAccess)
         {
             _dataAccess = dataAccess;
-            _userManager = userManager;
         }
 
         private ViewResult WithTenants(ViewResult view)
@@ -31,15 +27,32 @@ namespace AllReady.Controllers
         }
 
         // GET: Campaign
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return await Task.FromResult(View(_dataAccess.Campaigns));
+            return View(_dataAccess.Campaigns);
+        }
+
+        public IActionResult Details(int id)
+        {
+            Campaign campaign = _dataAccess.GetCampaign(id);
+
+            if (campaign == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (!User.IsTenantAdmin(campaign.ManagingTenantId))
+            {
+                return HttpUnauthorized();
+            }
+
+            return View(campaign);
         }
 
         // GET: Campaign/Create
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            return await Task.FromResult(WithTenants(View("Edit")));
+            return WithTenants(View("Edit"));
         }
 
         // POST: Campaign/Create
@@ -47,53 +60,41 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Campaign campaign)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null)
+            if (campaign == null)
             {
-                return new HttpUnauthorizedResult();
+                return HttpBadRequest();
             }
 
-            // Workaround: Sometimes AssociatedTenant is missing when using UserManager
-            var currentUserWithAssociatedTenant = _dataAccess.GetUser(currentUser.Id);
-            if (!await UserIsTenantAdminOfCampaign(currentUserWithAssociatedTenant, campaign))
+            if (!User.IsTenantAdmin(campaign.ManagingTenantId))
             {
-                return new HttpUnauthorizedResult();
+                return HttpUnauthorized();
             }
 
             if (ModelState.IsValid)
             {
                 await _dataAccess.AddCampaign(campaign);
-                return await Task.FromResult(RedirectToAction("Index", new { area = "Admin" }));
+                return RedirectToAction("Index", new { area = "Admin" });
             }
 
-            return await Task.FromResult(WithTenants(View("Edit", campaign)));
+            return WithTenants(View("Edit", campaign));
         }
 
         // GET: Campaign/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null)
-            {
-                return new HttpUnauthorizedResult();
-            }
+            Campaign campaign = _dataAccess.GetCampaign(id);
 
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(404);
-            }
-            Campaign campaign = _dataAccess.GetCampaign((int)id);
-
-            if (!await UserIsTenantAdminOfCampaign(currentUser, campaign))
-            {
-                return new HttpUnauthorizedResult();
-            }
             if (campaign == null)
             {
-                return new HttpStatusCodeResult(404);
+                return HttpNotFound();
             }
 
-            return await Task.FromResult(WithTenants(View(campaign)));
+            if (!User.IsTenantAdmin(campaign.ManagingTenantId))
+            {
+                return HttpUnauthorized();
+            }
+
+            return WithTenants(View(campaign));
         }
 
         // POST: Campaign/Edit/5
@@ -101,51 +102,39 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Campaign campaign)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null)
+            if (campaign == null)
             {
-                return new HttpUnauthorizedResult();
+                return HttpBadRequest();
             }
 
-            if (!await UserIsTenantAdminOfCampaign(currentUser, campaign))
+            if (!User.IsTenantAdmin(campaign.ManagingTenantId))
             {
-                return new HttpUnauthorizedResult();
+                return HttpUnauthorized();
             }
 
             if (ModelState.IsValid)
             {
                 await _dataAccess.UpdateCampaign(campaign);
-                return await Task.FromResult(RedirectToAction("Index", new { area = "Admin" }));
+                return RedirectToAction("Index", new { area = "Admin" });
             }
-            return await Task.FromResult(View(campaign));
-        }
+            return View(campaign);
+        }        
 
         // GET: Campaign/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(404);
-            }
-
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null)
-            {
-                return new HttpUnauthorizedResult();
-            }
-
-            Campaign campaign = _dataAccess.GetCampaign((int)id);
+            Campaign campaign = _dataAccess.GetCampaign(id);
 
             if (campaign == null)
             {
-                return new HttpStatusCodeResult(404);
+                return HttpNotFound();
             }
-            if (!await UserIsTenantAdminOfCampaign(currentUser, campaign))
+            if (!User.IsTenantAdmin(campaign.ManagingTenantId))
             {
-                return new HttpUnauthorizedResult();
+                return HttpUnauthorized();
             }
 
-            return await Task.FromResult(View(campaign));
+            return View(campaign);
         }
 
         // POST: Campaign/Delete/5
@@ -153,25 +142,15 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var currentUser = await _userManager.GetCurrentUser(HttpContext);
-            if (currentUser == null || !await UserIsTenantAdminOfCampaign(currentUser, id))
+            var campaign = _dataAccess.GetCampaign(id);
+
+            if (!User.IsTenantAdmin(campaign.ManagingTenantId))
             {
-                return new HttpUnauthorizedResult();
+                return HttpUnauthorized();
             }   
 
             await _dataAccess.DeleteCampaign(id);
-            return await Task.FromResult(RedirectToAction("Index", new { area = "Admin" }));
-        }
-
-        private async Task<bool> UserIsTenantAdminOfCampaign(ApplicationUser user, Campaign campaignToCheck)
-        {
-            return await _userManager.IsSiteAdmin(user) ||
-                ((user.AssociatedTenant != null) && (campaignToCheck.ManagingTenantId == user.AssociatedTenant.Id));
-        }
-
-        private async Task<bool> UserIsTenantAdminOfCampaign(ApplicationUser user, int campaignId)
-        {
-            return await UserIsTenantAdminOfCampaign(user, _dataAccess.GetCampaign(campaignId));
+            return RedirectToAction("Index", new { area = "Admin" });
         }
     }
 }

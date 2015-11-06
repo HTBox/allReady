@@ -7,8 +7,6 @@ namespace AllReady.Models
 {
     public class Activity
     {
-
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Display(Name = "Tenant")]
@@ -33,14 +31,16 @@ namespace AllReady.Models
 
         public Location Location { get; set; }
 
-        public List<AllReadyTask> Tasks { get; set; }
+        public List<AllReadyTask> Tasks { get; set; } = new List<AllReadyTask>();
 
-        public List<ActivitySignup> UsersSignedUp { get; set; }
+        public List<ActivitySignup> UsersSignedUp { get; set; } = new List<ActivitySignup>();
 
         public ApplicationUser Organizer { get; set; }
 
-        [Display(Name="Image")]
+        [Display(Name = "Image")]
         public string ImageUrl { get; set; }
 
+        [Display(Name = "Required skills")]
+        public List<ActivitySkill> RequiredSkills { get; set; } = new List<ActivitySkill>();
     }
 }
