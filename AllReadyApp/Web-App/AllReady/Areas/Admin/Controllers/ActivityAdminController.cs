@@ -15,6 +15,7 @@ using AllReady.Features.Notifications;
 using MediatR;
 using AllReady.Areas.Admin.ViewModels;
 using System;
+using AllReady.Areas.Admin.Features.Tasks;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -72,12 +73,7 @@ namespace AllReady.Areas.Admin.Controllers
                 StartDateTime = activity.StartDateTimeUtc,
                 EndDateTime = activity.EndDateTimeUtc,
                 Volunteers = _dataAccess.ActivitySignups.Where(asup => asup.Activity.Id == id).Select(u => u.User.UserName).ToList(),
-                Tasks = activity.Tasks.Select(t => new TaskViewModel
-                { Id = t.Id,
-                    ActivityId =id,
-                    Name = t.Name,
-                    Description = t.Description })
-                    .OrderBy(t => t.StartDateTime).ThenBy(t=> t.Name).ToList(),
+                Tasks = _bus.Send(new TaskListQuery() { ActivityId = activity.Id }),
                 ImageUrl = activity.ImageUrl
             };
 

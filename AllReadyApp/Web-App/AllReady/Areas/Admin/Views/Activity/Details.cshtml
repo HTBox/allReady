@@ -46,7 +46,15 @@
         <h3>Tasks</h3>
     </div>
 </div>
-@Html.Partial("~/Areas/Admin/Views/Task/_List.cshtml", Model)
+<div class="row">
+    <div class="col-md-12">
+        <a asp-controller="Task" asp-action="Create" asp-route-activityId="@Model.Id" class="btn">Create Task</a>
+        <a asp-controller="Activity" asp-action="Assign" asp-route-id="@Model.Id" asp-route-area="Admin" class="btn"><span class="fa fa-user"></span> Assign tasks</a>
+    </div>
+</div>
+
+@Html.Partial("~/Areas/Admin/Views/Task/_List.cshtml", Model.Tasks)
+
 @section scripts {
     <script src="~/lib/bootstrap/js/modal.js"></script>
     <script src="~/js/activityDetails.js"></script>

@@ -18,5 +18,12 @@ namespace AllReady.Services
         {
             return _context.Tenants.Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = t.Name });
         }
+
+        public IEnumerable<SelectListItem> GetSkills()
+        {
+            return _context.Skills.ToList()
+                .Select(s => new SelectListItem() { Value = s.Id.ToString(), Text = s.HierarchicalName })
+                .OrderBy(s => s.Text);
+        }
     }
 }
