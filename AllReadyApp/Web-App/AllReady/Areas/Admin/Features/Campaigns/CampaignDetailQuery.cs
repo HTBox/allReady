@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class CampaignQuery : IRequest<CampaignSummaryViewModel>
+    public class CampaignDetailQuery : IRequest<CampaignDetailViewModel>
     {
         public int CampaignId { get; set; }
     }

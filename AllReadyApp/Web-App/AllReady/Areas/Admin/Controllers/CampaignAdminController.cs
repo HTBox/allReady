@@ -13,12 +13,10 @@ namespace AllReady.Controllers
     [Authorize("TenantAdmin")]
     public class CampaignController : Controller
     {
-        private IAllReadyDataAccess _dataAccess;
         private IMediator _bus;
 
-        public CampaignController(IAllReadyDataAccess dataAccess, IMediator bus)
+        public CampaignController( IMediator bus)
         {
-            _dataAccess = dataAccess;
             _bus = bus;
         }
 
@@ -31,14 +29,14 @@ namespace AllReady.Controllers
 
         public IActionResult Details(int id)
         {
-            Campaign campaign = _dataAccess.GetCampaign(id);
+            CampaignDetailViewModel campaign = _bus.Send(new CampaignDetailQuery { CampaignId = id });
 
             if (campaign == null)
             {
                 return HttpNotFound();
             }
 
-            if (!User.IsTenantAdmin(campaign.ManagingTenantId))
+            if (!User.IsTenantAdmin(campaign.TenantId))
             {
                 return HttpUnauthorized();
             }
@@ -79,7 +77,7 @@ namespace AllReady.Controllers
         // GET: Campaign/Edit/5
         public IActionResult Edit(int id)
         {
-            CampaignSummaryViewModel campaign = _bus.Send(new CampaignQuery { CampaignId = id });
+            CampaignSummaryViewModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
 
             if (campaign == null)
             {
@@ -120,7 +118,7 @@ namespace AllReady.Controllers
         // GET: Campaign/Delete/5
         public IActionResult Delete(int id)
         {
-            CampaignSummaryViewModel campaign = _bus.Send(new CampaignQuery { CampaignId = id });
+            CampaignSummaryViewModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
 
             if (campaign == null)
             {
@@ -139,7 +137,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            CampaignSummaryViewModel campaign = _bus.Send(new CampaignQuery { CampaignId = id });
+            CampaignSummaryViewModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
 
             if (!User.IsTenantAdmin(campaign.TenantId))
             {

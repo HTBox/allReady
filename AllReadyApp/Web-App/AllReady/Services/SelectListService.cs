@@ -16,7 +16,7 @@ namespace AllReady.Services
 
         public IEnumerable<SelectListItem> GetTenants()
         {
-            return _context.Tenants.Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = t.Name });
+            return _context.Tenants.Select(t => new SelectListItem() {Value = t.Id.ToString(), Text = t.Name });
         }
     }
 }
