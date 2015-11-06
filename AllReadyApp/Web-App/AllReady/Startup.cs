@@ -21,6 +21,8 @@ using Autofac.Framework.DependencyInjection;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.Dnx.Runtime;
+using System.Threading;
+using System.Globalization;
 
 namespace AllReady
 {
@@ -47,6 +49,9 @@ namespace AllReady
       }
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
+
+      // if dnxcore50 is ever targetted, this will need to become: CultureInfo.CurrentCulture = new CultureInfo("en-US");
+      Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
     }
 
     public IConfiguration Configuration { get; set; }
