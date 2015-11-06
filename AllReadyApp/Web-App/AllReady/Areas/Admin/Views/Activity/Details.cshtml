@@ -1,5 +1,14 @@
 @model AllReady.Areas.Admin.ViewModels.AdminActivityViewModel
-
+@{ ViewBag.Title = Model.Title; }
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
+            <li>@Model.Title</li>
+        </ol>
+    </div>
+</div>
 <div class="row">
     @if (!String.IsNullOrEmpty(Model.ImageUrl))
     {
@@ -9,11 +18,9 @@
         </div>
     }
     <div class="col-md-10">
-        <h2>@Model.Title</h2>
+        <h2>@Model.Title <a asp-controller="Activity" asp-action="Edit" asp-route-id="@Model.Id" class="btn"><i class="glyphicon glyphicon-edit"></i></a> <a asp-controller="Activity" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
             <p>@Model.Description</p>
             <p><strong>Duration: </strong> @Model.StartDateTime.ToString("d") - @Model.EndDateTime.ToString("d")</p>
-                
-        @*<p><strong>Campaign: </strong>@Model.CampaignName</p>*@
     </div>
 </div>
 <div class="row">
@@ -37,27 +44,9 @@
 <div class="row">
     <div class="col-md-12">
         <h3>Tasks</h3>
-        <ul>
-            
-            @foreach (var task in Model.Tasks)
-            {
-                <li><a href="~/Admin/Task/Details/@task.ActivityId/@task.Id"/><strong>@task.Name</strong></li>
-            }
-        </ul>
     </div>
 </div>
-<div class="row">
-    <div class="col-md-12">
-        <p>
-            <a href="@Url.Action("Index", "Activity", new {campaignId = Model.CampaignId })" class="btn">
-                <span class="fa fa-backward"> Back to Activities</span>
-            </a>
-            <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn"><span class="fa fa-edit"></span> Edit</a> 
-            <a href="@Url.Action("Assign", new { id = Model.Id })" class="btn"><span class="fa fa-user"></span> Assign tasks</a>
-        </p>
-        
-    </div>
-</div>
+@Html.Partial("~/Areas/Admin/Views/Task/_List.cshtml", Model)
 @section scripts {
     <script src="~/lib/bootstrap/js/modal.js"></script>
     <script src="~/js/activityDetails.js"></script>

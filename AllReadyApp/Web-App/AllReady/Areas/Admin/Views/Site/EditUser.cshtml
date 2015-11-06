@@ -1,0 +1,100 @@
+﻿@using AllReady.Areas.Admin.ViewModels
+
+@model EditUserViewModel
+@{
+    ViewData["Title"] = $"Edit User - {Model.UserName}";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        <input asp-for="UserId" type="hidden" />
+        <div class="form-group">
+            <label asp-for="UserName" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <p class="form-control-static">@Model.UserName</p>
+            </div>
+        </div>
+        @if (Model.Tenant != null)
+        {
+            <div class="form-group">
+                <label class="control-label col-md-2">Organization</label>
+                <div class="col-md-10">
+                    <p class="form-control-static">@Model.Tenant.Name</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="IsTenantAdmin" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    <input type="checkbox" name="IsTenantAdmin" class="bootstrap-toggle" asp-for="IsTenantAdmin" />
+                </div>
+            </div>
+        }
+        <div class="form-group">
+            <label asp-for="AssociatedSkills" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <div data-bind="foreach: associatedSkills">
+                    <div class="form-inline">
+                        <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                        <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            Delete
+                        </a>
+                    </div>
+                </div>
+                <a href="#" data-bind="click: addSkill" title="Add required skill">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    Add
+                </a>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn" data-bind="enable: associatedSkills.isValid">Save</button>
+                <span class="label label-danger" data-bind="visible: !associatedSkills.isValid()">"@Html.DisplayNameFor(m => m.AssociatedSkills)" must be unique</span>
+                <a asp-controller="Site" asp-action="Index">Back to List</a>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts {
+    <script type="text/javascript">
+        $(".bootstrap-toggle").bootstrapToggle({ on: "Yes", off: "No" });
+        (function (ko, $, associatedSkills, availableSkills) {
+
+            function EditUserViewModel(associatedSkills, availableSkills) {
+
+                function SkillObservable(skillModel) {
+                    var ret = ko.utils.extend({}, skillModel);
+                    ret.Id = ko.observable(ret.Id);
+                    ret.ControlName = function (index) {
+                        return 'AssociatedSkills[' + ko.unwrap(index) + '].SkillId';
+                    };
+                    return ret;
+                }
+                associatedSkills = (associatedSkills || []).map(SkillObservable);
+
+                var self = this;
+                this.associatedSkills = ko.observableArray(associatedSkills).uniqueValidator("Id");
+                this.availableSkills = ko.observableArray(availableSkills);
+                this.addSkill = function() {
+                    self.associatedSkills.push(SkillObservable());
+                };
+                this.deleteSkill = function(skill) {
+                    self.associatedSkills.remove(skill);
+                };
+            }
+
+            ko.applyBindings(new EditUserViewModel(associatedSkills, availableSkills));
+        })(ko, $,
+            @Json.Serialize(Model.AssociatedSkills.Select(rs => new { Id = rs.SkillId })),
+            @Json.Serialize(ViewData["Skills"]));
+    </script>
+}

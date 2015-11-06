@@ -1,7 +1,37 @@
 ﻿@model AllReady.ViewModels.TaskViewModel
 
-@{  ViewBag.Title = Model.IsNew ? "Create Task" : $"Edit task: {Model.Name}"; }
+@{
+    string cancelUrl;
+    if (Model.IsNew)
+    {
+        ViewBag.Title = $"Create Task";
+        cancelUrl = Url.Action("Details", "Activity", new { id = Model.ActivityId, area = "Admin" });
+    }
+    else
+    {
+        ViewBag.Title = "Edit Task";
+        cancelUrl = Url.Action("Details", "Task", new { activityId = Model.ActivityId, id = Model.Id, area = "Admin" });
+    }
+}
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.ActivityId" asp-route-area="Admin">@Model.ActivityName</a></li>
+            @if (Model.IsNew)
+            {
+                <li>Create New Task</li>
+            }
+            else
+            {
+                <li><a asp-controller="Task" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Name</a></li>
+                <li>Edit</li>
+            }
 
+        </ol>
+    </div>
+</div>
 <h2>@ViewBag.Title</h2>
 
 @using (Html.BeginForm())
@@ -80,23 +110,19 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn" data-bind="enable: requiredSkills.isValid">Save</button>
-                <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">Required skills must be unique</span>
+                <a class="btn" href="@cancelUrl">Cancel</a>
+                <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">"@Html.DisplayNameFor(m => m.RequiredSkills)" must be unique</span>
             </div>
         </div>
     </div>
 }
 
-<div>
-    <a asp-controller="Task" asp-action="Index" asp-route-activityId="@Model.ActivityId" class="btn">Back to List</a>
-</div>
-
 @section scripts {
-    <script type="text/javascript" src="~/js/ko.validation.js"></script>
     <script type="text/javascript">
         (function (ko, $, requiredSkills, availableSkills) {
 
             function AdminTaskViewModel(requiredSkills, availableSkills) {
-                
+
                 function RequiredSkillObservable(skillModel) {
                     var ret = ko.utils.extend({}, skillModel);
                     ret.Id = ko.observable(skillModel);
@@ -106,7 +132,7 @@
                     return ret;
                 }
                 requiredSkills = (requiredSkills || []).map(RequiredSkillObservable);
-                
+
                 var self = this;
                 this.requiredSkills = ko.observableArray(requiredSkills).uniqueValidator("Id");
                 this.availableSkills = ko.observableArray(availableSkills);
@@ -119,7 +145,7 @@
             }
 
             ko.applyBindings(new AdminTaskViewModel(requiredSkills, availableSkills));
-        })(ko, $, 
+        })(ko, $,
             @Json.Serialize(Model.RequiredSkills),
             @Json.Serialize(ViewData["Skills"]));
     </script>

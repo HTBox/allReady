@@ -3,7 +3,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Framework.Configuration;
-using AllReady.Areas.SiteAdmin.Controllers;
+using AllReady.Areas.Admin.Controllers;
 using AllReady.Models;
 using AllReady.Services;
 
@@ -170,7 +170,7 @@ namespace AllReady.Controllers
             // this user as a Tenant Admin
             if(result.Succeeded)
             {
-                var callbackUrl = Url.Action(nameof(SiteController.MakeUserTenantAdmin), "Site", new { area = "Admin", Email=user.Email, TenantAdmin=true }, protocol: HttpContext.Request.Scheme);
+                var callbackUrl = Url.Action(nameof(SiteController.EditUser), "Site", new { area = "Admin", userId = user.Id }, protocol: HttpContext.Request.Scheme);
                 await _emailSender.SendEmailAsync(_config["DefaultAdminUsername"], "Approve Tenant user account",
                     "Please approve this account by clicking this <a href=\"" + callbackUrl + "\">link</a>");
             }

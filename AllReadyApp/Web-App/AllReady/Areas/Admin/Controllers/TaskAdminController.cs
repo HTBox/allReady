@@ -25,42 +25,21 @@ namespace AllReady.Areas.Admin.Controllers
             _dataAccess = dataAccess;
         }
 
-        ViewResult AddDropdownData(ViewResult view)
-        {
-            view.ViewData["Skills"] = _dataAccess.Skills
-                .Select(s => new { Name = s.HierarchicalName, Id = s.Id })
-                .OrderBy(a => a.Name)
-                .ToList();
-            return view;
-        }
-
         public override ViewResult View()
         {
-            return AddDropdownData(base.View());
+            return base.View().WithSkills(_dataAccess);
         }
         public override ViewResult View(object model)
         {
-            return AddDropdownData(base.View(model));
+            return base.View(model).WithSkills(_dataAccess);
         }
         public override ViewResult View(string viewName)
         {
-            return AddDropdownData(base.View(viewName));
+            return base.View(viewName).WithSkills(_dataAccess);
         }
         public override ViewResult View(string viewName, object model)
         {
-            return AddDropdownData(base.View(viewName, model));
-        }
-
-        [Route("Admin/Task/{activityId}")]
-        public IActionResult Index(int activityId)
-        {
-            ViewBag.ActivityId = activityId;
-            var activity = _dataAccess.GetActivity(activityId);
-            if (activity == null || !User.IsTenantAdmin(activity.TenantId))
-            {
-                return HttpUnauthorized();
-            }
-            return View(activity);
+            return base.View(viewName, model).WithSkills(_dataAccess);
         }
 
         [HttpGet]
@@ -103,7 +82,7 @@ namespace AllReady.Areas.Admin.Controllers
                     return HttpUnauthorized();
                 }
                 _dataAccess.AddTaskAsync(model.ToModel(_dataAccess));
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", "Activity", new { id = activityId });
             }
             model.IsNew = true;
             return View("Edit", model);
@@ -143,7 +122,7 @@ namespace AllReady.Areas.Admin.Controllers
                     return HttpUnauthorized();
                 }
                 await _dataAccess.UpdateTaskAsync(model.ToModel(_dataAccess));
-                return RedirectToAction("Index", new { activityId = model.ActivityId });
+                return RedirectToAction("Details", "Activity", new { id = model.ActivityId });
             }
 
             return View(model);
@@ -163,15 +142,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
 
-            var model = new TaskViewModel
-            {
-                Id = dbTask.Id,
-                Name = dbTask.Name,
-                ActivityId = dbTask.Activity.Id,
-                StartDateTime = dbTask.StartDateTimeUtc,
-                EndDateTime = dbTask.EndDateTimeUtc
-            };
-
+            var model = new TaskViewModel(dbTask);
             return View(model);
         }
 
@@ -186,15 +157,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return new HttpNotFoundResult();
             }
 
-            var model = new TaskViewModel
-            {
-                Id = dbTask.Id,
-                ActivityId = activityId,
-                Description = dbTask.Description,
-                Name = dbTask.Name,
-                StartDateTime = dbTask.StartDateTimeUtc,
-                EndDateTime = dbTask.EndDateTimeUtc
-            };
+            var model = new TaskViewModel(dbTask);
 
             return View(model);
         }
@@ -216,7 +179,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _dataAccess.DeleteTaskAsync(id);
 
-            return RedirectToAction("Index", new { activityId = dbTask.Activity.Id});
+            return RedirectToAction("Details", "Activity", new { id = dbTask.Activity.Id});
         }
 
     }

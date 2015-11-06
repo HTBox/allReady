@@ -21,6 +21,8 @@ using Autofac.Framework.DependencyInjection;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.Dnx.Runtime;
+using System.Globalization;
+using Microsoft.AspNet.Localization;
 
 namespace AllReady
 {
@@ -88,10 +90,10 @@ namespace AllReady
                .AddDefaultTokenProviders();
 
       // Add Authorization rules for the app
-      services.Configure<AuthorizationOptions>(options =>
+      services.AddAuthorization(options =>
       {
-        options.AddPolicy("TenantAdmin", new AuthorizationPolicyBuilder().RequireClaim(Security.ClaimTypes.UserType, new string[] { "TenantAdmin", "SiteAdmin" }).Build());
-        options.AddPolicy("SiteAdmin", new AuthorizationPolicyBuilder().RequireClaim(Security.ClaimTypes.UserType, "SiteAdmin").Build());
+        options.AddPolicy("TenantAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "TenantAdmin", "SiteAdmin"));
+        options.AddPolicy("SiteAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "SiteAdmin"));
       });
 
       services.AddCookieAuthentication(options =>
@@ -159,6 +161,14 @@ namespace AllReady
       app.UseCors("allReady");
 
       // Configure the HTTP request pipeline.
+
+      var usCultureInfo = new CultureInfo("en-US");
+      app.UseRequestLocalization(new RequestLocalizationOptions
+      {
+        DefaultRequestCulture = new RequestCulture(usCultureInfo),
+        SupportedCultures = new List<CultureInfo>(new[] { usCultureInfo }),
+        SupportedUICultures = new List<CultureInfo>(new[] { usCultureInfo })
+      });
 
       // Add Application Insights to the request pipeline to track HTTP request telemetry data.
       app.UseApplicationInsightsRequestTelemetry();
