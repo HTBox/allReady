@@ -135,17 +135,6 @@
     <script type="text/javascript">
         (function (ko, $, requiredSkills, availableSkills) {
 
-            ko.bindingHandlers.tooltip = {
-                update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-                    $(element).tooltip('destroy');
-                    var options = ko.unwrap(valueAccessor());
-                    ko.utils.objectForEach(options, function (property) {
-                        options[property] = ko.unwrap(options[property]);
-                    });
-                    $(element).tooltip(options);
-                }
-            }
-            
             function AdminActivityViewModel(requiredSkills, availableSkills) {
 
                 function RequiredSkillObservable(skillModel) {

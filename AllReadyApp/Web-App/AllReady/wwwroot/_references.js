@@ -5,6 +5,7 @@
 /// <reference path="js/campaign.js" />
 /// <reference path="js/campaigns.js" />
 /// <reference path="js/index.js" />
+/// <reference path="js/ko.bindingHandlers.js" />
 /// <reference path="js/ko.filterablelist.js" />
 /// <reference path="js/ko.validation.js" />
 /// <reference path="js/mapinteraction.js" />
