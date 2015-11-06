@@ -35,6 +35,9 @@ namespace AllReady.Models
                 _context.Skills.Any() ||
                 _context.Resources.Any())
             {
+                // Attempt to populate CampaignImpactTypes:
+                InsertCampaignImpactTypes(_context);
+
                 return;
             }
             // new up some data
@@ -368,6 +371,23 @@ namespace AllReady.Models
 
         }
 
+        /// <summary>
+        /// Split this off from the InsertTestData function so we can call this
+        /// even if the "anti-database-pollution" logic bails due to pre-existing
+        /// database records. The reason for this is that we are preventing
+        /// duplicate records already.
+        /// </summary>
+        /// <param name="_context"></param>
+        private static void InsertCampaignImpactTypes(AllReadyContext _context)
+        {
+            var campaignImpactTypes = new List<CampaignImpactType>();
+            var existingImpactTypes = _context.CampaignImpactTypes.ToList();
+            var numeric = GetImpactType(campaignImpactTypes, existingImpactTypes, "Numeric");
+            var textual = GetImpactType(campaignImpactTypes, existingImpactTypes, "Textual");
+            _context.CampaignImpactTypes.AddRange(campaignImpactTypes);
+            _context.SaveChanges();
+        }
+
         private static Skill GetSkill(List<Skill> skills, List<Skill> existingSkills, string skillName, Skill parentSkill = null)
         {
             Skill skill;
@@ -385,6 +405,22 @@ namespace AllReady.Models
                 skills.Add(skill);
             }
             return skill;
+        }
+
+        private static CampaignImpactType GetImpactType(List<CampaignImpactType> types, List<CampaignImpactType> existingTypes, string typeName)
+        {
+            CampaignImpactType impactType;
+            if (existingTypes.Any(item => item.ImpactType == typeName))
+            {
+                impactType = existingTypes.Single(item => item.ImpactType == typeName);
+            }
+            else
+            {
+                impactType = new CampaignImpactType { ImpactType = typeName };
+                
+                types.Add(impactType);
+            }
+            return impactType;
         }
 
         #region Sample Data Helper methods

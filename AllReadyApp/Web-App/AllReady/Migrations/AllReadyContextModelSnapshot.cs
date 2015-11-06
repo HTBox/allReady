@@ -146,6 +146,8 @@ namespace AllReady.Migrations
 
                     b.Property<DateTime>("EndDateTimeUtc");
 
+                    b.Property<string>("FullDescription");
+
                     b.Property<string>("ImageUrl");
 
                     b.Property<int>("ManagingTenantId");
@@ -156,6 +158,33 @@ namespace AllReady.Migrations
                     b.Property<string>("OrganizerId");
 
                     b.Property<DateTime>("StartDateTimeUtc");
+
+                    b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.CampaignImpact", b =>
+                {
+                    b.Property<int>("Id");
+
+                    b.Property<int?>("CampaignImpactTypeId");
+
+                    b.Property<int>("CurrentImpactLevel");
+
+                    b.Property<bool>("Display");
+
+                    b.Property<int>("NumericImpactGoal");
+
+                    b.Property<string>("TextualImpactGoal");
+
+                    b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.CampaignImpactType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ImpactType");
 
                     b.HasKey("Id");
                 });
@@ -439,6 +468,17 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.ApplicationUser")
                         .WithMany()
                         .ForeignKey("OrganizerId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.CampaignImpact", b =>
+                {
+                    b.HasOne("AllReady.Models.CampaignImpactType")
+                        .WithMany()
+                        .ForeignKey("CampaignImpactTypeId");
+
+                    b.HasOne("AllReady.Models.Campaign")
+                        .WithOne()
+                        .ForeignKey("AllReady.Models.CampaignImpact", "Id");
                 });
 
             modelBuilder.Entity("AllReady.Models.CampaignSponsors", b =>

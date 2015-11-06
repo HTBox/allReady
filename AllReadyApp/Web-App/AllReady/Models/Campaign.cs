@@ -45,6 +45,7 @@ namespace AllReady.Models
 
         public ApplicationUser Organizer { get; set; }
 
+        public CampaignImpact CampaignImpact { get; set; }
 
     }
 }
