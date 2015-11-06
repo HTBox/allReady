@@ -64,22 +64,22 @@ namespace AllReady.Controllers
         // POST: Campaign/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Campaign campaign)
+        public IActionResult Create(CampaignSummaryViewModel campaign)
         {
             if (campaign == null)
             {
                 return HttpBadRequest();
             }
 
-            if (!User.IsTenantAdmin(campaign.ManagingTenantId))
+            if (!User.IsTenantAdmin(campaign.TenantId))
             {
                 return HttpUnauthorized();
             }
 
             if (ModelState.IsValid)
             {
-                await _dataAccess.AddCampaign(campaign);
-                return RedirectToAction("Index", new { area = "Admin" });
+                int id = _bus.Send(new EditCampaignCommand { Campaign = campaign });
+                return RedirectToAction("Details", new {id = id, area = "Admin" });
             }
 
             return WithTenants(View("Edit", campaign));
@@ -106,7 +106,7 @@ namespace AllReady.Controllers
         // POST: Campaign/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(CampaignSummaryViewModel campaign)
+        public IActionResult Edit(CampaignSummaryViewModel campaign)
         {
             if (campaign == null)
             {
