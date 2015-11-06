@@ -6,6 +6,9 @@ using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
 using AllReady.Security;
 using AllReady.Models;
+using MediatR;
+using AllReady.Areas.Admin.Features.Campaigns;
+using AllReady.Areas.Admin.ViewModels;
 
 namespace AllReady.Controllers
 {
@@ -14,10 +17,12 @@ namespace AllReady.Controllers
     public class CampaignController : Controller
     {
         private IAllReadyDataAccess _dataAccess;
+        private IMediator _bus;
 
-        public CampaignController(IAllReadyDataAccess dataAccess)
+        public CampaignController(IAllReadyDataAccess dataAccess, IMediator bus)
         {
             _dataAccess = dataAccess;
+            _bus = bus;
         }
 
         private ViewResult WithTenants(ViewResult view)
@@ -29,7 +34,8 @@ namespace AllReady.Controllers
         // GET: Campaign
         public IActionResult Index()
         {
-            return View(_dataAccess.Campaigns);
+            var campaigns = _bus.Send(new CampaignListQuery());
+            return View(campaigns);
         }
 
         public IActionResult Details(int id)
@@ -82,14 +88,14 @@ namespace AllReady.Controllers
         // GET: Campaign/Edit/5
         public IActionResult Edit(int id)
         {
-            Campaign campaign = _dataAccess.GetCampaign(id);
+            CampaignSummaryViewModel campaign = _bus.Send(new CampaignQuery { CampaignId = id });
 
             if (campaign == null)
             {
                 return HttpNotFound();
             }
 
-            if (!User.IsTenantAdmin(campaign.ManagingTenantId))
+            if (!User.IsTenantAdmin(campaign.TenantId))
             {
                 return HttpUnauthorized();
             }
@@ -100,22 +106,22 @@ namespace AllReady.Controllers
         // POST: Campaign/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Campaign campaign)
+        public async Task<IActionResult> Edit(CampaignSummaryViewModel campaign)
         {
             if (campaign == null)
             {
                 return HttpBadRequest();
             }
 
-            if (!User.IsTenantAdmin(campaign.ManagingTenantId))
+            if (!User.IsTenantAdmin(campaign.TenantId))
             {
                 return HttpUnauthorized();
             }
 
             if (ModelState.IsValid)
             {
-                await _dataAccess.UpdateCampaign(campaign);
-                return RedirectToAction("Index", new { area = "Admin" });
+                int id = _bus.Send(new EditCampaignCommand { Campaign = campaign });
+                return RedirectToAction("Details", new { area = "Admin", id = id });
             }
             return View(campaign);
         }        
