@@ -21,8 +21,8 @@ using Autofac.Framework.DependencyInjection;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.Dnx.Runtime;
-using System.Threading;
 using System.Globalization;
+using Microsoft.AspNet.Localization;
 
 namespace AllReady
 {
@@ -49,9 +49,6 @@ namespace AllReady
       }
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
-
-      // if dnxcore50 is ever targetted, this will need to become: CultureInfo.CurrentCulture = new CultureInfo("en-US");
-      Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
     }
 
     public IConfiguration Configuration { get; set; }
@@ -164,6 +161,14 @@ namespace AllReady
       app.UseCors("allReady");
 
       // Configure the HTTP request pipeline.
+
+      var usCultureInfo = new CultureInfo("en-US");
+      app.UseRequestLocalization(new RequestLocalizationOptions
+      {
+        DefaultRequestCulture = new RequestCulture(usCultureInfo),
+        SupportedCultures = new List<CultureInfo>(new[] { usCultureInfo }),
+        SupportedUICultures = new List<CultureInfo>(new[] { usCultureInfo })
+      });
 
       // Add Application Insights to the request pipeline to track HTTP request telemetry data.
       app.UseApplicationInsightsRequestTelemetry();
