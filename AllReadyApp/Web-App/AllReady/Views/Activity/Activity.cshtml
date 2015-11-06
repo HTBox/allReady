@@ -62,8 +62,11 @@
                 <span class="label-warning label hide" data-bind="css: { hide: tasks.filtered().length }">No matching tasks.</span>
                 <ul data-bind="foreach: tasks.filtered">
                     <li>
-                        <span data-bind="text: Name"></span>
+                       
+                        <span data-bind="text: Name"></span>  
                         <span data-bind="text: Description"></span>
+                        <span><a data-bind="attr: { href:  'Accept/' + Id }">Accept</a> </span>
+                        <span><a data-bind="attr: { href:  'Reject/' + Id }">Reject</a> </span>                        
                     </li>
                 </ul>
             </div>
