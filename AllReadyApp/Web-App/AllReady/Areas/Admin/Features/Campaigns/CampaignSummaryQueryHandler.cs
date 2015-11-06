@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class CampaignQueryHandler : IRequestHandler<CampaignQuery, CampaignSummaryViewModel>
+    public class CampaignSummaryQueryHandler : IRequestHandler<CampaignSummaryQuery, CampaignSummaryViewModel>
     {
         private AllReadyContext _context;
 
-        public CampaignQueryHandler(AllReadyContext context)
+        public CampaignSummaryQueryHandler(AllReadyContext context)
         {
             _context = context;
 
         }
-        public CampaignSummaryViewModel Handle(CampaignQuery message)
+        public CampaignSummaryViewModel Handle(CampaignSummaryQuery message)
         {
             var campaign = _context.Campaigns
                 .Select(c => new CampaignSummaryViewModel()

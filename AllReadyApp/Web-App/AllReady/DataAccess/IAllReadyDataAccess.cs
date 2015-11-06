@@ -28,9 +28,6 @@ namespace AllReady.Models
 
         IEnumerable<Campaign> Campaigns { get; }
         Campaign GetCampaign(int campaignId);
-        Task AddCampaign(Campaign value);
-        Task DeleteCampaign(int id);
-        Task UpdateCampaign(Campaign value);
 
         #endregion
 
