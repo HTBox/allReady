@@ -9,11 +9,11 @@ namespace AllReady.Models
 {
     public partial class AllReadyDataAccessEF7 : IAllReadyDataAccess
     {
-        IEnumerable<TaskUsers> IAllReadyDataAccess.TaskSignups
+        IEnumerable<TaskSignup> IAllReadyDataAccess.TaskSignups
         {
             get
             {
-                return _dbContext.TaskSignup
+                return _dbContext.TaskSignups
                           .Include(x => x.Task)
                           .Include(x => x.User)
                           .Include(x => x.Task.Activity)
@@ -23,9 +23,9 @@ namespace AllReady.Models
             }
         }
 
-        TaskUsers IAllReadyDataAccess.GetTaskSignup(int taskId, string userId)
+        TaskSignup IAllReadyDataAccess.GetTaskSignup(int taskId, string userId)
         {
-            return _dbContext.TaskSignup
+            return _dbContext.TaskSignups
               .Include(x => x.Task)
               .Include(x => x.User)
               .ToArray()
@@ -34,27 +34,27 @@ namespace AllReady.Models
               .SingleOrDefault();
         }
 
-        Task IAllReadyDataAccess.AddTaskSignupAsync(TaskUsers taskSignup)
+        Task IAllReadyDataAccess.AddTaskSignupAsync(TaskSignup taskSignup)
         {
-            _dbContext.TaskSignup.Add(taskSignup);
+            _dbContext.TaskSignups.Add(taskSignup);
             return _dbContext.SaveChangesAsync();
         }
 
         Task IAllReadyDataAccess.DeleteTaskSignupAsync(int taskSignupId)
         {
-            var taskSignup = _dbContext.TaskSignup.SingleOrDefault(c => c.Id == taskSignupId);
+            var taskSignup = _dbContext.TaskSignups.SingleOrDefault(c => c.Id == taskSignupId);
 
             if (taskSignup != null)
             {
-                _dbContext.TaskSignup.Remove(taskSignup);
+                _dbContext.TaskSignups.Remove(taskSignup);
                 return _dbContext.SaveChangesAsync();
             }
             return null;
         }
 
-        Task IAllReadyDataAccess.UpdateTaskSignupAsync(TaskUsers value)
+        Task IAllReadyDataAccess.UpdateTaskSignupAsync(TaskSignup value)
         {
-            _dbContext.TaskSignup.Update(value);
+            _dbContext.TaskSignups.Update(value);
             return _dbContext.SaveChangesAsync();
         }
     }

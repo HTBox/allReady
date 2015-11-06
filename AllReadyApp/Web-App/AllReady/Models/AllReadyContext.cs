@@ -54,7 +54,7 @@ namespace AllReady.Models
         public DbSet<PostalCodeGeo> PostalCodes { get; set; }
         public DbSet<AllReadyTask> Tasks { get; set; }
         public DbSet<TaskSkill> TaskSkills { get; set; }
-        public DbSet<TaskUsers> TaskSignup { get; set; }
+        public DbSet<TaskSignup> TaskSignups { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<Skill> Skills { get; set; }
         public DbSet<UserSkill> UserSkills { get; set; }
@@ -72,7 +72,7 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<ActivitySignup>());
             Map(modelBuilder.Entity<AllReadyTask>());
             Map(modelBuilder.Entity<TaskSkill>());
-            Map(modelBuilder.Entity<TaskUsers>());
+            Map(modelBuilder.Entity<TaskSignup>());
             Map(modelBuilder.Entity<Location>());
             Map(modelBuilder.Entity<PostalCodeGeo>());
             Map(modelBuilder.Entity<Skill>());
@@ -90,7 +90,7 @@ namespace AllReady.Models
             builder.HasOne(l => l.PostalCode);
         }
 
-        private void Map(EntityTypeBuilder<TaskUsers> builder)
+        private void Map(EntityTypeBuilder<TaskSignup> builder)
         {
             builder.HasOne(u => u.Task);
         }
