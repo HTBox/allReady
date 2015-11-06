@@ -1,9 +1,6 @@
-using System.Linq;
-using System.Threading.Tasks;
 
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
 using AllReady.Security;
 using AllReady.Models;
 using MediatR;
@@ -23,12 +20,6 @@ namespace AllReady.Controllers
         {
             _dataAccess = dataAccess;
             _bus = bus;
-        }
-
-        private ViewResult WithTenants(ViewResult view)
-        {
-            view.ViewData["Tenants"] = _dataAccess.Tenants.Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = t.Name });
-            return view;
         }
 
         // GET: Campaign
@@ -58,7 +49,7 @@ namespace AllReady.Controllers
         // GET: Campaign/Create
         public IActionResult Create()
         {
-            return WithTenants(View("Edit"));
+            return View("Edit");
         }
 
         // POST: Campaign/Create
@@ -82,7 +73,7 @@ namespace AllReady.Controllers
                 return RedirectToAction("Details", new {id = id, area = "Admin" });
             }
 
-            return WithTenants(View("Edit", campaign));
+            return View("Edit", campaign);
         }
 
         // GET: Campaign/Edit/5
@@ -100,7 +91,7 @@ namespace AllReady.Controllers
                 return HttpUnauthorized();
             }
 
-            return WithTenants(View(campaign));
+            return View(campaign);
         }
 
         // POST: Campaign/Edit/5

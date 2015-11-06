@@ -73,6 +73,8 @@ namespace AllReady
 
       ef.AddDbContext<AllReadyContext>();
 
+      services.AddScoped<ISelectListService, SelectListService>();
+
       // Add CORS support
       services.AddCors(options =>
       {
@@ -103,7 +105,7 @@ namespace AllReady
 
       // Add MVC services to the services container.
       services.AddMvc();
-
+      
       // configure IoC support
       var container = CreateIoCContainer(services);
       return container.Resolve<IServiceProvider>();
