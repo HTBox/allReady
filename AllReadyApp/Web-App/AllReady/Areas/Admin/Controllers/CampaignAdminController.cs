@@ -129,13 +129,13 @@ namespace AllReady.Controllers
         // GET: Campaign/Delete/5
         public IActionResult Delete(int id)
         {
-            Campaign campaign = _dataAccess.GetCampaign(id);
+            CampaignSummaryViewModel campaign = _bus.Send(new CampaignQuery { CampaignId = id });
 
             if (campaign == null)
             {
                 return HttpNotFound();
             }
-            if (!User.IsTenantAdmin(campaign.ManagingTenantId))
+            if (!User.IsTenantAdmin(campaign.TenantId))
             {
                 return HttpUnauthorized();
             }
@@ -146,16 +146,15 @@ namespace AllReady.Controllers
         // POST: Campaign/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            var campaign = _dataAccess.GetCampaign(id);
+            CampaignSummaryViewModel campaign = _bus.Send(new CampaignQuery { CampaignId = id });
 
-            if (!User.IsTenantAdmin(campaign.ManagingTenantId))
+            if (!User.IsTenantAdmin(campaign.TenantId))
             {
                 return HttpUnauthorized();
-            }   
-
-            await _dataAccess.DeleteCampaign(id);
+            }
+            _bus.Send(new DeleteCampaignCommand { CampaignId = id });            
             return RedirectToAction("Index", new { area = "Admin" });
         }
     }
