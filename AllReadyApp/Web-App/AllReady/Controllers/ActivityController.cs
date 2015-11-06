@@ -92,7 +92,15 @@ namespace AllReady.Controllers
             var signedUp = _allReadyDataAccess.GetActivitySignups(id, User.GetUserId());
 
             isUserSignedUpForActivity = signedUp.Any();
-
+            var assignedTasks = new List<AllReadyTask>();
+            foreach(var task in activity.Tasks){
+                if (task.AssignedVolunteers.Exists(u => u.User.Id == User.GetUserId()))
+                {
+                    assignedTasks.Add(_allReadyDataAccess.GetTaskSignup(id, User.GetUserId()).Task);
+                }
+            }
+            
+            
             return View("Activity", new ActivityViewModel(activity, isUserSignedUpForActivity));
         }
 
