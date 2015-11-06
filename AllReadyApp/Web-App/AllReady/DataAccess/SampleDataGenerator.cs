@@ -54,7 +54,7 @@ namespace AllReady.Models
             var existingSkills = _context.Skills.ToList();
             var medical = GetSkill(skills, existingSkills, "Medical");
             var cprCertified = GetSkill(skills, existingSkills, "CPR Certified", medical);
-            var md = GetSkill(skills, existingSkills, "MD", medical);
+            var md = GetSkill(skills, existingSkills, "MD", medical, "Trust me, I'm a doctor");
             var surgeon = GetSkill(skills, existingSkills, "Surgeon", md);
             _context.Skills.AddRange(skills);
             //_context.SaveChanges();
@@ -405,7 +405,7 @@ namespace AllReady.Models
             _context.CampaignImpactTypes.AddRange(campaignImpactTypes);
         }
 
-        private static Skill GetSkill(List<Skill> skills, List<Skill> existingSkills, string skillName, Skill parentSkill = null)
+        private static Skill GetSkill(List<Skill> skills, List<Skill> existingSkills, string skillName, Skill parentSkill = null, string description = null)
         {
             Skill skill;
             if (existingSkills.Any(item => item.Name == skillName))
@@ -421,6 +421,7 @@ namespace AllReady.Models
                 }
                 skills.Add(skill);
             }
+            skill.Description = description;
             return skill;
         }
 

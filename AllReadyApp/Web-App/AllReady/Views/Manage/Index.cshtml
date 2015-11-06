@@ -64,6 +64,7 @@
                 <div data-bind="foreach: skills">
                     <div class="form-inline">
                         <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                        <span class="glyphicon glyphicon-info-sign" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
                         <a href="#" data-bind="click: $root.deleteSkill" title="Delete skill">
                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                             Delete
@@ -95,6 +96,10 @@
                     ret.ControlName = function (index) {
                         return 'AssociatedSkills[' + ko.unwrap(index) + '].SkillId';
                     };
+                    ret.Description = ko.computed(function () {
+                        var skill = availableSkills.filter(function (skill) { return skill.Id === ret.Id(); })[0];
+                        return (skill && skill.Description) || "";
+                    });
                     return ret;
                 }
                 skills = (skills || []).map(SkillObservable);
