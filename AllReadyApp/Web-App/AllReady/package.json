@@ -7,6 +7,7 @@
     "gulp-concat": "2.5.2",
     "gulp-cssmin": "0.1.7",
     "gulp-uglify": "1.2.0",
+    "bower": "1.6.5",
     "rimraf": "2.2.8"
   }
 }

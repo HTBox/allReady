@@ -11,19 +11,18 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <h3>Location</h3>
         <div id="bingMap" style="position:relative"></div>
     </div>
 </div>
 @section scripts {
-    <script type="text/javascript">
-        $(document).ready(function () {
+<script>
+    var modelCampaign = @Json.Serialize(Model);
 
-            $("#bingMap").css("width", "1000px").css("height", "800px");
-            renderBingMap('bingMap');
+    $(document).ready(function () {
+        $("#bingMap").css("width", "1000px").css("height", "600px");
+    });
+</script>
 
-        });
-
-    </script>
+    <script src="~/js/mapinteraction.js"></script>
     <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
 }
