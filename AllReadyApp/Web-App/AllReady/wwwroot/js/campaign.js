@@ -30,9 +30,26 @@ function ResourcesViewModel(category)
 
 
 (function (ko, $, activities) {
-
+    function Activity(item) {
+        for (var prop in item) {
+            this[prop] = item[prop];
+        }
+        this.Name = this.Title;
+        this.displayDate = function () {
+            var start = this.StartDateTime.split('T')[0];
+            var end = this.EndDateTime.split('T')[0];
+            return start + ' : ' + end;
+        }
+        return this;
+    }
     function CampaignViewModel(activities) {
-        this.activities = ko.observableArray(activities).filterBeforeDate("EndDateTimeUtc").textFilter(["Title","Description"]);
+        var list = activities.map(function (item) { return new Activity(item); })
+
+        this.activities = ko.observableArray(list).filterBeforeDate("EndDateTime").textFilter(["Title", "Description"]);
+        this.resources = ko.observableArray([]);
+
+        this.total = list.length;
+
     }
 
     ko.applyBindings(new CampaignViewModel(activities));

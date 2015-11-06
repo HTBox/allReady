@@ -19,8 +19,9 @@ namespace AllReady.Models
                                 .Include(a => a.Tenant)
                                 .Include(a => a.Campaign)
                                 .Include(a => a.Tasks)
-                                .Include(x => x.UsersSignedUp)
-                                .OrderBy(x => x.EndDateTimeUtc)
+                                .Include(a => a.RequiredSkills)
+                                .Include(a => a.UsersSignedUp)
+                                .OrderBy(a => a.EndDateTimeUtc)
                                 .ToList();
             }
         }
@@ -44,6 +45,10 @@ namespace AllReady.Models
 
         Task IAllReadyDataAccess.UpdateActivity(Activity value)
         {
+            //First remove any skills that are no longer associated with this activity
+            var acsksToRemove = _dbContext.ActivitySkills.Where(acsk => acsk.ActivityId == value.Id && (value.RequiredSkills == null ||
+                !value.RequiredSkills.Any(acsk1 => acsk1.SkillId == acsk.SkillId)));
+            _dbContext.ActivitySkills.RemoveRange(acsksToRemove);
             _dbContext.Activities.Update(value);
             return _dbContext.SaveChangesAsync();
         }
@@ -66,9 +71,15 @@ namespace AllReady.Models
                 .Include(a => a.Location.PostalCode)
                 .Include(a => a.Tenant)
                 .Include(a => a.Campaign)
+                .Include(a => a.RequiredSkills)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(tu => tu.User)
                 .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
                 .SingleOrDefault(a => a.Id == activityId);
+        }
+
+        int IAllReadyDataAccess.GetManagingTenantId(int activityId)
+        {
+            return _dbContext.Activities.Where(a => a.Id == activityId).Select(a => a.Campaign.ManagingTenantId).FirstOrDefault();
         }
 
         IEnumerable<ActivitySignup> IAllReadyDataAccess.GetActivitySignups(int activityId, string userId)

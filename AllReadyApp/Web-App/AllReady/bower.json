@@ -5,6 +5,7 @@
   "description": "AllReady",
   "dependencies": {
     "bootstrap": "~3.3.5",
+    "bootstrap-toggle": "2.2.1",
     "bootstrap-datepicker": "1.4.0",
     "bootstrap-touch-carousel": "0.8.0",
     "hammer.js": "2.0.4",

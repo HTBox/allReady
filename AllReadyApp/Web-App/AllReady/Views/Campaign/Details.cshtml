@@ -1,24 +1,27 @@
 ﻿@model CampaignViewModel
 <div class="row">
-    <div id="col-main" class="cold-md-12">
-        <div class="col-md-3"><h2>@Model.Name</h2></div>
-        <div class="col-md-9 share-buttons">
+    <div id="col-main" >
+        <div class="col-md-9"><h2>@Model.Name</h2></div>
+        <div class="col-md-3 share-buttons">
             <img src="~/images/share-shareaholic.png" alt="Share via Shareaholic" />
             <img src="~/images/share-twitter.png" alt="Share via Twitter" />
             <img src="~/images/share-fb.png" alt="Share via Facebook" />
         </div>
     </div>
 </div>
+
 <div class="row">
     <div class="col-md-12">
         <p class="date-address">@Model.StartDate.ToString("D") - @Model.EndDate.ToString("D")</p>
     </div>
 </div>
+
 <div class="row">
     <div id="col-main" class="col-md-12">
         @Model.Description
     </div>
 </div>
+
 <div class="row">
     <div class="col-md-12">
         <div class="campaign-sponsor">
@@ -26,11 +29,30 @@
         </div>
     </div>
 </div>
+
 <div class="row">
-    <div class="col-sm-12">
+    <div class="col-md-6">
         <h3>Activities for this campaign</h3>
     </div>
-    <div class="col-sm-12">
+    <div class="col-md-6">
+        <div class="pull-right">
+            <div class="form-inline">
+                <div class="form-group">
+                    <input type="text" class="form-control input-sm" data-bind="textInput: activities.searchTerm" placeholder="Search activities" />
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-sm" data-bind="css: { active: activities.showOld }, click: activities.showOld.toggle">
+                        <i class="fa" data-bind="css: { 'fa-square-o': !activities.showOld(), 'fa-check-square-o': activities.showOld }"></i>
+                        Show Completed Activities
+                    </button>
+                    <span data-bind="text: '(' + total + ')' "></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    @*<div class="col-sm-12">
         <div class="form-inline">
             <div class="form-group">
                 <input type="text" class="form-control input-sm" data-bind="textInput: activities.searchTerm" placeholder="Search activities" />
@@ -38,35 +60,63 @@
             <div class="form-group">
                 <button type="button" class="btn btn-sm" data-bind="css: { active: activities.showOld }, click: activities.showOld.toggle">
                     <i class="fa" data-bind="css: { 'fa-square-o': !activities.showOld(), 'fa-check-square-o': activities.showOld }"></i>
-                    Show Old
+                    Show Completed Activities
                 </button>
             </div>
         </div>
+    </div>*@
+
+
+<div class="row">
+    <div class="hide text-center" data-bind="css: { hide: activities.filtered().length }">
+        <div class="alert alert-warning" role="alert">
+            <strong>No matching activities.</strong>
+        </div>
     </div>
     <div class="col-md-12">
-        <span class="label-warning label hide" data-bind="css: { hide: activities.filtered().length }">No matching activities.</span>
-        <!-- ko foreach: activities.filtered -->
-        <div class="activity-list">
-            <a data-bind="attr: { href: '/Activity/' + Id }, text: Title"></a>
-            <span class="text-small" data-bind="text: Description"></span>
-        </div>
-        <!-- /ko -->
-    </div>
-    <div class="col-sm-12">
-        <h3>Resources for this campaign</h3>
-    </div>
-    <div class="col-md-12 text-center">
-        <div class="activity-results">
-            <div class="activity-wrapper" data-bind="foreach: resources">
-                <p><label data-bind="text: Name"></label></p>
-            </div>            
+        <div  class="table-responsive">
+            <table class="table" data-bind="css: { hide: !activities.filtered().length }">
+                <tr>
+                    <th><span title="Name of the activity">Title</span></th>
+                    <th><span title="Description of the activity">Description</span></th>
+                    <th><span title="Date of the activity">Dates</span></th>
+                </tr>
+                <!-- ko foreach: activities.filtered -->
+                <tr>
+                    <td>
+                        <a data-bind="attr: { href: '/Activity/' + Id }, text: Name"></a>
+                    </td>
+                    <td>
+                        <span data-bind="text: Description"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: displayDate()"></span>
+                    </td>
+                </tr>
+                <!-- /ko -->
+            </table>
+
         </div>
     </div>
 </div>
+
+
+<div class="row">
+    <div class="col-sm-12" data-bind="if: resources && resources.length > 0">
+        <h3>Resources for this campaign</h3>
+    </div>
+    <div class="col-md-12 text-center" data-bind="if: resources && resources.length > 0">
+        <div class="activity-results">
+            <div class="activity-wrapper" data-bind="foreach: resources">
+                <p><label data-bind="text: Name"></label></p>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section scripts {
     <script>
         var modelActivities = @Json.Serialize(Model.Activities);
     </script>
-    <script type="text/javascript" src="~/js/ko.filterableList.js"></script>
     <script type="text/javascript" src="~/js/campaign.js"></script>
 }

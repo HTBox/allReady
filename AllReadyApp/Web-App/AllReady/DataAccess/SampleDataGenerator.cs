@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.Framework.Configuration;
-using Microsoft.Framework.DependencyInjection;
 using AllReady.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using AllReady.DataAccess;
-using Microsoft.Dnx.Runtime;
 
 namespace AllReady.Models
 {
@@ -34,19 +31,36 @@ namespace AllReady.Models
                 _context.Tasks.Any() ||
                 _context.Campaigns.Any() ||
                 _context.Activities.Any() ||
+                _context.ActivitySkills.Any() ||
+                _context.Skills.Any() ||
                 _context.Resources.Any())
             {
                 return;
             }
-
             // new up some data
             List<Tenant> tenants = new List<Tenant>();
-            _context.PostalCodes.AddRange(GetPostalCodes());
+
+            #region postalCodes
+            var existingPostalCode = _context.PostalCodes.ToList();
+            _context.PostalCodes.AddRange(GetPostalCodes(existingPostalCode));
             _context.SaveChanges();
+            #endregion
+
+            #region Skills
+            var skills = new List<Skill>();
+            var existingSkills = _context.Skills.ToList();
+            var medical = GetSkill(skills, existingSkills, "Medical");
+            var cprCertified = GetSkill(skills, existingSkills, "CPR Certified", medical);
+            var md = GetSkill(skills, existingSkills, "MD", medical);
+            var surgeon = GetSkill(skills, existingSkills, "Surgeon", md);
+            _context.Skills.AddRange(skills);
+            _context.SaveChanges();
+            #endregion
 
             List<Location> locations = GetLocations();
             List<TaskUsers> users = new List<TaskUsers>();
             List<Activity> activities = new List<Activity>();
+            List<ActivitySkill> activitySkills = new List<ActivitySkill>();
             List<Campaign> campaigns = new List<Campaign>();
             List<AllReadyTask> tasks = new List<AllReadyTask>();
             List<Resource> resources = new List<Resource>();
@@ -61,6 +75,8 @@ namespace AllReady.Models
                 Campaigns = new List<Campaign>()
             };
             #endregion
+
+
             #region Campaign
 
             Campaign firePrev = new Campaign()
@@ -102,22 +118,31 @@ namespace AllReady.Models
             };
             htb.Campaigns.Add(escapePlan);
             #endregion
+
             #region Activity
             Activity queenAnne = new Activity()
             {
                 Name = "Queen Anne Fire Prevention Day",
                 StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 7, 4, 15, 0, 0).ToUniversalTime(),
+                EndDateTimeUtc = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
-                Tenant = htb
+                Tenant = htb,
+                RequiredSkills = new List<ActivitySkill>()
             };
             queenAnne.Tasks = GetSomeTasks(queenAnne, htb);
+            var ask = new ActivitySkill() { Skill = surgeon, Activity = queenAnne };
+            queenAnne.RequiredSkills.Add(ask);
+            activitySkills.Add(ask);
+            ask = new ActivitySkill() { Skill = cprCertified, Activity = queenAnne };
+            queenAnne.RequiredSkills.Add(ask);
+            activitySkills.Add(ask);
             tasks.AddRange(queenAnne.Tasks);
+
             Activity ballard = new Activity()
             {
                 Name = "Ballard Fire Prevention Day",
                 StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 7, 4, 14, 0, 0).ToUniversalTime(),
+                EndDateTimeUtc = new DateTime(2015, 12, 31, 14, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Tenant = htb
 
@@ -128,7 +153,7 @@ namespace AllReady.Models
             {
                 Name = "Madrona Fire Prevention Day",
                 StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 7, 4, 14, 0, 0).ToUniversalTime(),
+                EndDateTimeUtc = new DateTime(2015, 12, 31, 14, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Tenant = htb
             };
@@ -138,7 +163,7 @@ namespace AllReady.Models
             {
                 Name = "Smoke Detector Installation and Testing-South Loop",
                 StartDateTimeUtc = new DateTime(2015, 7, 6, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 7, 11, 17, 0, 0).ToUniversalTime(),
+                EndDateTimeUtc = new DateTime(2015, 12, 31, 17, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Tenant = htb
             };
@@ -148,7 +173,7 @@ namespace AllReady.Models
             {
                 Name = "Smoke Detector Installation and Testing-Near North Side",
                 StartDateTimeUtc = new DateTime(2015, 7, 6, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 7, 11, 17, 0, 0).ToUniversalTime(),
+                EndDateTimeUtc = new DateTime(2015, 12, 31, 17, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Tenant = htb
             };
@@ -170,7 +195,7 @@ namespace AllReady.Models
                 Name = "Renters Insurance Education Door to Door (woop woop)",
                 Description = "another great description",
                 StartDateTimeUtc = new DateTime(2015, 7, 12, 8, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 7, 12, 17, 0, 0).ToUniversalTime(),
+                EndDateTimeUtc = new DateTime(2015, 12, 12, 17, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Tenant = htb
             };
@@ -181,7 +206,7 @@ namespace AllReady.Models
                 Name = "Safety Kit Assembly Volunteer Day",
                 Description = "Full day of volunteers building kits",
                 StartDateTimeUtc = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 7, 11, 16, 30, 0).ToUniversalTime(),
+                EndDateTimeUtc = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Tenant = htb
             };
@@ -193,7 +218,7 @@ namespace AllReady.Models
                 Name = "Safety Kit Distribution Weekend",
                 Description = "Handing out kits at local fire stations",
                 StartDateTimeUtc = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 7, 11, 16, 30, 0).ToUniversalTime(),
+                EndDateTimeUtc = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Tenant = htb
             };
@@ -204,7 +229,7 @@ namespace AllReady.Models
                 Name = "Car Seat Testing-Naperville",
                 Description = "Checking car seats at local fire stations after last day of school year",
                 StartDateTimeUtc = new DateTime(2015, 7, 10, 9, 30, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 7, 10, 15, 30, 0).ToUniversalTime(),
+                EndDateTimeUtc = new DateTime(2015, 12, 10, 15, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Tenant = htb
             };
@@ -215,7 +240,7 @@ namespace AllReady.Models
                 Name = "Car Seat and Tire Pressure Checking Volunteer Day",
                 Description = "Checking those things all day at downtown train station parking",
                 StartDateTimeUtc = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 7, 11, 19, 30, 0).ToUniversalTime(),
+                EndDateTimeUtc = new DateTime(2015, 12, 11, 19, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Tenant = htb
             };
@@ -226,7 +251,7 @@ namespace AllReady.Models
                 Name = "Park District Home Safety Festival",
                 Description = "At downtown park district(adjacent to pool)",
                 StartDateTimeUtc = new DateTime(2015, 7, 11, 12, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 7, 11, 16, 30, 0).ToUniversalTime(),
+                EndDateTimeUtc = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Tenant = htb
             };
@@ -237,7 +262,7 @@ namespace AllReady.Models
                 Name = "Home Escape Plan Flyer Distribution",
                 Description = "Handing out flyers door to door in several areas of town after school/ work hours.Streets / blocks will vary but number of volunteers.",
                 StartDateTimeUtc = new DateTime(2015, 7, 15, 15, 30, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 7, 15, 20, 30, 0).ToUniversalTime(),
+                EndDateTimeUtc = new DateTime(2015, 12, 15, 20, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Tenant = htb
             };
@@ -306,6 +331,8 @@ namespace AllReady.Models
             #endregion
 
             #region Insert into DB
+
+            _context.ActivitySkills.AddRange(activitySkills);
             _context.Locations.AddRange(locations);
             _context.Tenants.AddRange(tenants);
             _context.Tasks.AddRange(tasks);
@@ -340,6 +367,26 @@ namespace AllReady.Models
             #endregion
 
         }
+
+        private static Skill GetSkill(List<Skill> skills, List<Skill> existingSkills, string skillName, Skill parentSkill = null)
+        {
+            Skill skill;
+            if (existingSkills.Any(item => item.Name == skillName))
+            {
+                skill = existingSkills.Single(item => item.Name == skillName);
+            }
+            else
+            {
+                skill = new Skill { Name = skillName };
+                if (parentSkill != null)
+                {
+                    skill.ParentSkill = parentSkill;
+                }
+                skills.Add(skill);
+            }
+            return skill;
+        }
+
         #region Sample Data Helper methods
         private static T GetRandom<T>(List<T> list)
         {
@@ -379,17 +426,17 @@ namespace AllReady.Models
             return ret;
         }
 
-        private List<PostalCodeGeo> GetPostalCodes()
+        private List<PostalCodeGeo> GetPostalCodes(IList<PostalCodeGeo> existingPostalCode)
         {
             var postalCodes = new List<PostalCodeGeo>();
-            postalCodes.Add(new PostalCodeGeo() { City = "Remond", State = "WA", PostalCode = "98052" });
-            postalCodes.Add(new PostalCodeGeo() { City = "Bellevue", State = "WA", PostalCode = "98004" });
-            postalCodes.Add(new PostalCodeGeo() { City = "Seattle", State = "WA", PostalCode = "98116" });
-            postalCodes.Add(new PostalCodeGeo() { City = "Seattle", State = "WA", PostalCode = "98117" });
-            postalCodes.Add(new PostalCodeGeo() { City = "Bellevue", State = "WA", PostalCode = "98007" });
-            postalCodes.Add(new PostalCodeGeo() { City = "Issaquah", State = "WA", PostalCode = "98027" });
-            postalCodes.Add(new PostalCodeGeo() { City = "Kirkland", State = "WA", PostalCode = "98034" });
-            postalCodes.Add(new PostalCodeGeo() { City = "Kirkland", State = "WA", PostalCode = "98033" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98052")) postalCodes.Add(new PostalCodeGeo() { City = "Remond", State = "WA", PostalCode = "98052" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98004")) postalCodes.Add(new PostalCodeGeo() { City = "Bellevue", State = "WA", PostalCode = "98004" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98116")) postalCodes.Add(new PostalCodeGeo() { City = "Seattle", State = "WA", PostalCode = "98116" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98117")) postalCodes.Add(new PostalCodeGeo() { City = "Seattle", State = "WA", PostalCode = "98117" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98007")) postalCodes.Add(new PostalCodeGeo() { City = "Bellevue", State = "WA", PostalCode = "98007" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98027")) postalCodes.Add(new PostalCodeGeo() { City = "Issaquah", State = "WA", PostalCode = "98027" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98034")) postalCodes.Add(new PostalCodeGeo() { City = "Kirkland", State = "WA", PostalCode = "98034" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98033")) postalCodes.Add(new PostalCodeGeo() { City = "Kirkland", State = "WA", PostalCode = "98033" });
             return postalCodes;
         }
 

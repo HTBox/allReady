@@ -21,6 +21,8 @@ using Autofac.Framework.DependencyInjection;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.Dnx.Runtime;
+using System.Globalization;
+using Microsoft.AspNet.Localization;
 
 namespace AllReady
 {
@@ -159,6 +161,14 @@ namespace AllReady
       app.UseCors("allReady");
 
       // Configure the HTTP request pipeline.
+
+      var usCultureInfo = new CultureInfo("en-US");
+      app.UseRequestLocalization(new RequestLocalizationOptions
+      {
+        DefaultRequestCulture = new RequestCulture(usCultureInfo),
+        SupportedCultures = new List<CultureInfo>(new[] { usCultureInfo }),
+        SupportedUICultures = new List<CultureInfo>(new[] { usCultureInfo })
+      });
 
       // Add Application Insights to the request pipeline to track HTTP request telemetry data.
       app.UseApplicationInsightsRequestTelemetry();

@@ -58,6 +58,15 @@ namespace AllReady.Migrations
                     b.HasKey("Id");
                 });
 
+            modelBuilder.Entity("AllReady.Models.ActivitySkill", b =>
+                {
+                    b.Property<int>("ActivityId");
+
+                    b.Property<int>("SkillId");
+
+                    b.HasKey("ActivityId", "SkillId");
+                });
+
             modelBuilder.Entity("AllReady.Models.AllReadyTask", b =>
                 {
                     b.Property<int>("Id")
@@ -220,6 +229,28 @@ namespace AllReady.Migrations
                     b.HasKey("Id");
                 });
 
+            modelBuilder.Entity("AllReady.Models.Skill", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<int?>("ParentSkillId");
+
+                    b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.TaskSkill", b =>
+                {
+                    b.Property<int>("TaskId");
+
+                    b.Property<int>("SkillId");
+
+                    b.HasKey("TaskId", "SkillId");
+                });
+
             modelBuilder.Entity("AllReady.Models.TaskUsers", b =>
                 {
                     b.Property<int>("Id")
@@ -250,6 +281,15 @@ namespace AllReady.Migrations
                     b.Property<string>("WebUrl");
 
                     b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.UserSkill", b =>
+                {
+                    b.Property<string>("UserId");
+
+                    b.Property<int>("SkillId");
+
+                    b.HasKey("UserId", "SkillId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNet.Identity.EntityFramework.IdentityRole", b =>
@@ -361,6 +401,17 @@ namespace AllReady.Migrations
                         .ForeignKey("UserId");
                 });
 
+            modelBuilder.Entity("AllReady.Models.ActivitySkill", b =>
+                {
+                    b.HasOne("AllReady.Models.Activity")
+                        .WithMany()
+                        .ForeignKey("ActivityId");
+
+                    b.HasOne("AllReady.Models.Skill")
+                        .WithMany()
+                        .ForeignKey("SkillId");
+                });
+
             modelBuilder.Entity("AllReady.Models.AllReadyTask", b =>
                 {
                     b.HasOne("AllReady.Models.Activity")
@@ -408,11 +459,40 @@ namespace AllReady.Migrations
                         .ForeignKey("PostalCodePostalCode");
                 });
 
+            modelBuilder.Entity("AllReady.Models.Skill", b =>
+                {
+                    b.HasOne("AllReady.Models.Skill")
+                        .WithMany()
+                        .ForeignKey("ParentSkillId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.TaskSkill", b =>
+                {
+                    b.HasOne("AllReady.Models.Skill")
+                        .WithMany()
+                        .ForeignKey("SkillId");
+
+                    b.HasOne("AllReady.Models.AllReadyTask")
+                        .WithMany()
+                        .ForeignKey("TaskId");
+                });
+
             modelBuilder.Entity("AllReady.Models.TaskUsers", b =>
                 {
                     b.HasOne("AllReady.Models.AllReadyTask")
                         .WithMany()
                         .ForeignKey("TaskId");
+
+                    b.HasOne("AllReady.Models.ApplicationUser")
+                        .WithMany()
+                        .ForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.UserSkill", b =>
+                {
+                    b.HasOne("AllReady.Models.Skill")
+                        .WithMany()
+                        .ForeignKey("SkillId");
 
                     b.HasOne("AllReady.Models.ApplicationUser")
                         .WithMany()

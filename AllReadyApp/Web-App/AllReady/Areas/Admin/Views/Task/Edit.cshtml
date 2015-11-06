@@ -1,61 +1,153 @@
 ﻿@model AllReady.ViewModels.TaskViewModel
 
-@{  ViewData["Title"] = "Edit task \"" + Model.Name +"\""; }
+@{
+    string cancelUrl;
+    if (Model.IsNew)
+    {
+        ViewBag.Title = $"Create Task";
+        cancelUrl = Url.Action("Details", "Activity", new { id = Model.ActivityId, area = "Admin" });
+    }
+    else
+    {
+        ViewBag.Title = "Edit Task";
+        cancelUrl = Url.Action("Details", "Task", new { activityId = Model.ActivityId, id = Model.Id, area = "Admin" });
+    }
+}
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.ActivityId" asp-route-area="Admin">@Model.ActivityName</a></li>
+            @if (Model.IsNew)
+            {
+                <li>Create New Task</li>
+            }
+            else
+            {
+                <li><a asp-controller="Task" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Name</a></li>
+                <li>Edit</li>
+            }
 
-<h2>@ViewData["Title"]</h2>
+        </ol>
+    </div>
+</div>
+<h2>@ViewBag.Title</h2>
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
+        <div asp-validation-summary="ValidationSummary.ModelOnly" class="text-danger"></div>
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Id)
+        <input type="hidden" asp-for="CampaignId" />
+        <input type="hidden" asp-for="CampaignName" />
+        <input type="hidden" asp-for="ActivityId" />
+        <input type="hidden" asp-for="ActivityName" />
+        <input type="hidden" asp-for="TenantId" />
+        <input type="hidden" asp-for="TenantName" />
         <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="CampaignName" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                <span>@Model.CampaignName</span>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="ActivityName" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                <span>@Model.ActivityName</span>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.ActivityId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="Name" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.ActivityId, (IEnumerable<SelectListItem>)ViewData["Activities"], htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.ActivityId, "", new { @class = "text-danger" })
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.StartDateTime, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="Description" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.StartDateTime, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.StartDateTime, "", new { @class = "text-danger" })
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.EndDateTime, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="StartDateTime" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.EndDateTime, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.EndDateTime, "", new { @class = "text-danger" })
+                <input asp-for="StartDateTime" class="form-control datepicker" />
+                <span asp-validation-for="StartDateTime" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="EndDateTime" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <input asp-for="EndDateTime" class="form-control datepicker" />
+                <span asp-validation-for="EndDateTime" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="RequiredSkills" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <div data-bind="foreach: requiredSkills">
+                    <div class="form-inline">
+                        <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                        <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            Delete
+                        </a>
+                    </div>
+                </div>
+                <a href="#" data-bind="click: addSkill" title="Add required skill">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    Add
+                </a>
             </div>
         </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <button type="submit" class="btn">Save</button>
+                <button type="submit" class="btn" data-bind="enable: requiredSkills.isValid">Save</button>
+                <a class="btn" href="@cancelUrl">Cancel</a>
+                <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">"@Html.DisplayNameFor(m => m.RequiredSkills)" must be unique</span>
             </div>
         </div>
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "Index", "Task", null, new { @class = "btn" })
-</div>
+@section scripts {
+    <script type="text/javascript">
+        (function (ko, $, requiredSkills, availableSkills) {
+
+            function AdminTaskViewModel(requiredSkills, availableSkills) {
+
+                function RequiredSkillObservable(skillModel) {
+                    var ret = ko.utils.extend({}, skillModel);
+                    ret.Id = ko.observable(skillModel);
+                    ret.ControlName = function (index) {
+                        return 'RequiredSkills[' + ko.unwrap(index) + ']';
+                    };
+                    return ret;
+                }
+                requiredSkills = (requiredSkills || []).map(RequiredSkillObservable);
+
+                var self = this;
+                this.requiredSkills = ko.observableArray(requiredSkills).uniqueValidator("Id");
+                this.availableSkills = ko.observableArray(availableSkills);
+                this.addSkill = function() {
+                    self.requiredSkills.push(RequiredSkillObservable());
+                };
+                this.deleteSkill = function(skill) {
+                    self.requiredSkills.remove(skill);
+                };
+            }
+
+            ko.applyBindings(new AdminTaskViewModel(requiredSkills, availableSkills));
+        })(ko, $,
+            @Json.Serialize(Model.RequiredSkills),
+            @Json.Serialize(ViewData["Skills"]));
+    </script>
+}
 
