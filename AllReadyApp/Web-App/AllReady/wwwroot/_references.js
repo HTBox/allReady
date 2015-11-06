@@ -13,6 +13,7 @@
 /// <reference path="js/tenants.js" />
 /// <reference path="lib/bootstrap/dist/js/bootstrap.js" />
 /// <reference path="lib/bootstrap-datepicker/js/bootstrap-datepicker.js" />
+/// <reference path="lib/bootstrap-toggle/js/bootstrap-toggle.min.js" />
 /// <reference path="lib/bootstrap-touch-carousel/dist/js/bootstrap-touch-carousel.js" />
 /// <reference path="lib/hammer.js/hammer.js" />
 /// <reference path="lib/jquery/dist/jquery.js" />

@@ -75,7 +75,7 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn" data-bind="enable: requiredSkills.isValid">Save</button>
-                <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">Required skills must be unique</span>
+                <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">"@Html.DisplayNameFor(m => m.RequiredSkills)" must be unique</span>
             </div>
         </div>
     </div>
@@ -109,7 +109,6 @@
 </div>
 
 @section scripts {
-    <script type="text/javascript" src="~/js/ko.validation.js"></script>
     <script type="text/javascript">
         (function (ko, $, requiredSkills, availableSkills) {
 
