@@ -155,7 +155,7 @@
                         return 'RequiredSkills[' + ko.unwrap(index) + '].SkillId';
                     };
                     ret.Description = ko.computed(function () {
-                        var skill = availableSkills.find(function (skill) { return skill.Id === ret.Id(); });
+                        var skill = availableSkills.filter(function (skill) { return skill.Id === ret.Id(); })[0];
                         return (skill && skill.Description) || "";
                     });
                     return ret;
