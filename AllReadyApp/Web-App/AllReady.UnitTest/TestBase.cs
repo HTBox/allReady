@@ -18,13 +18,6 @@ namespace AllReady.UnitTest
             {
                 var services = new ServiceCollection();
 
-                // Add Configuration to the Container
-                var builder = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddEnvironmentVariables();
-                IConfiguration configuration = builder.Build();
-                services.AddSingleton(x => configuration);
-
                 // Add EF (Full DB, not In-Memory)
                 services.AddEntityFramework()
                     .AddInMemoryDatabase()
