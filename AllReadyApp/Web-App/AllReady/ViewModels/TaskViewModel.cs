@@ -158,12 +158,12 @@ namespace AllReady.ViewModels
             dbtask.Name = taskViewModel.Name;
             dbtask.RequiredSkills = dbtask.RequiredSkills ?? new List<TaskSkill>();
             taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();
-            //Remove old skills
-            dbtask.RequiredSkills.RemoveAll(ts => !taskViewModel.RequiredSkills.Any(s => ts.SkillId == s));
-            //Add new skills
-            dbtask.RequiredSkills.AddRange(taskViewModel.RequiredSkills
-                .Where(rs => !dbtask.RequiredSkills.Any(ts => ts.SkillId == rs))
-                .Select(rs => new TaskSkill() { SkillId = rs, TaskId = taskViewModel.Id }));
+            ////Remove old skills
+            //dbtask.RequiredSkills.RemoveAll(ts => !taskViewModel.RequiredSkills.Any(s => ts.SkillId == s));
+            ////Add new skills
+            //dbtask.RequiredSkills.AddRange(taskViewModel.RequiredSkills
+            //    .Where(rs => !dbtask.RequiredSkills.Any(ts => ts.SkillId == rs))
+            //    .Select(rs => new TaskSkill() { SkillId = rs, TaskId = taskViewModel.Id }));
 
             // Workaround:  POST is bringing in empty AssignedVolunteers.  Clean this up. Discussing w/ Kiran Challa.
             // Workaround: the if statement is superflous, and should go away once we have the proper fix referenced above.

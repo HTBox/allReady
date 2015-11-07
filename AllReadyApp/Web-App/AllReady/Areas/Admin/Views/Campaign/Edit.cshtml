@@ -1,4 +1,6 @@
-@model AllReady.Models.Campaign
+@model AllReady.Areas.Admin.ViewModels.CampaignSummaryViewModel
+@inject AllReady.Services.ISelectListService SelectListService
+
 @{
     var isEdit = Model != null && Model.Id > 0;
     string actionTitle;
@@ -73,17 +75,17 @@
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control datepicker" } })
-                @Html.ValidationMessageFor(model => model.StartDateTimeUtc, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.EndDate, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control datepicker" } })
-                @Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
@@ -94,10 +96,9 @@
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.ManagingTenantId, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.TenantId, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @*@Html.DropDownList("ManagingTenantId", null, htmlAttributes: new { @class = "form-control" })*@
-                @Html.DropDownListFor(model => model.ManagingTenantId, (IEnumerable<SelectListItem>)ViewData["Tenants"], htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.TenantId, SelectListService.GetTenants(), htmlAttributes: new { @class = "form-control" })
             </div>
         </div>
 
