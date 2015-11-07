@@ -90,10 +90,10 @@ namespace AllReady
                .AddDefaultTokenProviders();
 
       // Add Authorization rules for the app
-      services.Configure<AuthorizationOptions>(options =>
+      services.AddAuthorization(options =>
       {
-        options.AddPolicy("TenantAdmin", new AuthorizationPolicyBuilder().RequireClaim(Security.ClaimTypes.UserType, new string[] { "TenantAdmin", "SiteAdmin" }).Build());
-        options.AddPolicy("SiteAdmin", new AuthorizationPolicyBuilder().RequireClaim(Security.ClaimTypes.UserType, "SiteAdmin").Build());
+        options.AddPolicy("TenantAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "TenantAdmin", "SiteAdmin"));
+        options.AddPolicy("SiteAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "SiteAdmin"));
       });
 
       services.AddCookieAuthentication(options =>
@@ -151,7 +151,9 @@ namespace AllReady
     public async void Configure(IApplicationBuilder app,
       IHostingEnvironment env,
       ILoggerFactory loggerFactory,
-      SampleDataGenerator sampleData)
+      SampleDataGenerator sampleData,
+      AllReadyContext context,
+      IConfiguration configuration)
     {
 
       loggerFactory.MinimumLevel = LogLevel.Information;
@@ -179,6 +181,10 @@ namespace AllReady
         app.UseBrowserLink();
         app.UseDeveloperExceptionPage();
         app.UseDatabaseErrorPage();
+        if (configuration["Data:DefaultConnection:UseInMemory"].ToLowerInvariant() == "false")
+        {
+            context.Database.Migrate();
+        }
       }
       else
       {
