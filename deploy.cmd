@@ -89,9 +89,9 @@ IF !ERRORLEVEL! NEQ 0 goto error
 
 
 :: 3. Run DNU Restore, Nuget restore for specific projects
-call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\AllReadyApp\AllReady.Models\AllReady.Models.csproj" -SolutionDirectory .\AllReadyApp
+call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\AllReadyApp\AllReady.Models\AllReady.Models.csproj" -SolutionDirectory %DEPLOYMENT_SOURCE%\AllReadyApp
 IF !ERRORLEVEL! NEQ 0 goto error
-call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj" -SolutionDirectory .\AllReadyApp
+call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj" -SolutionDirectory %DEPLOYMENT_SOURCE%\AllReadyApp
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 4. Run Our Custom build steps:
