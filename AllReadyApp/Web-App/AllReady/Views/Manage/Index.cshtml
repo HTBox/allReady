@@ -1,6 +1,7 @@
-﻿@model IndexViewModel
-@using AllReady.Security;
+﻿@using AllReady.Security;
+@inject AllReady.Services.ISelectListService SelectListService
 
+@model IndexViewModel
 @{
     ViewData["Title"] = "Manage your account";
 }
@@ -118,6 +119,6 @@
             ko.applyBindings(new ManageUserViewModel(skills, availableSkills));
         })(ko, $,
             @Json.Serialize(Model.AssociatedSkills.Select(rs => new { Id = rs.SkillId })),
-            @Json.Serialize(ViewData["Skills"]));
+            @Json.Serialize(SelectListService.GetSkills()));
     </script>
 }
