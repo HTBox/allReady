@@ -44,4 +44,5 @@
         this.total = list.length;
     }
     ko.applyBindings(new CampaignsViewModel(campaigns));
+
 })(ko, $, modelCampaigns);
