@@ -25,24 +25,7 @@ namespace AllReady.Models
                                 .ToList();
             }
         }
-        Task IAllReadyDataAccess.AddActivity(Activity value)
-        {
-            _dbContext.Activities.Add(value);
-            return _dbContext.SaveChangesAsync();
-        }
-
-        Task IAllReadyDataAccess.DeleteActivity(int id)
-        {
-            var activity = _dbContext.Activities.SingleOrDefault(c => c.Id == id);
-
-            if (activity != null)
-            {
-                _dbContext.Activities.Remove(activity);
-                return _dbContext.SaveChangesAsync();
-            }
-            return null;
-        }
-
+       
         Task IAllReadyDataAccess.UpdateActivity(Activity value)
         {
             //First remove any skills that are no longer associated with this activity

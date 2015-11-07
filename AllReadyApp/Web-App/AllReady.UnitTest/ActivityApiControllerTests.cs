@@ -73,48 +73,6 @@ namespace AllReady.UnitTests
             Assert.Equal(activityViewModel.StartDateTime, DateTime.MinValue.ToUniversalTime());
         }
 
-        [Fact]
-        public void PostSingleActivity()
-        {
-            // Arrange
-            ActivityApiController controller = GetActivityController();
-
-            //Act
-            ActivityViewModel toPost = new ActivityViewModel()
-            {
-                Id = 11,
-                Title = "the answer to life the universe and everything",
-                CampaignId = 1,
-                TenantId = 1,
-                StartDateTime = DateTime.Today,
-                EndDateTime = DateTime.Today.AddMonths(1),
-                Location = new LocationViewModel()
-                {
-                    Address1 = "123 Happy Street",
-                    City = "Madison",
-                    State = "WI",
-                    PostalCode = new PostalCodeGeo() { PostalCode = "53711" },
-                    Country = "country gets ignored right now"
-                }
-            };
-
-            controller.Post(toPost);
-            activitiesAdded++;
-            var viewModelFromDb = controller.Get(toPost.Id);
-
-            // Assert
-            Assert.NotEqual(viewModelFromDb, toPost);
-            Assert.Equal(toPost.Id, viewModelFromDb.Id);
-            Assert.Equal(toPost.CampaignId, viewModelFromDb.CampaignId);
-            Assert.Equal(string.Format(TestActivityModelProvider.CampaignNameFormat, toPost.CampaignId), viewModelFromDb.CampaignName);
-            Assert.Null(viewModelFromDb.Description);
-            Assert.Equal(toPost.EndDateTime, viewModelFromDb.EndDateTime);
-            Assert.Equal(toPost.StartDateTime, viewModelFromDb.StartDateTime);
-            Assert.Equal("US", viewModelFromDb.Location.Country);
-            Assert.Equal(toPost.Location.Address1, viewModelFromDb.Location.Address1);
-            Assert.Equal(toPost.Location.City, viewModelFromDb.Location.City);
-        }
-
         #region Helper Methods
 
         private ActivityApiController GetActivityController()

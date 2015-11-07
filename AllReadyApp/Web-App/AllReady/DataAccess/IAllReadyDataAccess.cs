@@ -13,8 +13,6 @@ namespace AllReady.Models
         IEnumerable<Activity> Activities { get; }
         Activity GetActivity(int activityId);
         int GetManagingTenantId(int activityId);
-        Task AddActivity(Activity value);
-        Task DeleteActivity(int id);
         IEnumerable<ActivitySignup> GetActivitySignups(string userId);
         IEnumerable<ActivitySignup> GetActivitySignups(int activityId, string userId);
         Task UpdateActivity(Activity value);

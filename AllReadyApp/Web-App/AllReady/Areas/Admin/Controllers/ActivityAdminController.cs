@@ -259,6 +259,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostActivityFile(int id, IFormFile file)
         {
+            //TODO: Use a command here
             Activity a = _dataAccess.GetActivity(id);
 
             a.ImageUrl = await _imageService.UploadActivityImageAsync(a.Id, a.Tenant.Id, file);
