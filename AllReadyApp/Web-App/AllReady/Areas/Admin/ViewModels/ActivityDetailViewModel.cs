@@ -11,8 +11,8 @@ namespace AllReady.Areas.Admin.ViewModels
     public class ActivityDetailViewModel : ActivitySummaryViewModel
     {
         public LocationViewModel Location { get; set; }
-        public IEnumerable<TaskSummaryViewModel> Tasks { get; set; } = new List<TaskSummaryViewModel>();
-        public List<string> Volunteers { get; set; } = new List<string>();
+        public IList<TaskSummaryViewModel> Tasks { get; set; } = new List<TaskSummaryViewModel>();
+        public IList<string> Volunteers { get; set; } = new List<string>();
 
         [Display(Name = "Required Skills")]
         public IEnumerable<ActivitySkill> RequiredSkills { get; set; } = new List<ActivitySkill>();

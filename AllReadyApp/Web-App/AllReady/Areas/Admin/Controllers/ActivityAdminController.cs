@@ -130,7 +130,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpBadRequest();
             }
-
+            //TODO: Use the query pattern here
             int campaignId = _dataAccess.GetManagingTenantId(activity.Id);
             if (!User.IsTenantAdmin(campaignId))
             {
@@ -152,20 +152,15 @@ namespace AllReady.Areas.Admin.Controllers
 
         // GET: Activity/Delete/5
         [ActionName("Delete")]
-        public IActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(404);
-            }
-
-            Activity activity = _dataAccess.GetActivity((int)id);
+        public IActionResult Delete(int id)
+        {            
+            var activity = _bus.Send(new ActivityDetailQuery { ActivityId = id });
             if (activity == null)
             {
                 return new HttpStatusCodeResult(404);
             }
 
-            if (!UserIsTenantAdminOfActivity(activity))
+            if (!User.IsTenantAdmin(activity.TenantId))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -176,30 +171,35 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Activity/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(System.Int32 id)
+        public IActionResult DeleteConfirmed(System.Int32 id)
         {
-            Activity activity = _dataAccess.GetActivity(id);
-            if (!UserIsTenantAdminOfActivity(activity))
+            //TODO: Should be using an ActivitySummaryQuery here
+            ActivityDetailViewModel activity = _bus.Send(new ActivityDetailQuery { ActivityId = id });
+            if (activity == null)
             {
-                return new HttpUnauthorizedResult();
+                return HttpNotFound();
             }
-
-            await _dataAccess.DeleteActivity(id);
+            if (!User.IsTenantAdmin(activity.TenantId))
+            {
+                return HttpUnauthorized();
+            }
+            _bus.Send(new DeleteActivityCommand { ActivityId = id });
             return RedirectToAction("Details", "Campaign", new { area = "Admin", id = activity.CampaignId });
         }
 
         [HttpGet]
         public IActionResult Assign(int id)
         {
+            //TODO: Update this to use Query pattern
             var activity = _dataAccess.GetActivity(id);
 
             if (activity == null)
             {
-                return new HttpStatusCodeResult(404);
+                return HttpNotFound();
             }
-            if (!UserIsTenantAdminOfActivity(activity))
+            if (!User.IsTenantAdmin(activity.TenantId))
             {
-                return new HttpUnauthorizedResult();
+                return HttpUnauthorized();
             }
 
             var model = new ActivityViewModel(activity);
