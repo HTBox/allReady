@@ -22,11 +22,6 @@ namespace AllReady.Models
             _environment = environment;          
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(_configuration["Data:DefaultConnection:ConnectionString"]);
-        }
-
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<ActivitySignup> ActivitySignup { get; set; }
         public DbSet<Campaign> Campaigns { get; set; }
