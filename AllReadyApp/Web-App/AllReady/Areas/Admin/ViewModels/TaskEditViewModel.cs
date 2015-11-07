@@ -10,6 +10,6 @@ namespace AllReady.Areas.Admin.ViewModels
     public class TaskEditViewModel : TaskSummaryViewModel
     {
         [Display(Name = "Required skills")]
-        public IEnumerable<TaskSkill> RequiredSkills { get; set; }
+        public IList<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();
     }
 }
