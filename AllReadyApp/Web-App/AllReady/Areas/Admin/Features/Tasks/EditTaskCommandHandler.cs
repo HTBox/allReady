@@ -29,7 +29,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             task.Tenant = _context.Tenants.SingleOrDefault(t => t.Id == message.Task.TenantId);
             task.StartDateTimeUtc = message.Task.StartDateTime.HasValue ? message.Task.StartDateTime.Value.UtcDateTime : default(DateTime?);
             task.EndDateTimeUtc = message.Task.EndDateTime.HasValue ? message.Task.EndDateTime.Value.UtcDateTime : default(DateTime?);
-
+            task.NumberOfVolunteersRequired = message.Task.NumberOfVolunteersRequired;
             if (task.Id > 0)
             {
                 var tsToRemove = _context.TaskSkills.Where(ts => ts.TaskId == task.Id && (message.Task.RequiredSkills == null ||

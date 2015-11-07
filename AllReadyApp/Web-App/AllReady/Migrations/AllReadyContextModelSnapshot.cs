@@ -33,6 +33,8 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<int>("NumberOfVolunteersRequired");
+
                     b.Property<string>("OrganizerId");
 
                     b.Property<DateTime>("StartDateTimeUtc");
@@ -79,6 +81,8 @@ namespace AllReady.Migrations
                     b.Property<DateTime?>("EndDateTimeUtc");
 
                     b.Property<string>("Name");
+
+                    b.Property<int>("NumberOfVolunteersRequired");
 
                     b.Property<DateTime?>("StartDateTimeUtc");
 
