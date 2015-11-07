@@ -1,4 +1,4 @@
-@model AllReady.Models.Campaign
+@model AllReady.Areas.Admin.ViewModels.CampaignSummaryViewModel
 @{ ViewData["Title"] = "Delete campaign " + Model.Name; }
 <div class="row">
     <div class="col-12">
@@ -28,28 +28,10 @@
                     @Html.DisplayFor(model => model.Description)
                 </dd>
                 <dt>
-                    @Html.DisplayNameFor(model => model.StartDateTimeUtc)
+                    @Html.DisplayNameFor(model => model.TenantId)
                 </dt>
                 <dd>
-                    @Html.DisplayFor(model => model.StartDateTimeUtc)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.EndDateTimeUtc)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.EndDateTimeUtc)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.ImageUrl)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.ImageUrl)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.ManagingTenantId)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.ManagingTenant.Name)
+                    @Html.DisplayFor(model => model.TenantName)
                 </dd>
             </dl>
 

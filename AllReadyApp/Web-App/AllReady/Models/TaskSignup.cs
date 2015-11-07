@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AllReady.Models
 {
-  public class TaskUsers
+  public class TaskSignup
   {
     public int Id { get; set; }
     public AllReadyTask Task { get; set; }

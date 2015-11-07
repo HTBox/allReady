@@ -1,12 +1,4 @@
-﻿@model AllReady.Areas.Admin.ViewModels.AdminActivityViewModel
-
-
-<div class="row">
-    <div class="col-md-12">
-        <a asp-controller="Task" asp-action="Create" asp-route-activityId="@Model.Id" class="btn">Create Task</a>
-        <a asp-controller="Activity" asp-action="Assign" asp-route-id="@Model.Id" asp-route-area="Admin" class="btn"><span class="fa fa-user"></span> Assign tasks</a>
-    </div>
-</div>
+﻿@model IEnumerable<AllReady.Areas.Admin.ViewModels.TaskSummaryViewModel>
 
 <div class="row">
     <div class="col-md-12">
@@ -16,6 +8,12 @@
                     Name
                 </th>
                 <th>
+                    Assignee
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>
                     Start
                 </th>
                 <th>
@@ -23,18 +21,34 @@
                 </th>
             </tr>
 
-            @foreach (var item in (Model.Tasks.OrderBy(t => t.StartDateTime).ThenBy(t => t.Name)))
+            @foreach (var item in Model.OrderBy(t => t.StartDateTime).ThenBy(t => t.Name))
             {
                 <tr>
                     <td>
-                        <a asp-controller="Task" asp-action="Details" asp-route-area="Admin" asp-route-activityId="@item.ActivityId" asp-route-id="@item.Id">@item.Name</a>
+                        <a asp-controller="Task" asp-action="Details" asp-route-area="Admin" asp-route-id="@item.Id">@item.Name</a>
                     </td>
+                    @if (item.AssignedVolunteers == null || item.AssignedVolunteers.Count == 0)
+                    {
+                        <td>*</td>
+                        <td>*</td>
+                    }
+                    else if (item.AssignedVolunteers.Count == 1)
+                    {
+                        <td>@item.AssignedVolunteers[0].UserName</td>
+                        <td>@(item.AssignedVolunteers[0].StatusDescription ?? "*")</td>
+                    }
+                    else
+                    {
+                        <td><a asp-controller="Task" asp-action="Details" asp-route-area="Admin" asp-route-activityId="@item.ActivityId" asp-route-id="@item.Id">Multiple Volunteers</a></td>
+                        <td>@item.AcceptedVolunteerCount / @item.AssignedVolunteers.Count Accepted</td>
+                    }
+
                     <td>
                         @(item.StartDateTime.HasValue ? item.StartDateTime.Value.UtcDateTime.ToShortDateString() : "*")
                     </td>
                     <td>
                         @(item.EndDateTime.HasValue ? item.EndDateTime.Value.UtcDateTime.ToShortDateString() : "*")
-                    </td>                    
+                    </td>
                 </tr>
             }
 

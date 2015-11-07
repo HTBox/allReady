@@ -172,6 +172,7 @@ The following settings enable the web app to connect to other services:
 | `Authentication:Twilio:PhoneNo`                | The phone number to display in a Twilio voice or SMS.    |
 | `Authentication:SendGrid:UserName`             | The username of the [SendGrid](https://sendgrid.com/) account used to send email.|
 | `Authentication:SendGrid:Password`             | The password of the Microsoft account app registration. |
+| `Authentication:SendGrid:FromEmail`            | The email address that appears as the sender when users receive notifications.|
 | `Authentication:MicrosoftAccount:ClientSecret` | The shared secret of the Microsoft account registration. |
 
 All of these settings should be stored in the secrets manager.

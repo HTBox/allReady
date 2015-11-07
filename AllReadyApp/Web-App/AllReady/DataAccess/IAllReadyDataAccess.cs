@@ -13,8 +13,6 @@ namespace AllReady.Models
         IEnumerable<Activity> Activities { get; }
         Activity GetActivity(int activityId);
         int GetManagingTenantId(int activityId);
-        Task AddActivity(Activity value);
-        Task DeleteActivity(int id);
         IEnumerable<ActivitySignup> GetActivitySignups(string userId);
         IEnumerable<ActivitySignup> GetActivitySignups(int activityId, string userId);
         Task UpdateActivity(Activity value);
@@ -28,9 +26,6 @@ namespace AllReady.Models
 
         IEnumerable<Campaign> Campaigns { get; }
         Campaign GetCampaign(int campaignId);
-        Task AddCampaign(Campaign value);
-        Task DeleteCampaign(int id);
-        Task UpdateCampaign(Campaign value);
 
         #endregion
 
@@ -73,15 +68,15 @@ namespace AllReady.Models
         #endregion
 
         #region TaskSignup CRUD
-        IEnumerable<TaskUsers> TaskSignups { get; }
+        IEnumerable<TaskSignup> TaskSignups { get; }
 
-        TaskUsers GetTaskSignup(int taskId, string userId);
+        TaskSignup GetTaskSignup(int taskId, string userId);
 
-        Task AddTaskSignupAsync(TaskUsers taskSignup);
+        Task AddTaskSignupAsync(TaskSignup taskSignup);
 
         Task DeleteTaskSignupAsync(int taskSignupId);
 
-        Task UpdateTaskSignupAsync(TaskUsers value);
+        Task UpdateTaskSignupAsync(TaskSignup value);
         #endregion
 
         #region AllReadyTask CRUD
@@ -96,7 +91,7 @@ namespace AllReady.Models
         Task DeleteTaskAsync(int taskId);
 
         Task UpdateTaskAsync(AllReadyTask value);
-        IEnumerable<TaskUsers> GetTasksAssignedToUser(int activityId, string userId);
+        IEnumerable<TaskSignup> GetTasksAssignedToUser(int activityId, string userId);
 
         #endregion
 

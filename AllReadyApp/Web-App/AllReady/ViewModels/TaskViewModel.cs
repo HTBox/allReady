@@ -108,6 +108,8 @@ namespace AllReady.ViewModels
 
         public List<TaskSignupViewModel> AssignedVolunteers { get; set; } = new List<TaskSignupViewModel>();
 
+        public int AcceptedVolunteerCount => AssignedVolunteers?.Where(v => v.Status == "Accepted").Count() ?? 0;
+
         public TaskViewModel(AllReadyTask task, bool isUserSignedupForTask)
             : this(task)
         {
@@ -156,12 +158,12 @@ namespace AllReady.ViewModels
             dbtask.Name = taskViewModel.Name;
             dbtask.RequiredSkills = dbtask.RequiredSkills ?? new List<TaskSkill>();
             taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();
-            //Remove old skills
-            dbtask.RequiredSkills.RemoveAll(ts => !taskViewModel.RequiredSkills.Any(s => ts.SkillId == s));
-            //Add new skills
-            dbtask.RequiredSkills.AddRange(taskViewModel.RequiredSkills
-                .Where(rs => !dbtask.RequiredSkills.Any(ts => ts.SkillId == rs))
-                .Select(rs => new TaskSkill() { SkillId = rs, TaskId = taskViewModel.Id }));
+            ////Remove old skills
+            //dbtask.RequiredSkills.RemoveAll(ts => !taskViewModel.RequiredSkills.Any(s => ts.SkillId == s));
+            ////Add new skills
+            //dbtask.RequiredSkills.AddRange(taskViewModel.RequiredSkills
+            //    .Where(rs => !dbtask.RequiredSkills.Any(ts => ts.SkillId == rs))
+            //    .Select(rs => new TaskSkill() { SkillId = rs, TaskId = taskViewModel.Id }));
 
             // Workaround:  POST is bringing in empty AssignedVolunteers.  Clean this up. Discussing w/ Kiran Challa.
             // Workaround: the if statement is superflous, and should go away once we have the proper fix referenced above.
@@ -180,7 +182,7 @@ namespace AllReady.ViewModels
 
             if (taskViewModel.AssignedVolunteers != null && taskViewModel.AssignedVolunteers.Count > 0)
             {
-                var taskUsersList = taskViewModel.AssignedVolunteers.Select(tvm => new TaskUsers
+                var taskUsersList = taskViewModel.AssignedVolunteers.Select(tvm => new TaskSignup
                 {
                     Task = dbtask,
                     User = dataAccess.GetUser(tvm.UserId)
@@ -194,7 +196,7 @@ namespace AllReady.ViewModels
                 else
                 {
                     // Can probably rewrite this more efficiently.
-                    foreach (TaskUsers taskUsers in taskUsersList)
+                    foreach (TaskSignup taskUsers in taskUsersList)
                     {
                         if (!(from entry in dbtask.AssignedVolunteers
                               where entry.User.Id == taskUsers.User.Id
