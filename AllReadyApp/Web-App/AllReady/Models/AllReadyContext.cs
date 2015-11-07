@@ -22,25 +22,6 @@ namespace AllReady.Models
             _environment = environment;          
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (_environment.IsDevelopment())
-            {
-                if (_configuration["Data:DefaultConnection:UseInMemory"].ToLowerInvariant() == "true")
-                {
-                    optionsBuilder.UseInMemoryDatabase();
-                }
-                else
-                {
-                    optionsBuilder.UseSqlServer(_configuration["Data:DefaultConnection:LocalConnectionString"]);
-                }
-            }
-            else
-            {
-                optionsBuilder.UseSqlServer(_configuration["Data:DefaultConnection:AzureConnectionString"]);
-            }
-        }
-
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<ActivitySignup> ActivitySignup { get; set; }
         public DbSet<Campaign> Campaigns { get; set; }

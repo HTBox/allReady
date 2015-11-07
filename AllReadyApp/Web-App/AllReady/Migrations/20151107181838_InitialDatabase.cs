@@ -5,10 +5,22 @@ using Microsoft.Data.Entity.Metadata;
 
 namespace AllReady.Migrations
 {
-    public partial class InitialCreateBeta8 : Migration
+    public partial class InitialDatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "CampaignImpactType",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ImpactType = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CampaignImpactType", x => x.Id);
+                });
             migrationBuilder.CreateTable(
                 name: "PostalCodeGeo",
                 columns: table => new
@@ -38,6 +50,24 @@ namespace AllReady.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Resource", x => x.Id);
+                });
+            migrationBuilder.CreateTable(
+                name: "Skill",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: false),
+                    ParentSkillId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Skill", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Skill_Skill_ParentSkillId",
+                        column: x => x.ParentSkillId,
+                        principalTable: "Skill",
+                        principalColumn: "Id");
                 });
             migrationBuilder.CreateTable(
                 name: "Tenant",
@@ -96,7 +126,6 @@ namespace AllReady.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
-                    AssociatedTenantId = table.Column<int>(nullable: true),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     EmailConfirmed = table.Column<bool>(nullable: false),
@@ -108,6 +137,7 @@ namespace AllReady.Migrations
                     PhoneNumber = table.Column<string>(nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(nullable: false),
                     SecurityStamp = table.Column<string>(nullable: true),
+                    TenantId = table.Column<int>(nullable: true),
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     UserName = table.Column<string>(nullable: true)
                 },
@@ -115,8 +145,8 @@ namespace AllReady.Migrations
                 {
                     table.PrimaryKey("PK_ApplicationUser", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ApplicationUser_Tenant_AssociatedTenantId",
-                        column: x => x.AssociatedTenantId,
+                        name: "FK_ApplicationUser_Tenant_TenantId",
+                        column: x => x.TenantId,
                         principalTable: "Tenant",
                         principalColumn: "Id");
                 });
@@ -147,6 +177,7 @@ namespace AllReady.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Description = table.Column<string>(nullable: true),
                     EndDateTimeUtc = table.Column<DateTime>(nullable: false),
+                    FullDescription = table.Column<string>(nullable: true),
                     ImageUrl = table.Column<string>(nullable: true),
                     ManagingTenantId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: false),
@@ -164,6 +195,27 @@ namespace AllReady.Migrations
                     table.ForeignKey(
                         name: "FK_Campaign_ApplicationUser_OrganizerId",
                         column: x => x.OrganizerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+            migrationBuilder.CreateTable(
+                name: "UserSkill",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(nullable: false),
+                    SkillId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserSkill", x => new { x.UserId, x.SkillId });
+                    table.ForeignKey(
+                        name: "FK_UserSkill_Skill_SkillId",
+                        column: x => x.SkillId,
+                        principalTable: "Skill",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserSkill_ApplicationUser_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                 });
@@ -266,6 +318,31 @@ namespace AllReady.Migrations
                         principalColumn: "Id");
                 });
             migrationBuilder.CreateTable(
+                name: "CampaignImpact",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false),
+                    CampaignImpactTypeId = table.Column<int>(nullable: true),
+                    CurrentImpactLevel = table.Column<int>(nullable: false),
+                    Display = table.Column<bool>(nullable: false),
+                    NumericImpactGoal = table.Column<int>(nullable: false),
+                    TextualImpactGoal = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CampaignImpact", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CampaignImpact_CampaignImpactType_CampaignImpactTypeId",
+                        column: x => x.CampaignImpactTypeId,
+                        principalTable: "CampaignImpactType",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CampaignImpact_Campaign_Id",
+                        column: x => x.Id,
+                        principalTable: "Campaign",
+                        principalColumn: "Id");
+                });
+            migrationBuilder.CreateTable(
                 name: "CampaignSponsors",
                 columns: table => new
                 {
@@ -314,6 +391,27 @@ namespace AllReady.Migrations
                         principalColumn: "Id");
                 });
             migrationBuilder.CreateTable(
+                name: "ActivitySkill",
+                columns: table => new
+                {
+                    ActivityId = table.Column<int>(nullable: false),
+                    SkillId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActivitySkill", x => new { x.ActivityId, x.SkillId });
+                    table.ForeignKey(
+                        name: "FK_ActivitySkill_Activity_ActivityId",
+                        column: x => x.ActivityId,
+                        principalTable: "Activity",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ActivitySkill_Skill_SkillId",
+                        column: x => x.SkillId,
+                        principalTable: "Skill",
+                        principalColumn: "Id");
+                });
+            migrationBuilder.CreateTable(
                 name: "AllReadyTask",
                 columns: table => new
                 {
@@ -341,7 +439,7 @@ namespace AllReady.Migrations
                         principalColumn: "Id");
                 });
             migrationBuilder.CreateTable(
-                name: "TaskUsers",
+                name: "TaskSignup",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -354,16 +452,37 @@ namespace AllReady.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TaskUsers", x => x.Id);
+                    table.PrimaryKey("PK_TaskSignup", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TaskUsers_AllReadyTask_TaskId",
+                        name: "FK_TaskSignup_AllReadyTask_TaskId",
                         column: x => x.TaskId,
                         principalTable: "AllReadyTask",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_TaskUsers_ApplicationUser_UserId",
+                        name: "FK_TaskSignup_ApplicationUser_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+            migrationBuilder.CreateTable(
+                name: "TaskSkill",
+                columns: table => new
+                {
+                    TaskId = table.Column<int>(nullable: false),
+                    SkillId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskSkill", x => new { x.TaskId, x.SkillId });
+                    table.ForeignKey(
+                        name: "FK_TaskSkill_Skill_SkillId",
+                        column: x => x.SkillId,
+                        principalTable: "Skill",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TaskSkill_AllReadyTask_TaskId",
+                        column: x => x.TaskId,
+                        principalTable: "AllReadyTask",
                         principalColumn: "Id");
                 });
             migrationBuilder.CreateIndex(
@@ -383,14 +502,20 @@ namespace AllReady.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable("ActivitySignup");
+            migrationBuilder.DropTable("ActivitySkill");
+            migrationBuilder.DropTable("CampaignImpact");
             migrationBuilder.DropTable("CampaignSponsors");
             migrationBuilder.DropTable("Resource");
-            migrationBuilder.DropTable("TaskUsers");
+            migrationBuilder.DropTable("TaskSignup");
+            migrationBuilder.DropTable("TaskSkill");
+            migrationBuilder.DropTable("UserSkill");
             migrationBuilder.DropTable("AspNetRoleClaims");
             migrationBuilder.DropTable("AspNetUserClaims");
             migrationBuilder.DropTable("AspNetUserLogins");
             migrationBuilder.DropTable("AspNetUserRoles");
+            migrationBuilder.DropTable("CampaignImpactType");
             migrationBuilder.DropTable("AllReadyTask");
+            migrationBuilder.DropTable("Skill");
             migrationBuilder.DropTable("AspNetRoles");
             migrationBuilder.DropTable("Activity");
             migrationBuilder.DropTable("Campaign");

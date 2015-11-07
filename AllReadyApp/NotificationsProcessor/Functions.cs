@@ -46,7 +46,7 @@ namespace NotificationsProcessor
             var myMessage = new SendGridMessage();
             myMessage.AddTo(emailMessage.Recipient);
             myMessage.From = new MailAddress(from, "AllReady");
-            myMessage.Subject = "An Email from AllReady";
+            myMessage.Subject = emailMessage.Subject;
             myMessage.Text = emailMessage.Message;
 
             // Create credentials, specifying your user name and password.

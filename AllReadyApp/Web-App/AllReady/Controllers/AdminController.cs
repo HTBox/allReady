@@ -43,7 +43,7 @@ namespace AllReady.Controllers
         public IActionResult Login(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            return View();
+            return View(new LoginViewModel());
         }
 
         //
@@ -171,7 +171,7 @@ namespace AllReady.Controllers
             if(result.Succeeded)
             {
                 var callbackUrl = Url.Action(nameof(SiteController.EditUser), "Site", new { area = "Admin", userId = user.Id }, protocol: HttpContext.Request.Scheme);
-                await _emailSender.SendEmailAsync(_config["DefaultAdminUsername"], "Approve Tenant user account",
+                await _emailSender.SendEmailAsync(_config["SampleData:DefaultAdminUsername"], "Approve Tenant user account",
                     "Please approve this account by clicking this <a href=\"" + callbackUrl + "\">link</a>");
             }
 
