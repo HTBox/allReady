@@ -20,6 +20,7 @@ namespace AllReady.ViewModels
             Id = campaign.Id;
             Name = campaign.Name;
             Description = campaign.Description;
+            FullDescription = campaign.FullDescription;
             ///TODO: Commented out as campaign.ManagingTenant is null from sample data;
             /// Fix sample provider to ensure that property is not null
             //ManagingTenantName = campaign.ManagingTenant.Name;
@@ -34,6 +35,8 @@ namespace AllReady.ViewModels
         public string Name { get; set; }
 
         public string Description { get; set; }
+
+        public string FullDescription { get; set; }
 
         public int ManagingTenantId { get; set; }
 

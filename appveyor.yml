@@ -16,12 +16,17 @@ before_build:
  - cmd: dnvm update-self
  - cmd: dnvm list
  - cmd: dnvm use 1.0.0-beta8
- - cmd: dnu restore
+ - cmd: dnu restore AllReadyApp
+ - nuget restore AllReadyApp\AllReady.Models\AllReady.Models.csproj -SolutionDirectory .\AllReadyApp
+ - nuget restore AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj -SolutionDirectory .\AllReadyApp
 
 build_script:
+ - cmd: msbuild AllReadyApp\AllReady.Models\AllReady.Models.csproj
+ - cmd: dnu build AllReadyApp/wrap/AllReady.Models/project.json
  - cmd: dnu build AllReadyApp\Web-App\AllReady\project.json
  - cmd: dnu build AllReadyApp\Web-App\AllReady.UnitTest\project.json
- 
+ - cmd: msbuild AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj
+
 test_script:
  - ps: cd .\AllReadyApp\Web-App\AllReady.UnitTest
  - cmd: dnx test 

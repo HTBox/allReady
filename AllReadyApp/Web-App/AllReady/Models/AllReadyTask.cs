@@ -14,7 +14,7 @@ namespace AllReady.Models
         public Activity Activity { get; set; }
         public DateTime? StartDateTimeUtc { get; set; }
         public DateTime? EndDateTimeUtc { get; set; }
-        public List<TaskUsers> AssignedVolunteers { get; set; }
+        public List<TaskSignup> AssignedVolunteers { get; set; }
         public List<TaskSkill> RequiredSkills { get; set; }
     }
 }

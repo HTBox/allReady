@@ -19,7 +19,7 @@ namespace AllReady.ViewModels
 
         public TaskSignupViewModel() { }
 
-        public TaskSignupViewModel(TaskUsers taskSignup)
+        public TaskSignupViewModel(TaskSignup taskSignup)
         {
             Id = taskSignup.Id;
             Status = taskSignup.Status;
