@@ -112,20 +112,18 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Delete(int id)
         {
-
-            var dbTask = _dataAccess.GetTask(id);
-            if (dbTask == null || dbTask.Activity == null)
+            var task = _bus.Send(new TaskQuery() { TaskId = id });
+            if (task == null)
             {
-                return new HttpNotFoundResult();
+                return HttpNotFound();
             }
             
-            if (!User.IsTenantAdmin(dbTask.Activity.TenantId))
+            if (!User.IsTenantAdmin(task.TenantId))
             {
                 return HttpUnauthorized();
             }
 
-            var model = new TaskViewModel(dbTask);
-            return View(model);
+            return View(task);
         }
 
         [HttpGet]
@@ -142,22 +140,20 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Activity/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            var dbTask = _dataAccess.GetTask(id);
-            if (dbTask == null || dbTask.Activity == null)
+            var task = _bus.Send(new TaskQuery() { TaskId = id });
+            if (task == null)
             {
-                return new HttpNotFoundResult();
+                return HttpNotFound();
             }
-
-            if (!User.IsTenantAdmin(dbTask.Activity.TenantId))
+            if (!User.IsTenantAdmin(task.TenantId))
             {
                 return HttpUnauthorized();
             }
-
-            await _dataAccess.DeleteTaskAsync(id);
-
-            return RedirectToAction("Details", "Activity", new { id = dbTask.Activity.Id});
+            var activityId = task.ActivityId;
+            _bus.Send(new DeleteTaskCommand() { TaskId = id });
+            return RedirectToAction("Details", "Activity", new { id = activityId });
         }
 
     }
