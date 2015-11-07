@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.Data.Entity;
 
 namespace AllReady.Services
 {
@@ -19,11 +20,12 @@ namespace AllReady.Services
             return _context.Tenants.Select(t => new SelectListItem() {Value = t.Id.ToString(), Text = t.Name });
         }
 
-        public IEnumerable<SelectListItem> GetSkills()
+        public IEnumerable<Skill> GetSkills()
         {
             return _context.Skills.ToList()
-                .Select(s => new SelectListItem() { Value = s.Id.ToString(), Text = s.HierarchicalName })
-                .OrderBy(s => s.Text);
+                //Project HierarchicalName onto Name
+                .Select(s => new Skill() { Id = s.Id, Name = s.HierarchicalName, Description = s.Description })
+                .OrderBy(s => s.Name);
         }
     }
 }
