@@ -32,7 +32,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     Name = t.Name,
                     Description = t.Description,
                     StartDateTime = t.StartDateTimeUtc,
-                    EndDateTime = t.EndDateTimeUtc
+                    EndDateTime = t.EndDateTimeUtc,
+                    NumberOfVolunteersRequired = t.NumberOfVolunteersRequired
                 }).SingleOrDefault(t => t.Id == message.TaskId);
                     
             return task;

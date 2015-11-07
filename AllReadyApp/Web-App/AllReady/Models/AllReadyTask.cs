@@ -14,6 +14,9 @@ namespace AllReady.Models
         public virtual Activity Activity { get; set; }
         public DateTime? StartDateTimeUtc { get; set; }
         public DateTime? EndDateTimeUtc { get; set; }
+
+        public int NumberOfVolunteersRequired { get; set; }
+
         public List<TaskSignup> AssignedVolunteers { get; set; } = new List<TaskSignup>();
         public List<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();
     }
