@@ -43,9 +43,10 @@ namespace AllReady.ViewModels
 
             //TODO Location
             Tasks = activity.Tasks != null
-                 ? new List<TaskViewModel>(activity.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
-                 : new List<TaskViewModel>();
+                ? new List<TaskViewModel>(activity.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
+                : new List<TaskViewModel>();
 
+            RequiredSkills = activity.RequiredSkills.Select(acsk => acsk.Skill).ToList();
         }
 
 
@@ -84,6 +85,7 @@ namespace AllReady.ViewModels
         public string IsUserVolunteeredForActivity { get; private set; }
         public List<ApplicationUser> Volunteers { get; set; }
         public string UserId { get; set; }
+        public List<Skill> RequiredSkills { get; set; }
     }
 
     public static class ActivityViewModelExtension

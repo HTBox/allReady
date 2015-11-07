@@ -1,10 +1,11 @@
 ﻿///<reference path="../lib/jquery/dist/jquery.js" />
 ///<reference path="../lib/knockout/dist/knockout.js" />
 
-(function (ko, $, tasks) {
+(function (ko, $, tasks, skills) {
 
-    function ActivityViewModel(tasks) {
-        this.tasks = ko.observableArray(tasks).filterBeforeDate("EndDateTime").textFilter(["Name","Description"]);
+    function ActivityViewModel(tasks, skills) {
+        this.skills = skills;
+        this.tasks = ko.observableArray(tasks).filterBeforeDate("EndDateTime").textFilter(["Name", "Description"]);
         this.enrolled = ko.observable(false);
     }
 
@@ -35,5 +36,5 @@
         }
     };
     
-    ko.applyBindings(new ActivityViewModel(tasks));
-})(ko, $, modelTasks);
+    ko.applyBindings(new ActivityViewModel(tasks, skills));
+})(ko, $, modelStuff.tasks, modelStuff.skills);

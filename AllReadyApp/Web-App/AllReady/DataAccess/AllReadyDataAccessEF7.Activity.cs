@@ -54,7 +54,7 @@ namespace AllReady.Models
                 .Include(a => a.Location.PostalCode)
                 .Include(a => a.Tenant)
                 .Include(a => a.Campaign)
-                .Include(a => a.RequiredSkills)
+                .Include(a => a.RequiredSkills).ThenInclude(rs => rs.Skill).ThenInclude(s => s.ParentSkill)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(tu => tu.User)
                 .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
                 .SingleOrDefault(a => a.Id == activityId);
