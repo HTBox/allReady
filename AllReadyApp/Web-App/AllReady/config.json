@@ -12,9 +12,7 @@
   },
   "Data": {
     "DefaultConnection": {
-      "UseInMemory": "false",
-      "AzureConnectionString": "Server=[server],1433;Database=[database];User ID=[userid];Password=[password];Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;MultipleActiveResultsets=true;",
-      "LocalConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
+      "ConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
     },
     "InsertSampleData": "true",
     "InsertTestUsers": "true",
