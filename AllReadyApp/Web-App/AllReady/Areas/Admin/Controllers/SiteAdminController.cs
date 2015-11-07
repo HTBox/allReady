@@ -49,7 +49,7 @@ namespace AllReady.Areas.Admin.Controllers
                 IsTenantAdmin = user.IsTenantAdmin(),
                 Tenant = tenantId != null ? _dataAccess.GetTenant(tenantId.Value) : null
             };
-            return View(viewModel).WithSkills(_dataAccess);
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -58,7 +58,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(viewModel).WithSkills(_dataAccess);
+                return View(viewModel);
             }
 
             //Skill associations
