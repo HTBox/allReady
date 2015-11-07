@@ -19,10 +19,7 @@ namespace AllReady.Models
         public AllReadyContext(IConfiguration configuration, IHostingEnvironment environment)
         {
             _configuration = configuration;
-            _environment = environment;
-
-            // Create DB and do migrations if necessary
-            Database.EnsureCreated();
+            _environment = environment;          
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -41,13 +38,14 @@ namespace AllReady.Models
             else
             {
                 optionsBuilder.UseSqlServer(_configuration["Data:DefaultConnection:AzureConnectionString"]);
-
             }
         }
 
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<ActivitySignup> ActivitySignup { get; set; }
         public DbSet<Campaign> Campaigns { get; set; }
+        public DbSet<CampaignImpact> CampaignImpacts { get; set; }
+        public DbSet<CampaignImpactType> CampaignImpactTypes { get; set; }
         public DbSet<Activity> Activities { get; set; }
         public DbSet<ActivitySkill> ActivitySkills { get; set; }
         public DbSet<Location> Locations { get; set; }
@@ -146,6 +144,7 @@ namespace AllReady.Models
         private void Map(EntityTypeBuilder<Campaign> builder)
         {
             builder.HasOne(c => c.ManagingTenant);
+            builder.HasOne(c => c.CampaignImpact);
             builder.HasMany(c => c.Activities);
             builder.Property(a => a.Name).IsRequired();
         }
