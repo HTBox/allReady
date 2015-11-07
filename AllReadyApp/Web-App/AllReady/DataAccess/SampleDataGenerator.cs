@@ -37,7 +37,7 @@ namespace AllReady.Models
             {
                 // Attempt to populate CampaignImpactTypes:
                 InsertCampaignImpactTypes(_context);
-
+                _context.SaveChanges();
                 return;
             }
             // new up some data
@@ -46,7 +46,7 @@ namespace AllReady.Models
             #region postalCodes
             var existingPostalCode = _context.PostalCodes.ToList();
             _context.PostalCodes.AddRange(GetPostalCodes(existingPostalCode));
-            _context.SaveChanges();
+            //_context.SaveChanges();
             #endregion
 
             #region Skills
@@ -57,7 +57,7 @@ namespace AllReady.Models
             var md = GetSkill(skills, existingSkills, "MD", medical);
             var surgeon = GetSkill(skills, existingSkills, "Surgeon", md);
             _context.Skills.AddRange(skills);
-            _context.SaveChanges();
+            //_context.SaveChanges();
             #endregion
 
             List<Location> locations = GetLocations();
@@ -342,7 +342,7 @@ namespace AllReady.Models
             _context.Campaigns.AddRange(campaigns);
             _context.Activities.AddRange(activities);
             _context.Resources.AddRange(resources);
-            _context.SaveChanges();
+            //_context.SaveChanges();
             #endregion
 
             #region Users for Activities
@@ -385,7 +385,6 @@ namespace AllReady.Models
             var numeric = GetImpactType(campaignImpactTypes, existingImpactTypes, "Numeric");
             var textual = GetImpactType(campaignImpactTypes, existingImpactTypes, "Textual");
             _context.CampaignImpactTypes.AddRange(campaignImpactTypes);
-            _context.SaveChanges();
         }
 
         private static Skill GetSkill(List<Skill> skills, List<Skill> existingSkills, string skillName, Skill parentSkill = null)
