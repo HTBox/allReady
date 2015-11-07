@@ -10,14 +10,14 @@ namespace AllReady.Services
     {
         private readonly ILogger _logger;
 
-        public FakeQueueWriterService(ILoggerFactory loggerFactory)
+        public FakeQueueWriterService(ILogger<FakeQueueWriterService> logger)
         {
-            _logger = loggerFactory.CreateLogger(typeof(FakeQueueWriterService).FullName);
+            _logger = logger;
         }
 
         public void SendMessage(string queueName, string message)
         {
-            _logger.LogInformation($"Message to {queueName} queue: {message}");
+            _logger.LogInformation("Message to {queueName} queue: {message}", queueName, message);
         }
     }
 }

@@ -104,9 +104,6 @@ namespace AllReady
 
         private IContainer CreateIoCContainer(IServiceCollection services)
         {
-            var loggerFactory = new LoggerFactory().AddConsole(LogLevel.Debug);
-            services.AddSingleton(x => loggerFactory);
-        
             // todo: move these to a proper autofac module
             // Register application services.
             services.AddSingleton((x) => Configuration);
@@ -162,8 +159,20 @@ namespace AllReady
           IConfiguration configuration)
         {
 
-            loggerFactory.MinimumLevel = LogLevel.Information;
-            loggerFactory.AddConsole();
+            loggerFactory.MinimumLevel = LogLevel.Verbose;
+
+            if (env.IsDevelopment())
+            {
+                // this will go to the VS output window
+                loggerFactory.AddDebug((category, level) =>
+                {
+                    if (category.StartsWith("Microsoft."))
+                    {
+                        return level >= LogLevel.Information;
+                    }
+                    return true;
+                });
+            }
 
             // CORS support
             app.UseCors("allReady");
