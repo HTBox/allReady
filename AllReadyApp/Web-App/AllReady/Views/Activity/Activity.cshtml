@@ -41,75 +41,78 @@
                 <h4><a asp-controller="Tenant" asp-action="ShowTenant" asp-route-id="@Model.TenantId">@Model.TenantName</a></h4>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <h3>Tasks</h3>
-            </div>
-            <div class="col-sm-12">
-                <div class="form-inline">
-                    <div class="form-group">
-                        <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
-                    </div>
-                    <div class="form-group">
-                        <button type="button" class="btn btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
-                            <i class="fa" data-bind="css: { 'fa-square-o': !tasks.showOld(), 'fa-check-square-o': tasks.showOld }"></i>
-                            Show Old
-                        </button>
+        @if (Model.IsUserVolunteeredForActivity == "true" && Model.Tasks.Any())
+        {
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3>Tasks</h3>
+                </div>
+                <div class="col-sm-12">
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
+                                <i class="fa" data-bind="css: { 'fa-square-o': !tasks.showOld(), 'fa-check-square-o': tasks.showOld }"></i>
+                                Show Old
+                            </button>
+                        </div>
                     </div>
                 </div>
+
+                <div class="col-sm-12">
+                    <span class="label-warning label hide" data-bind="css: { hide: tasks.filtered().length }">No matching tasks.</span>
+                    <ul data-bind="foreach: tasks.filtered">
+                        <li>
+
+                            <span data-bind="text: Name"></span>
+                            <span data-bind="text: Description"></span>
+                            @*S :<span data-bind="text: StartDateTime"></span>
+                            E :<span data-bind="text: EndDateTime"></span>*@
+                            <span><a data-bind="attr: { href:  'Accept/' + Id }">Accept</a> </span> |
+                            <span><a data-bind="attr: { href:  'Reject/' + Id }">Reject</a> </span>
+                        </li>
+                    </ul>
+                </div>
+                
             </div>
-            <div class="col-sm-12">
-                <span class="label-warning label hide" data-bind="css: { hide: tasks.filtered().length }">No matching tasks.</span>
-                <ul data-bind="foreach: tasks.filtered">
-                    <li>
-                       
-                        <span data-bind="text: Name"></span>  
-                        <span data-bind="text: Description"></span>
-                        @if (!string.IsNullOrWhiteSpace( Model.IsUserVolunteeredForActivity))
-                        {
-                        <span><a data-bind="attr: { href:  'Accept/' + Id }">Accept</a> </span>
-                        <span><a data-bind="attr: { href:  'Reject/' + Id }">Reject</a> </span>                        
-                        }
-                    </li>
-                </ul>
-            </div>
+        }
         </div>
-
+        <div class="col-sm-4">
+            <h3>Location</h3>
+            <div id="bingMap" style="position:relative"></div>
+            <h3>Address</h3>
+            <p>
+                @Model.Location?.Address1<br />
+                @if (!string.IsNullOrEmpty(Model.Location?.Address2))
+                {
+                    @Model.Location.Address2
+                }
+                @Model.Location?.City @Model.Location?.State @Model.Location?.PostalCode?.PostalCode
+            </p>
+        </div>
     </div>
-    <div class="col-sm-4">
-        <h3>Location</h3>
-        <div id="bingMap" style="position:relative"></div>
-        <h3>Address</h3>
-        <p>
-            @Model.Location?.Address1<br />
-            @if (!string.IsNullOrEmpty(Model.Location?.Address2))
-            {
-                @Model.Location.Address2
-            }
-            @Model.Location?.City @Model.Location?.State @Model.Location?.PostalCode?.PostalCode
-        </p>
-    </div>
-</div>
-@section scripts {
-    <script type="text/javascript">
-        $(document).ready(function () {
-            getGeoCoordinates('@Model.Location?.Address1',
-                '@Model.Location?.Address2',
-                '@Model.Location?.City',
-                '@Model.Location?.State',
-                '@Model.Location?.PostalCode?.PostalCode',
-                '@Model.Location?.Country',
-                function (result) {
-                    var positionCoordsList = [
-                    { latitude: result.latitude, longitude: result.longitude }
-                    ];
-                    $("#bingMap").css("width", "300px").css("height", "300px");
-                    renderBingMap('bingMap', positionCoordsList);
-                });
-        });
+    @section scripts {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                getGeoCoordinates('@Model.Location?.Address1',
+                    '@Model.Location?.Address2',
+                    '@Model.Location?.City',
+                    '@Model.Location?.State',
+                    '@Model.Location?.PostalCode?.PostalCode',
+                    '@Model.Location?.Country',
+                    function (result) {
+                        var positionCoordsList = [
+                        { latitude: result.latitude, longitude: result.longitude }
+                        ];
+                        $("#bingMap").css("width", "300px").css("height", "300px");
+                        renderBingMap('bingMap', positionCoordsList);
+                    });
+            });
 
-        var modelTasks = @Json.Serialize(Model.Tasks);
-    </script>
-    <script type="text/javascript" src="~/js/activity.js"></script>
-    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
-}
+            var modelTasks = @Json.Serialize(Model.Tasks);
+        </script>
+        <script type="text/javascript" src="~/js/activity.js"></script>
+        <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+    }

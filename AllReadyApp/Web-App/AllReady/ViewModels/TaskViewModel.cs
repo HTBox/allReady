@@ -62,9 +62,12 @@ namespace AllReady.ViewModels
                     IsUserSignedUpForTask = task.AssignedVolunteers.Any(au => au.User.Id == userId);
                 }
                 this.AssignedVolunteers = new List<TaskSignupViewModel>();
-                foreach (var t in task.AssignedVolunteers)
-                {
-                    this.AssignedVolunteers.Add(new TaskSignupViewModel(t));
+                if (IsUserSignedUpForTask)
+                {                    
+                    foreach (var t in task.AssignedVolunteers.Where(au => au.User.Id == userId))
+                    {
+                        this.AssignedVolunteers.Add(new TaskSignupViewModel(t));
+                    }
                 }
             }
 

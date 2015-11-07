@@ -60,7 +60,7 @@ namespace AllReady.ViewModels
 
             if (string.IsNullOrWhiteSpace(UserId) || !isUserSignedUp)
             {
-                Tasks = new List<TaskViewModel>(activity.Tasks.Select(data => new TaskViewModel(data, UserId)).OrderBy(task => task.StartDateTime));
+                Tasks = new List<TaskViewModel>();                     
             }
             else
             {
