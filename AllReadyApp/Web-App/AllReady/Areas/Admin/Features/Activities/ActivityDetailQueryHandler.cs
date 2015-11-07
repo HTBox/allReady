@@ -17,6 +17,8 @@ namespace AllReady.Areas.Admin.Features.Activities
 
         public ActivityDetailViewModel Handle(ActivityDetailQuery message)
         {
+            ActivityDetailViewModel result = null;
+
             var activity = _context.Activities
                 .AsNoTracking()
                 .Include(a => a.Campaign)
@@ -25,27 +27,30 @@ namespace AllReady.Areas.Admin.Features.Activities
                 .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
                 .SingleOrDefault(a => a.Id == message.ActivityId);
 
-            var viewModel = new ActivityDetailViewModel
+            if (activity != null)
             {
-                Id = activity.Id,
-                CampaignName = activity.Campaign.Name,
-                CampaignId = activity.Campaign.Id,
-                Name = activity.Name,
-                Description = activity.Description,
-                StartDateTime = activity.StartDateTimeUtc,
-                EndDateTime = activity.EndDateTimeUtc,
-                Volunteers = activity.UsersSignedUp.Select(u => u.User.UserName).ToList(),
-                Tasks = activity.Tasks.Select(t => new TaskSummaryViewModel()
+                result = new ActivityDetailViewModel
                 {
-                    Id = t.Id,
-                    Name = t.Name,
-                    StartDateTime = t.StartDateTimeUtc,
-                    EndDateTime = t.EndDateTimeUtc,
-                }).OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList(),
-                RequiredSkills = activity.RequiredSkills,
-                ImageUrl = activity.ImageUrl
-            };
-            return viewModel;
+                    Id = activity.Id,
+                    CampaignName = activity.Campaign.Name,
+                    CampaignId = activity.Campaign.Id,
+                    Name = activity.Name,
+                    Description = activity.Description,
+                    StartDateTime = activity.StartDateTimeUtc,
+                    EndDateTime = activity.EndDateTimeUtc,
+                    Volunteers = activity.UsersSignedUp.Select(u => u.User.UserName).ToList(),
+                    Tasks = activity.Tasks.Select(t => new TaskSummaryViewModel()
+                    {
+                        Id = t.Id,
+                        Name = t.Name,
+                        StartDateTime = t.StartDateTimeUtc,
+                        EndDateTime = t.EndDateTimeUtc,
+                    }).OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList(),
+                    RequiredSkills = activity.RequiredSkills,
+                    ImageUrl = activity.ImageUrl
+                };
+            }
+            return result;
         }
     }
 }
