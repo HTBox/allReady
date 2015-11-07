@@ -57,6 +57,7 @@ namespace AllReady.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Description = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: false),
                     ParentSkillId = table.Column<int>(nullable: true)
                 },
