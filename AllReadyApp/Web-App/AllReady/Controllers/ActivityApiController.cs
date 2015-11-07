@@ -83,49 +83,7 @@ namespace AllReady.Controllers
 
             return ret;
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public void Post([FromBody]ActivityViewModel value)
-        {
-            bool alreadyExists = _allReadyDataAccess.GetActivity(value.Id) != null;
-            if (alreadyExists)
-            {
-                this.HttpBadRequest();
-            }
-            _allReadyDataAccess.AddActivity(value.ToModel(_allReadyDataAccess));
-        }
-
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]ActivityViewModel value)
-        {
-            var activity = _allReadyDataAccess.GetActivity(value.Id);
-            if (activity == null)
-            {
-                this.HttpBadRequest();
-            }
-            var associatedCampaign = _allReadyDataAccess.GetCampaign(value.CampaignId);
-            var tenant = _allReadyDataAccess.GetTenant(value.TenantId);
-
-            // TODO:  Helper method to do this kind of conversion.
-            activity.Campaign = associatedCampaign;
-            activity.EndDateTimeUtc = value.EndDateTime.UtcDateTime;
-            activity.Location = value.Location.ToModel();
-            activity.Name = value.Title;
-            activity.StartDateTimeUtc = value.StartDateTime.UtcDateTime;
-            activity.Tasks = value.Tasks.ToModel(_allReadyDataAccess).ToList();
-            activity.Tenant = tenant;
-
-            _allReadyDataAccess.UpdateActivity(activity);
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-            _allReadyDataAccess.DeleteActivity(id);
-        }
-
+        
         [HttpGet("{id}/qrcode")]
         public ActionResult GetQrCode(int id)
         {

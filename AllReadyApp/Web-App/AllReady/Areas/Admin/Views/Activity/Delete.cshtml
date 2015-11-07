@@ -1,4 +1,4 @@
-@model AllReady.Models.Activity
+@model AllReady.Areas.Admin.ViewModels.ActivityDetailViewModel
 
 @{  ViewData["Title"] = "Delete activity " + Model.Name; }
 
@@ -6,7 +6,7 @@
     <div class="col-12">
         <ol class="breadcrumb">
             <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.Campaign.Name</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
             <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Name</a></li>
             <li>Delete</li>
         </ol>
@@ -24,22 +24,22 @@
     <div class="col-md-12">
         <dl class="dl-horizontal">
             <dt>
-                @Html.DisplayNameFor(model => model.EndDateTimeUtc)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.EndDateTimeUtc)
-            </dd>
-            <dt>
                 @Html.DisplayNameFor(model => model.Name)
             </dt>
             <dd>
                 @Html.DisplayFor(model => model.Name)
             </dd>
             <dt>
-                @Html.DisplayNameFor(model => model.StartDateTimeUtc)
+                @Html.DisplayNameFor(model => model.StartDateTime)
             </dt>
             <dd>
-                @Html.DisplayFor(model => model.StartDateTimeUtc)
+                @Html.DisplayFor(model => model.StartDateTime)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.EndDateTime)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.EndDateTime)
             </dd>
         </dl>
 

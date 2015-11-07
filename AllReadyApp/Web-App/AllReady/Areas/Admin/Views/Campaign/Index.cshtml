@@ -1,4 +1,4 @@
-@model IEnumerable<Campaign>
+@model IEnumerable<AllReady.Areas.Admin.ViewModels.CampaignSummaryViewModel>
 @{ ViewData["Title"] = "Campaigns - Admin"; }
 
 <div class="row">
@@ -26,13 +26,13 @@
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.ManagingTenant.Name)
+                    @Html.DisplayNameFor(model => model.TenantName)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.StartDateTimeUtc)
+                    @Html.DisplayNameFor(model => model.StartDate)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.EndDateTimeUtc)
+                    @Html.DisplayNameFor(model => model.EndDate)
                 </th>
             </tr>
             @foreach (var item in Model) {
@@ -45,13 +45,13 @@
                         }
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.ManagingTenant.Name)
+                        @Html.DisplayFor(modelItem => item.TenantName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.StartDateTimeUtc)
+                        @Html.DisplayFor(modelItem => item.StartDate)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.EndDateTimeUtc)
+                        @Html.DisplayFor(modelItem => item.EndDate)
                     </td>
                 </tr>
             }
