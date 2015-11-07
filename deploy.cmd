@@ -108,7 +108,7 @@ IF !ERRORLEVEL! NEQ 0 goto error
 call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\NotificationsProcessor\NotificationsProcessor.csproj"
 
 :: 4.1. Publish the site:
-call %DNX_RUNTIME%\bin\dnu publish ".\Web-App\AllReady\project.json" --runtime %DNX_RUNTIME% --out "%DEPLOYMENT_TEMP%" %SCM_DNU_PUBLISH_OPTIONS%
+call %DNX_RUNTIME%\bin\dnu publish "%DEPLOYMENT_SOURCE%\Web-App\AllReady\project.json" --runtime %DNX_RUNTIME% --out "%DEPLOYMENT_TEMP%" %SCM_DNU_PUBLISH_OPTIONS%
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 5. KuduSync
