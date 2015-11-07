@@ -35,7 +35,8 @@ namespace AllReady
             var builder = new ConfigurationBuilder()
                 .SetBasePath(appEnv.ApplicationBasePath)
                 .AddJsonFile("config.json")
-                .AddJsonFile($"config.{env.EnvironmentName}.json", optional: true);
+                      .AddJsonFile($"config.{env.EnvironmentName}.json", optional: true)
+                      .AddEnvironmentVariables();
 
             if (env.IsDevelopment())
             {
@@ -235,16 +236,10 @@ namespace AllReady
 
             // Add sample data and test admin accounts if specified in Config.Json.
             // for production applications, this should either be set to false or deleted.
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || env.IsEnvironment("Staging"))
             {
                 context.Database.Migrate();
             }
-            else if (env.IsEnvironment("Staging"))
-            {
-                context.Database.EnsureDeleted();
-                context.Database.Migrate();
-            }
-
             if (Configuration["Data:InsertSampleData"] == "true")
             {
                 sampleData.InsertTestData();
