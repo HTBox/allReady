@@ -93,10 +93,6 @@ IF !ERRORLEVEL! NEQ 0 goto error
 :: 3. Run DNU Restore, Nuget restore for specific projects
 call %DNX_RUNTIME%\bin\dnu restore "%DEPLOYMENT_SOURCE%" %SCM_DNU_RESTORE_OPTIONS%
 IF !ERRORLEVEL! NEQ 0 goto error
-call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\AllReady.Models\AllReady.Models.csproj" -SolutionDirectory %DEPLOYMENT_SOURCE%
-IF !ERRORLEVEL! NEQ 0 goto error
-call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\NotificationsProcessor\NotificationsProcessor.csproj" -SolutionDirectory %DEPLOYMENT_SOURCE%
-IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 4. Run Our Custom build steps:
 call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\AllReady.Models\AllReady.Models.csproj"
