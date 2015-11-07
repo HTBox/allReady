@@ -2,18 +2,39 @@
 
 @{
     //TODO: Need a better way of identifying Create vs Edit. Suggest not binding directly to model class, create view model instead
-    var isNew = Model.Id == 0;
-
-    if (isNew)
+    var isEdit = Model.Id != 0;
+    string cancelUrl;
+    if (isEdit)
     {
-        ViewBag.Title = "Create Activity";
+        ViewBag.Title = $"Edit Activity";
+        cancelUrl = Url.Action("Details", "Activity", new { id = Model.Id, area = "Admin" });
     }
     else
     {
-        ViewBag.Title = "Activity: " + Model.Name;
+        ViewBag.Title = "Create Activity";
+        cancelUrl = Url.Action("Details", "Campaign", new { id = Model.CampaignId, area = "Admin" });
     }
 }
-<h4>@Model.Campaign.Name</h4>
+
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.Campaign.Name</a></li>
+            @if (isEdit)
+            {
+                <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Name</a></li>
+                <li>Edit</li>
+            }
+            else
+            {
+                <li>Create New Activity</li>
+            }
+            
+        </ol>
+    </div>
+</div>
+
 <h2>@ViewBag.Title</h2>
 
 @using (Html.BeginForm())
@@ -59,7 +80,7 @@
             <div class="col-md-10">
                 <div data-bind="foreach: requiredSkills">
                     <div class="form-inline">
-                        <select class="form-control" data-bind="attr: { name: 'RequiredSkills[' + $index() + '].SkillId' }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                        <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
                         <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                             Delete
@@ -75,15 +96,16 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn" data-bind="enable: requiredSkills.isValid">Save</button>
-                <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">Required skills must be unique</span>
+                <a href="@cancelUrl" class="btn">Cancel</a>
+                <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">@Html.DisplayNameFor(m => m.RequiredSkills)" must be unique</span>
             </div>
         </div>
     </div>
 }
 
-@if (!isNew)
+@if (isEdit)
 {
-    <h2>Image for @Model.Name</h2>
+    <h2>Image</h2>
     <div class="form-horizontal">
         <div class="form-group">
             @Html.LabelFor(model => model.ImageUrl, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -104,12 +126,7 @@
     </div>
 }
 
-<div>
-    <a class="btn" asp-controller="Activity" asp-action="Index" asp-route-campaignId="@Model.CampaignId">Back to List</a>
-</div>
-
 @section scripts {
-    <script type="text/javascript" src="~/js/ko.validation.js"></script>
     <script type="text/javascript">
         (function (ko, $, requiredSkills, availableSkills) {
 
@@ -118,6 +135,9 @@
                 function RequiredSkillObservable(skillModel) {
                     var ret = ko.utils.extend({}, skillModel);
                     ret.Id = ko.observable(ret.Id);
+                    ret.ControlName = function (index) {
+                        return 'RequiredSkills[' + ko.unwrap(index) + '].SkillId';
+                    };
                     return ret;
                 }
                 requiredSkills = (requiredSkills || []).map(RequiredSkillObservable);

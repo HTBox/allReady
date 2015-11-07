@@ -3,47 +3,20 @@
     ViewData["Title"] = "Tasks Details";
 }
 <div class="row">
-    <div class="cold-md-12">
-        <h2>@ViewData["Title"]</h2>
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.ActivityId" asp-route-area="Admin">@Model.ActivityName</a></li>
+            <li>@Model.Name</li>
+        </ol>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-md-12">
-        <dl class="dl-horizontal">
-            <dt>
-                @Html.DisplayNameFor(model => model.Name)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.Name)
-            </dd>
-            <dt>
-                @Html.DisplayNameFor(model => model.Description)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.Description)
-            </dd>
-            <dt>
-                @Html.DisplayNameFor(model => model.StartDateTime)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.StartDateTime)
-            </dd>  
-            <dt>
-                @Html.DisplayNameFor(model => model.EndDateTime)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.EndDateTime)
-            </dd>   
-        
-        </dl>
-
-            @Html.AntiForgeryToken()
-            <div class="form-actions no-color">
-                <a href="@Url.Action("Details", "Activity", new { area="Admin", id = Model.ActivityId })" class="btn">
-                    <span class="fa fa-backward"> Back to Tasks</span>
-                </a>
-            </div>
-        
+    <div class="col-md-10">
+        <h2>@Model.Name <a asp-controller="Task" asp-action="Edit" asp-route-id="@Model.Id" class="btn"><i class="glyphicon glyphicon-edit"></i></a> <a asp-controller="Task" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
+        <p>@Model.Description</p>
+        <p><strong>Duration: </strong> @Model.StartDateTime.Value.DateTime.ToString("d") - @Model.EndDateTime.Value.DateTime.ToString("d")</p>
     </div>
 </div>

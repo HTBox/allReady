@@ -33,45 +33,21 @@ namespace AllReady.Areas.Admin.Controllers
             _bus = bus;
         }
 
-        ViewResult AddDropdownData(ViewResult view)
-        {           
-            view.ViewData["Skills"] = _dataAccess.Skills.Select(s => new { Name = s.HierarchicalName, Id = s.Id }).ToList();
-            return view;
-        }
-
         public override ViewResult View()
         {
-            return AddDropdownData(base.View());
+            return base.View().WithSkills(_dataAccess);
         }
         public override ViewResult View(object model)
         {
-            return AddDropdownData(base.View(model));
+            return base.View(model).WithSkills(_dataAccess);
         }
         public override ViewResult View(string viewName)
         {
-            return AddDropdownData(base.View(viewName));
+            return base.View(viewName).WithSkills(_dataAccess);
         }
         public override ViewResult View(string viewName, object model)
         {
-            return AddDropdownData(base.View(viewName, model));
-        }
-
-        // GET: Activity
-        [Route("Admin/Activity/{campaignId}")]
-        public IActionResult Index(int campaignId)
-        {
-            Campaign campaign = _dataAccess.GetCampaign(campaignId);
-            if (campaign == null || !User.IsTenantAdmin(campaign.ManagingTenantId))
-            {
-                return HttpUnauthorized();
-            }
-            var viewModel = new CampaignActivitiesViewModel
-            {
-                CampaignId = campaign.Id,
-                CampaignName = campaign.Name,
-                Activities = campaign.Activities
-            };
-            return View(viewModel);
+            return base.View(viewName, model).WithSkills(_dataAccess);
         }
 
         // GET: Activity/Details/5
@@ -124,8 +100,8 @@ namespace AllReady.Areas.Admin.Controllers
                 Campaign = campaign,
                 TenantId = campaign.ManagingTenantId,
                 RequiredSkills = new List<ActivitySkill>(),
-                StartDateTimeUtc = DateTime.Today,
-                EndDateTimeUtc = DateTime.Today.AddMonths(1)
+                StartDateTimeUtc = DateTime.Today.Date,
+                EndDateTimeUtc = DateTime.Today.Date.AddMonths(1)
             };
             return View("Edit", activity);
         }
@@ -136,6 +112,11 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Activity/Create/{campaignId}")]
         public async Task<IActionResult> Create(int campaignId, Activity activity)
         {
+            if (activity.EndDateTimeUtc < activity.StartDateTimeUtc)
+            {
+                ModelState.AddModelError("EndDateTimeUtc", "End date cannot be earlier than the start date");
+            }
+
             Campaign campaign = _dataAccess.GetCampaign(campaignId);
             activity.Campaign = campaign;
             activity.CampaignId = campaignId;
@@ -148,7 +129,7 @@ namespace AllReady.Areas.Admin.Controllers
                 }                
                 activity.TenantId = campaign.ManagingTenantId;
                 await _dataAccess.AddActivity(activity);
-                return RedirectToAction("Index", new { campaignId = activity.CampaignId });
+                return RedirectToAction("Details", "Campaign", new { area = "Admin", id = activity.CampaignId });
             }
             return View("Edit", activity);
         }
@@ -185,6 +166,12 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpUnauthorized();
             }
+
+            if (activity.EndDateTimeUtc < activity.StartDateTimeUtc)
+            {
+                ModelState.AddModelError("EndDateTimeUtc", "End date cannot be earlier than the start date");
+            }
+
             if (ModelState.IsValid)
             {
                 if (activity.RequiredSkills != null && activity.RequiredSkills.Count > 0)
@@ -192,7 +179,7 @@ namespace AllReady.Areas.Admin.Controllers
                     activity.RequiredSkills.ForEach(acsk => acsk.ActivityId = activity.Id);
                 }
                 await _dataAccess.UpdateActivity(activity);
-                return RedirectToAction("Index", new { campaignId = activity.CampaignId });
+                return RedirectToAction("Details", "Campaign", new { area = "Admin", id = activity.CampaignId });
             }
             Campaign campaign = _dataAccess.GetCampaign(activity.CampaignId);
             activity.Campaign = campaign;
@@ -234,8 +221,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             await _dataAccess.DeleteActivity(id);
-
-            return RedirectToAction("Index", new { campaignId = activity.CampaignId });
+            return RedirectToAction("Details", "Campaign", new { area = "Admin", id = activity.CampaignId });
         }
 
         [HttpGet]

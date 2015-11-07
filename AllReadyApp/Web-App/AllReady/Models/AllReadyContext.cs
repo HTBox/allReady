@@ -19,10 +19,7 @@ namespace AllReady.Models
         public AllReadyContext(IConfiguration configuration, IHostingEnvironment environment)
         {
             _configuration = configuration;
-            _environment = environment;
-
-            // Create DB and do migrations if necessary
-            Database.EnsureCreated();
+            _environment = environment;          
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -57,6 +54,7 @@ namespace AllReady.Models
         public DbSet<TaskUsers> TaskSignup { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<Skill> Skills { get; set; }
+        public DbSet<UserSkill> UserSkills { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -75,6 +73,8 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<Location>());
             Map(modelBuilder.Entity<PostalCodeGeo>());
             Map(modelBuilder.Entity<Skill>());
+            Map(modelBuilder.Entity<UserSkill>());
+            Map(modelBuilder.Entity<ApplicationUser>());
         }
 
         private void Map(EntityTypeBuilder<PostalCodeGeo> builder)
@@ -145,6 +145,16 @@ namespace AllReady.Models
             builder.HasOne(c => c.ManagingTenant);
             builder.HasMany(c => c.Activities);
             builder.Property(a => a.Name).IsRequired();
+        }
+
+        private void Map(EntityTypeBuilder<ApplicationUser> builder)
+        {
+            builder.HasMany(u => u.AssociatedSkills).WithOne(us => us.User);
+        }
+
+        private void Map(EntityTypeBuilder<UserSkill> builder)
+        {
+            builder.HasKey(us => new { us.UserId, us.SkillId });
         }
     }
 }

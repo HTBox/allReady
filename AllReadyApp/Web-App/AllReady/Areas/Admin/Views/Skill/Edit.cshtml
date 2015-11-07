@@ -3,7 +3,7 @@
     var isEdit = Model != null && Model.Id > 0;
     if (isEdit)
     {
-        ViewData["Title"] = string.Format("Edit Skill - {0}", Model.Name);
+        ViewData["Title"] = $"Edit Skill - {Model.Name}";
         ViewData["Action"] = "Save";
     }
     else
@@ -62,7 +62,7 @@
                 this.isValidParent = ko.computed(function () {
                     var id = @(Model != null ? Model.Id : 0);
                     var parentId = this.parentSkillId();
-                    var parent = this.availableSkills().find(function(skill) { return skill.Id === parentId; });
+                    var parent = this.availableSkills().filter(function(skill) { return skill.Id === parentId; })[0];
                     var parentIsValid = true;
                     while (parentIsValid && parent) {
                         parentIsValid = parent.Id !== id;

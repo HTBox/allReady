@@ -1,17 +1,38 @@
 @model AllReady.Models.Campaign
 @{
     var isEdit = Model != null && Model.Id > 0;
+    string actionTitle;
+    string cancelUrl;
     if (isEdit)
     {
-        ViewData["Title"] = string.Format("Edit Campaign - {0}", Model.Name);
-        ViewData["Action"] = "Save";
+        ViewData["Title"] = $"Edit Campaign";
+        actionTitle = "Save";
+        cancelUrl = Url.Action("Details", "Campaign", new { area = "Admin", id = Model.Id });
     }
     else
     {
         ViewData["Title"] = "Create Campaign";
-        ViewData["Action"] = "Create";
+        actionTitle = "Create";
+        cancelUrl = Url.Action("Index", "Campaign", new { area = "Admin" });
     }
 }
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            @if (isEdit)
+            {
+                <li><a href="@cancelUrl">@Model.Name</a></li>
+                <li>Edit</li>
+            }
+            else
+            {
+                <li>Create New Campaign</li>
+            }
+
+        </ol>
+    </div>
+</div>
 
 <h2>@ViewData["Title"]</h2>
 
@@ -73,8 +94,8 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <button type="submit" value="@ViewData["Action"]" class="btn">@ViewData["Action"]</button>
-            @Html.ActionLink("Cancel", "Index", new { controller = "Campaign", area = "Admin" }, new { @class = "btn" })
+            <button type="submit" value="@actionTitle" class="btn">@actionTitle</button>
+            <a href="@cancelUrl" class="btn">Cancel</a>
         </div>
     </div>
 }

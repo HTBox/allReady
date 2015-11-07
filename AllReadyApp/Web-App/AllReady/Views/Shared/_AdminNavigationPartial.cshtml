@@ -13,6 +13,7 @@
             @if (User.IsUserType(UserType.SiteAdmin))
             {
                 <li><a asp-route-area="Admin" asp-route-controller="Skill" asp-route-action="Index">Skills</a></li>
+                <li><a asp-route-area="Admin" asp-route-controller="Site" asp-route-action="Index">Site Admin</a></li>
             }
         </ul>
     </li>
