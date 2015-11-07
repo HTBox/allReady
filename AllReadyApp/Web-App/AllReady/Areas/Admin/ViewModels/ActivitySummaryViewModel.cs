@@ -27,6 +27,8 @@ namespace AllReady.Areas.Admin.ViewModels
 
         public string ImageUrl { get; set; }
 
+        [Display(Name = "Volunteers Required")]
+        public int NumberOfVolunteersRequired { get; set; }
         
         [Display(Name = "Start Date")]
         public DateTime StartDateTime { get; set; }

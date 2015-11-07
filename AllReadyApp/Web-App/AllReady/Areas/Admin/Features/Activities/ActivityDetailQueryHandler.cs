@@ -30,25 +30,26 @@ namespace AllReady.Areas.Admin.Features.Activities
             if (activity != null)
             {
                 result = new ActivityDetailViewModel
+            {
+                Id = activity.Id,
+                CampaignName = activity.Campaign.Name,
+                CampaignId = activity.Campaign.Id,
+                Name = activity.Name,
+                Description = activity.Description,
+                StartDateTime = activity.StartDateTimeUtc,
+                EndDateTime = activity.EndDateTimeUtc,
+                Volunteers = activity.UsersSignedUp.Select(u => u.User.UserName).ToList(),
+                NumberOfVolunteersRequired = activity.NumberOfVolunteersRequired,
+                Tasks = activity.Tasks.Select(t => new TaskSummaryViewModel()
                 {
-                    Id = activity.Id,
-                    CampaignName = activity.Campaign.Name,
-                    CampaignId = activity.Campaign.Id,
-                    Name = activity.Name,
-                    Description = activity.Description,
-                    StartDateTime = activity.StartDateTimeUtc,
-                    EndDateTime = activity.EndDateTimeUtc,
-                    Volunteers = activity.UsersSignedUp.Select(u => u.User.UserName).ToList(),
-                    Tasks = activity.Tasks.Select(t => new TaskSummaryViewModel()
-                    {
-                        Id = t.Id,
-                        Name = t.Name,
-                        StartDateTime = t.StartDateTimeUtc,
-                        EndDateTime = t.EndDateTimeUtc,
-                    }).OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList(),
-                    RequiredSkills = activity.RequiredSkills,
-                    ImageUrl = activity.ImageUrl
-                };
+                    Id = t.Id,
+                    Name = t.Name,
+                    StartDateTime = t.StartDateTimeUtc,
+                    EndDateTime = t.EndDateTimeUtc,
+                }).OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList(),
+                RequiredSkills = activity.RequiredSkills,
+                ImageUrl = activity.ImageUrl
+            };
             }
             return result;
         }

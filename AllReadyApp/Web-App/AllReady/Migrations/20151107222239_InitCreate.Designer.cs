@@ -8,8 +8,8 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    [Migration("20151107203647_InitialDatabase")]
-    partial class InitialDatabase
+    [Migration("20151107222239_InitCreate")]
+    partial class InitCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -33,6 +33,8 @@ namespace AllReady.Migrations
                     b.Property<int?>("LocationId");
 
                     b.Property<string>("Name");
+
+                    b.Property<int>("NumberOfVolunteersRequired");
 
                     b.Property<string>("OrganizerId");
 
@@ -77,11 +79,13 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<DateTime?>("EndDateTimeUtc");
+                    b.Property<DateTimeOffset?>("EndDateTimeUtc");
 
                     b.Property<string>("Name");
 
-                    b.Property<DateTime?>("StartDateTimeUtc");
+                    b.Property<int>("NumberOfVolunteersRequired");
+
+                    b.Property<DateTimeOffset?>("StartDateTimeUtc");
 
                     b.Property<int?>("TenantId");
 

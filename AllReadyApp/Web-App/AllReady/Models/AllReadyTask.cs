@@ -12,8 +12,9 @@ namespace AllReady.Models
         public string Description { get; set; }
         public virtual Tenant Tenant { get; set; }
         public virtual Activity Activity { get; set; }
-        public DateTime? StartDateTimeUtc { get; set; }
-        public DateTime? EndDateTimeUtc { get; set; }
+        public int NumberOfVolunteersRequired { get; set; }
+        public DateTimeOffset? StartDateTimeUtc { get; set; }
+        public DateTimeOffset? EndDateTimeUtc { get; set; }
         public List<TaskSignup> AssignedVolunteers { get; set; } = new List<TaskSignup>();
         public List<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();
     }

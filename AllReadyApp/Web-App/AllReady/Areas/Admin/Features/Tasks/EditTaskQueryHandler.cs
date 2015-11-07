@@ -37,6 +37,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     Description = task.Description,
                     StartDateTime = task.StartDateTimeUtc,
                     EndDateTime = task.EndDateTimeUtc,
+                    NumberOfVolunteersRequired = task.NumberOfVolunteersRequired,
                     RequiredSkills = task.RequiredSkills
                 };
                     

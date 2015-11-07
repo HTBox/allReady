@@ -1,19 +1,14 @@
 ﻿using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Models;
-using Microsoft.AspNet.Hosting;
-using Microsoft.Data.Entity;
-using Microsoft.Framework.Configuration;
 using Microsoft.Framework.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace AllReady.UnitTest
 {
-    public class GetActivityDetail : TestBase
+    public class DeleteActivity : TestBase
     {
         protected override void LoadTestData()
         {
@@ -49,24 +44,24 @@ namespace AllReady.UnitTest
         }
 
         [Fact]
-        public void ActivityExists()
+        public void ExistingActivity()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new ActivityDetailQuery { ActivityId = 1 };
-            var handler = new ActivityDetailQueryHandler(context);
+            var query = new DeleteActivityCommand { ActivityId = 1 };
+            var handler = new DeleteActivityCommandHandler(context);
             var result = handler.Handle(query);
-            Assert.NotNull(result);
+
+            var data = context.Activities.Count(_ => _.Id == 1);
+            Assert.Equal(0, data);
         }
 
         [Fact]
         public void ActivityDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new ActivityDetailQuery();
-            var handler = new ActivityDetailQueryHandler(context);
+            var query = new DeleteActivityCommand { ActivityId = 1 };
+            var handler = new DeleteActivityCommandHandler(context);
             var result = handler.Handle(query);
-            Assert.Null(result);
         }
-
     }
 }

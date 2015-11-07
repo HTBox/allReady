@@ -25,7 +25,7 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        <h3>Volunteers</h3>
+        <h3>Volunteers @if (Model.NumberOfVolunteersRequired > 0) { <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span> } </h3>
         @if (Model.Volunteers == null || Model.Volunteers.Count == 0)
         {
             <text>No volunteers yet. </text>

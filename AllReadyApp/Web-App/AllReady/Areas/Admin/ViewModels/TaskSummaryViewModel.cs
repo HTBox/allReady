@@ -26,6 +26,9 @@ namespace AllReady.Areas.Admin.ViewModels
 
         public bool IsUserSignedUpForTask { get; set; }
 
+        [Display(Name = "Volunteers Required")]
+        public int NumberOfVolunteersRequired { get; set; }
+
         public List<TaskSignupViewModel> AssignedVolunteers { get; set; } = new List<TaskSignupViewModel>();
 
         public int AcceptedVolunteerCount => AssignedVolunteers?.Where(v => v.Status == "Accepted").Count() ?? 0;
