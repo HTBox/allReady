@@ -61,7 +61,8 @@ namespace AllReady.Models
             #endregion
 
             List<Location> locations = GetLocations();
-            List<TaskUsers> users = new List<TaskUsers>();
+            List<ApplicationUser> users = new List<ApplicationUser>();
+            List<TaskSignup> taskSignups = new List<TaskSignup>();
             List<Activity> activities = new List<Activity>();
             List<ActivitySkill> activitySkills = new List<ActivitySkill>();
             List<Campaign> campaigns = new List<Campaign>();
@@ -352,16 +353,33 @@ namespace AllReady.Models
 
             var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true };
             _userManager.CreateAsync(user1, _configuration["DefaultAdminPassword"]).Wait();
+            users.Add(user1);
             var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true };
             _userManager.CreateAsync(user2, _configuration["DefaultAdminPassword"]).Wait();
+            users.Add(user2);
             var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true };
             _userManager.CreateAsync(user3, _configuration["DefaultAdminPassword"]).Wait();
+            users.Add(user3);
             #endregion
 
             #region ActvitySignups
             activitySignups.Add(new ActivitySignup { Activity = madrona, User = user1, SignupDateTime = DateTime.UtcNow });
             activitySignups.Add(new ActivitySignup { Activity = madrona, User = user2, SignupDateTime = DateTime.UtcNow });
             activitySignups.Add(new ActivitySignup { Activity = madrona, User = user3, SignupDateTime = DateTime.UtcNow });
+            #endregion
+
+            #region TaskSignups
+            int i = 0;
+            foreach (var task in tasks.Where(t => t.Activity == madrona))
+            {
+                for (var j = 0; j < i; j++)
+                {
+                    taskSignups.Add(new TaskSignup() { Task = task, User = users[j] });
+                }
+
+                i = (i + 1) % users.Count;
+            }
+            _context.TaskSignups.AddRange(taskSignups);
             #endregion
 
             #region Wrap Up DB  

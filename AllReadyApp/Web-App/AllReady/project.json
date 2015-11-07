@@ -48,6 +48,9 @@
 
   "frameworks": {
     "dnx451": {
+      "dependencies": {
+        "AllReady.Models": "1.0.0-*"
+      },
       "frameworkAssemblies": {
         "System.Drawing": "4.0.0.0"
       }
