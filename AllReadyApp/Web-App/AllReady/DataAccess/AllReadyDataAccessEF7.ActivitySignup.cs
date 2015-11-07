@@ -42,6 +42,7 @@ namespace AllReady.Models
 
         Task IAllReadyDataAccess.DeleteActivitySignupAsync(int activitySignupId)
         {
+            //TODO: Unvolunteer also remove Assigned Tasks
             var activity = _dbContext.ActivitySignup.SingleOrDefault(c => c.Id == activitySignupId);
 
             if (activity != null)

@@ -58,14 +58,14 @@ namespace AllReady.ViewModels
             UserId = userId;
 
 
-            if (string.IsNullOrWhiteSpace(UserId))
+            if (string.IsNullOrWhiteSpace(UserId) || !isUserSignedUp)
             {
-                Tasks = new List<TaskViewModel>(activity.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime));
+                Tasks = new List<TaskViewModel>(activity.Tasks.Select(data => new TaskViewModel(data, UserId)).OrderBy(task => task.StartDateTime));
             }
             else
             {
                 var assignedTasks = activity.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == UserId)).ToList();
-                Tasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime));
+                Tasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, UserId)).OrderBy(task => task.StartDateTime));
             }
 
         }

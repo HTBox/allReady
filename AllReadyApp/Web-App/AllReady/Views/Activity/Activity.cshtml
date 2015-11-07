@@ -65,8 +65,11 @@
                        
                         <span data-bind="text: Name"></span>  
                         <span data-bind="text: Description"></span>
+                        @if (!string.IsNullOrWhiteSpace( Model.IsUserVolunteeredForActivity))
+                        {
                         <span><a data-bind="attr: { href:  'Accept/' + Id }">Accept</a> </span>
                         <span><a data-bind="attr: { href:  'Reject/' + Id }">Reject</a> </span>                        
+                        }
                     </li>
                 </ul>
             </div>

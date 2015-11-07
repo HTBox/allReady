@@ -13,7 +13,7 @@ namespace AllReady.ViewModels
         {
         }
 
-        public TaskViewModel(AllReadyTask task)
+        public TaskViewModel(AllReadyTask task, string userId=null)
         {
             Id = task.Id;
             Name = task.Name;
@@ -55,9 +55,12 @@ namespace AllReady.ViewModels
             }
 
             IsUserSignedUpForTask = false;
-
             if (task.AssignedVolunteers != null)
             {
+                if (!string.IsNullOrWhiteSpace(userId))
+                {
+                    IsUserSignedUpForTask = task.AssignedVolunteers.Any(au => au.User.Id == userId);
+                }
                 this.AssignedVolunteers = new List<TaskSignupViewModel>();
                 foreach (var t in task.AssignedVolunteers)
                 {
@@ -90,7 +93,7 @@ namespace AllReady.ViewModels
 
         public int CampaignId { get; set; }
 
-        [Display(Name="Campaign")]
+        [Display(Name = "Campaign")]
         public string CampaignName { get; set; }
 
         public int TenantId { get; set; }
