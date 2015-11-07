@@ -20,7 +20,7 @@ namespace AllReady.Services
         : IClosestLocations
     {
         private IConfiguration _config;
-        private const string CONNECTION_STRING = "Data:DefaultConnection:AzureConnectionString";
+        private const string CONNECTION_STRING = "Data:DefaultConnection:ConnectionString";
 
         public SqlClosestLocations(IConfiguration config)
         {

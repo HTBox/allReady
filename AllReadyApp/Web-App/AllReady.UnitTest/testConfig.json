@@ -1,7 +1,0 @@
-{
-    "Data": {
-        "DefaultConnection": {
-            "UseInMemory": "true"
-        }
-    }
-}

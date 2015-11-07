@@ -273,16 +273,7 @@ namespace AllReady.Migrations
                     b.HasKey("Id");
                 });
 
-            modelBuilder.Entity("AllReady.Models.TaskSkill", b =>
-                {
-                    b.Property<int>("TaskId");
-
-                    b.Property<int>("SkillId");
-
-                    b.HasKey("TaskId", "SkillId");
-                });
-
-            modelBuilder.Entity("AllReady.Models.TaskUsers", b =>
+            modelBuilder.Entity("AllReady.Models.TaskSignup", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -298,6 +289,15 @@ namespace AllReady.Migrations
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.TaskSkill", b =>
+                {
+                    b.Property<int>("TaskId");
+
+                    b.Property<int>("SkillId");
+
+                    b.HasKey("TaskId", "SkillId");
                 });
 
             modelBuilder.Entity("AllReady.Models.Tenant", b =>
@@ -508,6 +508,17 @@ namespace AllReady.Migrations
                         .ForeignKey("ParentSkillId");
                 });
 
+            modelBuilder.Entity("AllReady.Models.TaskSignup", b =>
+                {
+                    b.HasOne("AllReady.Models.AllReadyTask")
+                        .WithMany()
+                        .ForeignKey("TaskId");
+
+                    b.HasOne("AllReady.Models.ApplicationUser")
+                        .WithMany()
+                        .ForeignKey("UserId");
+                });
+
             modelBuilder.Entity("AllReady.Models.TaskSkill", b =>
                 {
                     b.HasOne("AllReady.Models.Skill")
@@ -517,17 +528,6 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.AllReadyTask")
                         .WithMany()
                         .ForeignKey("TaskId");
-                });
-
-            modelBuilder.Entity("AllReady.Models.TaskUsers", b =>
-                {
-                    b.HasOne("AllReady.Models.AllReadyTask")
-                        .WithMany()
-                        .ForeignKey("TaskId");
-
-                    b.HasOne("AllReady.Models.ApplicationUser")
-                        .WithMany()
-                        .ForeignKey("UserId");
                 });
 
             modelBuilder.Entity("AllReady.Models.UserSkill", b =>
