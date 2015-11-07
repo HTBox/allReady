@@ -11,9 +11,9 @@ using Microsoft.Framework.Configuration;
 using System.IO;
 using Microsoft.AspNet.Hosting;
 
-namespace AllReady.UnitTests
+namespace AllReady.UnitTest
 {
-    public class ActivityApiControllerTest
+    public class ActivityApiControllerTest : TestBase
     {
         private static IServiceProvider _serviceProvider;
         private static bool populatedData = false;
@@ -25,15 +25,19 @@ namespace AllReady.UnitTests
             {
                 var services = new ServiceCollection();
 
+                // Add Configuration to the Container
+                var builder = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddEnvironmentVariables();
+                IConfiguration configuration = builder.Build();
+                services.AddSingleton(x => configuration);
+
+                // Add EF (Full DB, not In-Memory)
                 services.AddEntityFramework()
                     .AddInMemoryDatabase()
                     .AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase());
 
-                var builder = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("testConfig.json");
-                IConfiguration configuration = builder.Build();
-                services.AddSingleton(x => configuration);
+                // Setup hosting environment
                 IHostingEnvironment hostingEnvironment = new HostingEnvironment();
                 hostingEnvironment.EnvironmentName = "Development";
                 services.AddSingleton(x => hostingEnvironment);

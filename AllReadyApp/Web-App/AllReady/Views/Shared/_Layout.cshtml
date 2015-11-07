@@ -65,7 +65,7 @@
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li><a asp-controller="Home" asp-action="About">About</a></li>
-                        <li><a href="#">Blog</a></li>
+                        <li><a href="http://www.htbox.org/blog/">Blog</a></li>
                         <li><a asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
                         <li><a asp-controller="Tenant" asp-action="Index">Organizations</a></li>
                         @await Html.PartialAsync("_AdminNavigationPartial")
@@ -115,7 +115,7 @@
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.datepicker">
         </script>
         <script src="//gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"
-                asp-fallback-src="~/lib/bootstrap-toggle/js/bootstrap-toggle.min.js"
+                asp-fallback-src="~/lib/bootstrap-toggle/js/bootstrap-toggle.js"
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.bootstrapToggle">
         </script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"
@@ -127,6 +127,7 @@
                 asp-fallback-test="window.Hammer && window.Hammer.Instance">
         </script>
     </environment>
+    <script src="~/lib/knockout-bootstrap/src/knockout-bootstrap.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/ko.filterableList.js" asp-append-version="true"></script>
     <script src="~/js/ko.validation.js" asp-append-version="true"></script>

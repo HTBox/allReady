@@ -19,10 +19,9 @@
         <p>@Model.Description</p>
         <p><strong>Duration: </strong> @(Model.StartDateTime.HasValue ? Model.StartDateTime.Value.DateTime.ToString("d") : "*") - @(Model.EndDateTime.HasValue ? Model.EndDateTime.Value.DateTime.ToString("d") : "*")</p>
 
+        <h4>Volunteers @if (Model.NumberOfVolunteersRequired > 0) { <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span> } </h4> 
         @if (Model.AssignedVolunteers.Count > 0)
         {
-            <h4>Volunteers</h4>
-
             <table class="table">
                 <tr>
                     <th>
@@ -40,6 +39,9 @@
                     </tr>
                 }
             </table>
+        } else
+        {
+            <text>No volunteers yet. </text>
         }
     </div>
 </div>

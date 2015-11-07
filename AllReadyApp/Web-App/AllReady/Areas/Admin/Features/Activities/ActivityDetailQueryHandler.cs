@@ -17,6 +17,8 @@ namespace AllReady.Areas.Admin.Features.Activities
 
         public ActivityDetailViewModel Handle(ActivityDetailQuery message)
         {
+            ActivityDetailViewModel result = null;
+
             var activity = _context.Activities
                 .AsNoTracking()
                 .Include(a => a.Campaign)
@@ -25,7 +27,9 @@ namespace AllReady.Areas.Admin.Features.Activities
                 .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
                 .SingleOrDefault(a => a.Id == message.ActivityId);
 
-            var viewModel = new ActivityDetailViewModel
+            if (activity != null)
+            {
+                result = new ActivityDetailViewModel
             {
                 Id = activity.Id,
                 CampaignName = activity.Campaign.Name,
@@ -35,6 +39,7 @@ namespace AllReady.Areas.Admin.Features.Activities
                 StartDateTime = activity.StartDateTimeUtc,
                 EndDateTime = activity.EndDateTimeUtc,
                 Volunteers = activity.UsersSignedUp.Select(u => u.User.UserName).ToList(),
+                NumberOfVolunteersRequired = activity.NumberOfVolunteersRequired,
                 Tasks = activity.Tasks.Select(t => new TaskSummaryViewModel()
                 {
                     Id = t.Id,
@@ -45,7 +50,8 @@ namespace AllReady.Areas.Admin.Features.Activities
                 RequiredSkills = activity.RequiredSkills,
                 ImageUrl = activity.ImageUrl
             };
-            return viewModel;
+            }
+            return result;
         }
     }
 }

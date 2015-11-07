@@ -13,12 +13,18 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
                 <th></th>
             </tr>
             @foreach (var item in Model.OrderBy(s => s.HierarchicalName)) {
             <tr>
                 <td>
                     @item.HierarchicalName
+                </td>
+                <td>
+                    @item.Description
                 </td>
                 <td>
                     <a class="btn" asp-route-area="Admin" asp-controller="Skill" asp-action="Edit" asp-route-id="@item.Id">Edit</a>

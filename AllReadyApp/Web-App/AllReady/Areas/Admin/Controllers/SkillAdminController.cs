@@ -24,7 +24,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Create()
         {
-            return View("Edit").WithSkills(_dataAccess, s => s); //Append skills as-is
+            return View("Edit").WithSkills(_dataAccess); //Append skills as-is
         }
 
         [HttpPost]
@@ -37,7 +37,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return RedirectToAction("Index", new { area = "Admin" });
             }
 
-            return View("Edit", skill).WithSkills(_dataAccess, s => s);
+            return View("Edit", skill).WithSkills(_dataAccess);
         }
 
         public IActionResult Edit(int id)
@@ -48,7 +48,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            return View(skill).WithSkills(_dataAccess, s => s);
+            return View(skill).WithSkills(_dataAccess);
         }
 
         [HttpPost]
@@ -60,7 +60,7 @@ namespace AllReady.Areas.Admin.Controllers
                 _dataAccess.UpdateSkill(skill).Wait();
                 return RedirectToAction("Index", new { area = "Admin" });
             }
-            return View(skill).WithSkills(_dataAccess, s => s);
+            return View(skill).WithSkills(_dataAccess);
         }
 
         public IActionResult Delete(int id)

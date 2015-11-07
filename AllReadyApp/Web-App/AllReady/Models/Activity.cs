@@ -23,6 +23,8 @@ namespace AllReady.Models
 
         public string Description { get; set; }
 
+        public int NumberOfVolunteersRequired { get; set; }
+
         [Display(Name = "Start date")]
         public DateTime StartDateTimeUtc { get; set; }
 

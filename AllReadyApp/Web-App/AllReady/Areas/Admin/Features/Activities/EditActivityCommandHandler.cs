@@ -32,7 +32,8 @@ namespace AllReady.Areas.Admin.Features.Activities
             activity.EndDateTimeUtc = message.Activity.EndDateTime;
             activity.CampaignId = message.Activity.CampaignId;
             activity.TenantId = _context.Campaigns.Single(c => c.Id == activity.CampaignId).ManagingTenantId;
-            
+            activity.NumberOfVolunteersRequired = message.Activity.NumberOfVolunteersRequired;
+
             if (activity.Id > 0)
             {
                 var skillsToRemove = _context.ActivitySkills.Where(skill => skill.ActivityId == activity.Id && (message.Activity.RequiredSkills == null ||
