@@ -246,7 +246,8 @@ namespace AllReady.Areas.Admin.Controllers
                     SmsMessage = "You've been assigned a task from AllReady.",
                     SmsRecipients = smsRecipients,
                     EmailMessage = "You've been assigned a task from AllReady.",
-                    EmailRecipients = emailRecipients
+                    EmailRecipients = emailRecipients,
+                    Subject = "You've been assigned a task from AllReady."
                 }
             };
 
