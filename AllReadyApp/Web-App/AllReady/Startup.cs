@@ -104,20 +104,34 @@ namespace AllReady
 
         private IContainer CreateIoCContainer(IServiceCollection services)
         {
+            var loggerFactory = new LoggerFactory().AddConsole(LogLevel.Debug);
+            services.AddSingleton(x => loggerFactory);
+        
             // todo: move these to a proper autofac module
             // Register application services.
             services.AddSingleton((x) => Configuration);
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
-            services.AddTransient<IQueueStorageService, QueueStorageService>();
             services.AddSingleton<IClosestLocations, SqlClosestLocations>();
             services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
             services.AddSingleton<IImageService, ImageService>();
             //services.AddSingleton<GeoService>();
             services.AddTransient<SampleDataGenerator>();
 
-            var containerBuilder = new ContainerBuilder();
+            if (Configuration["Data:Storage:EnableAzureQueueService"] == "true")
+            {
+                // This setting is false by default. To enable queue processing you will 
+                // need to override the setting in your user secrets or env vars.
+                services.AddTransient<IQueueStorageService, QueueStorageService>();
+            }
+            else
+            {
+                // this writer service will just write to the default logger
+                services.AddTransient<IQueueStorageService, FakeQueueWriterService>();
+            }
 
+            var containerBuilder = new ContainerBuilder();
+            
             containerBuilder.RegisterSource(new ContravariantRegistrationSource());
             containerBuilder.RegisterAssemblyTypes(typeof(IMediator).Assembly).AsImplementedInterfaces();
             containerBuilder.RegisterAssemblyTypes(typeof(Startup).Assembly).AsImplementedInterfaces();

@@ -21,7 +21,8 @@
     "InsertSampleData": "true",
     "InsertTestUsers": "true",
     "Storage": {
-      "AzureStorage": "[storagekey]"
+      "AzureStorage": "[storagekey]",    
+      "EnableAzureQueueService": "false"
     }
   },
   "Authentication": {
