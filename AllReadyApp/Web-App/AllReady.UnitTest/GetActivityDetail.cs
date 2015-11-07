@@ -17,8 +17,35 @@ namespace AllReady.UnitTest
     {
         protected override void LoadTestData()
         {
-            var allReadyContext = ServiceProvider.GetService<AllReadyContext>();
-            allReadyContext.Activities.Add(new Activity { Id = 1 });
+            var context = ServiceProvider.GetService<AllReadyContext>();
+            Tenant htb = new Tenant()
+            {
+                Name = "Humanitarian Toolbox",
+                LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
+                WebUrl = "http://www.htbox.org",
+                Campaigns = new List<Campaign>()
+            };
+            Campaign firePrev = new Campaign()
+            {
+                Name = "Neighborhood Fire Prevention Days",
+                ManagingTenant = htb
+            };
+            htb.Campaigns.Add(firePrev);
+            Activity queenAnne = new Activity()
+            {
+                Id = 1,
+                Name = "Queen Anne Fire Prevention Day",
+                Campaign = firePrev,
+                CampaignId = firePrev.Id,
+                StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
+                EndDateTimeUtc = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
+                Location = new Location { Id = 1 },
+                Tenant = htb,
+                RequiredSkills = new List<ActivitySkill>()
+            };
+            context.Tenants.Add(htb);
+            context.Activities.Add(queenAnne);
+            context.SaveChanges();
         }
 
         [Fact]
@@ -28,7 +55,7 @@ namespace AllReady.UnitTest
             var query = new ActivityDetailQuery { ActivityId = 1 };
             var handler = new ActivityDetailQueryHandler(context);
             var result = handler.Handle(query);
-            Assert.Null(result);
+            Assert.NotNull(result);
         }
 
         [Fact]
