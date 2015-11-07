@@ -13,50 +13,20 @@ using Xunit;
 
 namespace AllReady.UnitTest
 {
-    public class GetActivityDetail
+    public class GetActivityDetail : TestBase
     {
-        private static IServiceProvider _serviceProvider;
-
-        public GetActivityDetail()
+        protected override void LoadTestData()
         {
-            if (_serviceProvider == null)
-            {
-                var services = new ServiceCollection();
-
-                // Add Configuration to the Container
-                var builder = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddEnvironmentVariables();
-                IConfiguration configuration = builder.Build();
-                services.AddSingleton(x => configuration);
-
-                // Add EF (Full DB, not In-Memory)
-                services.AddEntityFramework()
-                    .AddInMemoryDatabase()
-                    .AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase());
-
-                // Setup hosting environment
-                IHostingEnvironment hostingEnvironment = new HostingEnvironment();
-                hostingEnvironment.EnvironmentName = "Development";
-                services.AddSingleton(x => hostingEnvironment);
-                _serviceProvider = services.BuildServiceProvider();
-
-                LoadTestData();
-            }
-        }
-
-        private static void LoadTestData()
-        {
-            var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
+            var allReadyContext = ServiceProvider.GetService<AllReadyContext>();
             allReadyContext.Activities.Add(new Activity { Id = 1 });
         }
 
         [Fact]
         public void ActivityExists()
         {
-            var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
+            var context = ServiceProvider.GetService<AllReadyContext>();
             var query = new ActivityDetailQuery { ActivityId = 1 };
-            var handler = new ActivityDetailQueryHandler(allReadyContext);
+            var handler = new ActivityDetailQueryHandler(context);
             var result = handler.Handle(query);
             Assert.Null(result);
         }
@@ -64,9 +34,9 @@ namespace AllReady.UnitTest
         [Fact]
         public void ActivityDoesNotExist()
         {
-            var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
+            var context = ServiceProvider.GetService<AllReadyContext>();
             var query = new ActivityDetailQuery();
-            var handler = new ActivityDetailQueryHandler(allReadyContext);
+            var handler = new ActivityDetailQueryHandler(context);
             var result = handler.Handle(query);
             Assert.Null(result);
         }

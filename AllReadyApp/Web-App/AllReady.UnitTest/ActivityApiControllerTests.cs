@@ -11,9 +11,9 @@ using Microsoft.Framework.Configuration;
 using System.IO;
 using Microsoft.AspNet.Hosting;
 
-namespace AllReady.UnitTests
+namespace AllReady.UnitTest
 {
-    public class ActivityApiControllerTest
+    public class ActivityApiControllerTest : TestBase
     {
         private static IServiceProvider _serviceProvider;
         private static bool populatedData = false;
