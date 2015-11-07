@@ -12,6 +12,7 @@ namespace AllReady.UnitTests
         public DeletingTask()
         {
             Context.Tasks.Add(new AllReadyTask {Id=1});
+            Context.SaveChanges();
         }
 
         [Fact]
@@ -27,7 +28,7 @@ namespace AllReady.UnitTests
         {
             var sut = new DeleteTaskCommandHandler(Context);
             sut.Handle(new DeleteTaskCommand {TaskId = 666});
-            Assert.False(Context.Tasks.Any(t=>t.Id == TaskId));
+            Assert.False(Context.Tasks.Any(t=>t.Id == 666));
         }
     }
 }
