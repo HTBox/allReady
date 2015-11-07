@@ -16,6 +16,7 @@ using MediatR;
 using AllReady.Areas.Admin.ViewModels;
 using System;
 using AllReady.Areas.Admin.Features.Tasks;
+using AllReady.Areas.Admin.Features.Activities;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -34,50 +35,24 @@ namespace AllReady.Areas.Admin.Controllers
             _bus = bus;
         }
 
-        public override ViewResult View()
-        {
-            return base.View().WithSkills(_dataAccess);
-        }
-        public override ViewResult View(object model)
-        {
-            return base.View(model).WithSkills(_dataAccess);
-        }
-        public override ViewResult View(string viewName)
-        {
-            return base.View(viewName).WithSkills(_dataAccess);
-        }
-        public override ViewResult View(string viewName, object model)
-        {
-            return base.View(viewName, model).WithSkills(_dataAccess);
-        }
-
         // GET: Activity/Details/5
         [HttpGet]
         [Route("Admin/Activity/Details/{id}")]
         public IActionResult Details(int id)
         {
-            var activity = _dataAccess.GetActivity(id);
+            var activity = _bus.Send(new ActivityDetailQuery { ActivityId = id });
 
             if (activity == null)
             {
                 return new HttpStatusCodeResult(404);
             }
 
-            var avm = new AdminActivityViewModel
+            if (!User.IsTenantAdmin(activity.TenantId))
             {
-                Id = activity.Id,
-                CampaignName = activity.Campaign.Name,
-                CampaignId = activity.Campaign.Id,
-                Title = activity.Name,
-                Description = activity.Description,
-                StartDateTime = activity.StartDateTimeUtc,
-                EndDateTime = activity.EndDateTimeUtc,
-                Volunteers = _dataAccess.ActivitySignups.Where(asup => asup.Activity.Id == id).Select(u => u.User.UserName).ToList(),
-                Tasks = _bus.Send(new TaskListQuery() { ActivityId = activity.Id }),
-                ImageUrl = activity.ImageUrl
-            };
+                return new HttpUnauthorizedResult();
+            }
 
-            return View(avm);
+            return View(activity);
         }
 
         // GET: Activity/Create
@@ -133,13 +108,13 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Activity/Edit/5
         public IActionResult Edit(int id)
         {
-            Activity activity = _dataAccess.GetActivity(id);
+            ActivityDetailViewModel activity = _bus.Send(new ActivityDetailQuery{ ActivityId = id });
             if (activity == null)
             {
                 return new HttpStatusCodeResult(404);
             }
 
-            if (!UserIsTenantAdminOfActivity(activity))
+            if (!User.IsTenantAdmin(activity.TenantId))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -150,35 +125,31 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Activity/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Activity activity)
+        public async Task<IActionResult> Edit(ActivityDetailViewModel activity)
         {
             if (activity == null)
             {
                 return HttpBadRequest();
             }
 
-            int campaignId = _dataAccess.GetManagingTenantId(activity.Id);            
+            int campaignId = _dataAccess.GetManagingTenantId(activity.Id);
             if (!User.IsTenantAdmin(campaignId))
             {
                 return HttpUnauthorized();
             }
 
-            if (activity.EndDateTimeUtc < activity.StartDateTimeUtc)
+            if (activity.EndDateTime < activity.StartDateTime)
             {
-                ModelState.AddModelError("EndDateTimeUtc", "End date cannot be earlier than the start date");
+                ModelState.AddModelError("EndDateTime", "End date cannot be earlier than the start date");
             }
 
             if (ModelState.IsValid)
             {
-                if (activity.RequiredSkills != null && activity.RequiredSkills.Count > 0)
-                {
-                    activity.RequiredSkills.ForEach(acsk => acsk.ActivityId = activity.Id);
-                }
-                await _dataAccess.UpdateActivity(activity);
-                return RedirectToAction("Details", "Campaign", new { area = "Admin", id = activity.CampaignId });
+                var id = _bus.Send(new EditActivityCommand {Activity = activity });
+                return RedirectToAction("Details", "Activity", new { area = "Admin", id = id });
             }
             Campaign campaign = _dataAccess.GetCampaign(activity.CampaignId);
-            activity.Campaign = campaign;
+//            activity.Campaign = campaign;
             return View(activity);
         }
 

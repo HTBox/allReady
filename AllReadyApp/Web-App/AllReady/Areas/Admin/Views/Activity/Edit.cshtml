@@ -1,4 +1,6 @@
-@model AllReady.Models.Activity
+@model  AllReady.Areas.Admin.ViewModels.ActivityDetailViewModel
+@inject AllReady.Services.ISelectListService SelectListService
+
 
 @{
     //TODO: Need a better way of identifying Create vs Edit. Suggest not binding directly to model class, create view model instead
@@ -20,10 +22,10 @@
     <div class="col-12">
         <ol class="breadcrumb">
             <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.Campaign.Name</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
             @if (isEdit)
             {
-                <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Name</a></li>
+                <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Title</a></li>
                 <li>Edit</li>
             }
             else
@@ -47,10 +49,10 @@
         <input asp-for="CampaignId" type="hidden" />
         <input asp-for="TenantId" type="hidden" />
         <div class="form-group">
-            <label asp-for="Name" class="control-label col-md-2"></label>
+            <label asp-for="Title" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
@@ -62,17 +64,17 @@
         </div>
 
         <div class="form-group">
-            <label asp-for="StartDateTimeUtc" class="control-label col-md-2"></label>
+            <label asp-for="StartDateTime" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="StartDateTimeUtc" class="form-control datepicker" />
-                <span asp-validation-for="StartDateTimeUtc" class="text-danger"></span>
+                <input asp-for="StartDateTime" class="form-control datepicker" />
+                <span asp-validation-for="StartDateTime" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="EndDateTimeUtc" class="control-label col-md-2"></label>
+            <label asp-for="EndDateTime" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="EndDateTimeUtc" class="form-control datepicker" />
-                <span asp-validation-for="EndDateTimeUtc" class="text-danger"></span>
+                <input asp-for="EndDateTime" class="form-control datepicker" />
+                <span asp-validation-for="EndDateTime" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
@@ -80,7 +82,7 @@
             <div class="col-md-10">
                 <div data-bind="foreach: requiredSkills">
                     <div class="form-inline">
-                        <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                        <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Text', optionsValue: 'Value', value: Id"></select>
                         <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                             Delete
@@ -156,7 +158,7 @@
             ko.applyBindings(new AdminActivityViewModel(requiredSkills, availableSkills));
         })(ko, $,
             @Json.Serialize(Model.RequiredSkills.Select(rs => new { Id = rs.SkillId })),
-            @Json.Serialize(ViewData["Skills"]));
+            @Json.Serialize(SelectListService.GetSkills()));
     </script>
 }
 
