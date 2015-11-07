@@ -1,11 +1,15 @@
 {
+  // Note: You should --=NOT=-- put sensitive information into this file.
+  //       This file should only be used as placeholders for keys that
+  //       can be resolved via UserSecrets or environment variables.
+  //       http://docs.asp.net/en/latest/security/app-secrets.html#installing-the-secret-manager-tool
   "SampleData": {
-  "DefaultAdminUsername": "Administrator@example.com",
-  "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
-  "DefaultUsername": "User@example.com",
-  "DefaultTenantUsername": "tenant@example.com",
-  "DefaultFromEmailAddress": "Administrator@example.com",
-  "DefaultFromDisplayName": "allReady.com Administrator",
+    "DefaultAdminUsername": "Administrator@example.com",
+    "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
+    "DefaultUsername": "User@example.com",
+    "DefaultTenantUsername": "tenant@example.com",
+    "DefaultFromEmailAddress": "Administrator@example.com",
+    "DefaultFromDisplayName": "allReady.com Administrator",
   },
   "ApplicationInsights": {
     "InstrumentationKey": "[instrumentationkey]"
@@ -35,7 +39,8 @@
     },
     "SendGrid": {
       "UserName": "[sendgriduser]",
-      "Password": "[sendgridpassword]"
+      "Password": "[sendgridpassword]",
+      "FromEmail": "[sendgridemailsender]"
     },
     "Twilio": {
       "Sid": "[twiliosid]",
