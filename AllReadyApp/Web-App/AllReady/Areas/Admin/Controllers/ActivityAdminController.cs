@@ -62,6 +62,20 @@ namespace AllReady.Areas.Admin.Controllers
                 return new HttpStatusCodeResult(404);
             }
 
+            List<TaskViewModel> tasks = activity.Tasks.Select(t => new TaskViewModel
+            {
+                Id = t.Id,
+                ActivityId = id,
+                Name = t.Name,
+                Description = t.Description,
+                AssignedVolunteers = t.AssignedVolunteers?.Select(v => new TaskSignupViewModel()
+                {
+                    UserName = v.User.UserName,
+                    StatusDescription = v.StatusDescription,
+                }).ToList(),
+            })
+            .OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList();
+
             var avm = new AdminActivityViewModel
             {
                 Id = activity.Id,
@@ -71,13 +85,8 @@ namespace AllReady.Areas.Admin.Controllers
                 Description = activity.Description,
                 StartDateTime = activity.StartDateTimeUtc,
                 EndDateTime = activity.EndDateTimeUtc,
-                Volunteers = _dataAccess.ActivitySignups.Where(asup => asup.Activity.Id == id).Select(u => u.User.UserName).ToList(),
-                Tasks = activity.Tasks.Select(t => new TaskViewModel
-                { Id = t.Id,
-                    ActivityId =id,
-                    Name = t.Name,
-                    Description = t.Description })
-                    .OrderBy(t => t.StartDateTime).ThenBy(t=> t.Name).ToList(),
+                Volunteers = activity.UsersSignedUp?.Select(s => s.User.UserName).ToList(),
+                Tasks = tasks,
                 ImageUrl = activity.ImageUrl
             };
 
