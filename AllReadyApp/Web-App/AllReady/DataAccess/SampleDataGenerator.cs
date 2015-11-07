@@ -347,18 +347,18 @@ namespace AllReady.Models
             #endregion
 
             #region Users for Activities
-            var username1 = $"{_configuration["DefaultUsername"]}1.com";
-            var username2 = $"{_configuration["DefaultUsername"]}2.com";
-            var username3 = $"{_configuration["DefaultUsername"]}3.com";
+            var username1 = $"{_configuration["SampleData:DefaultUsername"]}1.com";
+            var username2 = $"{_configuration["SampleData:DefaultUsername"]}2.com";
+            var username3 = $"{_configuration["SampleData:DefaultUsername"]}3.com";
 
             var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true };
-            _userManager.CreateAsync(user1, _configuration["DefaultAdminPassword"]).Wait();
+            _userManager.CreateAsync(user1, _configuration["SampleData:DefaultAdminPassword"]).Wait();
             users.Add(user1);
             var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true };
-            _userManager.CreateAsync(user2, _configuration["DefaultAdminPassword"]).Wait();
+            _userManager.CreateAsync(user2, _configuration["SampleData:DefaultAdminPassword"]).Wait();
             users.Add(user2);
             var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true };
-            _userManager.CreateAsync(user3, _configuration["DefaultAdminPassword"]).Wait();
+            _userManager.CreateAsync(user3, _configuration["SampleData:DefaultAdminPassword"]).Wait();
             users.Add(user3);
             #endregion
 
@@ -434,7 +434,7 @@ namespace AllReady.Models
             else
             {
                 impactType = new CampaignImpactType { ImpactType = typeName };
-                
+
                 types.Add(impactType);
             }
             return impactType;
@@ -524,24 +524,24 @@ namespace AllReady.Models
         /// <returns></returns>
         public async Task CreateAdminUser()
         {
-            var user = await _userManager.FindByNameAsync(_configuration["DefaultAdminUsername"]);
+            var user = await _userManager.FindByNameAsync(_configuration["SampleData:DefaultAdminUsername"]);
             if (user == null)
             {
-                user = new ApplicationUser { UserName = _configuration["DefaultAdminUsername"], Email = _configuration["DefaultAdminUsername"] };
+                user = new ApplicationUser { UserName = _configuration["SampleData:DefaultAdminUsername"], Email = _configuration["SampleData:DefaultAdminUsername"] };
                 user.EmailConfirmed = true;
-                _userManager.CreateAsync(user, _configuration["DefaultAdminPassword"]).Wait();
+                _userManager.CreateAsync(user, _configuration["SampleData:DefaultAdminPassword"]).Wait();
                 _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, "SiteAdmin")).Wait();
 
-                var user2 = new ApplicationUser { UserName = _configuration["DefaultTenantUsername"], Email = _configuration["DefaultTenantUsername"] };
+                var user2 = new ApplicationUser { UserName = _configuration["SampleData:DefaultTenantUsername"], Email = _configuration["SampleData:DefaultTenantUsername"] };
                 // For the sake of being able to exercise Tenant-specific stuff, we need to associate a tenant.
                 user2.EmailConfirmed = true;
-                await _userManager.CreateAsync(user2, _configuration["DefaultAdminPassword"]);
+                await _userManager.CreateAsync(user2, _configuration["SampleData:DefaultAdminPassword"]);
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.UserType, "TenantAdmin"));
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.Tenant, _context.Tenants.First().Id.ToString()));
 
-                var user3 = new ApplicationUser { UserName = _configuration["DefaultUsername"], Email = _configuration["DefaultUsername"] };
+                var user3 = new ApplicationUser { UserName = _configuration["SampleData:DefaultUsername"], Email = _configuration["SampleData:DefaultUsername"] };
                 user3.EmailConfirmed = true;
-                await _userManager.CreateAsync(user3, _configuration["DefaultAdminPassword"]);
+                await _userManager.CreateAsync(user3, _configuration["SampleData:DefaultAdminPassword"]);
             }
         }
     }
