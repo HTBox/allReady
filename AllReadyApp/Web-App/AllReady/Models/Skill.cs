@@ -11,7 +11,7 @@ namespace AllReady.Models
         public string Name { get; set; }
         public int? ParentSkillId { get; set; }
         [Display(Name = "Parent skill")]
-        public Skill ParentSkill { get; set; }
+        public virtual Skill ParentSkill { get; set; }
         public string HierarchicalName
         {
             get

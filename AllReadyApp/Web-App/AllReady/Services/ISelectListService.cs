@@ -9,5 +9,6 @@ namespace AllReady.Services
     public interface ISelectListService
     {
         IEnumerable<SelectListItem> GetTenants();
+        IEnumerable<SelectListItem> GetSkills();
     }
 }

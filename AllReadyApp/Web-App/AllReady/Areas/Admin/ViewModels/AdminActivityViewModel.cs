@@ -19,7 +19,7 @@ namespace AllReady.Areas.Admin.ViewModels
         public DateTimeOffset StartDateTime { get; set; }
         public DateTimeOffset EndDateTime { get; set; }
         public LocationViewModel Location { get; set; }
-        public List<TaskViewModel> Tasks { get; set; }
+        public IEnumerable<TaskSummaryViewModel> Tasks { get; set; }
 
         public List<string> Volunteers { get; set; }
 
