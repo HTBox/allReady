@@ -5,7 +5,7 @@ using Xunit;
 
 namespace AllReady.UnitTests
 {
-    public class DeletingTask : InMemoryContextTaskTest
+    public class DeletingTask : InMemoryContextTest
     {
         const int TaskId = 1;
 

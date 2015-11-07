@@ -1,13 +1,17 @@
 using AllReady.Areas.Admin.ViewModels;
+using AllReady.Models;
+using AllReady.UnitTest;
 
 namespace AllReady.UnitTests
 {
-    public abstract class InMemoryContextTaskTest : InMemoryContextTest
+    public abstract class InMemoryContextTest : TestBase
     {
-        protected TaskEditViewModel Model = new TaskEditViewModel();
+        protected AllReadyContext Context;
 
-        protected InMemoryContextTaskTest()
+        protected InMemoryContextTest()
         {
+            Context = (AllReadyContext) ServiceProvider.GetService(typeof(AllReadyContext));
+
             // TODO: setup Model in any way for any other tests
         }
     }
