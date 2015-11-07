@@ -1,4 +1,4 @@
-﻿@model Campaign
+﻿@model AllReady.Areas.Admin.ViewModels.CampaignDetailViewModel
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
@@ -16,7 +16,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <p class="date-address">@Model.StartDateTimeUtc.ToString("D") - @Model.EndDateTimeUtc.ToString("D")</p>
+        <p class="date-address">@Model.StartDate.ToString("D") - @Model.EndDate.ToString("D")</p>
     </div>
 </div>
 
@@ -29,7 +29,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="campaign-sponsor">
-            <strong><a asp-controller="Tenant" asp-action="ShowTenant" asp-route-id="@Model.ManagingTenantId">@Model.ManagingTenant.Name</a></strong>
+            <strong><a asp-controller="Tenant" asp-action="ShowTenant" asp-route-id="@Model.TenantId">@Model.TenantName</a></strong>
         </div>
     </div>
 </div>

@@ -1,8 +1,9 @@
-﻿@model AllReady.ViewModels.TaskViewModel
+﻿@model AllReady.Areas.Admin.ViewModels.TaskEditViewModel
+@inject AllReady.Services.ISelectListService SelectListService
 
 @{
     string cancelUrl;
-    if (Model.IsNew)
+    if (Model.Id == 0)
     {
         ViewBag.Title = $"Create Task";
         cancelUrl = Url.Action("Details", "Activity", new { id = Model.ActivityId, area = "Admin" });
@@ -19,7 +20,7 @@
             <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
             <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
             <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.ActivityId" asp-route-area="Admin">@Model.ActivityName</a></li>
-            @if (Model.IsNew)
+            @if (Model.Id == 0)
             {
                 <li>Create New Task</li>
             }
@@ -41,22 +42,21 @@
     <div class="form-horizontal">
         <div asp-validation-summary="ValidationSummary.ModelOnly" class="text-danger"></div>
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <input type="hidden" asp-for="CampaignId" />
-        <input type="hidden" asp-for="CampaignName" />
         <input type="hidden" asp-for="ActivityId" />
         <input type="hidden" asp-for="ActivityName" />
+        <input type="hidden" asp-for="CampaignId" />
+        <input type="hidden" asp-for="CampaignName" />
         <input type="hidden" asp-for="TenantId" />
-        <input type="hidden" asp-for="TenantName" />
         <div class="form-group">
             <label asp-for="CampaignName" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <span>@Model.CampaignName</span>
+                <p class="form-control-static">@Model.CampaignName</p>
             </div>
         </div>
         <div class="form-group">
             <label asp-for="ActivityName" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <span>@Model.ActivityName</span>
+                <p class="form-control-static">@Model.ActivityName</p>
             </div>
         </div>
         <div class="form-group">
@@ -93,7 +93,7 @@
             <div class="col-md-10">
                 <div data-bind="foreach: requiredSkills">
                     <div class="form-inline">
-                        <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                        <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Text', optionsValue: 'Value', value: Id"></select>
                         <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                             Delete
@@ -125,9 +125,9 @@
 
                 function RequiredSkillObservable(skillModel) {
                     var ret = ko.utils.extend({}, skillModel);
-                    ret.Id = ko.observable(skillModel);
+                    ret.Id = ko.observable(ret.Id);
                     ret.ControlName = function (index) {
-                        return 'RequiredSkills[' + ko.unwrap(index) + ']';
+                        return 'RequiredSkills[' + ko.unwrap(index) + '].SkillId';
                     };
                     return ret;
                 }
@@ -146,8 +146,8 @@
 
             ko.applyBindings(new AdminTaskViewModel(requiredSkills, availableSkills));
         })(ko, $,
-            @Json.Serialize(Model.RequiredSkills),
-            @Json.Serialize(ViewData["Skills"]));
+            @Json.Serialize(Model.RequiredSkills.Select(rs => new { Id = rs.SkillId })),
+            @Json.Serialize(SelectListService.GetSkills()));
     </script>
 }
 
