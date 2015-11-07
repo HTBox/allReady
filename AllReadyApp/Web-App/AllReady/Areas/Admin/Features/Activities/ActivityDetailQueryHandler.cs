@@ -8,7 +8,7 @@ namespace AllReady.Areas.Admin.Features.Activities
 {
     public class ActivityDetailQueryHandler : IRequestHandler<ActivityDetailQuery, ActivityDetailViewModel>
     {
-        private AllReadyContext _context;
+        private IAllReadyContext _context;
 
         public ActivityDetailQueryHandler(AllReadyContext context)
         {

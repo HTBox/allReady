@@ -8,7 +8,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class EditTaskCommandHandler : IRequestHandler<EditTaskCommand, int>
     {
-        private AllReadyContext _context;
+        private IAllReadyContext _context;
 
         public EditTaskCommandHandler(AllReadyContext context)
         {

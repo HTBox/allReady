@@ -6,7 +6,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class DeleteTaskCommandHandler : RequestHandler<DeleteTaskCommand>
     {
-        private AllReadyContext _context;
+        private IAllReadyContext _context;
 
         public DeleteTaskCommandHandler(AllReadyContext context)
         {

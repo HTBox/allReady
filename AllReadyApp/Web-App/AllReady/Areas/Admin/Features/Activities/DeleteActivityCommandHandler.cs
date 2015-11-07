@@ -6,7 +6,7 @@ namespace AllReady.Areas.Admin.Features.Activities
 {
     public class DeleteActivityCommandHandler : RequestHandler<DeleteActivityCommand>
     {
-        private AllReadyContext _context;
+        private IAllReadyContext _context;
 
         public DeleteActivityCommandHandler(AllReadyContext context)
         {

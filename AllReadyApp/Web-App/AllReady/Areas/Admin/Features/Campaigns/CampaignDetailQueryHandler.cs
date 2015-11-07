@@ -8,7 +8,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 {
     public class CampaignDetailQueryHandler : IRequestHandler<CampaignDetailQuery, CampaignDetailViewModel>
     {
-        private AllReadyContext _context;
+        private IAllReadyContext _context;
 
         public CampaignDetailQueryHandler(AllReadyContext context)
         {

@@ -6,7 +6,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 {
     public class DeleteCampaignCommandHandler : RequestHandler<DeleteCampaignCommand>
     {
-        private AllReadyContext _context;
+        private IAllReadyContext _context;
 
         public DeleteCampaignCommandHandler(AllReadyContext context)
         {

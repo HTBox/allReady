@@ -11,7 +11,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class TaskListQueryHandler : IRequestHandler<TaskListQuery, IEnumerable<TaskSummaryViewModel>>
     {
-        private AllReadyContext _context;
+        private IAllReadyContext _context;
 
         public TaskListQueryHandler(AllReadyContext context)
         {

@@ -11,7 +11,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 {
     public class CampaignListQueryHandler : IRequestHandler<CampaignListQuery, IEnumerable<CampaignSummaryViewModel>>
     {
-        private AllReadyContext _context;
+        private IAllReadyContext _context;
 
         public CampaignListQueryHandler(AllReadyContext context)
         {

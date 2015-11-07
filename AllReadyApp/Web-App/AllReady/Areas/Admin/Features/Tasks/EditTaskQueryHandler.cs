@@ -12,7 +12,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class EditTaskQueryHandler : IRequestHandler<EditTaskQuery, TaskEditViewModel>
     {
-        private AllReadyContext _context;
+        private IAllReadyContext _context;
 
         public EditTaskQueryHandler(AllReadyContext context)
         {

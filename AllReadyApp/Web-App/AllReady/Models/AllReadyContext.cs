@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.Infrastructure;
+﻿using Microsoft.Data.Entity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Framework.Configuration;
 using Microsoft.AspNet.Hosting;
@@ -11,7 +6,7 @@ using Microsoft.Data.Entity.Metadata.Builders;
 
 namespace AllReady.Models
 {
-    public class AllReadyContext : IdentityDbContext<ApplicationUser>
+    public class AllReadyContext : IdentityDbContext<ApplicationUser>, IAllReadyContext
     {
         private IConfiguration _configuration;
         private IHostingEnvironment _environment;
@@ -20,6 +15,16 @@ namespace AllReady.Models
         {
             _configuration = configuration;
             _environment = environment;          
+        }
+
+        public new void SaveChanges()
+        {
+            base.SaveChanges();
+        }
+
+        public void Update(object entity)
+        {
+            base.Update(entity);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -7,7 +7,7 @@ namespace AllReady.Areas.Admin.Features.Activities
 {
     public class EditActivityCommandHandler : IRequestHandler<EditActivityCommand, int>
     {
-        private AllReadyContext _context;
+        private IAllReadyContext _context;
 
         public EditActivityCommandHandler(AllReadyContext context)
         {
