@@ -82,19 +82,11 @@ namespace AllReady.Controllers
                 return HttpNotFound();
             }
 
-            var isUserSignedUpForActivity = User.IsSignedIn();
-
-            if (!isUserSignedUpForActivity)
+            var isUserSignedUpForActivity = User.IsSignedIn() && _allReadyDataAccess.GetActivitySignups(id, User.GetUserId()).Any();
+            return View("Activity", new ActivityViewModel(activity, isUserSignedUpForActivity)
             {
-                return View("Activity", new ActivityViewModel(activity, false, User.GetUserId()));
-            }
-
-            var signedUp = _allReadyDataAccess.GetActivitySignups(id, User.GetUserId());
-
-            isUserSignedUpForActivity = signedUp.Any();
-            var assignedTasks = new List<AllReadyTask>();
-
-            return View("Activity", new ActivityViewModel(activity, isUserSignedUpForActivity, User.GetUserId()));
+                UserSkills = User.IsSignedIn() ? _allReadyDataAccess.GetUser(User.GetUserId()).AssociatedSkills.Select(us => us.Skill).ToList() : null
+            });
         }
 
         [HttpGet]

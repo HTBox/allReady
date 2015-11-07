@@ -92,6 +92,10 @@
                     <li>
                         <span data-bind="text: HierarchicalName"></span>
                         <span class="glyphicon glyphicon-info-sign" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                        <span class="label label-success" data-bind="visible: IsUserSkill, tooltip: { title: 'You have this skill!', placement: 'top' }">
+                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                            Match
+                        </span>
                     </li>
                 </ul>
             </div>
@@ -129,7 +133,7 @@
                         renderBingMap('bingMap', positionCoordsList);
                     });
             });
-        var modelStuff = @Json.Serialize(new { tasks = Model.Tasks, skills = Model.RequiredSkills });
+        var modelStuff = @Json.Serialize(new { tasks = Model.Tasks, skills = Model.RequiredSkills, userSkills = Model.UserSkills });
         </script>
         <script type="text/javascript" src="~/js/activity.js"></script>
         <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>

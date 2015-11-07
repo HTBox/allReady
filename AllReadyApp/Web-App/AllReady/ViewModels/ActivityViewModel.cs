@@ -47,6 +47,7 @@ namespace AllReady.ViewModels
                 : new List<TaskViewModel>();
 
             RequiredSkills = activity.RequiredSkills.Select(acsk => acsk.Skill).ToList();
+
         }
 
 
@@ -86,6 +87,7 @@ namespace AllReady.ViewModels
         public List<ApplicationUser> Volunteers { get; set; }
         public string UserId { get; set; }
         public List<Skill> RequiredSkills { get; set; }
+        public List<Skill> UserSkills { get; set; }
     }
 
     public static class ActivityViewModelExtension
