@@ -17,6 +17,7 @@ using AllReady.Areas.Admin.ViewModels;
 using System;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Features.Activities;
+using AllReady.Areas.Admin.Features.Campaigns;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -59,20 +60,20 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Activity/Create/{campaignId}")]
         public IActionResult Create(int campaignId)
         {
-            Campaign campaign = _dataAccess.GetCampaign(campaignId);
-            if (campaign == null || !User.IsTenantAdmin(campaign.ManagingTenantId))
+            CampaignSummaryViewModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
+            if (campaign == null || !User.IsTenantAdmin(campaign.TenantId))
             {
                 return new HttpUnauthorizedResult();
             }
 
-            Activity activity = new Activity
+            var activity = new ActivityDetailViewModel
             {
                 CampaignId = campaign.Id,
-                Campaign = campaign,
-                TenantId = campaign.ManagingTenantId,
-                RequiredSkills = new List<ActivitySkill>(),
-                StartDateTimeUtc = DateTime.Today.Date,
-                EndDateTimeUtc = DateTime.Today.Date.AddMonths(1)
+                CampaignName = campaign.Name,
+                TenantId = campaign.TenantId,
+                TenantName = campaign.TenantName,                
+                StartDateTime = DateTime.Today.Date,
+                EndDateTime = DateTime.Today.Date.AddMonths(1)
             };
             return View("Edit", activity);
         }
@@ -81,26 +82,24 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Activity/Create/{campaignId}")]
-        public async Task<IActionResult> Create(int campaignId, Activity activity)
+        public IActionResult Create(int campaignId, ActivityDetailViewModel activity)
         {
-            if (activity.EndDateTimeUtc < activity.StartDateTimeUtc)
+            if (activity.EndDateTime < activity.StartDateTime)
             {
-                ModelState.AddModelError("EndDateTimeUtc", "End date cannot be earlier than the start date");
+                ModelState.AddModelError("EndDateTime", "End date cannot be earlier than the start date");
             }
 
-            Campaign campaign = _dataAccess.GetCampaign(campaignId);
-            activity.Campaign = campaign;
-            activity.CampaignId = campaignId;
             if (ModelState.IsValid)
-            {                
+            {
+                CampaignSummaryViewModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
                 if (campaign == null || 
-                    !User.IsTenantAdmin(campaign.ManagingTenantId))
+                    !User.IsTenantAdmin(campaign.TenantId))
                 {
                     return HttpUnauthorized();
                 }                
-                activity.TenantId = campaign.ManagingTenantId;
-                await _dataAccess.AddActivity(activity);
-                return RedirectToAction("Details", "Campaign", new { area = "Admin", id = activity.CampaignId });
+                activity.TenantId = campaign.TenantId;
+                var id = _bus.Send(new EditActivityCommand { Activity = activity });
+                return RedirectToAction("Details", "Activity", new { area = "Admin", id = id });
             }
             return View("Edit", activity);
         }
@@ -125,7 +124,7 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Activity/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ActivityDetailViewModel activity)
+        public IActionResult Edit(ActivityDetailViewModel activity)
         {
             if (activity == null)
             {
@@ -147,9 +146,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 var id = _bus.Send(new EditActivityCommand {Activity = activity });
                 return RedirectToAction("Details", "Activity", new { area = "Admin", id = id });
-            }
-            Campaign campaign = _dataAccess.GetCampaign(activity.CampaignId);
-//            activity.Campaign = campaign;
+            }          
             return View(activity);
         }
 

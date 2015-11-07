@@ -8,35 +8,13 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.ViewModels
 {
-    public class ActivityDetailViewModel
+    public class ActivityDetailViewModel : ActivitySummaryViewModel
     {
-        public int Id { get; set; }
-
-        [Display(Name ="Organization")]
-        public int TenantId { get; set; }
-
-        [Display(Name = "Organization")]
-        public string TenantName { get; set; }
-
-        [Display(Name = "Campaign")]
-        public int CampaignId { get; set; }
-        [Display(Name = "Campaign")]
-        public string CampaignName { get; set; }
-
-        [Display(Name = "Name")]
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string ImageUrl { get; set; }
-
-        [Display(Name = "Start Date")]
-        public DateTime StartDateTime { get; set; }
-        [Display(Name = "End Date")]
-        public DateTime EndDateTime { get; set; }
         public LocationViewModel Location { get; set; }
-        public IEnumerable<TaskSummaryViewModel> Tasks { get; set; }
-        public List<string> Volunteers { get; set; }
+        public IEnumerable<TaskSummaryViewModel> Tasks { get; set; } = new List<TaskSummaryViewModel>();
+        public List<string> Volunteers { get; set; } = new List<string>();
 
         [Display(Name = "Required Skills")]
-        public IEnumerable<ActivitySkill> RequiredSkills { get; set; }
+        public IEnumerable<ActivitySkill> RequiredSkills { get; set; } = new List<ActivitySkill>();
     }
 }

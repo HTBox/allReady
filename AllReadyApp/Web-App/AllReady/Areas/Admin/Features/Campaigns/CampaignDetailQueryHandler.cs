@@ -38,10 +38,13 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Id = a.Id,
                     Name = a.Name,
                     Description = a.Description,
-                    StartDate = a.StartDateTimeUtc,
-                    EndDate = a.EndDateTimeUtc,
+                    StartDateTime = a.StartDateTimeUtc,
+                    EndDateTime = a.EndDateTimeUtc,
                     CampaignId = campaign.Id,
-                    CampainName = campaign.Name
+                    CampaignName = campaign.Name,
+                    TenantId = campaign.ManagingTenantId,
+                    TenantName = campaign.ManagingTenant.Name,
+                    ImageUrl = a.ImageUrl
                 })
             };
 

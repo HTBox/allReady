@@ -26,7 +26,7 @@ namespace AllReady.Areas.Admin.Features.Activities
                 activity = new Activity();
             }
 
-            activity.Name = message.Activity.Title;
+            activity.Name = message.Activity.Name;
             activity.Description = message.Activity.Description;
             activity.StartDateTimeUtc = message.Activity.StartDateTime;
             activity.EndDateTimeUtc = message.Activity.EndDateTime;

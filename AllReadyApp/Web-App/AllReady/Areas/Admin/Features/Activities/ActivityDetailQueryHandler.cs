@@ -30,7 +30,7 @@ namespace AllReady.Areas.Admin.Features.Activities
                 Id = activity.Id,
                 CampaignName = activity.Campaign.Name,
                 CampaignId = activity.Campaign.Id,
-                Title = activity.Name,
+                Name = activity.Name,
                 Description = activity.Description,
                 StartDateTime = activity.StartDateTimeUtc,
                 EndDateTime = activity.EndDateTimeUtc,
