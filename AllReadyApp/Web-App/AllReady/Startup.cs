@@ -151,7 +151,9 @@ namespace AllReady
     public async void Configure(IApplicationBuilder app,
       IHostingEnvironment env,
       ILoggerFactory loggerFactory,
-      SampleDataGenerator sampleData)
+      SampleDataGenerator sampleData,
+      AllReadyContext context,
+      IConfiguration configuration)
     {
 
       loggerFactory.MinimumLevel = LogLevel.Information;
@@ -179,6 +181,10 @@ namespace AllReady
         app.UseBrowserLink();
         app.UseDeveloperExceptionPage();
         app.UseDatabaseErrorPage();
+        if (configuration["Data:DefaultConnection:UseInMemory"].ToLowerInvariant() == "false")
+        {
+            context.Database.Migrate();
+        }
       }
       else
       {

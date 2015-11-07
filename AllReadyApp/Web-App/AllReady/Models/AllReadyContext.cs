@@ -19,10 +19,7 @@ namespace AllReady.Models
         public AllReadyContext(IConfiguration configuration, IHostingEnvironment environment)
         {
             _configuration = configuration;
-            _environment = environment;
-
-            // Create DB and do migrations if necessary
-            Database.EnsureCreated();
+            _environment = environment;          
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
