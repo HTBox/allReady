@@ -27,9 +27,10 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     Id = t.Id,
                     Name = t.Name,
                     StartDateTime = t.StartDateTimeUtc,
-                    EndDateTime = t.EndDateTimeUtc
+                    EndDateTime = t.EndDateTimeUtc,
+                    IsUserSignedUpForTask = false
                 });
-
+            //TODO: Add AssignedVolunteers here.
             return tasks;
         }
     }

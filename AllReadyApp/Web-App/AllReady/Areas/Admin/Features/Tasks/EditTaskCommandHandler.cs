@@ -1,6 +1,7 @@
 ﻿using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
+using System;
 using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Tasks
@@ -26,8 +27,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
             task.Description = message.Task.Description;
             task.Activity = _context.Activities.SingleOrDefault(a => a.Id == message.Task.ActivityId);
             task.Tenant = _context.Tenants.SingleOrDefault(t => t.Id == message.Task.TenantId);
-            task.StartDateTimeUtc = message.Task.StartDateTime.Value.DateTime;
-            task.EndDateTimeUtc = message.Task.EndDateTime.Value.DateTime;
+            task.StartDateTimeUtc = message.Task.StartDateTime.HasValue ? message.Task.StartDateTime.Value.UtcDateTime : default(DateTime?);
+            task.EndDateTimeUtc = message.Task.EndDateTime.HasValue ? message.Task.EndDateTime.Value.UtcDateTime : default(DateTime?);
 
             if (task.Id > 0)
             {

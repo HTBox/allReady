@@ -1,4 +1,5 @@
 ﻿using AllReady.Models;
+using AllReady.Models.Notifications;
 using AllReady.Services;
 using MediatR;
 using Newtonsoft.Json;

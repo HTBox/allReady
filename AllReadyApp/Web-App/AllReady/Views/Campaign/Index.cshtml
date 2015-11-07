@@ -69,6 +69,7 @@
                     <th><span title="Name of the campaign">Title</span></th>
                     <th><span title="Description of the campaign">Description</span></th>
                     <th><span title="Date of the campaign">Dates</span></th>
+                    <th><span title="Locations of the campaign">Locations</span></th>
                 </tr>
                 <!-- ko foreach: campaigns.filtered -->
                 <tr>
@@ -80,6 +81,9 @@
                     </td>
                     <td>
                         <span data-bind="text: displayDate()"></span>
+                    </td>
+                    <td>
+                        <a data-bind="attr: { href: '/Campaign/Map/' + Id }">Map</a>
                     </td>
                 </tr>
                 <!-- /ko -->

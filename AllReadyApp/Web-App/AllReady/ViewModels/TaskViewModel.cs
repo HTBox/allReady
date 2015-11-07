@@ -108,6 +108,8 @@ namespace AllReady.ViewModels
 
         public List<TaskSignupViewModel> AssignedVolunteers { get; set; } = new List<TaskSignupViewModel>();
 
+        public int AcceptedVolunteerCount => AssignedVolunteers?.Where(v => v.Status == "Accepted").Count() ?? 0;
+
         public TaskViewModel(AllReadyTask task, bool isUserSignedupForTask)
             : this(task)
         {
@@ -180,7 +182,7 @@ namespace AllReady.ViewModels
 
             if (taskViewModel.AssignedVolunteers != null && taskViewModel.AssignedVolunteers.Count > 0)
             {
-                var taskUsersList = taskViewModel.AssignedVolunteers.Select(tvm => new TaskUsers
+                var taskUsersList = taskViewModel.AssignedVolunteers.Select(tvm => new TaskSignup
                 {
                     Task = dbtask,
                     User = dataAccess.GetUser(tvm.UserId)
@@ -194,7 +196,7 @@ namespace AllReady.ViewModels
                 else
                 {
                     // Can probably rewrite this more efficiently.
-                    foreach (TaskUsers taskUsers in taskUsersList)
+                    foreach (TaskSignup taskUsers in taskUsersList)
                     {
                         if (!(from entry in dbtask.AssignedVolunteers
                               where entry.User.Id == taskUsers.User.Id

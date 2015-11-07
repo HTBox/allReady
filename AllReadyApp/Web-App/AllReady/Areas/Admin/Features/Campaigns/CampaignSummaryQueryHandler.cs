@@ -26,6 +26,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Id = c.Id,
                     Name = c.Name,
                     Description = c.Description,
+                    FullDescription = c.FullDescription,
                     TenantId = c.ManagingTenantId,
                     TenantName = c.ManagingTenant.Name,
                     ImageUrl = c.ImageUrl,

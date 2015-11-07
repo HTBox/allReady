@@ -94,8 +94,10 @@ angular
     .factory("Backend", ["$http", "$q", "CacheManager", function ($http, $q, CacheManager) {
         var svc = {};
         var protocol = "https://";
-        var domainUrl = "allready-dev.azurewebsites.net"; // NOTE: Update when the site is deployed for real
+        var domainUrl = "allready-d.azurewebsites.net"; // NOTE: Update when the site is deployed for real
         var baseUrl = protocol + domainUrl + "/";
+
+
 
         svc.getActivities = function (forceWebQuery) {
             forceWebQuery = typeof forceWebQuery !== "undefined" ? forceWebQuery : false;
@@ -162,13 +164,13 @@ angular
                 });
         };
 
-        svc.doLogin = function(){
+        svc.doLogin = function () {
             var deferred = $q.defer();
             var done = false;
 
             var ref = cordova.InAppBrowser.open(baseUrl + "api/me", "_blank", "location=no");
-            ref.addEventListener("loadstop", function(e) {
-                if (e.url === baseUrl + "api/me") {
+            ref.addEventListener("loadstop", function (e) {
+                if (e.url.toLowerCase().indexOf("api/me") != -1) {
                     if (!done) {
                         ref.close();
                         done = true;
@@ -177,8 +179,8 @@ angular
                 }
             });
 
-            ref.addEventListener("loaderror", function(){
-                if (!done){
+            ref.addEventListener("loaderror", function () {
+                if (!done) {
                     done = true;
                     deferred.reject();
                 }

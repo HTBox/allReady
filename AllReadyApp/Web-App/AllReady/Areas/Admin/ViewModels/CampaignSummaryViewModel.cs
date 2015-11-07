@@ -14,6 +14,9 @@ namespace AllReady.Areas.Admin.ViewModels
 
         public string Description { get; set; }
 
+        [Display(Name = "Full Description")]
+        public string FullDescription { get; set; }
+
         [Display(Name = "Organization")]
         public int TenantId { get; set; }
 

@@ -85,9 +85,9 @@ namespace AllReady.Models
                         .OrderBy(x => x.Activity.StartDateTimeUtc);
         }
 
-        IEnumerable<TaskUsers> IAllReadyDataAccess.GetTasksAssignedToUser(int activityId, string userId)
+        IEnumerable<TaskSignup> IAllReadyDataAccess.GetTasksAssignedToUser(int activityId, string userId)
         {
-            var unfilteredTasks = _dbContext.TaskSignup
+            var unfilteredTasks = _dbContext.TaskSignups
                 .Include(ts => ts.Task)
                 .ThenInclude(t => t.Activity)
                 .Include(ts => ts.User)

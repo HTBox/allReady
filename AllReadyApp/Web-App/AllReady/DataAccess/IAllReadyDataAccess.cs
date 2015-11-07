@@ -68,15 +68,15 @@ namespace AllReady.Models
         #endregion
 
         #region TaskSignup CRUD
-        IEnumerable<TaskUsers> TaskSignups { get; }
+        IEnumerable<TaskSignup> TaskSignups { get; }
 
-        TaskUsers GetTaskSignup(int taskId, string userId);
+        TaskSignup GetTaskSignup(int taskId, string userId);
 
-        Task AddTaskSignupAsync(TaskUsers taskSignup);
+        Task AddTaskSignupAsync(TaskSignup taskSignup);
 
         Task DeleteTaskSignupAsync(int taskSignupId);
 
-        Task UpdateTaskSignupAsync(TaskUsers value);
+        Task UpdateTaskSignupAsync(TaskSignup value);
         #endregion
 
         #region AllReadyTask CRUD
@@ -91,7 +91,7 @@ namespace AllReady.Models
         Task DeleteTaskAsync(int taskId);
 
         Task UpdateTaskAsync(AllReadyTask value);
-        IEnumerable<TaskUsers> GetTasksAssignedToUser(int activityId, string userId);
+        IEnumerable<TaskSignup> GetTasksAssignedToUser(int activityId, string userId);
 
         #endregion
 

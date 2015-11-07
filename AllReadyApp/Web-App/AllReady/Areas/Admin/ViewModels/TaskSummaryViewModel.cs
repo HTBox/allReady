@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AllReady.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -22,5 +23,11 @@ namespace AllReady.Areas.Admin.ViewModels
         public DateTimeOffset? StartDateTime { get; set; }
         [Display(Name = "End date")]
         public DateTimeOffset? EndDateTime { get; set; }
+
+        public bool IsUserSignedUpForTask { get; set; }
+
+        public List<TaskSignupViewModel> AssignedVolunteers { get; set; } = new List<TaskSignupViewModel>();
+
+        public int AcceptedVolunteerCount => AssignedVolunteers?.Where(v => v.Status == "Accepted").Count() ?? 0;
     }
 }

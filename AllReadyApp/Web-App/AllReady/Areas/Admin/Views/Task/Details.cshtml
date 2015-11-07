@@ -17,6 +17,29 @@
     <div class="col-md-10">
         <h2>@Model.Name <a asp-controller="Task" asp-action="Edit" asp-route-id="@Model.Id" class="btn"><i class="glyphicon glyphicon-edit"></i></a> <a asp-controller="Task" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
         <p>@Model.Description</p>
-        <p><strong>Duration: </strong> @Model.StartDateTime.Value.DateTime.ToString("d") - @Model.EndDateTime.Value.DateTime.ToString("d")</p>
+        <p><strong>Duration: </strong> @(Model.StartDateTime.HasValue ? Model.StartDateTime.Value.DateTime.ToString("d") : "*") - @(Model.EndDateTime.HasValue ? Model.EndDateTime.Value.DateTime.ToString("d") : "*")</p>
+
+        @if (Model.AssignedVolunteers.Count > 0)
+        {
+            <h4>Volunteers</h4>
+
+            <table class="table">
+                <tr>
+                    <th>
+                        Volunteer Name
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                </tr>
+                @foreach (var volunteer in Model.AssignedVolunteers)
+                {
+                    <tr>
+                        <td>@volunteer.UserName</td>
+                        <td>@(volunteer.StatusDescription ?? "*")</td>
+                    </tr>
+                }
+            </table>
+        }
     </div>
 </div>

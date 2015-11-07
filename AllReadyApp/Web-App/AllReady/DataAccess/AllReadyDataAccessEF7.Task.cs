@@ -25,7 +25,7 @@ namespace AllReady.Models
 
         AllReadyTask IAllReadyDataAccess.GetTask(int taskId, string userId)
         {
-            var taskUser = _dbContext.TaskSignup.Where(tu => tu.User.Id == userId).SingleOrDefault();
+            var taskUser = _dbContext.TaskSignups.Where(tu => tu.User.Id == userId).SingleOrDefault();
 
             return taskUser == null ? null :
                 _dbContext.Tasks
@@ -42,7 +42,7 @@ namespace AllReady.Models
                 .Include(x => x.Tenant)
                 .Include(x => x.Activity)
                 .Include(x => x.Activity.Campaign)
-                .Include(x => x.AssignedVolunteers)
+                .Include(x => x.AssignedVolunteers).ThenInclude(v => v.User)
                 .Include(x => x.RequiredSkills)
                 .Where(t => t.Id == taskId).SingleOrDefault();
         }
