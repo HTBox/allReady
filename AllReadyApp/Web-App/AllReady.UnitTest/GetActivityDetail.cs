@@ -13,11 +13,11 @@ using Xunit;
 
 namespace AllReady.UnitTest
 {
-    public class AdminTests
+    public class GetActivityDetail
     {
         private static IServiceProvider _serviceProvider;
 
-        public AdminTests()
+        public GetActivityDetail()
         {
             if (_serviceProvider == null)
             {
@@ -36,11 +36,29 @@ namespace AllReady.UnitTest
                 hostingEnvironment.EnvironmentName = "Development";
                 services.AddSingleton(x => hostingEnvironment);
                 _serviceProvider = services.BuildServiceProvider();
+
+                LoadTestData();
             }
         }
 
+        private static void LoadTestData()
+        {
+            var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
+            allReadyContext.Activities.Add(new Activity { Id = 1 });
+        }
+
         [Fact]
-        public void GetInvalidActivityDetail()
+        public void ActivityExists()
+        {
+            var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
+            var query = new ActivityDetailQuery { ActivityId = 1 };
+            var handler = new ActivityDetailQueryHandler(allReadyContext);
+            var result = handler.Handle(query);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void ActivityDoesNotExist()
         {
             var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
             var query = new ActivityDetailQuery();
