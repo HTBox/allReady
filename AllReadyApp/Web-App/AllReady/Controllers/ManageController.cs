@@ -58,7 +58,7 @@ namespace AllReady.Controllers
                 BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
                 AssociatedSkills = user.AssociatedSkills
             };
-            return View(model).WithSkills(_dataAccess);
+            return View(model);
         }
 
         // POST: /Manage/Index
@@ -68,7 +68,7 @@ namespace AllReady.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(model).WithSkills(_dataAccess);
+                return View(model);
             }
             var user = GetCurrentUser();
             user.AssociatedSkills.RemoveAll(usk => model.AssociatedSkills == null || !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
