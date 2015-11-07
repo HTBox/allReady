@@ -1,17 +1,18 @@
 {
+  "SampleData": {
   "DefaultAdminUsername": "Administrator@example.com",
   "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
   "DefaultUsername": "User@example.com",
   "DefaultTenantUsername": "tenant@example.com",
   "DefaultFromEmailAddress": "Administrator@example.com",
   "DefaultFromDisplayName": "allReady.com Administrator",
-
+  },
   "ApplicationInsights": {
     "InstrumentationKey": "[instrumentationkey]"
   },
   "Data": {
     "DefaultConnection": {
-      "UseInMemory": "true",
+      "UseInMemory": "false",
       "AzureConnectionString": "Server=[server],1433;Database=[database];User ID=[userid];Password=[password];Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;MultipleActiveResultsets=true;",
       "LocalConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
     },

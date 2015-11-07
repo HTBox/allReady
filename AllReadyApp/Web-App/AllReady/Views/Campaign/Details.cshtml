@@ -6,7 +6,7 @@
             <img src="~/images/share-shareaholic.png" alt="Share via Shareaholic" />
             <img src="~/images/share-twitter.png" alt="Share via Twitter" />
             <img src="~/images/share-fb.png" alt="Share via Facebook" />
-        </div>
+</div>
     </div>
 </div>
 
@@ -17,8 +17,14 @@
 </div>
 
 <div class="row">
-    <div id="col-main" class="col-md-12">
+    <div id="col-main" class="col-md-8">
         @Html.Raw(Model.FullDescription)
+    </div>
+    <div class="col-md-4">
+        @if (Model.CampaignImpact != null && Model.CampaignImpact.Display)
+        {
+            @Html.Partial("_CampaignImpact")
+        }
     </div>
 </div>
 

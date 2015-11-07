@@ -8,8 +8,8 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    [Migration("20151025011910_RemoveUserTenantRelationship")]
-    partial class RemoveUserTenantRelationship
+    [Migration("20151107181838_InitialDatabase")]
+    partial class InitialDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -57,6 +57,15 @@ namespace AllReady.Migrations
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.ActivitySkill", b =>
+                {
+                    b.Property<int>("ActivityId");
+
+                    b.Property<int>("SkillId");
+
+                    b.HasKey("ActivityId", "SkillId");
                 });
 
             modelBuilder.Entity("AllReady.Models.AllReadyTask", b =>
@@ -138,6 +147,8 @@ namespace AllReady.Migrations
 
                     b.Property<DateTime>("EndDateTimeUtc");
 
+                    b.Property<string>("FullDescription");
+
                     b.Property<string>("ImageUrl");
 
                     b.Property<int>("ManagingTenantId");
@@ -148,6 +159,33 @@ namespace AllReady.Migrations
                     b.Property<string>("OrganizerId");
 
                     b.Property<DateTime>("StartDateTimeUtc");
+
+                    b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.CampaignImpact", b =>
+                {
+                    b.Property<int>("Id");
+
+                    b.Property<int?>("CampaignImpactTypeId");
+
+                    b.Property<int>("CurrentImpactLevel");
+
+                    b.Property<bool>("Display");
+
+                    b.Property<int>("NumericImpactGoal");
+
+                    b.Property<string>("TextualImpactGoal");
+
+                    b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.CampaignImpactType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ImpactType");
 
                     b.HasKey("Id");
                 });
@@ -221,7 +259,20 @@ namespace AllReady.Migrations
                     b.HasKey("Id");
                 });
 
-            modelBuilder.Entity("AllReady.Models.TaskUsers", b =>
+            modelBuilder.Entity("AllReady.Models.Skill", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<int?>("ParentSkillId");
+
+                    b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.TaskSignup", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -239,6 +290,15 @@ namespace AllReady.Migrations
                     b.HasKey("Id");
                 });
 
+            modelBuilder.Entity("AllReady.Models.TaskSkill", b =>
+                {
+                    b.Property<int>("TaskId");
+
+                    b.Property<int>("SkillId");
+
+                    b.HasKey("TaskId", "SkillId");
+                });
+
             modelBuilder.Entity("AllReady.Models.Tenant", b =>
                 {
                     b.Property<int>("Id")
@@ -251,6 +311,15 @@ namespace AllReady.Migrations
                     b.Property<string>("WebUrl");
 
                     b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.UserSkill", b =>
+                {
+                    b.Property<string>("UserId");
+
+                    b.Property<int>("SkillId");
+
+                    b.HasKey("UserId", "SkillId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNet.Identity.EntityFramework.IdentityRole", b =>
@@ -362,6 +431,17 @@ namespace AllReady.Migrations
                         .ForeignKey("UserId");
                 });
 
+            modelBuilder.Entity("AllReady.Models.ActivitySkill", b =>
+                {
+                    b.HasOne("AllReady.Models.Activity")
+                        .WithMany()
+                        .ForeignKey("ActivityId");
+
+                    b.HasOne("AllReady.Models.Skill")
+                        .WithMany()
+                        .ForeignKey("SkillId");
+                });
+
             modelBuilder.Entity("AllReady.Models.AllReadyTask", b =>
                 {
                     b.HasOne("AllReady.Models.Activity")
@@ -391,6 +471,17 @@ namespace AllReady.Migrations
                         .ForeignKey("OrganizerId");
                 });
 
+            modelBuilder.Entity("AllReady.Models.CampaignImpact", b =>
+                {
+                    b.HasOne("AllReady.Models.CampaignImpactType")
+                        .WithMany()
+                        .ForeignKey("CampaignImpactTypeId");
+
+                    b.HasOne("AllReady.Models.Campaign")
+                        .WithOne()
+                        .ForeignKey("AllReady.Models.CampaignImpact", "Id");
+                });
+
             modelBuilder.Entity("AllReady.Models.CampaignSponsors", b =>
                 {
                     b.HasOne("AllReady.Models.Campaign")
@@ -409,11 +500,40 @@ namespace AllReady.Migrations
                         .ForeignKey("PostalCodePostalCode");
                 });
 
-            modelBuilder.Entity("AllReady.Models.TaskUsers", b =>
+            modelBuilder.Entity("AllReady.Models.Skill", b =>
+                {
+                    b.HasOne("AllReady.Models.Skill")
+                        .WithMany()
+                        .ForeignKey("ParentSkillId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.TaskSignup", b =>
                 {
                     b.HasOne("AllReady.Models.AllReadyTask")
                         .WithMany()
                         .ForeignKey("TaskId");
+
+                    b.HasOne("AllReady.Models.ApplicationUser")
+                        .WithMany()
+                        .ForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.TaskSkill", b =>
+                {
+                    b.HasOne("AllReady.Models.Skill")
+                        .WithMany()
+                        .ForeignKey("SkillId");
+
+                    b.HasOne("AllReady.Models.AllReadyTask")
+                        .WithMany()
+                        .ForeignKey("TaskId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.UserSkill", b =>
+                {
+                    b.HasOne("AllReady.Models.Skill")
+                        .WithMany()
+                        .ForeignKey("SkillId");
 
                     b.HasOne("AllReady.Models.ApplicationUser")
                         .WithMany()
