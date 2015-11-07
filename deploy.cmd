@@ -23,8 +23,10 @@ setlocal enabledelayedexpansion
 SET ARTIFACTS=%~dp0%..\artifacts
 
 IF NOT DEFINED DEPLOYMENT_SOURCE (
-  SET DEPLOYMENT_SOURCE=%~dp0%..\AllReadyApp
+  SET DEPLOYMENT_SOURCE=%~dp0%
 )
+
+SET DEPLOYMENT_SOURCE=%DEPLOYMENT_SOURCE%\AllReadyApp
 
 IF NOT DEFINED DEPLOYMENT_TARGET (
   SET DEPLOYMENT_TARGET=%ARTIFACTS%\wwwroot
@@ -91,21 +93,21 @@ IF !ERRORLEVEL! NEQ 0 goto error
 :: 3. Run DNU Restore, Nuget restore for specific projects
 call %DNX_RUNTIME%\bin\dnu restore "%DEPLOYMENT_SOURCE%" %SCM_DNU_RESTORE_OPTIONS%
 IF !ERRORLEVEL! NEQ 0 goto error
-call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\AllReadyApp\AllReady.Models\AllReady.Models.csproj" -SolutionDirectory %DEPLOYMENT_SOURCE%\AllReadyApp
+call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\AllReady.Models\AllReady.Models.csproj" -SolutionDirectory %DEPLOYMENT_SOURCE%
 IF !ERRORLEVEL! NEQ 0 goto error
-call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj" -SolutionDirectory %DEPLOYMENT_SOURCE%\AllReadyApp
+call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\NotificationsProcessor\NotificationsProcessor.csproj" -SolutionDirectory %DEPLOYMENT_SOURCE%
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 4. Run Our Custom build steps:
-call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\AllReadyApp\AllReady.Models\AllReady.Models.csproj"
+call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\AllReady.Models\AllReady.Models.csproj"
 IF !ERRORLEVEL! NEQ 0 goto error
-call %DNX_RUNTIME%\bin\dnu build "%DEPLOYMENT_SOURCE%\AllReadyApp\wrap\AllReady.Models\project.json"
+call %DNX_RUNTIME%\bin\dnu build "%DEPLOYMENT_SOURCE%\wrap\AllReady.Models\project.json"
 IF !ERRORLEVEL! NEQ 0 goto error
-call %DNX_RUNTIME%\bin\dnu build "%DEPLOYMENT_SOURCE%\AllReadyApp\Web-App\AllReady\project.json"
+call %DNX_RUNTIME%\bin\dnu build "%DEPLOYMENT_SOURCE%\Web-App\AllReady\project.json"
 IF !ERRORLEVEL! NEQ 0 goto error
-call %DNX_RUNTIME%\bin\dnu build "%DEPLOYMENT_SOURCE%\AllReadyApp\Web-App\AllReady.UnitTest\project.json"
+call %DNX_RUNTIME%\bin\dnu build "%DEPLOYMENT_SOURCE%\Web-App\AllReady.UnitTest\project.json"
 IF !ERRORLEVEL! NEQ 0 goto error
-call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj"
+call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\NotificationsProcessor\NotificationsProcessor.csproj"
 
 :: 4.1. Publish the site:
 call %DNX_RUNTIME%\bin\dnu publish ".\Web-App\AllReady\project.json" --runtime %DNX_RUNTIME% --out "%DEPLOYMENT_TEMP%" %SCM_DNU_PUBLISH_OPTIONS%
