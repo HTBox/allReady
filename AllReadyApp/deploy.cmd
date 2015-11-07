@@ -64,7 +64,7 @@ SET MSBUILD_PATH=%ProgramFiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe
 :: Deployment
 :: ----------
 
-echo Handling ASP.NET 5 Web Application deployment.
+echo Custom Deployment script for combined csproj and xproj deployment.
 
 :: Remove wwwroot if deploying to default location
 IF "%DEPLOYMENT_TARGET%" == "%WEBROOT_PATH%" (
