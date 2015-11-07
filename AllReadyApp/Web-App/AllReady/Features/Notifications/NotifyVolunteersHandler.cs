@@ -34,7 +34,8 @@ namespace AllReady.Features.Notifications
                 var queuedEmail = new QueuedEmailMessage
                 {
                     Recipient = recipient,
-                    Message = message.ViewModel.EmailMessage
+                    Message = message.ViewModel.EmailMessage, 
+                    Subject = message.ViewModel.Subject
                 };
                 var email = JsonConvert.SerializeObject(queuedEmail);
                 _storageService.SendMessage(QueueStorageService.Queues.EmailQueue, email);

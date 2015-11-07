@@ -1,10 +1,11 @@
-﻿using Microsoft.Framework.Configuration;
-using SendGrid;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
+using AllReady.Features.Notifications;
+using MediatR;
+using Microsoft.Framework.Configuration;
+using SendGrid;
 using Twilio;
 
 namespace AllReady.Services
@@ -15,46 +16,45 @@ namespace AllReady.Services
     public class AuthMessageSender : IEmailSender, ISmsSender
     {
         private readonly IConfiguration _config;
-        public AuthMessageSender(IConfiguration config)
+        private readonly IMediator _bus;
+
+        public AuthMessageSender(IConfiguration config, IMediator bus)
         {
             _config = config;
+            _bus = bus;
         }
+
         public Task SendEmailAsync(string email, string subject, string message)
         {
-            // Plug in your email service here to send an email.
-            var myMessage = new SendGridMessage();
-            myMessage.AddTo(email);
-            myMessage.From = new System.Net.Mail.MailAddress(_config["DefaultFromEmailAddress"], _config["DefaultFromDisplayName"]);
-            myMessage.Subject = subject;
-            myMessage.Text = message;
-            myMessage.Html = message;
-            var credentials = new NetworkCredential(
-                _config["Authentication:SendGrid:UserName"],
-                _config["Authentication:SendGrid:Password"]);
-            // Create a Web transport for sending email.
-            ITransportAdapter.Credentials = credentials;
-            ITransportAdapter.Config = _config;
-            var transportWeb = ITransportAdapter.Create();
-            
-            // Send the email.
-            if (transportWeb != null)
+            var command = new NotifyVolunteersCommand
             {
-                return transportWeb.DeliverAsync(myMessage);
-            }
-            else
-            {
-                return Task.FromResult(0);
-            }
+                ViewModel = new NotifyVolunteersViewModel
+                {
+                    EmailMessage = message,
+                    EmailRecipients = new List<string> {email},
+                    Subject = subject
+                }
+            };
+
+            _bus.Send(command);
+            return Task.FromResult(0);
         }
 
         public Task SendSmsAsync(string number, string message)
         {
-            // Plug in your SMS service here to send a text message.
-            var twilio = new TwilioRestClient(
-                _config["Authentication:Twilio:Sid"],
-                _config["Authentication:Twilio:Token"]);
-            var result = twilio.SendMessage(_config["Authentication:Twilio:PhoneNo"],
-                number, message);
+
+
+            var command = new NotifyVolunteersCommand
+            {
+                ViewModel = new NotifyVolunteersViewModel
+                {
+                    SmsMessage = message,
+                    EmailRecipients = new List<string> { number },
+                }
+            };
+
+            _bus.Send(command);
+
             return Task.FromResult(0);
         }
     }
