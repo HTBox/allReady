@@ -125,7 +125,7 @@
 
                 function RequiredSkillObservable(skillModel) {
                     var ret = ko.utils.extend({}, skillModel);
-                    ret.Id = ko.observable(skillModel);
+                    ret.Id = ko.observable(ret.Id);
                     ret.ControlName = function (index) {
                         return 'RequiredSkills[' + ko.unwrap(index) + '].SkillId';
                     };
@@ -146,7 +146,7 @@
 
             ko.applyBindings(new AdminTaskViewModel(requiredSkills, availableSkills));
         })(ko, $,
-            @Json.Serialize(Model.RequiredSkills),
+            @Json.Serialize(Model.RequiredSkills.Select(rs => new { Id = rs.SkillId })),
             @Json.Serialize(SelectListService.GetSkills()));
     </script>
 }

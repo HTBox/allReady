@@ -1,5 +1,6 @@
 ﻿using AllReady.Models;
 using MediatR;
+using Microsoft.Data.Entity;
 using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Tasks
@@ -14,7 +15,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
         }
         public int Handle(EditTaskCommand message)
         {
-            var task = _context.Tasks.SingleOrDefault(t => t.Id == message.Task.Id);
+            var task = _context.Tasks.Include(t => t.RequiredSkills).SingleOrDefault(t => t.Id == message.Task.Id);
 
             if (task == null)
             {
@@ -27,7 +28,17 @@ namespace AllReady.Areas.Admin.Features.Tasks
             task.Tenant = _context.Tenants.SingleOrDefault(t => t.Id == message.Task.TenantId);
             task.StartDateTimeUtc = message.Task.StartDateTime.Value.DateTime;
             task.EndDateTimeUtc = message.Task.EndDateTime.Value.DateTime;
-            task.RequiredSkills = message.Task.RequiredSkills.ToList();
+
+            if (task.Id > 0)
+            {
+                var tsToRemove = _context.TaskSkills.Where(ts => ts.TaskId == task.Id && (message.Task.RequiredSkills == null ||
+                    !message.Task.RequiredSkills.Any(ts1 => ts1.SkillId == ts.SkillId)));
+                _context.TaskSkills.RemoveRange(tsToRemove);
+            }
+            if (message.Task.RequiredSkills != null)
+            {
+                task.RequiredSkills.AddRange(message.Task.RequiredSkills.Where(mt => !task.RequiredSkills.Any(ts => ts.SkillId == mt.SkillId)));
+            }
 
             _context.Update(task);
             _context.SaveChanges();

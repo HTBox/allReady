@@ -109,7 +109,7 @@ namespace AllReady.Areas.Admin.Controllers
                     return HttpUnauthorized();
                 }
                 _bus.Send(new EditTaskCommand() { Task = model });
-                return RedirectToAction("Details", "Activity", new { id = model.ActivityId });
+                return RedirectToAction("Details", "Task", new { id = model.Id });
             }
 
             return View(model);
