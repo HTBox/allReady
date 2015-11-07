@@ -11,6 +11,9 @@ using AllReady.Models;
 using AllReady.ViewModels;
 using System.Security.Claims;
 using AllReady.Security;
+using MediatR;
+using AllReady.Areas.Admin.Features.Tasks;
+using AllReady.Areas.Admin.ViewModels;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -19,27 +22,12 @@ namespace AllReady.Areas.Admin.Controllers
     public class TaskController : Controller
     {
         private readonly IAllReadyDataAccess _dataAccess;
+        private readonly IMediator _bus;
 
-        public TaskController(IAllReadyDataAccess dataAccess)
+        public TaskController(IAllReadyDataAccess dataAccess, IMediator bus)
         {
             _dataAccess = dataAccess;
-        }
-
-        public override ViewResult View()
-        {
-            return base.View().WithSkills(_dataAccess);
-        }
-        public override ViewResult View(object model)
-        {
-            return base.View(model).WithSkills(_dataAccess);
-        }
-        public override ViewResult View(string viewName)
-        {
-            return base.View(viewName).WithSkills(_dataAccess);
-        }
-        public override ViewResult View(string viewName, object model)
-        {
-            return base.View(viewName, model).WithSkills(_dataAccess);
+            _bus = bus;
         }
 
         [HttpGet]
@@ -51,15 +39,13 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpUnauthorized();
             }
-            var viewModel = new TaskViewModel()
+            var viewModel = new TaskEditViewModel()
             {
-                IsNew = true,
                 ActivityId = activity.Id,
                 ActivityName = activity.Name,
                 CampaignId = activity.CampaignId,
                 CampaignName = activity.Campaign.Name,
-                TenantId = activity.TenantId,
-                TenantName = activity.Tenant.Name
+                TenantId = activity.TenantId
             };
             return View("Edit", viewModel);
         }
@@ -67,7 +53,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Task/Create/{activityId}")]
-        public IActionResult Create(int activityId, TaskViewModel model)
+        public IActionResult Create(int activityId, TaskEditViewModel model)
         {
             if (model.EndDateTime < model.StartDateTime)
             {
@@ -76,15 +62,13 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var activity = _dataAccess.GetActivity(model.ActivityId);
-                if (activity == null || !User.IsTenantAdmin(activity.TenantId))
+                if (!User.IsTenantAdmin(model.TenantId))
                 {
                     return HttpUnauthorized();
                 }
-                _dataAccess.AddTaskAsync(model.ToModel(_dataAccess));
+                _bus.Send(new EditTaskCommand() { Task = model });
                 return RedirectToAction("Details", "Activity", new { id = activityId });
             }
-            model.IsNew = true;
             return View("Edit", model);
         }
 
@@ -92,22 +76,21 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Task/Edit/{id}")]
         public IActionResult Edit(int id)
         {
-            var dbTask = _dataAccess.GetTask(id);
-            if (dbTask == null || dbTask.Activity == null)
+            var task = _bus.Send(new EditTaskQuery() { TaskId = id });
+            if (task == null)
             {
                 return HttpNotFound();
             }            
-            if (!User.IsTenantAdmin(dbTask.Activity.TenantId))
+            if (!User.IsTenantAdmin(task.TenantId))
             {
                 return HttpUnauthorized();
             }
-            var model = new TaskViewModel(dbTask);
-            return View(model);
+            return View(task);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(TaskViewModel model)
+        public IActionResult Edit(TaskEditViewModel model)
         {
             if (model.EndDateTime < model.StartDateTime)
             {
@@ -116,13 +99,12 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var activity = _dataAccess.GetActivity(model.ActivityId);
-                if (activity == null || !User.IsTenantAdmin(activity.TenantId))
+                if (!User.IsTenantAdmin(model.TenantId))
                 {
                     return HttpUnauthorized();
                 }
-                await _dataAccess.UpdateTaskAsync(model.ToModel(_dataAccess));
-                return RedirectToAction("Details", "Activity", new { id = model.ActivityId });
+                _bus.Send(new EditTaskCommand() { Task = model });
+                return RedirectToAction("Details", "Task", new { id = model.Id });
             }
 
             return View(model);
@@ -130,56 +112,48 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Delete(int id)
         {
-
-            var dbTask = _dataAccess.GetTask(id);
-            if (dbTask == null || dbTask.Activity == null)
+            var task = _bus.Send(new TaskQuery() { TaskId = id });
+            if (task == null)
             {
-                return new HttpNotFoundResult();
+                return HttpNotFound();
             }
             
-            if (!User.IsTenantAdmin(dbTask.Activity.TenantId))
+            if (!User.IsTenantAdmin(task.TenantId))
             {
                 return HttpUnauthorized();
             }
 
-            var model = new TaskViewModel(dbTask);
-            return View(model);
+            return View(task);
         }
 
         [HttpGet]
-        [Route("Admin/Task/Details/{activityId}/{id}")]
-        public IActionResult Details(int activityId, int id)
+        [Route("Admin/Task/Details/{id}")]
+        public IActionResult Details(int id)
         {
-
-            var dbTask = _dataAccess.GetTask(id);
-            if (dbTask == null)
+            var task = _bus.Send(new TaskQuery() { TaskId = id });
+            if (task == null)
             {
                 return new HttpNotFoundResult();
             }
-
-            var model = new TaskViewModel(dbTask);
-
-            return View(model);
+            return View(task);
         }
         // POST: Activity/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            var dbTask = _dataAccess.GetTask(id);
-            if (dbTask == null || dbTask.Activity == null)
+            var task = _bus.Send(new TaskQuery() { TaskId = id });
+            if (task == null)
             {
-                return new HttpNotFoundResult();
+                return HttpNotFound();
             }
-
-            if (!User.IsTenantAdmin(dbTask.Activity.TenantId))
+            if (!User.IsTenantAdmin(task.TenantId))
             {
                 return HttpUnauthorized();
             }
-
-            await _dataAccess.DeleteTaskAsync(id);
-
-            return RedirectToAction("Details", "Activity", new { id = dbTask.Activity.Id});
+            var activityId = task.ActivityId;
+            _bus.Send(new DeleteTaskCommand() { TaskId = id });
+            return RedirectToAction("Details", "Activity", new { id = activityId });
         }
 
     }

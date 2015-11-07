@@ -16,7 +16,7 @@ namespace AllReady.Models
         [Display(Name = "Full Description")]
         public string FullDescription { get; set; }
 
-        [Display(Name = "Managing Tenant")]
+        [Display(Name = "Managing Organization")]
         public int ManagingTenantId { get; set; }
         public Tenant ManagingTenant { get; set; }
         [Display(Name = "Image URL")]
