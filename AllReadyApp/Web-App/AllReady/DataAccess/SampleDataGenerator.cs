@@ -35,6 +35,9 @@ namespace AllReady.Models
                 _context.Skills.Any() ||
                 _context.Resources.Any())
             {
+                // Attempt to populate CampaignImpactTypes:
+                InsertCampaignImpactTypes(_context);
+                _context.SaveChanges();
                 return;
             }
             // new up some data
@@ -43,7 +46,7 @@ namespace AllReady.Models
             #region postalCodes
             var existingPostalCode = _context.PostalCodes.ToList();
             _context.PostalCodes.AddRange(GetPostalCodes(existingPostalCode));
-            _context.SaveChanges();
+            //_context.SaveChanges();
             #endregion
 
             #region Skills
@@ -54,7 +57,7 @@ namespace AllReady.Models
             var md = GetSkill(skills, existingSkills, "MD", medical);
             var surgeon = GetSkill(skills, existingSkills, "Surgeon", md);
             _context.Skills.AddRange(skills);
-            _context.SaveChanges();
+            //_context.SaveChanges();
             #endregion
 
             List<Location> locations = GetLocations();
@@ -339,7 +342,7 @@ namespace AllReady.Models
             _context.Campaigns.AddRange(campaigns);
             _context.Activities.AddRange(activities);
             _context.Resources.AddRange(resources);
-            _context.SaveChanges();
+            //_context.SaveChanges();
             #endregion
 
             #region Users for Activities
@@ -368,6 +371,22 @@ namespace AllReady.Models
 
         }
 
+        /// <summary>
+        /// Split this off from the InsertTestData function so we can call this
+        /// even if the "anti-database-pollution" logic bails due to pre-existing
+        /// database records. The reason for this is that we are preventing
+        /// duplicate records already.
+        /// </summary>
+        /// <param name="_context"></param>
+        private static void InsertCampaignImpactTypes(AllReadyContext _context)
+        {
+            var campaignImpactTypes = new List<CampaignImpactType>();
+            var existingImpactTypes = _context.CampaignImpactTypes.ToList();
+            var numeric = GetImpactType(campaignImpactTypes, existingImpactTypes, "Numeric");
+            var textual = GetImpactType(campaignImpactTypes, existingImpactTypes, "Textual");
+            _context.CampaignImpactTypes.AddRange(campaignImpactTypes);
+        }
+
         private static Skill GetSkill(List<Skill> skills, List<Skill> existingSkills, string skillName, Skill parentSkill = null)
         {
             Skill skill;
@@ -385,6 +404,22 @@ namespace AllReady.Models
                 skills.Add(skill);
             }
             return skill;
+        }
+
+        private static CampaignImpactType GetImpactType(List<CampaignImpactType> types, List<CampaignImpactType> existingTypes, string typeName)
+        {
+            CampaignImpactType impactType;
+            if (existingTypes.Any(item => item.ImpactType == typeName))
+            {
+                impactType = existingTypes.Single(item => item.ImpactType == typeName);
+            }
+            else
+            {
+                impactType = new CampaignImpactType { ImpactType = typeName };
+                
+                types.Add(impactType);
+            }
+            return impactType;
         }
 
         #region Sample Data Helper methods
