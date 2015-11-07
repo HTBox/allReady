@@ -150,10 +150,10 @@ namespace AllReady.Controllers
 
             if (task.AssignedVolunteers == null)
             {
-                task.AssignedVolunteers = new List<TaskUsers>();
+                task.AssignedVolunteers = new List<TaskSignup>();
             }
 
-            task.AssignedVolunteers.Add(new TaskUsers
+            task.AssignedVolunteers.Add(new TaskSignup
             {
                 Task = task,
                 User = user,
