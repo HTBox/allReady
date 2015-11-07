@@ -34,21 +34,18 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Task/Create/{activityId}")]
         public IActionResult Create(int activityId)
         {
-
             var activity = _dataAccess.GetActivity(activityId);
             if (activity == null || !User.IsTenantAdmin(activity.TenantId))
             {
                 return HttpUnauthorized();
             }
-            var viewModel = new TaskViewModel()
+            var viewModel = new TaskEditViewModel()
             {
-                IsNew = true,
                 ActivityId = activity.Id,
                 ActivityName = activity.Name,
                 CampaignId = activity.CampaignId,
                 CampaignName = activity.Campaign.Name,
-                TenantId = activity.TenantId,
-                TenantName = activity.Tenant.Name
+                TenantId = activity.TenantId
             };
             return View("Edit", viewModel);
         }
@@ -56,7 +53,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Task/Create/{activityId}")]
-        public IActionResult Create(int activityId, TaskViewModel model)
+        public IActionResult Create(int activityId, TaskEditViewModel model)
         {
             if (model.EndDateTime < model.StartDateTime)
             {
@@ -65,15 +62,13 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var activity = _dataAccess.GetActivity(model.ActivityId);
-                if (activity == null || !User.IsTenantAdmin(activity.TenantId))
+                if (!User.IsTenantAdmin(model.TenantId))
                 {
                     return HttpUnauthorized();
                 }
-                _dataAccess.AddTaskAsync(model.ToModel(_dataAccess));
+                _bus.Send(new EditTaskCommand() { Task = model });
                 return RedirectToAction("Details", "Activity", new { id = activityId });
             }
-            model.IsNew = true;
             return View("Edit", model);
         }
 
@@ -109,7 +104,7 @@ namespace AllReady.Areas.Admin.Controllers
                     return HttpUnauthorized();
                 }
                 _bus.Send(new EditTaskCommand() { Task = model });
-                return RedirectToAction("Details", "Activity", new { id = model.ActivityId });
+                return RedirectToAction("Details", "Task", new { id = model.Id });
             }
 
             return View(model);
