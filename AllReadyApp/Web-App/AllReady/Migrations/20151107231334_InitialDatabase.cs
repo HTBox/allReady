@@ -5,7 +5,7 @@ using Microsoft.Data.Entity.Metadata;
 
 namespace AllReady.Migrations
 {
-    public partial class InitCreate : Migration
+    public partial class InitialDatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
