@@ -11,5 +11,6 @@ namespace AllReady.ViewModels
         public string PreferredEmail { get; set; }
         public string PreferredPhoneNumber { get; set; }
         public string AdditionalInfo { get; set; }
+        public List<int> AddSkillIds { get; set; } = new List<int>();
     }
 }
