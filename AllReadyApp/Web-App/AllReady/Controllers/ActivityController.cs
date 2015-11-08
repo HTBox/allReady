@@ -90,11 +90,10 @@ namespace AllReady.Controllers
         }
 
         
-
         [HttpGet]
         [Route("/Activity/Signup/{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> Signup(int id)
+        public IActionResult Signup(int id)
         {
             var returnUrl = $"/Activity/Signup/{id}";
 
@@ -111,7 +110,19 @@ namespace AllReady.Controllers
                 return RedirectToAction(nameof(AccountController.Login), "Account", new { ReturnUrl = returnUrl });
             }
 
-            var activity = _allReadyDataAccess.GetActivity(id);
+            //Otherwise, user is actually logged in, but shouldn't have been able to get here without signup info (punt back to activity)
+            return RedirectToAction(nameof(ShowActivity), new { id = id });
+
+        }
+
+        [HttpPost]
+        [Route("/Activity/Signup")]
+        [Authorize]
+        public async Task<IActionResult> Signup(ActivitySignupViewModel signupModel)
+        {
+            //TODO: do as command
+            var user = _allReadyDataAccess.GetUser(User.GetUserId());
+            var activity = _allReadyDataAccess.GetActivity(signupModel.ActivityId);
 
             if (activity == null)
             {
@@ -138,7 +149,8 @@ namespace AllReady.Controllers
                 await _allReadyDataAccess.UpdateActivity(activity);
             }
 
-            return View("Activity", new ActivityViewModel(activity).WithUserInfo(activity, User, _allReadyDataAccess));
+            return RedirectToAction(nameof(ShowActivity), new { id = signupModel.ActivityId });
         }
+
     }
 }
