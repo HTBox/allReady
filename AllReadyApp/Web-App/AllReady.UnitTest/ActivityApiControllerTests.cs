@@ -1,15 +1,13 @@
-﻿using AllReady.Models;
-using AllReady.ViewModels;
-using AllReady.Controllers;
-using Microsoft.Data.Entity;
-using Microsoft.Framework.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Xunit;
-using Microsoft.Framework.Configuration;
-using System.IO;
+using AllReady.Controllers;
+using AllReady.Models;
+using AllReady.ViewModels;
 using Microsoft.AspNet.Hosting;
+using Microsoft.Data.Entity;
+using Microsoft.Framework.DependencyInjection;
+using Xunit;
 
 namespace AllReady.UnitTest
 {
@@ -24,13 +22,6 @@ namespace AllReady.UnitTest
             if (_serviceProvider == null)
             {
                 var services = new ServiceCollection();
-
-                // Add Configuration to the Container
-                var builder = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddEnvironmentVariables();
-                IConfiguration configuration = builder.Build();
-                services.AddSingleton(x => configuration);
 
                 // Add EF (Full DB, not In-Memory)
                 services.AddEntityFramework()

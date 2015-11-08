@@ -1,12 +1,10 @@
-﻿using Microsoft.Framework.Configuration;
-using AllReady.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
+using AllReady.Models;
+using Microsoft.Framework.OptionsModel;
 
 namespace AllReady.Services
 {
@@ -19,19 +17,18 @@ namespace AllReady.Services
     public class SqlClosestLocations
         : IClosestLocations
     {
-        private IConfiguration _config;
-        private const string CONNECTION_STRING = "Data:DefaultConnection:ConnectionString";
+        private DatabaseSettings _settings;
 
-        public SqlClosestLocations(IConfiguration config)
+        public SqlClosestLocations(IOptions<DatabaseSettings> options)
         {
-            _config = config;
+            _settings = options.Value;
         }
 
         public IEnumerable<ClosestLocation> GetClosestLocations(LocationQuery query)
         {
             IEnumerable<ClosestLocation> ret = null;
 
-            using (var connection = new SqlConnection(_config[CONNECTION_STRING]))
+            using (var connection = new SqlConnection(_settings.ConnectionString))
             {
                 var cmd = connection.CreateCommand();
                 cmd.CommandText = "GetClosestLocations";
@@ -54,7 +51,7 @@ namespace AllReady.Services
         {
             IEnumerable<PostalCodeGeoCoordinate> ret = null;
 
-            using (var connection = new SqlConnection(_config[CONNECTION_STRING]))
+            using (var connection = new SqlConnection(_settings.ConnectionString))
             {
                 var cmd = connection.CreateCommand();
                 cmd.CommandText = "GetCoordinatesForPostalCode";

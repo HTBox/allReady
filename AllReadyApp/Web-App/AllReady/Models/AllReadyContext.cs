@@ -13,15 +13,6 @@ namespace AllReady.Models
 {
     public class AllReadyContext : IdentityDbContext<ApplicationUser>
     {
-        private IConfiguration _configuration;
-        private IHostingEnvironment _environment;
-
-        public AllReadyContext(IConfiguration configuration, IHostingEnvironment environment)
-        {
-            _configuration = configuration;
-            _environment = environment;          
-        }
-
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<ActivitySignup> ActivitySignup { get; set; }
         public DbSet<Campaign> Campaigns { get; set; }

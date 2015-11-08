@@ -10,6 +10,7 @@ using AllReady.Services;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Framework.OptionsModel;
 
 namespace AllReady.Controllers
 {
@@ -19,21 +20,20 @@ namespace AllReady.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
-        private readonly IConfiguration _config;
+        private readonly SampleDataSettings _settings;
 
         public AdminController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            IConfiguration config
-            )
+            IOptions<SampleDataSettings> options)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
-            _config = config;
+            _settings = options.Value;
         }
 
         //
@@ -171,7 +171,9 @@ namespace AllReady.Controllers
             if(result.Succeeded)
             {
                 var callbackUrl = Url.Action(nameof(SiteController.EditUser), "Site", new { area = "Admin", userId = user.Id }, protocol: HttpContext.Request.Scheme);
-                await _emailSender.SendEmailAsync(_config["SampleData:DefaultAdminUsername"], "Approve Tenant user account",
+                await _emailSender.SendEmailAsync(
+                    _settings.DefaultAdminUsername,
+                    "Approve Tenant user account",
                     "Please approve this account by clicking this <a href=\"" + callbackUrl + "\">link</a>");
             }
 

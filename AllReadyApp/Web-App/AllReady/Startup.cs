@@ -1,28 +1,22 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNet.Authentication.Facebook;
-using Microsoft.AspNet.Authentication.MicrosoftAccount;
-using Microsoft.AspNet.Authentication.Twitter;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Diagnostics;
-using Microsoft.AspNet.Diagnostics.Entity;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Data.Entity;
-using Microsoft.Framework.Configuration;
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.Logging;
+using System.Globalization;
 using AllReady.Models;
 using AllReady.Services;
 using Autofac;
 using Autofac.Features.Variance;
 using Autofac.Framework.DependencyInjection;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.Dnx.Runtime;
-using System.Globalization;
+using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Localization;
+using Microsoft.Data.Entity;
+using Microsoft.Dnx.Runtime;
+using Microsoft.Framework.Configuration;
+using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.Logging;
 
 namespace AllReady
 {
@@ -31,12 +25,11 @@ namespace AllReady
         public Startup(IHostingEnvironment env, IApplicationEnvironment appEnv)
         {
             // Setup configuration sources.
-
             var builder = new ConfigurationBuilder()
                 .SetBasePath(appEnv.ApplicationBasePath)
                 .AddJsonFile("config.json")
-                      .AddJsonFile($"config.{env.EnvironmentName}.json", optional: true)
-                      .AddEnvironmentVariables();
+                .AddJsonFile($"config.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
 
             if (env.IsDevelopment())
             {
@@ -62,8 +55,16 @@ namespace AllReady
 
             // Add Entity Framework services to the services container.
             var ef = services.AddEntityFramework()
-              .AddSqlServer()
-              .AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+                .AddSqlServer()
+                .AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+
+            services.Configure<AzureStorageSettings>(options =>
+            {
+                options.StorageAccount = Configuration["Data:Storage:AzureStorage"];
+            });
+            services.Configure<DatabaseSettings>(Configuration.GetSection("Data:DefaultConnection"));
+            services.Configure<EmailSettings>(Configuration.GetSection("Email"));
+            services.Configure<SampleDataSettings>(Configuration.GetSection("SampleData"));
 
             // Add CORS support
             services.AddCors(options =>
@@ -109,15 +110,26 @@ namespace AllReady
             services.AddSingleton((x) => Configuration);
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
-            services.AddTransient<IQueueStorageService, QueueStorageService>();
             services.AddSingleton<IClosestLocations, SqlClosestLocations>();
             services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
             services.AddSingleton<IImageService, ImageService>();
             //services.AddSingleton<GeoService>();
             services.AddTransient<SampleDataGenerator>();
 
-            var containerBuilder = new ContainerBuilder();
+            if (Configuration["Data:Storage:EnableAzureQueueService"] == "true")
+            {
+                // This setting is false by default. To enable queue processing you will 
+                // need to override the setting in your user secrets or env vars.
+                services.AddTransient<IQueueStorageService, QueueStorageService>();
+            }
+            else
+            {
+                // this writer service will just write to the default logger
+                services.AddTransient<IQueueStorageService, FakeQueueWriterService>();
+            }
 
+            var containerBuilder = new ContainerBuilder();
+            
             containerBuilder.RegisterSource(new ContravariantRegistrationSource());
             containerBuilder.RegisterAssemblyTypes(typeof(IMediator).Assembly).AsImplementedInterfaces();
             containerBuilder.RegisterAssemblyTypes(typeof(Startup).Assembly).AsImplementedInterfaces();
@@ -147,9 +159,30 @@ namespace AllReady
           AllReadyContext context,
           IConfiguration configuration)
         {
+            loggerFactory.MinimumLevel = LogLevel.Verbose;
 
-            loggerFactory.MinimumLevel = LogLevel.Information;
-            loggerFactory.AddConsole();
+            // todo: in RC update we can read from a logging.json config file
+            loggerFactory.AddConsole((category, level) =>
+            {
+                if (category.StartsWith("Microsoft."))
+                {
+                    return level >= LogLevel.Information;
+                }
+                return true;
+            });
+
+            if (env.IsDevelopment())
+            {
+                // this will go to the VS output window
+                loggerFactory.AddDebug((category, level) =>
+                {
+                    if (category.StartsWith("Microsoft."))
+                    {
+                        return level >= LogLevel.Information;
+                    }
+                    return true;
+                });
+            }
 
             // CORS support
             app.UseCors("allReady");
@@ -240,15 +273,14 @@ namespace AllReady
             {
                 context.Database.Migrate();
             }
-            if (Configuration["Data:InsertSampleData"] == "true")
+            if (Configuration["SampleData:InsertSampleData"] == "true")
             {
                 sampleData.InsertTestData();
             }
-            if (Configuration["Data:InsertTestUsers"] == "true")
+            if (Configuration["SampleData:InsertTestUsers"] == "true")
             {
                 await sampleData.CreateAdminUser();
             }
         }
-
     }
 }
