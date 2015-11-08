@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
+using Microsoft.Data.Entity;
 
 namespace AllReady.Features.Notifications
 {
@@ -17,7 +18,15 @@ namespace AllReady.Features.Notifications
 
         public void Handle(VolunteerInformationAdded notification)
         {
-            throw new NotImplementedException();
+            var voluteer = _context.Users.Single(u => u.Id == notification.UserId);
+            var activity = _context.Activities.Single(a => a.Id == notification.ActivityId);
+            var campaign = _context.Campaigns
+                .Include(c => c.Organizer)
+                .Single(c => c.Id == activity.CampaignId);
+
+            var message = $"A volunteer has signed up for {activity.Name}";
+
+
         }
     }
 }
