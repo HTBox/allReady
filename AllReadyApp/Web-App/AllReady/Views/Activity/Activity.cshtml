@@ -9,10 +9,10 @@
         <div class="row">
             @if (!String.IsNullOrEmpty(Model.ImageUrl))
             {
-            <div class="col-sm-2">
-                <h2></h2>
-                <img src="@Model.ImageUrl" class="img-responsive" />
-            </div>
+                <div class="col-sm-2">
+                    <h2></h2>
+                    <img src="@Model.ImageUrl" class="img-responsive" />
+                </div>
             }
             <div class="@(string.IsNullOrEmpty(Model.ImageUrl) ? "col-sm-12" : "col-sm-10" )">
                 <h2>@Model.Title</h2>
@@ -38,51 +38,57 @@
         </div>
         @if (Model.IsUserVolunteeredForActivity && Model.Tasks.Any())
         {
-        <div class="row">
-            <div class="col-sm-12">
-                <h3>Tasks</h3>
-            </div>
-            <div class="col-sm-12">
-                <div class="form-inline">
-                    <div class="form-group">
-                        <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
-                    </div>
-                    <div class="form-group">
-                        <button type="button" class="btn btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
-                            <i class="fa" data-bind="css: { 'fa-square-o': !tasks.showOld(), 'fa-check-square-o': tasks.showOld }"></i>
-                            Show Old
-                        </button>
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3>Tasks</h3>
+                </div>
+                <div class="col-sm-12">
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
+                                <i class="fa" data-bind="css: { 'fa-square-o': !tasks.showOld(), 'fa-check-square-o': tasks.showOld }"></i>
+                                Show Old
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-sm-12">
-                <span class="label-warning label hide" data-bind="css: { hide: tasks.filtered().length }">No matching tasks.</span>
-                <ul data-bind="foreach: tasks.filtered">
-                    <li>
-                        <span data-bind="text: Name"></span>
-                        <span data-bind="text: Description"></span>
-                        @*S :<span data-bind="text: StartDateTime"></span>
-                            E :<span data-bind="text: EndDateTime"></span>*@
-                        <span><a data-bind="attr: { href:  'Accept/' + Id }">Accept</a> </span> |
-                        <span><a data-bind="attr: { href:  'Reject/' + Id }">Reject</a> </span>
-                    </li>
-                </ul>
+                <div class="col-sm-12">
+                    <span class="label-warning label hide" data-bind="css: { hide: tasks.filtered().length }">No matching tasks.</span>
+                    <ul data-bind="foreach: tasks.filtered">
+                        <li>
+                            <span data-bind="text: Name"></span>
+                            <span data-bind="text: Description"></span>
+                            @*S :<span data-bind="text: StartDateTime"></span>
+                                E :<span data-bind="text: EndDateTime"></span>*@
+                            <span><a data-bind="attr: { href:  'Accept/' + Id }">Accept</a> </span> |
+                            <span><a data-bind="attr: { href:  'Reject/' + Id }">Reject</a> </span>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
         }
     </div>
     <div class="col-sm-3">
         <div class="row">
             <div class="col-sm-12">
-                <h2 data-bind="visible: !@(Model.IsUserVolunteeredForActivity)"><a href="@Url.Action("Signup","Activity", new { id = Model.Id })" class="btn btn-volunteer">Volunteer</a></h2>
-                <div data-bind="visible: @(Model.IsUserVolunteeredForActivity)" class="volunteered">
-                    <center>
-                        Thanks for volunteering!
-                        <br />
-                        <a href="#" class="unvolunteer text-center" data-bind="click: function() {unenroll(@Model.Id);}">Unenroll</a>
-                    </center>
-                </div>
+                @if (!Model.IsUserVolunteeredForActivity)
+                {
+                    <h2><a href="@Url.Action("Signup","Activity", new { id = Model.Id })" class="btn btn-volunteer">Volunteer</a></h2>
+                }
+                else
+                {
+                    <div class="volunteered">
+                        <center>
+                            Thanks for volunteering!
+                            <br />
+                            <a href="#" class="unvolunteer text-center" data-bind="click: function() {unenroll(@Model.Id);}">Unenroll</a>
+                        </center>
+                    </div>
+                }
             </div>
         </div>
         <div class="row" data-bind="visible: skills">
