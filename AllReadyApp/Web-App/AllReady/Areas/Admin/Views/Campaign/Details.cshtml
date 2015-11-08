@@ -21,8 +21,20 @@
 </div>
 
 <div class="row">
-    <div id="col-main" class="col-md-12">
-        @Model.Description
+    <div id="col-main" class="col-md-8">
+        @if (!String.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <div class="row">
+                <img src="@Model.ImageUrl" class="img-responsive" />
+            </div>
+        }
+        @Html.Raw(Model.FullDescription)
+    </div>
+    <div class="col-md-4">
+        @if (Model.CampaignImpact != null && Model.CampaignImpact.Display)
+        {
+            @Html.Partial("_CampaignImpact")
+        }
     </div>
 </div>
 

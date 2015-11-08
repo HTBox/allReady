@@ -29,6 +29,7 @@ namespace AllReady.ViewModels
             EndDate = new DateTimeOffset(campaign.EndDateTimeUtc, TimeSpan.Zero);
             Activities = campaign.Activities != null ? campaign.Activities.ToViewModel() : Enumerable.Empty<ActivityViewModel>();
             CampaignImpact = campaign.CampaignImpact;
+            ImageUrl = campaign.ImageUrl;
         }
 
         public int Id { get; set; }
@@ -38,6 +39,8 @@ namespace AllReady.ViewModels
         public string Description { get; set; }
 
         public string FullDescription { get; set; }
+
+        public string ImageUrl { get; set; }
 
         public int ManagingTenantId { get; set; }
 

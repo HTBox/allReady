@@ -21,6 +21,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                                   .AsNoTracking()
                                   .Include(c => c.Activities)    
                                   .Include(m => m.ManagingTenant)
+                                  .Include(ci => ci.CampaignImpact)
                                   .SingleOrDefault(c => c.Id == message.CampaignId);
 
             CampaignDetailModel result = null;
@@ -37,8 +38,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     ImageUrl = campaign.ImageUrl,
                     StartDate = campaign.StartDateTimeUtc,
                     EndDate = campaign.EndDateTimeUtc,
-                    Activities = campaign.Activities.Select(a => new ActivitySummaryModel
-                    {
+					CampaignImpact = campaign.CampaignImpact,
+                    Activities = campaign.Activities.Select(a => new ActivitySummaryModel                    {
                         Id = a.Id,
                         Name = a.Name,
                         Description = a.Description,
