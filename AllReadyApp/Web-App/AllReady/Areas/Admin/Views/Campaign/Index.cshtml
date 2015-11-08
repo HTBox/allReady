@@ -22,6 +22,7 @@
     <div class="col-md-12">
         <table class="table">
             <tr>
+                <th></th>
                 <th>
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
@@ -29,14 +30,14 @@
                     @Html.DisplayNameFor(model => model.TenantName)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.StartDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.EndDate)
+                    Dates
                 </th>
             </tr>
             @foreach (var item in Model) {
                 <tr>
+                    <td>
+                        <a asp-controller="Campaign" asp-action="Edit" asp-route-id="@item.Id" class="btn" title="Edit"><i class="glyphicon glyphicon-edit"></i></a>
+                    </td>
                     <td>
                         <a asp-controller="Campaign" asp-action="Details" asp-route-area="Admin" asp-route-id="@item.Id">@item.Name</a>
                         @if (!string.IsNullOrEmpty(item.Description))
@@ -48,10 +49,10 @@
                         @Html.DisplayFor(modelItem => item.TenantName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.StartDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EndDate)
+                        @if (item.StartDate != DateTime.MinValue)
+                        {
+                            @:@Html.DisplayFor(modelItem => item.StartDate) - @Html.DisplayFor(modelItem => item.EndDate)
+                        }
                     </td>
                 </tr>
             }
