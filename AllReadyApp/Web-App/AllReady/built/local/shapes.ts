@@ -1,4 +1,4 @@
-﻿export module Shapes {
+export module Shapes {
     export class Rectangle {
         area: number;
         constructor(
