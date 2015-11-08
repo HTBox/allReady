@@ -47,7 +47,7 @@ namespace AllReady.ViewModels
                 ? new List<TaskViewModel>(activity.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
                 : new List<TaskViewModel>();
 
-            RequiredSkills = activity.RequiredSkills.Select(acsk => acsk.Skill).ToList();
+            RequiredSkills = activity.RequiredSkills?.Select(acsk => acsk.Skill).ToList();
         }
 
         public int Id { get; set; }
@@ -155,7 +155,7 @@ namespace AllReady.ViewModels
             {
                 var userId = user.GetUserId();
                 viewModel.UserId = userId;
-                viewModel.UserSkills = dataAccess.GetUser(userId).AssociatedSkills.Select(us => us.Skill).ToList();
+                viewModel.UserSkills = dataAccess.GetUser(userId)?.AssociatedSkills?.Select(us => us.Skill).ToList();
                 viewModel.IsUserVolunteeredForActivity = dataAccess.GetActivitySignups(viewModel.Id, userId).Any();
                 var assignedTasks = activity.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
                 viewModel.Tasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
