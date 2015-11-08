@@ -24,8 +24,17 @@ namespace AllReady.Features.Notifications
                 .Include(c => c.Organizer)
                 .Single(c => c.Id == activity.CampaignId);
 
-            var message = $"A volunteer has signed up for {activity.Name}";
+            var subject = $"A volunteer has signed up for {activity.Name}";
 
+            var command = new NotifyVolunteersCommand
+            {
+                ViewModel = new NotifyVolunteersViewModel
+                {
+                    EmailMessage = $"Your {campaign.Name} campaign activity '{activity.Name}' has a new volunteer. {voluteer.UserName} can be reached at {voluteer.Email}.",
+                    EmailRecipients = new List<string> { campaign.Organizer.Email },
+                    Subject = subject
+                }
+            };
 
         }
     }
