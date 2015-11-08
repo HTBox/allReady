@@ -4,6 +4,7 @@ using AllReady.ViewModels;
 using MediatR;
 using System;
 using System.Collections.Generic;
+using Microsoft.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 

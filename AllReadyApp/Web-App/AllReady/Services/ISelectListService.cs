@@ -11,6 +11,6 @@ namespace AllReady.Services
     {
         IEnumerable<SelectListItem> GetTenants();
         IEnumerable<Skill> GetSkills();
-        IEnumerable<SelectListItem> GetCampaignImpactTypes();
+        IEnumerable<CampaignImpactType> GetCampaignImpactTypes();
     }
 }
