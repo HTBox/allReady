@@ -10,6 +10,11 @@ namespace AllReady.Areas.Admin.Models
 {
     public class CampaignSummaryModel
     {
+        public CampaignSummaryModel()
+        {
+            this.CampaignImpact = new CampaignImpact();
+        }
+
         public int Id { get; set; }
         public string Name { get; set; }
 
