@@ -26,3 +26,12 @@
 /// <reference path="lib/moment/moment.js" />
 /// <reference path="lib/tinymce/tinymce.min.js" />
 /// <reference path="lib/typeahead.js/dist/typeahead.bundle.js" />
+<<<<<<< .mine
+/// <reference path="lib/knockout-bootstrap/build/knockout-bootstrap.min.js" />
+/// <reference path="lib/moment/moment.js" />
+=======
+/// <reference path="lib/knockout-bootstrap/build/knockout-bootstrap.min.js" />
+
+>>>>>>> .theirs
+/// <reference path="lib/tinymce/tinymce.min.js" />
+/// <reference path="lib/typeahead.js/dist/typeahead.bundle.js" />
