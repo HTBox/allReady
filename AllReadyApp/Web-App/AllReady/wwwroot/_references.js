@@ -23,3 +23,6 @@
 /// <reference path="lib/knockout-bootstrap/build/knockout-bootstrap.min.js" />
 /// <reference path="lib/tinymce/tinymce.min.js" />
 /// <reference path="lib/typeahead.js/dist/typeahead.bundle.js" />
+/// <reference path="ts/mappingtools.js" />
+/// <reference path="ts/shapelist.js" />
+/// <reference path="ts/shapes.js" />
