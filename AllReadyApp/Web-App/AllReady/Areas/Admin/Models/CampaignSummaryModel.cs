@@ -5,9 +5,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AllReady.Areas.Admin.ViewModels
+namespace AllReady.Areas.Admin.Models
 {
-    public class CampaignSummaryViewModel
+    public class CampaignSummaryModel
     {
         public int Id { get; set; }
         public string Name { get; set; }

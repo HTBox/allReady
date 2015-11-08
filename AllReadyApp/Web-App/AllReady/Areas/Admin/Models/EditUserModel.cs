@@ -5,9 +5,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AllReady.Areas.Admin.ViewModels
+namespace AllReady.Areas.Admin.Models
 {
-    public class EditUserViewModel
+    public class EditUserModel
     {
         public string UserId { get; set; }
         [Display(Name = "User name")]

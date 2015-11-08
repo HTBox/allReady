@@ -9,7 +9,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Services;
-using AllReady.Areas.Admin.ViewModels;
+using AllReady.Areas.Admin.Models;
 using AllReady.Security;
 using Microsoft.Framework.Logging;
 using System;
@@ -35,7 +35,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            var viewModel = new SiteAdminViewModel()
+            var viewModel = new SiteAdminModel()
             {
                 Users = _dataAccess.Users.OrderBy(u => u.UserName).ToList()
             };
@@ -46,7 +46,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var user = _dataAccess.GetUser(userId);
             var tenantId = user.GetTenantId();
-            var viewModel = new EditUserViewModel()
+            var viewModel = new EditUserModel()
             {
                 UserId = userId,
                 UserName = user.UserName,
@@ -60,7 +60,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditUser(EditUserViewModel viewModel)
+        public async Task<IActionResult> EditUser(EditUserModel viewModel)
         {
             if (!ModelState.IsValid)
             {

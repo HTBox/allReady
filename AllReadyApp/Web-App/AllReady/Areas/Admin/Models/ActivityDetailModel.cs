@@ -6,12 +6,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AllReady.Areas.Admin.ViewModels
+namespace AllReady.Areas.Admin.Models
 {
-    public class ActivityDetailViewModel : ActivitySummaryViewModel
+    public class ActivityDetailModel : ActivitySummaryModel
     {
         public LocationViewModel Location { get; set; }
-        public IList<TaskSummaryViewModel> Tasks { get; set; } = new List<TaskSummaryViewModel>();
+        public IList<TaskSummaryModel> Tasks { get; set; } = new List<TaskSummaryModel>();
         public IList<string> Volunteers { get; set; } = new List<string>();
 
         [Display(Name = "Required Skills")]

@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.ViewModels;
+﻿using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class TaskQueryHandler : IRequestHandler<TaskQuery, TaskSummaryViewModel>
+    public class TaskQueryHandler : IRequestHandler<TaskQuery, TaskSummaryModel>
     {
         private AllReadyContext _context;
 
@@ -18,10 +18,10 @@ namespace AllReady.Areas.Admin.Features.Tasks
             _context = context;
         }
 
-        public TaskSummaryViewModel Handle(TaskQuery message)
+        public TaskSummaryModel Handle(TaskQuery message)
         {
             var task = _context.Tasks
-                .Select(t => new TaskSummaryViewModel()
+                .Select(t => new TaskSummaryModel()
                 {
                     Id = t.Id,
                     ActivityId = t.Activity.Id,
