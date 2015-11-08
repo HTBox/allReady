@@ -89,32 +89,6 @@ namespace AllReady.Controllers
             return View("Activity", new ActivityViewModel(activity).WithUserInfo(activity, User, _allReadyDataAccess));
         }
 
-        
-        [HttpGet]
-        [Route("/Activity/Signup/{id}")]
-        [AllowAnonymous]
-        public IActionResult Signup(int id)
-        {
-            var returnUrl = $"/Activity/Signup/{id}";
-
-            if (!User.IsSignedIn())
-            {
-                return RedirectToAction(nameof(AccountController.Login), "Account", new { ReturnUrl = returnUrl });
-            }
-
-            var user = _allReadyDataAccess.GetUser(User.GetUserId());
-
-            // Maybe it wasn't logged in properly.
-            if (user == null)
-            {
-                return RedirectToAction(nameof(AccountController.Login), "Account", new { ReturnUrl = returnUrl });
-            }
-
-            //Otherwise, user is actually logged in, but shouldn't have been able to get here without signup info (punt back to activity)
-            return RedirectToAction(nameof(ShowActivity), new { id = id });
-
-        }
-
         [HttpPost]
         [Route("/Activity/Signup")]
         [Authorize]

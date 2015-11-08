@@ -81,11 +81,12 @@
                     <h2>
                         @if (!User.IsSignedIn())
                         {
-                            <a href="@Url.Action("Signup","Activity", new { id = Model.Id })" class="btn btn-volunteer">Volunteer</a>
+                            <a asp-action="Login" asp-controller="Account" asp-route-ReturnUrl="/Activity/@Model.Id" class="btn btn-volunteer">Volunteer</a>
                         }
                         else
                         {
-                            <a href="#" data-bind="click: volunteer" class="btn btn-volunteer">Volunteer</a>
+                            <!-- Trigger modal -->
+                            <a href="#" data-toggle="modal" data-target="#volunteerForm" class="btn btn-volunteer">Volunteer</a>
                         }
                     </h2>
                 }
@@ -132,6 +133,84 @@
         </p>
     </div>
 </div>
+
+<!-- Volunteer Modal -->
+@if (User.IsSignedIn())
+{
+    <div class="modal fade" id="volunteerForm" tabindex="-1" role="dialog" aria-labelledby="volunteerFormLabel">
+        @using (Html.BeginForm("Signup", "Activity", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <input asp-for="SignupModel.ActivityId" type="hidden" />
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="volunteerFormLabel">Volunteer for @Model.Title</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label asp-for="SignupModel.Name" class="control-label col-md-2"></label>
+                                    <div class="col-md-10">
+                                        <p class="form-control-static">
+                                            <input asp-for="SignupModel.Name" type="hidden" />
+                                            @Model.SignupModel.Name
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="SignupModel.PreferredEmail" class="control-label col-md-2"></label>
+                                    <div class="col-md-10">
+                                        <input type="text" asp-for="SignupModel.PreferredEmail" class="form-control" />
+                                        <span asp-validation-for="SignupModel.PreferredEmail" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="SignupModel.PreferredPhoneNumber" class="control-label col-md-2"></label>
+                                    <div class="col-md-10">
+                                        <input type="text" asp-for="SignupModel.PreferredPhoneNumber" class="form-control" />
+                                        <span asp-validation-for="SignupModel.PreferredPhoneNumber" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="SignupModel.AdditionalInfo" class="control-label col-md-2"></label>
+                                    <div class="col-md-10">
+                                        <input type="text" asp-for="SignupModel.AdditionalInfo" class="form-control" />
+                                        <span asp-validation-for="SignupModel.AdditionalInfo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="SignupModel.AddSkillIds" class="control-label col-md-2"></label>
+                                    <div class="col-md-10">
+                                        <ul>
+                                            @foreach (var skill in Model.RequiredSkills)
+                                            {
+                                                if (!Model.UserSkills.Any(us => us.Id == skill.Id))
+                                                {
+                                                    <li>
+                                                        Add @skill.HierarchicalName ?
+                                                    </li>
+                                                }
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Volunteer</button>
+                        <button type="button" data-dismiss="modal" class="btn btn-link">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
 @section scripts {
     <script type="text/javascript">
         $(document).ready(function () {
