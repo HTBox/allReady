@@ -1,24 +1,24 @@
-﻿using Microsoft.AspNet.Identity;
-using Microsoft.Framework.Configuration;
-using AllReady.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AllReady.Services;
+using Microsoft.AspNet.Identity;
+using Microsoft.Framework.OptionsModel;
 
 namespace AllReady.Models
 {
     public class SampleDataGenerator
     {
-        private static IConfiguration _configuration;
-        private AllReadyContext _context;
-        private UserManager<ApplicationUser> _userManager;
+        private readonly AllReadyContext _context;
+        private readonly SampleDataSettings _settings;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public SampleDataGenerator(AllReadyContext context, IConfiguration configuration, UserManager<ApplicationUser> userManager)
+        public SampleDataGenerator(AllReadyContext context, IOptions<SampleDataSettings> options, UserManager<ApplicationUser> userManager)
         {
-            _configuration = configuration;
             _context = context;
+            _settings = options.Value;
             _userManager = userManager;
         }
 
@@ -35,6 +35,9 @@ namespace AllReady.Models
                 _context.Skills.Any() ||
                 _context.Resources.Any())
             {
+                // Attempt to populate CampaignImpactTypes:
+                InsertCampaignImpactTypes(_context);
+                _context.SaveChanges();
                 return;
             }
             // new up some data
@@ -43,22 +46,23 @@ namespace AllReady.Models
             #region postalCodes
             var existingPostalCode = _context.PostalCodes.ToList();
             _context.PostalCodes.AddRange(GetPostalCodes(existingPostalCode));
-            _context.SaveChanges();
+            //_context.SaveChanges();
             #endregion
 
             #region Skills
             var skills = new List<Skill>();
             var existingSkills = _context.Skills.ToList();
-            var medical = GetSkill(skills, existingSkills, "Medical");
-            var cprCertified = GetSkill(skills, existingSkills, "CPR Certified", medical);
-            var md = GetSkill(skills, existingSkills, "MD", medical);
-            var surgeon = GetSkill(skills, existingSkills, "Surgeon", md);
+            var medical = GetSkill(skills, existingSkills, "Medical", null, "specific enough, right?");
+            var cprCertified = GetSkill(skills, existingSkills, "CPR Certified", medical, "ha ha ha ha, stayin alive");
+            var md = GetSkill(skills, existingSkills, "MD", medical, "Trust me, I'm a doctor");
+            var surgeon = GetSkill(skills, existingSkills, "Surgeon", md, "cut open; sew shut; play 18 holes");
             _context.Skills.AddRange(skills);
-            _context.SaveChanges();
+            //_context.SaveChanges();
             #endregion
 
             List<Location> locations = GetLocations();
-            List<TaskUsers> users = new List<TaskUsers>();
+            List<ApplicationUser> users = new List<ApplicationUser>();
+            List<TaskSignup> taskSignups = new List<TaskSignup>();
             List<Activity> activities = new List<Activity>();
             List<ActivitySkill> activitySkills = new List<ActivitySkill>();
             List<Campaign> campaigns = new List<Campaign>();
@@ -339,26 +343,43 @@ namespace AllReady.Models
             _context.Campaigns.AddRange(campaigns);
             _context.Activities.AddRange(activities);
             _context.Resources.AddRange(resources);
-            _context.SaveChanges();
+            //_context.SaveChanges();
             #endregion
 
             #region Users for Activities
-            var username1 = $"{_configuration["DefaultUsername"]}1.com";
-            var username2 = $"{_configuration["DefaultUsername"]}2.com";
-            var username3 = $"{_configuration["DefaultUsername"]}3.com";
+            var username1 = $"{_settings.DefaultUsername}1.com";
+            var username2 = $"{_settings.DefaultUsername}2.com";
+            var username3 = $"{_settings.DefaultUsername}3.com";
 
             var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true };
-            _userManager.CreateAsync(user1, _configuration["DefaultAdminPassword"]).Wait();
+            _userManager.CreateAsync(user1, _settings.DefaultAdminPassword).Wait();
+            users.Add(user1);
             var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true };
-            _userManager.CreateAsync(user2, _configuration["DefaultAdminPassword"]).Wait();
+            _userManager.CreateAsync(user2, _settings.DefaultAdminPassword).Wait();
+            users.Add(user2);
             var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true };
-            _userManager.CreateAsync(user3, _configuration["DefaultAdminPassword"]).Wait();
+            _userManager.CreateAsync(user3, _settings.DefaultAdminPassword).Wait();
+            users.Add(user3);
             #endregion
 
             #region ActvitySignups
             activitySignups.Add(new ActivitySignup { Activity = madrona, User = user1, SignupDateTime = DateTime.UtcNow });
             activitySignups.Add(new ActivitySignup { Activity = madrona, User = user2, SignupDateTime = DateTime.UtcNow });
             activitySignups.Add(new ActivitySignup { Activity = madrona, User = user3, SignupDateTime = DateTime.UtcNow });
+            #endregion
+
+            #region TaskSignups
+            int i = 0;
+            foreach (var task in tasks.Where(t => t.Activity == madrona))
+            {
+                for (var j = 0; j < i; j++)
+                {
+                    taskSignups.Add(new TaskSignup() { Task = task, User = users[j] });
+                }
+
+                i = (i + 1) % users.Count;
+            }
+            _context.TaskSignups.AddRange(taskSignups);
             #endregion
 
             #region Wrap Up DB  
@@ -368,7 +389,23 @@ namespace AllReady.Models
 
         }
 
-        private static Skill GetSkill(List<Skill> skills, List<Skill> existingSkills, string skillName, Skill parentSkill = null)
+        /// <summary>
+        /// Split this off from the InsertTestData function so we can call this
+        /// even if the "anti-database-pollution" logic bails due to pre-existing
+        /// database records. The reason for this is that we are preventing
+        /// duplicate records already.
+        /// </summary>
+        /// <param name="_context"></param>
+        private static void InsertCampaignImpactTypes(AllReadyContext _context)
+        {
+            var campaignImpactTypes = new List<CampaignImpactType>();
+            var existingImpactTypes = _context.CampaignImpactTypes.ToList();
+            var numeric = GetImpactType(campaignImpactTypes, existingImpactTypes, "Numeric");
+            var textual = GetImpactType(campaignImpactTypes, existingImpactTypes, "Textual");
+            _context.CampaignImpactTypes.AddRange(campaignImpactTypes);
+        }
+
+        private static Skill GetSkill(List<Skill> skills, List<Skill> existingSkills, string skillName, Skill parentSkill = null, string description = null)
         {
             Skill skill;
             if (existingSkills.Any(item => item.Name == skillName))
@@ -384,7 +421,24 @@ namespace AllReady.Models
                 }
                 skills.Add(skill);
             }
+            skill.Description = description;
             return skill;
+        }
+
+        private static CampaignImpactType GetImpactType(List<CampaignImpactType> types, List<CampaignImpactType> existingTypes, string typeName)
+        {
+            CampaignImpactType impactType;
+            if (existingTypes.Any(item => item.Name == typeName))
+            {
+                impactType = existingTypes.Single(item => item.Name == typeName);
+            }
+            else
+            {
+                impactType = new CampaignImpactType { Name = typeName };
+
+                types.Add(impactType);
+            }
+            return impactType;
         }
 
         #region Sample Data Helper methods
@@ -471,24 +525,24 @@ namespace AllReady.Models
         /// <returns></returns>
         public async Task CreateAdminUser()
         {
-            var user = await _userManager.FindByNameAsync(_configuration["DefaultAdminUsername"]);
+            var user = await _userManager.FindByNameAsync(_settings.DefaultAdminUsername);
             if (user == null)
             {
-                user = new ApplicationUser { UserName = _configuration["DefaultAdminUsername"], Email = _configuration["DefaultAdminUsername"] };
+                user = new ApplicationUser { UserName = _settings.DefaultAdminUsername, Email = _settings.DefaultAdminUsername };
                 user.EmailConfirmed = true;
-                _userManager.CreateAsync(user, _configuration["DefaultAdminPassword"]).Wait();
+                _userManager.CreateAsync(user, _settings.DefaultAdminPassword).Wait();
                 _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, "SiteAdmin")).Wait();
 
-                var user2 = new ApplicationUser { UserName = _configuration["DefaultTenantUsername"], Email = _configuration["DefaultTenantUsername"] };
+                var user2 = new ApplicationUser { UserName = _settings.DefaultTenantUsername, Email = _settings.DefaultTenantUsername};
                 // For the sake of being able to exercise Tenant-specific stuff, we need to associate a tenant.
                 user2.EmailConfirmed = true;
-                await _userManager.CreateAsync(user2, _configuration["DefaultAdminPassword"]);
+                await _userManager.CreateAsync(user2, _settings.DefaultAdminPassword);
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.UserType, "TenantAdmin"));
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.Tenant, _context.Tenants.First().Id.ToString()));
 
-                var user3 = new ApplicationUser { UserName = _configuration["DefaultUsername"], Email = _configuration["DefaultUsername"] };
+                var user3 = new ApplicationUser { UserName = _settings.DefaultUsername, Email = _settings.DefaultUsername };
                 user3.EmailConfirmed = true;
-                await _userManager.CreateAsync(user3, _configuration["DefaultAdminPassword"]);
+                await _userManager.CreateAsync(user3, _settings.DefaultAdminPassword);
             }
         }
     }

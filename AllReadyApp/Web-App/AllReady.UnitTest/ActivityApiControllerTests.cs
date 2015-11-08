@@ -1,19 +1,17 @@
-﻿using AllReady.Models;
-using AllReady.ViewModels;
-using AllReady.Controllers;
-using Microsoft.Data.Entity;
-using Microsoft.Framework.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Xunit;
-using Microsoft.Framework.Configuration;
-using System.IO;
+using AllReady.Controllers;
+using AllReady.Models;
+using AllReady.ViewModels;
 using Microsoft.AspNet.Hosting;
+using Microsoft.Data.Entity;
+using Microsoft.Framework.DependencyInjection;
+using Xunit;
 
-namespace AllReady.UnitTests
+namespace AllReady.UnitTest
 {
-    public class ActivityApiControllerTest
+    public class ActivityApiControllerTest : TestBase
     {
         private static IServiceProvider _serviceProvider;
         private static bool populatedData = false;
@@ -25,15 +23,12 @@ namespace AllReady.UnitTests
             {
                 var services = new ServiceCollection();
 
+                // Add EF (Full DB, not In-Memory)
                 services.AddEntityFramework()
                     .AddInMemoryDatabase()
                     .AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase());
 
-                var builder = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("testConfig.json");
-                IConfiguration configuration = builder.Build();
-                services.AddSingleton(x => configuration);
+                // Setup hosting environment
                 IHostingEnvironment hostingEnvironment = new HostingEnvironment();
                 hostingEnvironment.EnvironmentName = "Development";
                 services.AddSingleton(x => hostingEnvironment);
@@ -71,48 +66,6 @@ namespace AllReady.UnitTests
             Assert.Equal(activityViewModel.Description, string.Format(TestActivityModelProvider.ActivityDescriptionFormat, recordId));
             Assert.Equal(activityViewModel.EndDateTime, DateTime.MaxValue.ToUniversalTime());
             Assert.Equal(activityViewModel.StartDateTime, DateTime.MinValue.ToUniversalTime());
-        }
-
-        [Fact]
-        public void PostSingleActivity()
-        {
-            // Arrange
-            ActivityApiController controller = GetActivityController();
-
-            //Act
-            ActivityViewModel toPost = new ActivityViewModel()
-            {
-                Id = 11,
-                Title = "the answer to life the universe and everything",
-                CampaignId = 1,
-                TenantId = 1,
-                StartDateTime = DateTime.Today,
-                EndDateTime = DateTime.Today.AddMonths(1),
-                Location = new LocationViewModel()
-                {
-                    Address1 = "123 Happy Street",
-                    City = "Madison",
-                    State = "WI",
-                    PostalCode = new PostalCodeGeo() { PostalCode = "53711" },
-                    Country = "country gets ignored right now"
-                }
-            };
-
-            controller.Post(toPost);
-            activitiesAdded++;
-            var viewModelFromDb = controller.Get(toPost.Id);
-
-            // Assert
-            Assert.NotEqual(viewModelFromDb, toPost);
-            Assert.Equal(toPost.Id, viewModelFromDb.Id);
-            Assert.Equal(toPost.CampaignId, viewModelFromDb.CampaignId);
-            Assert.Equal(string.Format(TestActivityModelProvider.CampaignNameFormat, toPost.CampaignId), viewModelFromDb.CampaignName);
-            Assert.Null(viewModelFromDb.Description);
-            Assert.Equal(toPost.EndDateTime, viewModelFromDb.EndDateTime);
-            Assert.Equal(toPost.StartDateTime, viewModelFromDb.StartDateTime);
-            Assert.Equal("US", viewModelFromDb.Location.Country);
-            Assert.Equal(toPost.Location.Address1, viewModelFromDb.Location.Address1);
-            Assert.Equal(toPost.Location.City, viewModelFromDb.Location.City);
         }
 
         #region Helper Methods

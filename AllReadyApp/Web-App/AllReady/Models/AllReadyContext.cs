@@ -13,48 +13,18 @@ namespace AllReady.Models
 {
     public class AllReadyContext : IdentityDbContext<ApplicationUser>
     {
-        private IConfiguration _configuration;
-        private IHostingEnvironment _environment;
-
-        public AllReadyContext(IConfiguration configuration, IHostingEnvironment environment)
-        {
-            _configuration = configuration;
-            _environment = environment;
-
-            // Create DB and do migrations if necessary
-            Database.EnsureCreated();
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (_environment.IsDevelopment())
-            {
-                if (_configuration["Data:DefaultConnection:UseInMemory"].ToLowerInvariant() == "true")
-                {
-                    optionsBuilder.UseInMemoryDatabase();
-                }
-                else
-                {
-                    optionsBuilder.UseSqlServer(_configuration["Data:DefaultConnection:LocalConnectionString"]);
-                }
-            }
-            else
-            {
-                optionsBuilder.UseSqlServer(_configuration["Data:DefaultConnection:AzureConnectionString"]);
-
-            }
-        }
-
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<ActivitySignup> ActivitySignup { get; set; }
         public DbSet<Campaign> Campaigns { get; set; }
+        public DbSet<CampaignImpact> CampaignImpacts { get; set; }
+        public DbSet<CampaignImpactType> CampaignImpactTypes { get; set; }
         public DbSet<Activity> Activities { get; set; }
         public DbSet<ActivitySkill> ActivitySkills { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<PostalCodeGeo> PostalCodes { get; set; }
         public DbSet<AllReadyTask> Tasks { get; set; }
         public DbSet<TaskSkill> TaskSkills { get; set; }
-        public DbSet<TaskUsers> TaskSignup { get; set; }
+        public DbSet<TaskSignup> TaskSignups { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<Skill> Skills { get; set; }
         public DbSet<UserSkill> UserSkills { get; set; }
@@ -72,7 +42,7 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<ActivitySignup>());
             Map(modelBuilder.Entity<AllReadyTask>());
             Map(modelBuilder.Entity<TaskSkill>());
-            Map(modelBuilder.Entity<TaskUsers>());
+            Map(modelBuilder.Entity<TaskSignup>());
             Map(modelBuilder.Entity<Location>());
             Map(modelBuilder.Entity<PostalCodeGeo>());
             Map(modelBuilder.Entity<Skill>());
@@ -90,7 +60,7 @@ namespace AllReady.Models
             builder.HasOne(l => l.PostalCode);
         }
 
-        private void Map(EntityTypeBuilder<TaskUsers> builder)
+        private void Map(EntityTypeBuilder<TaskSignup> builder)
         {
             builder.HasOne(u => u.Task);
         }
@@ -146,6 +116,7 @@ namespace AllReady.Models
         private void Map(EntityTypeBuilder<Campaign> builder)
         {
             builder.HasOne(c => c.ManagingTenant);
+            builder.HasOne(c => c.CampaignImpact);
             builder.HasMany(c => c.Activities);
             builder.Property(a => a.Name).IsRequired();
         }

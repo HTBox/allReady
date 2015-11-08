@@ -50,7 +50,7 @@ namespace AllReady.Controllers
         public async Task<IActionResult> UpdateMyTasks(int id, [FromBody]List<TaskSignupViewModel> model) {
             var currentUser = _allReadyDataAccess.GetUser(User.GetUserId());
             foreach (var taskSignup in model) {
-                await _allReadyDataAccess.UpdateTaskSignupAsync(new TaskUsers {
+                await _allReadyDataAccess.UpdateTaskSignupAsync(new TaskSignup {
                     Id = taskSignup.Id,
                     StatusDateTimeUtc = DateTime.UtcNow,
                     StatusDescription = taskSignup.StatusDescription,
@@ -86,14 +86,15 @@ namespace AllReady.Controllers
 
             if (!isUserSignedUpForActivity)
             {
-                return View("Activity", new ActivityViewModel(activity, false));
+                return View("Activity", new ActivityViewModel(activity, false, User.GetUserId()));
             }
 
             var signedUp = _allReadyDataAccess.GetActivitySignups(id, User.GetUserId());
 
             isUserSignedUpForActivity = signedUp.Any();
+            var assignedTasks = new List<AllReadyTask>();
 
-            return View("Activity", new ActivityViewModel(activity, isUserSignedUpForActivity));
+            return View("Activity", new ActivityViewModel(activity, isUserSignedUpForActivity, User.GetUserId()));
         }
 
         [HttpGet]
@@ -143,7 +144,7 @@ namespace AllReady.Controllers
                 await _allReadyDataAccess.UpdateActivity(activity);
             }
 
-            return RedirectToAction(nameof(GetMyActivities));
+            return View("Activity", new ActivityViewModel(activity, true, User.GetUserId()));
         }        
     }
 }

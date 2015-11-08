@@ -30,28 +30,5 @@ namespace AllReady.Models
                 .SingleOrDefault(x => x.Id == campaignId);
         }
 
-        Task IAllReadyDataAccess.AddCampaign(Campaign value)
-        {
-            _dbContext.Campaigns.Add(value);
-            return _dbContext.SaveChangesAsync();
-        }
-
-        Task IAllReadyDataAccess.DeleteCampaign(int id)
-        {
-            var toDelete = _dbContext.Campaigns.Where(c => c.Id == id).SingleOrDefault();
-
-            if (toDelete != null)
-            {
-                _dbContext.Campaigns.Remove(toDelete);
-                return _dbContext.SaveChangesAsync();
-            }
-            return null;
-        }
-
-        Task IAllReadyDataAccess.UpdateCampaign(Campaign value)
-        {
-            _dbContext.Campaigns.Update(value);
-            return _dbContext.SaveChangesAsync();
-        }
     }
 }

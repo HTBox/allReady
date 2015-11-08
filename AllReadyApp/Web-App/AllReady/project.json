@@ -38,7 +38,8 @@
     "Autofac.Framework.DependencyInjection": "4.0.0-beta6-110",
     "MediatR": "2.0.2",
     "Sendgrid": "6.1.0",
-    "Twilio": "4.0.3"
+    "Twilio": "4.0.3",
+    "Microsoft.Framework.Logging.Debug": "1.0.0-beta8"
   },
 
   "commands": {
@@ -48,6 +49,9 @@
 
   "frameworks": {
     "dnx451": {
+      "dependencies": {
+        "AllReady.Models": "1.0.0-*"
+      },
       "frameworkAssemblies": {
         "System.Drawing": "4.0.0.0"
       }

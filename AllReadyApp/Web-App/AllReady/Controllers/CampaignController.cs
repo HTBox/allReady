@@ -36,6 +36,18 @@ namespace AllReady.Areas.Admin.Controllers
             return View("Details", new CampaignViewModel(campaign));
         }
 
+        [HttpGet]
+        [Route("~/[controller]/map/{id}")]
+        public IActionResult LocationMap(int id)
+        {
+            var campaign = _dataAccess.GetCampaign(id);
+
+            if (campaign == null)
+                HttpNotFound();
+
+            return View("Map", new CampaignViewModel(campaign));
+        }
+
         // GET: api/values
         [HttpGet]
         public IEnumerable<CampaignViewModel> Get()
@@ -54,49 +66,6 @@ namespace AllReady.Areas.Admin.Controllers
                 HttpNotFound();
 
             return campaign.ToViewModel();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public void Post([FromBody]CampaignViewModel campaign)
-        {
-            if (campaign == null)
-                HttpBadRequest();
-
-            var exists = _dataAccess.GetCampaign(campaign.Id) != null;
-
-            _dataAccess.AddCampaign(campaign.ToModel(_dataAccess));
-        }
-
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]CampaignViewModel campaign)
-        {
-            if (campaign == null)
-                HttpBadRequest();
-
-            var matching = _dataAccess.GetCampaign(campaign.Id);
-
-            if (matching == null)
-            {
-                _dataAccess.AddCampaign(campaign.ToModel(_dataAccess));
-            }
-            else
-            {
-                matching.Activities = campaign.Activities.ToModel(_dataAccess).ToList();
-                matching.Description = campaign.Description;
-                matching.Name = campaign.Name;
-                matching.StartDateTimeUtc = campaign.StartDate.UtcDateTime;
-                matching.EndDateTimeUtc = campaign.EndDate.UtcDateTime;
-
-                _dataAccess.UpdateCampaign(matching);
-            }
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-            _dataAccess.DeleteCampaign(id);
         }
     }
 }

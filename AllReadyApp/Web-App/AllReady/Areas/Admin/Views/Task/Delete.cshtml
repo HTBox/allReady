@@ -1,6 +1,19 @@
-@model AllReady.ViewModels.TaskViewModel
+@model AllReady.Areas.Admin.ViewModels.TaskSummaryViewModel
 
 @{  ViewData["Title"] = "Delete task " + Model.Name; }
+
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.ActivityId" asp-route-area="Admin">@Model.ActivityName</a></li>
+            <li><a asp-controller="Task" asp-action="Details" asp-route-activityId="@Model.ActivityId" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Name</a></li>
+            <li>Delete</li>
+        </ol>
+    </div>
+</div>
+
 
 <div class="row">
     <div class="col-md-12">
@@ -13,12 +26,6 @@
     <div class="col-md-12">
         <dl class="dl-horizontal">
             <dt>
-                @Html.DisplayNameFor(model => model.EndDateTime)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.EndDateTime)
-            </dd>
-            <dt>
                 @Html.DisplayNameFor(model => model.Name)
             </dt>
             <dd>
@@ -30,6 +37,12 @@
             <dd>
                 @Html.DisplayFor(model => model.StartDateTime)
             </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.EndDateTime)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.EndDateTime)
+            </dd>
         </dl>
 
         @using (Html.BeginForm()) {
@@ -37,7 +50,7 @@
 
             <div class="form-actions no-color">
                 <button type="submit" class="btn">Delete</button>
-                <a asp-controller="Task" asp-action="Index" asp-route-activityId="@Model.ActivityId" class="btn">Back to List</a>
+                <a asp-controller="Task" asp-action="Details" asp-route-id="@Model.Id" class="btn">Cancel</a>
             </div>
         }
     </div>

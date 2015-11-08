@@ -13,6 +13,7 @@
         }
         return this;
     }
+
     function CampaignsViewModel(campaigns) {
         this.searchTerm = ko.observable();
         this.campaignsNearZip = ko.observableArray();
@@ -43,4 +44,5 @@
         this.total = list.length;
     }
     ko.applyBindings(new CampaignsViewModel(campaigns));
+
 })(ko, $, modelCampaigns);

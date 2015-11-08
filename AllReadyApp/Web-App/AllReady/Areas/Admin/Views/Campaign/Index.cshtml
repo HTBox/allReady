@@ -1,6 +1,13 @@
-@model IEnumerable<Campaign>
+@model IEnumerable<AllReady.Areas.Admin.ViewModels.CampaignSummaryViewModel>
 @{ ViewData["Title"] = "Campaigns - Admin"; }
 
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li>Campaigns</li>
+        </ol>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-12">
         <h2>@ViewData["Title"]</h2>
@@ -8,7 +15,7 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        @Html.ActionLink("Create new", "Create", "Campaign", null, new { @class = "btn" })
+        <a asp-controller="Campaign" asp-action="Create" asp-route-area="Admin" class="btn">Create New</a>
     </div>
 </div>
 <div class="row">
@@ -19,40 +26,32 @@
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Description)
+                    @Html.DisplayNameFor(model => model.TenantName)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.ManagingTenant.Name)
+                    @Html.DisplayNameFor(model => model.StartDate)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.StartDateTimeUtc)
+                    @Html.DisplayNameFor(model => model.EndDate)
                 </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.EndDateTimeUtc)
-                </th>
-                <th></th>
             </tr>
             @foreach (var item in Model) {
                 <tr>
                     <td>
-                        @Html.ActionLink(item.Name, "Details", "Campaign", new { id = item.Id })                        
+                        <a asp-controller="Campaign" asp-action="Details" asp-route-area="Admin" asp-route-id="@item.Id">@item.Name</a>
+                        @if (!string.IsNullOrEmpty(item.Description))
+                        {
+                            <br/><span class="text-muted">@item.Description</span>
+                        }
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Description)
+                        @Html.DisplayFor(modelItem => item.TenantName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.ManagingTenant.Name)
+                        @Html.DisplayFor(modelItem => item.StartDate)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.StartDateTimeUtc)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EndDateTimeUtc)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Edit", "Edit", "Campaign", new { id = item.Id }, new { @class = "btn" })                       
-                        @Html.ActionLink("Activities", "Index", "Activity", new {area ="Admin", campaignId = item.Id }, new { @class = "btn" })
-                        @Html.ActionLink("Delete", "Delete", "Campaign", new { area = "Admin", id = item.Id }, new { @class = "btn" })
+                        @Html.DisplayFor(modelItem => item.EndDate)
                     </td>
                 </tr>
             }

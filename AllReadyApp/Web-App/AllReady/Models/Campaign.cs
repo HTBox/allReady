@@ -9,8 +9,14 @@ namespace AllReady.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        /// <summary>
+        /// Short synopsis of this campaign, displayed within grids.
+        /// </summary>
         public string Description { get; set; }
-        [Display(Name = "Managing Tenant")]
+        [Display(Name = "Full Description")]
+        public string FullDescription { get; set; }
+
+        [Display(Name = "Managing Organization")]
         public int ManagingTenantId { get; set; }
         public Tenant ManagingTenant { get; set; }
         [Display(Name = "Image URL")]
@@ -39,6 +45,7 @@ namespace AllReady.Models
 
         public ApplicationUser Organizer { get; set; }
 
+        public CampaignImpact CampaignImpact { get; set; }
 
     }
 }

@@ -1,12 +1,10 @@
-using System.Linq;
-using System.Threading.Tasks;
-
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
-
 using AllReady.Security;
 using AllReady.Models;
+using MediatR;
+using AllReady.Areas.Admin.Features.Campaigns;
+using AllReady.Areas.Admin.ViewModels;
 
 namespace AllReady.Controllers
 {
@@ -14,134 +12,138 @@ namespace AllReady.Controllers
     [Authorize("TenantAdmin")]
     public class CampaignController : Controller
     {
-        private IAllReadyDataAccess _dataAccess;
+        private IMediator _bus;
 
-        public CampaignController(IAllReadyDataAccess dataAccess)
+        public CampaignController( IMediator bus)
         {
-            _dataAccess = dataAccess;
-        }
-
-        private ViewResult WithTenants(ViewResult view)
-        {
-            view.ViewData["Tenants"] = _dataAccess.Tenants.Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = t.Name });
-            return view;
+            _bus = bus;
         }
 
         // GET: Campaign
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return await Task.FromResult(View(_dataAccess.Campaigns));
+            var campaigns = _bus.Send(new CampaignListQuery());
+            return View(campaigns);
+        }
+
+        public IActionResult Details(int id)
+        {
+            CampaignDetailViewModel campaign = _bus.Send(new CampaignDetailQuery { CampaignId = id });
+
+            if (campaign == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (!User.IsTenantAdmin(campaign.TenantId))
+            {
+                return HttpUnauthorized();
+            }
+
+            return View(campaign);
         }
 
         // GET: Campaign/Create
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            return await Task.FromResult(WithTenants(View("Edit")));
+            return View("Edit", new CampaignSummaryViewModel());
         }
 
         // POST: Campaign/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Campaign campaign)
+        public IActionResult Create(CampaignSummaryViewModel campaign)
         {
-            if (!UserIsTenantAdminOfCampaign(campaign))
+            if (campaign == null)
             {
-                return new HttpUnauthorizedResult();
+                return HttpBadRequest();
+            }
+
+            if (!User.IsTenantAdmin(campaign.TenantId))
+            {
+                return HttpUnauthorized();
             }
 
             if (ModelState.IsValid)
             {
-                await _dataAccess.AddCampaign(campaign);
-                return await Task.FromResult(RedirectToAction("Index", new { area = "Admin" }));
+                int id = _bus.Send(new EditCampaignCommand { Campaign = campaign });
+                return RedirectToAction("Details", new {id = id, area = "Admin" });
             }
 
-            return await Task.FromResult(WithTenants(View("Edit", campaign)));
+            return View("Edit", campaign);
         }
 
         // GET: Campaign/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(404);
-            }
-            Campaign campaign = _dataAccess.GetCampaign((int)id);
+            CampaignSummaryViewModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
 
-            if (!UserIsTenantAdminOfCampaign(campaign))
-            {
-                return new HttpUnauthorizedResult();
-            }
             if (campaign == null)
             {
-                return new HttpStatusCodeResult(404);
+                return HttpNotFound();
             }
 
-            return await Task.FromResult(WithTenants(View(campaign)));
+            if (!User.IsTenantAdmin(campaign.TenantId))
+            {
+                return HttpUnauthorized();
+            }
+
+            return View(campaign);
         }
 
         // POST: Campaign/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Campaign campaign)
+        public IActionResult Edit(CampaignSummaryViewModel campaign)
         {
-            if (!UserIsTenantAdminOfCampaign(campaign))
+            if (campaign == null)
             {
-                return new HttpUnauthorizedResult();
+                return HttpBadRequest();
+            }
+
+            if (!User.IsTenantAdmin(campaign.TenantId))
+            {
+                return HttpUnauthorized();
             }
 
             if (ModelState.IsValid)
             {
-                await _dataAccess.UpdateCampaign(campaign);
-                return await Task.FromResult(RedirectToAction("Index", new { area = "Admin" }));
+                int id = _bus.Send(new EditCampaignCommand { Campaign = campaign });
+                return RedirectToAction("Details", new { area = "Admin", id = id });
             }
-            return await Task.FromResult(View(campaign));
-        }
+            return View(campaign);
+        }        
 
         // GET: Campaign/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(404);
-            }
-
-            Campaign campaign = _dataAccess.GetCampaign((int)id);
+            CampaignSummaryViewModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
 
             if (campaign == null)
             {
-                return new HttpStatusCodeResult(404);
+                return HttpNotFound();
             }
-            if (!UserIsTenantAdminOfCampaign(campaign))
+            if (!User.IsTenantAdmin(campaign.TenantId))
             {
-                return new HttpUnauthorizedResult();
+                return HttpUnauthorized();
             }
 
-            return await Task.FromResult(View(campaign));
+            return View(campaign);
         }
 
         // POST: Campaign/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            if (!UserIsTenantAdminOfCampaign(id))
+            CampaignSummaryViewModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
+
+            if (!User.IsTenantAdmin(campaign.TenantId))
             {
-                return new HttpUnauthorizedResult();
-            }   
-
-            await _dataAccess.DeleteCampaign(id);
-            return await Task.FromResult(RedirectToAction("Index", new { area = "Admin" }));
-        }
-
-        private bool UserIsTenantAdminOfCampaign(Campaign campaignToCheck)
-        {
-            return User.IsUserType(UserType.SiteAdmin) ||
-                campaignToCheck.ManagingTenantId == User.GetTenantId();
-        }
-
-        private bool UserIsTenantAdminOfCampaign(int campaignId)
-        {
-            return UserIsTenantAdminOfCampaign(_dataAccess.GetCampaign(campaignId));
+                return HttpUnauthorized();
+            }
+            _bus.Send(new DeleteCampaignCommand { CampaignId = id });            
+            return RedirectToAction("Index", new { area = "Admin" });
         }
     }
 }

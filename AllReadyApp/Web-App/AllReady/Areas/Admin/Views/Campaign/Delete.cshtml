@@ -1,5 +1,14 @@
-@model AllReady.Models.Campaign
+@model AllReady.Areas.Admin.ViewModels.CampaignSummaryViewModel
 @{ ViewData["Title"] = "Delete campaign " + Model.Name; }
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Name</a></li>
+            <li>Delete</li>
+        </ol>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-12">
         <h3>Are you sure you want to delete this?</h3>
@@ -19,28 +28,10 @@
                     @Html.DisplayFor(model => model.Description)
                 </dd>
                 <dt>
-                    @Html.DisplayNameFor(model => model.StartDateTimeUtc)
+                    @Html.DisplayNameFor(model => model.TenantId)
                 </dt>
                 <dd>
-                    @Html.DisplayFor(model => model.StartDateTimeUtc)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.EndDateTimeUtc)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.EndDateTimeUtc)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.ImageUrl)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.ImageUrl)
-                </dd>
-                <dt>
-                    @Html.DisplayNameFor(model => model.ManagingTenantId)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.ManagingTenant.Name)
+                    @Html.DisplayFor(model => model.TenantName)
                 </dd>
             </dl>
 
@@ -49,7 +40,7 @@
 
                 <div class="form-actions no-color">
                     <button type="submit" value="Delete" class="btn">Delete campaign</button> 
-                    @Html.ActionLink("Cancel", "Index", new { controller = "Campaign", area = "Admin" }, new { @class = "btn" })
+                    <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin" class="btn">Cancel</a>
                 </div>
             }
         </div>

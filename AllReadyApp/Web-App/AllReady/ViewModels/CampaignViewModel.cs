@@ -20,6 +20,7 @@ namespace AllReady.ViewModels
             Id = campaign.Id;
             Name = campaign.Name;
             Description = campaign.Description;
+            FullDescription = campaign.FullDescription;
             ///TODO: Commented out as campaign.ManagingTenant is null from sample data;
             /// Fix sample provider to ensure that property is not null
             //ManagingTenantName = campaign.ManagingTenant.Name;
@@ -27,6 +28,7 @@ namespace AllReady.ViewModels
             StartDate = new DateTimeOffset(campaign.StartDateTimeUtc, TimeSpan.Zero);
             EndDate = new DateTimeOffset(campaign.EndDateTimeUtc, TimeSpan.Zero);
             Activities = campaign.Activities != null ? campaign.Activities.ToViewModel() : Enumerable.Empty<ActivityViewModel>();
+            CampaignImpact = campaign.CampaignImpact;
         }
 
         public int Id { get; set; }
@@ -35,9 +37,13 @@ namespace AllReady.ViewModels
 
         public string Description { get; set; }
 
+        public string FullDescription { get; set; }
+
         public int ManagingTenantId { get; set; }
 
         public string ManagingTenantName { get; set; }
+
+        public CampaignImpact CampaignImpact { get; set; }
 
         public List<CampaignSponsors> ParticipatingTenants { get; set; }
 

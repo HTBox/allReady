@@ -1,25 +1,32 @@
 {
-  "DefaultAdminUsername": "Administrator@example.com",
-  "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
-  "DefaultUsername": "User@example.com",
-  "DefaultTenantUsername": "tenant@example.com",
-  "DefaultFromEmailAddress": "Administrator@example.com",
-  "DefaultFromDisplayName": "allReady.com Administrator",
-
+  // Note: You should --=NOT=-- put sensitive information into this file.
+  //       This file should only be used as placeholders for keys that
+  //       can be resolved via UserSecrets or environment variables.
+  //       http://docs.asp.net/en/latest/security/app-secrets.html#installing-the-secret-manager-tool
+  "SampleData": {
+    "DefaultAdminUsername": "Administrator@example.com",
+    "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
+    "DefaultUsername": "User@example.com",
+    "DefaultTenantUsername": "tenant@example.com",
+    "DefaultFromEmailAddress": "Administrator@example.com",
+    "DefaultFromDisplayName": "allReady.com Administrator",
+    "InsertSampleData": "true",
+    "InsertTestUsers": "true"
+  },
   "ApplicationInsights": {
     "InstrumentationKey": "[instrumentationkey]"
   },
   "Data": {
     "DefaultConnection": {
-      "UseInMemory": "true",
-      "AzureConnectionString": "Server=[server],1433;Database=[database];User ID=[userid];Password=[password];Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;MultipleActiveResultsets=true;",
-      "LocalConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
+      "ConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
     },
-    "InsertSampleData": "true",
-    "InsertTestUsers": "true",
     "Storage": {
-      "AzureStorage": "[storagekey]"
+      "AzureStorage": "[storagekey]",    
+      "EnableAzureQueueService": "false"
     }
+  },
+  "Email": {
+    "EmailFolder": "..."
   },
   "Authentication": {
     "Facebook": {
@@ -36,7 +43,8 @@
     },
     "SendGrid": {
       "UserName": "[sendgriduser]",
-      "Password": "[sendgridpassword]"
+      "Password": "[sendgridpassword]",
+      "FromEmail": "[sendgridemailsender]"
     },
     "Twilio": {
       "Sid": "[twiliosid]",

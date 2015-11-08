@@ -1,6 +1,7 @@
-﻿@model IndexViewModel
-@using AllReady.Security;
+﻿@using AllReady.Security;
+@inject AllReady.Services.ISelectListService SelectListService
 
+@model IndexViewModel
 @{
     ViewData["Title"] = "Manage your account";
 }
@@ -63,7 +64,8 @@
             <dd>
                 <div data-bind="foreach: skills">
                     <div class="form-inline">
-                        <select class="form-control" data-bind="attr: { name: 'AssociatedSkills[' + $index() + '].SkillId' }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                        <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                        <span class="glyphicon glyphicon-info-sign" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
                         <a href="#" data-bind="click: $root.deleteSkill" title="Delete skill">
                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                             Delete
@@ -76,7 +78,7 @@
                 </a>
                 <div>
                     <button type="submit" class="btn" data-bind="enable: skills.isValid">Save Skills</button>
-                    <span class="label label-danger" data-bind="visible: !skills.isValid()">Associated skills must be unique</span>
+                    <span class="label label-danger" data-bind="visible: !skills.isValid()">"@Html.DisplayNameFor(m => m.AssociatedSkills)" must be unique</span>
                 </div>
             </dd>
         </dl>
@@ -84,7 +86,6 @@
 </div>
 
 @section scripts {
-    <script type="text/javascript" src="~/js/ko.validation.js"></script>
     <script type="text/javascript">
         (function (ko, $, skills, availableSkills) {
 
@@ -93,6 +94,13 @@
                 function SkillObservable(skillModel) {
                     var ret = ko.utils.extend({}, skillModel);
                     ret.Id = ko.observable(ret.Id);
+                    ret.ControlName = function (index) {
+                        return 'AssociatedSkills[' + ko.unwrap(index) + '].SkillId';
+                    };
+                    ret.Description = ko.computed(function () {
+                        var skill = availableSkills.filter(function (skill) { return skill.Id === ret.Id(); })[0];
+                        return (skill && skill.Description) || "";
+                    });
                     return ret;
                 }
                 skills = (skills || []).map(SkillObservable);
@@ -111,6 +119,6 @@
             ko.applyBindings(new ManageUserViewModel(skills, availableSkills));
         })(ko, $,
             @Json.Serialize(Model.AssociatedSkills.Select(rs => new { Id = rs.SkillId })),
-            @Json.Serialize(ViewData["Skills"]));
+            @Json.Serialize(SelectListService.GetSkills()));
     </script>
 }
