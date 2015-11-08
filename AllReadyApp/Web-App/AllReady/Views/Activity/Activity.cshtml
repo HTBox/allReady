@@ -152,46 +152,54 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="form-horizontal">
-                                <div class="form-group">
-                                    <label asp-for="SignupModel.Name" class="control-label col-md-2"></label>
-                                    <div class="col-md-10">
-                                        <p class="form-control-static">
-                                            <input asp-for="SignupModel.Name" type="hidden" />
-                                            @Model.SignupModel.Name
-                                        </p>
+                                <input asp-for="SignupModel.Name" type="hidden" />
+                                @if (!string.IsNullOrWhiteSpace(Model.SignupModel.Name))
+                                {
+                                    <div class="form-group">
+                                        <label asp-for="SignupModel.Name" class="control-label col-md-4"></label>
+                                        <div class="col-md-8">
+                                            <p class="form-control-static">
+                                                @Model.SignupModel.Name
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
+                                }
                                 <div class="form-group">
-                                    <label asp-for="SignupModel.PreferredEmail" class="control-label col-md-2"></label>
-                                    <div class="col-md-10">
+                                    <label asp-for="SignupModel.PreferredEmail" class="control-label col-md-4"></label>
+                                    <div class="col-md-8">
                                         <input type="text" asp-for="SignupModel.PreferredEmail" class="form-control" />
                                         <span asp-validation-for="SignupModel.PreferredEmail" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="SignupModel.PreferredPhoneNumber" class="control-label col-md-2"></label>
-                                    <div class="col-md-10">
+                                    <label asp-for="SignupModel.PreferredPhoneNumber" class="control-label col-md-4"></label>
+                                    <div class="col-md-8">
                                         <input type="text" asp-for="SignupModel.PreferredPhoneNumber" class="form-control" />
                                         <span asp-validation-for="SignupModel.PreferredPhoneNumber" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="SignupModel.AdditionalInfo" class="control-label col-md-2"></label>
-                                    <div class="col-md-10">
+                                    <label asp-for="SignupModel.AdditionalInfo" class="control-label col-md-4"></label>
+                                    <div class="col-md-8">
                                         <input type="text" asp-for="SignupModel.AdditionalInfo" class="form-control" />
                                         <span asp-validation-for="SignupModel.AdditionalInfo" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="SignupModel.AddSkillIds" class="control-label col-md-2"></label>
-                                    <div class="col-md-10">
-                                        <ul>
+                                    <label class="control-label col-md-4">Associate new skills?</label>
+                                    <div class="col-md-8">
+                                        <ul class="list-unstyled form-control-static">
                                             @foreach (var skill in Model.RequiredSkills)
                                             {
                                                 if (!Model.UserSkills.Any(us => us.Id == skill.Id))
                                                 {
                                                     <li>
-                                                        Add @skill.HierarchicalName ?
+                                                        <input type="checkbox" id="@($"skillId{skill.Id}")" name="SignupModel.AddSkillIds" value="@skill.Id" />
+                                                        <label for="@($"skillId{skill.Id}")">@skill.HierarchicalName</label>
+                                                        @if (!string.IsNullOrWhiteSpace(skill.Description))
+                                                        {
+                                                            <span class="glyphicon glyphicon-info-sign" data-bind="visible: '@skill.Description', tooltip: { title: '@skill.Description', placement: 'top' }" aria-hidden="true"></span>
+                                                        }
                                                     </li>
                                                 }
                                             }

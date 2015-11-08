@@ -103,24 +103,35 @@ namespace AllReady.Controllers
                 return HttpNotFound();
             }
 
-            if (activity.UsersSignedUp == null)
+            if (ModelState.IsValid)
             {
-                activity.UsersSignedUp = new List<ActivitySignup>();
-            }
-            // If the user clicks multiple times, they may already be signed up.
-            if (!(from actSignup in activity.UsersSignedUp
-                  where actSignup.User.Id == user.Id
-                  select actSignup).Any())
-            {
+                activity.UsersSignedUp = activity.UsersSignedUp ?? new List<ActivitySignup>();
 
-                activity.UsersSignedUp.Add(new ActivitySignup
+                // Don't do anything if the user is already signed up for some reason
+                if (activity.UsersSignedUp.Any(acsu => acsu.User.Id == user.Id))
                 {
-                    Activity = activity,
-                    User = user,
-                    SignupDateTime = DateTime.UtcNow
-                });
+                    activity.UsersSignedUp.Add(new ActivitySignup
+                    {
+                        Activity = activity,
+                        User = user,
+                        PreferredEmail = signupModel.PreferredEmail,
+                        PreferredPhoneNumber = signupModel.PreferredPhoneNumber,
+                        AdditionalInfo = signupModel.AdditionalInfo,
+                        SignupDateTime = DateTime.UtcNow
+                    });
 
-                await _allReadyDataAccess.UpdateActivity(activity);
+                    await _allReadyDataAccess.UpdateActivity(activity);
+
+                    //Add new skills (if any)
+                    if (signupModel.AddSkillIds.Count > 0)
+                    {
+                        var skillsToAdd = activity.RequiredSkills
+                            .Where(acsk => signupModel.AddSkillIds.Contains(acsk.SkillId))
+                            .Select(acsk => new UserSkill() { SkillId = acsk.SkillId, UserId = user.Id });
+                        user.AssociatedSkills.AddRange(skillsToAdd.Where(toAdd => !user.AssociatedSkills.Any(existing => existing.SkillId == toAdd.SkillId)));
+                        await _allReadyDataAccess.UpdateUser(user);
+                    }
+                }
             }
 
             return RedirectToAction(nameof(ShowActivity), new { id = signupModel.ActivityId });
