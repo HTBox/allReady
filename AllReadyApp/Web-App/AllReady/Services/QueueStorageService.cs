@@ -7,12 +7,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace AllReady.Services
-{ 
-    public interface IQueueStorageService
-    {
-        void SendMessage(string queueName, string message);
-    }
-
+{
     public class QueueStorageService : IQueueStorageService
     {
         public class Queues
