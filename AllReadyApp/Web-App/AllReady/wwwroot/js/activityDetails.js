@@ -4,6 +4,7 @@
         function ActivityDetailAdmin() {
             $("#messageVolunteersModal").on("show.bs.modal", function (e) {
                 var modal = $(this);
+                $('#messageCharacterCount').html("");
                 $("#sendMessageToVolunteers").removeAttr('disabled');
                 $("#messageVolunteersModal-message").val("");
                 $("#messageVolunteersModal-subject").val("");
@@ -28,10 +29,29 @@
                         $(".alert-success", form).show();
                         setTimeout(function () {
                             $("#messageVolunteersModal").modal("hide");
-                        }, 300);
+                        }, 500);
+                    },
+                    error: function (error) {
+                        $(".alert-info", form).hide();
+                        var errorSection = $(".alert-danger", form);
+                        var errorMessage = "";
+                        if (error.responseText) {
+                            var errorInfo = JSON.parse(error.responseText);
+                            
+                            if (errorInfo.Subject && errorInfo.Subject.length > 0) {
+                                errorMessage = errorMessage + errorInfo.Subject[0] + "<br/>";
+                            }
+                            if (errorInfo.Message && errorInfo.Message.length > 0) {
+                                errorMessage = errorMessage + errorInfo.Message[0] + "<br/>";
+                            }                            
+                        }
+                        if (errorMessage === "") {
+                            errorMessage = "An error occurred while attempting to send message. Please try again.";
+                        }
+                        errorSection.html(errorMessage);
+                        errorSection.show();
+                        $("#sendMessageToVolunteers").removeAttr('disabled');
                     }
-                }).error(function (error) {
-                    $(".alert-danger", form).hide();
                 });
 
                 // prevent submitting again
@@ -50,5 +70,3 @@
     })();
     HTBox.ActivityDetailAdmin = ActivityDetailAdmin;
 })(HTBox || (HTBox = {}));
-
-

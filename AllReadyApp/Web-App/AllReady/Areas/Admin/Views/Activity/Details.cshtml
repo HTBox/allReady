@@ -26,7 +26,7 @@
 <div class="row">
     <div class="col-md-12">
         <h3>Volunteers @if (Model.NumberOfVolunteersRequired > 0)
-        { <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span> } <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button></h3>
+        { <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span> } <button type="button" class="btn btn-primary" disabled="@(!Model.Volunteers.Any())" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button></h3>
         @if (Model.Volunteers == null || Model.Volunteers.Count == 0)
         {
             <text>No volunteers yet. </text>
@@ -75,7 +75,7 @@
                     </div>
                     <div class="alert alert-info" role="alert">Sending message...</div>
                     <div class="alert alert-success" role="alert"><i class="fa fa-check"></i> Message sent</div>
-                    <div class="alert alert-danger" role="alert">An error occurred while attempting to send message. Please try again.</div>
+                    <div class="alert alert-danger" role="alert"></div>
 
                 </div>
                 <div class="modal-footer">

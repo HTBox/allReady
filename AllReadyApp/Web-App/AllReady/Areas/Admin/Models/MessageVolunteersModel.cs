@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.Areas.Admin.Models
 {
@@ -9,8 +6,10 @@ namespace AllReady.Areas.Admin.Models
     {
         public int ActivityId { get; set; }
 
+        [Required]
         public string Subject { get; set; }
 
+        [Required]
         public string Message { get; set; }
     }
 }
