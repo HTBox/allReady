@@ -13,7 +13,7 @@ using Xunit;
 
 namespace AllReady.UnitTest
 {
-    public class GetActivityDetail : TestBase
+    public class GetActivityDetail : InMemoryContextTest
     {
         protected override void LoadTestData()
         {

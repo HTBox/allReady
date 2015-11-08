@@ -3,7 +3,7 @@ using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Models;
 using Xunit;
 
-namespace AllReady.UnitTests
+namespace AllReady.UnitTest
 {
     public class DeletingTask : InMemoryContextTest
     {
