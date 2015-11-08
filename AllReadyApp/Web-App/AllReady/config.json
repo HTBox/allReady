@@ -13,6 +13,9 @@
     "InsertSampleData": "true",
     "InsertTestUsers": "true"
   },
+  "General": {
+    "SiteBaseUrl": "http://localhost:33310/"
+  },
   "ApplicationInsights": {
     "InstrumentationKey": "[instrumentationkey]"
   },

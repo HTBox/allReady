@@ -8,6 +8,11 @@ namespace AllReady
         public string StorageAccount { get; set; }
     }
 
+    public class GeneralSettings
+    {
+        public string SiteBaseUrl { get; set; }
+    }
+
     public class DatabaseSettings
     {
         public string ConnectionString { get; set; }
