@@ -1,46 +1,51 @@
 {
-    "SampleData": {
-        "DefaultAdminUsername": "Administrator@example.com",
-        "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
-        "DefaultUsername": "User@example.com",
-        "DefaultTenantUsername": "tenant@example.com",
-        "DefaultFromEmailAddress": "Administrator@example.com",
-        "DefaultFromDisplayName": "allReady.com Administrator",
+  // Note: You should --=NOT=-- put sensitive information into this file.
+  //       This file should only be used as placeholders for keys that
+  //       can be resolved via UserSecrets or environment variables.
+  //       http://docs.asp.net/en/latest/security/app-secrets.html#installing-the-secret-manager-tool
+  "SampleData": {
+  "DefaultAdminUsername": "Administrator@example.com",
+  "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
+  "DefaultUsername": "User@example.com",
+  "DefaultTenantUsername": "tenant@example.com",
+  "DefaultFromEmailAddress": "Administrator@example.com",
+  "DefaultFromDisplayName": "allReady.com Administrator",
+  },
+  "ApplicationInsights": {
+    "InstrumentationKey": "[instrumentationkey]"
+  },
+  "Data": {
+    "DefaultConnection": {
+      "ConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
     },
-    "ApplicationInsights": {
-        "InstrumentationKey": "[instrumentationkey]"
-    },
-    "Data": {
-        "DefaultConnection": {
-            "ConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
-        },
-        "InsertSampleData": "true",
-        "InsertTestUsers": "true",
-        "Storage": {
-            "AzureStorage": "[storagekey]"
-        }
-    },
-    "Authentication": {
-        "Facebook": {
-            "AppId": "[facebookappId]",
-            "AppSecret": "[facebookappsecret]"
-        },
-        "Twitter": {
-            "ConsumerKey": "[twitterkey]",
-            "ConsumerSecret": "[twittersecret]"
-        },
-        "MicrosoftAccount": {
-            "ClientId": "[twitterclient]",
-            "ClientSecret": "[twittersecret]"
-        },
-        "SendGrid": {
-            "UserName": "[sendgriduser]",
-            "Password": "[sendgridpassword]"
-        },
-        "Twilio": {
-            "Sid": "[twiliosid]",
-            "Token": "[twiliotoken]",
-            "PhoneNo": "[twilionumber]"
-        }
+    "InsertSampleData": "true",
+    "InsertTestUsers": "true",
+    "Storage": {
+      "AzureStorage": "[storagekey]"
     }
+  },
+  "Authentication": {
+    "Facebook": {
+      "AppId": "[facebookappId]",
+      "AppSecret": "[facebookappsecret]"
+    },
+    "Twitter": {
+      "ConsumerKey": "[twitterkey]",
+      "ConsumerSecret": "[twittersecret]"
+    },
+    "MicrosoftAccount": {
+      "ClientId": "[twitterclient]",
+      "ClientSecret": "[twittersecret]"
+    },
+    "SendGrid": {
+      "UserName": "[sendgriduser]",
+      "Password": "[sendgridpassword]",
+      "FromEmail": "[sendgridemailsender]"
+    },
+    "Twilio": {
+      "Sid": "[twiliosid]",
+      "Token": "[twiliotoken]",
+      "PhoneNo": "[twilionumber]"
+    }
+  }
 }
