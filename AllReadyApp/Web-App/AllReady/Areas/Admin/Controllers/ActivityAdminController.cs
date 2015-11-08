@@ -209,53 +209,7 @@ namespace AllReady.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Assign(int id, List<TaskViewModel> tasks)
-        {
-            if (!UserIsTenantAdminOfActivity(id))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
-            var updates = tasks.ToModel(_dataAccess).ToList();
-            //TODO: Replacement for API like Tasks.UpdateRange(updates);
-            foreach (var item in updates)
-            {
-                await _dataAccess.UpdateTaskAsync(item);
-            }
-
-            // send all notifications to the queue
-            var smsRecipients = new List<string>();
-            var emailRecipients = new List<string>();
-
-            foreach (var allReadyTask in updates)
-            {
-                // get all confirmed contact points for the broadcast
-                smsRecipients.AddRange(allReadyTask.AssignedVolunteers.Where(u => u.User.PhoneNumberConfirmed).Select(v => v.User.PhoneNumber));
-                emailRecipients.AddRange(allReadyTask.AssignedVolunteers.Where(u => u.User.EmailConfirmed).Select(v => v.User.Email));
-            }
-
-            var command = new NotifyVolunteersCommand
-            {
-                // todo: what information do we add about the task?
-                // todo: should we use a template from the email service provider?
-                // todo: what about non-English volunteers?
-                ViewModel = new NotifyVolunteersViewModel
-                {
-                    SmsMessage = "You've been assigned a task from AllReady.",
-                    SmsRecipients = smsRecipients,
-                    EmailMessage = "You've been assigned a task from AllReady.",
-                    EmailRecipients = emailRecipients,
-                    Subject = "You've been assigned a task from AllReady."
-                }
-            };
-
-            _bus.Send(command);
-
-            return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Details", id = id });
-        }
-
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostActivityFile(int id, IFormFile file)

@@ -86,6 +86,7 @@ namespace AllReady.ViewModels
         public string IsUserVolunteeredForActivity { get; private set; }
         public List<ApplicationUser> Volunteers { get; set; }
         public string UserId { get; set; }
+        public int NumberOfVolunteersRequired { get; set; }
     }
 
     public static class ActivityViewModelExtension
