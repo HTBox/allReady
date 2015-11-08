@@ -15,6 +15,8 @@ namespace AllReady.Areas.Admin.ViewModels
         public Tenant Tenant { get; set; }
         [Display(Name = "Is organization admin?")]
         public bool IsTenantAdmin { get; set; }
+        [Display(Name = "Is site admin?")]
+        public bool IsSiteAdmin { get; set; }
         [Display(Name = "Associated skills")]
         public List<UserSkill> AssociatedSkills { get; set; }
     }
