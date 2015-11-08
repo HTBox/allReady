@@ -17,6 +17,22 @@ namespace AllReady.UnitTest
     public class EditActivity : TestBase
     {
         [Fact]
+        public void ActivityDoesNotExist()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                var context = ServiceProvider.GetService<AllReadyContext>();
+                var vm = new ActivityDetailViewModel
+                {
+                    Id = 0
+                };
+                var query = new EditActivityCommand { Activity = vm };
+                var handler = new EditActivityCommandHandler(context);
+                var result = handler.Handle(query);
+            });
+        }
+
+        [Fact]
         public void ExistingActivity()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
