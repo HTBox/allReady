@@ -65,6 +65,7 @@ namespace AllReady
             services.Configure<DatabaseSettings>(Configuration.GetSection("Data:DefaultConnection"));
             services.Configure<EmailSettings>(Configuration.GetSection("Email"));
             services.Configure<SampleDataSettings>(Configuration.GetSection("SampleData"));
+            services.Configure<GeneralSettings>(Configuration.GetSection("General"));
 
             // Add CORS support
             services.AddCors(options =>
