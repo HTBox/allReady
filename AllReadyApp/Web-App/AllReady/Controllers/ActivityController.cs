@@ -47,10 +47,13 @@ namespace AllReady.Controllers
         [Authorize]
         [ValidateAntiForgeryToken]
         [Route("~/MyActivities/{id}/tasks")]
-        public async Task<IActionResult> UpdateMyTasks(int id, [FromBody]List<TaskSignupViewModel> model) {
+        public async Task<IActionResult> UpdateMyTasks(int id, [FromBody]List<TaskSignupViewModel> model)
+        {
             var currentUser = _allReadyDataAccess.GetUser(User.GetUserId());
-            foreach (var taskSignup in model) {
-                await _allReadyDataAccess.UpdateTaskSignupAsync(new TaskSignup {
+            foreach (var taskSignup in model)
+            {
+                await _allReadyDataAccess.UpdateTaskSignupAsync(new TaskSignup
+                {
                     Id = taskSignup.Id,
                     StatusDateTimeUtc = DateTime.UtcNow,
                     StatusDescription = taskSignup.StatusDescription,
@@ -59,7 +62,8 @@ namespace AllReady.Controllers
                     User = currentUser
                 });
             }
-            var result = new {
+            var result = new
+            {
                 success = true
             };
             return Json(result);
@@ -82,12 +86,10 @@ namespace AllReady.Controllers
                 return HttpNotFound();
             }
 
-            var isUserSignedUpForActivity = User.IsSignedIn() && _allReadyDataAccess.GetActivitySignups(id, User.GetUserId()).Any();
-            return View("Activity", new ActivityViewModel(activity, isUserSignedUpForActivity)
-            {
-                UserSkills = User.IsSignedIn() ? _allReadyDataAccess.GetUser(User.GetUserId()).AssociatedSkills.Select(us => us.Skill).ToList() : null
-            });
+            return View("Activity", new ActivityViewModel(activity).WithUserInfo(activity, User, _allReadyDataAccess));
         }
+
+        
 
         [HttpGet]
         [Route("/Activity/Signup/{id}")]
@@ -136,7 +138,7 @@ namespace AllReady.Controllers
                 await _allReadyDataAccess.UpdateActivity(activity);
             }
 
-            return View("Activity", new ActivityViewModel(activity, true, User.GetUserId()));
-        }        
+            return View("Activity", new ActivityViewModel(activity).WithUserInfo(activity, User, _allReadyDataAccess));
+        }
     }
 }
