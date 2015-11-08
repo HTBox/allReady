@@ -13,6 +13,11 @@ namespace AllReady.Areas.Admin.Features.Tasks
         public TaskStatus TaskStatus { get; set; }
     }
 
+    /// <summary>
+    /// Valid status values for a task signup. See
+    /// the TaskStatusChangeHandler for the rules
+    /// around moving from one status to another.
+    /// </summary>
     public enum TaskStatus
     {
         Assigned,
