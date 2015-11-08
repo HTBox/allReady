@@ -8,7 +8,7 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    [Migration("20151108170315_UserRealName")]
+    [Migration("20151108175734_UserRealName")]
     partial class UserRealName
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,13 +52,7 @@ namespace AllReady.Migrations
 
                     b.Property<int?>("ActivityId");
 
-                    b.Property<string>("AdditionalInfo");
-
                     b.Property<DateTime?>("CheckinDateTime");
-
-                    b.Property<string>("PreferredEmail");
-
-                    b.Property<string>("PreferredPhoneNumber");
 
                     b.Property<DateTime>("SignupDateTime");
 
