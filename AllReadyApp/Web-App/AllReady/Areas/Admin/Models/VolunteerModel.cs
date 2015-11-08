@@ -1,4 +1,4 @@
-﻿namespace AllReady.Areas.Admin.ViewModels
+﻿namespace AllReady.Areas.Admin.Models
 {
     public class VolunteerModel
     {
