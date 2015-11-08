@@ -1,4 +1,5 @@
 ﻿using AllReady.Areas.Admin.Models;
+using AllReady.Features.Notifications;
 using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
@@ -59,6 +60,13 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             taskSignup.Status = message.TaskStatus.ToString();
             _context.SaveChanges();
+
+            var notification = new TaskSignupStatusChanged
+            {
+                TaskId = task.Id,
+                SignupId = taskSignup.Id
+            };
+            // TODO: publish notification
         }
     }
 }
