@@ -130,6 +130,14 @@ These topics show you how to use the secrets manager for app settings when runni
 
 The following app settings are used by the project.   
 
+####General settings
+
+These settings control how the web app stores and seeds data:
+
+| **Key value**                                  | **Description**                                          |
+|------------------------------------------------|----------------------------------------------------------|
+| `General:SiteBaseUrl`           | Used when creating links (when composing emails). Set by default as localhost:33310 but should be overridden in deployments.   |
+
 ####Data settings
 
 These settings control how the web app stores and seeds data:
