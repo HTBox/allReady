@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace AllReady.UnitTest.Areas.Admin.Features.Activities
+namespace AllReady.UnitTest.Activities
 {
     public class MessageVolunteers : InMemoryContextTest
     {
