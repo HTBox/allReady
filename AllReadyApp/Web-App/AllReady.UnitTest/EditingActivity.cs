@@ -1,5 +1,5 @@
 using AllReady.Areas.Admin.Features.Activities;
-using AllReady.Areas.Admin.ViewModels;
+using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using Xunit;
 
@@ -20,7 +20,7 @@ namespace AllReady.UnitTests
         {
             var sut = new EditActivityCommandHandler(Context);
             int actual =
-                sut.Handle(new EditActivityCommand {Activity = new ActivityDetailViewModel {CampaignId = 1, Id = 1}});
+                sut.Handle(new EditActivityCommand {Activity = new ActivityDetailModel {CampaignId = 1, Id = 1}});
             Assert.Equal(1, actual);
         }
     }

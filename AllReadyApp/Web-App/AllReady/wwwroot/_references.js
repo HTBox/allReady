@@ -22,5 +22,7 @@
 /// <reference path="lib/jquery/dist/jquery.js" />
 /// <reference path="lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js" />
 /// <reference path="lib/knockout/dist/knockout.js" />
+/// <reference path="lib/knockout-bootstrap/build/knockout-bootstrap.min.js" />
 /// <reference path="lib/moment/moment.js" />
 /// <reference path="lib/tinymce/tinymce.min.js" />
+/// <reference path="lib/typeahead.js/dist/typeahead.bundle.js" />
