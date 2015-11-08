@@ -3,7 +3,7 @@ using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using Xunit;
 
-namespace AllReady.UnitTest
+namespace AllReady.UnitTest.Activities
 {
     public class EditingActivity : InMemoryContextTest
     {

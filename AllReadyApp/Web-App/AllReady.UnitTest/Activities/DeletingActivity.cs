@@ -2,7 +2,7 @@ using AllReady.Areas.Admin.Features.Activities;
 using Xunit;
 using System.Linq;
 
-namespace AllReady.UnitTest
+namespace AllReady.UnitTest.Activities
 {
     public class DeletingActivity : InMemoryContextTest
     {

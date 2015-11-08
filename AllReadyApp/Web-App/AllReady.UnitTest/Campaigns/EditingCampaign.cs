@@ -2,7 +2,7 @@ using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Models;
 using Xunit;
 
-namespace AllReady.UnitTest
+namespace AllReady.UnitTest.Campaigns
 {
     public class EditingCampaign : InMemoryContextTest
     {

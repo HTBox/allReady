@@ -2,7 +2,7 @@ using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Models;
 using Xunit;
 
-namespace AllReady.UnitTest
+namespace AllReady.UnitTest.Tasks
 {
     public class EditingTask : InMemoryContextTest
     {
