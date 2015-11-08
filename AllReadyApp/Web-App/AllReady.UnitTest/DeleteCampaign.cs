@@ -8,7 +8,7 @@ using Xunit;
 
 namespace AllReady.UnitTest
 {
-    public class DeleteCampaign : TestBase
+    public class DeleteCampaign : InMemoryContextTest
     {
         protected override void LoadTestData()
         {
