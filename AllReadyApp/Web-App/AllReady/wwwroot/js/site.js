@@ -36,7 +36,9 @@ var getGeoCoordinates = function (address1, address2, city, state, postalCode, c
     lookupAddress = lookupAddress + (state != undefined || state != null ? " " + state : null);
     lookupAddress = lookupAddress + (postalCode != undefined || postalCode != null ? " " + postalCode : null);
     lookupAddress = lookupAddress + (country != undefined || country != null ? " " + country : null);
-
+    if (lookupAddress.trim() == "") {
+        return;
+    }
     var geocodeRequest = "http://dev.virtualearth.net/REST/v1/Locations?query=" +
         encodeURIComponent(lookupAddress) +
         "&key=" + BingMapKey;

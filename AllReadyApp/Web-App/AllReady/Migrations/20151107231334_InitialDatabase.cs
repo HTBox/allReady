@@ -57,6 +57,7 @@ namespace AllReady.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Description = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: false),
                     ParentSkillId = table.Column<int>(nullable: true)
                 },
@@ -289,6 +290,7 @@ namespace AllReady.Migrations
                     ImageUrl = table.Column<string>(nullable: true),
                     LocationId = table.Column<int>(nullable: true),
                     Name = table.Column<string>(nullable: true),
+                    NumberOfVolunteersRequired = table.Column<int>(nullable: false),
                     OrganizerId = table.Column<string>(nullable: true),
                     StartDateTimeUtc = table.Column<DateTime>(nullable: false),
                     TenantId = table.Column<int>(nullable: false)
@@ -419,9 +421,10 @@ namespace AllReady.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     ActivityId = table.Column<int>(nullable: true),
                     Description = table.Column<string>(nullable: true),
-                    EndDateTimeUtc = table.Column<DateTime>(nullable: true),
+                    EndDateTimeUtc = table.Column<DateTimeOffset>(nullable: true),
                     Name = table.Column<string>(nullable: true),
-                    StartDateTimeUtc = table.Column<DateTime>(nullable: true),
+                    NumberOfVolunteersRequired = table.Column<int>(nullable: false),
+                    StartDateTimeUtc = table.Column<DateTimeOffset>(nullable: true),
                     TenantId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
