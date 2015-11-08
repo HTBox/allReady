@@ -28,9 +28,11 @@ namespace AllReady.Areas.Admin.Models
         public string ImageUrl { get; set; }
             
         [Display(Name = "Start Date")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
         public DateTime StartDate { get; set; }
 
         [Display(Name = "End Date")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
         public DateTime EndDate { get; set; }
 
         public CampaignImpact CampaignImpact { get; set; }
