@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.Activities;
+﻿using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Models;
 using Microsoft.Framework.DependencyInjection;
 using System;
@@ -8,7 +8,7 @@ using Xunit;
 
 namespace AllReady.UnitTest
 {
-    public class DeleteActivity : TestBase
+    public class DeleteCampaign : TestBase
     {
         protected override void LoadTestData()
         {
@@ -22,45 +22,33 @@ namespace AllReady.UnitTest
             };
             Campaign firePrev = new Campaign()
             {
+                Id = 1,
                 Name = "Neighborhood Fire Prevention Days",
                 ManagingTenant = htb
             };
             htb.Campaigns.Add(firePrev);
-            Activity queenAnne = new Activity()
-            {
-                Id = 1,
-                Name = "Queen Anne Fire Prevention Day",
-                Campaign = firePrev,
-                CampaignId = firePrev.Id,
-                StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
-                Location = new Location { Id = 1 },
-                Tenant = htb,
-                RequiredSkills = new List<ActivitySkill>()
-            };
             context.Tenants.Add(htb);
-            context.Activities.Add(queenAnne);
             context.SaveChanges();
         }
 
         [Fact]
-        public void ExistingActivity()
+        public void ExistingCampaign()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new DeleteActivityCommand { ActivityId = 1 };
-            var handler = new DeleteActivityCommandHandler(context);
+            var query = new DeleteCampaignCommand { CampaignId = 1 };
+            var handler = new DeleteCampaignCommandHandler(context);
             var result = handler.Handle(query);
 
-            var data = context.Activities.Count(_ => _.Id == 1);
+            var data = context.Campaigns.Count(_ => _.Id == 1);
             Assert.Equal(0, data);
         }
 
         [Fact]
-        public void ActivityDoesNotExist()
+        public void CampaignDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new DeleteActivityCommand { ActivityId = 0 };
-            var handler = new DeleteActivityCommandHandler(context);
+            var query = new DeleteCampaignCommand { CampaignId = 0 };
+            var handler = new DeleteCampaignCommandHandler(context);
             var result = handler.Handle(query);
         }
     }
