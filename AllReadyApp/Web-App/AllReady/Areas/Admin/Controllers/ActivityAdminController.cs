@@ -71,7 +71,7 @@ namespace AllReady.Areas.Admin.Controllers
                 CampaignId = campaign.Id,
                 CampaignName = campaign.Name,
                 TenantId = campaign.TenantId,
-                TenantName = campaign.TenantName,                
+                TenantName = campaign.TenantName,
                 StartDateTime = DateTime.Today.Date,
                 EndDateTime = DateTime.Today.Date.AddMonths(1)
             };
@@ -90,13 +90,13 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             if (ModelState.IsValid)
-            {                
+            {
                 CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
-                if (campaign == null || 
+                if (campaign == null ||
                     !User.IsTenantAdmin(campaign.TenantId))
                 {
                     return HttpUnauthorized();
-                }                
+                }
                 activity.TenantId = campaign.TenantId;
                 var id = _bus.Send(new EditActivityCommand { Activity = activity });
                 return RedirectToAction("Details", "Activity", new { area = "Admin", id = id });
@@ -107,7 +107,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Activity/Edit/5
         public IActionResult Edit(int id)
         {
-            ActivityDetailModel activity = _bus.Send(new ActivityDetailQuery{ ActivityId = id });
+            ActivityDetailModel activity = _bus.Send(new ActivityDetailQuery { ActivityId = id });
             if (activity == null)
             {
                 return new HttpStatusCodeResult(404);
@@ -131,7 +131,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpBadRequest();
             }
             //TODO: Use the query pattern here
-            int campaignId = _dataAccess.GetManagingTenantId(activity.Id);            
+            int campaignId = _dataAccess.GetManagingTenantId(activity.Id);
             if (!User.IsTenantAdmin(campaignId))
             {
                 return HttpUnauthorized();
@@ -144,7 +144,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var id = _bus.Send(new EditActivityCommand {Activity = activity });
+                var id = _bus.Send(new EditActivityCommand { Activity = activity });
                 return RedirectToAction("Details", "Activity", new { area = "Admin", id = id });
             }
             return View(activity);
@@ -153,7 +153,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Activity/Delete/5
         [ActionName("Delete")]
         public IActionResult Delete(int id)
-            {
+        {
             var activity = _bus.Send(new ActivityDetailQuery { ActivityId = id });
             if (activity == null)
             {
@@ -176,7 +176,7 @@ namespace AllReady.Areas.Admin.Controllers
             //TODO: Should be using an ActivitySummaryQuery here
             ActivityDetailModel activity = _bus.Send(new ActivityDetailQuery { ActivityId = id });
             if (activity == null)
-        {
+            {
                 return HttpNotFound();
             }
             if (!User.IsTenantAdmin(activity.TenantId))
@@ -209,7 +209,30 @@ namespace AllReady.Areas.Admin.Controllers
             return View(model);
         }
 
-       
+
+        public IActionResult MessageAllVolunteers(MessageActivityVolunteersModel model)
+        {
+            //TODO: Query only for the tenant Id rather than the whole activity detail
+            if (!ModelState.IsValid)
+            {
+                return HttpBadRequest(ModelState);
+            }
+
+            var activity = _bus.Send(new ActivityDetailQuery { ActivityId = model.ActivityId });
+            if (activity == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (!User.IsTenantAdmin(activity.TenantId))
+            {
+                return HttpUnauthorized();
+            }
+
+            _bus.Send(new MessageActivityVolunteersCommand { Model = model });
+            return Ok();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostActivityFile(int id, IFormFile file)
@@ -221,14 +244,13 @@ namespace AllReady.Areas.Admin.Controllers
             await _dataAccess.UpdateActivity(a);
 
             return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Edit", id = id });
-
         }
 
         private bool UserIsTenantAdminOfActivity(Activity activity)
         {
             return User.IsTenantAdmin(activity.TenantId);
         }
-        
+
         private bool UserIsTenantAdminOfActivity(int activityId)
         {
             return UserIsTenantAdminOfActivity(_dataAccess.GetActivity(activityId));
