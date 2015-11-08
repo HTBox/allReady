@@ -1,24 +1,24 @@
-﻿using Microsoft.AspNet.Identity;
-using Microsoft.Framework.Configuration;
-using AllReady.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AllReady.Services;
+using Microsoft.AspNet.Identity;
+using Microsoft.Framework.OptionsModel;
 
 namespace AllReady.Models
 {
     public class SampleDataGenerator
     {
-        private static IConfiguration _configuration;
-        private AllReadyContext _context;
-        private UserManager<ApplicationUser> _userManager;
+        private readonly AllReadyContext _context;
+        private readonly SampleDataSettings _settings;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public SampleDataGenerator(AllReadyContext context, IConfiguration configuration, UserManager<ApplicationUser> userManager)
+        public SampleDataGenerator(AllReadyContext context, IOptions<SampleDataSettings> options, UserManager<ApplicationUser> userManager)
         {
-            _configuration = configuration;
             _context = context;
+            _settings = options.Value;
             _userManager = userManager;
         }
 
@@ -347,18 +347,18 @@ namespace AllReady.Models
             #endregion
 
             #region Users for Activities
-            var username1 = $"{_configuration["SampleData:DefaultUsername"]}1.com";
-            var username2 = $"{_configuration["SampleData:DefaultUsername"]}2.com";
-            var username3 = $"{_configuration["SampleData:DefaultUsername"]}3.com";
+            var username1 = $"{_settings.DefaultUsername}1.com";
+            var username2 = $"{_settings.DefaultUsername}2.com";
+            var username3 = $"{_settings.DefaultUsername}3.com";
 
             var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true };
-            _userManager.CreateAsync(user1, _configuration["SampleData:DefaultAdminPassword"]).Wait();
+            _userManager.CreateAsync(user1, _settings.DefaultAdminPassword).Wait();
             users.Add(user1);
             var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true };
-            _userManager.CreateAsync(user2, _configuration["SampleData:DefaultAdminPassword"]).Wait();
+            _userManager.CreateAsync(user2, _settings.DefaultAdminPassword).Wait();
             users.Add(user2);
             var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true };
-            _userManager.CreateAsync(user3, _configuration["SampleData:DefaultAdminPassword"]).Wait();
+            _userManager.CreateAsync(user3, _settings.DefaultAdminPassword).Wait();
             users.Add(user3);
             #endregion
 
@@ -428,13 +428,13 @@ namespace AllReady.Models
         private static CampaignImpactType GetImpactType(List<CampaignImpactType> types, List<CampaignImpactType> existingTypes, string typeName)
         {
             CampaignImpactType impactType;
-            if (existingTypes.Any(item => item.ImpactType == typeName))
+            if (existingTypes.Any(item => item.Name == typeName))
             {
-                impactType = existingTypes.Single(item => item.ImpactType == typeName);
+                impactType = existingTypes.Single(item => item.Name == typeName);
             }
             else
             {
-                impactType = new CampaignImpactType { ImpactType = typeName };
+                impactType = new CampaignImpactType { Name = typeName };
 
                 types.Add(impactType);
             }
@@ -525,24 +525,24 @@ namespace AllReady.Models
         /// <returns></returns>
         public async Task CreateAdminUser()
         {
-            var user = await _userManager.FindByNameAsync(_configuration["SampleData:DefaultAdminUsername"]);
+            var user = await _userManager.FindByNameAsync(_settings.DefaultAdminUsername);
             if (user == null)
             {
-                user = new ApplicationUser { UserName = _configuration["SampleData:DefaultAdminUsername"], Email = _configuration["SampleData:DefaultAdminUsername"] };
+                user = new ApplicationUser { UserName = _settings.DefaultAdminUsername, Email = _settings.DefaultAdminUsername };
                 user.EmailConfirmed = true;
-                _userManager.CreateAsync(user, _configuration["SampleData:DefaultAdminPassword"]).Wait();
+                _userManager.CreateAsync(user, _settings.DefaultAdminPassword).Wait();
                 _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, "SiteAdmin")).Wait();
 
-                var user2 = new ApplicationUser { UserName = _configuration["SampleData:DefaultTenantUsername"], Email = _configuration["SampleData:DefaultTenantUsername"] };
+                var user2 = new ApplicationUser { UserName = _settings.DefaultTenantUsername, Email = _settings.DefaultTenantUsername};
                 // For the sake of being able to exercise Tenant-specific stuff, we need to associate a tenant.
                 user2.EmailConfirmed = true;
-                await _userManager.CreateAsync(user2, _configuration["SampleData:DefaultAdminPassword"]);
+                await _userManager.CreateAsync(user2, _settings.DefaultAdminPassword);
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.UserType, "TenantAdmin"));
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.Tenant, _context.Tenants.First().Id.ToString()));
 
-                var user3 = new ApplicationUser { UserName = _configuration["SampleData:DefaultUsername"], Email = _configuration["SampleData:DefaultUsername"] };
+                var user3 = new ApplicationUser { UserName = _settings.DefaultUsername, Email = _settings.DefaultUsername };
                 user3.EmailConfirmed = true;
-                await _userManager.CreateAsync(user3, _configuration["SampleData:DefaultAdminPassword"]);
+                await _userManager.CreateAsync(user3, _settings.DefaultAdminPassword);
             }
         }
     }

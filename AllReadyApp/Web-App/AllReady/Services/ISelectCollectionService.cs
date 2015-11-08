@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace AllReady.Services
 {
-    public interface ISelectListService
+    public interface ISelectCollectionService
     {
-        IEnumerable<SelectListItem> GetTenants();
-        IEnumerable<Skill> GetSkills();
-        IEnumerable<SelectListItem> GetCampaignImpactTypes();
+        IEnumerable<CampaignImpactType> GetCampaignImpactTypes();
     }
 }

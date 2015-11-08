@@ -4,12 +4,14 @@
   //       can be resolved via UserSecrets or environment variables.
   //       http://docs.asp.net/en/latest/security/app-secrets.html#installing-the-secret-manager-tool
   "SampleData": {
-  "DefaultAdminUsername": "Administrator@example.com",
-  "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
-  "DefaultUsername": "User@example.com",
-  "DefaultTenantUsername": "tenant@example.com",
-  "DefaultFromEmailAddress": "Administrator@example.com",
-  "DefaultFromDisplayName": "allReady.com Administrator",
+    "DefaultAdminUsername": "Administrator@example.com",
+    "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
+    "DefaultUsername": "User@example.com",
+    "DefaultTenantUsername": "tenant@example.com",
+    "DefaultFromEmailAddress": "Administrator@example.com",
+    "DefaultFromDisplayName": "allReady.com Administrator",
+    "InsertSampleData": "true",
+    "InsertTestUsers": "true"
   },
   "ApplicationInsights": {
     "InstrumentationKey": "[instrumentationkey]"
@@ -18,12 +20,13 @@
     "DefaultConnection": {
       "ConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
     },
-    "InsertSampleData": "true",
-    "InsertTestUsers": "true",
     "Storage": {
       "AzureStorage": "[storagekey]",    
       "EnableAzureQueueService": "false"
     }
+  },
+  "Email": {
+    "EmailFolder": "..."
   },
   "Authentication": {
     "Facebook": {

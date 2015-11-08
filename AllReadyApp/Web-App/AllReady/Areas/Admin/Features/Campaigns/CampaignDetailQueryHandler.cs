@@ -23,32 +23,36 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                                   .Include(m => m.ManagingTenant)
                                   .SingleOrDefault(c => c.Id == message.CampaignId);
 
-            var viewModel = new CampaignDetailViewModel()
+            CampaignDetailViewModel result = null;
+
+            if (campaign != null)
             {
-                Id = campaign.Id,
-                Name = campaign.Name,
-                Description = campaign.Description,
-                TenantId = campaign.ManagingTenantId,
-                TenantName = campaign.ManagingTenant.Name,
-                ImageUrl = campaign.ImageUrl,
-                StartDate = campaign.StartDateTimeUtc,
-                EndDate = campaign.EndDateTimeUtc,
-                Activities = campaign.Activities.Select(a => new ActivitySummaryViewModel
+                result = new CampaignDetailViewModel()
                 {
-                    Id = a.Id,
-                    Name = a.Name,
-                    Description = a.Description,
-                    StartDateTime = a.StartDateTimeUtc,
-                    EndDateTime = a.EndDateTimeUtc,
-                    CampaignId = campaign.Id,
-                    CampaignName = campaign.Name,
+                    Id = campaign.Id,
+                    Name = campaign.Name,
+                    Description = campaign.Description,
                     TenantId = campaign.ManagingTenantId,
                     TenantName = campaign.ManagingTenant.Name,
-                    ImageUrl = a.ImageUrl
-                })
-            };
-
-            return viewModel;
+                    ImageUrl = campaign.ImageUrl,
+                    StartDate = campaign.StartDateTimeUtc,
+                    EndDate = campaign.EndDateTimeUtc,
+                    Activities = campaign.Activities.Select(a => new ActivitySummaryViewModel
+                    {
+                        Id = a.Id,
+                        Name = a.Name,
+                        Description = a.Description,
+                        StartDateTime = a.StartDateTimeUtc,
+                        EndDateTime = a.EndDateTimeUtc,
+                        CampaignId = campaign.Id,
+                        CampaignName = campaign.Name,
+                        TenantId = campaign.ManagingTenantId,
+                        TenantName = campaign.ManagingTenant.Name,
+                        ImageUrl = a.ImageUrl
+                    })
+                };
+            }
+            return result;
         }
     }
 }
