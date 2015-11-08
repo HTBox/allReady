@@ -8,7 +8,7 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    [Migration("20151107194340_CampaignImpactFieldChange")]
+    [Migration("20151107233000_CampaignImpactFieldChange")]
     partial class CampaignImpactFieldChange
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
