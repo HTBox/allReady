@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace AllReady.UnitTest
+namespace AllReady.UnitTest.Activities
 {
     public class EditActivity : TestBase
     {

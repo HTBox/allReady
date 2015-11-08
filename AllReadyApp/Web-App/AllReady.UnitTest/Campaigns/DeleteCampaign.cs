@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace AllReady.UnitTest
+namespace AllReady.UnitTest.Campaigns
 {
     public class DeleteCampaign : InMemoryContextTest
     {
