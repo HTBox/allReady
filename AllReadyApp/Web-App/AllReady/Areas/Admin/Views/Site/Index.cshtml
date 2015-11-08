@@ -7,12 +7,16 @@
 }
 
 <h2>User Admin</h2>
+
 <div class="row">
     <div class="col-md-12">
-        <table class="table">
+        <table class="table table-responsive table-striped table-condensed">
             <tr>
                 <th>
                     Username
+                </th>
+                <th>
+                    Actions
                 </th>
             </tr>
             @foreach (var item in Model.Users)
@@ -20,15 +24,49 @@
                 <tr>
                     <td>
                         <a asp-action="EditUser" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id">@item.UserName</a>
-                        @if (item.IsTenantAdmin())
+                        @if (item.UserName == User.Identity.Name)
                         {
-                            <span class="label label-default">Org Admin</span>
+                            <span class="label label-info"><span class="fa fa-user"></span> (You)</span>
+                        }
+                        @if (item.IsUserType(UserType.SiteAdmin))
+                        {
+                            <span class="label label-warning"><span class="fa fa-user-secret"></span> Site</span>
+                        }
+                        @if (item.IsUserType(UserType.TenantAdmin))
+                        {
+                            <span class="label label-default"><span class="fa fa-users"></span> Org</span>
                         }
                     </td>
-
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a asp-action="EditUser" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-sm"><span class="fa fa-edit"></span> Edit</a>
+                            <a asp-action="ResetPassword" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-sm btn-warning"><span class="fa fa-recycle"></span> Reset Password</a>
+                            @if (!item.IsUserType(UserType.SiteAdmin) && !item.IsUserType(UserType.TenantAdmin))
+                            {
+                                <a asp-action="AssignSiteAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-sm btn-default"><span class="fa fa-user-secret"></span> Make Site Admin</a>
+                                <a asp-action="AssignTenantAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-sm btn-default "><span class="fa fa-group"></span> Make Org Admin</a>
+                            }
+                            else if (item.IsUserType(UserType.SiteAdmin))
+                            {
+                                <a asp-action="RevokeSiteAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-sm btn-danger"><span class="fa fa-user-secret"></span> Revoke Site Admin</a>
+                            }
+                            else if (item.IsUserType(UserType.TenantAdmin))
+                            {
+                                <a asp-action="RevokeTenantAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-sm btn-danger"><span class="fa fa-group"></span> Revoke Org Admin</a>
+                            }
+                        </div>
+                    </td>
                 </tr>
             }
         </table>
 
     </div>
 </div>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#resetPwdButton").click(function () { $("#resetPwdForm").submit() });
+        });
+    </script>
+}
