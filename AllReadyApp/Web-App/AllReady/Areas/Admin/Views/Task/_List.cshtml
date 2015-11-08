@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AllReady.Areas.Admin.ViewModels.TaskSummaryViewModel>
+﻿@model IEnumerable<AllReady.Areas.Admin.Models.TaskSummaryModel>
 
 <div class="row">
     <div class="col-md-12">
@@ -35,7 +35,7 @@
                     else if (item.AssignedVolunteers.Count == 1)
                     {
                         <td>@item.AssignedVolunteers[0].UserName</td>
-                        <td>@(item.AssignedVolunteers[0].StatusDescription ?? "*")</td>
+                        @*<td>@(item.AssignedVolunteers[0].HasVolunteered ? "": "*")</td>*@
                     }
                     else
                     {

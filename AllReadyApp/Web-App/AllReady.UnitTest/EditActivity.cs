@@ -1,5 +1,5 @@
 ﻿using AllReady.Areas.Admin.Features.Activities;
-using AllReady.Areas.Admin.ViewModels;
+using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Data.Entity;
@@ -38,7 +38,7 @@ namespace AllReady.UnitTest
             context.Tenants.Add(htb);
             context.SaveChanges();
 
-            var vm = new ActivityDetailViewModel
+            var vm = new ActivityDetailModel
             {
                 CampaignId = 1 
             };
@@ -88,7 +88,7 @@ namespace AllReady.UnitTest
 
             const string NEW_NAME = "Some new name value";
 
-            var vm = new ActivityDetailViewModel
+            var vm = new ActivityDetailModel
             {
                 CampaignId = queenAnne.CampaignId,
                 CampaignName = queenAnne.Campaign.Name,

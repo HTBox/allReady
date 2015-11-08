@@ -2,7 +2,7 @@ using System.Linq;
 using AllReady.Areas.Admin.Features.Campaigns;
 using Xunit;
 
-namespace AllReady.UnitTests
+namespace AllReady.UnitTest
 {
     public class DeletingCampaign : InMemoryContextTest
     {

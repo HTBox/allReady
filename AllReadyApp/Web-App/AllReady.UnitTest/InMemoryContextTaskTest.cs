@@ -1,18 +1,35 @@
-using AllReady.Areas.Admin.ViewModels;
 using AllReady.Models;
 using AllReady.UnitTest;
+using Microsoft.Framework.DependencyInjection;
 
-namespace AllReady.UnitTests
+namespace AllReady.UnitTest
 {
+    /// <summary>
+    /// Inherit from this type to implement tests
+    /// that make use of the in-memory test database
+    /// context.
+    /// </summary>
     public abstract class InMemoryContextTest : TestBase
     {
-        protected AllReadyContext Context;
+        /// <summary>
+        /// Gets the in-memory database context.
+        /// </summary>
+        protected AllReadyContext Context { get; private set; }
 
         protected InMemoryContextTest()
         {
-            Context = (AllReadyContext) ServiceProvider.GetService(typeof(AllReadyContext));
-
-            // TODO: setup Model in any way for any other tests
+            Context = ServiceProvider.GetService<AllReadyContext>();
+            LoadTestData();
         }
+
+        /// <summary>
+        /// Override this method to load test data
+        /// into the in-memory database context prior
+        /// to any tests being executed in your 
+        /// test class.
+        /// </summary>
+        protected virtual void LoadTestData()
+        { }
+
     }
 }

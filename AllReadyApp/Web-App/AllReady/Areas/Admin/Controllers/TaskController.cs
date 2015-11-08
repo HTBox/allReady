@@ -1,19 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
-
 using AllReady.Models;
 using AllReady.ViewModels;
-using System.Security.Claims;
 using AllReady.Security;
 using MediatR;
 using AllReady.Areas.Admin.Features.Tasks;
-using AllReady.Areas.Admin.ViewModels;
+using AllReady.Areas.Admin.Models;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -39,7 +34,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpUnauthorized();
             }
-            var viewModel = new TaskEditViewModel()
+            var viewModel = new TaskEditModel()
             {
                 ActivityId = activity.Id,
                 ActivityName = activity.Name,
@@ -53,7 +48,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Task/Create/{activityId}")]
-        public IActionResult Create(int activityId, TaskEditViewModel model)
+        public IActionResult Create(int activityId, TaskEditModel model)
         {
             if (model.EndDateTime < model.StartDateTime)
             {
@@ -90,7 +85,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(TaskEditViewModel model)
+        public IActionResult Edit(TaskEditModel model)
         {
             if (model.EndDateTime < model.StartDateTime)
             {
@@ -154,6 +149,34 @@ namespace AllReady.Areas.Admin.Controllers
             var activityId = task.ActivityId;
             _bus.Send(new DeleteTaskCommand() { TaskId = id });
             return RedirectToAction("Details", "Activity", new { id = activityId });
+        }
+
+
+        private bool UserIsTenantAdminOfActivity(Activity activity)
+        {
+            return User.IsTenantAdmin(activity.TenantId);
+        }
+
+        private bool UserIsTenantAdminOfActivity(int activityId)
+        {
+            return UserIsTenantAdminOfActivity(_dataAccess.GetActivity(activityId));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Assign(int id, List<string> userIds)
+        {
+            var task = _bus.Send(new TaskQuery() { TaskId = id });
+            
+            if (!UserIsTenantAdminOfActivity(task.ActivityId))
+            {
+                return new HttpUnauthorizedResult();
+            }
+            
+            _bus.Send(new AssignTaskCommand { TaskId = id, UserIds = userIds });
+
+
+            return RedirectToRoute(new { controller = "Task", Area = "Admin", action = "Details", id = id });
         }
 
     }
