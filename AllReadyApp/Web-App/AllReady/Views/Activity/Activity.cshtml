@@ -1,6 +1,11 @@
 ﻿@model AllReady.ViewModels.ActivityViewModel
+
+@{
+    ViewBag.Title = $"{Model.Title}";
+}
+
 <div class="row">
-    <div class="col-sm-8">
+    <div class="col-sm-5">
         <div class="row">
             @if (!String.IsNullOrEmpty(Model.ImageUrl))
             {
@@ -9,19 +14,9 @@
                     <img src="@Model.ImageUrl" class="img-responsive" />
                 </div>
             }
-            <div class="col-sm-7">
+            <div class="@(string.IsNullOrEmpty(Model.ImageUrl) ? "col-sm-12" : "col-sm-10" )">
                 <h2>@Model.Title</h2>
                 <p class="date-address">@Model.StartDateTime.ToString("F") - @Model.EndDateTime.ToString("F")</p>
-            </div>
-            <div class="col-sm-3">
-                <h2 data-bind="visible: !@(Model.IsUserVolunteeredForActivity)"><a href="@Url.Action("Signup","Activity", new { id = Model.Id })" class="btn btn-volunteer">Volunteer</a></h2>
-                <div data-bind="visible: @(Model.IsUserVolunteeredForActivity)" class="volunteered">
-                    <center>
-                        Thanks for volunteering!
-                        <br />
-                        <a href="#" class="unvolunteer text-center" data-bind="click: function() {unenroll(@Model.Id);}">Unenroll</a>
-                    </center>
-                </div>
             </div>
         </div>
         <div class="row">
@@ -41,7 +36,7 @@
                 <h4><a asp-controller="Tenant" asp-action="ShowTenant" asp-route-id="@Model.TenantId">@Model.TenantName</a></h4>
             </div>
         </div>
-        @if (Model.IsUserVolunteeredForActivity == "true" && Model.Tasks.Any())
+        @if (Model.IsUserVolunteeredForActivity && Model.Tasks.Any())
         {
             <div class="row">
                 <div class="col-sm-12">
@@ -65,54 +60,87 @@
                     <span class="label-warning label hide" data-bind="css: { hide: tasks.filtered().length }">No matching tasks.</span>
                     <ul data-bind="foreach: tasks.filtered">
                         <li>
-
                             <span data-bind="text: Name"></span>
                             <span data-bind="text: Description"></span>
                             @*S :<span data-bind="text: StartDateTime"></span>
-                            E :<span data-bind="text: EndDateTime"></span>*@
+                                E :<span data-bind="text: EndDateTime"></span>*@
                             <span><a data-bind="attr: { href:  'Accept/' + Id }">Accept</a> </span> |
                             <span><a data-bind="attr: { href:  'Reject/' + Id }">Reject</a> </span>
                         </li>
                     </ul>
                 </div>
-                
             </div>
         }
-        </div>
-        <div class="col-sm-4">
-            <h3>Location</h3>
-            <div id="bingMap" style="position:relative"></div>
-            <h3>Address</h3>
-            <p>
-                @Model.Location?.Address1<br />
-                @if (!string.IsNullOrEmpty(Model.Location?.Address2))
+    </div>
+    <div class="col-sm-3">
+        <div class="row">
+            <div class="col-sm-12">
+                @if (!Model.IsUserVolunteeredForActivity)
                 {
-                    @Model.Location.Address2
+                    <h2><a href="@Url.Action("Signup","Activity", new { id = Model.Id })" class="btn btn-volunteer">Volunteer</a></h2>
                 }
-                @Model.Location?.City @Model.Location?.State @Model.Location?.PostalCode?.PostalCode
-            </p>
+                else
+                {
+                    <div class="volunteered">
+                        <center>
+                            Thanks for volunteering!
+                            <br />
+                            <a href="#" class="unvolunteer text-center" data-bind="click: function() {unenroll(@Model.Id);}">Unenroll</a>
+                        </center>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="row" data-bind="visible: skills">
+            <div class="col-sm-12">
+                <h3>Needed Skills</h3>
+                <ul data-bind="foreach: skills">
+                    <li>
+                        <span data-bind="text: HierarchicalName"></span>
+                        <span class="glyphicon glyphicon-info-sign" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                        <span class="label label-success" data-bind="visible: IsUserSkill, tooltip: { title: 'You have this skill!', placement: 'top' }">
+                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                            Match
+                        </span>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
-    @section scripts {
-        <script type="text/javascript">
-            $(document).ready(function () {
-                getGeoCoordinates('@Model.Location?.Address1',
-                    '@Model.Location?.Address2',
-                    '@Model.Location?.City',
-                    '@Model.Location?.State',
-                    '@Model.Location?.PostalCode?.PostalCode',
-                    '@Model.Location?.Country',
-                    function (result) {
-                        var positionCoordsList = [
-                        { latitude: result.latitude, longitude: result.longitude }
-                        ];
-                        $("#bingMap").css("width", "300px").css("height", "300px");
-                        renderBingMap('bingMap', positionCoordsList);
-                    });
-            });
 
-            var modelTasks = @Json.Serialize(Model.Tasks);
-        </script>
-        <script type="text/javascript" src="~/js/activity.js"></script>
-        <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
-    }
+    <div class="col-sm-4">
+        <h3>Location</h3>
+        <div id="bingMap" style="position:relative"></div>
+        <h3>Address</h3>
+        <p>
+            @Model.Location?.Address1<br />
+            @if (!string.IsNullOrEmpty(Model.Location?.Address2))
+            {
+                @Model.Location.Address2
+            }
+            @Model.Location?.City @Model.Location?.State @Model.Location?.PostalCode?.PostalCode
+        </p>
+    </div>
+</div>
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            getGeoCoordinates('@Model.Location?.Address1',
+                '@Model.Location?.Address2',
+                '@Model.Location?.City',
+                '@Model.Location?.State',
+                '@Model.Location?.PostalCode?.PostalCode',
+                '@Model.Location?.Country',
+                function (result) {
+                    var positionCoordsList = [
+                    { latitude: result.latitude, longitude: result.longitude }
+                    ];
+                    $("#bingMap").css("width", "300px").css("height", "300px");
+                    renderBingMap('bingMap', positionCoordsList);
+                });
+        });
+        var modelStuff = @Json.Serialize(new { tasks = Model.Tasks, skills = Model.RequiredSkills, userSkills = Model.UserSkills });
+    </script>
+    <script type="text/javascript" src="~/js/activity.js"></script>
+    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+}
