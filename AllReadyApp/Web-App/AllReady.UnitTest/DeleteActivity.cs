@@ -59,7 +59,7 @@ namespace AllReady.UnitTest
         public void ActivityDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new DeleteActivityCommand { ActivityId = 1 };
+            var query = new DeleteActivityCommand { ActivityId = 0 };
             var handler = new DeleteActivityCommandHandler(context);
             var result = handler.Handle(query);
         }

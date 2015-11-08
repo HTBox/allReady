@@ -1,9 +1,9 @@
 ﻿using AllReady.Models;
 using System.Collections.Generic;
 
-namespace AllReady.Areas.Admin.ViewModels
+namespace AllReady.Areas.Admin.Models
 {
-    public class CampaignActivitiesViewModel
+    public class CampaignActivitiesModel
     {
         public int CampaignId { get; set; }
         public string CampaignName { get; set; }

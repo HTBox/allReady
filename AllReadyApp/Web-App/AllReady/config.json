@@ -10,6 +10,8 @@
     "DefaultTenantUsername": "tenant@example.com",
     "DefaultFromEmailAddress": "Administrator@example.com",
     "DefaultFromDisplayName": "allReady.com Administrator",
+    "InsertSampleData": "true",
+    "InsertTestUsers": "true"
   },
   "ApplicationInsights": {
     "InstrumentationKey": "[instrumentationkey]"
@@ -18,11 +20,13 @@
     "DefaultConnection": {
       "ConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
     },
-    "InsertSampleData": "true",
-    "InsertTestUsers": "true",
     "Storage": {
-      "AzureStorage": "[storagekey]"
+      "AzureStorage": "[storagekey]",    
+      "EnableAzureQueueService": "false"
     }
+  },
+  "Email": {
+    "EmailFolder": "..."
   },
   "Authentication": {
     "Facebook": {

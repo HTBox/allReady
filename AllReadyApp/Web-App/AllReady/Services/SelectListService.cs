@@ -27,5 +27,10 @@ namespace AllReady.Services
                 .Select(s => new Skill() { Id = s.Id, Name = s.HierarchicalName, Description = s.Description })
                 .OrderBy(s => s.Name);
         }
+
+        public IEnumerable<SelectListItem> GetCampaignImpactTypes()
+        {
+            return _context.CampaignImpactTypes.Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = t.Name });
+        }
     }
 }

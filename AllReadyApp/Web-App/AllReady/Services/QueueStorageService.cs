@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Framework.Configuration;
+﻿using Microsoft.Framework.OptionsModel;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace AllReady.Services
-{ 
-    public interface IQueueStorageService
-    {
-        void SendMessage(string queueName, string message);
-    }
-
+{
     public class QueueStorageService : IQueueStorageService
     {
         public class Queues
@@ -23,9 +14,9 @@ namespace AllReady.Services
 
         private readonly CloudQueueClient _client;
 
-        public QueueStorageService(IConfiguration config)
+        public QueueStorageService(IOptions<AzureStorageSettings> options)
         {
-            var storageAccount = CloudStorageAccount.Parse(config["Data:Storage:AzureStorage"]);
+            var storageAccount = CloudStorageAccount.Parse(options.Value.StorageAccount);
             _client = storageAccount.CreateCloudQueueClient();
         }
 

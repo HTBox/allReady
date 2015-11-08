@@ -13,6 +13,6 @@ namespace AllReady.Models
     public class CampaignImpactType
     {
         public int Id { get; set; }
-        public string ImpactType { get; set; }
+        public string Name { get; set; }
     }
 }

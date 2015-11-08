@@ -13,7 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using MediatR;
-using AllReady.Areas.Admin.ViewModels;
+using AllReady.Areas.Admin.Models;
 using System;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Features.Activities;
@@ -60,13 +60,13 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Activity/Create/{campaignId}")]
         public IActionResult Create(int campaignId)
         {
-            CampaignSummaryViewModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
+            CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
             if (campaign == null || !User.IsTenantAdmin(campaign.TenantId))
             {
                 return new HttpUnauthorizedResult();
             }
 
-            var activity = new ActivityDetailViewModel
+            var activity = new ActivityDetailModel
             {
                 CampaignId = campaign.Id,
                 CampaignName = campaign.Name,
@@ -82,7 +82,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Activity/Create/{campaignId}")]
-        public IActionResult Create(int campaignId, ActivityDetailViewModel activity)
+        public IActionResult Create(int campaignId, ActivityDetailModel activity)
         {
             if (activity.EndDateTime < activity.StartDateTime)
             {
@@ -91,7 +91,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {                
-                CampaignSummaryViewModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
+                CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
                 if (campaign == null || 
                     !User.IsTenantAdmin(campaign.TenantId))
                 {
@@ -107,7 +107,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Activity/Edit/5
         public IActionResult Edit(int id)
         {
-            ActivityDetailViewModel activity = _bus.Send(new ActivityDetailQuery{ ActivityId = id });
+            ActivityDetailModel activity = _bus.Send(new ActivityDetailQuery{ ActivityId = id });
             if (activity == null)
             {
                 return new HttpStatusCodeResult(404);
@@ -124,7 +124,7 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Activity/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(ActivityDetailViewModel activity)
+        public IActionResult Edit(ActivityDetailModel activity)
         {
             if (activity == null)
             {
@@ -174,7 +174,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult DeleteConfirmed(System.Int32 id)
         {
             //TODO: Should be using an ActivitySummaryQuery here
-            ActivityDetailViewModel activity = _bus.Send(new ActivityDetailQuery { ActivityId = id });
+            ActivityDetailModel activity = _bus.Send(new ActivityDetailQuery { ActivityId = id });
             if (activity == null)
         {
                 return HttpNotFound();

@@ -109,6 +109,8 @@ namespace AllReady.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
 
+                    b.Property<string>("Name");
+
                     b.Property<string>("NormalizedEmail")
                         .Annotation("MaxLength", 256);
 
@@ -188,7 +190,7 @@ namespace AllReady.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ImpactType");
+                    b.Property<string>("Name");
 
                     b.HasKey("Id");
                 });

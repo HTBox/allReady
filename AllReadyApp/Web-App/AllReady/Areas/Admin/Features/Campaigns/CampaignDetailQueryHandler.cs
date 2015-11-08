@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.ViewModels;
+﻿using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class CampaignDetailQueryHandler : IRequestHandler<CampaignDetailQuery, CampaignDetailViewModel>
+    public class CampaignDetailQueryHandler : IRequestHandler<CampaignDetailQuery, CampaignDetailModel>
     {
         private AllReadyContext _context;
 
@@ -15,7 +15,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             _context = context;
 
         }
-        public CampaignDetailViewModel Handle(CampaignDetailQuery message)
+        public CampaignDetailModel Handle(CampaignDetailQuery message)
         {
             var campaign = _context.Campaigns
                                   .AsNoTracking()
@@ -23,32 +23,36 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                                   .Include(m => m.ManagingTenant)
                                   .SingleOrDefault(c => c.Id == message.CampaignId);
 
-            var viewModel = new CampaignDetailViewModel()
+            CampaignDetailModel result = null;
+
+            if (campaign != null)
             {
-                Id = campaign.Id,
-                Name = campaign.Name,
-                Description = campaign.Description,
-                TenantId = campaign.ManagingTenantId,
-                TenantName = campaign.ManagingTenant.Name,
-                ImageUrl = campaign.ImageUrl,
-                StartDate = campaign.StartDateTimeUtc,
-                EndDate = campaign.EndDateTimeUtc,
-                Activities = campaign.Activities.Select(a => new ActivitySummaryViewModel
+                result = new CampaignDetailModel()
                 {
-                    Id = a.Id,
-                    Name = a.Name,
-                    Description = a.Description,
-                    StartDateTime = a.StartDateTimeUtc,
-                    EndDateTime = a.EndDateTimeUtc,
-                    CampaignId = campaign.Id,
-                    CampaignName = campaign.Name,
+                    Id = campaign.Id,
+                    Name = campaign.Name,
+                    Description = campaign.Description,
                     TenantId = campaign.ManagingTenantId,
                     TenantName = campaign.ManagingTenant.Name,
-                    ImageUrl = a.ImageUrl
-                })
-            };
-
-            return viewModel;
+                    ImageUrl = campaign.ImageUrl,
+                    StartDate = campaign.StartDateTimeUtc,
+                    EndDate = campaign.EndDateTimeUtc,
+                    Activities = campaign.Activities.Select(a => new ActivitySummaryModel
+                    {
+                        Id = a.Id,
+                        Name = a.Name,
+                        Description = a.Description,
+                        StartDateTime = a.StartDateTimeUtc,
+                        EndDateTime = a.EndDateTimeUtc,
+                        CampaignId = campaign.Id,
+                        CampaignName = campaign.Name,
+                        TenantId = campaign.ManagingTenantId,
+                        TenantName = campaign.ManagingTenant.Name,
+                        ImageUrl = a.ImageUrl
+                    })
+                };
+            }
+            return result;
         }
     }
 }

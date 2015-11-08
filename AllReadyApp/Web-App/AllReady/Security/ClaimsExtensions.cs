@@ -13,6 +13,12 @@ namespace AllReady.Security
             return user.HasClaim(ClaimTypes.UserType, userTypeString);
         }
 
+        public static bool IsTenantAdmin(this ClaimsPrincipal user)
+        {
+            int? userTenantId = user.GetTenantId();
+            return userTenantId.HasValue && user.IsTenantAdmin(userTenantId.Value);
+        }
+
         public static bool IsTenantAdmin(this ClaimsPrincipal user, int tenantId)
         {
             int? userTenantId = user.GetTenantId();
@@ -53,9 +59,6 @@ namespace AllReady.Security
             return result;
         }
 
-        public static bool IsTenantAdmin(this ApplicationUser user)
-        {
-            return user.Claims.Any(c => c.ClaimType == ClaimTypes.UserType && c.ClaimValue == "TenantAdmin");
-        }
+
     }
 }

@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.ViewModels;
+﻿using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class EditTaskQueryHandler : IRequestHandler<EditTaskQuery, TaskEditViewModel>
+    public class EditTaskQueryHandler : IRequestHandler<EditTaskQuery, TaskEditModel>
     {
         private AllReadyContext _context;
 
@@ -19,13 +19,13 @@ namespace AllReady.Areas.Admin.Features.Tasks
             _context = context;
         }
 
-        public TaskEditViewModel Handle(EditTaskQuery message)
+        public TaskEditModel Handle(EditTaskQuery message)
         {
             var task = _context.Tasks.AsNoTracking()
                 .Include(t => t.Activity).ThenInclude(a => a.Campaign)
                 .Include(t => t.RequiredSkills)
                 .SingleOrDefault(t => t.Id == message.TaskId);
-            var viewModel = new TaskEditViewModel()
+            var viewModel = new TaskEditModel()
                 {
                     Id = task.Id,
                     ActivityId = task.Activity.Id,

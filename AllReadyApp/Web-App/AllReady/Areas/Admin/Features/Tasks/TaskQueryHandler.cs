@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.ViewModels;
+﻿using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class TaskQueryHandler : IRequestHandler<TaskQuery, TaskSummaryViewModel>
+    public class TaskQueryHandler : IRequestHandler<TaskQuery, TaskSummaryModel>
     {
         private AllReadyContext _context;
 
@@ -19,7 +19,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             _context = context;
         }
 
-        public TaskSummaryViewModel Handle(TaskQuery message)
+        public TaskSummaryModel Handle(TaskQuery message)
         {
             var task = _context.Tasks
                 .AsNoTracking()
@@ -28,7 +28,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 .Include(t => t.AssignedVolunteers).ThenInclude(av => av.User)
 
                 .SingleOrDefault(t => t.Id == message.TaskId);
-            var taskModel = new TaskSummaryViewModel()
+            var taskModel = new TaskSummaryModel()
             {
                 Id = task.Id,
                 ActivityId = task.Activity.Id,
@@ -45,7 +45,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 AllVolunteers = task.Activity.UsersSignedUp.Select(v => new VolunteerModel { UserId = v.User.Id, UserName = v.User.UserName, HasVolunteered = false }).ToList()
             };
             foreach (var av in taskModel.AssignedVolunteers)
-            {
+                {
                 var v = taskModel.AllVolunteers.Single(al => al.UserId == av.UserId);
                 v.HasVolunteered = true;
             }

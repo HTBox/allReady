@@ -56,7 +56,8 @@ namespace AllReady.Controllers
                 TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
                 Logins = await _userManager.GetLoginsAsync(user),
                 BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
-                AssociatedSkills = user.AssociatedSkills
+                AssociatedSkills = user.AssociatedSkills,
+                Name = user.Name
             };
             return View(model);
         }
@@ -71,15 +72,13 @@ namespace AllReady.Controllers
                 return View(model);
             }
             var user = GetCurrentUser();
+            user.Name = model.Name;
             user.AssociatedSkills.RemoveAll(usk => model.AssociatedSkills == null || !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
             if (model.AssociatedSkills != null)
             {
                 user.AssociatedSkills.AddRange(model.AssociatedSkills.Where(msk => !user.AssociatedSkills.Any(usk => usk.SkillId == msk.SkillId)));
             }
-            if (user.AssociatedSkills != null && user.AssociatedSkills.Count > 0)
-            {
-                user.AssociatedSkills.ForEach(usk => usk.UserId = user.Id);
-            }
+            user.AssociatedSkills?.ForEach(usk => usk.UserId = user.Id);
             await _dataAccess.UpdateUser(user);
             return RedirectToAction(nameof(Index));
         }
