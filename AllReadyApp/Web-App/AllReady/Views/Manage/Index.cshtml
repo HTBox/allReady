@@ -16,6 +16,13 @@
         <h4>Change your account settings</h4>
         <hr />
         <dl class="dl-horizontal">
+            <dt>
+                <label asp-for="Name"></label>:
+            </dt>
+            <dd>
+                <input type="text" asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </dd>
             @if (User.IsUserType(UserType.TenantAdmin))
             {
                 <dt>Phone number:</dt>
