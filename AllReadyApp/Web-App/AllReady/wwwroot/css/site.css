@@ -11,6 +11,12 @@ textarea {
     max-width: 380px;
 }
 
+input.wide,
+select.wide,
+textarea.wide {
+    max-width: inherit;
+}
+
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
 .body-content {
