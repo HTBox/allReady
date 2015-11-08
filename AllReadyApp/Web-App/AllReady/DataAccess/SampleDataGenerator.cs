@@ -428,13 +428,13 @@ namespace AllReady.Models
         private static CampaignImpactType GetImpactType(List<CampaignImpactType> types, List<CampaignImpactType> existingTypes, string typeName)
         {
             CampaignImpactType impactType;
-            if (existingTypes.Any(item => item.ImpactType == typeName))
+            if (existingTypes.Any(item => item.Name == typeName))
             {
-                impactType = existingTypes.Single(item => item.ImpactType == typeName);
+                impactType = existingTypes.Single(item => item.Name == typeName);
             }
             else
             {
-                impactType = new CampaignImpactType { ImpactType = typeName };
+                impactType = new CampaignImpactType { Name = typeName };
 
                 types.Add(impactType);
             }

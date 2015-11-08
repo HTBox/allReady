@@ -8,9 +8,10 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    partial class AllReadyContextModelSnapshot : ModelSnapshot
+    [Migration("20151107233000_CampaignImpactFieldChange")]
+    partial class CampaignImpactFieldChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .Annotation("ProductVersion", "7.0.0-beta8-15964")
@@ -32,8 +33,6 @@ namespace AllReady.Migrations
                     b.Property<int?>("LocationId");
 
                     b.Property<string>("Name");
-
-                    b.Property<int>("NumberOfVolunteersRequired");
 
                     b.Property<string>("OrganizerId");
 
@@ -78,13 +77,11 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<DateTimeOffset?>("EndDateTimeUtc");
+                    b.Property<DateTime?>("EndDateTimeUtc");
 
                     b.Property<string>("Name");
 
-                    b.Property<int>("NumberOfVolunteersRequired");
-
-                    b.Property<DateTimeOffset?>("StartDateTimeUtc");
+                    b.Property<DateTime?>("StartDateTimeUtc");
 
                     b.Property<int?>("TenantId");
 
@@ -266,8 +263,6 @@ namespace AllReady.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Description");
 
                     b.Property<string>("Name")
                         .IsRequired();

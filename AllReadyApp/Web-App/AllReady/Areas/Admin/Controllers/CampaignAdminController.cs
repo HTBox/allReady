@@ -46,7 +46,7 @@ namespace AllReady.Controllers
         // GET: Campaign/Create
         public IActionResult Create()
         {
-            return View("Edit");
+            return View("Edit", new CampaignSummaryViewModel());
         }
 
         // POST: Campaign/Create
