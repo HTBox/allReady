@@ -9,5 +9,7 @@ namespace AllReady.Models
     {
         [Display(Name = "Associated skills")]
         public List<UserSkill> AssociatedSkills { get; set; } = new List<UserSkill>();
+
+        public string Name { get; set; }
     }
 }

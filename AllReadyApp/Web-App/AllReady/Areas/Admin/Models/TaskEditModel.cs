@@ -5,9 +5,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AllReady.Areas.Admin.ViewModels
+namespace AllReady.Areas.Admin.Models
 {
-    public class TaskEditViewModel : TaskSummaryViewModel
+    public class TaskEditModel : TaskSummaryModel
     {
         [Display(Name = "Required skills")]
         public IList<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();

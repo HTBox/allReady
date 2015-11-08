@@ -1,8 +1,8 @@
 using AllReady.Areas.Admin.Features.Campaigns;
-using AllReady.Areas.Admin.ViewModels;
+using AllReady.Areas.Admin.Models;
 using Xunit;
 
-namespace AllReady.UnitTests
+namespace AllReady.UnitTest
 {
     public class EditingCampaign : InMemoryContextTest
     {
@@ -10,7 +10,7 @@ namespace AllReady.UnitTests
         public void ModelIsCreated()
         {
             var sut = new EditCampaignCommandHandler(Context);
-            int actual = sut.Handle(new EditCampaignCommand {Campaign = new CampaignSummaryViewModel()});
+            int actual = sut.Handle(new EditCampaignCommand {Campaign = new CampaignSummaryModel()});
             Assert.Equal(1, actual);
         }
     }

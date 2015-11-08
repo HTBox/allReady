@@ -1,7 +1,7 @@
-﻿@using AllReady.Areas.Admin.ViewModels
+﻿@using AllReady.Areas.Admin.Models
 @inject AllReady.Services.ISelectListService SelectListService
 
-@model EditUserViewModel
+@model EditUserModel
 @{
     ViewData["Title"] = $"Edit User - {Model.UserName}";
 }
@@ -71,7 +71,7 @@
         $(".bootstrap-toggle").bootstrapToggle({ on: "Yes", off: "No" });
         (function (ko, $, associatedSkills, availableSkills) {
 
-            function EditUserViewModel(associatedSkills, availableSkills) {
+            function EditUserModel(associatedSkills, availableSkills) {
 
                 function SkillObservable(skillModel) {
                     var ret = ko.utils.extend({}, skillModel);
@@ -98,7 +98,7 @@
                 };
             }
 
-            ko.applyBindings(new EditUserViewModel(associatedSkills, availableSkills));
+            ko.applyBindings(new EditUserModel(associatedSkills, availableSkills));
         })(ko, $,
             @Json.Serialize(Model.AssociatedSkills.Select(rs => new { Id = rs.SkillId })),
             @Json.Serialize(SelectListService.GetSkills()));

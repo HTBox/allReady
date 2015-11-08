@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.ViewModels;
+﻿using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Activities
 {
-    public class ActivityDetailQueryHandler : IRequestHandler<ActivityDetailQuery, ActivityDetailViewModel>
+    public class ActivityDetailQueryHandler : IRequestHandler<ActivityDetailQuery, ActivityDetailModel>
     {
         private AllReadyContext _context;
 
@@ -15,9 +15,9 @@ namespace AllReady.Areas.Admin.Features.Activities
             _context = context;
         }
 
-        public ActivityDetailViewModel Handle(ActivityDetailQuery message)
+        public ActivityDetailModel Handle(ActivityDetailQuery message)
         {
-            ActivityDetailViewModel result = null;
+            ActivityDetailModel result = null;
 
             var activity = _context.Activities
                 .AsNoTracking()
@@ -29,7 +29,7 @@ namespace AllReady.Areas.Admin.Features.Activities
 
             if (activity != null)
             {
-                result = new ActivityDetailViewModel
+                result = new ActivityDetailModel
             {
                 Id = activity.Id,
                 CampaignName = activity.Campaign.Name,
@@ -40,7 +40,7 @@ namespace AllReady.Areas.Admin.Features.Activities
                 EndDateTime = activity.EndDateTimeUtc,
                 Volunteers = activity.UsersSignedUp.Select(u => u.User.UserName).ToList(),
                 NumberOfVolunteersRequired = activity.NumberOfVolunteersRequired,
-                Tasks = activity.Tasks.Select(t => new TaskSummaryViewModel()
+                Tasks = activity.Tasks.Select(t => new TaskSummaryModel()
                 {
                     Id = t.Id,
                     Name = t.Name,

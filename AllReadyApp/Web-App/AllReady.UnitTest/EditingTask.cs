@@ -1,8 +1,8 @@
 using AllReady.Areas.Admin.Features.Tasks;
-using AllReady.Areas.Admin.ViewModels;
+using AllReady.Areas.Admin.Models;
 using Xunit;
 
-namespace AllReady.UnitTests
+namespace AllReady.UnitTest
 {
     public class EditingTask : InMemoryContextTest
     {
@@ -10,7 +10,7 @@ namespace AllReady.UnitTests
         public void ModelIsCreated()
         {
             var sut = new EditTaskCommandHandler(Context);
-            int actual = sut.Handle(new EditTaskCommand {Task = new TaskEditViewModel()});
+            int actual = sut.Handle(new EditTaskCommand {Task = new TaskEditModel()});
             Assert.Equal(1, actual);
         }
     }

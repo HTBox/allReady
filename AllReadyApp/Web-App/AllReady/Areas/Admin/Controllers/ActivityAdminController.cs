@@ -13,7 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using MediatR;
-using AllReady.Areas.Admin.ViewModels;
+using AllReady.Areas.Admin.Models;
 using System;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Features.Activities;
@@ -60,13 +60,13 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Activity/Create/{campaignId}")]
         public IActionResult Create(int campaignId)
         {
-            CampaignSummaryViewModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
+            CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
             if (campaign == null || !User.IsTenantAdmin(campaign.TenantId))
             {
                 return new HttpUnauthorizedResult();
             }
 
-            var activity = new ActivityDetailViewModel
+            var activity = new ActivityDetailModel
             {
                 CampaignId = campaign.Id,
                 CampaignName = campaign.Name,
@@ -82,7 +82,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Activity/Create/{campaignId}")]
-        public IActionResult Create(int campaignId, ActivityDetailViewModel activity)
+        public IActionResult Create(int campaignId, ActivityDetailModel activity)
         {
             if (activity.EndDateTime < activity.StartDateTime)
             {
@@ -91,7 +91,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {                
-                CampaignSummaryViewModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
+                CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
                 if (campaign == null || 
                     !User.IsTenantAdmin(campaign.TenantId))
                 {
@@ -107,7 +107,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Activity/Edit/5
         public IActionResult Edit(int id)
         {
-            ActivityDetailViewModel activity = _bus.Send(new ActivityDetailQuery{ ActivityId = id });
+            ActivityDetailModel activity = _bus.Send(new ActivityDetailQuery{ ActivityId = id });
             if (activity == null)
             {
                 return new HttpStatusCodeResult(404);
@@ -124,7 +124,7 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Activity/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(ActivityDetailViewModel activity)
+        public IActionResult Edit(ActivityDetailModel activity)
         {
             if (activity == null)
             {
@@ -174,7 +174,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult DeleteConfirmed(System.Int32 id)
         {
             //TODO: Should be using an ActivitySummaryQuery here
-            ActivityDetailViewModel activity = _bus.Send(new ActivityDetailQuery { ActivityId = id });
+            ActivityDetailModel activity = _bus.Send(new ActivityDetailQuery { ActivityId = id });
             if (activity == null)
         {
                 return HttpNotFound();
@@ -209,53 +209,7 @@ namespace AllReady.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Assign(int id, List<TaskViewModel> tasks)
-        {
-            if (!UserIsTenantAdminOfActivity(id))
-            {
-                return new HttpUnauthorizedResult();
-            }
-
-            var updates = tasks.ToModel(_dataAccess).ToList();
-            //TODO: Replacement for API like Tasks.UpdateRange(updates);
-            foreach (var item in updates)
-            {
-                await _dataAccess.UpdateTaskAsync(item);
-            }
-
-            // send all notifications to the queue
-            var smsRecipients = new List<string>();
-            var emailRecipients = new List<string>();
-
-            foreach (var allReadyTask in updates)
-            {
-                // get all confirmed contact points for the broadcast
-                smsRecipients.AddRange(allReadyTask.AssignedVolunteers.Where(u => u.User.PhoneNumberConfirmed).Select(v => v.User.PhoneNumber));
-                emailRecipients.AddRange(allReadyTask.AssignedVolunteers.Where(u => u.User.EmailConfirmed).Select(v => v.User.Email));
-            }
-
-            var command = new NotifyVolunteersCommand
-            {
-                // todo: what information do we add about the task?
-                // todo: should we use a template from the email service provider?
-                // todo: what about non-English volunteers?
-                ViewModel = new NotifyVolunteersViewModel
-                {
-                    SmsMessage = "You've been assigned a task from AllReady.",
-                    SmsRecipients = smsRecipients,
-                    EmailMessage = "You've been assigned a task from AllReady.",
-                    EmailRecipients = emailRecipients,
-                    Subject = "You've been assigned a task from AllReady."
-                }
-            };
-
-            _bus.Send(command);
-
-            return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Details", id = id });
-        }
-
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostActivityFile(int id, IFormFile file)
