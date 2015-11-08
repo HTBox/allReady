@@ -1,5 +1,4 @@
 ﻿using AllReady.Areas.Admin.Models;
-using AllReady.Features.Notifications;
 using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
@@ -28,11 +27,10 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             var taskSignup = task.AssignedVolunteers.SingleOrDefault(c => c.User.Id == message.UserId);
             if (taskSignup == null)
-                throw new InvalidOperationException($"Sign-up for user {message.UserId} does not exist");
+                throw new InvalidOperationException($"Signup for user {message.UserId} does not exist");
 
             TaskStatus currentStatus;
-            if (!Enum.TryParse<TaskStatus>(taskSignup.Status, out currentStatus))
-                currentStatus = TaskStatus.Assigned;
+            Enum.TryParse<TaskStatus>(taskSignup.Status, out currentStatus);
 
             switch (message.TaskStatus)
             {
@@ -55,18 +53,11 @@ namespace AllReady.Areas.Admin.Features.Tasks
                         throw new ArgumentException($"Task must be assigned or accepted before it can be marked as {message.TaskStatus}");
                     break;
                 default:
-                    throw new ArgumentException($"Invalid sign-up status value: {message.TaskStatus}");
+                    throw new ArgumentException($"Invalid signup status value: {message.TaskStatus}");
             }
 
             taskSignup.Status = message.TaskStatus.ToString();
             _context.SaveChanges();
-
-            var notification = new TaskSignupStatusChanged
-            {
-                TaskId = task.Id,
-                SignupId = taskSignup.Id
-            };
-            // TODO: publish notification
         }
     }
 }
