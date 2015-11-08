@@ -108,7 +108,7 @@ namespace AllReady.Controllers
                 activity.UsersSignedUp = activity.UsersSignedUp ?? new List<ActivitySignup>();
 
                 // Don't do anything if the user is already signed up for some reason
-                if (activity.UsersSignedUp.Any(acsu => acsu.User.Id == user.Id))
+                if (!activity.UsersSignedUp.Any(acsu => acsu.User.Id == user.Id))
                 {
                     activity.UsersSignedUp.Add(new ActivitySignup
                     {
