@@ -3,8 +3,11 @@ using Microsoft.AspNet.Mvc;
 using AllReady.Security;
 using AllReady.Models;
 using MediatR;
+using Microsoft.AspNet.Http;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Models;
+using System.Threading.Tasks;
+using AllReady.Services;
 
 namespace AllReady.Controllers
 {
@@ -13,10 +16,12 @@ namespace AllReady.Controllers
     public class CampaignController : Controller
     {
         private IMediator _bus;
+        private readonly IImageService _imageService;
 
-        public CampaignController( IMediator bus)
+        public CampaignController(IMediator bus, IImageService imageService)
         {
             _bus = bus;
+            _imageService = imageService;
         }
 
         // GET: Campaign
@@ -144,6 +149,20 @@ namespace AllReady.Controllers
             }
             _bus.Send(new DeleteCampaignCommand { CampaignId = id });            
             return RedirectToAction("Index", new { area = "Admin" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PostCampaignFile(int id, IFormFile file)
+        {
+            //TODO: Use a command here
+            var campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
+
+            campaign.ImageUrl = await _imageService.UploadActivityImageAsync(campaign.Id, campaign.TenantId, file);
+            _bus.Send(new EditCampaignCommand { Campaign = campaign });
+
+            return RedirectToRoute(new { controller = "Campaign", Area = "Admin", action = "Edit", id = id });
+
         }
     }
 }

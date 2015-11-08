@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AllReady.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -31,5 +32,7 @@ namespace AllReady.Areas.Admin.Models
 
         [Display(Name = "End Date")]
         public DateTime EndDate { get; set; }
+
+        public CampaignImpact CampaignImpact { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AllReady.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -14,8 +15,11 @@ namespace AllReady.Areas.Admin.Models
 
         public string Description { get; set; }
 
+        public string FullDescription { get; set; }
+
         [Display(Name = "Organization")]
         public int TenantId { get; set; }
+
 
         [Display(Name = "Organization")]
         public string TenantName { get; set; }
@@ -29,6 +33,7 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "End Date")]
         public DateTime EndDate { get; set; }
 
-        public IEnumerable<ActivitySummaryModel> Activities { get; set; }
+		public IEnumerable<ActivitySummaryModel> Activities { get; set; }
+        public CampaignImpact CampaignImpact { get; set; }
     }
 }
