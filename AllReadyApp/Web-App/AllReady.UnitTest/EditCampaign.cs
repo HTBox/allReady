@@ -1,5 +1,5 @@
 ﻿using AllReady.Areas.Admin.Features.Campaigns;
-using AllReady.Areas.Admin.ViewModels;
+using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Data.Entity;
@@ -20,7 +20,7 @@ namespace AllReady.UnitTest
         public void CampaignDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var vm = new CampaignSummaryViewModel();
+            var vm = new CampaignSummaryModel();
             var query = new EditCampaignCommand { Campaign = vm };
             var handler = new EditCampaignCommandHandler(context);
             var result = handler.Handle(query);
@@ -52,7 +52,7 @@ namespace AllReady.UnitTest
 
             const string NEW_NAME = "Some new name value";
 
-            var vm = new CampaignSummaryViewModel
+            var vm = new CampaignSummaryModel
             {
                 Description = firePrev.Description,
                 EndDate = firePrev.EndDateTimeUtc,

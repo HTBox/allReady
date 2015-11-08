@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.ViewModels;
+﻿using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class CampaignSummaryQueryHandler : IRequestHandler<CampaignSummaryQuery, CampaignSummaryViewModel>
+    public class CampaignSummaryQueryHandler : IRequestHandler<CampaignSummaryQuery, CampaignSummaryModel>
     {
         private AllReadyContext _context;
 
@@ -18,10 +18,10 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             _context = context;
 
         }
-        public CampaignSummaryViewModel Handle(CampaignSummaryQuery message)
+        public CampaignSummaryModel Handle(CampaignSummaryQuery message)
         {
             var campaign = _context.Campaigns
-                .Select(c => new CampaignSummaryViewModel()
+                .Select(c => new CampaignSummaryModel()
                 {
                     Id = c.Id,
                     Name = c.Name,

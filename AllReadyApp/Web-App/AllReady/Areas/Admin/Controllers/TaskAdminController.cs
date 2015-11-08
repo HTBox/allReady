@@ -13,7 +13,7 @@ using System.Security.Claims;
 using AllReady.Security;
 using MediatR;
 using AllReady.Areas.Admin.Features.Tasks;
-using AllReady.Areas.Admin.ViewModels;
+using AllReady.Areas.Admin.Models;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -39,7 +39,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpUnauthorized();
             }
-            var viewModel = new TaskEditViewModel()
+            var viewModel = new TaskEditModel()
             {
                 ActivityId = activity.Id,
                 ActivityName = activity.Name,
@@ -53,7 +53,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Task/Create/{activityId}")]
-        public IActionResult Create(int activityId, TaskEditViewModel model)
+        public IActionResult Create(int activityId, TaskEditModel model)
         {
             if (model.EndDateTime < model.StartDateTime)
             {
@@ -90,7 +90,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(TaskEditViewModel model)
+        public IActionResult Edit(TaskEditModel model)
         {
             if (model.EndDateTime < model.StartDateTime)
             {

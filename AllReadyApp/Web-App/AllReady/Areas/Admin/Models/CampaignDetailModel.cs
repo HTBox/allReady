@@ -5,17 +5,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AllReady.Areas.Admin.ViewModels
+namespace AllReady.Areas.Admin.Models
 {
-    public class CampaignSummaryViewModel
+    public class CampaignDetailModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
 
         public string Description { get; set; }
-
-        [Display(Name = "Full Description")]
-        public string FullDescription { get; set; }
 
         [Display(Name = "Organization")]
         public int TenantId { get; set; }
@@ -31,5 +28,7 @@ namespace AllReady.Areas.Admin.ViewModels
 
         [Display(Name = "End Date")]
         public DateTime EndDate { get; set; }
+
+        public IEnumerable<ActivitySummaryModel> Activities { get; set; }
     }
 }

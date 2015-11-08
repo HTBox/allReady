@@ -1,4 +1,4 @@
-using AllReady.Areas.Admin.ViewModels;
+using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using AllReady.UnitTest;
 

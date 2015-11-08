@@ -4,7 +4,7 @@ using AllReady.Security;
 using AllReady.Models;
 using MediatR;
 using AllReady.Areas.Admin.Features.Campaigns;
-using AllReady.Areas.Admin.ViewModels;
+using AllReady.Areas.Admin.Models;
 
 namespace AllReady.Controllers
 {
@@ -28,7 +28,7 @@ namespace AllReady.Controllers
 
         public IActionResult Details(int id)
         {
-            CampaignDetailViewModel campaign = _bus.Send(new CampaignDetailQuery { CampaignId = id });
+            CampaignDetailModel campaign = _bus.Send(new CampaignDetailQuery { CampaignId = id });
 
             if (campaign == null)
             {
@@ -46,13 +46,13 @@ namespace AllReady.Controllers
         // GET: Campaign/Create
         public IActionResult Create()
         {
-            return View("Edit", new CampaignSummaryViewModel());
+            return View("Edit", new CampaignSummaryModel());
         }
 
         // POST: Campaign/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(CampaignSummaryViewModel campaign)
+        public IActionResult Create(CampaignSummaryModel campaign)
         {
             if (campaign == null)
             {
@@ -76,7 +76,7 @@ namespace AllReady.Controllers
         // GET: Campaign/Edit/5
         public IActionResult Edit(int id)
         {
-            CampaignSummaryViewModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
+            CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
 
             if (campaign == null)
             {
@@ -94,7 +94,7 @@ namespace AllReady.Controllers
         // POST: Campaign/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(CampaignSummaryViewModel campaign)
+        public IActionResult Edit(CampaignSummaryModel campaign)
         {
             if (campaign == null)
             {
@@ -117,7 +117,7 @@ namespace AllReady.Controllers
         // GET: Campaign/Delete/5
         public IActionResult Delete(int id)
         {
-            CampaignSummaryViewModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
+            CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
 
             if (campaign == null)
             {
@@ -136,7 +136,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            CampaignSummaryViewModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
+            CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
 
             if (!User.IsTenantAdmin(campaign.TenantId))
             {
