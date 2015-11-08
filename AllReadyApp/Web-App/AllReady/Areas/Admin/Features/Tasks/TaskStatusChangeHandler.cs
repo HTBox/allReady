@@ -28,9 +28,9 @@ namespace AllReady.Areas.Admin.Features.Tasks
             if (task == null)
                 throw new InvalidOperationException($"Task {message.TaskId} does not exist");
 
-            var taskSignup = task.AssignedVolunteers.SingleOrDefault(c => c.User.Id == message.UserId);
+            var taskSignup = task.AssignedVolunteers.SingleOrDefault(c => c.User.UserName == message.UserName);
             if (taskSignup == null)
-                throw new InvalidOperationException($"Sign-up for user {message.UserId} does not exist");
+                throw new InvalidOperationException($"Sign-up for user {message.UserName} does not exist");
 
             TaskStatus currentStatus;
             if (!Enum.TryParse<TaskStatus>(taskSignup.Status, out currentStatus))
