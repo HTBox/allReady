@@ -1,9 +1,7 @@
-﻿using AllReady.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Models
 {
@@ -29,8 +27,10 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Volunteers Required")]
         public int NumberOfVolunteersRequired { get; set; }
 
-        public List<TaskSignupViewModel> AssignedVolunteers { get; set; } = new List<TaskSignupViewModel>();
+        public List<VolunteerModel> AssignedVolunteers { get; set; } = new List<VolunteerModel>();
 
-        public int AcceptedVolunteerCount => AssignedVolunteers?.Where(v => v.Status == "Accepted").Count() ?? 0;
+        public List<VolunteerModel> AllVolunteers { get; set; } = new List<VolunteerModel>();
+
+        public int AcceptedVolunteerCount => AssignedVolunteers?.Where(v => v.HasVolunteered).Count() ?? 0;
     }
 }
