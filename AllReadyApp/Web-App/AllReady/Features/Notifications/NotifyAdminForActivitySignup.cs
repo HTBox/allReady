@@ -11,9 +11,12 @@ namespace AllReady.Features.Notifications
     public class NotifyAdminForActivitySignup: INotificationHandler<VolunteerInformationAdded>
     {
         private readonly AllReadyContext _context;
-        public NotifyAdminForActivitySignup(AllReadyContext context)
+        private readonly IMediator _bus;
+
+        public NotifyAdminForActivitySignup(AllReadyContext context, IMediator bus)
         {
             _context = context;
+            _bus = bus;
         }
 
         public void Handle(VolunteerInformationAdded notification)
@@ -36,6 +39,7 @@ namespace AllReady.Features.Notifications
                 }
             };
 
+            _bus.Send(command);
         }
     }
 }
