@@ -1,28 +1,22 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNet.Authentication.Facebook;
-using Microsoft.AspNet.Authentication.MicrosoftAccount;
-using Microsoft.AspNet.Authentication.Twitter;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Diagnostics;
-using Microsoft.AspNet.Diagnostics.Entity;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Data.Entity;
-using Microsoft.Framework.Configuration;
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.Logging;
+using System.Globalization;
 using AllReady.Models;
 using AllReady.Services;
 using Autofac;
 using Autofac.Features.Variance;
 using Autofac.Framework.DependencyInjection;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.Dnx.Runtime;
-using System.Globalization;
+using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Localization;
+using Microsoft.Data.Entity;
+using Microsoft.Dnx.Runtime;
+using Microsoft.Framework.Configuration;
+using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.Logging;
 
 namespace AllReady
 {
@@ -31,12 +25,11 @@ namespace AllReady
         public Startup(IHostingEnvironment env, IApplicationEnvironment appEnv)
         {
             // Setup configuration sources.
-
             var builder = new ConfigurationBuilder()
                 .SetBasePath(appEnv.ApplicationBasePath)
                 .AddJsonFile("config.json")
-                      .AddJsonFile($"config.{env.EnvironmentName}.json", optional: true)
-                      .AddEnvironmentVariables();
+                .AddJsonFile($"config.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
 
             if (env.IsDevelopment())
             {
@@ -62,8 +55,16 @@ namespace AllReady
 
             // Add Entity Framework services to the services container.
             var ef = services.AddEntityFramework()
-              .AddSqlServer()
-              .AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+                .AddSqlServer()
+                .AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+
+            services.Configure<AzureStorageSettings>(options =>
+            {
+                options.StorageAccount = Configuration["Data:Storage:AzureStorage"];
+            });
+            services.Configure<DatabaseSettings>(Configuration.GetSection("Data:DefaultConnection"));
+            services.Configure<EmailSettings>(Configuration.GetSection("Email"));
+            services.Configure<SampleDataSettings>(Configuration.GetSection("SampleData"));
 
             // Add CORS support
             services.AddCors(options =>
@@ -158,7 +159,6 @@ namespace AllReady
           AllReadyContext context,
           IConfiguration configuration)
         {
-
             loggerFactory.MinimumLevel = LogLevel.Verbose;
 
             // todo: in RC update we can read from a logging.json config file
@@ -273,15 +273,14 @@ namespace AllReady
             {
                 context.Database.Migrate();
             }
-            if (Configuration["Data:InsertSampleData"] == "true")
+            if (Configuration["SampleData:InsertSampleData"] == "true")
             {
                 sampleData.InsertTestData();
             }
-            if (Configuration["Data:InsertTestUsers"] == "true")
+            if (Configuration["SampleData:InsertTestUsers"] == "true")
             {
                 await sampleData.CreateAdminUser();
             }
         }
-
     }
 }

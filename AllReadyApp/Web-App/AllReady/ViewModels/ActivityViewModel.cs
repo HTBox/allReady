@@ -8,8 +8,6 @@ namespace AllReady.ViewModels
 {
     public class ActivityViewModel
     {
-        private string v;
-
         public ActivityViewModel()
         {
             this.Tasks = new List<TaskViewModel>();
