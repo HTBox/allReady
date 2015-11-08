@@ -209,7 +209,25 @@ namespace AllReady.Areas.Admin.Controllers
             return View(model);
         }
 
-       
+
+        public IActionResult MessageAllVolunteers(MessageActivityVolunteersModel model)
+        {
+            //TODO: Query only for the tenant Id rather than the whole activity detail
+            var activity = _bus.Send(new ActivityDetailQuery { ActivityId = model.ActivityId });
+            if (activity == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (!User.IsTenantAdmin(activity.TenantId))
+            {
+                return HttpUnauthorized();
+            }
+
+            _bus.Send(new MessageActivityVolunteersCommand { Model = model });
+            return Ok();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostActivityFile(int id, IFormFile file)
@@ -221,7 +239,6 @@ namespace AllReady.Areas.Admin.Controllers
             await _dataAccess.UpdateActivity(a);
 
             return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Edit", id = id });
-
         }
 
         private bool UserIsTenantAdminOfActivity(Activity activity)
