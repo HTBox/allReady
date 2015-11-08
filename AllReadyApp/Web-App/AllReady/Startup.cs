@@ -161,6 +161,16 @@ namespace AllReady
 
             loggerFactory.MinimumLevel = LogLevel.Verbose;
 
+            // todo: in RC update we can read from a logging.json config file
+            loggerFactory.AddConsole((category, level) =>
+            {
+                if (category.StartsWith("Microsoft."))
+                {
+                    return level >= LogLevel.Information;
+                }
+                return true;
+            });
+
             if (env.IsDevelopment())
             {
                 // this will go to the VS output window
