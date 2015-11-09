@@ -11,10 +11,10 @@ namespace AllReady.ViewModels
         public int ActivityId { get; set; }
         public string UserId { get; set; }
         public string Name { get; set; }
-        [Display(Name = "Email")]
+        [Display(Name = "Contact email")]
         [EmailAddress]
         public string PreferredEmail { get; set; }
-        [Display(Name = "Phone")]
+        [Display(Name = "Contact phone")]
         [Phone]
         public string PreferredPhoneNumber { get; set; }
         [Display(Name = "Comments")]
