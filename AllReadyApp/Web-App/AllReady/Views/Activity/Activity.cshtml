@@ -102,7 +102,7 @@
                 }
             </div>
         </div>
-        <div class="row" data-bind="visible: skills">
+        <div class="row" data-bind="visible: skills.length">
             <div class="col-sm-12">
                 <h3>Needed Skills</h3>
                 <ul data-bind="foreach: skills">
@@ -186,27 +186,30 @@
                                         <span asp-validation-for="SignupModel.AdditionalInfo" class="text-danger"></span>
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-4">Associate new skills?</label>
-                                    <div class="col-md-8">
-                                        <ul class="list-unstyled form-control-static">
-                                            @foreach (var skill in Model.RequiredSkills)
-                                            {
-                                                if (!Model.UserSkills.Any(us => us.Id == skill.Id))
+                                @if (Model.RequiredSkills?.Count > 0)
+                                {
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">Associate new skills?</label>
+                                        <div class="col-md-8">
+                                            <ul class="list-unstyled form-control-static">
+                                                @foreach (var skill in Model.RequiredSkills)
                                                 {
-                                                    <li>
-                                                        <input type="checkbox" id="@($"skillId{skill.Id}")" name="SignupModel.AddSkillIds" value="@skill.Id" />
-                                                        <label for="@($"skillId{skill.Id}")">@skill.HierarchicalName</label>
-                                                        @if (!string.IsNullOrWhiteSpace(skill.Description))
-                                                        {
-                                                            <span class="glyphicon glyphicon-info-sign" data-bind="visible: '@skill.Description', tooltip: { title: '@skill.Description', placement: 'top' }" aria-hidden="true"></span>
-                                                        }
-                                                    </li>
+                                                    if (!Model.UserSkills.Any(us => us.Id == skill.Id))
+                                                    {
+                                                        <li>
+                                                            <input type="checkbox" id="@($"skillId{skill.Id}")" name="SignupModel.AddSkillIds" value="@skill.Id" />
+                                                            <label for="@($"skillId{skill.Id}")">@skill.HierarchicalName</label>
+                                                            @if (!string.IsNullOrWhiteSpace(skill.Description))
+                                                            {
+                                                                <span class="glyphicon glyphicon-info-sign" data-bind="visible: '@skill.Description', tooltip: { title: '@skill.Description', placement: 'top' }" aria-hidden="true"></span>
+                                                            }
+                                                        </li>
+                                                    }
                                                 }
-                                            }
-                                        </ul>
+                                            </ul>
+                                        </div>
                                     </div>
-                                </div>
+                                }
                             </div>
                         </div>
                     </div>

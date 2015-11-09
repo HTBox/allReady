@@ -62,6 +62,8 @@ namespace AllReady.Features.Activity
                     _context.Update(user);
                 }
 
+                _context.SaveChanges();
+
                 //Notify admins of a new volunteer
                 _bus.Publish(new VolunteerInformationAdded()
                 {
