@@ -24,7 +24,9 @@ namespace AllReady.Models
         public int CurrentImpactLevel { get; set; }
         /// <summary>
         /// If the impact type is textual, the TextualImpactGoal value
-        /// is displayed.
+        /// is displayed. This value is also displayed (if not empty)
+        /// as a descriptor underneath the thermometer display if the
+        /// impact type is numeric.
         /// </summary>
         public string TextualImpactGoal { get; set; }
         public bool Display { get; set; }

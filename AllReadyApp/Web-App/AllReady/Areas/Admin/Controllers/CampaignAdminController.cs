@@ -15,13 +15,15 @@ namespace AllReady.Controllers
     [Authorize("TenantAdmin")]
     public class CampaignController : Controller
     {
-        private IMediator _bus;
+        private readonly IAllReadyDataAccess _dataAccess;
+        private readonly IMediator _bus;
         private readonly IImageService _imageService;
 
-        public CampaignController(IMediator bus, IImageService imageService)
+        public CampaignController(IMediator bus, IImageService imageService, IAllReadyDataAccess dataAccess)
         {
             _bus = bus;
             _imageService = imageService;
+            _dataAccess = dataAccess;
         }
 
         // GET: Campaign
@@ -155,11 +157,10 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostCampaignFile(int id, IFormFile file)
         {
-            //TODO: Use a command here
-            var campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
+            var campaign = _dataAccess.GetCampaign(id);
 
-            campaign.ImageUrl = await _imageService.UploadActivityImageAsync(campaign.Id, campaign.TenantId, file);
-            _bus.Send(new EditCampaignCommand { Campaign = campaign });
+            campaign.ImageUrl = await _imageService.UploadActivityImageAsync(campaign.Id, campaign.ManagingTenantId, file);
+            await _dataAccess.UpdateCampaign(campaign);
 
             return RedirectToRoute(new { controller = "Campaign", Area = "Admin", action = "Edit", id = id });
 
