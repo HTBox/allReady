@@ -6,6 +6,8 @@ using Microsoft.AspNet.Mvc;
 using AllReady.Models;
 using Microsoft.Data.Entity;
 using Microsoft.AspNet.Authorization;
+using MediatR;
+using AllReady.Areas.Admin.Features.Tenants;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,17 +18,20 @@ namespace AllReady.Areas.Admin.Controllers
     [Authorize("TenantAdmin")]
     public class TenantController : Controller
     {
+        private readonly IMediator _bus;
         private readonly IAllReadyDataAccess _dataAccess;
 
-        public TenantController(IAllReadyDataAccess dataAccess)
+        public TenantController(IMediator bus, IAllReadyDataAccess dataAccess)
         {
+            _bus = bus;
             _dataAccess = dataAccess;
         }
 
         // GET: Tenant
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return await Task.Run(() => View(_dataAccess.Tenants));
+            var list = _bus.Send(new TenantListQuery());
+            return View(list);
         }
 
         // GET: Tenant/Details/5

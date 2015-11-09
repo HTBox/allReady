@@ -41,5 +41,7 @@ namespace AllReady.Areas.Admin.Models
         public DateTime EndDate { get; set; }
 
         public CampaignImpact CampaignImpact { get; set; }
+
+
     }
 }
