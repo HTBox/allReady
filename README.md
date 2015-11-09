@@ -144,9 +144,7 @@ These settings control how the web app stores and seeds data:
 
 | **Key value**                                  | **Description**                                          |
 |------------------------------------------------|----------------------------------------------------------|
-| `Data:DefaultConnection:UseInMemory`           | Determines whether an in-memory data store or a persisted database is used to store data |
-| **`Data:DefaultConnection:AzureConnectionString`** | The Azure SQL Database connection string. For more information, see [How to use Azure SQL Database in .NET applications](https://azure.microsoft.com/en-us/documentation/articles/sql-database-dotnet-how-to-use/). |
-| `Data:DefaultConnection:LocalConnectionString` | The local DB connection string. This setting is required to run the app locally, unless you set **Data:DefaultConnection:UseInMemory** to `true`. |
+| `Data:DefaultConnection:ConnectionString`      | The local DB connection string. This setting is required to run the app locally. |
 | `Data:InsertSampleData`                        | When `true`, seed data is loaded into the data store.    |
 | `Data:InsertTestUsers`                         | When `true`, test user accounts are created on start-up. |
 | **`Data:Storage:AzureStorage`**                | The Azure Storage service connection string.             |
