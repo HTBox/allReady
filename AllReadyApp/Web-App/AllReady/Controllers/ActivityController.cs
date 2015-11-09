@@ -8,18 +8,20 @@ using AllReady.ViewModels;
 using Microsoft.AspNet.Authorization;
 using System.Security.Claims;
 using AllReady.Services;
+using MediatR;
+using AllReady.Features.Activity;
 
 namespace AllReady.Controllers
 {
     public class ActivityController : Controller
     {
         private readonly IAllReadyDataAccess _allReadyDataAccess;
+        private readonly IMediator _bus;
 
-        public ActivityController(
-            IAllReadyDataAccess allReadyDataAccess,
-            IClosestLocations closestLocations)
+        public ActivityController(IAllReadyDataAccess allReadyDataAccess, IMediator bus)
         {
             _allReadyDataAccess = allReadyDataAccess;
+            _bus = bus;
         }
 
         [Route("~/MyActivities")]
@@ -92,46 +94,21 @@ namespace AllReady.Controllers
         [HttpPost]
         [Route("/Activity/Signup")]
         [Authorize]
-        public async Task<IActionResult> Signup(ActivitySignupViewModel signupModel)
+        public IActionResult Signup(ActivitySignupViewModel signupModel)
         {
-            //TODO: do as command
-            var user = _allReadyDataAccess.GetUser(User.GetUserId());
-            var activity = _allReadyDataAccess.GetActivity(signupModel.ActivityId);
-
-            if (activity == null)
+            if (signupModel == null)
             {
-                return HttpNotFound();
+                return HttpBadRequest();
             }
 
             if (ModelState.IsValid)
             {
-                activity.UsersSignedUp = activity.UsersSignedUp ?? new List<ActivitySignup>();
-
-                // Don't do anything if the user is already signed up for some reason
-                if (!activity.UsersSignedUp.Any(acsu => acsu.User.Id == user.Id))
-                {
-                    activity.UsersSignedUp.Add(new ActivitySignup
-                    {
-                        Activity = activity,
-                        User = user,
-                        PreferredEmail = signupModel.PreferredEmail,
-                        PreferredPhoneNumber = signupModel.PreferredPhoneNumber,
-                        AdditionalInfo = signupModel.AdditionalInfo,
-                        SignupDateTime = DateTime.UtcNow
-                    });
-
-                    await _allReadyDataAccess.UpdateActivity(activity);
-
-                    //Add new skills (if any)
-                    if (signupModel.AddSkillIds.Count > 0)
-                    {
-                        var skillsToAdd = activity.RequiredSkills
-                            .Where(acsk => signupModel.AddSkillIds.Contains(acsk.SkillId))
-                            .Select(acsk => new UserSkill() { SkillId = acsk.SkillId, UserId = user.Id });
-                        user.AssociatedSkills.AddRange(skillsToAdd.Where(toAdd => !user.AssociatedSkills.Any(existing => existing.SkillId == toAdd.SkillId)));
-                        await _allReadyDataAccess.UpdateUser(user);
-                    }
-                }
+                _bus.Send(new ActivitySignupCommand() { ActivitySignup = signupModel });
+            }
+            else
+            {
+                //TODO: handle invalid activity signup info (phone, email) in a useful way
+                //  would be best to handle it in KO on the client side (prevent clicking Volunteer)
             }
 
             return RedirectToAction(nameof(ShowActivity), new { id = signupModel.ActivityId });

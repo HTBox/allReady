@@ -165,6 +165,7 @@ namespace AllReady.ViewModels
                 viewModel.SignupModel = new ActivitySignupViewModel()
                 {
                     ActivityId = viewModel.Id,
+                    UserId = userId,
                     Name = appUser.Name,
                     PreferredEmail = appUser.Email,
                     PreferredPhoneNumber = appUser.PhoneNumber

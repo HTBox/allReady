@@ -9,6 +9,7 @@ namespace AllReady.ViewModels
     public class ActivitySignupViewModel
     {
         public int ActivityId { get; set; }
+        public string UserId { get; set; }
         public string Name { get; set; }
         [Display(Name = "Email")]
         [EmailAddress]
