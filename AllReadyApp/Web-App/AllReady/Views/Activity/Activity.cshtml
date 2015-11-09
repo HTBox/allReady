@@ -1,4 +1,5 @@
 ﻿@model AllReady.ViewModels.ActivityViewModel
+@using System.Security.Claims
 
 @{
     ViewBag.Title = $"{Model.Title}";
@@ -77,7 +78,17 @@
             <div class="col-sm-12">
                 @if (!Model.IsUserVolunteeredForActivity)
                 {
-                    <h2><a href="@Url.Action("Signup","Activity", new { id = Model.Id })" class="btn btn-volunteer">Volunteer</a></h2>
+                    <h2>
+                        @if (!User.IsSignedIn())
+                        {
+                            <a asp-action="Login" asp-controller="Account" asp-route-ReturnUrl="/Activity/@Model.Id" class="btn btn-volunteer">Volunteer</a>
+                        }
+                        else
+                        {
+                            <!-- Trigger modal -->
+                            <a href="#" data-toggle="modal" data-target="#volunteerForm" class="btn btn-volunteer">Volunteer</a>
+                        }
+                    </h2>
                 }
                 else
                 {
@@ -91,7 +102,7 @@
                 }
             </div>
         </div>
-        <div class="row" data-bind="visible: skills">
+        <div class="row" data-bind="visible: skills.length">
             <div class="col-sm-12">
                 <h3>Needed Skills</h3>
                 <ul data-bind="foreach: skills">
@@ -122,6 +133,96 @@
         </p>
     </div>
 </div>
+
+<!-- Volunteer Modal -->
+@if (User.IsSignedIn())
+{
+    <div class="modal fade" id="volunteerForm" tabindex="-1" role="dialog" aria-labelledby="volunteerFormLabel">
+        @using (Html.BeginForm("Signup", "Activity", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <input asp-for="SignupModel.ActivityId" type="hidden" />
+            <input asp-for="SignupModel.UserId" type="hidden" />
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="volunteerFormLabel">Volunteer for @Model.Title</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-horizontal">
+                                <input asp-for="SignupModel.Name" type="hidden" />
+                                @if (!string.IsNullOrWhiteSpace(Model.SignupModel.Name))
+                                {
+                                    <div class="form-group">
+                                        <label asp-for="SignupModel.Name" class="control-label col-md-4"></label>
+                                        <div class="col-md-8">
+                                            <p class="form-control-static">
+                                                @Model.SignupModel.Name
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="form-group">
+                                    <label asp-for="SignupModel.PreferredEmail" class="control-label col-md-4"></label>
+                                    <div class="col-md-8">
+                                        <input type="text" asp-for="SignupModel.PreferredEmail" class="form-control" />
+                                        <span asp-validation-for="SignupModel.PreferredEmail" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="SignupModel.PreferredPhoneNumber" class="control-label col-md-4"></label>
+                                    <div class="col-md-8">
+                                        <input type="text" asp-for="SignupModel.PreferredPhoneNumber" class="form-control" />
+                                        <span asp-validation-for="SignupModel.PreferredPhoneNumber" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="SignupModel.AdditionalInfo" class="control-label col-md-4"></label>
+                                    <div class="col-md-8">
+                                        <input type="text" asp-for="SignupModel.AdditionalInfo" class="form-control" />
+                                        <span asp-validation-for="SignupModel.AdditionalInfo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                @if (Model.RequiredSkills?.Count > 0)
+                                {
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">Associate new skills?</label>
+                                        <div class="col-md-8">
+                                            <ul class="list-unstyled form-control-static">
+                                                @foreach (var skill in Model.RequiredSkills)
+                                                {
+                                                    if (!Model.UserSkills.Any(us => us.Id == skill.Id))
+                                                    {
+                                                        <li>
+                                                            <input type="checkbox" id="@($"skillId{skill.Id}")" name="SignupModel.AddSkillIds" value="@skill.Id" />
+                                                            <label for="@($"skillId{skill.Id}")">@skill.HierarchicalName</label>
+                                                            @if (!string.IsNullOrWhiteSpace(skill.Description))
+                                                            {
+                                                                <span class="glyphicon glyphicon-info-sign" data-bind="visible: '@skill.Description', tooltip: { title: '@skill.Description', placement: 'top' }" aria-hidden="true"></span>
+                                                            }
+                                                        </li>
+                                                    }
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Volunteer</button>
+                        <button type="button" data-dismiss="modal" class="btn btn-link">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
 @section scripts {
     <script type="text/javascript">
         $(document).ready(function () {
