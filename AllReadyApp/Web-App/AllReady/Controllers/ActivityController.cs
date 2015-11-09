@@ -8,18 +8,20 @@ using AllReady.ViewModels;
 using Microsoft.AspNet.Authorization;
 using System.Security.Claims;
 using AllReady.Services;
+using MediatR;
+using AllReady.Features.Activity;
 
 namespace AllReady.Controllers
 {
     public class ActivityController : Controller
     {
         private readonly IAllReadyDataAccess _allReadyDataAccess;
+        private readonly IMediator _bus;
 
-        public ActivityController(
-            IAllReadyDataAccess allReadyDataAccess,
-            IClosestLocations closestLocations)
+        public ActivityController(IAllReadyDataAccess allReadyDataAccess, IMediator bus)
         {
             _allReadyDataAccess = allReadyDataAccess;
+            _bus = bus;
         }
 
         [Route("~/MyActivities")]
@@ -89,56 +91,28 @@ namespace AllReady.Controllers
             return View("Activity", new ActivityViewModel(activity).WithUserInfo(activity, User, _allReadyDataAccess));
         }
 
-        
-
-        [HttpGet]
-        [Route("/Activity/Signup/{id}")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Signup(int id)
+        [HttpPost]
+        [Route("/Activity/Signup")]
+        [Authorize]
+        public IActionResult Signup(ActivitySignupViewModel signupModel)
         {
-            var returnUrl = $"/Activity/Signup/{id}";
-
-            if (!User.IsSignedIn())
+            if (signupModel == null)
             {
-                return RedirectToAction(nameof(AccountController.Login), "Account", new { ReturnUrl = returnUrl });
+                return HttpBadRequest();
             }
 
-            var user = _allReadyDataAccess.GetUser(User.GetUserId());
-
-            // Maybe it wasn't logged in properly.
-            if (user == null)
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(AccountController.Login), "Account", new { ReturnUrl = returnUrl });
+                _bus.Send(new ActivitySignupCommand() { ActivitySignup = signupModel });
+            }
+            else
+            {
+                //TODO: handle invalid activity signup info (phone, email) in a useful way
+                //  would be best to handle it in KO on the client side (prevent clicking Volunteer)
             }
 
-            var activity = _allReadyDataAccess.GetActivity(id);
-
-            if (activity == null)
-            {
-                return HttpNotFound();
-            }
-
-            if (activity.UsersSignedUp == null)
-            {
-                activity.UsersSignedUp = new List<ActivitySignup>();
-            }
-            // If the user clicks multiple times, they may already be signed up.
-            if (!(from actSignup in activity.UsersSignedUp
-                  where actSignup.User.Id == user.Id
-                  select actSignup).Any())
-            {
-
-                activity.UsersSignedUp.Add(new ActivitySignup
-                {
-                    Activity = activity,
-                    User = user,
-                    SignupDateTime = DateTime.UtcNow
-                });
-
-                await _allReadyDataAccess.UpdateActivity(activity);
-            }
-
-            return View("Activity", new ActivityViewModel(activity).WithUserInfo(activity, User, _allReadyDataAccess));
+            return RedirectToAction(nameof(ShowActivity), new { id = signupModel.ActivityId });
         }
+
     }
 }

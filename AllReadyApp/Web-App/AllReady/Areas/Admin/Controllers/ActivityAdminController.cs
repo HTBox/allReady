@@ -209,7 +209,8 @@ namespace AllReady.Areas.Admin.Controllers
             return View(model);
         }
 
-
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult MessageAllVolunteers(MessageActivityVolunteersModel model)
         {
             //TODO: Query only for the tenant Id rather than the whole activity detail

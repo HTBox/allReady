@@ -8,7 +8,7 @@ using Microsoft.Data.Entity;
 namespace AllReady.Models
 {
     public partial class AllReadyDataAccessEF7 : IAllReadyDataAccess
-    {        
+    {
         IEnumerable<Activity> IAllReadyDataAccess.Activities
         {
             get
@@ -102,6 +102,12 @@ namespace AllReady.Models
             var resources = from c in _dbContext.Resources
                             select c;
             return resources;
+        }
+
+        Task IAllReadyDataAccess.UpdateCampaign(Campaign value)
+        {
+            _dbContext.Campaigns.Update(value);
+            return _dbContext.SaveChangesAsync();
         }
     }
 }

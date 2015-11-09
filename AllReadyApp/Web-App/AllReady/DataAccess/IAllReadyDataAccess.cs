@@ -26,6 +26,7 @@ namespace AllReady.Models
 
         IEnumerable<Campaign> Campaigns { get; }
         Campaign GetCampaign(int campaignId);
+        Task UpdateCampaign(Campaign value);
 
         #endregion
 

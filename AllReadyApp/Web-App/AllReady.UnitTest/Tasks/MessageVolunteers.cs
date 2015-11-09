@@ -1,4 +1,5 @@
 ﻿using AllReady.Areas.Admin.Features.Activities;
+using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Features.Notifications;
 using AllReady.Models;
@@ -11,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace AllReady.UnitTest.Activities
+namespace AllReady.UnitTest.Tasks
 {
     public class MessageVolunteers : InMemoryContextTest
     {
@@ -43,6 +44,8 @@ namespace AllReady.UnitTest.Activities
                 RequiredSkills = new List<ActivitySkill>(),
             };
 
+            
+
             var username1 = $"blah@1.com";
             var username2 = $"blah@2.com";
 
@@ -53,39 +56,53 @@ namespace AllReady.UnitTest.Activities
 
             htb.Campaigns.Add(firePrev);            
             context.Tenants.Add(htb);
-            context.Activities.Add(queenAnne);
             
-            var activitySignups = new List<ActivitySignup>();
-            activitySignups.Add(new ActivitySignup { Activity = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow });
-            activitySignups.Add(new ActivitySignup { Activity = queenAnne, User = user2, SignupDateTime = DateTime.UtcNow });
+            var task = new AllReadyTask()
+            {
+                Activity = queenAnne,
+                Description = "Description of a very important task",
+                Name = "Task # ",
+                EndDateTimeUtc = DateTime.Now.AddDays(1),
+                StartDateTimeUtc = DateTime.Now.AddDays(-3),
+                Tenant = queenAnne.Tenant
+            };
+            queenAnne.Tasks.Add(task);
+            context.Activities.Add(queenAnne);
 
-            context.ActivitySignup.AddRange(activitySignups);
+
+            var taskSignups = new List<TaskSignup>();
+            taskSignups.Add(new TaskSignup() { Task = task, User = user1 });
+            taskSignups.Add(new TaskSignup() { Task = task, User = user2 });
+            context.TaskSignups.AddRange(taskSignups);
+
             context.SaveChanges();
         }
 
         [Fact]
         public void SendMessageToAssignedVolunteers()
         {
-            var command = new MessageActivityVolunteersCommand
+            var expectedMessage = "This is my message for all you task peeps";
+            var expectedSubject = "This is my subject";
+            var command = new MessageTaskVolunteersCommand
             {
-                Model = new MessageActivityVolunteersModel
+                Model = new MessageTaskVolunteersModel
                 {
-                    ActivityId = 1,
-                    Message = "This is my message",
-                    Subject = "This is my subject"
+                    TaskId = 1,
+                    Message = expectedMessage,
+                    Subject = expectedSubject
                 }
             };
 
             var bus = new Mock<IMediator>();
             
             
-            var handler = new MessageActivityVolunteersCommandHandler(Context, bus.Object);
+            var handler = new MessageTaskVolunteersCommandHandler(Context, bus.Object);
             var result = handler.Handle(command);
 
             bus.Verify(b => b.Send(It.Is<NotifyVolunteersCommand>(notifyCommand =>
                    notifyCommand.ViewModel != null &&
-                   notifyCommand.ViewModel.EmailMessage == "This is my message" &&
-                   notifyCommand.ViewModel.Subject == "This is my subject" &&
+                   notifyCommand.ViewModel.EmailMessage == expectedMessage &&
+                   notifyCommand.ViewModel.Subject == expectedSubject &&
                    notifyCommand.ViewModel.EmailRecipients.Count() == 2 &&
                    notifyCommand.ViewModel.EmailRecipients.Contains("blah@1.com") &&
                    notifyCommand.ViewModel.EmailRecipients.Contains("blah@2.com")
