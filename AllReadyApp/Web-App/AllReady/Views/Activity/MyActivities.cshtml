@@ -22,8 +22,8 @@
                 <div class="collapsible-panel-body" id="activity-details-@activity.Id">
                     <p><em>@activity.Description</em></p>
                     <p>
-                        <button class="btn btn-xs" data-bind="click: function (d,e) { loadTasks(@activity.Id) }">Load tasks</button> 
-                        <button class="btn btn-xs" data-bind="click: function(d,e) { unvolunteer(@activity.Id) }">Un-volunteer</button>
+                        <button class="btn btn-default btn-xs" data-bind="click: function (d,e) { loadTasks(@activity.Id) }">Load tasks</button> 
+                        <button class="btn btn-default btn-xs" data-bind="click: function(d,e) { unvolunteer(@activity.Id) }">Un-volunteer</button>
                     </p>
                         <div data-bind="foreach: tasks">
                             <p><strong data-bind="text: name"></strong>: 
@@ -34,7 +34,7 @@
                             </p>
                         </div>
                         <!-- ko if: tasksLoaded -->
-                        <button class="btn btn-xs" data-bind="click: function (d,e) { updateTasks(@activity.Id) }">Update</button>
+                        <button class="btn btn-default btn-xs" data-bind="click: function (d,e) { updateTasks(@activity.Id) }">Update</button>
                         <!-- /ko -->
                 </div>
             </div>
