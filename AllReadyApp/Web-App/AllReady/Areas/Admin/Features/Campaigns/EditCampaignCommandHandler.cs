@@ -27,7 +27,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.Description = message.Campaign.Description;
             campaign.StartDateTimeUtc = message.Campaign.StartDate;
             campaign.EndDateTimeUtc = message.Campaign.EndDate;
-            campaign.ImageUrl = message.Campaign.ImageUrl;
             campaign.ManagingTenantId = message.Campaign.TenantId;
 
             _context.Update(campaign);

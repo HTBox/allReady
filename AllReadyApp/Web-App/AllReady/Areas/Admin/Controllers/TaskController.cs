@@ -179,5 +179,31 @@ namespace AllReady.Areas.Admin.Controllers
             return RedirectToRoute(new { controller = "Task", Area = "Admin", action = "Details", id = id });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult MessageAllVolunteers(MessageTaskVolunteersModel model)
+        {
+            //TODO: Query only for the tenant Id rather than the whole activity detail
+            if (!ModelState.IsValid)
+            {
+                return HttpBadRequest(ModelState);
+            }
+
+            var task = _bus.Send(new TaskQuery { TaskId = model.TaskId });
+            if (task == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (!User.IsTenantAdmin(task.TenantId))
+            {
+                return HttpUnauthorized();
+            }
+
+            _bus.Send(new MessageTaskVolunteersCommand { Model = model });
+            return Ok();
+        }
+
+
     }
 }

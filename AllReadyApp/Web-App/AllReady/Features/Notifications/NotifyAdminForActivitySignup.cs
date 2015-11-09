@@ -9,7 +9,7 @@ using Microsoft.Framework.OptionsModel;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyAdminForActivitySignup: INotificationHandler<VolunteerInformationAdded>
+    public class NotifyAdminForActivitySignup : INotificationHandler<VolunteerInformationAdded>
     {
         private readonly AllReadyContext _context;
         private readonly IMediator _bus;
@@ -24,7 +24,7 @@ namespace AllReady.Features.Notifications
 
         public void Handle(VolunteerInformationAdded notification)
         {
-            var voluteer = _context.Users.Single(u => u.Id == notification.UserId);
+            var volunteer = _context.Users.Single(u => u.Id == notification.UserId);
             var activity = _context.Activities.Single(a => a.Id == notification.ActivityId);
             var campaign = _context.Campaigns
                 .Include(c => c.Organizer)
@@ -33,17 +33,20 @@ namespace AllReady.Features.Notifications
 
             var subject = $"A volunteer has signed up for {activity.Name}";
 
-            var command = new NotifyVolunteersCommand
+            if (campaign.Organizer != null)
             {
-                ViewModel = new NotifyVolunteersViewModel
+                var command = new NotifyVolunteersCommand
                 {
-                    EmailMessage = $"Your {campaign.Name} campaign activity '{activity.Name}' has a new volunteer. {voluteer.UserName} can be reached at {voluteer.Email}. {link}",
-                    EmailRecipients = new List<string> { campaign.Organizer.Email },
-                    Subject = subject
-                }
-            };
+                    ViewModel = new NotifyVolunteersViewModel
+                    {
+                        EmailMessage = $"Your {campaign.Name} campaign activity '{activity.Name}' has a new volunteer. {volunteer.UserName} can be reached at {volunteer.Email}. {link}",
+                        EmailRecipients = new List<string> { campaign.Organizer.Email },
+                        Subject = subject
+                    }
+                };
 
-            _bus.Send(command);
+                _bus.Send(command);
+            }
         }
     }
 }

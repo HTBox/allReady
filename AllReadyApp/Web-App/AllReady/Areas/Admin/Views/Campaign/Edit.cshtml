@@ -94,12 +94,19 @@
                 @Html.DropDownListFor(model => model.TenantId, SelectListService.GetTenants(), htmlAttributes: new { @class = "form-control" })
             </div>
         </div>
+        @* TODO: Implement tags for search and filtering
+                <div class="form-group">
+                <label class="control-label col-md-2">Tags</label>
+                <div class="col-md-10">
+                    <input type="text" id="CampaignTags" data-role="tagsinput" />
+                </div>
+            </div>*@
 
     </div>
     <div class="row">
         <div class="col-md-12">
-            <button type="submit" value="@actionTitle" class="btn">@actionTitle</button>
-            <a href="@cancelUrl" class="btn">Cancel</a>
+            <button type="submit" value="@actionTitle" class="btn btn-default">@actionTitle</button>
+            <a href="@cancelUrl" class="btn btn-default">Cancel</a>
         </div>
     </div>
 }
@@ -125,4 +132,59 @@
             </div>
         </div>
     </div>
+
+    @*
+        TODO: Implement Impact Goal persistence & numeric fields
+    *@
+    <h2>Campaign Impact Goals</h2>
+    <div class="col-md-5">
+        <p><strong><em>** BETA **</em></strong> Define your campaign's impact in a way that will inspire people to help you reach those goals.</p>
+        <p>
+            If you choose <em>numeric</em> as an impact type, then a "thermometer" will be displayed on the landing page
+            showing the current progress of the campaign as you update the current impact level.
+        </p>
+    </div>
+    <div class="col-md-7">
+        <div class="form-horizontal">
+            <input type="text" asp-for="CampaignImpact.TextualImpactGoal" class="form-control" />
+        </div>
+    </div>
 }
+
+        @*@section scripts {
+                <script type="text/javascript">
+                    (function (ko, $, requiredSkills, availableSkills) {
+
+                        function AdminActivityViewModel(requiredSkills, availableSkills) {
+
+                            function RequiredSkillObservable(skillModel) {
+                                var ret = ko.utils.extend({}, skillModel);
+                                ret.Id = ko.observable(ret.Id);
+                                ret.ControlName = function (index) {
+                                    return 'RequiredSkills[' + ko.unwrap(index) + '].SkillId';
+                                };
+                                ret.Description = ko.computed(function () {
+                                    var skill = availableSkills.filter(function (skill) { return skill.Id === ret.Id(); })[0];
+                                    return (skill && skill.Description) || "";
+                                });
+                                return ret;
+                            }
+                            requiredSkills = (requiredSkills || []).map(RequiredSkillObservable);
+
+                            var self = this;
+                            this.requiredSkills = ko.observableArray(requiredSkills).uniqueValidator("Id");
+                            this.availableSkills = ko.observableArray(availableSkills);
+                            this.addSkill = function() {
+                                self.requiredSkills.push(RequiredSkillObservable());
+                            };
+                            this.deleteSkill = function(skill) {
+                                self.requiredSkills.remove(skill);
+                            };
+                        }
+
+                        ko.applyBindings(new AdminActivityViewModel(requiredSkills, availableSkills));
+                    })(ko, $,
+                        @Json.Serialize(Model.RequiredSkills.Select(rs => new { Id = rs.SkillId })),
+                        @Json.Serialize(SelectListService.GetSkills()));
+                </script>
+            }*@

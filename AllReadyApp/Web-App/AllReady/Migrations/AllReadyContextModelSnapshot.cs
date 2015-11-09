@@ -51,7 +51,13 @@ namespace AllReady.Migrations
 
                     b.Property<int?>("ActivityId");
 
+                    b.Property<string>("AdditionalInfo");
+
                     b.Property<DateTime?>("CheckinDateTime");
+
+                    b.Property<string>("PreferredEmail");
+
+                    b.Property<string>("PreferredPhoneNumber");
 
                     b.Property<DateTime>("SignupDateTime");
 

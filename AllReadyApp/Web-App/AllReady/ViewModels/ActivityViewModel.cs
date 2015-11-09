@@ -68,6 +68,7 @@ namespace AllReady.ViewModels
         public List<Skill> RequiredSkills { get; set; }
         public List<Skill> UserSkills { get; set; }
         public int NumberOfVolunteersRequired { get; set; }
+        public ActivitySignupViewModel SignupModel { get; set; }
     }
 
     public static class ActivityViewModelExtension
@@ -155,11 +156,20 @@ namespace AllReady.ViewModels
             if (user.IsSignedIn())
             {
                 var userId = user.GetUserId();
+                var appUser = dataAccess.GetUser(userId);
                 viewModel.UserId = userId;
-                viewModel.UserSkills = dataAccess.GetUser(userId)?.AssociatedSkills?.Select(us => us.Skill).ToList();
+                viewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => us.Skill).ToList();
                 viewModel.IsUserVolunteeredForActivity = dataAccess.GetActivitySignups(viewModel.Id, userId).Any();
                 var assignedTasks = activity.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
                 viewModel.Tasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
+                viewModel.SignupModel = new ActivitySignupViewModel()
+                {
+                    ActivityId = viewModel.Id,
+                    UserId = userId,
+                    Name = appUser.Name,
+                    PreferredEmail = appUser.Email,
+                    PreferredPhoneNumber = appUser.PhoneNumber
+                };
             }
             else
             {
