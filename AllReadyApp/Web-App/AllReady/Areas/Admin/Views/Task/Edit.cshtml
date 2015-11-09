@@ -117,8 +117,8 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <button type="submit" class="btn" data-bind="enable: requiredSkills.isValid">Save</button>
-                <a class="btn" href="@cancelUrl">Cancel</a>
+                <button type="submit" class="btn btn-default" data-bind="enable: requiredSkills.isValid">Save</button>
+                <a class="btn btn-default" href="@cancelUrl">Cancel</a>
                 <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">"@Html.DisplayNameFor(m => m.RequiredSkills)" must be unique</span>
             </div>
         </div>

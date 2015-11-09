@@ -13,14 +13,12 @@
 .campaign-search-button:hover
 {
    opacity:1.0;
-   transform:scale(1.5,1.5);
 }
 
 .campaign-search-button {
     margin: 0;
     cursor: pointer;
     opacity:0.7;
-    transform:scale(1,1);    
     margin-top:-5px;
     margin-left:2px;
 }

@@ -48,7 +48,7 @@
                             <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
                         </div>
                         <div class="form-group">
-                            <button type="button" class="btn btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
+                            <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
                                 <i class="fa" data-bind="css: { 'fa-square-o': !tasks.showOld(), 'fa-check-square-o': tasks.showOld }"></i>
                                 Show Old
                             </button>
@@ -97,9 +97,9 @@
                 <ul data-bind="foreach: skills">
                     <li>
                         <span data-bind="text: HierarchicalName"></span>
-                        <span class="glyphicon glyphicon-info-sign" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                        <span class="fa fa-info-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
                         <span class="label label-success" data-bind="visible: IsUserSkill, tooltip: { title: 'You have this skill!', placement: 'top' }">
-                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                            <span class="fa fa-check" aria-hidden="true"></span>
                             Match
                         </span>
                     </li>
