@@ -1,4 +1,4 @@
-﻿@model AllReady.Areas.Admin.ViewModels.TaskSummaryViewModel
+﻿@model AllReady.Areas.Admin.Models.TaskSummaryModel
 @{
     ViewData["Title"] = "Tasks Details";
 }
@@ -15,33 +15,123 @@
 
 <div class="row">
     <div class="col-md-10">
-        <h2>@Model.Name <a asp-controller="Task" asp-action="Edit" asp-route-id="@Model.Id" class="btn"><i class="glyphicon glyphicon-edit"></i></a> <a asp-controller="Task" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
+        <h2>@Model.Name <a asp-controller="Task" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-controller="Task" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
         <p>@Model.Description</p>
         <p><strong>Duration: </strong> @(Model.StartDateTime.HasValue ? Model.StartDateTime.Value.DateTime.ToString("d") : "*") - @(Model.EndDateTime.HasValue ? Model.EndDateTime.Value.DateTime.ToString("d") : "*")</p>
 
-        <h4>Volunteers @if (Model.NumberOfVolunteersRequired > 0) { <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span> } </h4> 
-        @if (Model.AssignedVolunteers.Count > 0)
-        {
-            <table class="table">
-                <tr>
-                    <th>
-                        Volunteer Name
-                    </th>
-                    <th>
-                        Status
-                    </th>
-                </tr>
-                @foreach (var volunteer in Model.AssignedVolunteers)
+        <h4>
+            Volunteers @if (Model.NumberOfVolunteersRequired > 0)
+            { <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span> }            
+        </h4>
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#Assigned">Assigned Volunteers</a> </li>
+            <li><a data-toggle="tab" href="#All">All Volunteers</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="Assigned" class="tab-pane fade in active">
+                <h3>Assigned Volunteers</h3>
+                @if (Model.AssignedVolunteers.Any())
+            {
+                    <button type="button" class="btn btn-primary" disabled="@(!Model.AssignedVolunteers.Any())" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button>
+                    <table class="table">
+                        <tr>
+                            <th>
+                                Volunteer Name
+                            </th>
+                        </tr>
+                        @foreach (var volunteer in Model.AssignedVolunteers)
                 {
-                    <tr>
-                        <td>@volunteer.UserName</td>
-                        <td>@(volunteer.StatusDescription ?? "*")</td>
-                    </tr>
+                            <tr>
+                                <td>@volunteer.UserName</td>
+
+                            </tr>
+                        }
+                    </table>
                 }
-            </table>
-        } else
-        {
-            <text>No volunteers yet. </text>
-        }
+                else
+                {
+                    <text>No volunteers yet. </text>
+                }
+            </div>
+
+            <div id="All" class="tab-pane fade">
+                <h3>All Volunteers</h3>
+                @if (Model.AllVolunteers.Count > 0)
+                {
+                    <form asp-controller="Task" asp-action="Assign" asp-route-area="Admin" method="post">
+                         
+                        <input type="hidden" asp-for="Id" />
+                        <table class="table">
+                            <tr>
+                                <th>&nbsp;</th>
+                                <th>
+                                    Volunteer Name
+                                </th>
+                            </tr>
+                            @foreach (var volunteer in Model.AllVolunteers)
+                            {
+                                <tr>
+                                    <td><input type="checkbox" value="@volunteer.UserId" @(volunteer.HasVolunteered ? "checked" : "") name="userIds" /></td>
+                                    <td>@volunteer.UserName</td>
+                                </tr>
+                            }
+                        </table>
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                        
+                    </form>
+                }
+                else
+                {
+                    < text > No volunteers yet. </ text >
+                }
+        </div>
+
+    </div>
+
+</div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="messageVolunteersModal" tabindex="-1" role="dialog" aria-labelledby="messageVolunteersLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="messageVolunteersLabel">Message All Volunteers</h4>
+            </div>
+            <form asp-controller="Task" asp-action="MessageAllVolunteers" method="post">
+                <div class="modal-body">
+                    <input type="hidden" value="@Model.Id" name="taskId" id="message-taskId">
+                    <div class="form-group">
+                        <label for="subject" class="control-label">Subject</label>
+                        <input type="text" class="form-control wide" name="subject" id="messageVolunteersModal-subject">
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="control-label">Message</label>
+                        <textarea rows="4" class="form-control wide" name="message" id="messageVolunteersModal-message"></textarea>
+                        <span id="messageCharacterCount" class="text-muted"></span>
+                    </div>
+                    <div class="alert alert-info" role="alert">Sending message...</div>
+                    <div class="alert alert-success" role="alert"><i class="fa fa-check"></i> Message sent</div>
+                    <div class="alert alert-danger" role="alert"></div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" id="sendMessageToVolunteers" class="btn btn-primary">Send Message</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+
+@section scripts {
+    <script src="~/js/taskDetails.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var taskDetailsAdmin = new HTBox.TaskDetailAdmin();
+
+        });
+    </script>
+}

@@ -1,4 +1,4 @@
-@model AllReady.Areas.Admin.ViewModels.TaskSummaryViewModel
+@model AllReady.Areas.Admin.Models.TaskSummaryModel
 
 @{  ViewData["Title"] = "Delete task " + Model.Name; }
 
@@ -49,8 +49,8 @@
             @Html.AntiForgeryToken()
 
             <div class="form-actions no-color">
-                <button type="submit" class="btn">Delete</button>
-                <a asp-controller="Task" asp-action="Details" asp-route-id="@Model.Id" class="btn">Cancel</a>
+                <button type="submit" class="btn btn-default">Delete</button>
+                <a asp-controller="Task" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-default">Cancel</a>
             </div>
         }
     </div>

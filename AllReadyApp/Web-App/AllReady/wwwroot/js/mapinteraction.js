@@ -126,4 +126,4 @@
         geo.getMyLocation();
     });
 
-})(ko, $, modelCampaign, 'bingMap');
+})(ko, $, modelCampaign, 'mapArea');

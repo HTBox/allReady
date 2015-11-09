@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.ViewModels;
+﻿using AllReady.Areas.Admin.Models;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,6 @@ namespace AllReady.Areas.Admin.Features.Activities
 {
     public class EditActivityCommand : IRequest<int>
     {
-        public ActivityDetailViewModel Activity {get; set;}
+        public ActivityDetailModel Activity {get; set;}
     }
 }

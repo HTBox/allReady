@@ -27,7 +27,7 @@ namespace AllReady.Services
         */
 
         /// <summary>
-        /// Uploads a image given a unique tenant ID. Passing in the same params will overwrite the existing file.
+        /// Uploads an image given a unique tenant ID. Passing in the same params will overwrite the existing file.
         /// </summary>
         /// <param name="tenantId">int ID</param>
         /// <param name="image">a image from Microsoft.AspNet.Http</param>

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace AllReady.ViewModels
@@ -46,28 +47,8 @@ namespace AllReady.ViewModels
                  ? new List<TaskViewModel>(activity.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
                  : new List<TaskViewModel>();
 
+            RequiredSkills = activity.RequiredSkills?.Select(acsk => acsk.Skill).ToList();
         }
-
-
-        public ActivityViewModel(Activity activity, bool isUserSignedUp, string userId)
-            : this(activity)
-        {
-            IsUserVolunteeredForActivity = isUserSignedUp.ToString().ToLowerInvariant();
-            UserId = userId;
-
-
-            if (string.IsNullOrWhiteSpace(UserId) || !isUserSignedUp)
-            {
-                Tasks = new List<TaskViewModel>();                     
-            }
-            else
-            {
-                var assignedTasks = activity.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == UserId)).ToList();
-                Tasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, UserId)).OrderBy(task => task.StartDateTime));
-            }
-
-        }
-
 
         public int Id { get; set; }
         public int TenantId { get; set; }
@@ -81,9 +62,13 @@ namespace AllReady.ViewModels
         public DateTimeOffset EndDateTime { get; set; }
         public LocationViewModel Location { get; set; }
         public List<TaskViewModel> Tasks { get; set; }
-        public string IsUserVolunteeredForActivity { get; private set; }
+        public bool IsUserVolunteeredForActivity { get; set; }
         public List<ApplicationUser> Volunteers { get; set; }
         public string UserId { get; set; }
+        public List<Skill> RequiredSkills { get; set; }
+        public List<Skill> UserSkills { get; set; }
+        public int NumberOfVolunteersRequired { get; set; }
+        public ActivitySignupViewModel SignupModel { get; set; }
     }
 
     public static class ActivityViewModelExtension
@@ -164,6 +149,33 @@ namespace AllReady.ViewModels
         public static IEnumerable<Activity> ToModel(this IEnumerable<ActivityViewModel> activities, IAllReadyDataAccess dataAccess)
         {
             return activities.Select(activity => activity.ToModel(dataAccess));
+        }
+
+        public static ActivityViewModel WithUserInfo(this ActivityViewModel viewModel, Activity activity, ClaimsPrincipal user, IAllReadyDataAccess dataAccess)
+        {
+            if (user.IsSignedIn())
+            {
+                var userId = user.GetUserId();
+                var appUser = dataAccess.GetUser(userId);
+                viewModel.UserId = userId;
+                viewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => us.Skill).ToList();
+                viewModel.IsUserVolunteeredForActivity = dataAccess.GetActivitySignups(viewModel.Id, userId).Any();
+                var assignedTasks = activity.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
+                viewModel.Tasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
+                viewModel.SignupModel = new ActivitySignupViewModel()
+                {
+                    ActivityId = viewModel.Id,
+                    UserId = userId,
+                    Name = appUser.Name,
+                    PreferredEmail = appUser.Email,
+                    PreferredPhoneNumber = appUser.PhoneNumber
+                };
+            }
+            else
+            {
+                viewModel.Tasks = new List<TaskViewModel>();
+            }
+            return viewModel;
         }
     }
 }

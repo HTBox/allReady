@@ -51,7 +51,13 @@ namespace AllReady.Migrations
 
                     b.Property<int?>("ActivityId");
 
+                    b.Property<string>("AdditionalInfo");
+
                     b.Property<DateTime?>("CheckinDateTime");
+
+                    b.Property<string>("PreferredEmail");
+
+                    b.Property<string>("PreferredPhoneNumber");
 
                     b.Property<DateTime>("SignupDateTime");
 
@@ -108,6 +114,8 @@ namespace AllReady.Migrations
                     b.Property<bool>("LockoutEnabled");
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
+
+                    b.Property<string>("Name");
 
                     b.Property<string>("NormalizedEmail")
                         .Annotation("MaxLength", 256);

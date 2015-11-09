@@ -1,6 +1,12 @@
 ﻿@model AllReady.ViewModels.ActivityViewModel
+@using System.Security.Claims
+
+@{
+    ViewBag.Title = $"{Model.Title}";
+}
+
 <div class="row">
-    <div class="col-sm-8">
+    <div class="col-sm-5">
         <div class="row">
             @if (!String.IsNullOrEmpty(Model.ImageUrl))
             {
@@ -9,19 +15,9 @@
                     <img src="@Model.ImageUrl" class="img-responsive" />
                 </div>
             }
-            <div class="col-sm-7">
+            <div class="@(string.IsNullOrEmpty(Model.ImageUrl) ? "col-sm-12" : "col-sm-10" )">
                 <h2>@Model.Title</h2>
                 <p class="date-address">@Model.StartDateTime.ToString("F") - @Model.EndDateTime.ToString("F")</p>
-            </div>
-            <div class="col-sm-3">
-                <h2 data-bind="visible: !@(Model.IsUserVolunteeredForActivity)"><a href="@Url.Action("Signup","Activity", new { id = Model.Id })" class="btn btn-volunteer">Volunteer</a></h2>
-                <div data-bind="visible: @(Model.IsUserVolunteeredForActivity)" class="volunteered">
-                    <center>
-                        Thanks for volunteering!
-                        <br />
-                        <a href="#" class="unvolunteer text-center" data-bind="click: function() {unenroll(@Model.Id);}">Unenroll</a>
-                    </center>
-                </div>
             </div>
         </div>
         <div class="row">
@@ -41,7 +37,7 @@
                 <h4><a asp-controller="Tenant" asp-action="ShowTenant" asp-route-id="@Model.TenantId">@Model.TenantName</a></h4>
             </div>
         </div>
-        @if (Model.IsUserVolunteeredForActivity == "true" && Model.Tasks.Any())
+        @if (Model.IsUserVolunteeredForActivity && Model.Tasks.Any())
         {
             <div class="row">
                 <div class="col-sm-12">
@@ -53,7 +49,7 @@
                             <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
                         </div>
                         <div class="form-group">
-                            <button type="button" class="btn btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
+                            <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
                                 <i class="fa" data-bind="css: { 'fa-square-o': !tasks.showOld(), 'fa-check-square-o': tasks.showOld }"></i>
                                 Show Old
                             </button>
@@ -65,54 +61,187 @@
                     <span class="label-warning label hide" data-bind="css: { hide: tasks.filtered().length }">No matching tasks.</span>
                     <ul data-bind="foreach: tasks.filtered">
                         <li>
-
                             <span data-bind="text: Name"></span>
                             <span data-bind="text: Description"></span>
                             @*S :<span data-bind="text: StartDateTime"></span>
-                            E :<span data-bind="text: EndDateTime"></span>*@
+                                E :<span data-bind="text: EndDateTime"></span>*@
                             <span><a data-bind="attr: { href:  'Accept/' + Id }">Accept</a> </span> |
                             <span><a data-bind="attr: { href:  'Reject/' + Id }">Reject</a> </span>
                         </li>
                     </ul>
                 </div>
-                
             </div>
         }
-        </div>
-        <div class="col-sm-4">
-            <h3>Location</h3>
-            <div id="bingMap" style="position:relative"></div>
-            <h3>Address</h3>
-            <p>
-                @Model.Location?.Address1<br />
-                @if (!string.IsNullOrEmpty(Model.Location?.Address2))
+    </div>
+    <div class="col-sm-3">
+        <div class="row">
+            <div class="col-sm-12">
+                @if (!Model.IsUserVolunteeredForActivity)
                 {
-                    @Model.Location.Address2
+                    <h2>
+                        @if (!User.IsSignedIn())
+                        {
+                            <a asp-action="Login" asp-controller="Account" asp-route-ReturnUrl="/Activity/@Model.Id" class="btn btn-volunteer">Volunteer</a>
+                        }
+                        else
+                        {
+                            <!-- Trigger modal -->
+                            <a href="#" data-toggle="modal" data-target="#volunteerForm" class="btn btn-volunteer">Volunteer</a>
+                        }
+                    </h2>
                 }
-                @Model.Location?.City @Model.Location?.State @Model.Location?.PostalCode?.PostalCode
-            </p>
+                else
+                {
+                    <div class="volunteered">
+                        <center>
+                            Thanks for volunteering!
+                            <br />
+                            <a href="#" class="unvolunteer text-center" data-bind="click: function() {unenroll(@Model.Id);}">Unenroll</a>
+                        </center>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="row" data-bind="visible: skills.length">
+            <div class="col-sm-12">
+                <h3>Needed Skills</h3>
+                <ul data-bind="foreach: skills">
+                    <li>
+                        <span data-bind="text: HierarchicalName"></span>
+                        <span class="fa fa-info" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                        <span class="label label-success" data-bind="visible: IsUserSkill, tooltip: { title: 'You have this skill!', placement: 'top' }">
+                            <span class="fa fa-check" aria-hidden="true"></span>
+                            Match
+                        </span>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
-    @section scripts {
-        <script type="text/javascript">
-            $(document).ready(function () {
-                getGeoCoordinates('@Model.Location?.Address1',
-                    '@Model.Location?.Address2',
-                    '@Model.Location?.City',
-                    '@Model.Location?.State',
-                    '@Model.Location?.PostalCode?.PostalCode',
-                    '@Model.Location?.Country',
-                    function (result) {
-                        var positionCoordsList = [
-                        { latitude: result.latitude, longitude: result.longitude }
-                        ];
-                        $("#bingMap").css("width", "300px").css("height", "300px");
-                        renderBingMap('bingMap', positionCoordsList);
-                    });
-            });
 
-            var modelTasks = @Json.Serialize(Model.Tasks);
-        </script>
-        <script type="text/javascript" src="~/js/activity.js"></script>
-        <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
-    }
+    <div class="col-sm-4">
+        <h3>Location</h3>
+        <div id="bingMap" style="position:relative"></div>
+        <h3>Address</h3>
+        <p>
+            @Model.Location?.Address1<br />
+            @if (!string.IsNullOrEmpty(Model.Location?.Address2))
+            {
+                @Model.Location.Address2
+            }
+            @Model.Location?.City @Model.Location?.State @Model.Location?.PostalCode?.PostalCode
+        </p>
+    </div>
+</div>
+
+<!-- Volunteer Modal -->
+@if (User.IsSignedIn())
+{
+    <div class="modal fade" id="volunteerForm" tabindex="-1" role="dialog" aria-labelledby="volunteerFormLabel">
+        @using (Html.BeginForm("Signup", "Activity", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <input asp-for="SignupModel.ActivityId" type="hidden" />
+            <input asp-for="SignupModel.UserId" type="hidden" />
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="volunteerFormLabel">Volunteer for @Model.Title</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-horizontal">
+                                <input asp-for="SignupModel.Name" type="hidden" />
+                                @if (!string.IsNullOrWhiteSpace(Model.SignupModel.Name))
+                                {
+                                    <div class="form-group">
+                                        <label asp-for="SignupModel.Name" class="control-label col-md-4"></label>
+                                        <div class="col-md-8">
+                                            <p class="form-control-static">
+                                                @Model.SignupModel.Name
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="form-group">
+                                    <label asp-for="SignupModel.PreferredEmail" class="control-label col-md-4"></label>
+                                    <div class="col-md-8">
+                                        <input type="text" asp-for="SignupModel.PreferredEmail" class="form-control" />
+                                        <span asp-validation-for="SignupModel.PreferredEmail" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="SignupModel.PreferredPhoneNumber" class="control-label col-md-4"></label>
+                                    <div class="col-md-8">
+                                        <input type="text" asp-for="SignupModel.PreferredPhoneNumber" class="form-control" />
+                                        <span asp-validation-for="SignupModel.PreferredPhoneNumber" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="SignupModel.AdditionalInfo" class="control-label col-md-4"></label>
+                                    <div class="col-md-8">
+                                        <input type="text" asp-for="SignupModel.AdditionalInfo" class="form-control" />
+                                        <span asp-validation-for="SignupModel.AdditionalInfo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                @if (Model.RequiredSkills?.Count > 0)
+                                {
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">Associate new skills?</label>
+                                        <div class="col-md-8">
+                                            <ul class="list-unstyled form-control-static">
+                                                @foreach (var skill in Model.RequiredSkills)
+                                                {
+                                                    if (!Model.UserSkills.Any(us => us.Id == skill.Id))
+                                                    {
+                                                        <li>
+                                                            <input type="checkbox" id="@($"skillId{skill.Id}")" name="SignupModel.AddSkillIds" value="@skill.Id" />
+                                                            <label for="@($"skillId{skill.Id}")">@skill.HierarchicalName</label>
+                                                            @if (!string.IsNullOrWhiteSpace(skill.Description))
+                                                            {
+                                                                <span class="glyphicon glyphicon-info-sign" data-bind="visible: '@skill.Description', tooltip: { title: '@skill.Description', placement: 'top' }" aria-hidden="true"></span>
+                                                            }
+                                                        </li>
+                                                    }
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Volunteer</button>
+                        <button type="button" data-dismiss="modal" class="btn btn-link">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            getGeoCoordinates('@Model.Location?.Address1',
+                '@Model.Location?.Address2',
+                '@Model.Location?.City',
+                '@Model.Location?.State',
+                '@Model.Location?.PostalCode?.PostalCode',
+                '@Model.Location?.Country',
+                function (result) {
+                    var positionCoordsList = [
+                    { latitude: result.latitude, longitude: result.longitude }
+                    ];
+                    $("#bingMap").css("width", "300px").css("height", "300px");
+                    renderBingMap('bingMap', positionCoordsList);
+                });
+        });
+        var modelStuff = @Json.Serialize(new { tasks = Model.Tasks, skills = Model.RequiredSkills, userSkills = Model.UserSkills });
+    </script>
+    <script type="text/javascript" src="~/js/activity.js"></script>
+    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+}

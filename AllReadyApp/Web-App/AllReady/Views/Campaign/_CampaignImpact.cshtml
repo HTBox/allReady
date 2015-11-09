@@ -5,15 +5,12 @@
     <div class="panel campaign-impact">
         <div class="panel-heading">Campaign Goal</div>
         <div class="panel-body">
-            @if (Model.CampaignImpact.CampaignImpactType.ImpactType == "Textual" && !string.IsNullOrWhiteSpace(Model.CampaignImpact.TextualImpactGoal))
-            {
-                @Html.Raw(Model.CampaignImpact.TextualImpactGoal);
-            }
-            else if (Model.CampaignImpact.CampaignImpactType.ImpactType == "Numeric")
+            @if (Model.CampaignImpact.CampaignImpactType.Name == "Numeric")
             {
                 <!-- TODO: Display thermometer showing impact progress -->
                 
             }
+            @Html.Raw(Model.CampaignImpact.TextualImpactGoal);
         </div>
     </div>
 }

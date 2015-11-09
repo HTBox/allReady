@@ -11,6 +11,12 @@ textarea {
     max-width: 380px;
 }
 
+input.wide,
+select.wide,
+textarea.wide {
+    max-width: inherit;
+}
+
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
 .body-content {
@@ -18,7 +24,7 @@ textarea {
     padding-right: 40px;
 }
 
-a:not(.unvolunteer) {
+a:not(.unvolunteer,.btn) {
     text-decoration: none;
     color: #ab6627;
 }
@@ -42,18 +48,24 @@ footer > p > img {
 .date-address {
     color: #555555;
 }
-.btn, a.btn {
+.btn.btn-default, a.btn.btn-default {
     background-color: hsl(28.6, 62.9%, 41.2%);
     border-radius: 0;
     color: #fff;
 }
-.btn.active, a.btn.active {
+.btn.btn-default.active, a.btn.btn-default.active {
     background-color: hsl(28.9, 80.4%, 50%);
     color: #fff;
 }
-.btn.active:hover, .btn.active:focus {
+.btn.btn-default.active:hover, .btn.btn-default.active:focus {
     background-color: hsl(28.9, 80.4%, 60%);
 }
+
+.btn.btn-default:hover, .btn.btn-default:focus {
+    color: #fff;
+    background-color: hsl(28.9, 80.4%, 68%);
+}
+
 .btn-volunteer {
     width: 100%;
     height: 100%;
@@ -168,11 +180,6 @@ Navigation
 /* Login status */
 .navbar .login-status > li > a {
     font-size: 1.1em;
-}
-
-.btn:hover, .btn:focus {
-    color: #fff;
-    background-color: hsl(28.9, 80.4%, 68%);
 }
 .campaign-sponsor {
     margin-top: 30px;

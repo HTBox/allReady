@@ -1,4 +1,4 @@
-@model AllReady.Areas.Admin.ViewModels.CampaignSummaryViewModel
+@model AllReady.Areas.Admin.Models.CampaignSummaryModel
 @{ ViewData["Title"] = "Delete campaign " + Model.Name; }
 <div class="row">
     <div class="col-12">
@@ -39,8 +39,8 @@
                 @Html.AntiForgeryToken()
 
                 <div class="form-actions no-color">
-                    <button type="submit" value="Delete" class="btn">Delete campaign</button> 
-                    <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin" class="btn">Cancel</a>
+                    <button type="submit" value="Delete" class="btn btn-default">Delete campaign</button> 
+                    <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin" class="btn btn-default">Cancel</a>
                 </div>
             }
         </div>

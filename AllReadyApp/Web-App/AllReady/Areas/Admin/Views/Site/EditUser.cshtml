@@ -1,7 +1,7 @@
-﻿@using AllReady.Areas.Admin.ViewModels
+﻿@using AllReady.Areas.Admin.Models
 @inject AllReady.Services.ISelectListService SelectListService
 
-@model EditUserViewModel
+@model EditUserModel
 @{
     ViewData["Title"] = $"Edit User - {Model.UserName}";
 }
@@ -43,24 +43,24 @@
                 <div data-bind="foreach: associatedSkills">
                     <div class="form-inline">
                         <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
-                        <span class="glyphicon glyphicon-info-sign" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                        <span class="fa fa-info" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
                         <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
-                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            <span class="fa fa-remove" aria-hidden="true"></span>
                             Delete
                         </a>
                     </div>
                 </div>
                 <a href="#" data-bind="click: addSkill" title="Add required skill">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    <span class="fa fa-plus" aria-hidden="true"></span>
                     Add
                 </a>
             </div>
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <button type="submit" class="btn" data-bind="enable: associatedSkills.isValid">Save</button>
+                <button type="submit" class="btn btn-default" data-bind="enable: associatedSkills.isValid">Save</button>
                 <span class="label label-danger" data-bind="visible: !associatedSkills.isValid()">"@Html.DisplayNameFor(m => m.AssociatedSkills)" must be unique</span>
-                <a asp-controller="Site" asp-action="Index">Back to List</a>
+                <a asp-controller="Site" asp-action="Index" class="btn btn-default">Back to List</a>
             </div>
         </div>
     </div>
@@ -71,7 +71,7 @@
         $(".bootstrap-toggle").bootstrapToggle({ on: "Yes", off: "No" });
         (function (ko, $, associatedSkills, availableSkills) {
 
-            function EditUserViewModel(associatedSkills, availableSkills) {
+            function EditUserModel(associatedSkills, availableSkills) {
 
                 function SkillObservable(skillModel) {
                     var ret = ko.utils.extend({}, skillModel);
@@ -98,7 +98,7 @@
                 };
             }
 
-            ko.applyBindings(new EditUserViewModel(associatedSkills, availableSkills));
+            ko.applyBindings(new EditUserModel(associatedSkills, availableSkills));
         })(ko, $,
             @Json.Serialize(Model.AssociatedSkills.Select(rs => new { Id = rs.SkillId })),
             @Json.Serialize(SelectListService.GetSkills()));

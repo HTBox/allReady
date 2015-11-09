@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.ViewModels;
+﻿using AllReady.Areas.Admin.Models;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 {
     public class EditCampaignCommand : IRequest<int>
     {
-        public CampaignSummaryViewModel Campaign {get; set;}
+        public CampaignSummaryModel Campaign {get; set;}
     }
 }

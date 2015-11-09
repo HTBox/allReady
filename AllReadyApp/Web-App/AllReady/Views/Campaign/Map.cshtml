@@ -11,7 +11,7 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <div id="bingMap" style="position:relative"></div>
+        <div id="mapArea" style="position:relative"></div>
     </div>
 </div>
 @section scripts {
@@ -19,7 +19,7 @@
     var modelCampaign = @Json.Serialize(Model);
 
     $(document).ready(function () {
-        $("#bingMap").css("width", "1000px").css("height", "600px");
+        $("#mapArea").css("width", "1000px").css("height", "600px");
     });
 </script>
 

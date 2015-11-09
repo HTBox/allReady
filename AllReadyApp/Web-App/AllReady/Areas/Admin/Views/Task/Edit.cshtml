@@ -1,4 +1,4 @@
-﻿@model AllReady.Areas.Admin.ViewModels.TaskEditViewModel
+﻿@model AllReady.Areas.Admin.Models.TaskEditModel
 @inject AllReady.Services.ISelectListService SelectListService
 
 @{
@@ -101,15 +101,15 @@
                 <div data-bind="foreach: requiredSkills">
                     <div class="form-inline">
                         <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
-                        <span class="glyphicon glyphicon-info-sign" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                        <span class="fa fa-info" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
                         <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
-                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            <span class="fa fa-remove" aria-hidden="true"></span>
                             Delete
                         </a>
                     </div>
                 </div>
                 <a href="#" data-bind="click: addSkill" title="Add required skill">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    <span class="fa fa-plus" aria-hidden="true"></span>
                     Add
                 </a>
             </div>
@@ -117,8 +117,8 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <button type="submit" class="btn" data-bind="enable: requiredSkills.isValid">Save</button>
-                <a class="btn" href="@cancelUrl">Cancel</a>
+                <button type="submit" class="btn btn-default" data-bind="enable: requiredSkills.isValid">Save</button>
+                <a class="btn btn-default" href="@cancelUrl">Cancel</a>
                 <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">"@Html.DisplayNameFor(m => m.RequiredSkills)" must be unique</span>
             </div>
         </div>

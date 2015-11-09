@@ -1,10 +1,18 @@
 ﻿///<reference path="../lib/jquery/dist/jquery.js" />
 ///<reference path="../lib/knockout/dist/knockout.js" />
 
-(function (ko, $, tasks) {
+(function (ko, $, tasks, skills, userSkills) {
 
-    function ActivityViewModel(tasks) {
-        this.tasks = ko.observableArray(tasks).filterBeforeDate("EndDateTime").textFilter(["Name","Description"]);
+    function RequiredSkill(userSkills, skill)
+    {
+        var obj = ko.utils.extend({}, skill);
+        obj.IsUserSkill = userSkills && userSkills.length && userSkills.filter(function (userSkill) { return obj.Id === userSkill.Id }).length > 0;
+        return obj;
+    }
+
+    function ActivityViewModel(tasks, skills, userSkills) {
+        this.skills = skills.map(RequiredSkill.bind(null, userSkills));
+        this.tasks = ko.observableArray(tasks).filterBeforeDate("EndDateTime").textFilter(["Name", "Description"]);
         this.enrolled = ko.observable(false);
     }
 
@@ -35,5 +43,5 @@
         }
     };
     
-    ko.applyBindings(new ActivityViewModel(tasks));
-})(ko, $, modelTasks);
+    ko.applyBindings(new ActivityViewModel(tasks, skills, userSkills));
+})(ko, $, modelStuff.tasks, modelStuff.skills, modelStuff.userSkills);

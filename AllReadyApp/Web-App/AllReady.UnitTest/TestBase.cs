@@ -8,9 +8,14 @@ using System.IO;
 
 namespace AllReady.UnitTest
 {
+    /// <summary>
+    /// Inherit from this type to implement tests that
+    /// have access to a service provider, empty in-memory
+    /// database, and basic configuration.
+    /// </summary>
     public abstract class TestBase
     {
-        public IServiceProvider ServiceProvider { get; private set; }
+        protected IServiceProvider ServiceProvider { get; private set; }
 
         public TestBase()
         {
@@ -18,7 +23,7 @@ namespace AllReady.UnitTest
             {
                 var services = new ServiceCollection();
 
-                // Add EF (Full DB, not In-Memory)
+                // set up empty in-memory test db
                 services.AddEntityFramework()
                     .AddInMemoryDatabase()
                     .AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase());
@@ -27,19 +32,10 @@ namespace AllReady.UnitTest
                 IHostingEnvironment hostingEnvironment = new HostingEnvironment();
                 hostingEnvironment.EnvironmentName = "Development";
                 services.AddSingleton(x => hostingEnvironment);
-                ServiceProvider = services.BuildServiceProvider();
 
-                LoadTestData();
+                // set up service provider for tests
+                ServiceProvider = services.BuildServiceProvider();
             }
         }
-
-        /// <summary>
-        /// Override this method to load test data
-        /// into the in-memory database context prior
-        /// to any tests being executed in your 
-        /// test class.
-        /// </summary>
-        protected virtual void LoadTestData()
-        { }
     }
 }

@@ -23,7 +23,7 @@ namespace AllReady.Models
         {
             return _dbContext.Users
                 .Where(u => u.Id == userId)
-                .Include(u => u.AssociatedSkills)
+                .Include(u => u.AssociatedSkills).ThenInclude((UserSkill us) => us.Skill)
                 .Include(u => u.Claims)
                 .SingleOrDefault();
         }
