@@ -13,6 +13,7 @@ using AllReady.Areas.Admin.Models;
 using AllReady.Security;
 using Microsoft.Framework.Logging;
 using System;
+using Microsoft.AspNet.Mvc.Rendering;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -158,18 +159,52 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult AssignTenantAdmin(string userId)
         {
-            try
+            var user = _dataAccess.GetUser(userId);
+            if (user.IsUserType(UserType.TenantAdmin) || user.IsUserType(UserType.SiteAdmin))
             {
-                var user = _dataAccess.GetUser(userId);
+                return RedirectToAction(nameof(Index));
+            }
 
-                return View();
-            }
-            catch (Exception ex)
+            var tenants = _dataAccess.Tenants
+                .OrderBy(t => t.Name)
+                .Select(t => new SelectListItem() { Text = t.Name, Value = t.Id.ToString() })
+                .ToList();
+
+            ViewBag.Tenants = new SelectListItem[] 
             {
-                _logger.LogError(@"Failed to assign site admin for {userId}", ex);
-                ViewBag.ErrorMessage = $"Failed to assign site admin for {userId}. Exception thrown.";
-                return View();
+                new SelectListItem() { Selected = true, Text = "<Select One>", Value = "0" }
+            }.Union(tenants);
+
+            return View(new AssignTenantAdminModel() { UserId = userId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignTenantAdmin(AssignTenantAdminModel model)
+        {
+            var user = _dataAccess.GetUser(model.UserId);
+            if (user == null) return RedirectToAction(nameof(Index));
+
+            if (model.TenantId == 0)
+            {
+                ModelState.AddModelError(nameof(AssignTenantAdminModel.TenantId), "You must pick a valid organization.");
             }
+
+            if (ModelState.IsValid)
+            {
+                if (_dataAccess.Tenants.Any(t => t.Id == model.TenantId))
+                {
+                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.TenantAdmin.ToName()));
+                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.Tenant, model.TenantId.ToString()));
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ModelState.AddModelError(nameof(AssignTenantAdminModel.TenantId), "Invalid Organization. Please contact support.");
+                }
+            }
+
+            return View();
         }
 
         [HttpGet]
@@ -190,13 +225,15 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult RevokeTenantAdmin(string userId)
+        public async Task<IActionResult> RevokeTenantAdmin(string userId)
         {
             try
             {
                 var user = _dataAccess.GetUser(userId);
-
-                return View();
+                var claims = await _userManager.GetClaimsAsync(user);
+                await _userManager.RemoveClaimAsync(user, claims.First(c => c.Type == Security.ClaimTypes.UserType));
+                await _userManager.RemoveClaimAsync(user, claims.First(c => c.Type == Security.ClaimTypes.Tenant));
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {

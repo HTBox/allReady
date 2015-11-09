@@ -1,6 +1,6 @@
 ﻿@model IList<CampaignViewModel>
 @{
-    ViewData["Title"] = "All registered campaigns";
+    ViewData["Title"] = "All Registered Campaigns";
     @addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
 }
 <environment names="Development">
@@ -14,7 +14,7 @@
     <div class="col-md-12 text-center">
         <input type="search"
                class="campaign-search "
-               placeholder="Search for campaigns using your zipcode"
+               placeholder="Search for campaigns using your zip code"
                data-bind="value: searchTerm, valueUpdate: 'afterkeydown', event: { keypress: handleEnter }" />
         <a class="main-search-button" data-bind="click: searchCampaigns" title="Search for campaigns">
             <img class="campaign-search-button" src="~/images/search-icon.png" alt="Search for campaigns" />
