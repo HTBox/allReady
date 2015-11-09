@@ -39,15 +39,21 @@ footer, footer a {
     color: #ab6627;
 }
 
-    footer a:hover {
-        text-decoration: none;
-        color: #efab6c;
-    }
+footer a:hover {
+    text-decoration: none;
+    color: #efab6c;
+}
 
-    footer > p > img {
-        margin-left: 20px;
-        /*margin-right: 10px;*/
-    }
+footer > p > img, footer > p > a > img {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
 
 .date-address {
     color: #555555;
