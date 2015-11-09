@@ -36,7 +36,7 @@
             @foreach (var item in Model) {
                 <tr>
                     <td>
-                        <a asp-controller="Campaign" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-default" title="Edit"><i class="glyphicon glyphicon-edit"></i></a>
+                        <a asp-controller="Campaign" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-default" title="Edit"><i class="fa fa-edit"></i></a>
                     </td>
                     <td>
                         <a asp-controller="Campaign" asp-action="Details" asp-route-area="Admin" asp-route-id="@item.Id">@item.Name</a>

@@ -45,7 +45,7 @@
             <div class="col-md-10">
                 <div class="form-inline">
                     <select class="form-control" name="ParentSkillId" data-bind="options: availableSkills, optionsText: 'HierarchicalName', optionsValue: 'Id', value: parentSkillId"></select>
-                    <span class="glyphicon glyphicon-info-sign" data-bind="visible: parentSkillDescription, tooltip: { title: parentSkillDescription, placement: 'top' }" aria-hidden="true"></span>
+                    <span class="fa fa-info" data-bind="visible: parentSkillDescription, tooltip: { title: parentSkillDescription, placement: 'top' }" aria-hidden="true"></span>
                     <span class="label label-danger" data-bind="visible: !isValidParent()">A skill can't be its own ancestor!</span>
                 </div>
             </div>

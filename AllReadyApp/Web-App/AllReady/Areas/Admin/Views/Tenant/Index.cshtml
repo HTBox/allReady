@@ -39,8 +39,8 @@
                         @Html.DisplayFor(modelItem => item.WebUrl)
                     </td>
                     <td>
-                        <a href="@Url.Action("Edit", "Tenant", new { id = item.Id })" class="btn btn-sm" ><span class="fa fa-edit"></span> Edit</a>
-                        <a href="@Url.Action("Delete", "Tenant", new { id = item.Id })" class="btn btn-sm"><span class="fa fa-trash"></span> Delete</a>
+                        <a href="@Url.Action("Edit", "Tenant", new { id = item.Id })" class="btn btn-default btn-sm" ><span class="fa fa-edit"></span> Edit</a>
+                        <a href="@Url.Action("Delete", "Tenant", new { id = item.Id })" class="btn btn-default btn-sm"><span class="fa fa-trash"></span> Delete</a>
                     </td>
                 </tr>
             }

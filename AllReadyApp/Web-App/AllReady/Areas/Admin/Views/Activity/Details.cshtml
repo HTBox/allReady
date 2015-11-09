@@ -18,7 +18,7 @@
         </div>
     }
     <div class="col-md-10">
-        <h2>@Model.Name <a asp-controller="Activity" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="glyphicon glyphicon-edit"></i></a> <a asp-controller="Activity" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
+        <h2>@Model.Name <a asp-controller="Activity" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-controller="Activity" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a></h2>
         <p>@Model.Description</p>
         <p><strong>Duration: </strong> @Model.StartDateTime.ToString("d") - @Model.EndDateTime.ToString("d")</p>
     </div>
