@@ -1,4 +1,4 @@
-@model AllReady.Areas.Admin.ViewModels.ActivityDetailViewModel
+@model AllReady.Areas.Admin.Models.ActivityDetailModel
 @{ ViewBag.Title = Model.Name; }
 <div class="row">
     <div class="col-12">
@@ -19,13 +19,14 @@
     }
     <div class="col-md-10">
         <h2>@Model.Name <a asp-controller="Activity" asp-action="Edit" asp-route-id="@Model.Id" class="btn"><i class="glyphicon glyphicon-edit"></i></a> <a asp-controller="Activity" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
-            <p>@Model.Description</p>
-            <p><strong>Duration: </strong> @Model.StartDateTime.ToString("d") - @Model.EndDateTime.ToString("d")</p>
+        <p>@Model.Description</p>
+        <p><strong>Duration: </strong> @Model.StartDateTime.ToString("d") - @Model.EndDateTime.ToString("d")</p>
     </div>
 </div>
 <div class="row">
     <div class="col-md-12">
-        <h3>Volunteers @if (Model.NumberOfVolunteersRequired > 0) { <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span> } </h3>
+        <h3>Volunteers @if (Model.NumberOfVolunteersRequired > 0)
+        { <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span> } <button type="button" class="btn btn-primary" disabled="@(!Model.Volunteers.Any())" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button></h3>
         @if (Model.Volunteers == null || Model.Volunteers.Count == 0)
         {
             <text>No volunteers yet. </text>
@@ -33,10 +34,10 @@
         else
         {
             <ul>
-            @foreach (var volunteer in Model.Volunteers)
-            {
-                <li><strong>@volunteer</strong></li>
-            }
+                @foreach (var volunteer in Model.Volunteers)
+                {
+                    <li><strong>@volunteer</strong></li>
+                }
             </ul>
         }
     </div>
@@ -49,13 +50,51 @@
 <div class="row">
     <div class="col-md-12">
         <a asp-controller="Task" asp-action="Create" asp-route-activityId="@Model.Id" class="btn">Create Task</a>
-        <a asp-controller="Activity" asp-action="Assign" asp-route-id="@Model.Id" asp-route-area="Admin" class="btn"><span class="fa fa-user"></span> Assign tasks</a>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="messageVolunteersModal" tabindex="-1" role="dialog" aria-labelledby="messageVolunteersLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="messageVolunteersLabel">Message All Volunteers</h4>
+            </div>
+            <form asp-controller="Activity" asp-action="MessageAllVolunteers" method="post">
+                <div class="modal-body">
+                    <input type="hidden" value="@Model.Id" name="activityId" id="message-activityId">
+                    <div class="form-group">
+                        <label for="subject" class="control-label">Subject</label>
+                        <input type="text" class="form-control wide" name="subject" id="messageVolunteersModal-subject">
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="control-label">Message</label>
+                        <textarea rows="4" class="form-control wide" name="message" id="messageVolunteersModal-message"></textarea>
+                        <span id="messageCharacterCount" class="text-muted"></span>
+                    </div>
+                    <div class="alert alert-info" role="alert">Sending message...</div>
+                    <div class="alert alert-success" role="alert"><i class="fa fa-check"></i> Message sent</div>
+                    <div class="alert alert-danger" role="alert"></div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" id="sendMessageToVolunteers" class="btn btn-primary">Send Message</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 @Html.Partial("~/Areas/Admin/Views/Task/_List.cshtml", Model.Tasks)
 
 @section scripts {
-    <script src="~/lib/bootstrap/js/modal.js"></script>
     <script src="~/js/activityDetails.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var activityDetailAdmin = new HTBox.ActivityDetailAdmin();
+
+        });
+    </script>
 }

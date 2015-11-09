@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.ViewModels;
+﻿using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class CampaignDetailQueryHandler : IRequestHandler<CampaignDetailQuery, CampaignDetailViewModel>
+    public class CampaignDetailQueryHandler : IRequestHandler<CampaignDetailQuery, CampaignDetailModel>
     {
         private AllReadyContext _context;
 
@@ -15,19 +15,20 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             _context = context;
 
         }
-        public CampaignDetailViewModel Handle(CampaignDetailQuery message)
+        public CampaignDetailModel Handle(CampaignDetailQuery message)
         {
             var campaign = _context.Campaigns
                                   .AsNoTracking()
                                   .Include(c => c.Activities)    
                                   .Include(m => m.ManagingTenant)
+                                  .Include(ci => ci.CampaignImpact)
                                   .SingleOrDefault(c => c.Id == message.CampaignId);
 
-            CampaignDetailViewModel result = null;
+            CampaignDetailModel result = null;
 
             if (campaign != null)
             {
-                result = new CampaignDetailViewModel()
+                result = new CampaignDetailModel()
                 {
                     Id = campaign.Id,
                     Name = campaign.Name,
@@ -37,8 +38,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     ImageUrl = campaign.ImageUrl,
                     StartDate = campaign.StartDateTimeUtc,
                     EndDate = campaign.EndDateTimeUtc,
-                    Activities = campaign.Activities.Select(a => new ActivitySummaryViewModel
-                    {
+					CampaignImpact = campaign.CampaignImpact,
+                    Activities = campaign.Activities.Select(a => new ActivitySummaryModel                    {
                         Id = a.Id,
                         Name = a.Name,
                         Description = a.Description,

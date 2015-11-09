@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.ViewModels;
+﻿using AllReady.Areas.Admin.Models;
 using AllReady.ViewModels;
 using MediatR;
 using System;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class CampaignListQuery : IRequest<IEnumerable<CampaignSummaryViewModel>>
+    public class CampaignListQuery : IRequest<IEnumerable<CampaignSummaryModel>>
     {
         //public int TenantId { get; set; }
     }

@@ -1,4 +1,4 @@
-﻿@model AllReady.Areas.Admin.ViewModels.TaskSummaryViewModel
+﻿@model AllReady.Areas.Admin.Models.TaskSummaryModel
 @{
     ViewData["Title"] = "Tasks Details";
 }
@@ -19,29 +19,74 @@
         <p>@Model.Description</p>
         <p><strong>Duration: </strong> @(Model.StartDateTime.HasValue ? Model.StartDateTime.Value.DateTime.ToString("d") : "*") - @(Model.EndDateTime.HasValue ? Model.EndDateTime.Value.DateTime.ToString("d") : "*")</p>
 
-        <h4>Volunteers @if (Model.NumberOfVolunteersRequired > 0) { <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span> } </h4> 
-        @if (Model.AssignedVolunteers.Count > 0)
-        {
-            <table class="table">
-                <tr>
-                    <th>
-                        Volunteer Name
-                    </th>
-                    <th>
-                        Status
-                    </th>
-                </tr>
-                @foreach (var volunteer in Model.AssignedVolunteers)
+        <h4>
+            Volunteers @if (Model.NumberOfVolunteersRequired > 0)
+            { <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span> }
+        </h4>
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#Assigned">Assigned Volunteers</a> </li>
+            <li><a data-toggle="tab" href="#All">All Volunteers</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="Assigned" class="tab-pane fade in active">
+                <h3>Assigned Volunteers</h3>
+                @if (Model.AssignedVolunteers.Count > 0)
+            {
+                    <table class="table">
+                        <tr>
+                            <th>
+                                Volunteer Name
+                            </th>
+                        </tr>
+                        @foreach (var volunteer in Model.AssignedVolunteers)
                 {
-                    <tr>
-                        <td>@volunteer.UserName</td>
-                        <td>@(volunteer.StatusDescription ?? "*")</td>
-                    </tr>
+                            <tr>
+                                <td>@volunteer.UserName</td>
+
+                            </tr>
+                        }
+                    </table>
                 }
-            </table>
-        } else
-        {
-            <text>No volunteers yet. </text>
-        }
+                else
+                {
+                    <text>No volunteers yet. </text>
+                }
+            </div>
+
+            <div id="All" class="tab-pane fade">
+                <h3>All Volunteers</h3>
+                @if (Model.AllVolunteers.Count > 0)
+                {
+                    <form asp-controller="Task" asp-action="Assign" asp-route-area="Admin" method="post">
+                         
+                        <input type="hidden" asp-for="Id" />
+                        <table class="table">
+                            <tr>
+                                <th>&nbsp;</th>
+                                <th>
+                                    Volunteer Name
+                                </th>
+                            </tr>
+                            @foreach (var volunteer in Model.AllVolunteers)
+                            {
+                                <tr>
+                                    <td><input type="checkbox" value="@volunteer.UserId" @(volunteer.HasVolunteered ? "checked" : "") name="userIds" /></td>
+                                    <td>@volunteer.UserName</td>
+                                </tr>
+                            }
+                        </table>
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                        
+                    </form>
+                }
+                else
+                {
+                    < text > No volunteers yet. </ text >
+                }
+        </div>
+
     </div>
+
+</div>
 </div>

@@ -4,6 +4,7 @@ var gulp = require("gulp"),
     concat = require("gulp-concat"),
     cssmin = require("gulp-cssmin"),
     uglify = require("gulp-uglify"),
+    ts = require('gulp-typescript'),
     project = require("./project.json");
 
 var paths = {
@@ -46,3 +47,15 @@ gulp.task("min", ["min:js", "min:css"]);
 gulp.task("watch", function () {
     gulp.watch(paths.css, ["min"]);
 })
+
+
+//https://www.npmjs.com/package/gulp-typescript
+//http://weblogs.asp.net/dwahlin/creating-a-typescript-workflow-with-gulp
+var tsProject = ts.createProject('tsconfig.json');
+
+gulp.task('typescript:Build', function () {
+    var tsResult = tsProject.src() // instead of gulp.src(...) 
+        .pipe(ts(tsProject));
+    return tsResult.js.pipe(gulp.dest('wwwroot/release'));
+});
+

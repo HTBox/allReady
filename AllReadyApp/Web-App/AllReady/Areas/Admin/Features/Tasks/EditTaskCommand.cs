@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.ViewModels;
+﻿using AllReady.Areas.Admin.Models;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class EditTaskCommand : IRequest<int>
     {
-        public TaskEditViewModel Task {get; set;}
+        public TaskEditModel Task {get; set;}
     }
 }
