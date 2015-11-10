@@ -47,18 +47,9 @@ namespace AllReady.Models
 
         public CampaignImpact CampaignImpact { get; set; }
 
-        [Display(Name = "First Name")]
-        public string PrimaryContactFirstName { get; set; }
+        public Location Location { get; set; }
 
-        [Display(Name = "Last Name")]
-        public string PrimaryContactLastName { get; set; }
-
-        [Display(Name = "Phone Number")]
-        public string PrimaryContactPhoneNumber { get; set; }
-
-        [Display(Name = "Email")]
-        [EmailAddress]
-        public string PrimaryContactEmail { get; set; }
+        public List<CampaignContact> CampaignContacts { get; set; }
 
     }
 }

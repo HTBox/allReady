@@ -31,6 +31,7 @@ namespace AllReady.Models
 
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<TenantContact> TenantContacts { get; set; }
+        public DbSet<CampaignContact> CampaignContacts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -53,13 +54,22 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<ApplicationUser>());
             Map(modelBuilder.Entity<Tenant>());
             Map(modelBuilder.Entity<TenantContact>());
+            Map(modelBuilder.Entity<CampaignContact>());
             Map(modelBuilder.Entity<Contact>());
 
         }
 
+        private void Map(EntityTypeBuilder<CampaignContact> builder)
+        {
+            builder.HasKey(tc => new { tc.CampaignId, tc.ContactId, tc.ContactType });
+            builder.HasOne(tc => tc.Contact);
+            builder.HasOne(tc => tc.Campaign);
+        }
+
         private void Map(EntityTypeBuilder<Contact> builder)
         {
-            builder.HasMany(c => c.TenantContact);
+            builder.HasMany(c => c.TenantContacts);
+            builder.HasMany(c => c.CampaignContacts);
         }
 
         private void Map(EntityTypeBuilder<TenantContact> builder)
@@ -72,9 +82,9 @@ namespace AllReady.Models
         private void Map(EntityTypeBuilder<Tenant> builder)
         {
             builder.HasOne(t => t.Location);
-            builder.HasMany(t => t.TenantContact);
+            builder.HasMany(t => t.TenantContacts);
             builder.Property(t => t.Name).IsRequired();
-            builder.HasAlternateKey(t => t.Name);
+            
 
 
         }
@@ -100,6 +110,8 @@ namespace AllReady.Models
             builder.HasOne(t => t.Tenant);
             builder.HasMany(t => t.AssignedVolunteers);
             builder.HasMany(t => t.RequiredSkills).WithOne(ts => ts.Task);
+            builder.Property(p => p.Name).IsRequired();
+            
         }
 
         private void Map(EntityTypeBuilder<TaskSkill> builder)
@@ -123,6 +135,8 @@ namespace AllReady.Models
             builder.HasMany(a => a.Tasks);
             builder.HasMany(a => a.UsersSignedUp);
             builder.HasMany(a => a.RequiredSkills).WithOne(acsk => acsk.Activity);
+            builder.Property(p => p.Name).IsRequired();
+            
         }
 
         private void Map(EntityTypeBuilder<ActivitySkill> builder)
@@ -132,7 +146,7 @@ namespace AllReady.Models
 
         private void Map(EntityTypeBuilder<Skill> builder)
         {
-            builder.HasOne(s => s.ParentSkill);
+            builder.HasOne(s => s.ParentSkill);             
         }
 
         private void Map(EntityTypeBuilder<CampaignSponsors> builder)
@@ -147,7 +161,10 @@ namespace AllReady.Models
             builder.HasOne(c => c.ManagingTenant);
             builder.HasOne(c => c.CampaignImpact);
             builder.HasMany(c => c.Activities);
+            builder.HasOne(t => t.Location);
+            builder.HasMany(t => t.CampaignContacts);
             builder.Property(a => a.Name).IsRequired();
+            
         }
 
         private void Map(EntityTypeBuilder<ApplicationUser> builder)

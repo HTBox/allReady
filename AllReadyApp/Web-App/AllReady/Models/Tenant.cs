@@ -1,7 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace AllReady.Models
 {
     /// <summary>
@@ -27,6 +24,6 @@ namespace AllReady.Models
 
         public Location Location { get; set; }
 
-        public List<TenantContact> TenantContact { get; set; }
+        public List<TenantContact> TenantContacts { get; set; }
     }
 }

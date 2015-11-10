@@ -33,6 +33,7 @@
             }
 
         </ol>
+
     </div>
 </div>
 
@@ -42,6 +43,8 @@
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
+    <button type="button" id="btnGetContactInfo" class="btn btn-info">Get Contact Information</button>
+    <input type="hidden" asp-for="TenantId" />
 
     <div class="form-horizontal">
         <hr />
@@ -94,6 +97,40 @@
                 @Html.DropDownListFor(model => model.TenantId, SelectListService.GetTenants(), htmlAttributes: new { @class = "form-control" })
             </div>
         </div>
+
+        @Html.EditorFor(m => m.Location)
+
+        <div class="form-group">
+            <label asp-for="PrimaryContactFirstName" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PrimaryContactFirstName" class="form-control" />
+                <span asp-validation-for="PrimaryContactFirstName" class="text-danger"></span>
+            </div>
+
+        </div>
+        <div class="form-group">
+            <label asp-for="PrimaryContactLastName" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PrimaryContactLastName" class="form-control" />
+                <span asp-validation-for="PrimaryContactLastName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="PrimaryContactPhoneNumber" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PrimaryContactPhoneNumber" class="form-control" />
+                <span asp-validation-for="PrimaryContactPhoneNumber" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="PrimaryContactEmail" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PrimaryContactEmail" class="form-control" />
+                <span asp-validation-for="PrimaryContactEmail" class="text-danger"></span>
+            </div>
+        </div>
+
         @* TODO: Implement tags for search and filtering
                 <div class="form-group">
                 <label class="control-label col-md-2">Tags</label>
@@ -151,40 +188,51 @@
     </div>
 }
 
-        @*@section scripts {
-                <script type="text/javascript">
-                    (function (ko, $, requiredSkills, availableSkills) {
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            $("#btnGetContactInfo").click(function () {
+                alert("hi");
+                //$.ajax();
+            });
+        });
+    </script>
+}
 
-                        function AdminActivityViewModel(requiredSkills, availableSkills) {
+@*@section scripts {
+        <script type="text/javascript">
+            (function (ko, $, requiredSkills, availableSkills) {
 
-                            function RequiredSkillObservable(skillModel) {
-                                var ret = ko.utils.extend({}, skillModel);
-                                ret.Id = ko.observable(ret.Id);
-                                ret.ControlName = function (index) {
-                                    return 'RequiredSkills[' + ko.unwrap(index) + '].SkillId';
-                                };
-                                ret.Description = ko.computed(function () {
-                                    var skill = availableSkills.filter(function (skill) { return skill.Id === ret.Id(); })[0];
-                                    return (skill && skill.Description) || "";
-                                });
-                                return ret;
-                            }
-                            requiredSkills = (requiredSkills || []).map(RequiredSkillObservable);
+                function AdminActivityViewModel(requiredSkills, availableSkills) {
 
-                            var self = this;
-                            this.requiredSkills = ko.observableArray(requiredSkills).uniqueValidator("Id");
-                            this.availableSkills = ko.observableArray(availableSkills);
-                            this.addSkill = function() {
-                                self.requiredSkills.push(RequiredSkillObservable());
-                            };
-                            this.deleteSkill = function(skill) {
-                                self.requiredSkills.remove(skill);
-                            };
-                        }
+                    function RequiredSkillObservable(skillModel) {
+                        var ret = ko.utils.extend({}, skillModel);
+                        ret.Id = ko.observable(ret.Id);
+                        ret.ControlName = function (index) {
+                            return 'RequiredSkills[' + ko.unwrap(index) + '].SkillId';
+                        };
+                        ret.Description = ko.computed(function () {
+                            var skill = availableSkills.filter(function (skill) { return skill.Id === ret.Id(); })[0];
+                            return (skill && skill.Description) || "";
+                        });
+                        return ret;
+                    }
+                    requiredSkills = (requiredSkills || []).map(RequiredSkillObservable);
 
-                        ko.applyBindings(new AdminActivityViewModel(requiredSkills, availableSkills));
-                    })(ko, $,
-                        @Json.Serialize(Model.RequiredSkills.Select(rs => new { Id = rs.SkillId })),
-                        @Json.Serialize(SelectListService.GetSkills()));
-                </script>
-            }*@
+                    var self = this;
+                    this.requiredSkills = ko.observableArray(requiredSkills).uniqueValidator("Id");
+                    this.availableSkills = ko.observableArray(availableSkills);
+                    this.addSkill = function() {
+                        self.requiredSkills.push(RequiredSkillObservable());
+                    };
+                    this.deleteSkill = function(skill) {
+                        self.requiredSkills.remove(skill);
+                    };
+                }
+
+                ko.applyBindings(new AdminActivityViewModel(requiredSkills, availableSkills));
+            })(ko, $,
+                @Json.Serialize(Model.RequiredSkills.Select(rs => new { Id = rs.SkillId })),
+                @Json.Serialize(SelectListService.GetSkills()));
+        </script>
+    }*@

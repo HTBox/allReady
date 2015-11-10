@@ -28,14 +28,9 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Tenant/Details/5
-        public IActionResult Details(int? id)
+        public IActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(404);
-            }
-
-            var tenant = _bus.Send(new TenantDetailQuery { Id = id.Value });
+            var tenant = _bus.Send(new TenantDetailQuery { Id = id });
             if (tenant == null)
             {
                 return new HttpStatusCodeResult(404);
@@ -65,14 +60,10 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Tenant/Edit/5
-        public IActionResult Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(404);
-            }
 
-            var tenant = _bus.Send(new TenantEditQuery { Id = id.Value });
+            var tenant = _bus.Send(new TenantEditQuery { Id = id });
             if (tenant == null)
             {
                 return new HttpStatusCodeResult(404);

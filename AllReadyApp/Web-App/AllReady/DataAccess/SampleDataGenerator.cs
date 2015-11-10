@@ -69,15 +69,20 @@ namespace AllReady.Models
             List<AllReadyTask> tasks = new List<AllReadyTask>();
             List<Resource> resources = new List<Resource>();
             List<ActivitySignup> activitySignups = new List<ActivitySignup>();
-
+            List<Contact> contacts = GetContacts();
+            
             #region Tenant
             Tenant htb = new Tenant()
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
                 WebUrl = "http://www.htbox.org",
-                Campaigns = new List<Campaign>()
+                Location = locations.FirstOrDefault(),
+                Campaigns = new List<Campaign>(), 
+                TenantContacts = new List<TenantContact>(),
+                
             };
+            
             #endregion
 
 
@@ -94,7 +99,8 @@ namespace AllReady.Models
                 Name = "Working Smoke Detectors Save Lives",
                 ManagingTenant = htb,
                 StartDateTimeUtc = DateTime.Today.AddMonths(-1).ToUniversalTime(),
-                EndDateTimeUtc = DateTime.Today.AddMonths(1).ToUniversalTime()
+                EndDateTimeUtc = DateTime.Today.AddMonths(1).ToUniversalTime(),
+                
             };
             htb.Campaigns.Add(smokeDet);
             Campaign financial = new Campaign()
@@ -335,7 +341,7 @@ namespace AllReady.Models
             #endregion
 
             #region Insert into DB
-
+            _context.Contacts.AddRange(contacts);
             _context.ActivitySkills.AddRange(activitySkills);
             _context.Locations.AddRange(locations);
             _context.Tenants.AddRange(tenants);
@@ -382,11 +388,23 @@ namespace AllReady.Models
             _context.TaskSignups.AddRange(taskSignups);
             #endregion
 
+            #region TennatContacts
+            htb.TenantContacts.Add(new TenantContact { Contact = contacts.First(), Tenant = htb, ContactType = 1 /*Primary*/ });
+            #endregion
+
             #region Wrap Up DB  
             _context.ActivitySignup.AddRange(activitySignups);
             _context.SaveChanges();
             #endregion
 
+        }
+
+        private List<Contact> GetContacts()
+        {
+            var list = new List<Contact>();
+            list.Add(new Contact { FirstName = "Bob", LastName = "Smith", Email = "BobSmith@mailinator.com", PhoneNumber = "999-888-7777" });
+            list.Add(new Contact { FirstName = "George", LastName = "Leone", Email = "GeorgeLeone@mailinator.com", PhoneNumber = "999-888-7777" });
+            return list;
         }
 
         /// <summary>
@@ -491,6 +509,10 @@ namespace AllReady.Models
             if (!existingPostalCode.Any(item => item.PostalCode == "98027")) postalCodes.Add(new PostalCodeGeo() { City = "Issaquah", State = "WA", PostalCode = "98027" });
             if (!existingPostalCode.Any(item => item.PostalCode == "98034")) postalCodes.Add(new PostalCodeGeo() { City = "Kirkland", State = "WA", PostalCode = "98034" });
             if (!existingPostalCode.Any(item => item.PostalCode == "98033")) postalCodes.Add(new PostalCodeGeo() { City = "Kirkland", State = "WA", PostalCode = "98033" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "60505")) postalCodes.Add(new PostalCodeGeo() { City = "Aurora", State = "IL", PostalCode = "60505" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "60506")) postalCodes.Add(new PostalCodeGeo() { City = "Aurora", State = "IL", PostalCode = "60506" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "45231")) postalCodes.Add(new PostalCodeGeo() { City = "Cincinnati", State = "OH", PostalCode = "45231" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "45240")) postalCodes.Add(new PostalCodeGeo() { City = "Cincinnati", State = "OH", PostalCode = "45240" });
             return postalCodes;
         }
 

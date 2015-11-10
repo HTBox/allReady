@@ -20,6 +20,8 @@ namespace AllReady.Models
         [EmailAddress]
         public string Email { get; set; }
 
-        public List<TenantContact> TenantContact { get; set; }
+        public List<TenantContact> TenantContacts { get; set; }
+
+        public List<CampaignContact> CampaignContacts { get; set; }
     }
 }

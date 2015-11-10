@@ -21,7 +21,7 @@ namespace AllReady.Areas.Admin.Features.Tenants
                 .Include(c => c.Campaigns)
                 .Include(l => l.Location).ThenInclude(p => p.PostalCode)
                 .Include(u => u.Users)
-                .Include(c => c.TenantContact).ThenInclude(tc => tc.Contact)
+                .Include(c => c.TenantContacts).ThenInclude(tc => tc.Contact)
                 .Where(ten => ten.Id == message.Id)
                 .SingleOrDefault();
             if (t == null)
@@ -38,7 +38,7 @@ namespace AllReady.Areas.Admin.Features.Tenants
                 Campaigns = t.Campaigns,
                 Users = t.Users,
             };
-            var contactId = t.TenantContact?.SingleOrDefault(tc => tc.ContactType == (int)ContactType.Primary)?.ContactId;
+            var contactId = t.TenantContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactType.Primary)?.ContactId;
             if (contactId != null)
             {
                 var contact = _context.Contacts.Single(c => c.Id == contactId);

@@ -35,5 +35,22 @@ namespace AllReady.Areas.Admin.Models
 
 		public IEnumerable<ActivitySummaryModel> Activities { get; set; }
         public CampaignImpact CampaignImpact { get; set; }
+
+        [UIHint("Location")]
+        public LocationDisplayModel Location { get; set; }
+        [Display(Name = "First Name")]
+        public string PrimaryContactFirstName { get; set; }
+
+        [Display(Name = "Last Name")]
+        public string PrimaryContactLastName { get; set; }
+
+        [Display(Name = "Phone Number")]
+        [Phone]
+        public string PrimaryContactPhoneNumber { get; set; }
+
+        [Display(Name = "Email")]
+        [EmailAddress]
+        public string PrimaryContactEmail { get; set; }
+
     }
 }

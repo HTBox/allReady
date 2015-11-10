@@ -20,7 +20,7 @@ namespace AllReady.Areas.Admin.Features.Tenants
             var tenant = _context
                     .Tenants
                     .Include(l => l.Location).ThenInclude(p => p.PostalCode)
-                    .Include(tc => tc.TenantContact)
+                    .Include(tc => tc.TenantContacts)
                     .SingleOrDefault(t => t.Id == message.Tenant.Id);
             if (tenant == null)
             {
@@ -31,7 +31,7 @@ namespace AllReady.Areas.Admin.Features.Tenants
             tenant.WebUrl = message.Tenant.WebUrl;
 
             var contactInfo = string.Concat(message.Tenant.PrimaryContactEmail?.Trim() + message.Tenant.PrimaryContactFirstName?.Trim(), message.Tenant.PrimaryContactLastName?.Trim(), message.Tenant.PrimaryContactPhoneNumber?.Trim());
-            var primaryTenantContact = tenant.TenantContact.SingleOrDefault(tc => tc.ContactType == (int)ContactType.Primary);
+            var primaryTenantContact = tenant.TenantContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactType.Primary);
             var contactId = primaryTenantContact?.ContactId;
             Contact primaryContact;
 
@@ -67,7 +67,7 @@ namespace AllReady.Areas.Admin.Features.Tenants
                         Tenant = tenant,
                         ContactType = (int)ContactType.Primary
                     };
-                    tenant.TenantContact.Add(primaryTenantContact);
+                    tenant.TenantContacts.Add(primaryTenantContact);
                     _context.Update(primaryTenantContact);
                 }
 

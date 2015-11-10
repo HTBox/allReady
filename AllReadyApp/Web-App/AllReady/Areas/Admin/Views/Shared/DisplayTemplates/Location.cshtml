@@ -1,17 +1,23 @@
 ﻿@model AllReady.Areas.Admin.Models.LocationDisplayModel
 <div>
-    @Html.DisplayFor(model => model.Address1)<br />
-    @if (Model.Address2 != null)
+    @if (Model == null)
     {
-        @Html.DisplayFor(model => model.Address2)  <br />
-    }
-    @if (Model.City != null || Model.State != null || Model.PostalCode != null)
-    {
-        <div><span>@Html.DisplayFor(model => model.City)</span>&nbsp;<span>@Html.DisplayFor(model => model.State)</span>&nbsp;&nbsp;<span> @Html.DisplayFor(model => model.PostalCode)</span></div>
-    }
-    @if (Model.Country != null)
-    {
-        @Html.DisplayFor(model => model.Country)
-    }
 
+    }
+    else
+    {
+        @Html.DisplayFor(model => model.Address1)<br />
+        @if (Model.Address2 != null)
+        {
+            @Html.DisplayFor(model => model.Address2)  <br />
+        }
+        @if (Model.City != null || Model.State != null || Model.PostalCode != null)
+        {
+            <div><span>@Html.DisplayFor(model => model.City)</span>&nbsp;<span>@Html.DisplayFor(model => model.State)</span>&nbsp;&nbsp;<span> @Html.DisplayFor(model => model.PostalCode)</span></div>
+        }
+        @if (Model.Country != null)
+        {
+            @Html.DisplayFor(model => model.Country)
+        }
+    }
 </div>

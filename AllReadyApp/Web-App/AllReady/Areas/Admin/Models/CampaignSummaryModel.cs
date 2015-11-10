@@ -42,6 +42,22 @@ namespace AllReady.Areas.Admin.Models
 
         public CampaignImpact CampaignImpact { get; set; }
 
+        [UIHint("Location")]
+        public LocationEditModel Location { get; set; }
+
+        [Display(Name = "First Name")]
+        public string PrimaryContactFirstName { get; set; }
+
+        [Display(Name = "Last Name")]
+        public string PrimaryContactLastName { get; set; }
+
+        [Display(Name = "Phone Number")]
+        [Phone]
+        public string PrimaryContactPhoneNumber { get; set; }
+
+        [Display(Name = "Email")]
+        [EmailAddress]
+        public string PrimaryContactEmail { get; set; }
 
     }
 }

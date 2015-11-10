@@ -5,7 +5,7 @@ using Microsoft.Data.Entity.Metadata;
 
 namespace AllReady.Migrations
 {
-    public partial class AddTenantContactContact : Migration
+    public partial class AddTenantContactCampaignContactContact : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -23,6 +23,28 @@ namespace AllReady.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Contact", x => x.Id);
+                });
+            migrationBuilder.CreateTable(
+                name: "CampaignContact",
+                columns: table => new
+                {
+                    CampaignId = table.Column<int>(nullable: false),
+                    ContactId = table.Column<int>(nullable: false),
+                    ContactType = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CampaignContact", x => new { x.CampaignId, x.ContactId, x.ContactType });
+                    table.ForeignKey(
+                        name: "FK_CampaignContact_Campaign_CampaignId",
+                        column: x => x.CampaignId,
+                        principalTable: "Campaign",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CampaignContact_Contact_ContactId",
+                        column: x => x.ContactId,
+                        principalTable: "Contact",
+                        principalColumn: "Id");
                 });
             migrationBuilder.CreateTable(
                 name: "TenantContact",
@@ -54,26 +76,36 @@ namespace AllReady.Migrations
                 name: "LocationId",
                 table: "Tenant",
                 nullable: true);
-            migrationBuilder.AddUniqueConstraint(
-                name: "AK_Tenant_Name",
-                table: "Tenant",
-                column: "Name");
-            migrationBuilder.AddColumn<string>(
-                name: "PrimaryContactEmail",
+            migrationBuilder.AddColumn<int>(
+                name: "LocationId",
                 table: "Campaign",
                 nullable: true);
+            migrationBuilder.AlterColumn<string>(
+                name: "Name",
+                table: "AllReadyTask",
+                nullable: false);
             migrationBuilder.AddColumn<string>(
-                name: "PrimaryContactFirstName",
-                table: "Campaign",
+                name: "AdditionalInfo",
+                table: "ActivitySignup",
                 nullable: true);
             migrationBuilder.AddColumn<string>(
-                name: "PrimaryContactLastName",
-                table: "Campaign",
+                name: "PreferredEmail",
+                table: "ActivitySignup",
                 nullable: true);
             migrationBuilder.AddColumn<string>(
-                name: "PrimaryContactPhoneNumber",
-                table: "Campaign",
+                name: "PreferredPhoneNumber",
+                table: "ActivitySignup",
                 nullable: true);
+            migrationBuilder.AlterColumn<string>(
+                name: "Name",
+                table: "Activity",
+                nullable: false);
+            migrationBuilder.AddForeignKey(
+                name: "FK_Campaign_Location_LocationId",
+                table: "Campaign",
+                column: "LocationId",
+                principalTable: "Location",
+                principalColumn: "Id");
             migrationBuilder.AddForeignKey(
                 name: "FK_Tenant_Location_LocationId",
                 table: "Tenant",
@@ -84,18 +116,27 @@ namespace AllReady.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(name: "FK_Campaign_Location_LocationId", table: "Campaign");
             migrationBuilder.DropForeignKey(name: "FK_Tenant_Location_LocationId", table: "Tenant");
-            migrationBuilder.DropUniqueConstraint(name: "AK_Tenant_Name", table: "Tenant");
             migrationBuilder.DropColumn(name: "LocationId", table: "Tenant");
-            migrationBuilder.DropColumn(name: "PrimaryContactEmail", table: "Campaign");
-            migrationBuilder.DropColumn(name: "PrimaryContactFirstName", table: "Campaign");
-            migrationBuilder.DropColumn(name: "PrimaryContactLastName", table: "Campaign");
-            migrationBuilder.DropColumn(name: "PrimaryContactPhoneNumber", table: "Campaign");
+            migrationBuilder.DropColumn(name: "LocationId", table: "Campaign");
+            migrationBuilder.DropColumn(name: "AdditionalInfo", table: "ActivitySignup");
+            migrationBuilder.DropColumn(name: "PreferredEmail", table: "ActivitySignup");
+            migrationBuilder.DropColumn(name: "PreferredPhoneNumber", table: "ActivitySignup");
+            migrationBuilder.DropTable("CampaignContact");
             migrationBuilder.DropTable("TenantContact");
             migrationBuilder.DropTable("Contact");
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
                 table: "Tenant",
+                nullable: true);
+            migrationBuilder.AlterColumn<string>(
+                name: "Name",
+                table: "AllReadyTask",
+                nullable: true);
+            migrationBuilder.AlterColumn<string>(
+                name: "Name",
+                table: "Activity",
                 nullable: true);
         }
     }
