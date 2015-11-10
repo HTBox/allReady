@@ -76,6 +76,9 @@ export module HTBox.maps {
             });
         }
 
+        public drawCampaignLocations(campaigns: Array<any>) {
+        }
+
         getGeoCoordinates(address1, address2, city, state, postalCode, country, callbackFunction) {
             var lookupAddress = "";
             lookupAddress = lookupAddress + (address1 != undefined || address1 != null ? " " + address1 : null);

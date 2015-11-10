@@ -60,6 +60,8 @@ System.register([], function(exports_1) {
                                 center: center
                             });
                         };
+                        MapRender.prototype.drawCampaignLocations = function (campaigns) {
+                        };
                         MapRender.prototype.getGeoCoordinates = function (address1, address2, city, state, postalCode, country, callbackFunction) {
                             var lookupAddress = "";
                             lookupAddress = lookupAddress + (address1 != undefined || address1 != null ? " " + address1 : null);
