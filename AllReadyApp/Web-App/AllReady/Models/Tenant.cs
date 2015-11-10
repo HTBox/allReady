@@ -27,18 +27,6 @@ namespace AllReady.Models
 
         public Location Location { get; set; }
 
-        [Display(Name = "First Name")]
-        public string PrimaryContactFirstName { get; set; }
-
-        [Display(Name = "Last Name")]
-        public string PrimaryContactLastName { get; set; }
-
-        [Display(Name = "Phone Number")]
-        public string PrimaryContactPhoneNumber { get; set; }
-
-        [Display(Name = "Email")]
-        [EmailAddress]
-        public string PrimaryContactEmail { get; set; }
-
+        public List<TenantContact> TenantContact { get; set; }
     }
 }

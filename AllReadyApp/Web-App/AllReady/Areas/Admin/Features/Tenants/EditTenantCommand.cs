@@ -1,10 +1,10 @@
 ﻿using AllReady.Areas.Admin.Models;
 using MediatR;
-
+ 
 namespace AllReady.Areas.Admin.Features.Tenants
 {
-    public class TenantDetailQuery : IRequest<TenantDetailModel>
+    public class EditTenantCommand : IRequest<int>
     {
-        public int Id { get; set; }
+        public TenantEditModel Tenant { get; set; }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.Data.Entity;
 using Microsoft.AspNet.Authorization;
 using MediatR;
 using AllReady.Areas.Admin.Features.Tenants;
+using AllReady.Areas.Admin.Models;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -42,7 +43,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return new HttpStatusCodeResult(404);
             }
 
-            Tenant tenant = _dataAccess.GetTenant((int)id);
+            var tenant = _bus.Send(new TenantDetailQuery { Id = id.Value });
             if (tenant == null)
             {
                 return new HttpStatusCodeResult(404);
@@ -72,46 +73,46 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Tenant/Edit/5
-        public IActionResult Edit(System.Int32? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(404);
             }
 
-            Tenant tenant = _dataAccess.GetTenant((int)id);
+            var tenant = _bus.Send(new TenantEditQuery { Id = id.Value });
             if (tenant == null)
             {
                 return new HttpStatusCodeResult(404);
             }
 
-            return View(tenant);
+            return View("Edit",tenant);
         }
 
         // POST: Tenant/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Tenant tenant)
+        public IActionResult Edit(TenantEditModel tenant)
         {
             if (ModelState.IsValid)
             {
-                await _dataAccess.UpdateTenant(tenant);
-                return RedirectToAction("Index");
+                int id = _bus.Send(new EditTenantCommand { Tenant = tenant });
+                return RedirectToAction("Details", new { id = id, area = "Admin" });
             }
 
-            return View(tenant);
+            return View("Edit", tenant);
         }
 
         // GET: Tenant/Delete/5
         [ActionName("Delete")]
-        public IActionResult Delete(System.Int32? id)
+        public IActionResult Delete(int? id)
         {
             // Needs comments:  This method doesn't delete things.
             if (id == null)
             {
                 return new HttpStatusCodeResult(404);
             }
-            Tenant tenant = _dataAccess.GetTenant((int)id);
+            var tenant = _bus.Send(new TenantDetailQuery { Id = id.Value });
             if (tenant == null)
             {
                 return new HttpStatusCodeResult(404);

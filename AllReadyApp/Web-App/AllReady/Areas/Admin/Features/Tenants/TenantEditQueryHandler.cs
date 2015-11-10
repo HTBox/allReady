@@ -3,42 +3,39 @@ using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
 using System.Linq;
-using System;
 
 namespace AllReady.Areas.Admin.Features.Tenants
 {
-    public class TenantDetailQueryHandler : IRequestHandler<TenantDetailQuery, TenantDetailModel>
+    public class TenantEditQueryHandler : IRequestHandler<TenantEditQuery, TenantEditModel>
     {
         private AllReadyContext _context;
-        public TenantDetailQueryHandler(AllReadyContext context)
+        public TenantEditQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
-        public TenantDetailModel Handle(TenantDetailQuery message)
+        public TenantEditModel Handle(TenantEditQuery message)
         {
             var t = _context.Tenants
                  .AsNoTracking()
                 .Include(c => c.Campaigns)
                 .Include(l => l.Location)
                 .Include(u => u.Users)
-                .Include(c => c.TenantContact).ThenInclude(tc => tc.Contact)
+                .Include(tc=> tc.TenantContact)
                 .Where(ten => ten.Id == message.Id)
                 .SingleOrDefault();
             if (t == null)
             {
                 return null;
             }
-            var tenant = new TenantDetailModel
+            var tenant = new TenantEditModel
             {
                 Id = t.Id,
                 Name = t.Name,
                 Location = ToModel(t.Location),
                 LogoUrl = t.LogoUrl,
                 WebUrl = t.WebUrl,
-                Campaigns = t.Campaigns,
-                Users = t.Users,
             };
-            var contactId = t.TenantContact?.SingleOrDefault(tc => tc.ContactType == (int)ContactType.Primary)?.ContactId;
+            var contactId = t.TenantContact?.SingleOrDefault(tc => tc.ContactType ==(int) ContactType.Primary)?.ContactId;
             if (contactId != null)
             {
                 var contact = _context.Contacts.Single(c => c.Id == contactId);
@@ -50,18 +47,19 @@ namespace AllReady.Areas.Admin.Features.Tenants
             return tenant;
         }
 
-        private LocationDisplayModel ToModel(Location location)
+        private LocationEditModel ToModel(Location location)
         {
             if (location == null) { return null; }
-            return new LocationDisplayModel {
+            return new LocationEditModel
+            {
                 Id = location.Id,
-                Address1= location.Address1,
+                Address1 = location.Address1,
                 Address2 = location.Address2,
                 City = location.City,
-                Country= location.Country,
+                Country = location.Country,
                 Name = location.Name,
-                PhoneNumber=location.PhoneNumber,
-                PostalCode=location.PostalCode?.PostalCode,
+                PhoneNumber = location.PhoneNumber,
+                PostalCode = location.PostalCode?.PostalCode,
                 State = location.State
             };
         }

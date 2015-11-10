@@ -29,6 +29,9 @@ namespace AllReady.Models
         public DbSet<Skill> Skills { get; set; }
         public DbSet<UserSkill> UserSkills { get; set; }
 
+        public DbSet<Contact> Contacts { get; set; }
+        public DbSet<TenantContact> TenantContacts { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -48,6 +51,32 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<Skill>());
             Map(modelBuilder.Entity<UserSkill>());
             Map(modelBuilder.Entity<ApplicationUser>());
+            Map(modelBuilder.Entity<Tenant>());
+            Map(modelBuilder.Entity<TenantContact>());
+            Map(modelBuilder.Entity<Contact>());
+
+        }
+
+        private void Map(EntityTypeBuilder<Contact> builder)
+        {
+            builder.HasMany(c => c.TenantContact);
+        }
+
+        private void Map(EntityTypeBuilder<TenantContact> builder)
+        {
+            builder.HasKey(tc => new { tc.TenantId, tc.ContactId, tc.ContactType});
+            builder.HasOne(tc => tc.Contact);
+            builder.HasOne(tc => tc.Tenant);
+        }
+
+        private void Map(EntityTypeBuilder<Tenant> builder)
+        {
+            builder.HasOne(t => t.Location);
+            builder.HasMany(t => t.TenantContact);
+            builder.Property(t => t.Name).IsRequired();
+            builder.HasAlternateKey(t => t.Name);
+
+
         }
 
         private void Map(EntityTypeBuilder<PostalCodeGeo> builder)
