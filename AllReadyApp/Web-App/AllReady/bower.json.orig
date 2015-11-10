@@ -1,0 +1,27 @@
+{
+  "name": "AllReady",
+  "private": true,
+  "version": "1.0.0",
+  "description": "AllReady",
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "bootstrap-toggle": "2.2.1",
+    "eonasdan-bootstrap-datetimepicker": "4.17.37",
+    "bootstrap-touch-carousel": "0.8.0",
+    "hammer.js": "2.0.4",
+    "jquery": "2.1.4",
+    "jquery-validation": "1.11.1",
+    "jquery-validation-unobtrusive": "3.2.2",
+    "font-awesome": "4.3.0",
+    "knockout": "3.3.0",
+    "knockout-bootstrap": "0.3.2",
+    "moment": "2.10.6",
+    "tota11y": "0.1.2",
+    "tinymce": "4.2.6",
+    "bootstrap-tagsinput": "0.6.1",
+<<<<<<< c2830b7884562b8ffbe0f80cc5381f1f7fd6ed52
+    "d3": "3.5.9"
+=======
+>>>>>>> intriduce typescript and systems.js module loader
+  }
+}
