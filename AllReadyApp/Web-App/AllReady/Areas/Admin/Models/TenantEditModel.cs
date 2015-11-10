@@ -14,6 +14,7 @@ namespace AllReady.Areas.Admin.Models
         public string LogoUrl { get; set; }
         public string WebUrl { get; set; }
           
+        [UIHint("Location")]
         public LocationEditModel Location { get; set; }
 
         [Display(Name = "First Name")]

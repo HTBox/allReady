@@ -25,6 +25,7 @@ namespace AllReady.Areas.Admin.Models
         /// </summary>
         public List<ApplicationUser> Users { get; set; }
 
+        [UIHint("Location")]
         public LocationDisplayModel Location { get; set; }
 
         [Display(Name = "First Name")]

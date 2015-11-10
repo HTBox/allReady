@@ -1,27 +1,25 @@
 ﻿using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
-using System.Collections.Generic;
 using System.Linq;
 using AllReady.Areas.Admin.Models;
-using System;
 
 namespace AllReady.Areas.Admin.Features.Tenants
 {
-    public class EditTenantCommandHandler : IRequestHandler<EditTenantCommand, int>
+    public class TenantEditCommandHandler : IRequestHandler<TenantEditCommand, int>
     {
         private AllReadyContext _context;
 
-        public EditTenantCommandHandler(AllReadyContext context)
+        public TenantEditCommandHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public int Handle(EditTenantCommand message)
+        public int Handle(TenantEditCommand message)
         {
             var tenant = _context
                     .Tenants
-                    .Include(l => l.Location)
+                    .Include(l => l.Location).ThenInclude(p => p.PostalCode)
                     .Include(tc => tc.TenantContact)
                     .SingleOrDefault(t => t.Id == message.Tenant.Id);
             if (tenant == null)

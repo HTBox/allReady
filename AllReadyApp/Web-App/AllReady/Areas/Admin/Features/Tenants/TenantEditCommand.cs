@@ -3,7 +3,7 @@ using MediatR;
  
 namespace AllReady.Areas.Admin.Features.Tenants
 {
-    public class EditTenantCommand : IRequest<int>
+    public class TenantEditCommand : IRequest<int>
     {
         public TenantEditModel Tenant { get; set; }
     }

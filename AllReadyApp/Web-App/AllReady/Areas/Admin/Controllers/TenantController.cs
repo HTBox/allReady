@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNet.Mvc;
 using AllReady.Models;
-using Microsoft.Data.Entity;
 using Microsoft.AspNet.Authorization;
 using MediatR;
 using AllReady.Areas.Admin.Features.Tenants;
 using AllReady.Areas.Admin.Models;
 
-// For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace AllReady.Areas.Admin.Controllers
 {
-    //[Area("TenantAdmin")]
     [Area("Admin")]
     [Authorize("TenantAdmin")]
     public class TenantController : Controller
@@ -36,7 +28,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Tenant/Details/5
-        public IActionResult Details(System.Int32? id)
+        public IActionResult Details(int? id)
         {
             if (id == null)
             {
@@ -61,11 +53,11 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Tenant/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Tenant tenant)
+        public  IActionResult Create(TenantEditModel tenant)
         {
             if (ModelState.IsValid)
             {
-                await _dataAccess.AddTenant(tenant);
+                int id = _bus.Send(new TenantEditCommand { Tenant = tenant });
                 return RedirectToAction("Index");
             }
 
@@ -96,7 +88,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                int id = _bus.Send(new EditTenantCommand { Tenant = tenant });
+                int id = _bus.Send(new TenantEditCommand { Tenant = tenant });
                 return RedirectToAction("Details", new { id = id, area = "Admin" });
             }
 
@@ -124,9 +116,9 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Tenant/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(System.Int32 id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            await _dataAccess.DeleteTenant(id);
+            _bus.Send(new TenantDeleteCommand { Id= id });
             return RedirectToAction("Index");
         }
     }

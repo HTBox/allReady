@@ -18,7 +18,7 @@ namespace AllReady.Areas.Admin.Features.Tenants
             var t = _context.Tenants
                  .AsNoTracking()
                 .Include(c => c.Campaigns)
-                .Include(l => l.Location)
+                .Include(l => l.Location).ThenInclude(p=>p.PostalCode)
                 .Include(u => u.Users)
                 .Include(tc=> tc.TenantContact)
                 .Where(ten => ten.Id == message.Id)
