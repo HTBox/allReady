@@ -27,10 +27,10 @@
     });
 
     // load from an absolute URL directly
-    System.import('http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0');
     System.import('mappingTools.js').then(function (sys) {
         var map = new sys.HTBox.maps.MapRender('mapArea');
         map.zoomToMyLocation();
+        map.drawCampaignLocations(modelCampaign);
     });;
 
 
