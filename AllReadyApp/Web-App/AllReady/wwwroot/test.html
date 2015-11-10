@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="js/system.js"></script>
+    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+
+    <script>
+  // set our baseURL reference path
+      System.config({
+        baseURL: '/ts'
+      });
+
+      // loads /app/main.js
+    </script>
+
+</head>
+<body>
+    <div id="target"></div>
+    <script>
+        System.import('mappingTools.js').then(function (sys) {
+            var map = new sys.HTBox.maps.MapRender('target');
+
+        });;
+
+    </script>
+</body>
+</html>

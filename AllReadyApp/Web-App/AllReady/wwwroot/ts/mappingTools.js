@@ -28,6 +28,25 @@ System.register([], function(exports_1) {
                         MapRender.prototype.getMyLocation = function (callback) {
                             navigator.geolocation.getCurrentPosition(callback);
                         };
+                        MapRender.prototype.zoomToMyLocation = function () {
+                            var _this = this;
+                            this.getMyLocation(function (pos) {
+                                var myPosition = {
+                                    name: 'my loc',
+                                    latitude: pos.coords.latitude,
+                                    longitude: pos.coords.longitude,
+                                };
+                                _this.zoomToLocations(myPosition);
+                            });
+                        };
+                        MapRender.prototype.zoomToLocations = function (location) {
+                            var bingMap = this.bingMap;
+                            var zoomLocation = new geoMaps.Location(location.latitude, location.longitude);
+                            bingMap.setView({
+                                zoom: 10,
+                                center: zoomLocation
+                            });
+                        };
                         MapRender.prototype.drawLocations = function (locations) {
                             var bingMap = this.bingMap;
                             var center = bingMap.getCenter();

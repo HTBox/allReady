@@ -39,6 +39,27 @@ export module HTBox.maps {
             navigator.geolocation.getCurrentPosition(callback);
         }
 
+        public zoomToMyLocation() {
+            this.getMyLocation(pos => {
+                var myPosition = {
+                    name: 'my loc',
+                    latitude: pos.coords.latitude,
+                    longitude: pos.coords.longitude,
+                };
+
+                this.zoomToLocations(myPosition);
+            });
+        }
+
+        public zoomToLocations(location: location) {
+            var bingMap = this.bingMap;
+            var zoomLocation = new geoMaps.Location(location.latitude, location.longitude));
+            bingMap.setView({
+                zoom: 10,
+                center: zoomLocation
+            });
+        }
+
         public drawLocations(locations: Array<location>) {
             var bingMap = this.bingMap;
             var center = bingMap.getCenter();
