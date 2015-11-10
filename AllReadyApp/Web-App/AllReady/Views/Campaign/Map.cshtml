@@ -11,18 +11,28 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <div id="mapArea" style="position:relative"></div>
+        <div id="mapArea" style="position:relative;width:800px;height:600px"></div>
     </div>
 </div>
 @section scripts {
+<script src="~/js/system.js"></script>
+<script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+
+
 <script>
     var modelCampaign = @Json.Serialize(Model);
 
-    $(document).ready(function () {
-        $("#mapArea").css("width", "1000px").css("height", "600px");
+    System.config({
+        baseURL: location.protocol + "//" + location.host + '/ts/'
     });
-</script>
 
-    <script src="~/js/mapinteraction.js"></script>
-    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+    // load from an absolute URL directly
+    System.import('http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0');
+    System.import('mappingTools.js').then(function (sys) {
+        var map = new sys.HTBox.maps.MapRender('mapArea');
+        map.zoomToMyLocation();
+    });;
+
+
+</script>
 }
