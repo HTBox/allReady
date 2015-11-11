@@ -72,6 +72,7 @@
                             <span class="label label-danger" data-bind="visible: AssignedVolunteers[0].Status === 'CanNotComplete', tooltip: { title: 'Could not complete' }"><span class="fa fa-times"></span></span>
                             <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', attr: { href:  '/Activity/ChangeStatus?status=Accepted&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Accept</a>
                             <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', attr: { href:  '/Activity/ChangeStatus?status=Rejected&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Reject</a>
+                            <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', attr: { href:  '/Activity/ChangeStatus?status=Completed&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Complete</a>
                         </li>
                     </ul>
                 </div>
