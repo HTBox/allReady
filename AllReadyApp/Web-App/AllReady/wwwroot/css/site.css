@@ -2,6 +2,8 @@
     margin: 0;
     padding: 0;
     font-family: sans-serif;
+    position: relative;
+    padding-bottom: 16rem;
 }
 
 /* Set widths on the form inputs since otherwise they're 100% wide */
@@ -39,15 +41,21 @@ footer, footer a {
     color: #ab6627;
 }
 
-    footer a:hover {
-        text-decoration: none;
-        color: #efab6c;
-    }
+footer a:hover {
+    text-decoration: none;
+    color: #efab6c;
+}
 
-    footer > p > img {
-        margin-left: 20px;
-        /*margin-right: 10px;*/
-    }
+footer > p > img, footer > p > a > img {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
 
 .date-address {
     color: #555555;
