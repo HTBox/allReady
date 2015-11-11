@@ -13,7 +13,7 @@ namespace AllReady.Migrations
                 name: "ImpactType",
                 table: "CampaignImpact",
                 nullable: false,
-                defaultValue: ImpactType.Numeric);
+                defaultValue: 0);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -411,21 +411,6 @@ namespace AllReady.Models
             return list;
         }
 
-        /// <summary>
-        /// Split this off from the InsertTestData function so we can call this
-        /// even if the "anti-database-pollution" logic bails due to pre-existing
-        /// database records. The reason for this is that we are preventing
-        /// duplicate records already.
-        /// </summary>
-        /// <param name="_context"></param>
-        private static void InsertCampaignImpactTypes(AllReadyContext _context)
-        {
-            var campaignImpactTypes = new List<CampaignImpactType>();
-            var existingImpactTypes = _context.CampaignImpactTypes.ToList();
-            var numeric = GetImpactType(campaignImpactTypes, existingImpactTypes, "Numeric");
-            var textual = GetImpactType(campaignImpactTypes, existingImpactTypes, "Textual");
-            _context.CampaignImpactTypes.AddRange(campaignImpactTypes);
-        }
 
         private static Skill GetSkill(List<Skill> skills, List<Skill> existingSkills, string skillName, Skill parentSkill = null, string description = null)
         {
