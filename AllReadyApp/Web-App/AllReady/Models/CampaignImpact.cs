@@ -30,5 +30,17 @@ namespace AllReady.Models
         /// </summary>
         public string TextualImpactGoal { get; set; }
         public bool Display { get; set; }
+        public int PercentComplete
+        {
+            get
+            {
+                if (NumericImpactGoal > 0)
+                {
+                    return (int)Math.Round((CurrentImpactLevel * 100.0f / NumericImpactGoal * 100.0f) * 100.0f);
+                }
+                return 0;
+            }
+
+        }
     }
 }
