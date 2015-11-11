@@ -2,6 +2,8 @@
     margin: 0;
     padding: 0;
     font-family: sans-serif;
+    position: relative;
+    padding-bottom: 16rem;
 }
 
 /* Set widths on the form inputs since otherwise they're 100% wide */
@@ -50,7 +52,7 @@ footer > p > img, footer > p > a > img {
 }
 
 footer {
-    position: fixed;
+    position: absolute;
     bottom: 0;
     width: 100%;
 }
