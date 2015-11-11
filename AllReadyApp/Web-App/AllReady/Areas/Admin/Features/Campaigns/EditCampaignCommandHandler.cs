@@ -3,6 +3,7 @@ using Microsoft.Data.Entity;
 using AllReady.Models;
 using MediatR;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
@@ -37,6 +38,9 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
 
             var contactInfo = string.Concat(message.Campaign.PrimaryContactEmail?.Trim() + message.Campaign.PrimaryContactFirstName?.Trim(), message.Campaign.PrimaryContactLastName?.Trim(), message.Campaign.PrimaryContactPhoneNumber?.Trim());
+            if (campaign.CampaignContacts == null) {
+                campaign.CampaignContacts = new List<CampaignContact>();
+            }
             var primaryCampaignContact = campaign.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactType.Primary);
             var contactId = primaryCampaignContact?.ContactId;
             Contact primaryContact;
