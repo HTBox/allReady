@@ -33,7 +33,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
                         av = new TaskSignup
                         {
                             Task = task,
-                            User = volunteerUser
+                            User = volunteerUser,
+                            Status = TaskStatus.Assigned.ToString()
                         };
                     }
                     task.AssignedVolunteers.Add(av);
