@@ -36,10 +36,10 @@ System.register([], function(exports_1) {
                                     latitude: pos.coords.latitude,
                                     longitude: pos.coords.longitude,
                                 };
-                                _this.zoomToLocations(myPosition);
+                                _this.zoomToLocation(myPosition);
                             });
                         };
-                        MapRender.prototype.zoomToLocations = function (location) {
+                        MapRender.prototype.zoomToLocation = function (location) {
                             var bingMap = this.bingMap;
                             var zoomLocation = new geoMaps.Location(location.latitude, location.longitude);
                             bingMap.setView({
@@ -62,6 +62,13 @@ System.register([], function(exports_1) {
                         };
                         MapRender.prototype.drawCampaignLocations = function (campaigns) {
                         };
+                        MapRender.prototype.drawAddress = function (address1, address2, city, state, postalCode, country) {
+                            var self = this;
+                            self.getGeoCoordinates(address1, address2, city, state, postalCode, country, function (location) {
+                                self.drawLocations([location]);
+                                self.zoomToLocation(location);
+                            });
+                        };
                         MapRender.prototype.getGeoCoordinates = function (address1, address2, city, state, postalCode, country, callbackFunction) {
                             var lookupAddress = "";
                             lookupAddress = lookupAddress + (address1 != undefined || address1 != null ? " " + address1 : null);
@@ -78,11 +85,13 @@ System.register([], function(exports_1) {
                                 dataType: "jsonp",
                                 jsonp: "jsonp",
                                 success: function (result) {
-                                    var geoCoordinates = {
-                                        latitude: result.resourceSets[0].resources[0].geocodePoints[0].coordinates[0],
-                                        longitude: result.resourceSets[0].resources[0].geocodePoints[0].coordinates[1]
+                                    var points = result.resourceSets[0].resources[0].geocodePoints[0];
+                                    var myLocation = {
+                                        name: lookupAddress,
+                                        latitude: points.coordinates[0],
+                                        longitude: points.coordinates[1],
                                     };
-                                    callbackFunction(geoCoordinates);
+                                    callbackFunction(myLocation);
                                 },
                                 error: function (e) {
                                     alert(e.statusText);

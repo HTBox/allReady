@@ -19,9 +19,10 @@
     "tota11y": "0.1.2",
     "tinymce": "4.2.6",
     "bootstrap-tagsinput": "0.6.1",
-<<<<<<< c2830b7884562b8ffbe0f80cc5381f1f7fd6ed52
+<<<<<<< b1367080f9d9d5f230130ea3df1dd58c6e14ff1a
     "d3": "3.5.9"
 =======
->>>>>>> intriduce typescript and systems.js module loader
+    "system.js": "0.19.5"
+>>>>>>> all mapping now is provided by a mappingtools.ts module that is loaded via system.js (through bower)  previous implementations like site.js, mapinteraction.js and activitymap.js have been removed
   }
 }

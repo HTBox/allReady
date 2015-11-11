@@ -20,5 +20,6 @@
     "tinymce": "4.2.6",
     "bootstrap-tagsinput": "0.6.1",
     "d3": "3.5.9"
+    "system.js": "0.19.5"
   }
 }

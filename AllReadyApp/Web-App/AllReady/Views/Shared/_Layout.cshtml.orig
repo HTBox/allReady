@@ -144,7 +144,11 @@
     </environment>
     <script src="~/lib/knockout-bootstrap/src/knockout-bootstrap.js"></script>
     <script src="~/lib/system.js/dist/system.js"></script>
+<<<<<<< b1367080f9d9d5f230130ea3df1dd58c6e14ff1a
+    <script src="~/js/site.js" asp-append-version="true"></script>
+=======
     @*<script src="~/js/site.js" asp-append-version="true"></script>*@
+>>>>>>> all mapping now is provided by a mappingtools.ts module that is loaded via system.js (through bower)  previous implementations like site.js, mapinteraction.js and activitymap.js have been removed
     <script src="~/js/ko.filterableList.js" asp-append-version="true"></script>
     <script src="~/js/ko.validation.js" asp-append-version="true"></script>
     <script>
@@ -168,8 +172,12 @@
 							"insertdatetime media table contextmenu paste imagetools"
                 ],
                 toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image",
+<<<<<<< b1367080f9d9d5f230130ea3df1dd58c6e14ff1a
+                autosave_ask_before_unload: false });
+=======
                 autosave_ask_before_unload: false
             });
+>>>>>>> all mapping now is provided by a mappingtools.ts module that is loaded via system.js (through bower)  previous implementations like site.js, mapinteraction.js and activitymap.js have been removed
         });
     </script>
     @RenderSection("scripts", required: false)
