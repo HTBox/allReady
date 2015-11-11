@@ -1,6 +1,6 @@
 ﻿namespace AllReady.Models
 {
-    public enum ContactType
+    public enum ContactTypes
     {
         Primary = 1
     }

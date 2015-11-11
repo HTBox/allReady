@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Models
 {
-    public class TenantDetailModel
+    public class TenantDetailModel: IPrimaryContactModel
     {
         public int Id { get; set; }
         public string Name { get; set; }

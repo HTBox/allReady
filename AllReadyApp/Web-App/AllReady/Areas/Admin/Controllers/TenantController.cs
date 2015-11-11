@@ -8,16 +8,14 @@ using AllReady.Areas.Admin.Models;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("TenantAdmin")]
+    [Authorize("SiteAdmin")]
     public class TenantController : Controller
     {
         private readonly IMediator _bus;
-        private readonly IAllReadyDataAccess _dataAccess;
 
-        public TenantController(IMediator bus, IAllReadyDataAccess dataAccess)
+        public TenantController(IMediator bus)
         {
             _bus = bus;
-            _dataAccess = dataAccess;
         }
 
         // GET: Tenant

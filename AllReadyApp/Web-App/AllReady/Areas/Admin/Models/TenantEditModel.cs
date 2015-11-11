@@ -1,10 +1,8 @@
-﻿using AllReady.Models;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.Areas.Admin.Models
 {
-    public class TenantEditModel
+    public class TenantEditModel : IPrimaryContactModel
     {
         
         public int Id { get; set; }

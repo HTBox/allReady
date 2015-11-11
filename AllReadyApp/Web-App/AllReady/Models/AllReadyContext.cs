@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.Infrastructure;
+﻿using Microsoft.Data.Entity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Framework.Configuration;
-using Microsoft.AspNet.Hosting;
 using Microsoft.Data.Entity.Metadata.Builders;
 
 namespace AllReady.Models

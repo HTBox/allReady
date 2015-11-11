@@ -18,9 +18,9 @@ namespace AllReady.Areas.Admin.Features.Tenants
             var t = _context.Tenants
                  .AsNoTracking()
                 .Include(c => c.Campaigns)
-                .Include(l => l.Location).ThenInclude(p=>p.PostalCode)
+                .Include(l => l.Location).ThenInclude(p => p.PostalCode)
                 .Include(u => u.Users)
-                .Include(tc=> tc.TenantContacts)
+                .Include(tc => tc.TenantContacts).ThenInclude(c => c.Contact)
                 .Where(ten => ten.Id == message.Id)
                 .SingleOrDefault();
             if (t == null)
@@ -31,37 +31,19 @@ namespace AllReady.Areas.Admin.Features.Tenants
             {
                 Id = t.Id,
                 Name = t.Name,
-                Location = ToModel(t.Location),
+                Location = t.Location.ToEditModel(),
                 LogoUrl = t.LogoUrl,
                 WebUrl = t.WebUrl,
             };
-            var contactId = t.TenantContacts?.SingleOrDefault(tc => tc.ContactType ==(int) ContactType.Primary)?.ContactId;
-            if (contactId != null)
+
+            if (t.TenantContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
             {
-                var contact = _context.Contacts.Single(c => c.Id == contactId);
-                tenant.PrimaryContactEmail = contact.Email;
-                tenant.PrimaryContactFirstName = contact.FirstName;
-                tenant.PrimaryContactLastName = contact.LastName;
-                tenant.PrimaryContactPhoneNumber = contact.PhoneNumber;
+                tenant = (TenantEditModel)t.TenantContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(tenant);
             }
             return tenant;
         }
 
-        private LocationEditModel ToModel(Location location)
-        {
-            if (location == null) { return null; }
-            return new LocationEditModel
-            {
-                Id = location.Id,
-                Address1 = location.Address1,
-                Address2 = location.Address2,
-                City = location.City,
-                Country = location.Country,
-                Name = location.Name,
-                PhoneNumber = location.PhoneNumber,
-                PostalCode = location.PostalCode?.PostalCode,
-                State = location.State
-            };
-        }
+
+
     }
 }

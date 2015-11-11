@@ -3,7 +3,6 @@ using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
 using System.Linq;
-using System;
 
 namespace AllReady.Areas.Admin.Features.Tenants
 {
@@ -32,38 +31,19 @@ namespace AllReady.Areas.Admin.Features.Tenants
             {
                 Id = t.Id,
                 Name = t.Name,
-                Location = ToModel(t.Location),
+                Location = t.Location.ToModel(),
                 LogoUrl = t.LogoUrl,
                 WebUrl = t.WebUrl,
                 Campaigns = t.Campaigns,
                 Users = t.Users,
             };
-            var contactId = t.TenantContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactType.Primary)?.ContactId;
-            if (contactId != null)
+            if (t.TenantContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
             {
-                var contact = _context.Contacts.Single(c => c.Id == contactId);
-                tenant.PrimaryContactEmail = contact.Email;
-                tenant.PrimaryContactFirstName = contact.FirstName;
-                tenant.PrimaryContactLastName = contact.LastName;
-                tenant.PrimaryContactPhoneNumber = contact.PhoneNumber;
+                tenant = (TenantDetailModel)t.TenantContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(tenant);
             }
             return tenant;
         }
 
-        private LocationDisplayModel ToModel(Location location)
-        {
-            if (location == null) { return null; }
-            return new LocationDisplayModel {
-                Id = location.Id,
-                Address1= location.Address1,
-                Address2 = location.Address2,
-                City = location.City,
-                Country= location.Country,
-                Name = location.Name,
-                PhoneNumber=location.PhoneNumber,
-                PostalCode=location.PostalCode?.PostalCode,
-                State = location.State
-            };
-        }
+     
     }
 }

@@ -33,7 +33,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
             if (campaign != null)
             {
-                result = new CampaignSummaryModel()
+                result = new CampaignSummaryModel
                 {
                     Id = campaign.Id,
                     Name = campaign.Name,
@@ -44,44 +44,22 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     ImageUrl = campaign.ImageUrl,
                     StartDate = campaign.StartDateTimeUtc,
                     EndDate = campaign.EndDateTimeUtc,
-                    Location = ToModel(campaign.Location),
+                    Location = campaign.Location.ToEditModel(),
                     CampaignImpact = campaign.CampaignImpact != null ? campaign.CampaignImpact : new CampaignImpact()
                 };
                 if (!campaign.CampaignContacts.Any())// Include isn't including
                 {
                     campaign.CampaignContacts = _context.CampaignContacts.Include(c => c.Contact).Where(cc => cc.CampaignId == campaign.Id).ToList();
                 }
-                var contact = campaign.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactType.Primary)?.Contact;
-                if (contact != null)
+                if (campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
                 {
-                    //var contact = _context.Contacts.Single(c => c.Id == contactId);
-                    result.PrimaryContactEmail = contact.Email;
-                    result.PrimaryContactFirstName = contact.FirstName;
-                    result.PrimaryContactLastName = contact.LastName;
-                    result.PrimaryContactPhoneNumber = contact.PhoneNumber;
+                    result = (CampaignSummaryModel)campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(result);
                 }
 
             }
 
             return result;
         }
-        private LocationEditModel ToModel(Location location)
-        {
-            if (location == null) { return null; }
-            return new LocationEditModel
-            {
-                Id = location.Id,
-                Address1 = location.Address1,
-                Address2 = location.Address2,
-                City = location.City,
-                Country = location.Country,
-                Name = location.Name,
-                PhoneNumber = location.PhoneNumber,
-                PostalCode = location.PostalCode?.PostalCode,
-                State = location.State
-            };
-
-
-        }
+       
     }
 }
