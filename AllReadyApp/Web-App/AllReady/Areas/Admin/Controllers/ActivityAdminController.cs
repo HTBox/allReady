@@ -89,14 +89,25 @@ namespace AllReady.Areas.Admin.Controllers
                 ModelState.AddModelError("EndDateTime", "End date cannot be earlier than the start date");
             }
 
+            CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
+            if (campaign == null ||
+                !User.IsTenantAdmin(campaign.TenantId))
+            {
+                return HttpUnauthorized();
+            }
+
+            if (activity.StartDateTime < campaign.StartDate)
+            {
+                ModelState.AddModelError("StartDateTime", "Start date cannot be earlier than the campaign start date " + campaign.StartDate.ToString("d"));
+            }
+
+            if (activity.EndDateTime > campaign.EndDate)
+            {
+                ModelState.AddModelError("EndDateTime", "End date cannot be later than the campaign end date " + campaign.EndDate.ToString("d"));
+            }
+
             if (ModelState.IsValid)
             {
-                CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
-                if (campaign == null ||
-                    !User.IsTenantAdmin(campaign.TenantId))
-                {
-                    return HttpUnauthorized();
-                }
                 activity.TenantId = campaign.TenantId;
                 var id = _bus.Send(new EditActivityCommand { Activity = activity });
                 return RedirectToAction("Details", "Activity", new { area = "Admin", id = id });
@@ -131,8 +142,8 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpBadRequest();
             }
             //TODO: Use the query pattern here
-            int campaignId = _dataAccess.GetManagingTenantId(activity.Id);
-            if (!User.IsTenantAdmin(campaignId))
+            int TenantId = _dataAccess.GetManagingTenantId(activity.Id);
+            if (!User.IsTenantAdmin(TenantId))
             {
                 return HttpUnauthorized();
             }
@@ -140,6 +151,18 @@ namespace AllReady.Areas.Admin.Controllers
             if (activity.EndDateTime < activity.StartDateTime)
             {
                 ModelState.AddModelError("EndDateTime", "End date cannot be earlier than the start date");
+            }
+
+            CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = activity.CampaignId });
+
+            if (activity.StartDateTime < campaign.StartDate)
+            {
+                ModelState.AddModelError("StartDateTime", "Start date cannot be earlier than the campaign start date " + campaign.StartDate.ToString("d"));
+            }
+
+            if (activity.EndDateTime > campaign.EndDate)
+            {
+                ModelState.AddModelError("EndDateTime", "End date cannot be later than the campaign end date " + campaign.EndDate.ToString("d"));
             }
 
             if (ModelState.IsValid)
