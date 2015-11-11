@@ -380,7 +380,7 @@ namespace AllReady.Models
             {
                 for (var j = 0; j < i; j++)
                 {
-                    taskSignups.Add(new TaskSignup() { Task = task, User = users[j] });
+                    taskSignups.Add(new TaskSignup() { Task = task, User = users[j], Status = Areas.Admin.Features.Tasks.TaskStatus.Assigned.ToString() });
                 }
 
                 i = (i + 1) % users.Count;

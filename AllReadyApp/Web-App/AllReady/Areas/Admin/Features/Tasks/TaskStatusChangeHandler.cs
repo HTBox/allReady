@@ -24,13 +24,15 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         protected override void HandleCore(TaskStatusChangeCommand message)
         {
-            var task = _context.Tasks.SingleOrDefault(c => c.Id == message.TaskId);
+            var task = _context.Tasks
+                .Include(t => t.AssignedVolunteers).ThenInclude((TaskSignup ts) => ts.User)
+                .SingleOrDefault(c => c.Id == message.TaskId);
             if (task == null)
                 throw new InvalidOperationException($"Task {message.TaskId} does not exist");
 
-            var taskSignup = task.AssignedVolunteers.SingleOrDefault(c => c.User.UserName == message.UserName);
+            var taskSignup = task.AssignedVolunteers.SingleOrDefault(c => c.User.Id == message.UserId);
             if (taskSignup == null)
-                throw new InvalidOperationException($"Sign-up for user {message.UserName} does not exist");
+                throw new InvalidOperationException($"Sign-up for user {message.UserId} does not exist");
 
             TaskStatus currentStatus;
             if (!Enum.TryParse<TaskStatus>(taskSignup.Status, out currentStatus))
@@ -49,7 +51,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                         throw new ArgumentException($"Task must be assigned before being rejected");
                     break;
                 case TaskStatus.Completed:
-                    if (currentStatus != TaskStatus.Accepted)
+                    if (currentStatus != TaskStatus.Accepted && currentStatus != TaskStatus.Assigned)
                         throw new ArgumentException($"Task must be accepted before being completed");
                     break;
                 case TaskStatus.CanNotComplete:
@@ -63,11 +65,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             taskSignup.Status = message.TaskStatus.ToString();
             _context.SaveChanges();
 
-            var notification = new TaskSignupStatusChanged
-            {
-                TaskId = task.Id,
-                SignupId = taskSignup.Id
-            };
+            var notification = new TaskSignupStatusChanged { SignupId = taskSignup.Id };
             _bus.Publish(notification);
         }
     }
