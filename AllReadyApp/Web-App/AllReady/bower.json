@@ -19,5 +19,6 @@
     "tota11y": "0.1.2",
     "tinymce": "4.2.6",
     "bootstrap-tagsinput": "0.6.1",
+    "system.js": "0.19.5"
   }
 }

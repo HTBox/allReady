@@ -15,7 +15,6 @@
     </div>
 </div>
 @section scripts {
-<script src="~/js/system.js"></script>
 <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
 
 
@@ -26,7 +25,6 @@
         baseURL: location.protocol + "//" + location.host + '/ts/'
     });
 
-    // load from an absolute URL directly
     System.import('mappingTools.js').then(function (sys) {
         var map = new sys.HTBox.maps.MapRender('mapArea');
         map.zoomToMyLocation();
