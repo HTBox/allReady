@@ -34,7 +34,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
                         {
                             Task = task,
                             User = volunteerUser,
-                            Status = TaskStatus.Assigned.ToString()
+                            Status = TaskStatus.Assigned.ToString(),
+                            StatusDateTimeUtc = DateTime.UtcNow
                         };
                     }
                     task.AssignedVolunteers.Add(av);
