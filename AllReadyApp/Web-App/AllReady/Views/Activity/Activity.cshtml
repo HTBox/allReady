@@ -69,10 +69,32 @@
                             <span class="label label-primary" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', tooltip: { title: 'Accepted' }"><span class="fa fa-thumbs-o-up"></span></span>
                             <span class="label label-warning" data-bind="visible: AssignedVolunteers[0].Status === 'Rejected', tooltip: { title: 'Rejected' }"><span class="fa fa-thumbs-o-down"></span></span>
                             <span class="label label-success" data-bind="visible: AssignedVolunteers[0].Status === 'Completed', tooltip: { title: 'Completed' }"><span class="fa fa-check"></span></span>
-                            <span class="label label-danger" data-bind="visible: AssignedVolunteers[0].Status === 'CanNotComplete', tooltip: { title: 'Could not complete' }"><span class="fa fa-times"></span></span>
-                            <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', attr: { href:  '/Activity/ChangeStatus?status=Accepted&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Accept</a>
-                            <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', attr: { href:  '/Activity/ChangeStatus?status=Rejected&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Reject</a>
-                            <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', attr: { href:  '/Activity/ChangeStatus?status=Completed&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Complete</a>
+                            <span class="label label-danger" data-bind="visible: AssignedVolunteers[0].Status === 'CanNotComplete', tooltip: { title: 'Could not complete (' + AssignedVolunteers[0].StatusDescription + ')' }"><span class="fa fa-times"></span></span>
+                            <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', attr: { href: '/Activity/ChangeStatus?status=Accepted&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Accept</a>
+                            <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', attr: { href: '/Activity/ChangeStatus?status=Rejected&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Reject</a>
+                            <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', attr: { href: '/Activity/ChangeStatus?status=Completed&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Complete</a>
+                            <a class="btn btn-link" href="#" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', attr: { 'data-target': '#cantCompleteReason' + Id }" data-toggle="modal">Not Complete</a>
+                            <div class="modal fade" data-bind="if: AssignedVolunteers[0].Status === 'Accepted', attr: { id: 'cantCompleteReason' + Id }" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title" id="cantCompleteLabel">
+                                                Mark <span data-bind="text: Name"></span> as not complete?
+                                            </h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" placeholder="Reason" data-bind="textInput: NotCompleteReason">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a class="btn btn-danger" data-bind="attr: { href: '/Activity/ChangeStatus?status=CanNotComplete&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId + '&statusDesc=' + NotCompleteReason() }">Not Completed</a>
+                                            <button type="button" data-dismiss="modal" class="btn btn-link">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -91,7 +113,6 @@
                         }
                         else
                         {
-                            <!-- Trigger modal -->
                             <a href="#" data-toggle="modal" data-target="#volunteerForm" class="btn btn-volunteer">Volunteer</a>
                         }
                     </h2>

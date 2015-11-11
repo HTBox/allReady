@@ -64,6 +64,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             taskSignup.Status = message.TaskStatus.ToString();
             taskSignup.StatusDateTimeUtc = DateTime.UtcNow;
+            taskSignup.StatusDescription = message.TaskStatusDescription;
             _context.SaveChanges();
 
             var notification = new TaskSignupStatusChanged { SignupId = taskSignup.Id };

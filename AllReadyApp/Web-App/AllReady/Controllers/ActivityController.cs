@@ -119,14 +119,14 @@ namespace AllReady.Controllers
         [HttpGet]
         [Route("/Activity/ChangeStatus")]
         [Authorize]
-        public IActionResult ChangeStatus(int activityId, int taskId, string userId, TaskStatus status)
+        public IActionResult ChangeStatus(int activityId, int taskId, string userId, TaskStatus status, string statusDesc)
         {
             if (userId == null)
             {
                 return HttpBadRequest();
             }
 
-            _bus.Send(new TaskStatusChangeCommand { TaskStatus = status, TaskId = taskId, UserId = userId });
+            _bus.Send(new TaskStatusChangeCommand { TaskStatus = status, TaskId = taskId, UserId = userId, TaskStatusDescription = statusDesc });
 
             return RedirectToAction(nameof(ShowActivity), new { id = activityId });
         }
