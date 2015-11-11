@@ -8,7 +8,6 @@ namespace AllReady.Features.Notifications
 {
     public class TaskSignupStatusChanged : INotification
     {
-        public int TaskId { get; set; }
         public int SignupId { get; set; }
     }
 }
