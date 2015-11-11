@@ -92,7 +92,7 @@
                     <div data-bind="foreach: requiredSkills">
                         <div class="form-inline">
                             <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
-                            <span class="fa fa-info" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                            <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
                             <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
                                 <span class="fa fa-remove" aria-hidden="true"></span>
                                 Delete
@@ -125,9 +125,14 @@
     <h2>Image</h2>
     <div class="form-horizontal">
         <div class="form-group">
-            @Html.LabelFor(model => model.ImageUrl, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-2">&nbsp;</div>
             <div class="col-md-10">
                 <img src="@Model.ImageUrl" class="img-thumbnail img-responsive col-md-4" />
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.ImageUrl, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
                 <form action="~/Admin/Activity/PostActivityFile" method="post" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="id" id="activiteyId" value="@Model.Id" />
