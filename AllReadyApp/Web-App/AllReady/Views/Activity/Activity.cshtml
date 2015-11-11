@@ -85,7 +85,8 @@
                                         </div>
                                         <div class="modal-body">
                                             <div class="form-group">
-                                                <input type="text" class="form-control" placeholder="Reason" data-bind="textInput: NotCompleteReason">
+                                                <label data-bind="attr: { 'for': 'notCompleteReason' + Id }">Reason</label>
+                                                <input type="text" class="form-control" data-bind="textInput: NotCompleteReason, attr: { 'id': 'notCompleteReason' + Id }">
                                             </div>
                                         </div>
                                         <div class="modal-footer">
