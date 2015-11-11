@@ -149,8 +149,20 @@
 }
 
 @section scripts {
-    <script src="~/js/activitymap.js"></script>
     <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+
+    <script type="text/javascript">
+
+            System.config({
+                baseURL: location.protocol + "//" + location.host + '/ts/'
+            });
+
+            System.import('mappingTools.js').then(function (sys) {
+                var map = new sys.HTBox.maps.MapRender('mapArea');
+                map.zoomToMyLocation();
+            });
+
+    </script>
     <script type="text/javascript">
         (function (ko, $, requiredSkills, availableSkills) {
 

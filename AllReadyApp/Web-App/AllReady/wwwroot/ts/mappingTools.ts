@@ -47,11 +47,11 @@ export module HTBox.maps {
                     longitude: pos.coords.longitude,
                 };
 
-                this.zoomToLocations(myPosition);
+                this.zoomToLocation(myPosition);
             });
         }
 
-        public zoomToLocations(location: location) {
+        public zoomToLocation(location: location) {
             var bingMap = this.bingMap;
             var zoomLocation = new geoMaps.Location(location.latitude, location.longitude));
             bingMap.setView({
@@ -79,6 +79,14 @@ export module HTBox.maps {
         public drawCampaignLocations(campaigns: Array<any>) {
         }
 
+        public drawAddress(address1, address2, city, state, postalCode, country) {
+            var self = this;
+            self.getGeoCoordinates(address1, address2, city, state, postalCode, country, location => {
+                self.drawLocations([location]);
+                self.zoomToLocation(location);
+            });
+        }
+
         getGeoCoordinates(address1, address2, city, state, postalCode, country, callbackFunction) {
             var lookupAddress = "";
             lookupAddress = lookupAddress + (address1 != undefined || address1 != null ? " " + address1 : null);
@@ -97,11 +105,13 @@ export module HTBox.maps {
                 dataType: "jsonp",
                 jsonp: "jsonp",
                 success: function (result) {
-                    var geoCoordinates = {
-                        latitude: result.resourceSets[0].resources[0].geocodePoints[0].coordinates[0],
-                        longitude: result.resourceSets[0].resources[0].geocodePoints[0].coordinates[1]
+                    var points = result.resourceSets[0].resources[0].geocodePoints[0];
+                    var myLocation = {
+                        name: lookupAddress,
+                        latitude: points.coordinates[0],
+                        longitude: points.coordinates[1],
                     };
-                    callbackFunction(geoCoordinates);
+                    callbackFunction(myLocation);
                 },
                 error: function (e) {
                     alert(e.statusText);

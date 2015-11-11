@@ -126,7 +126,7 @@
 
     <div class="col-sm-4">
         <h3>Location</h3>
-        <div id="bingMap" style="position:relative"></div>
+        <div id="mapArea" style="position:relative;width:300px;height:300px"></div>
         <h3>Address</h3>
         <p>
             @Model.Location?.Address1<br />
@@ -229,8 +229,27 @@
 }
 
 @section scripts {
+    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+
     <script type="text/javascript">
-        $(document).ready(function () {
+        var modelStuff = @Json.Serialize(new { tasks = Model.Tasks, skills = Model.RequiredSkills, userSkills = Model.UserSkills });
+
+        System.config({
+            baseURL: location.protocol + "//" + location.host + '/ts/'
+        });
+
+        System.import('mappingTools.js').then(function (sys) {
+            var map = new sys.HTBox.maps.MapRender('mapArea');
+            //map.zoomToMyLocation();
+            map.drawAddress('@Model.Location?.Address1',
+                '@Model.Location?.Address2',
+                '@Model.Location?.City',
+                '@Model.Location?.State',
+                '@Model.Location?.PostalCode?.PostalCode',
+                '@Model.Location?.Country');
+        });;
+
+        @*$(document).ready(function () {
             getGeoCoordinates('@Model.Location?.Address1',
                 '@Model.Location?.Address2',
                 '@Model.Location?.City',
@@ -244,9 +263,7 @@
                     $("#bingMap").css("width", "300px").css("height", "300px");
                     renderBingMap('bingMap', positionCoordsList);
                 });
-        });
-        var modelStuff = @Json.Serialize(new { tasks = Model.Tasks, skills = Model.RequiredSkills, userSkills = Model.UserSkills });
+        });*@
     </script>
     <script type="text/javascript" src="~/js/activity.js"></script>
-    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
 }
