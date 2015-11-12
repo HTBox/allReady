@@ -39,6 +39,27 @@ export module HTBox.maps {
             navigator.geolocation.getCurrentPosition(callback);
         }
 
+        public zoomToMyLocation() {
+            this.getMyLocation(pos => {
+                var myPosition = {
+                    name: 'my loc',
+                    latitude: pos.coords.latitude,
+                    longitude: pos.coords.longitude,
+                };
+
+                this.zoomToLocation(myPosition);
+            });
+        }
+
+        public zoomToLocation(location: location) {
+            var bingMap = this.bingMap;
+            var zoomLocation = new geoMaps.Location(location.latitude, location.longitude));
+            bingMap.setView({
+                zoom: 10,
+                center: zoomLocation
+            });
+        }
+
         public drawLocations(locations: Array<location>) {
             var bingMap = this.bingMap;
             var center = bingMap.getCenter();
@@ -52,6 +73,17 @@ export module HTBox.maps {
             bingMap.setView({
                 zoom: 10,
                 center: center
+            });
+        }
+
+        public drawCampaignLocations(campaigns: Array<any>) {
+        }
+
+        public drawAddress(address1, address2, city, state, postalCode, country) {
+            var self = this;
+            self.getGeoCoordinates(address1, address2, city, state, postalCode, country, location => {
+                self.drawLocations([location]);
+                self.zoomToLocation(location);
             });
         }
 
@@ -73,11 +105,13 @@ export module HTBox.maps {
                 dataType: "jsonp",
                 jsonp: "jsonp",
                 success: function (result) {
-                    var geoCoordinates = {
-                        latitude: result.resourceSets[0].resources[0].geocodePoints[0].coordinates[0],
-                        longitude: result.resourceSets[0].resources[0].geocodePoints[0].coordinates[1]
+                    var points = result.resourceSets[0].resources[0].geocodePoints[0];
+                    var myLocation = {
+                        name: lookupAddress,
+                        latitude: points.coordinates[0],
+                        longitude: points.coordinates[1],
                     };
-                    callbackFunction(geoCoordinates);
+                    callbackFunction(myLocation);
                 },
                 error: function (e) {
                     alert(e.statusText);

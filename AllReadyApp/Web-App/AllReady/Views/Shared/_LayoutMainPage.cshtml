@@ -71,30 +71,8 @@
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
         </script>
     </environment>
-    <script src="~/js/site.js"></script>
+    <script src="~/lib/system.js/dist/system.js"></script>
+    @*<script src="~/js/site.js"></script>*@
     <script src="~/js/index.js"></script>
-    @*<script type="text/javascript">
-            $(function () {
-                $('#doGeo').click(function () {
-                    var geo = new geoHelper(function (position) {
-
-                        // TODO: replace with your own functionality
-                        console.log(position.coords.latitude + ',' + position.coords.longitude);
-
-                    });
-                    geo.getMyLocation();
-                });
-            });
-        </script>*@
-    @*<script type="text/javascript">
-            $(document).ready(function () {
-                var positionCoordsList = [
-                    { latitude: '47.662471771240234', longitude: '-122.12596893310547' },
-                    { latitude: '47.64004938304424', longitude: '-122.12979689240456' }
-                ];
-                renderBingMap('bingMap', positionCoordsList);
-            });
-        </script>
-        <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>*@
 </body>
 </html>
