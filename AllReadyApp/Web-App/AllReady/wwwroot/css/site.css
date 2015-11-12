@@ -136,7 +136,6 @@ Navigation
 
 .navbar-default .navbar-nav > li > a, .navbar-default .navbar-nav > li > a:active, .navbar-default .navbar-nav > li > a:visited, .navbar-default .navbar-nav > li > a:focus {
     color: #fff;
-    font-size: 1.4em;
 }
 
 .navbar-default .navbar-nav > li:hover, .navbar-default .navbar-nav > li:active, .navbar-default .navbar-nav > li:focus {
