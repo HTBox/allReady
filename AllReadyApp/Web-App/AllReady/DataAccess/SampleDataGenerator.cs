@@ -35,9 +35,6 @@ namespace AllReady.Models
                 _context.Skills.Any() ||
                 _context.Resources.Any())
             {
-                // Attempt to populate CampaignImpactTypes:
-                InsertCampaignImpactTypes(_context);
-                _context.SaveChanges();
                 return;
             }
             // new up some data
@@ -100,7 +97,14 @@ namespace AllReady.Models
                 ManagingTenant = htb,
                 StartDateTimeUtc = DateTime.Today.AddMonths(-1).ToUniversalTime(),
                 EndDateTimeUtc = DateTime.Today.AddMonths(1).ToUniversalTime(),
-                
+                CampaignImpact = new CampaignImpact
+                {
+                    ImpactType = ImpactType.Numeric,
+                    NumericImpactGoal = 10000,
+                    CurrentImpactLevel = 6722,
+                    Display=true,
+                    TextualImpactGoal = "Total number of smoke detectors installed."
+                }
             };
             htb.Campaigns.Add(smokeDet);
             Campaign financial = new Campaign()
@@ -441,22 +445,6 @@ namespace AllReady.Models
             }
             skill.Description = description;
             return skill;
-        }
-
-        private static CampaignImpactType GetImpactType(List<CampaignImpactType> types, List<CampaignImpactType> existingTypes, string typeName)
-        {
-            CampaignImpactType impactType;
-            if (existingTypes.Any(item => item.Name == typeName))
-            {
-                impactType = existingTypes.Single(item => item.Name == typeName);
-            }
-            else
-            {
-                impactType = new CampaignImpactType { Name = typeName };
-
-                types.Add(impactType);
-            }
-            return impactType;
         }
 
         #region Sample Data Helper methods

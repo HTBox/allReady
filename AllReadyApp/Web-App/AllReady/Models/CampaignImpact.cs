@@ -9,7 +9,7 @@ namespace AllReady.Models
     {
         public int Id { get; set; }
         public Campaign Campaign { get; set; }
-        public CampaignImpactType CampaignImpactType { get; set; }
+        public ImpactType ImpactType { get; set; }
         /// <summary>
         /// If the impact type is numeric, the value is the number
         /// of x to reach the goal.

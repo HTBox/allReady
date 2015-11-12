@@ -10,9 +10,9 @@ namespace AllReady.Models
     /// Used to control the display of the impact as well as the
     /// edit form.
     /// </summary>
-    public class CampaignImpactType
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-    }
+    //public class CampaignImpactType
+    //{
+    //    public int Id { get; set; }
+    //    public string Name { get; set; }
+    //}
 }
