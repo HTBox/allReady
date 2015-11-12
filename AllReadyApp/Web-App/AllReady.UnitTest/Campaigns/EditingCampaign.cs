@@ -11,7 +11,7 @@ namespace AllReady.UnitTest.Campaigns
         {
             var sut = new EditCampaignCommandHandler(Context);
             int actual = sut.Handle(new EditCampaignCommand {Campaign = new CampaignSummaryModel()});
-            Assert.Equal(1, actual);
+            Assert.NotEqual(0, actual);
         }
     }
 }

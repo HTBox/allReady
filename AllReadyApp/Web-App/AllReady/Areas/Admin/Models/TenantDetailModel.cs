@@ -2,39 +2,32 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Models
 {
-    public class CampaignDetailModel: IPrimaryContactModel
+    public class TenantDetailModel: IPrimaryContactModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string LogoUrl { get; set; }
+        public string WebUrl { get; set; }
 
-        public string Description { get; set; }
+        /// <summary>
+        /// Collection of the campaigns directly managed by this Tenant
+        /// </summary>
+        public List<Campaign> Campaigns { get; set; }
 
-        public string FullDescription { get; set; }
-
-        [Display(Name = "Organization")]
-        public int TenantId { get; set; }
-
-
-        [Display(Name = "Organization")]
-        public string TenantName { get; set; }
-
-        [Display(Name = "Image URL")]
-        public string ImageUrl { get; set; }
-            
-        [Display(Name = "Start Date")]
-        public DateTime StartDate { get; set; }
-
-        [Display(Name = "End Date")]
-        public DateTime EndDate { get; set; }
-
-		public IEnumerable<ActivitySummaryModel> Activities { get; set; }
-        public CampaignImpact CampaignImpact { get; set; }
+        /// <summary>
+        /// Application users which are members of this Tenant.
+        /// Users may be members of more than one tenant.
+        /// </summary>
+        public List<ApplicationUser> Users { get; set; }
 
         [UIHint("Location")]
         public LocationDisplayModel Location { get; set; }
+
         [Display(Name = "First Name")]
         public string PrimaryContactFirstName { get; set; }
 
@@ -48,6 +41,5 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Email")]
         [EmailAddress]
         public string PrimaryContactEmail { get; set; }
-
     }
 }

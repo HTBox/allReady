@@ -47,5 +47,9 @@ namespace AllReady.Models
 
         public CampaignImpact CampaignImpact { get; set; }
 
+        public Location Location { get; set; }
+
+        public List<CampaignContact> CampaignContacts { get; set; }
+
     }
 }
