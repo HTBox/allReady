@@ -39,17 +39,18 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-controller="Campaign" asp-route-area="Admin" asp-action="Edit" method="post">
+<form asp-controller="Campaign" asp-route-area="Admin" asp-action="Edit" method="post" enctype="multipart/form-data">
 
     <button type="button" id="btnGetContactInfo" class="btn btn-info" title="Copy Contact Information from Organizatio">Copy Contact Info</button>
 
 
     <div class="form-horizontal">
         <hr />
-        <div asp-validation-summary="ValidationSummary.ModelOnly" class="text-danger"></div>
+        <div asp-validation-summary="ValidationSummary.All" class="text-danger"></div>
         @if (isEdit)
             {
             <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ImageUrl" />
         }
         <div class="form-group">
             <label asp-for="Name" class="col-md-2 control-label"></label>
@@ -124,6 +125,30 @@
                 <span asp-validation-for="PrimaryContactEmail" class="text-danger"></span>
             </div>
         </div>
+        <h2>Image</h2>
+        <div class="form-horizontal">
+            @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+            {
+            <div class="form-group">
+                <div class="col-md-2">&nbsp;</div>
+                <div class="col-md-10">
+                    <img src="@Model.ImageUrl" class="img-thumbnail img-responsive col-md-4" />
+                </div>
+            </div>
+            }
+            <div class="form-group">
+                <label asp-for="FileUpload" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            <input type="file" asp-for="FileUpload" class="control-label col-md-4" />
+                            @*<button type="submit" class="btn col-md-1">Upload</button>*@
+                            <span asp-validation-for="FileUpload" class="text-danger col-md-12"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="row">
         <div class="col-md-12">
@@ -136,7 +161,7 @@
 
 @if (isEdit)
 {
-    <h2>Image</h2>
+    @*<h2>Image</h2>
     <div class="form-horizontal">
         <div class="form-group">
             <div class="col-md-2">&nbsp;</div>
@@ -158,7 +183,7 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div>*@
 
     @*
         TODO: Implement Impact Goal persistence & numeric fields
