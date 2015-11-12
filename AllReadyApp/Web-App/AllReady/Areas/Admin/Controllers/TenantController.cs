@@ -1,43 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNet.Mvc;
 using AllReady.Models;
-using Microsoft.Data.Entity;
 using Microsoft.AspNet.Authorization;
-
-// For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+using MediatR;
+using AllReady.Areas.Admin.Features.Tenants;
+using AllReady.Areas.Admin.Models;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    //[Area("TenantAdmin")]
     [Area("Admin")]
-    [Authorize("TenantAdmin")]
+    [Authorize("SiteAdmin")]
     public class TenantController : Controller
     {
-        private readonly IAllReadyDataAccess _dataAccess;
+        private readonly IMediator _bus;
 
-        public TenantController(IAllReadyDataAccess dataAccess)
+        public TenantController(IMediator bus)
         {
-            _dataAccess = dataAccess;
+            _bus = bus;
         }
 
         // GET: Tenant
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return await Task.Run(() => View(_dataAccess.Tenants));
+            var list = _bus.Send(new TenantListQuery());
+            return View(list);
         }
 
         // GET: Tenant/Details/5
-        public IActionResult Details(System.Int32? id)
+        public IActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(404);
-            }
-
-            Tenant tenant = _dataAccess.GetTenant((int)id);
+            var tenant = _bus.Send(new TenantDetailQuery { Id = id });
             if (tenant == null)
             {
                 return new HttpStatusCodeResult(404);
@@ -55,11 +46,11 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Tenant/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Tenant tenant)
+        public  IActionResult Create(TenantEditModel tenant)
         {
             if (ModelState.IsValid)
             {
-                await _dataAccess.AddTenant(tenant);
+                int id = _bus.Send(new TenantEditCommand { Tenant = tenant });
                 return RedirectToAction("Index");
             }
 
@@ -67,46 +58,42 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Tenant/Edit/5
-        public IActionResult Edit(System.Int32? id)
+        public IActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(404);
-            }
 
-            Tenant tenant = _dataAccess.GetTenant((int)id);
+            var tenant = _bus.Send(new TenantEditQuery { Id = id });
             if (tenant == null)
             {
                 return new HttpStatusCodeResult(404);
             }
 
-            return View(tenant);
+            return View("Edit",tenant);
         }
 
         // POST: Tenant/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Tenant tenant)
+        public IActionResult Edit(TenantEditModel tenant)
         {
             if (ModelState.IsValid)
             {
-                await _dataAccess.UpdateTenant(tenant);
-                return RedirectToAction("Index");
+                int id = _bus.Send(new TenantEditCommand { Tenant = tenant });
+                return RedirectToAction("Details", new { id = id, area = "Admin" });
             }
 
-            return View(tenant);
+            return View("Edit", tenant);
         }
 
         // GET: Tenant/Delete/5
         [ActionName("Delete")]
-        public IActionResult Delete(System.Int32? id)
+        public IActionResult Delete(int? id)
         {
             // Needs comments:  This method doesn't delete things.
             if (id == null)
             {
                 return new HttpStatusCodeResult(404);
             }
-            Tenant tenant = _dataAccess.GetTenant((int)id);
+            var tenant = _bus.Send(new TenantDetailQuery { Id = id.Value });
             if (tenant == null)
             {
                 return new HttpStatusCodeResult(404);
@@ -118,9 +105,9 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Tenant/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(System.Int32 id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            await _dataAccess.DeleteTenant(id);
+            _bus.Send(new TenantDeleteCommand { Id= id });
             return RedirectToAction("Index");
         }
     }

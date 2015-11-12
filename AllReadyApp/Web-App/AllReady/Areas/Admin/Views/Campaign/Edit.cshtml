@@ -33,75 +33,122 @@
             }
 
         </ol>
+
     </div>
 </div>
 
 <h2>@ViewData["Title"]</h2>
 
+<form asp-controller="Campaign" asp-route-area="Admin" asp-action="Edit" method="post" enctype="multipart/form-data">
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
+    <button type="button" id="btnGetContactInfo" class="btn btn-info" title="Copy Contact Information from Organizatio">Copy Contact Info</button>
+
 
     <div class="form-horizontal">
         <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div asp-validation-summary="ValidationSummary.All" class="text-danger"></div>
         @if (isEdit)
-        {
-            Html.HiddenFor(model => model.Id);
+            {
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ImageUrl" />
         }
         <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="Name" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="Description" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input type="text" asp-for="Description" class="form-control" />
-                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
             <div class="control-label col-md-2">
-                @Html.LabelFor(model => model.FullDescription)
+                <label asp-for="FullDescription"></label> @*class="col-md-2 control-label"*@
                 <p><cite>This formatted text will be used as your landing page content</cite></p>
             </div>
             <div class="col-md-10">
                 <textarea asp-for="FullDescription" class="form-control wysiwyg" rows="6"></textarea>
-                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                <span asp-validation-for="FullDescription" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="StartDate" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
-                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                <input asp-for="StartDate" class="form-control datepicker" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.EndDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="EndDate" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
-                @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                <input asp-for="EndDate" class="form-control datepicker" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.TenantId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="TenantId" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 @Html.DropDownListFor(model => model.TenantId, SelectListService.GetTenants(), htmlAttributes: new { @class = "form-control" })
             </div>
         </div>
-        @* TODO: Implement tags for search and filtering
-                <div class="form-group">
-                <label class="control-label col-md-2">Tags</label>
+        @Html.EditorFor(m => m.Location)
+        <div class="form-group">
+            <label asp-for="PrimaryContactFirstName" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PrimaryContactFirstName" class="form-control" />
+                <span asp-validation-for="PrimaryContactFirstName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="PrimaryContactLastName" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PrimaryContactLastName" class="form-control" />
+                <span asp-validation-for="PrimaryContactLastName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="PrimaryContactPhoneNumber" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PrimaryContactPhoneNumber" class="form-control" />
+                <span asp-validation-for="PrimaryContactPhoneNumber" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="PrimaryContactEmail" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PrimaryContactEmail" class="form-control" />
+                <span asp-validation-for="PrimaryContactEmail" class="text-danger"></span>
+            </div>
+        </div>
+        <h2>Image</h2>
+        <div class="form-horizontal">
+            @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+            {
+            <div class="form-group">
+                <div class="col-md-2">&nbsp;</div>
                 <div class="col-md-10">
-                    <input type="text" id="CampaignTags" data-role="tagsinput" />
+                    <img src="@Model.ImageUrl" class="img-thumbnail img-responsive col-md-4" />
                 </div>
-            </div>*@
-
+            </div>
+            }
+            <div class="form-group">
+                <label asp-for="FileUpload" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            <input type="file" asp-for="FileUpload" class="control-label col-md-4" />
+                            @*<button type="submit" class="btn col-md-1">Upload</button>*@
+                            <span asp-validation-for="FileUpload" class="text-danger col-md-12"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="row">
         <div class="col-md-12">
@@ -109,11 +156,12 @@
             <a href="@cancelUrl" class="btn btn-default">Cancel</a>
         </div>
     </div>
-}
+
+</form>
 
 @if (isEdit)
 {
-    <h2>Image</h2>
+    @*<h2>Image</h2>
     <div class="form-horizontal">
         <div class="form-group">
             <div class="col-md-2">&nbsp;</div>
@@ -122,11 +170,10 @@
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.ImageUrl, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label asp-for="ImageUrl" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <form action="~/Admin/Campaign/PostCampaignFile" method="post" enctype="multipart/form-data">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" id="campaignId" value="@Model.Id" />
+                <form asp-controller="Campaign" asp-route-area="Admin" asp-action="PostCampaignFile" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="Id" />
                     <div class="form-group">
                         <div class="col-md-10">
                             <input type="file" name="file" id="newFile" class="control-label col-md-4" />
@@ -136,7 +183,7 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div>*@
 
     @*
         TODO: Implement Impact Goal persistence & numeric fields
@@ -155,41 +202,6 @@
         </div>
     </div>
 }
-
-        @*@section scripts {
-                <script type="text/javascript">
-                    (function (ko, $, requiredSkills, availableSkills) {
-
-                        function AdminActivityViewModel(requiredSkills, availableSkills) {
-
-                            function RequiredSkillObservable(skillModel) {
-                                var ret = ko.utils.extend({}, skillModel);
-                                ret.Id = ko.observable(ret.Id);
-                                ret.ControlName = function (index) {
-                                    return 'RequiredSkills[' + ko.unwrap(index) + '].SkillId';
-                                };
-                                ret.Description = ko.computed(function () {
-                                    var skill = availableSkills.filter(function (skill) { return skill.Id === ret.Id(); })[0];
-                                    return (skill && skill.Description) || "";
-                                });
-                                return ret;
-                            }
-                            requiredSkills = (requiredSkills || []).map(RequiredSkillObservable);
-
-                            var self = this;
-                            this.requiredSkills = ko.observableArray(requiredSkills).uniqueValidator("Id");
-                            this.availableSkills = ko.observableArray(availableSkills);
-                            this.addSkill = function() {
-                                self.requiredSkills.push(RequiredSkillObservable());
-                            };
-                            this.deleteSkill = function(skill) {
-                                self.requiredSkills.remove(skill);
-                            };
-                        }
-
-                        ko.applyBindings(new AdminActivityViewModel(requiredSkills, availableSkills));
-                    })(ko, $,
-                        @Json.Serialize(Model.RequiredSkills.Select(rs => new { Id = rs.SkillId })),
-                        @Json.Serialize(SelectListService.GetSkills()));
-                </script>
-            }*@
+@section scripts {
+    <script src="~/js/campaignadmin.js"></script>
+}  
