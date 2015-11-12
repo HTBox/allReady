@@ -78,8 +78,7 @@
                         <li><a href="http://www.htbox.org/blog/">Blog</a></li>
                         <li><a asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
                         <li><a asp-controller="Tenant" asp-action="Index">Organizations</a></li>
-                        @await Html.PartialAsync("_AdminNavigationPartial")
-                        @*@await Html.PartialAsync("_LoginPartial")*@
+                        @await Html.PartialAsync("_AdminNavigationPartial")                        
                     </ul>
                     @await Html.PartialAsync("_LoginPartial")
                 </div>
