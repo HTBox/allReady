@@ -36,7 +36,7 @@ namespace AllReady.Models
             {
                 if (NumericImpactGoal > 0)
                 {
-                    return (int)Math.Round((CurrentImpactLevel * 100.0f / NumericImpactGoal * 100.0f) * 100.0f);
+                    return (int)Math.Round(((CurrentImpactLevel * 100.0f) / NumericImpactGoal));
                 }
                 return 0;
             }
