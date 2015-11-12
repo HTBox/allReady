@@ -8,7 +8,7 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    [Migration("20151111233017_ImpactTypeChanges")]
+    [Migration("20151112001041_ImpactTypeChanges")]
     partial class ImpactTypeChanges
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
