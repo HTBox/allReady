@@ -27,6 +27,7 @@ namespace AllReady
             // Setup configuration sources.
             var builder = new ConfigurationBuilder()
                 .SetBasePath(appEnv.ApplicationBasePath)
+                .AddJsonFile("version.json")
                 .AddJsonFile("config.json")
                 .AddJsonFile($"config.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
