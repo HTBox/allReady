@@ -26,8 +26,10 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Organization")]
         public string TenantName { get; set; }
 
-        [Display(Name = "Browse for image")]
         public string ImageUrl { get; set; }
+
+        [Display(Name = "Browse for image")]
+        public string FileUpload { get; set; }
             
         [Display(Name = "Start Date")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]

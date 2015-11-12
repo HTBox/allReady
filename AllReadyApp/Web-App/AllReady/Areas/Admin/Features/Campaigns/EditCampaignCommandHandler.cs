@@ -34,6 +34,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.StartDateTimeUtc = message.Campaign.StartDate;
             campaign.EndDateTimeUtc = message.Campaign.EndDate;
             campaign.ManagingTenantId = message.Campaign.TenantId;
+            campaign.ImageUrl = message.Campaign.ImageUrl;
 
             campaign = campaign.UpdateCampaignContact(message.Campaign, _context);
             campaign.Location = campaign.Location.UpdateModel(message.Campaign.Location);
