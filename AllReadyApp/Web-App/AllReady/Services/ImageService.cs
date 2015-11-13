@@ -40,7 +40,13 @@ namespace AllReady.Services
 
         public async Task<string> UploadActivityImageAsync(int tenantId, int activityId, IFormFile image)
         {
-            string blobPath = tenantId.ToString() + @"/" + activityId.ToString();
+            string blobPath = tenantId.ToString() + @"/activities/" + activityId.ToString();
+            return await UploadImageAsync(blobPath, image);
+        }
+
+        public async Task<string> UploadCampaignImageAsync(int tenantId, int campaignId, IFormFile image)
+        {
+            string blobPath = tenantId.ToString() + @"/campaigns/" + campaignId.ToString();
             return await UploadImageAsync(blobPath, image);
         }
 
@@ -56,7 +62,8 @@ namespace AllReady.Services
             var fileName = (ContentDispositionHeaderValue.Parse(image.ContentDisposition).FileName).Trim('"').ToLower();
             Debug.WriteLine(string.Format("BlobPath={0}, fileName={1}, image length={2}", blobPath, fileName, image.Length.ToString()));
 
-            if (fileName.EndsWith(".jpg") || fileName.EndsWith(".jpeg") || fileName.EndsWith(".png"))
+            if (fileName.EndsWith(".jpg") || fileName.EndsWith(".jpeg") || fileName.EndsWith(".png") ||
+                fileName.EndsWith(".gif"))
             {
                 var account = CloudStorageAccount.Parse(_settings.StorageAccount);
                 CloudBlobContainer container = account.CreateCloudBlobClient().GetContainerReference(CONTAINER_NAME);
@@ -92,7 +99,7 @@ namespace AllReady.Services
             }
             else
             {
-                throw new Exception("Invalid file extension: " + fileName + "You can only upload images with the extension: jpg, jpeg, or png");
+                throw new Exception("Invalid file extension: " + fileName + "You can only upload images with the extension: jpg, jpeg, gif, or png");
             }
         }
     }

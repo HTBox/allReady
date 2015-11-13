@@ -25,12 +25,14 @@
     </environment>
     @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
 
-    <script type="text/javascript">
-        var htbox = htbox || {};
-        htbox.allReady = htbox.allReady || {};
-        htbox.allReady.map = htbox.allReady.map || {};
-        htbox.allReady.init = htbox.allReady.init || {};
-    </script>
+    @*  remove me
+        this will be done via typescript / ES6 modules 
+            <script type="text/javascript">
+            var htbox = htbox || {};
+            htbox.allReady = htbox.allReady || {};
+            htbox.allReady.map = htbox.allReady.map || {};
+            htbox.allReady.init = htbox.allReady.init || {};
+        </script>*@
 </head>
 <body>
     @*<div class="navbar">
@@ -140,7 +142,8 @@
         </script>
     </environment>
     <script src="~/lib/knockout-bootstrap/src/knockout-bootstrap.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/system.js/dist/system.js"></script>
+    @*<script src="~/js/site.js" asp-append-version="true"></script>*@
     <script src="~/js/ko.filterableList.js" asp-append-version="true"></script>
     <script src="~/js/ko.validation.js" asp-append-version="true"></script>
     <script>
@@ -152,9 +155,10 @@
 							"advlist autolink lists link image charmap print preview anchor",
 							"searchreplace visualblocks code fullscreen",
 							"insertdatetime media table contextmenu paste imagetools"
-            ],
-            toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image",
-            autosave_ask_before_unload: false });
+                ],
+                toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image",
+                autosave_ask_before_unload: false
+            });
         });
     </script>
     @RenderSection("scripts", required: false)

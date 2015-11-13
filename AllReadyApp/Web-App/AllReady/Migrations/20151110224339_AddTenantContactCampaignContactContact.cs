@@ -84,18 +84,6 @@ namespace AllReady.Migrations
                 name: "Name",
                 table: "AllReadyTask",
                 nullable: false);
-            migrationBuilder.AddColumn<string>(
-                name: "AdditionalInfo",
-                table: "ActivitySignup",
-                nullable: true);
-            migrationBuilder.AddColumn<string>(
-                name: "PreferredEmail",
-                table: "ActivitySignup",
-                nullable: true);
-            migrationBuilder.AddColumn<string>(
-                name: "PreferredPhoneNumber",
-                table: "ActivitySignup",
-                nullable: true);
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
                 table: "Activity",
@@ -120,9 +108,6 @@ namespace AllReady.Migrations
             migrationBuilder.DropForeignKey(name: "FK_Tenant_Location_LocationId", table: "Tenant");
             migrationBuilder.DropColumn(name: "LocationId", table: "Tenant");
             migrationBuilder.DropColumn(name: "LocationId", table: "Campaign");
-            migrationBuilder.DropColumn(name: "AdditionalInfo", table: "ActivitySignup");
-            migrationBuilder.DropColumn(name: "PreferredEmail", table: "ActivitySignup");
-            migrationBuilder.DropColumn(name: "PreferredPhoneNumber", table: "ActivitySignup");
             migrationBuilder.DropTable("CampaignContact");
             migrationBuilder.DropTable("TenantContact");
             migrationBuilder.DropTable("Contact");
