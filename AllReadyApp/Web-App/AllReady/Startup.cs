@@ -80,7 +80,13 @@ namespace AllReady
             });
 
             // Add Identity services to the services container.
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                    {
+                        options.Password.RequiredLength = 10;
+                        options.Password.RequireNonLetterOrDigit = false;
+                        options.Password.RequireDigit = true;
+                        options.Password.RequireUppercase = false;
+                    })
                      .AddEntityFrameworkStores<AllReadyContext>()
                      .AddDefaultTokenProviders();
 
