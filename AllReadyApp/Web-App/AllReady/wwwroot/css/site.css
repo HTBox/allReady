@@ -275,3 +275,11 @@ Navigation
     font-size: 24pt;
     font-family: sans-serif;
 }
+
+/* version information */
+.version{
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    font-size: 9px;
+}

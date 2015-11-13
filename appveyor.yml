@@ -21,6 +21,7 @@ before_build:
  - nuget restore AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj -SolutionDirectory .\AllReadyApp
 
 build_script:
+ - ps: (Get-Content AllReadyApp\Web-App\AllReady\version.json).replace("GITVERSION", (git rev-parse HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json
  - cmd: msbuild AllReadyApp\AllReady.Models\AllReady.Models.csproj
  - cmd: dnu build AllReadyApp/wrap/AllReady.Models/project.json
  - cmd: dnu build AllReadyApp\Web-App\AllReady\project.json

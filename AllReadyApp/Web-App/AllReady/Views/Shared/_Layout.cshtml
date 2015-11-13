@@ -95,9 +95,10 @@
                 <img src="~/images/youtube-small.png" alt="YouTube" />
             </p>
             <p class="text-center">Powered by <br /><a href="http://www.htbox.org/">Humanitarian Toolbox</a></p>
+            
         </footer>
     </div>
-
+    @await Html.PartialAsync("_Version")
     <environment names="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
