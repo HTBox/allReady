@@ -31,6 +31,7 @@ namespace AllReady.Areas.Admin.Features.Activities
             activity.StartDateTimeUtc = message.Activity.StartDateTime;
             activity.EndDateTimeUtc = message.Activity.EndDateTime;
             activity.CampaignId = message.Activity.CampaignId;
+            activity.ImageUrl = message.Activity.ImageUrl;
             activity.TenantId = _context.Campaigns.Single(c => c.Id == activity.CampaignId).ManagingTenantId;
             activity.NumberOfVolunteersRequired = message.Activity.NumberOfVolunteersRequired;
 

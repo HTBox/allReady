@@ -18,6 +18,7 @@ using System;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Areas.Admin.Features.Campaigns;
+using AllReady.Extensions;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -82,7 +83,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Activity/Create/{campaignId}")]
-        public IActionResult Create(int campaignId, ActivityDetailModel activity)
+        public async Task<IActionResult> Create(int campaignId, ActivityDetailModel activity, IFormFile fileUpload)
         {
             if (activity.EndDateTime < activity.StartDateTime)
             {
@@ -108,8 +109,26 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+                if (fileUpload != null)
+                {
+                    if (!fileUpload.IsAcceptableImageContentType())
+                    {
+                        ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
+                        return View("Edit", activity);
+                    }
+                }
+
                 activity.TenantId = campaign.TenantId;
                 var id = _bus.Send(new EditActivityCommand { Activity = activity });
+
+                if (fileUpload != null)
+                {
+                    // resave now that activty has the ImageUrl
+                    activity.Id = id;
+                    activity.ImageUrl = await _imageService.UploadActivityImageAsync(campaign.TenantId, id, fileUpload);
+                    _bus.Send(new EditActivityCommand { Activity = activity });
+                }
+
                 return RedirectToAction("Details", "Activity", new { area = "Admin", id = id });
             }
             return View("Edit", activity);
@@ -135,7 +154,7 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Activity/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(ActivityDetailModel activity)
+        public async Task<IActionResult> Edit(ActivityDetailModel activity, IFormFile fileUpload)
         {
             if (activity == null)
             {
@@ -167,6 +186,19 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+                if (fileUpload != null)
+                {
+                    if (fileUpload.IsAcceptableImageContentType())
+                    {
+                        activity.ImageUrl = await _imageService.UploadActivityImageAsync(campaign.TenantId, activity.Id, fileUpload);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
+                        return View(activity);
+                    }
+                }
+                
                 var id = _bus.Send(new EditActivityCommand { Activity = activity });
                 return RedirectToAction("Details", "Activity", new { area = "Admin", id = id });
             }
@@ -257,18 +289,6 @@ namespace AllReady.Areas.Admin.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PostActivityFile(int id, IFormFile file)
-        {
-            //TODO: Use a command here
-            Activity a = _dataAccess.GetActivity(id);
-
-            a.ImageUrl = await _imageService.UploadActivityImageAsync(a.Id, a.Tenant.Id, file);
-            await _dataAccess.UpdateActivity(a);
-
-            return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Edit", id = id });
-        }
 
         private bool UserIsTenantAdminOfActivity(Activity activity)
         {

@@ -57,50 +57,7 @@ namespace AllReady.Controllers
             return View("Edit", new CampaignSummaryModel());
         }
 
-        // POST: Campaign/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CampaignSummaryModel campaign, IFormCollection form)
-        {
-            if (campaign == null)
-            {
-                return HttpBadRequest();
-            }
-
-            if (!User.IsTenantAdmin(campaign.TenantId))
-            {
-                return HttpUnauthorized();
-            }
-
-            if (ModelState.IsValid)
-            {
-                if (form.Files.Count > 0)
-                {
-                    // If the form contains a file, upload it and update the ImageUrl.
-                    if (form.Files[0] != null)
-                    {
-                        var file = form.Files[0];
-
-                        if (file.IsAcceptableImageContentType())
-                        {
-                            campaign.ImageUrl = await _imageService.UploadCampaignImageAsync(campaign.Id, campaign.TenantId, form.Files[0]);
-                        }
-                        else
-                        {
-                            ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
-                            return View(campaign);
-                        }
-                    }
-                }
-
-                int id = _bus.Send(new EditCampaignCommand { Campaign = campaign });
-                return RedirectToAction("Details", new {id = id, area = "Admin" });
-            }
-
-            return View("Edit", campaign);
-        }
-
-        // GET: Campaign/Edit/5
+         // GET: Campaign/Edit/5
         public IActionResult Edit(int id)
         {
             CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
@@ -121,7 +78,7 @@ namespace AllReady.Controllers
         // POST: Campaign/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(CampaignSummaryModel campaign, IFormCollection form)
+        public async Task<IActionResult> Edit(CampaignSummaryModel campaign, IFormFile fileUpload)
         {
             if (campaign == null)
             {
@@ -135,22 +92,16 @@ namespace AllReady.Controllers
 
             if (ModelState.IsValid)
             {
-                if (form.Files.Count > 0)
+                if (fileUpload != null)
                 {
-                    // If the form contains a file, upload it and update the ImageUrl.
-                    if (form.Files[0] != null)
+                    if (fileUpload.IsAcceptableImageContentType())
                     {
-                        var file = form.Files[0];
-                        
-                        if (file.IsAcceptableImageContentType())
-                        {
-                            campaign.ImageUrl = await _imageService.UploadCampaignImageAsync(campaign.Id, campaign.TenantId, form.Files[0]);
-                        }
-                        else
-                        {
-                            ModelState.AddModelError("FileUpload", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
-                            return View(campaign);
-                        }
+                        campaign.ImageUrl = await _imageService.UploadCampaignImageAsync(campaign.TenantId, campaign.Id, fileUpload);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
+                        return View(campaign);
                     }
                 }
 
@@ -192,17 +143,5 @@ namespace AllReady.Controllers
             return RedirectToAction("Index", new { area = "Admin" });
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PostCampaignFile(int id, IFormFile file)
-        {
-            var campaign = _dataAccess.GetCampaign(id);
-
-            campaign.ImageUrl = await _imageService.UploadCampaignImageAsync(campaign.Id, campaign.ManagingTenantId, file);
-            await _dataAccess.UpdateCampaign(campaign);
-
-            return RedirectToRoute(new { controller = "Campaign", Area = "Admin", action = "Edit", id = id });
-
-        }
     }
 }
