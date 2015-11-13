@@ -28,9 +28,5 @@ namespace AllReady.Services
                 .OrderBy(s => s.Name);
         }
 
-        public IEnumerable<CampaignImpactType> GetCampaignImpactTypes()
-        {
-            return _context.CampaignImpactTypes.ToList();
-        }
     }
 }

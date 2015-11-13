@@ -1,5 +1,6 @@
-﻿@using AllReady.ViewModels
-@model CampaignViewModel
+﻿@using System.Threading.Tasks
+@using AllReady.Areas.Admin.Models
+@model CampaignDetailModel
 
 <div class="panel panel-success campaign-impact">
     <div class="panel-heading">@Html.Raw(Model.CampaignImpact.TextualImpactGoal) </div>
@@ -19,7 +20,7 @@
                     else
                     {
                         <text>
-                        @Model.CampaignImpact.PercentComplete
+                            @Model.CampaignImpact.PercentComplete
                         </text>
                     }
                 </div>
