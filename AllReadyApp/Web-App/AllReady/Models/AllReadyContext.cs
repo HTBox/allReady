@@ -6,7 +6,7 @@ namespace AllReady.Models
 {
     public class AllReadyContext : IdentityDbContext<ApplicationUser>
     {
-        public DbSet<Tenant> Tenants { get; set; }
+        public virtual DbSet<Tenant> Tenants { get; set; }
         public DbSet<ActivitySignup> ActivitySignup { get; set; }
         public DbSet<Campaign> Campaigns { get; set; }
         public DbSet<CampaignImpact> CampaignImpacts { get; set; }
@@ -18,7 +18,7 @@ namespace AllReady.Models
         public DbSet<TaskSkill> TaskSkills { get; set; }
         public DbSet<TaskSignup> TaskSignups { get; set; }
         public DbSet<Resource> Resources { get; set; }
-        public DbSet<Skill> Skills { get; set; }
+        public virtual DbSet<Skill> Skills { get; set; }
         public DbSet<UserSkill> UserSkills { get; set; }
 
         public DbSet<Contact> Contacts { get; set; }

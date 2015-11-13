@@ -1,6 +1,4 @@
 ﻿
-using System.Collections.Generic;
-using AllReady.Features.Notifications;
 using AllReady.Services;
 using MediatR;
 using Moq;
