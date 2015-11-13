@@ -100,32 +100,5 @@ namespace AllReady.UnitTest.Services
                 return obj.Id.GetHashCode();
             }
         }
-
-        [Fact]
-        public void GetCampaignImpactTypesTest()
-        {
-            var data = new List<CampaignImpactType>
-            {
-                new CampaignImpactType { Id = 1, Name = "name1" },
-                new CampaignImpactType { Id = 2, Name = "name2" }
-            }.AsQueryable();
-
-            var mockSet = new Mock<DbSet<CampaignImpactType>>();
-            mockSet.As<IQueryable<CampaignImpactType>>().Setup(m => m.Provider).Returns(data.Provider);
-            mockSet.As<IQueryable<CampaignImpactType>>().Setup(m => m.Expression).Returns(data.Expression);
-            mockSet.As<IQueryable<CampaignImpactType>>().Setup(m => m.ElementType).Returns(data.ElementType);
-            mockSet.As<IQueryable<CampaignImpactType>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
-
-            var mockContext = new Mock<AllReadyContext>();
-            mockContext.Setup(c => c.CampaignImpactTypes).Returns(mockSet.Object);
-
-            var service = new SelectListService(mockContext.Object);
-            var campaignImpactTypes = service.GetCampaignImpactTypes().ToList();
-
-            var expected = data.ToList();
-
-            Assert.Equal(2, campaignImpactTypes.Count);
-            Assert.Equal(expected, campaignImpactTypes);
-        }
     }
 }

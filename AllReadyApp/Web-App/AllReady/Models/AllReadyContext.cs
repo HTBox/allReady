@@ -10,7 +10,6 @@ namespace AllReady.Models
         public DbSet<ActivitySignup> ActivitySignup { get; set; }
         public DbSet<Campaign> Campaigns { get; set; }
         public DbSet<CampaignImpact> CampaignImpacts { get; set; }
-        public virtual DbSet<CampaignImpactType> CampaignImpactTypes { get; set; }
         public DbSet<Activity> Activities { get; set; }
         public DbSet<ActivitySkill> ActivitySkills { get; set; }
         public DbSet<Location> Locations { get; set; }
