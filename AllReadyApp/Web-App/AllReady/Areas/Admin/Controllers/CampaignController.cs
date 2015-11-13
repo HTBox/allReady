@@ -8,6 +8,7 @@ using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Models;
 using System.Threading.Tasks;
 using AllReady.Services;
+using AllReady.Extensions;
 
 namespace AllReady.Controllers
 {
@@ -59,7 +60,7 @@ namespace AllReady.Controllers
         // POST: Campaign/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(CampaignSummaryModel campaign)
+        public async Task<IActionResult> Create(CampaignSummaryModel campaign, IFormCollection form)
         {
             if (campaign == null)
             {
@@ -73,6 +74,25 @@ namespace AllReady.Controllers
 
             if (ModelState.IsValid)
             {
+                if (form.Files.Count > 0)
+                {
+                    // If the form contains a file, upload it and update the ImageUrl.
+                    if (form.Files[0] != null)
+                    {
+                        var file = form.Files[0];
+
+                        if (file.IsAcceptableImageContentType())
+                        {
+                            campaign.ImageUrl = await _imageService.UploadCampaignImageAsync(campaign.Id, campaign.TenantId, form.Files[0]);
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
+                            return View(campaign);
+                        }
+                    }
+                }
+
                 int id = _bus.Send(new EditCampaignCommand { Campaign = campaign });
                 return RedirectToAction("Details", new {id = id, area = "Admin" });
             }
@@ -101,7 +121,7 @@ namespace AllReady.Controllers
         // POST: Campaign/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(CampaignSummaryModel campaign)
+        public async Task<IActionResult> Edit(CampaignSummaryModel campaign, IFormCollection form)
         {
             if (campaign == null)
             {
@@ -115,6 +135,25 @@ namespace AllReady.Controllers
 
             if (ModelState.IsValid)
             {
+                if (form.Files.Count > 0)
+                {
+                    // If the form contains a file, upload it and update the ImageUrl.
+                    if (form.Files[0] != null)
+                    {
+                        var file = form.Files[0];
+                        
+                        if (file.IsAcceptableImageContentType())
+                        {
+                            campaign.ImageUrl = await _imageService.UploadCampaignImageAsync(campaign.Id, campaign.TenantId, form.Files[0]);
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("FileUpload", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
+                            return View(campaign);
+                        }
+                    }
+                }
+
                 int id = _bus.Send(new EditCampaignCommand { Campaign = campaign });
                 return RedirectToAction("Details", new { area = "Admin", id = id });
             }
@@ -159,7 +198,7 @@ namespace AllReady.Controllers
         {
             var campaign = _dataAccess.GetCampaign(id);
 
-            campaign.ImageUrl = await _imageService.UploadActivityImageAsync(campaign.Id, campaign.ManagingTenantId, file);
+            campaign.ImageUrl = await _imageService.UploadCampaignImageAsync(campaign.Id, campaign.ManagingTenantId, file);
             await _dataAccess.UpdateCampaign(campaign);
 
             return RedirectToRoute(new { controller = "Campaign", Area = "Admin", action = "Edit", id = id });
