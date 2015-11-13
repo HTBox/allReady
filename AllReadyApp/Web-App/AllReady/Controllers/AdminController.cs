@@ -11,6 +11,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Framework.OptionsModel;
+using AllReady.Security;
 
 namespace AllReady.Controllers
 {
@@ -71,23 +72,20 @@ namespace AllReady.Controllers
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
-                {
+                {                    
                     var user = await _userManager.FindByNameAsync(model.Email);
-                    var claims = await _userManager.GetClaimsAsync(user);
-                    if (claims.Count > 0)
+                    if (user.IsUserType(UserType.SiteAdmin))
                     {
-                        var claimValue = claims.FirstOrDefault(c => c.Type.Equals(Security.ClaimTypes.UserType)).Value;
-
-                        if (claimValue.Equals("TenantAdmin"))
-                        {
-                            return base.RedirectToAction(nameof(Areas.Admin.Controllers.TenantController.Index), "Tenant", new { area = "Admin" });
-                        }
-                        else if (claimValue.Equals("SiteAdmin"))
-                        {
-                            return RedirectToAction(nameof(SiteController.Index), "Site", new { area = "Admin" });
-                        }
+                        return RedirectToAction(nameof(SiteController.Index), "Site", new { area = "Admin" });
                     }
-
+                    else if (user.IsUserType(UserType.TenantAdmin))
+                    {
+                        return base.RedirectToAction(nameof(Areas.Admin.Controllers.TenantController.Index), "Tenant", new { area = "Admin" });
+                    }
+                    else
+                    {                        
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
                 if (result.RequiresTwoFactor)
                 {
