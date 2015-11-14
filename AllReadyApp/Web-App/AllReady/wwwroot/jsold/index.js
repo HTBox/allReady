@@ -1,10 +1,11 @@
-(function (ko, $, navigator) {
+﻿(function (ko, $, navigator) {
+
     var indexViewModel = {
         status: ko.observable(),
         searchTerm: ko.observable(),
         activities: ko.observableArray(),
         loadingDone: ko.observable(false),
-        handleEnter: function (data, event) {
+        handleEnter: function(data, event) {
             if (event.keyCode === 13) {
                 this.searchActivities();
             }
@@ -15,12 +16,11 @@
             var term = this.searchTerm();
             if (term !== undefined) {
                 $.get('/api/activity/search/?zip=' + term + '&miles=10')
-                    .done(function (data) {
+                .done(function (data) {
                     if (data) {
                         indexViewModel.activities(data.slice(0, 3));
                         indexViewModel.loadingDone(true);
-                    }
-                    else {
+                    } else {
                         self.status('noresults');
                     }
                 }).fail(function () {

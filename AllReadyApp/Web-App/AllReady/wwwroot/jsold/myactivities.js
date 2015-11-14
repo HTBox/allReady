@@ -1,4 +1,5 @@
-(function (ko, $) {
+﻿(function (ko, $) {
+
     function TaskModel(status, statusDescription, id, name, tid) {
         this.status = ko.observable(status);
         this.statusDescription = ko.observable(statusDescription);
@@ -6,6 +7,7 @@
         this.name = ko.observable(name);
         this.taskId = ko.observable(tid);
     }
+
     var myActivitiesViewModel = {
         tasksLoaded: ko.observable(false),
         statusList: ko.observableArray(["Completed", "Cannot complete"]),
@@ -14,7 +16,7 @@
             type: ko.observable(),
             exists: ko.observable(false),
         },
-        handleResponse: function (response, which, message) {
+        handleResponse: function (response, which, message){
             var that = this;
             that.notification.message(message);
             that.notification.type(which);
@@ -23,7 +25,7 @@
         tasks: ko.observableArray(),
         expand: function (actId, data, event) {
             var that = this;
-            var el = "#activity-details-" + actId;
+            var el = "#activity-details-"+actId;
             $(el).toggle();
             var chevron = ($(el).is(":visible")) ? "fa fa-chevron-up" : "fa fa-chevron-down";
             $(event.currentTarget).children("span").removeClass().addClass(chevron);
@@ -51,14 +53,20 @@
         loadTasks: function (activityId, data, event) {
             var that = this;
             $.get("/MyActivities/" + activityId + "/tasks")
-                .done(function (response) {
+            .done(function (response) {
                 if (response.length < 1) {
                     that.handleResponse(response, 'notification', 'No results');
                     return;
                 }
                 var temp = [];
                 for (var i = 0; i < response.length; i++) {
-                    temp.push(new TaskModel(response[i].Status, response[i].StatusDescription, response[i].Id, response[i].TaskName, response[i].TaskId));
+                    temp.push(new TaskModel(
+                        response[i].Status,
+                        response[i].StatusDescription,
+                        response[i].Id,
+                        response[i].TaskName,
+                        response[i].TaskId
+                    ));
                 }
                 that.tasks(temp);
                 that.tasksLoaded(true);
@@ -93,7 +101,9 @@
             }).fail(function (response) {
                 that.handleResponse(response, "error", "An error has happened");
             });
+
         }
-    };
+    }
+
     ko.applyBindings(myActivitiesViewModel);
-})(ko, $);
+})(ko, $)
