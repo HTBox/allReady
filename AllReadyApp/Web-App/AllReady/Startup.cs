@@ -60,10 +60,7 @@ namespace AllReady
                 .AddSqlServer()
                 .AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
 
-            services.Configure<AzureStorageSettings>(options =>
-            {
-                options.AzureStorage = Configuration["Data:Storage:AzureStorage"];
-            });
+            services.Configure<AzureStorageSettings>(Configuration.GetSection("Data:Storage"));
             services.Configure<DatabaseSettings>(Configuration.GetSection("Data:DefaultConnection"));
             services.Configure<EmailSettings>(Configuration.GetSection("Email"));
             services.Configure<SampleDataSettings>(Configuration.GetSection("SampleData"));

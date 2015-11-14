@@ -6,6 +6,7 @@ namespace AllReady
     public class AzureStorageSettings
     {
         public string AzureStorage { get; set; }
+        public bool EnableAzureQueueService { get; set; }
     }
 
     public class GeneralSettings
