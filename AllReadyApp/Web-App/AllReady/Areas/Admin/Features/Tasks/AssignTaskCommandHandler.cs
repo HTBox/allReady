@@ -10,11 +10,13 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class AssignTaskCommandHandler : RequestHandler<AssignTaskCommand>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
+        private readonly IMediator _bus;
 
-        public AssignTaskCommandHandler(AllReadyContext context)
+        public AssignTaskCommandHandler(AllReadyContext context, IMediator bus)
         {
             _context = context;
+            _bus = bus;
         }
 
         protected override void HandleCore(AssignTaskCommand message)
@@ -56,8 +58,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 }
             }
             _context.SaveChanges();
-            /*
-            //TODO: Create Event, for Pub\Sub
+
             // send all notifications to the queue
             var smsRecipients = new List<string>();
             var emailRecipients = new List<string>();
@@ -71,9 +72,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             var command = new NotifyVolunteersCommand
             {
-                // todo: what information do we add about the task?
-                // todo: should we use a template from the email service provider?
-                // todo: what about non-English volunteers?
                 ViewModel = new NotifyVolunteersViewModel
                 {
                     SmsMessage = "You've been assigned a task from AllReady.",
@@ -85,7 +83,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             };
 
             _bus.Send(command);
-            */
+
         }
     }
 }
