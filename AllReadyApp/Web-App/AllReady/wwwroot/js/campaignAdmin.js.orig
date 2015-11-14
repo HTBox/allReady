@@ -32,6 +32,7 @@
         toggleImpactDisplay();
     });
 
+<<<<<<< 99bb5daad69e6955e877c30abeada09ca1b1df85
     function toggleImpactDisplay() {
         console.log($("#CampaignImpact_ImpactType").val());
         if ($("#CampaignImpact_ImpactType").val() === "0") {
@@ -42,3 +43,6 @@
         }
     }
 });
+=======
+});
+>>>>>>> change the dir structure for typescript

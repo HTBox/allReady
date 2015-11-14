@@ -1,8 +1,7 @@
-//TODO: Lots of duplication here with activityDetails. Would be great to merge these
-var HTBox;
+﻿var HTBox;
 (function (HTBox) {
-    var TaskDetailAdmin = (function () {
-        function TaskDetailAdmin() {
+    var ActivityDetailAdmin = (function () {
+        function ActivityDetailAdmin() {
             $("#messageVolunteersModal").on("show.bs.modal", function (e) {
                 var modal = $(this);
                 $('#messageCharacterCount').html("");
@@ -13,7 +12,8 @@ var HTBox;
                 $(".alert-danger", modal).hide();
                 $(".alert-success", modal).hide();
             });
-            $("#messageVolunteersModal form").submit(function (e) {
+
+            $("#messageVolunteersModal form").submit(function(e){
                 e.preventDefault();
                 $("#sendMessageToVolunteers").attr('disabled', 'disabled');
                 var form = $(this);
@@ -37,12 +37,13 @@ var HTBox;
                         var errorMessage = "";
                         if (error.responseText) {
                             var errorInfo = JSON.parse(error.responseText);
+                            
                             if (errorInfo.Subject && errorInfo.Subject.length > 0) {
                                 errorMessage = errorMessage + errorInfo.Subject[0] + "<br/>";
                             }
                             if (errorInfo.Message && errorInfo.Message.length > 0) {
                                 errorMessage = errorMessage + errorInfo.Message[0] + "<br/>";
-                            }
+                            }                            
                         }
                         if (errorMessage === "") {
                             errorMessage = "An error occurred while attempting to send message. Please try again.";
@@ -52,16 +53,20 @@ var HTBox;
                         $("#sendMessageToVolunteers").removeAttr('disabled');
                     }
                 });
+
                 // prevent submitting again
                 return false;
             });
+
             $('#messageCharacterCount').html("");
+
             $('#messageVolunteersModal-message').keyup(function () {
                 var messageLength = $('#messageVolunteersModal-message').val().length;
+
                 $('#messageCharacterCount').html(messageLength + ' characters');
             });
         }
-        return TaskDetailAdmin;
+        return ActivityDetailAdmin;
     })();
-    HTBox.TaskDetailAdmin = TaskDetailAdmin;
+    HTBox.ActivityDetailAdmin = ActivityDetailAdmin;
 })(HTBox || (HTBox = {}));

@@ -1,6 +1,7 @@
-///<reference path="../lib/jquery/dist/jquery.js" />
+﻿///<reference path="../lib/jquery/dist/jquery.js" />
 ///<reference path="../lib/knockout/dist/knockout.js" />
 ///<reference path="../lib/moment/moment.js" />
+
 ko.observableArray.fn.filterList = function (filterFn) {
     var inputToFilterFn = this.filtered || this;
     //If this observable array has already been filtered, append this function as a filter instead of replacing
@@ -9,6 +10,7 @@ ko.observableArray.fn.filterList = function (filterFn) {
     }, this);
     return this;
 };
+
 ko.observableArray.fn.filterBeforeDate = function (dateProperty, showOld, date) {
     var showOld = ko.observable(showOld || false);
     showOld.toggle = function () {
@@ -21,6 +23,7 @@ ko.observableArray.fn.filterBeforeDate = function (dateProperty, showOld, date) 
         });
     });
 };
+
 ko.observableArray.fn.textFilter = function (searchProperties, initialTerm) {
     if (!$.isArray(searchProperties)) {
         searchProperties = [searchProperties];
