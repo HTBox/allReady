@@ -41,7 +41,12 @@
 
 <form asp-controller="Campaign" asp-route-area="Admin" asp-action="Edit" method="post" enctype="multipart/form-data">
 
-    <button type="button" id="btnGetContactInfo" class="btn btn-info" title="Copy Contact Information from Organizatio">Copy Contact Info</button>
+    <button type="button"
+            id="btnGetContactInfo"
+            class="btn btn-info"
+            data-toggle="modal"
+            data-target="#confirmContactModal"
+            title="Copy Contact Information from Organizatio">Copy Contact Info</button>
 
 
     <div class="form-horizontal">
@@ -158,6 +163,28 @@
     </div>
 
 </form>
+
+<div class="modal fade" id="confirmContactModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
+    <div class="modal-dialog" >
+        <div class="modal-content" role="document">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modalLabel">Confirm Contact Details</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    This will copy in the contact details that you have stored
+                    at the organization levels. If you have contact information
+                    saved here now, it will be overwritten.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="confirmOverwriteContact" type="button" class="btn btn-primary">Overwrite existing details</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @if (isEdit)
 {
