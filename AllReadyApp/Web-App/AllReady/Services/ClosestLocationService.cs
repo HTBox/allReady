@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Reflection;
 using AllReady.Models;
 using Microsoft.Framework.OptionsModel;
@@ -72,17 +73,16 @@ namespace AllReady.Services
     {
         public static List<T> DataReaderMapToList<T>(this IDataReader dr)
         {
-            List<T> list = new List<T>();
-            T obj = default(T);
+            var list = new List<T>();
             while (dr.Read())
             {
-                obj = Activator.CreateInstance<T>();
-                foreach (PropertyInfo prop in obj.GetType().GetProperties())
+                var obj = Activator.CreateInstance<T>();
+                foreach (var prop in obj
+                    .GetType()
+                    .GetProperties()
+                    .Where(prop => !Equals(dr[prop.Name], DBNull.Value)))
                 {
-                    if (!object.Equals(dr[prop.Name], DBNull.Value))
-                    {
-                        prop.SetValue(obj, dr[prop.Name], null);
-                    }
+                    prop.SetValue(obj, dr[prop.Name], null);
                 }
                 list.Add(obj);
             }
