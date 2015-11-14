@@ -65,7 +65,7 @@ namespace AllReady.Services
             if (fileName.EndsWith(".jpg") || fileName.EndsWith(".jpeg") || fileName.EndsWith(".png") ||
                 fileName.EndsWith(".gif"))
             {
-                var account = CloudStorageAccount.Parse(_settings.StorageAccount);
+                var account = CloudStorageAccount.Parse(_settings.AzureStorage);
                 CloudBlobContainer container = account.CreateCloudBlobClient().GetContainerReference(CONTAINER_NAME);
 
                 //Create container if it doesn't exist wiht public access

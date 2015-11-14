@@ -62,7 +62,7 @@ namespace AllReady
 
             services.Configure<AzureStorageSettings>(options =>
             {
-                options.StorageAccount = Configuration["Data:Storage:AzureStorage"];
+                options.AzureStorage = Configuration["Data:Storage:AzureStorage"];
             });
             services.Configure<DatabaseSettings>(Configuration.GetSection("Data:DefaultConnection"));
             services.Configure<EmailSettings>(Configuration.GetSection("Email"));
