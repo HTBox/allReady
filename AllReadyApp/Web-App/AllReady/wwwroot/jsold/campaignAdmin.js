@@ -1,4 +1,4 @@
-$(function () {
+﻿$(function () {
     $("#btnGetContactInfo").click(function () {
         if (confirm("Do you want to overwrite existing contact information?")) {
             var id = $("select[id=TenantId").val();
@@ -19,7 +19,7 @@ $(function () {
                     }
                 }
             })
-                .fail(function (e, t, m) {
+            .fail(function (e, t, m) {
                 alert("Ajax Error:" + e);
             });
         }

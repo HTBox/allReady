@@ -1,5 +1,6 @@
-///<reference path="../lib/jquery/dist/jquery.js" />
+﻿///<reference path="../lib/jquery/dist/jquery.js" />
 ///<reference path="../lib/knockout/dist/knockout.js" />
+
 (function (ko, $, campaigns) {
     function Campaign(item) {
         for (var prop in item) {
@@ -9,9 +10,10 @@
             var start = this.StartDate.split('T')[0];
             var end = this.EndDate.split('T')[0];
             return start + ' : ' + end;
-        };
+        }
         return this;
     }
+
     function CampaignsViewModel(campaigns) {
         this.searchTerm = ko.observable();
         this.campaignsNearZip = ko.observableArray();
@@ -27,7 +29,7 @@
             var term = this.searchTerm();
             if (term) {
                 $.get('/api/campaign/search/?zip=' + term + '&miles=10')
-                    .done(function (data) {
+                .done(function (data) {
                     if (data) {
                         self.campaignsNearZip(data);
                     }
@@ -35,9 +37,12 @@
                 });
             }
         };
-        var list = campaigns.map(function (item) { return new Campaign(item); });
+
+        var list = campaigns.map(function (item) { return new Campaign(item); })
+
         this.campaigns = ko.observableArray(list).filterBeforeDate("EndDate").textFilter(["Name", "Description"]);
         this.total = list.length;
     }
     ko.applyBindings(new CampaignsViewModel(campaigns));
+
 })(ko, $, modelCampaigns);

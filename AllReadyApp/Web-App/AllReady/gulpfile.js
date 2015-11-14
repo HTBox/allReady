@@ -4,6 +4,7 @@ var gulp = require("gulp"),
     concat = require("gulp-concat"),
     cssmin = require("gulp-cssmin"),
     uglify = require("gulp-uglify"),
+    debug = require("gulp-debug"),
     ts = require('gulp-typescript'),
     project = require("./project.json");
 
@@ -12,6 +13,7 @@ var paths = {
 };
 
 paths.js = paths.webroot + "js/**/*.js";
+paths.tsResult = paths.webroot + "./ts/**/*.js";
 paths.minJs = paths.webroot + "js/**/*.min.js";
 paths.css = paths.webroot + "css/**/*.css";
 paths.minCss = paths.webroot + "css/**/*.min.css";
@@ -49,13 +51,27 @@ gulp.task("watch", function () {
 })
 
 
+
+
+gulp.task('typescript:Build', function () {
+    return gulp.src('ts/**/*.ts')
+        .pipe(ts({
+            noImplicitAny: false,
+            target: "es5",
+            module: "system",
+        }))
+        .pipe(gulp.dest('wwwroot/js'));
+});
+
+
+
 //https://www.npmjs.com/package/gulp-typescript
 //http://weblogs.asp.net/dwahlin/creating-a-typescript-workflow-with-gulp
 var tsProject = ts.createProject('tsconfig.json');
 
-gulp.task('typescript:Build', function () {
-    var tsResult = tsProject.src() // instead of gulp.src(...) 
-        .pipe(ts(tsProject));
-    return tsResult.js.pipe(gulp.dest('wwwroot/release'));
-});
+//gulp.task('typescript:Build', function () {
+//    var tsResult = tsProject.src() // instead of gulp.src(...) 
+//        .pipe(ts(tsProject));
+
+//});
 

@@ -1,5 +1,6 @@
-///<reference path="../lib/jquery/dist/jquery.js" />
+﻿///<reference path="../lib/jquery/dist/jquery.js" />
 ///<reference path="../lib/knockout/dist/knockout.js" />
+
 (function (ko, $, tenants) {
     function Orgainzation(item) {
         for (var prop in item) {
@@ -12,10 +13,13 @@
         //}
         return this;
     }
+
     function TenantViewModel(tenants) {
-        var list = tenants.map(function (item) { return new Orgainzation(item); });
+        var list = tenants.map(function (item) { return new Orgainzation(item); })
+
         this.tenants = ko.observableArray(tenants).textFilter(["Name", "Description"]);
         this.total = tenants.length;
     }
+
     ko.applyBindings(new TenantViewModel(tenants));
 })(ko, $, modelTenants);
