@@ -63,12 +63,9 @@ namespace AllReady.Areas.Admin.Features.Tasks
             var smsRecipients = new List<string>();
             var emailRecipients = new List<string>();
 
-            foreach (var allReadyTask in newVolunteers)
-            {
-                // get all confirmed contact points for the broadcast
-                smsRecipients.AddRange(newVolunteers.Where(u => u.User.PhoneNumberConfirmed).Select(v => v.User.PhoneNumber));
-                emailRecipients.AddRange(newVolunteers.Where(u => u.User.EmailConfirmed).Select(v => v.User.Email));
-            }
+            // get all confirmed contact points for the broadcast
+            smsRecipients.AddRange(newVolunteers.Where(u => u.User.PhoneNumberConfirmed).Select(v => v.User.PhoneNumber));
+            emailRecipients.AddRange(newVolunteers.Where(u => u.User.EmailConfirmed).Select(v => v.User.Email));
 
             var command = new NotifyVolunteersCommand
             {
