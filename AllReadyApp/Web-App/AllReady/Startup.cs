@@ -17,6 +17,7 @@ using Microsoft.Dnx.Runtime;
 using Microsoft.Framework.Configuration;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
+using AllReady.Security;
 
 namespace AllReady
 {
@@ -239,6 +240,9 @@ namespace AllReady
                 {
                     options.AppId = Configuration["Authentication:Facebook:AppId"];
                     options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                    options.Scope.Add("email");
+                    options.BackchannelHttpHandler = new FacebookBackChannelHandler();
+                    options.UserInformationEndpoint = "https://graph.facebook.com/v2.5/me?fields=id,name,email,first_name,last_name";
                 });
             }
             // app.UseGoogleAuthentication();
