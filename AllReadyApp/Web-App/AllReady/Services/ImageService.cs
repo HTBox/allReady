@@ -34,25 +34,25 @@ namespace AllReady.Services
         /// <returns></returns>
         public async Task<string> UploadTenantImageAsync(int tenantId, IFormFile image)
         {
-            string blobPath = tenantId.ToString();
+            var blobPath = tenantId.ToString();
             return await UploadImageAsync(blobPath, image);
         }
 
         public async Task<string> UploadActivityImageAsync(int tenantId, int activityId, IFormFile image)
         {
-            string blobPath = tenantId.ToString() + @"/activities/" + activityId.ToString();
+            var blobPath = tenantId + @"/activities/" + activityId;
             return await UploadImageAsync(blobPath, image);
         }
 
         public async Task<string> UploadCampaignImageAsync(int tenantId, int campaignId, IFormFile image)
         {
-            string blobPath = tenantId.ToString() + @"/campaigns/" + campaignId.ToString();
+            var blobPath = tenantId + @"/campaigns/" + campaignId;
             return await UploadImageAsync(blobPath, image);
         }
 
         public async Task<string> UploadImageAsync(IFormFile image)
         {
-            string blobPath = Guid.NewGuid().ToString().ToLower();
+            var blobPath = Guid.NewGuid().ToString().ToLower();
             return await UploadImageAsync(blobPath, image);
         }
 
@@ -60,30 +60,30 @@ namespace AllReady.Services
         {
             //Get filename
             var fileName = (ContentDispositionHeaderValue.Parse(image.ContentDisposition).FileName).Trim('"').ToLower();
-            Debug.WriteLine(string.Format("BlobPath={0}, fileName={1}, image length={2}", blobPath, fileName, image.Length.ToString()));
+            Debug.WriteLine("BlobPath={0}, fileName={1}, image length={2}", blobPath, fileName, image.Length.ToString());
 
             if (fileName.EndsWith(".jpg") || fileName.EndsWith(".jpeg") || fileName.EndsWith(".png") ||
                 fileName.EndsWith(".gif"))
             {
                 var account = CloudStorageAccount.Parse(_settings.AzureStorage);
-                CloudBlobContainer container = account.CreateCloudBlobClient().GetContainerReference(CONTAINER_NAME);
+                var container = account.CreateCloudBlobClient().GetContainerReference(CONTAINER_NAME);
 
                 //Create container if it doesn't exist wiht public access
                 await container.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Container, new BlobRequestOptions(), new OperationContext());
 
-                string blob = blobPath + "/" + fileName;
+                var blob = blobPath + "/" + fileName;
                 Debug.WriteLine("blob" + blob);
 
-                CloudBlockBlob blockBlob = container.GetBlockBlobReference(blob);
+                var blockBlob = container.GetBlockBlobReference(blob);
 
                 blockBlob.Properties.ContentType = image.ContentType;
 
                 using (var imageStream = image.OpenReadStream())
                 {
                     //Option #1
-                    byte[] contents = new byte[image.Length];
+                    var contents = new byte[image.Length];
 
-                    for (int i = 0; i < image.Length; i++)
+                    for (var i = 0; i < image.Length; i++)
                     {
                         contents[i] = (byte)imageStream.ReadByte();
                     }
@@ -94,13 +94,11 @@ namespace AllReady.Services
                     //await blockBlob.UploadFromStreamAsync(imageStream);
                 }
 
-                Debug.WriteLine("Image uploaded to URI: " + blockBlob.Uri.ToString());
+                Debug.WriteLine("Image uploaded to URI: " + blockBlob.Uri);
                 return blockBlob.Uri.ToString();
             }
-            else
-            {
-                throw new Exception("Invalid file extension: " + fileName + "You can only upload images with the extension: jpg, jpeg, gif, or png");
-            }
+
+            throw new Exception("Invalid file extension: " + fileName + "You can only upload images with the extension: jpg, jpeg, gif, or png");
         }
     }
 }

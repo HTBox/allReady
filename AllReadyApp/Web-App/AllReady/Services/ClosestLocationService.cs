@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Reflection;
 using AllReady.Models;
 using Microsoft.Framework.OptionsModel;
 
@@ -18,7 +17,7 @@ namespace AllReady.Services
     public class SqlClosestLocations
         : IClosestLocations
     {
-        private DatabaseSettings _settings;
+        private readonly DatabaseSettings _settings;
 
         public SqlClosestLocations(IOptions<DatabaseSettings> options)
         {
@@ -27,13 +26,13 @@ namespace AllReady.Services
 
         public IEnumerable<ClosestLocation> GetClosestLocations(LocationQuery query)
         {
-            IEnumerable<ClosestLocation> ret = null;
+            IEnumerable<ClosestLocation> ret;
 
             using (var connection = new SqlConnection(_settings.ConnectionString))
             {
                 var cmd = connection.CreateCommand();
                 cmd.CommandText = "GetClosestLocations";
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@lat", query.Latitude);
                 cmd.Parameters.AddWithValue("@lon", query.Longitude);
                 cmd.Parameters.AddWithValue("@count", query.MaxRecordsToReturn.HasValue ? query.MaxRecordsToReturn : 10);
@@ -50,13 +49,13 @@ namespace AllReady.Services
 
         public IEnumerable<PostalCodeGeoCoordinate> GetPostalCodeCoordinates(string postalCode)
         {
-            IEnumerable<PostalCodeGeoCoordinate> ret = null;
+            IEnumerable<PostalCodeGeoCoordinate> ret;
 
             using (var connection = new SqlConnection(_settings.ConnectionString))
             {
                 var cmd = connection.CreateCommand();
                 cmd.CommandText = "GetCoordinatesForPostalCode";
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@postalcode", postalCode);
 
                 if (cmd.Connection.State != ConnectionState.Open)
