@@ -1,10 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Net.Mail;
-using Microsoft.Framework.Configuration;
 using SendGrid;
-using System.Net;
 using Microsoft.Framework.OptionsModel;
 
 namespace AllReady.Services
