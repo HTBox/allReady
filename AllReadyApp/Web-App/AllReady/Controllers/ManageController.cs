@@ -52,6 +52,8 @@ namespace AllReady.Controllers
             var model = new IndexViewModel
             {
                 HasPassword = await _userManager.HasPasswordAsync(user),
+                EmailAddress = user.Email,
+                IsEmailAddressConfirmed = user.EmailConfirmed,
                 PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
                 TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
                 Logins = await _userManager.GetLoginsAsync(user),
@@ -81,6 +83,25 @@ namespace AllReady.Controllers
             user.AssociatedSkills?.ForEach(usk => usk.UserId = user.Id);
             await _dataAccess.UpdateUser(user);
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResendEmailConfirmation()
+        {
+            var user = await _userManager.FindByIdAsync(User.GetUserId());
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+            await _emailSender.SendEmailAsync(user.Email, "Confirm your allReady account",
+                "Please confirm your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+
+            return RedirectToAction(nameof(EmailConfirmationSent));
+        }
+
+        [HttpGet]
+        public IActionResult EmailConfirmationSent()
+        {
+            return View();
         }
 
         // GET: /Account/RemoveLogin
