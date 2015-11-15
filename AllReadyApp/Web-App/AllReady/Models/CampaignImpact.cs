@@ -8,7 +8,7 @@ namespace AllReady.Models
     public class CampaignImpact
     {
         public int Id { get; set; }
-        public Campaign Campaign { get; set; }
+
         public ImpactType ImpactType { get; set; }
         /// <summary>
         /// If the impact type is numeric, the value is the number
