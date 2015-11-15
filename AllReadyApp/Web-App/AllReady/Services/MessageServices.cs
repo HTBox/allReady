@@ -37,7 +37,7 @@ namespace AllReady.Services
                 ViewModel = new NotifyVolunteersViewModel
                 {
                     SmsMessage = message,
-                    EmailRecipients = new List<string> { number },
+                    SmsRecipients = new List<string> { number },
                 }
             };
 
