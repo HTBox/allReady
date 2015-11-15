@@ -25,8 +25,8 @@ namespace AllReady.Models
         {
             return _dbContext.Campaigns
                 .Include(x => x.ManagingTenant)
-                .Include(x => x.CampaignImpact)
                 .Include(x => x.Activities)
+                .Include(x => x.CampaignImpact)
                 .Include(x => x.ParticipatingTenants)
                 .SingleOrDefault(x => x.Id == campaignId);
         }
