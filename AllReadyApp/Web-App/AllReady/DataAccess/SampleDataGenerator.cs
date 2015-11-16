@@ -91,20 +91,22 @@ namespace AllReady.Models
                 ManagingTenant = htb
             };
             htb.Campaigns.Add(firePrev);
+            var smokeDetImpact = new CampaignImpact
+            {
+                ImpactType = ImpactType.Numeric,
+                NumericImpactGoal = 10000,
+                CurrentImpactLevel = 6722,
+                Display = true,
+                TextualImpactGoal = "Total number of smoke detectors installed."
+            };
+            _context.CampaignImpacts.Add(smokeDetImpact);
             Campaign smokeDet = new Campaign()
             {
                 Name = "Working Smoke Detectors Save Lives",
                 ManagingTenant = htb,
                 StartDateTimeUtc = DateTime.Today.AddMonths(-1).ToUniversalTime(),
                 EndDateTimeUtc = DateTime.Today.AddMonths(1).ToUniversalTime(),
-                CampaignImpact = new CampaignImpact
-                {
-                    ImpactType = ImpactType.Numeric,
-                    NumericImpactGoal = 10000,
-                    CurrentImpactLevel = 6722,
-                    Display=true,
-                    TextualImpactGoal = "Total number of smoke detectors installed."
-                }
+                CampaignImpact = smokeDetImpact
             };
             htb.Campaigns.Add(smokeDet);
             Campaign financial = new Campaign()

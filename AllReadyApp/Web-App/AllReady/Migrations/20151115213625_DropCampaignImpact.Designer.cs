@@ -8,9 +8,10 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    partial class AllReadyContextModelSnapshot : ModelSnapshot
+    [Migration("20151115213625_DropCampaignImpact")]
+    partial class DropCampaignImpact
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .Annotation("ProductVersion", "7.0.0-beta8-15964")
@@ -156,8 +157,6 @@ namespace AllReady.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("CampaignImpactId");
-
                     b.Property<string>("Description");
 
                     b.Property<DateTime>("EndDateTimeUtc");
@@ -189,24 +188,6 @@ namespace AllReady.Migrations
                     b.Property<int>("ContactType");
 
                     b.HasKey("CampaignId", "ContactId", "ContactType");
-                });
-
-            modelBuilder.Entity("AllReady.Models.CampaignImpact", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("CurrentImpactLevel");
-
-                    b.Property<bool>("Display");
-
-                    b.Property<int>("ImpactType");
-
-                    b.Property<int>("NumericImpactGoal");
-
-                    b.Property<string>("TextualImpactGoal");
-
-                    b.HasKey("Id");
                 });
 
             modelBuilder.Entity("AllReady.Models.CampaignSponsors", b =>
@@ -513,10 +494,6 @@ namespace AllReady.Migrations
 
             modelBuilder.Entity("AllReady.Models.Campaign", b =>
                 {
-                    b.HasOne("AllReady.Models.CampaignImpact")
-                        .WithMany()
-                        .ForeignKey("CampaignImpactId");
-
                     b.HasOne("AllReady.Models.Location")
                         .WithMany()
                         .ForeignKey("LocationId");

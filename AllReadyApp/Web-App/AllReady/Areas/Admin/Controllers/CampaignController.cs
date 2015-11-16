@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using AllReady.Services;
 using AllReady.Extensions;
 
-namespace AllReady.Controllers
+namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize("TenantAdmin")]
