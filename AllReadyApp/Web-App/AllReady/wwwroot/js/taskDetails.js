@@ -1,6 +1,6 @@
 //TODO: Lots of duplication here with activityDetails. Would be great to merge these
 var HTBox;
-(function (HTBox) {
+(function (HTBox, $) {
     var TaskDetailAdmin = (function () {
         function TaskDetailAdmin() {
             $("#messageVolunteersModal").on("show.bs.modal", function (e) {
@@ -64,4 +64,4 @@ var HTBox;
         return TaskDetailAdmin;
     })();
     HTBox.TaskDetailAdmin = TaskDetailAdmin;
-})(HTBox || (HTBox = {}));
+})(HTBox || (HTBox = {}), JQuery);
