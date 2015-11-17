@@ -64,3 +64,4 @@ var HTBox;
     })();
     HTBox.ActivityDetailAdmin = ActivityDetailAdmin;
 })(HTBox || (HTBox = {}), JQuery);
+//# sourceMappingURL=activityDetails.js.map

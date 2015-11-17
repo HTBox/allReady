@@ -1,5 +1,4 @@
-﻿///<reference path="../lib/jquery/dist/jquery.js" />
-///<reference path="../lib/knockout/dist/knockout.js" />
+﻿declare var modelStuff: any;
 
 (function (ko, $, tasks, skills, userSkills) {
 
@@ -20,7 +19,8 @@
     ActivityViewModel.prototype = {
         enroll: function (activity) {
             // TODO: set up a spinner
-            $.ajax({
+            var activityViewModel = this;
+           $.ajax({
                 type: "POST",
                 url: '/api/activity/' + activity + '/signup',
                 contentType: "application/json",
@@ -32,6 +32,7 @@
         },
         unenroll: function (activity) {
             // TODO: set up a spinner
+            var activityViewModel = this;
             $.ajax({
                 type: "DELETE",
                 url: '/api/activity/' + activity + '/signup',

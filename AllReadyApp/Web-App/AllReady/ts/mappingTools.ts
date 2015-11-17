@@ -1,4 +1,5 @@
 ﻿
+declare var Microsoft: any;
 
 export module HTBox.maps {
     var geoMaps = Microsoft.Maps;

@@ -1,10 +1,11 @@
-ko.observableArray.fn.withValidator = function (validatorFn) {
+fn = ko.observableArray.fn;
+fn.withValidator = function (validatorFn) {
     this.isValid = ko.computed(function () {
         return validatorFn(this);
     }, this);
     return this;
 };
-ko.observableArray.fn.uniqueValidator = function (property) {
+fn.uniqueValidator = function (property) {
     return this.withValidator(function (obsArray) {
         //every value is unique if the length of the original array is equal to the length of a distinct array
         return obsArray().length === obsArray()
@@ -16,3 +17,4 @@ ko.observableArray.fn.uniqueValidator = function (property) {
         }, []).length;
     });
 };
+//# sourceMappingURL=ko.validation.js.map

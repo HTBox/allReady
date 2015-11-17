@@ -1,8 +1,5 @@
-﻿///<reference path="../lib/jquery/dist/jquery.js" />
-///<reference path="../lib/knockout/dist/knockout.js" />
-///<reference path="../lib/moment/moment.js" />
-
-ko.observableArray.fn.filterList = function (filterFn) {
+fn = ko.observableArray.fn;
+fn.filterList = function (filterFn) {
     var inputToFilterFn = this.filtered || this;
     //If this observable array has already been filtered, append this function as a filter instead of replacing
     this.filtered = ko.computed(function () {
@@ -10,9 +7,9 @@ ko.observableArray.fn.filterList = function (filterFn) {
     }, this);
     return this;
 };
-
-ko.observableArray.fn.filterBeforeDate = function (dateProperty, showOld, date) {
-    var showOld = ko.observable(showOld || false);
+fn.filterBeforeDate = function (dateProperty, showOlder, date) {
+    var showOld;
+    showOld = ko.observable(showOlder || false);
     showOld.toggle = function () {
         showOld(!showOld());
     };
@@ -23,8 +20,7 @@ ko.observableArray.fn.filterBeforeDate = function (dateProperty, showOld, date) 
         });
     });
 };
-
-ko.observableArray.fn.textFilter = function (searchProperties, initialTerm) {
+fn.textFilter = function (searchProperties, initialTerm) {
     if (!$.isArray(searchProperties)) {
         searchProperties = [searchProperties];
     }
@@ -41,3 +37,4 @@ ko.observableArray.fn.textFilter = function (searchProperties, initialTerm) {
         });
     });
 };
+//# sourceMappingURL=ko.filterableList.js.map

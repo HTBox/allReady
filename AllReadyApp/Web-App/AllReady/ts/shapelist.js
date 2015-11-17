@@ -23,6 +23,7 @@ System.register(["./shapes"], function(exports_1) {
             })(ShapeUser = ShapeUser || (ShapeUser = {}));
             exports_1("ShapeUser", ShapeUser);
             rect = new sss.Shapes.Rectangle(10, 4);
+            document.getElementById("target").textContent = JSON.stringify(rect, undefined, 3);
         }
     }
 });

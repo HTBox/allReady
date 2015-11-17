@@ -1,6 +1,3 @@
-///<reference path="../lib/jquery/dist/jquery.js" />
-///<reference path="../lib/knockout/dist/knockout.js" />
-///<reference path="../lib/moment/moment.js" />
 ko.observableArray.fn.filterList = function (filterFn) {
     var inputToFilterFn = this.filtered || this;
     //If this observable array has already been filtered, append this function as a filter instead of replacing
