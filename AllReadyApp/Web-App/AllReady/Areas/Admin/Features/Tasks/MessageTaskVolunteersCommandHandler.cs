@@ -44,6 +44,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     SmsMessage = message.Model.Message,
                     SmsRecipients = smsRecipients,
                     EmailMessage = message.Model.Message,
+                    HtmlMessage = message.Model.Message,
                     EmailRecipients = emailRecipients,
                     Subject = message.Model.Subject
                 }

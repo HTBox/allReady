@@ -22,6 +22,7 @@ namespace AllReady.Services
                 {
                     EmailMessage = message,
                     EmailRecipients = new List<string> {email},
+                    HtmlMessage = message,
                     Subject = subject
                 }
             };

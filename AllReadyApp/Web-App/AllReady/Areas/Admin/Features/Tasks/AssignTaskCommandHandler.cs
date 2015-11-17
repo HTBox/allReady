@@ -74,6 +74,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     SmsMessage = "You've been assigned a task from AllReady.",
                     SmsRecipients = smsRecipients,
                     EmailMessage = "You've been assigned a task from AllReady.",
+                    HtmlMessage = "You've been assigned a task from AllReady.",
                     EmailRecipients = emailRecipients,
                     Subject = "You've been assigned a task from AllReady."
                 }

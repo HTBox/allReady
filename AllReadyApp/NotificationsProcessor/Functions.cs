@@ -47,6 +47,7 @@ namespace NotificationsProcessor
             myMessage.AddTo(emailMessage.Recipient);
             myMessage.From = new MailAddress(from, "AllReady");
             myMessage.Subject = emailMessage.Subject;
+            myMessage.Html = emailMessage.HtmlMessage;
             myMessage.Text = emailMessage.Message;
 
             // Create credentials, specifying your user name and password.

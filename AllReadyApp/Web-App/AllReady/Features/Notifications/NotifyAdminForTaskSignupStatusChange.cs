@@ -46,17 +46,20 @@ namespace AllReady.Features.Notifications
             {
                 var link = $"View activity: http://{_options.Value.SiteBaseUrl}/Admin/Task/Details/{taskSignup.Task.Id}";
                 var subject = $"Task status changed ({taskSignup.Status}) for volunteer {volunteer.Name ?? volunteer.Email}";
+
+                var message = $@"A volunteer's status has changed for a task.
+                                    Volunteer: {volunteer.Name} ({volunteer.Email})
+                                    New status: {taskSignup.Status}
+                                    Task: {task.Name} {link}
+                                    Activity: {activity.Name}
+                                    Campaign: {campaign.Name}";
+
                 var command = new NotifyVolunteersCommand
                 {
                     ViewModel = new NotifyVolunteersViewModel
                     {
-                        EmailMessage = $@"A volunteer's status has changed for a task.
-
-Volunteer: {volunteer.Name} ({volunteer.Email})
-New status: {taskSignup.Status}
-Task: {task.Name} {link}
-Activity: {activity.Name}
-Campaign: {campaign.Name}",
+                        EmailMessage = message,
+                        HtmlMessage = message,
                         EmailRecipients = new List<string> { adminEmail },
                         Subject = subject
                     }
