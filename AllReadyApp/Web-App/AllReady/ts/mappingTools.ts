@@ -1,4 +1,5 @@
 ﻿
+declare var Microsoft: any;
 
 export module HTBox.maps {
     var geoMaps = Microsoft.Maps;
@@ -53,7 +54,7 @@ export module HTBox.maps {
 
         public zoomToLocation(location: location) {
             var bingMap = this.bingMap;
-            var zoomLocation = new geoMaps.Location(location.latitude, location.longitude));
+            var zoomLocation = new geoMaps.Location(location.latitude, location.longitude);
             bingMap.setView({
                 zoom: 10,
                 center: zoomLocation
