@@ -8,7 +8,6 @@
         //    var end = this.EndDate.split('T')[0];
         //    return start + ' : ' + end;
         //}
-        return this;
     }
     function TenantViewModel(tenants) {
         var list = tenants.map(function (item) { return new Orgainzation(item); });

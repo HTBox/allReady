@@ -1,3 +1,4 @@
+<<<<<<< 8e5f80a6a2ee9b0bda2677b5bccd9293f5eb9360
 ﻿$(function() {
     $(document).ready(function () {
         toggleImpactDisplay();
@@ -20,19 +21,39 @@
                     $("#Location_State").val(data.Location.State);
                     $("#Location_PostalCode").val(data.Location.PostalCode);
                     $("#Location_Country").val(data.Location.Country);
+=======
+$(function () {
+    $("#btnGetContactInfo").click(function () {
+        if (confirm("Do you want to overwrite existing contact information?")) {
+            var id = $("select[id=TenantId").val();
+            var getContactInfo = $.ajax({ url: "/admin/api/tenant/" + id + "/Contact", method: "GET", cache: true });
+            getContactInfo.then(function (data) {
+                if (data != null) {
+                    $("#PrimaryContactFirstName").val(data.FirstName);
+                    $("#PrimaryContactLastName").val(data.LastName);
+                    $("#PrimaryContactPhoneNumber").val(data.PhoneNumber);
+                    $("#PrimaryContactEmail").val(data.Email);
+                    if (data.Location != null) {
+                        $("#Location_Address1").val(data.Location.Address1);
+                        $("#Location_Address2").val(data.Location.Address2);
+                        $("#Location_City").val(data.Location.City);
+                        $("#Location_State").val(data.Location.State);
+                        $("#Location_PostalCode").val(data.Location.PostalCode);
+                        $("#Location_Country").val(data.Location.Country);
+                    }
+>>>>>>> Add thermometer visualization
                 }
-            }
-                $('#confirmContactModal').modal('hide');
             })
-        .fail(function (e, t, m) {
-            alert("Ajax Error:" + e);
-        });
+                .fail(function (e, t, m) {
+                alert("Ajax Error:" + e);
+            });
+        }
     });
+<<<<<<< 8e5f80a6a2ee9b0bda2677b5bccd9293f5eb9360
     $("#CampaignImpact_ImpactType").on("change", function () {
         toggleImpactDisplay();
     });
 
-<<<<<<< 99bb5daad69e6955e877c30abeada09ca1b1df85
     function toggleImpactDisplay() {
         console.log($("#CampaignImpact_ImpactType").val());
         if ($("#CampaignImpact_ImpactType").val() === "0") {
@@ -42,7 +63,6 @@
             $("#numericImpactSection").hide();
         }
     }
-});
 =======
+>>>>>>> Add thermometer visualization
 });
->>>>>>> change the dir structure for typescript

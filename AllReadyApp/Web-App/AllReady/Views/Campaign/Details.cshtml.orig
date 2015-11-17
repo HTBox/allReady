@@ -29,7 +29,11 @@
         }
         @Html.Raw(Model.FullDescription)
     </div>
+<<<<<<< 8e5f80a6a2ee9b0bda2677b5bccd9293f5eb9360
 
+=======
+    
+>>>>>>> Add thermometer visualization
 </div>
 
 <div class="row">
@@ -41,8 +45,11 @@
 </div>
 
 <div class="row">
+<<<<<<< 8e5f80a6a2ee9b0bda2677b5bccd9293f5eb9360
 
+=======
     
+>>>>>>> Add thermometer visualization
     <div class="col-md-6">
         <h3>Activities for this Campaign</h3>
     </div>
@@ -137,7 +144,12 @@
         var modelActivities = @Json.Serialize(Model.Activities);
     </script>
     <script type="text/javascript" src="~/js/campaign.js"></script>
+
+<<<<<<< 8e5f80a6a2ee9b0bda2677b5bccd9293f5eb9360
+    <script>
+=======
 <script>
+>>>>>>> Add thermometer visualization
     System.config({
         baseURL: location.protocol + "//" + location.host + '/js/'
     });
@@ -147,6 +159,12 @@
             new sys.AllReady.Controls.Thermometer($("[data-control=thermometer]"));
     });;
 
+<<<<<<< 8e5f80a6a2ee9b0bda2677b5bccd9293f5eb9360
+
+    </script>
+}
+=======
         
 </script>
 }
+>>>>>>> Add thermometer visualization

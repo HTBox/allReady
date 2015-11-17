@@ -3,7 +3,11 @@
 
 <div class="panel panel-success campaign-impact">
     <div class="panel-heading">@Html.Raw(Model.CampaignImpact.TextualImpactGoal) </div>
+<<<<<<< 8e5f80a6a2ee9b0bda2677b5bccd9293f5eb9360
+    <div class="panel-body" style="height: 350px">
+=======
     <div class="panel-body"  style="height: 350px">
+>>>>>>> Add thermometer visualization
         @if (Model.CampaignImpact.ImpactType == ImpactType.Numeric)
             {
             <div data-control="thermometer" data-max-value="@Model.CampaignImpact.NumericImpactGoal" data-current-value="@Model.CampaignImpact.CurrentImpactLevel">

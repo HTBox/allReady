@@ -21,12 +21,11 @@
                     $("#Location_PostalCode").val(data.Location.PostalCode);
                     $("#Location_Country").val(data.Location.Country);
                 }
-            }
-                $('#confirmContactModal').modal('hide');
             })
-        .fail(function (e, t, m) {
-            alert("Ajax Error:" + e);
-        });
+                .fail(function (e, t, m) {
+                alert("Ajax Error:" + e);
+            });
+        }
     });
     $("#CampaignImpact_ImpactType").on("change", function () {
         toggleImpactDisplay();

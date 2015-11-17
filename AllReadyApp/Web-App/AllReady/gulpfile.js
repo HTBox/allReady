@@ -55,6 +55,7 @@ gulp.task("min", ["min:js", "min:css"]);
 
 gulp.task("watch", function () {
     gulp.watch(paths.css, ["min"]);
+    gulp.watch('ts/**/*.ts', ["typescript:Build"]);
 })
 
 

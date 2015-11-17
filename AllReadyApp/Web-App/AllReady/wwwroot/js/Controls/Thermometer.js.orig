@@ -1,9 +1,18 @@
+<<<<<<< 8e5f80a6a2ee9b0bda2677b5bccd9293f5eb9360
 ﻿/// <reference path="../../tools/typings/tsd.d.ts" />
 System.register([], function (exports_1) {
     var AllReady;
     return {
         setters: [],
         execute: function () {
+=======
+/// <reference path="../../tools/typings/tsd.d.ts" />
+System.register([], function(exports_1) {
+    var AllReady;
+    return {
+        setters:[],
+        execute: function() {
+>>>>>>> Add thermometer visualization
             (function (AllReady) {
                 (function (Controls) {
                     var Thermometer = (function () {
@@ -158,4 +167,8 @@ System.register([], function (exports_1) {
             exports_1("AllReady", AllReady);
         }
     }
+<<<<<<< 8e5f80a6a2ee9b0bda2677b5bccd9293f5eb9360
 });
+=======
+});
+>>>>>>> Add thermometer visualization

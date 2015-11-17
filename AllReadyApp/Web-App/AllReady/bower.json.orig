@@ -19,10 +19,12 @@
     "tota11y": "0.1.2",
     "tinymce": "4.2.6",
     "bootstrap-tagsinput": "0.6.1",
-<<<<<<< b1367080f9d9d5f230130ea3df1dd58c6e14ff1a
+<<<<<<< 8e5f80a6a2ee9b0bda2677b5bccd9293f5eb9360
     "d3": "3.5.9"
-=======
     "system.js": "0.19.5"
->>>>>>> all mapping now is provided by a mappingtools.ts module that is loaded via system.js (through bower)  previous implementations like site.js, mapinteraction.js and activitymap.js have been removed
+=======
+    "system.js": "0.19.5",
+    "d3": "3.5.9"
+>>>>>>> Add thermometer visualization
   }
 }

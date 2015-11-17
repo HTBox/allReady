@@ -2,7 +2,9 @@
 <html>
 <head>
     <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>@ViewData["Title"] - AllReady</title>
 
     <environment names="Development">
@@ -141,14 +143,14 @@
         <script src="//d3js.org/d3.v3.min.js"
                 asp-fallback-src="~/lib/d3/d3.js">
         </script>
+<<<<<<< 8e5f80a6a2ee9b0bda2677b5bccd9293f5eb9360
+=======
+        
+>>>>>>> Add thermometer visualization
     </environment>
     <script src="~/lib/knockout-bootstrap/src/knockout-bootstrap.js"></script>
     <script src="~/lib/system.js/dist/system.js"></script>
-<<<<<<< b1367080f9d9d5f230130ea3df1dd58c6e14ff1a
-    <script src="~/js/site.js" asp-append-version="true"></script>
-=======
     @*<script src="~/js/site.js" asp-append-version="true"></script>*@
->>>>>>> all mapping now is provided by a mappingtools.ts module that is loaded via system.js (through bower)  previous implementations like site.js, mapinteraction.js and activitymap.js have been removed
     <script src="~/js/ko.filterableList.js" asp-append-version="true"></script>
     <script src="~/js/ko.validation.js" asp-append-version="true"></script>
     <script>
@@ -172,12 +174,8 @@
 							"insertdatetime media table contextmenu paste imagetools"
                 ],
                 toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image",
-<<<<<<< b1367080f9d9d5f230130ea3df1dd58c6e14ff1a
-                autosave_ask_before_unload: false });
-=======
                 autosave_ask_before_unload: false
             });
->>>>>>> all mapping now is provided by a mappingtools.ts module that is loaded via system.js (through bower)  previous implementations like site.js, mapinteraction.js and activitymap.js have been removed
         });
     </script>
     @RenderSection("scripts", required: false)
