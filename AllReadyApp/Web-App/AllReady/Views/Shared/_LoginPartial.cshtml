@@ -1,11 +1,13 @@
 ﻿@using System.Security.Claims
+@using System.Threading.Tasks
+@using AllReady.Security
 
 @if (User.Identity.IsAuthenticated)
 {
     <form asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm">
         <ul class="nav navbar-nav navbar-right login-status">
             <li>
-                <a asp-controller="Manage" asp-action="Index" title="Manage">Hello @User.GetUserName()!</a>
+                <a asp-controller="Manage" asp-action="Index" title="Manage">Hello @User.GetDisplayName()!</a>
             </li>
             <li><a href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-sign-out"></i>&nbsp;&nbsp;Log off</a></li>
         </ul>
