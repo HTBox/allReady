@@ -1,7 +1,8 @@
-﻿var HTBox;
-(function (HTBox) {
-    var ActivityDetailAdmin = (function () {
-        function ActivityDetailAdmin() {
+﻿//TODO: Lots of duplication here with activityDetails. Would be great to merge these
+var HTBox;
+(function (HTBox, $) {
+    var TaskDetailAdmin = (function () {
+        function TaskDetailAdmin() {
             $("#messageVolunteersModal").on("show.bs.modal", function (e) {
                 var modal = $(this);
                 $('#messageCharacterCount').html("");
@@ -66,7 +67,7 @@
                 $('#messageCharacterCount').html(messageLength + ' characters');
             });
         }
-        return ActivityDetailAdmin;
+        return TaskDetailAdmin;
     })();
-    HTBox.ActivityDetailAdmin = ActivityDetailAdmin;
-})(HTBox || (HTBox = {}));
+    HTBox.TaskDetailAdmin = TaskDetailAdmin;
+})(HTBox || (HTBox = {}), JQuery);

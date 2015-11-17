@@ -1,7 +1,9 @@
-﻿///<reference path="../lib/jquery/dist/jquery.js" />
-///<reference path="../lib/knockout/dist/knockout.js" />
+﻿
+
+declare var modelCampaigns: any;
 
 (function (ko, $, campaigns) {
+
     function Campaign(item) {
         for (var prop in item) {
             this[prop] = item[prop];
@@ -11,8 +13,8 @@
             var end = this.EndDate.split('T')[0];
             return start + ' : ' + end;
         }
-        return this;
     }
+
     function TenantViewModel(campaigns) {
         var list = campaigns.map(function (item) { return new Campaign(item); })
 

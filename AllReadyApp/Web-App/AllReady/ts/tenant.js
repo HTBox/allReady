@@ -8,7 +8,6 @@
             var end = this.EndDate.split('T')[0];
             return start + ' : ' + end;
         };
-        return this;
     }
     function TenantViewModel(campaigns) {
         var list = campaigns.map(function (item) { return new Campaign(item); });
@@ -17,3 +16,4 @@
     }
     ko.applyBindings(new TenantViewModel(campaigns));
 })(ko, $, modelCampaigns);
+//# sourceMappingURL=tenant.js.map

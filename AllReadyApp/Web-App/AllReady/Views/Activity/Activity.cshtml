@@ -258,7 +258,7 @@
         var modelStuff = @Json.Serialize(new { tasks = Model.Tasks, skills = Model.RequiredSkills, userSkills = Model.UserSkills });
 
         System.config({
-            baseURL: location.protocol + "//" + location.host + '/ts/'
+            baseURL: location.protocol + "//" + location.host + '/js/'
         });
 
         System.import('mappingTools.js').then(function (sys) {
@@ -270,23 +270,8 @@
                 '@Model.Location?.State',
                 '@Model.Location?.PostalCode?.PostalCode',
                 '@Model.Location?.Country');
-        });;
+        });
 
-        @*$(document).ready(function () {
-            getGeoCoordinates('@Model.Location?.Address1',
-                '@Model.Location?.Address2',
-                '@Model.Location?.City',
-                '@Model.Location?.State',
-                '@Model.Location?.PostalCode?.PostalCode',
-                '@Model.Location?.Country',
-                function (result) {
-                    var positionCoordsList = [
-                    { latitude: result.latitude, longitude: result.longitude }
-                    ];
-                    $("#bingMap").css("width", "300px").css("height", "300px");
-                    renderBingMap('bingMap', positionCoordsList);
-                });
-        });*@
     </script>
     <script type="text/javascript" src="~/js/activity.js"></script>
 }

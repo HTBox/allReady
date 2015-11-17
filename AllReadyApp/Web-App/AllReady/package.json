@@ -9,6 +9,7 @@
     "gulp-uglify": "1.2.0",
     "bower": "1.6.5",
     "rimraf": "2.2.8",
+    "gulp-tslint": "3.6.0",
     "gulp-typescript": "2.9.2",
     "gulp-sourcemaps": "1.6.0",
     "gulp-debug": "2.1.2"
