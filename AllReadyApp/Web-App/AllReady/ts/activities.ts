@@ -1,11 +1,18 @@
+﻿
+declare var moment: any;
+
 (function (ko, $) {
+
     var getActivities = $.getJSON("/api/activity");
+
     function ActivitiesViewModel() {
-        this.activities = ko.observableArray([]).filterBeforeDate("EndDateTime").textFilter(["Title", "Description"]);
+        this.activities = ko.observableArray([]).filterBeforeDate("EndDateTime").textFilter(["Title","Description"]);
         this.loading = ko.observable(true);
     }
+
     var viewModel = new ActivitiesViewModel();
     ko.applyBindings(viewModel);
+
     getActivities.done(function (activities) {
         viewModel.loading(false);
         activities.sort(function (a1, a2) {

@@ -40,3 +40,4 @@
     };
     ko.applyBindings(new ActivityViewModel(tasks, skills, userSkills));
 })(ko, $, modelStuff.tasks, modelStuff.skills, modelStuff.userSkills);
+//# sourceMappingURL=activity.js.map
