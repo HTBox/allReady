@@ -1,0 +1,14 @@
+{
+  "name": "tota11y",
+  "homepage": "https://github.com/Khan/tota11y",
+  "version": "0.1.2",
+  "_release": "0.1.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.1.2",
+    "commit": "90402ed9a28cc25158f77a9e888ace8693da3f38"
+  },
+  "_source": "git://github.com/Khan/tota11y.git",
+  "_target": "0.1.2",
+  "_originalSource": "tota11y"
+}

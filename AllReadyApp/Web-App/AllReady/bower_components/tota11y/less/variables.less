@@ -1,0 +1,41 @@
+@fontSize: 14px;
+@fontSizeSmall: 11px;
+@borderRadius: 5px;
+
+@darkGray: #333;
+@gray: #555;
+@lightGray: #999;
+@lighterGray: #ddd;
+@white: #f2f2f2;
+
+@kaGreen: #639b24;
+
+@highlightColor: rgba(120, 130, 200, 0.4);
+
+@darkBorderColor: @gray;
+@lightBorderColor: @lightGray;
+
+@viewportEdgePadding: 10px;
+
+// z-index variables
+@z-index--highlights: 9999;
+@z-index--UI: 9998;
+@z-index--labels: 9997;
+
+.tota11y-dark-color-scheme {
+    background-color: @darkGray;
+    color: @white;
+}
+
+.tota11y-no-select {
+    user-select: none;
+}
+
+// Position mixin
+.position(@position: static, @top: auto, @right: auto, @bottom: auto, @left: auto) {
+    position: @position;
+    top: @top;
+    right: @right;
+    bottom: @bottom;
+    left: @left;
+}

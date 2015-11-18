@@ -1,0 +1,211 @@
+@import "../../../less/variables.less";
+
+@panelBodyWidth: 400px;
+@panelBodyHeight: 270px;
+
+@tabHoverColor: #555;
+@tabActiveColor: @white;
+
+@tabHeight: 30px;
+@panelPadding: 10px;
+
+@dismissFontSize: 25px;
+@chevornFontSize: 20px;
+@descriptionFontSize: 13px;
+
+.tota11y-info {
+    .tota11y-dark-color-scheme;
+    .tota11y-no-select;
+
+    border-radius: @borderRadius;
+    position: fixed;
+    z-index: @z-index--UI;
+
+    &-controls {
+        float: right;
+    }
+
+    &-annotation-toggle {
+        float: left;
+        margin-right: 10px;
+    }
+
+    &-hidden {
+        display: none;
+    }
+
+    &-dismiss-trigger {
+        font-size: @dismissFontSize;
+        line-height: @dismissFontSize;
+
+        // TODO: Rework styles using line-heights
+        position: relative;
+        top: -2px;
+    }
+
+    &-title, &-body {
+        padding: @panelPadding @panelPadding 0;
+    }
+
+    &-title:hover {
+        cursor: move;
+    }
+
+    &-tabs {
+        display: flex;
+        margin: 0;
+        padding: 0 0 @panelPadding;
+    }
+
+    &-tab {
+        height: @tabHeight;
+        list-style: none;
+        position: relative;
+        text-align: center;
+        width: 100%;
+
+        &-anchor {
+            .position(absolute, 0, 0, 0, 0);
+            text-align: center;
+
+            &-text {
+                line-height: @tabHeight;
+            }
+        }
+
+        &:hover {
+            background-color: @tabHoverColor;
+        }
+
+        &.active, &.active:hover {
+            // Active tabs do not have a hover state
+            background-color: @tabActiveColor;
+        }
+
+        &.active &-anchor-text {
+            color: @darkGray;
+        }
+    }
+
+    &-sections {
+        position: relative;
+        height: @panelBodyHeight;
+        width: @panelBodyWidth;
+    }
+
+    &-section {
+        .position(absolute, 0, 0, 0, 0);
+
+        &, * {
+            color: @darkGray;
+        }
+
+        background-color: @white;
+        display: none;
+        overflow-y: scroll;
+        padding: @panelPadding;
+
+        &.active {
+            display: block;
+        }
+    }
+
+    &-errors {
+        margin: 0;
+        padding: 0;
+    }
+
+    &-error {
+        list-style: none;
+        margin-bottom: 10px;
+
+        &-trigger {
+            display: block;
+
+            &.trigger-highlight {
+                background-color: @highlightColor;
+            }
+        }
+
+        &-chevron {
+            @height: 14px;
+
+            display: inline-block;
+            font-size: @chevornFontSize;
+            height: @height;
+            line-height: @height;
+            margin-right: 3px;
+            transform: rotateZ(90deg);
+            // Magic numbers to make the chevron rotate cleanly
+            transform-origin: 3px 8px;
+            transition: transform ease-in-out 50ms;
+        }
+        &-trigger.tota11y-collapsed &-chevron {
+            transform: rotateZ(0deg);
+        }
+
+        &-title {
+            font-weight: bold;
+        }
+
+        &-scroll {
+            float: right;
+            margin-top: 3px;
+            padding-left: 5px;
+
+            // Styling for both the lens and handle
+            &-glyph {
+                border-color: @darkGray;
+            }
+            &:hover &-glyph {
+                border-color: @lightGray;
+            }
+
+            &-lens {
+                @radius: 8px;
+                border: 1px solid;
+                border-radius: 50%;
+                height: @radius;
+                width: @radius;
+            }
+
+            &-handle {
+                border-left: 1px solid;
+                height: 7px;
+                // A transform to rotate it and line it up with the lens
+                transform: translateX(-2px) translateY(-2px) rotate(45deg);
+                width: 1px;
+            }
+        }
+
+        &-description {
+            font-size: @descriptionFontSize;
+            padding: 10px 0 0;
+            user-select: text;
+
+            &-code-container {
+                margin-top: @panelPadding;
+
+                code {
+                    display: block;
+                    margin-top: 10px;
+                    padding: 5px @panelPadding;
+                    word-wrap: break-word;
+                }
+            }
+            &.tota11y-collapsed {
+                display: none
+            }
+        }
+
+    }
+
+    &-error-count {
+        background-color: red;
+        border-radius: 20px;
+        color: white;
+        display: inline;
+        margin-left: 5px;
+        padding: 1px 8px;
+    }
+}

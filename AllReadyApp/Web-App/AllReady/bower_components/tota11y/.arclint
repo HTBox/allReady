@@ -1,0 +1,10 @@
+{
+  "linters": {
+    "tota11y-linter": {
+      "type": "script-and-regex",
+      "script-and-regex.regex": "/^(?P<file>\\S+): line (?P<line>\\d+), col \\d+, (?P<message>.*)$/m",
+      "script-and-regex.script": "./node_modules/.bin/eslint",
+      "include": "(\\.js$)"
+    }
+  }
+}

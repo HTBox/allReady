@@ -1,0 +1,6 @@
+/*! <%= pkg.name %> version: <%= pkg.version %>
+*  <%= buildDate %>
+*  Author: Bill Pullen
+*  Website: http://billpull.github.com/knockout-bootstrap
+*  MIT License http://www.opensource.org/licenses/mit-license.php
+*/

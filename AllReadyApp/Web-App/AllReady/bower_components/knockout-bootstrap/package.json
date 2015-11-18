@@ -1,0 +1,49 @@
+{
+  "name": "knockout-bootstrap",
+  "version": "0.3.1",
+  "description": "Knockout Bindings for Bootstrap Widgets",
+  "main": "src/knockout-bootstrap.js",
+  "scripts": {
+    "test": "grunt tests"
+  },
+  "directories": {
+    "example": "examples"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/billpull/knockout-bootstrap.git"
+  },
+  "keywords": [
+    "knockout",
+    "bootstrap",
+    "knockout-bootstrap",
+    "bindings"
+  ],
+  "dependencies": {
+    "jQuery": ">= 1.7.4",
+    "knockout": ">= 3.1"
+  },
+  "devDependencies": {
+    "grunt": "*",
+    "grunt-cli": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-jshint": "*",
+    "gulp": "~3.8.6",
+    "gulp-cached": "~1.0.1",
+    "gulp-changed": "~0.4.0",
+    "gulp-uglify": "~0.3.1",
+    "gulp-concat": "~2.3.3",
+    "gulp-header": "~1.0.5",
+    "gulp-util": "~2.2.20",
+    "gulp-jshint": "~1.7.1",
+    "gulp-karma": "0.0.4",
+    "karma-chrome-launcher": "~0.1.4",
+    "karma-phantomjs-launcher": "~0.1.4",
+    "karma-mocha": "~0.1.4",
+    "karma-chai": "~0.1.0",
+    "karma-jasmine": "~0.1.5"
+  },
+  "author": "Bill Pullen",
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}

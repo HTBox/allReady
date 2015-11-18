@@ -8,58 +8,15 @@
     <title>@ViewData["Title"] - AllReady</title>
 
     <environment names="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/lib/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css" />
-        <link rel="stylesheet" href="~/lib/bootstrap-toggle/css/bootstrap-toggle.css" />
-        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
-        <link rel="stylesheet" href="~/lib/bootstrap-tagsinput/src/bootstrap-tagsinput.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
+        <link href="~/vendor/vender.css" rel="stylesheet" />
     </environment>
     <environment names="Staging,Production">
-        <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/bootstrap/3.0.0/css/bootstrap.min.css"
-              asp-fallback-href="~/lib/bootstrap/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker3.min.css"
-              asp-fallback-href="~/lib/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css" />
-        <link rel="stylesheet" href="//gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css"
-              asp-fallback-href="~/lib/bootstrap-toggle/css/bootstrap-toggle.css" />
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+        <link href="~/vendor/vender.css" rel="stylesheet" />
     </environment>
     @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
 
-    @*  remove me
-        this will be done via typescript / ES6 modules 
-            <script type="text/javascript">
-            var htbox = htbox || {};
-            htbox.allReady = htbox.allReady || {};
-            htbox.allReady.map = htbox.allReady.map || {};
-            htbox.allReady.init = htbox.allReady.init || {};
-        </script>*@
 </head>
 <body>
-    @*<div class="navbar">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a asp-controller="Home" asp-action="Index" class="navbar-brand"><img src="~/images/Web-Logo-small.png" alt="Web Logo" /></a>
-                </div>
-                <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav navbar-right main-nav">
-                        @await Html.PartialAsync("_AdminNavigationPartial")
-                        <li><a asp-controller="Home" asp-action="About">About</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
-                        <li><a asp-controller="Tenant" asp-action="Index">Organizations</a></li>
-                        @await Html.PartialAsync("_LoginPartial")
-                    </ul>
-                </div>
-            </div>
-        </div>*@
-
     <header>
         @*<div style="padding: 0 20px;">
                 @await Html.PartialAsync("_LoginPartial")

@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="css/bootstrap.min.css" />
+        <link rel="stylesheet" href="css/docs.css" />
+        <link rel="stylesheet" href="css/prettify.css" />
+    </head>
+    <body data-spy="scroll" data-target=".bs-docs-sidebar" data-twttr-rendered="true">
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+              <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+              </div>
+              <a class="navbar-brand" href="./index.html">Knockout-Bootstrap</a>
+              <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                  <li>
+                    <a href="./index.html">Home</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+        </div>
+
+        <header class="jumbotron subhead">
+          <div class="container">
+            <h1>Knockout-Bootstrap</h1>
+            <p class="lead">Create rich two way interactions with Bootstrap and Knockout bindings
+          </p></div>
+        </header>
+
+        <!-- Add your site or application content here -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 bs-docs-sidebar">
+                    <ul class="nav nav-list bs-docs-sidenav">
+                        <li class="active"><a href="#overview"><i class="glyphicon glyphicon-chevron-right"></i> Overview</a></li>
+                        <li class=""><a href="#tooltip"><i class="glyphicon glyphicon-chevron-right"></i> Tooltip</a></li>
+                        <li class=""><a href="#popover"><i class="glyphicon glyphicon-chevron-right"></i> Popover</a></li>
+                        <li class=""><a href="#alert"><i class="glyphicon glyphicon-chevron-right"></i> Alert</a></li>
+                        <li class=""><a href="#progress"><i class="glyphicon glyphicon-chevron-right"></i> Progress Bar</a></li>
+                        <li class=""><a href="#typeahead"><i class="glyphicon glyphicon-chevron-right"></i> Typeahead</a></li>
+                        <li class=""><a href="#modal"><i class="glyphicon glyphicon-chevron-right"></i> Modal</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-9">
+                    <section id="overview">
+                        <div class="page-header">
+                            <h1>Knockout-bootstrap Overview</h1>
+                        </div>
+                        <p>
+                            Knockout-bootstrap is a set of custom knockout binding handlers that provide access
+                            to Bootstrap javascript widgets. 
+                        </p>
+                        <p>
+                            <h4>Features</h4>
+                            <ul>
+                                <li>Enable Bootstrap widgets with <code>data-bind</code> attribute</li>
+                                <li>Two way bindings of observables inside bootstrap elements</li>
+                                <li>Use knockout templates to create widget content</li>
+                                <li>Keeps your coding style consistent</li>
+                                <li>~2kb</li>
+                            </ul>
+                        </p>
+                        <a class="btn btn-lg btn-primary" href="https://raw.github.com/billpull/knockout-bootstrap/master/build/knockout-bootstrap.min.js" download="knockout-bootstrap.min.js">
+                            <i class="glyphicon glyphicon-download-alt"></i> Download</a>
+                    </section>
+                    <section id="tooltip">
+                        <div class="page-header">
+                            <h1>Tooltips</h1>
+                        </div>
+                        <h2>Examples</h2>
+                        <div class="bs-docs-example">
+                            <p class="muted" style="margin-bottom: 0;">Tight pants next level keffiyeh <a href="#" data-bind="tooltip: {title: 'Default tooltip'}">you probably</a> haven't heard of them. Photo booth beard raw denim letterpress vegan messenger bag stumptown. Farm-to-table seitan, mcsweeney's fixie sustainable quinoa 8-bit american apparel <a href="#" data-bind="tooltip: {title: 'Another tooltip', placement: 'right'}">have a</a> terry richardson vinyl chambray. Beard stumptown, cardigans banh mi lomo thundercats. Tofu biodiesel williamsburg marfa, four loko mcsweeney's cleanse vegan chambray.
+                            </p>
+                        </div>
+<pre class="prettyprint linenums">
+&lt;a href="#" data-bind="tooltip: {title: 'Default tooltip'}"&gt;you probably&lt;/a&gt;
+&lt;a href="#" data-bind="tooltip: {title: 'Another tooltip', placement: 'right'}"&gt;have a&lt;/a&gt;
+</pre>
+                        <h3>Options</h3>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                             <tr>
+                               <th style="width: 100px;">Name</th>
+                               <th style="width: 100px;">type</th>
+                               <th style="width: 50px;">default</th>
+                               <th>description</th>
+                             </tr>
+                            </thead>
+                            <tbody>
+                             <tr>
+                               <td>placement</td>
+                               <td>string | function</td>
+                               <td>'top'</td>
+                               <td>how to position the tooltip - top | bottom | left | right</td>
+                             </tr>
+                             <tr>
+                               <td>title</td>
+                               <td>string | function</td>
+                               <td>''</td>
+                               <td>default title value if `title` tag isn't present</td>
+                             </tr>
+                             <tr>
+                               <td>trigger</td>
+                               <td>string</td>
+                               <td>'hover focus'</td>
+                               <td>how tooltip is triggered - click | hover | focus | manual. Note you case pass trigger mutliple, space seperated, trigger types.</td>
+                             </tr>
+                            </tbody>
+                          </table>
+                    </section>
+                    <section id="popover">
+                        <div class="page-header">
+                            <h1>Popovers</h1>
+                        </div>
+                        <h2>Examples</h2>
+                        <h3>Simple Popover</h3>
+                        <p>
+                            Takes text content from a template and puts it in a popover
+                        </p>
+                        <div class="bs-docs-example">
+                            <button class="btn btn-lg btn-primary" data-bind="popover: {template: 'popoverTemplate', options: {title: 'Oh Yea'}}">Launch Simple Popover</button>
+
+                            <button class="btn btn-lg btn-primary" data-bind="popover: {template: 'popoverTemplate', options: {title: 'Oh Yea', trigger: 'hover'}}">Hover Simple Popover</button>
+
+                            <button class="btn btn-lg btn-primary" data-bind="popover: {template: 'popoverTemplate', options: {title: 'Oh Yea', trigger: 'focus'}}">Focus Simple Popover</button>
+                        </div>
+<pre class="prettyprint linenums">
+&lt;button class="btn" data-bind="popover: {template: 'popoverTemplate', options: {title: 'Oh Yea'}}"&gt;
+    Launch Simple Popover
+&lt;/button&gt;
+
+&lt;script type="text/html" id="popoverTemplate"&gt;
+    &lt;button class="close pull-right" type="button" data-dismiss="popover"&gt;&times&lt;/button&gt;
+    Hey I am some content in A popover
+&lt;/script&gt;
+</pre>
+                        <h3>Two Way Binding Popover</h3>
+                        <p>
+                            Manipulate data from within a popover
+                        </p>
+                        <div class="bs-docs-example">
+                            <h1 data-bind="text: popoverBindingHeader"></h1>
+                            <button class="btn btn-lg btn-primary" data-bind="popover: {template: 'popoverBindingTemplate', options: {title: 'Oh Yea Binding'}}">Launch Binding Popover</button>
+                        </div>
+<pre class="prettyprint linenums">
+&lt;h1 data-bind="text: popoverBindingHeader"&gt;&lt;/h1&gt;
+&lt;button class="btn" data-bind="popover: {template: 'popoverBindingTemplate', options: {title: 'Oh Yea Binding'}}"&gt;
+    Launch Binding Popover
+&lt;/button&gt;
+
+&lt;script type=&quot;text/html&quot; id=&quot;popoverBindingTemplate&quot;&gt;
+            &lt;button class=&quot;close pull-right&quot; type=&quot;button&quot; data-dismiss=&quot;popover&quot;&gt;&amp;times&lt;/button&gt;
+            &lt;form&gt;
+                &lt;label&gt;Popover Binding Header&lt;/label&gt;
+                &lt;input type=&quot;text&quot; data-bind=&quot;value: popoverBindingHeader, valueUpdate:&#39;afterkeydown&#39;&quot; /&gt;
+                &lt;strong&gt;Foreach binding:&lt;/strong&gt;
+                &lt;table class=&quot;table table-striped&quot;&gt;
+                      &lt;tbody data-bind=&quot;foreach: colors&quot;&gt;
+                        &lt;tr&gt;&lt;td&gt;&lt;span data-bind=&quot;text: $data&quot;&gt;&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+                      &lt;/tbody&gt;
+                &lt;/table&gt;
+            &lt;/form&gt;
+        &lt;/script&gt;
+</pre>
+                        <h3>Options</h3>
+                        <table class="table table-bordered table-striped">
+                          <thead>
+                           <tr>
+                             <th style="width: 100px;">Name</th>
+                             <th style="width: 100px;">type</th>
+                             <th style="width: 50px;">default</th>
+                             <th>description</th>
+                           </tr>
+                          </thead>
+                          <tbody>
+                           <tr>
+                             <td>options</td>
+                             <td>object</td>
+                             <td>{title: 'Popover'}</td>
+                             <td>refer to <a href="http://getbootstrap.com/javascript/#popovers">official documentation</a> for options.</td>
+                           </tr>
+                           <tr>
+                             <td>template</td>
+                             <td>string</td>
+                             <td>''</td>
+                             <td>the id to the template for the content</td>
+                           </tr>
+                           <tr>
+                             <td>data</td>
+                             <td>string | function</td>
+                             <td>''</td>
+                             <td>the data for the template</td>
+                           </tr>
+                          </tbody>
+                        </table>
+                    </section>
+                    <section id="alert">
+                        <div class="page-header">
+                            <h1>Alerts</h1>
+                        </div>
+                        <h2>Examples</h2>
+                        <div class="bs-docs-example">
+                            <div data-bind="foreach: alerts">
+                                <div data-bind="alert: $data"></div>
+                            </div>
+                        </div>
+<pre class="prettyprint linenums">
+&lt;!-- View Code --&gt;
+&lt;div data-bind="foreach: alerts"&gt;
+    &lt;div data-bind="alert: $data">&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- View Model --&gt;
+var ViewModel = function() {
+    //....
+    //...
+    self.alerts = ko.observableArray([
+                        {'message': 'Here is an Error', 'priority': 'error'},
+                        {'message': 'Here is a Warning', 'priority': 'warning'},
+                        {'message': 'Here is a Success', 'priority': 'success'},
+                        {'message': 'Here is some Info', 'priority': 'info'}
+                    ]);
+    //....
+    //...
+};
+</pre>
+    
+                        <h3>Options</h3>
+                        <table class="table table-bordered table-striped">
+                          <thead>
+                           <tr>
+                             <th style="width: 100px;">Name</th>
+                             <th style="width: 100px;">type</th>
+                             <th style="width: 50px;">default</th>
+                             <th>description</th>
+                           </tr>
+                          </thead>
+                          <tbody>
+                           <tr>
+                             <td>message</td>
+                             <td>string</td>
+                             <td>''</td>
+                             <td>The message to be displayed in the alert</td>
+                           </tr>
+                           <tr>
+                             <td>priority</td>
+                             <td>string</td>
+                             <td>''</td>
+                             <td>The priority of the alert - error | warning | success | info</td>
+                           </tr>
+                          </tbody>
+                        </table>
+                    </section>
+                    <section id="progress">
+                        <div class="page-header">
+                            <h1>Progress Bar</h1>
+                        </div>
+                        <h2>Examples</h2>
+                        <div class="bs-docs-example">
+                            <form>
+                                <label>Update Progress Value Observable</label>
+                                <input type="text" data-bind="value: progressVal, valueUpdate:'afterkeydown'" />
+                            </form>
+                            <div data-bind="progress: 'progressWidth'"></div>
+                        </div>
+<pre class="prettyprint linenums">
+&lt;!-- View Code --&gt;
+&lt;form&gt;
+    &lt;label&gt;Update Progress Value Observable&lt;/label&gt;
+    &lt;input type="text" data-bind="value: progressVal, valueUpdate:'afterkeydown'" /&gt;
+&lt;/form&gt;
+&lt;div data-bind="progress: 'progressWidth'"&gt;&lt;/div&gt;
+
+&lt;!-- View Model --&gt;
+var ViewModel = function() {
+    //....
+    //...
+    self.progressVal = ko.observable(10);
+    self.progressWidth = ko.computed(function(){
+        return self.progressVal() + '%';
+    }, self);
+    //....
+    //...
+};
+</pre>
+                        <h3>Options</h3>
+                        <table class="table table-bordered table-striped">
+                          <thead>
+                           <tr>
+                             <th style="width: 100px;">Name</th>
+                             <th style="width: 100px;">type</th>
+                             <th style="width: 50px;">default</th>
+                             <th>description</th>
+                           </tr>
+                          </thead>
+                          <tbody>
+                           <tr>
+                             <td>width computed</td>
+                             <td>string</td>
+                             <td>''</td>
+                             <td>the name of the computed observable that returns the width percentage</td>
+                           </tr>
+                          </tbody>
+                        </table>
+                    </section>
+                    <section id="typeahead">
+                        <div class="page-header">
+                            <h1>Typeahead</h1>
+                        </div>
+                        <h2>Examples</h2>
+                        <p>
+                            Typeahead input with a data source as an observable array. Pass a reference
+                            to the <code>data-bind="typeahead:"</code> binding and the items from that observable
+                            array will be shown as suggestions in the input box. To show the binding nature of this
+                            feature the example allows you to add and remove items from the array.
+                         <div class="bs-docs-example">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form>
+                                        <label>Javascript Frameworks</label>
+                                        <input type="text" data-bind="typeahead: jsFrameworks" />
+                                    </form>
+                                    <form data-bind="submit: addFramework">
+                                        <label>Add a framework</label>
+                                        <input type="text" data-bind="value: frameworkToAdd, valueUpdate:'afterkeydown'" />
+                                        <div class="form-actions well">
+                                            <button class="btn btn-default" type="submit" data-bind="enable: frameworkToAdd().length > 0">Add</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="well col-md-5">
+                                    <ul class="nav nav-list" data-bind="foreach: jsFrameworks">
+                                        <li>
+                                            <span data-bind="text: $data"></span>
+                                            <span class="glyphicon glyphicon-remove" data-bind="click: $root.removeFramework"></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+<pre class="prettyprint linenums">
+&lt;!-- View Code --&gt;
+&lt;div class="row"&gt;
+    &lt;div class="col-md-4"&gt;
+        &lt;form&gt;
+            &lt;label&gt;Javascript Frameworks&lt;/label&gt;
+            &lt;input type="text" data-bind="typeahead: jsFrameworks" /&gt;
+        &lt;/form&gt;
+        &lt;form data-bind="submit: addFramework"&gt;
+            &lt;label&gt;Add a framework&lt;/label&gt;
+            &lt;input type="text" data-bind="value: frameworkToAdd, valueUpdate:'afterkeydown'" /&gt;
+            &lt;div class="form-actions"&gt;
+                &lt;button class="btn btn-default" type="submit" data-bind="enable: frameworkToAdd().length > 0"&gt;Add&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/form&gt;
+    &lt;/div&gt;
+    &lt;div class="well col-md-4"&gt;
+        &lt;ul class="nav nav-list" data-bind="foreach: jsFrameworks"&gt;
+            &lt;li&gt;
+                &lt;span data-bind="text: $data"&gt;&lt;/span&gt;
+                &lt;span class="glyphicon glyphicon-remove" data-bind="click: $root.removeFramework"&gt;&lt;/span&gt;
+            &lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- View Model --&gt;
+var ViewModel = function() {
+    //....
+    //...
+    self.jsFrameworks = ko.observableArray([
+            'Angular',
+            'Canjs',
+            'Batman',
+            //...
+        ]);
+
+    self.frameworkToAdd = ko.observable("");
+    self.addFramework = function() {
+        self.jsFrameworks.push(self.frameworkToAdd());
+    };
+
+    self.removeFramework = function(framework) {
+        self.jsFrameworks.remove(framework);
+    };
+    //....
+    //...
+};
+</pre>
+                    </section>
+                    <section id="modal">
+                        <div class="page-header">
+                            <h1>Modal</h1>
+                            <p>Modals are streamlined, but flexible, dialog prompts with the minimum required functionality and smart defaults.</p>
+                        </div>
+                        <h2>Examples</h2>
+                        <p>
+
+                        </p>
+                        <div class="bs-docs-example">
+                            <p data-bind="text: modalBindingBody"></p>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <button class="btn btn-lg btn-primary" data-bind="modal: {template: 'modalBindingTemplateLive'}">Change Text Live</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-lg btn-primary" data-bind="modal: {template: 'modalBindingTemplateSave', openModal: openModal}">Change Text on Save</button>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <button class="btn btn-lg btn-primary" data-bind="modal: {template: 'modalSmallBindingTemplate', data: {modalBindingHeader: modalBindingHeader, body: 'Small Modal'} }">Small Modal</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-lg btn-primary" data-bind="modal: {template: 'modalLargeBindingTemplate', data: {modalBindingHeader: modalBindingHeader, body: 'Large Modal'} }">Large Modal</button>
+                                </div>
+                            </div>
+                        </div>
+                        <pre  class="prettyprint linenums">
+&lt;!-- View Code --&gt;
+&lt;p data-bind=&quot;text: modalBindingBody&quot;&gt;&lt;/p&gt;
+&lt;div class=&quot;row&quot;&gt;
+    &lt;div class=&quot;col-md-4&quot;&gt;
+        &lt;button class=&quot;btn btn-lg btn-primary&quot; data-bind=&quot;modal: {template: &#39;modalBindingTemplateLive&#39;}&quot;&gt;Change Text Live&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;col-md-4&quot;&gt;
+        &lt;button class=&quot;btn btn-lg btn-primary&quot; data-bind=&quot;modal: {template: &#39;modalBindingTemplateSave&#39;, openModal: openModal}&quot;&gt;Change Text on Save&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;br /&gt;
+&lt;div class=&quot;row&quot;&gt;
+    &lt;div class=&quot;col-md-4&quot;&gt;
+        &lt;button class=&quot;btn btn-lg btn-primary&quot; data-bind=&quot;modal: {template: &#39;modalSmallBindingTemplate&#39;, data: {modalBindingHeader: modalBindingHeader, body: &#39;Small Modal&#39;} }&quot;&gt;Small Modal&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;col-md-4&quot;&gt;
+        &lt;button class=&quot;btn btn-lg btn-primary&quot; data-bind=&quot;modal: {template: &#39;modalLargeBindingTemplate&#39;, data: {modalBindingHeader: modalBindingHeader, body: &#39;Large Modal&#39;} }&quot;&gt;Large Modal&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Model Code --&gt;
+var ViewModel = function() {
+    //....
+    //...
+    self.modalBindingHeader = ko.observable(&#39;Binding in A Modal&#39;);
+    self.modalBindingBody = ko.observable(&#39;Gotta love data binding!!.&#39;);
+    self.modalBindingTemp = ko.observable();
+    self.openModal = function() {
+        self.modalBindingTemp(self.modalBindingBody());
+    };
+    self.saveChange = function() {
+        self.modalBindingBody(self.modalBindingTemp());
+    };
+    //....
+    //...
+}
+                        </pre>
+                        <h3>Options</h3>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th style="width: 100px;">Name</th>
+                                <th style="width: 100px;">type</th>
+                                <th style="width: 50px;">default</th>
+                                <th>description</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>options</td>
+                                <td>object</td>
+                                <td>{show: false}</td>
+                                <td>refer to <a href="http://getbootstrap.com/javascript/#modals">official documentation</a> for options.</td>
+                            </tr>
+                            <tr>
+                                <td>template</td>
+                                <td>string</td>
+                                <td>''</td>
+                                <td>the id to the template for the content</td>
+                            </tr>
+                            <tr>
+                                <td>data</td>
+                                <td>string | function</td>
+                                <td>''</td>
+                                <td>the data for the template</td>
+                            </tr>
+                            <tr>
+                                <td>openModal</td>
+                                <td>function</td>
+                                <td>''</td>
+                                <td>function to execute when modal is opened.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <a href="https://github.com/billpull/knockout-bootstrap"><img style="position: absolute; top: 0; right: 0; border: 0;z-index:10001" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+        
+
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/knockout.js"></script>
+        <script src="js/prettify.js"></script>
+        <script src="js/typeahead.jquery.js"></script>
+        <script src="../src/knockout-bootstrap.js"></script>
+        <script>
+            var ExampleViewModel = function () {
+                var self = this;
+
+                self.popoverBindingHeader = ko.observable('Binding in A Popover');
+                self.alerts = ko.observableArray([
+                        {'message': 'Here is an Error', 'priority': 'danger'},
+                        {'message': 'Here is a Warning', 'priority': 'warning'},
+                        {'message': 'Here is a Success', 'priority': 'success'},
+                        {'message': 'Here is some Info', 'priority': 'info'}
+                    ]);
+                self.progressVal = ko.observable(10);
+                self.progressWidth = ko.computed(function(){
+                    return self.progressVal() + '%';
+                }, self);
+
+                self.jsFrameworks = ko.observableArray([
+                        'Angular',
+                        'Canjs',
+                        'Batman',
+                        'Meteor',
+                        'Ember',
+                        'Backbone',
+                        'Knockout',
+                        'Knockback',
+                        'Spine',
+                        'Sammy',
+                        'YUI',
+                        'Closure',
+                        'jQuery'
+                    ]);
+
+                self.colors = ko.observableArray([
+                        'Red',
+                        'Green',
+                        'Blue',
+                        'Brown',
+                        'Yellow',
+                        'White',
+                        'Black'
+                    ]);
+
+                self.frameworkToAdd = ko.observable("");
+                self.addFramework = function() {
+                    self.jsFrameworks.push(self.frameworkToAdd());
+                };
+
+                self.removeFramework = function(framework) {
+                    self.jsFrameworks.remove(framework);
+                };
+
+                self.modalBindingHeader = ko.observable('Binding in A Modal');
+                self.modalBindingBody = ko.observable('Gotta love data binding!!.');
+                self.modalBindingTemp = ko.observable();
+                self.openModal = function() {
+                    self.modalBindingTemp(self.modalBindingBody());
+                };
+                self.saveChange = function() {
+                    self.modalBindingBody(self.modalBindingTemp());
+                };
+            };
+
+            $(function(){
+                // make code pretty
+                window.prettyPrint && prettyPrint();
+
+                viewModel = new ExampleViewModel();
+
+                ko.applyBindings(viewModel);
+            });
+        </script>
+
+        <script type="text/html" id="popoverTemplate">
+            <button class="close pull-right" type="button" data-dismiss="popover">&times</button>
+            Hey I am some content in A popover
+        </script>
+
+        <script type="text/html" id="popoverBindingTemplate">
+            <button class="close pull-right" type="button" data-dismiss="popover">&times</button>
+            <form>
+                <label>Popover Binding Header</label>
+                <input type="text" data-bind="value: popoverBindingHeader, valueUpdate:'afterkeydown' " />
+                <strong>Foreach binding:</strong>
+                <table class="table table-striped">
+                      <tbody data-bind="foreach: colors">
+                        <tr><td><span data-bind="text: $data"></span></td></tr>
+                      </tbody>
+                </table>
+            </form>
+        </script>
+
+        <script type="text/html" id="modalBindingTemplateLive">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel0" data-bind="text: modalBindingHeader"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <textarea cols="80" rows="5" data-bind="value: modalBindingBody, valueUpdate:'afterkeydown' "></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </script>
+
+        <script type="text/html" id="modalBindingTemplateSave">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel1" data-bind="text: modalBindingHeader"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <textarea cols="80" rows="5" data-bind="value: modalBindingTemp, valueUpdate:'afterkeydown' "></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-bind="click: saveChange">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </script>
+
+        <script type="text/html" id="modalSmallBindingTemplate">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel2" data-bind="text: modalBindingHeader"></h4>
+                    </div>
+                    <div class="modal-body" data-bind="text: body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </script>
+
+        <script type="text/html" id="modalLargeBindingTemplate">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel3" data-bind="text: modalBindingHeader"></h4>
+                    </div>
+                    <div class="modal-body" data-bind="text: body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </script>
+    </body>
+</html>

@@ -1,0 +1,23 @@
+{
+    "parser": "babel-eslint",
+    "env": {
+        "node": true,
+        "browser": true,
+        "mocha": true,
+        "es6": true
+    },
+    "rules": {
+        "comma-dangle": 0,
+        "no-underscore-dangle": 0,
+        "quotes": [2, "double"],
+        "space-after-keywords": [2, "always"],
+        "space-infix-ops": 0,
+        "strict": 0
+    },
+    "ecmaFeatures": {
+        "jsx": true,
+    },
+    "globals": {
+        "axs": true
+    }
+}

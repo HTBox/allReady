@@ -7,15 +7,10 @@
     <title>@ViewData["Title"] - AllReady</title>
 
     <environment names="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
-        <link rel="stylesheet" href="~/css/mainPage.css" />
+        <link href="~/vendor/vender.css" rel="stylesheet" />
     </environment>
     <environment names="Staging,Production">
-        <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/bootstrap/3.3.5/css/bootstrap.min.css"
-              asp-fallback-href="~/lib/bootstrap/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="~/css/site.css" asp-file-version="true" />
-        <link rel="stylesheet" href="~/css/mainPage.css" asp-file-version="true" />
+        <link href="~/vendor/vender.css" rel="stylesheet" />
     </environment>
     @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
 </head>
@@ -73,7 +68,6 @@
         </script>
     </environment>
     <script src="~/lib/system.js/dist/system.js"></script>
-    @*<script src="~/js/site.js"></script>*@
-    <script src="~/js/index.js"></script>
+.    <script src="~/js/index.js"></script>
 </body>
 </html>

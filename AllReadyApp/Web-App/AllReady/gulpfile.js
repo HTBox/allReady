@@ -13,12 +13,15 @@ var gulp = require("gulp"),
 
 //var config = new Config();
 
+//https://www.npmjs.com/package/gulp-typescript
+//http://weblogs.asp.net/dwahlin/creating-a-typescript-workflow-with-gulp
+var tsProject = tsc.createProject('./tsconfig.json');
+
 var paths = {
     webroot: "./" + project.webroot + "/"
 };
 
 paths.js = paths.webroot + "js/**/*.js";
-paths.tsResult = paths.webroot + "./ts/**/*.js";
 paths.minJs = paths.webroot + "js/**/*.min.js";
 paths.css = paths.webroot + "css/**/*.css";
 paths.minCss = paths.webroot + "css/**/*.min.css";
@@ -58,6 +61,45 @@ gulp.task("watch", function () {
 })
 
 
+gulp.task('vender:JS', function () {
+    var list = [
+        'http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0',
+        'bower_components/jquery/dist/jquery.js',
+        'bower_components/bootstrap/dist/js/bootstrap.js',
+        'bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.js',
+        'bower_components/bootstrap-tagsinput/dist/bootstrap-tagsinput.js',
+        'bower_components/knockout/dist/knockout.js',
+        'bower_components/knockout-bootstrap/src/knockout-bootstrap.js',
+        'bower_components/moment/moment.js',
+        'bower_components/tota11y/build/tota11y.js',
+        'bower_components/tinymce/tinymce.js',
+        'bower_components/system.js/dist/system.js',
+    ];
+
+    gulp.src(list)
+    .pipe(concat('vender.js'))
+    .pipe(gulp.dest(paths.webroot + '/vendor'));
+});
+
+gulp.task('vender:CSS', function () {
+    var list = [
+    'bower_components/bootstrap/dist/css/bootstrap.css',
+    'bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
+    'bower_components/font-awesome/css/font-awesome.css',
+    'bower_components/bootstrap-toggle/css/bootstrap-toggle.css',
+    'bower_components/bootstrap-tagsinput/src/bootstrap-tagsinput.css',
+    'wwwroot/css/campaignStyle.css',
+    'wwwroot/css/mainPage.css',
+    'wwwroot/css/site.css',
+    ];
+
+    // place code for your default task here
+    gulp.src(list)
+    .pipe(concat('vender.css'))
+    .pipe(gulp.dest(paths.webroot + '/vendor'));
+
+});
+
 
 //https://www.npmjs.com/package/gulp-typescript
 gulp.task('typescript:Build', function () {
@@ -84,15 +126,9 @@ gulp.task('typescript:Build', function () {
 
 
 
-//https://www.npmjs.com/package/gulp-typescript
-//http://weblogs.asp.net/dwahlin/creating-a-typescript-workflow-with-gulp
-var tsProject = tsc.createProject('./tsconfig.json');
 
-//gulp.task('typescript:Build', function () {
-//    var tsResult = tsProject.src() // instead of gulp.src(...) 
-//        .pipe(ts(tsProject));
 
-//});
+
 
 
 /**

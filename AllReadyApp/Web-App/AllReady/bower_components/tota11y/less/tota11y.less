@@ -1,0 +1,52 @@
+@import "variables.less";
+@import "base.less";
+
+@togglePadding: 7px;
+@toggleCollapsedWidth: 35px;
+@toggleHeight: 25px;
+
+.tota11y-toolbar {
+    .tota11y-dark-color-scheme;
+    .position(fixed, auto, auto, 0, @viewportEdgePadding);
+
+    border-top-left-radius: @borderRadius;
+    border-top-right-radius: @borderRadius;
+    overflow: hidden;
+    z-index: @z-index--UI;
+
+    &-toggle {
+        background-color: @darkGray;
+        display: block;
+        padding: @togglePadding;
+        width: 100%;
+    }
+
+    &-logo {
+        height: @toggleHeight;
+        margin: 0 auto;
+        text-align: center;
+        width: @toggleCollapsedWidth;
+
+        & svg {
+            height: @toggleHeight;
+        }
+    }
+
+    &-body {
+        display: none;
+    }
+    &.tota11y-expanded &-body {
+        display: block;
+    }
+}
+
+.tota11y-sr-only {
+    border: 0;
+    clip: rect(0,0,0,0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
