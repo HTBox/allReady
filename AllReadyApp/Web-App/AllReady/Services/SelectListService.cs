@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.Mvc.Rendering;
+using AllReady.Extensions;
 
 namespace AllReady.Services
 {
@@ -25,6 +26,14 @@ namespace AllReady.Services
                 //Project HierarchicalName onto Name
                 .Select(s => new Skill { Id = s.Id, Name = s.HierarchicalName, Description = s.Description })
                 .OrderBy(s => s.Name);
+        }
+
+        public IEnumerable<SelectListItem> GetCampaignImpactTypes()
+        {
+            return new List<SelectListItem> {
+                new SelectListItem { Value = ((int)ImpactType.Text).ToString(), Text = ImpactType.Text.GetDisplayName() },
+                new SelectListItem { Value = ((int)ImpactType.Numeric).ToString(), Text = ImpactType.Numeric.GetDisplayName() }
+            };
         }
 
     }
