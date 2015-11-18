@@ -18,6 +18,7 @@
     "moment": "2.10.6",
     "tota11y": "0.1.2",
     "tinymce": "4.2.6",
-    "bootstrap-tagsinput": "0.6.1"
+    "bootstrap-tagsinput": "0.6.1",
+    "d3": "3.5.9"
   }
 }
