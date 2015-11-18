@@ -14,5 +14,10 @@
         /// The type of user
         /// </summary>
         public const string UserType = "ar:usertype";
+
+        /// <summary>
+        /// The display name of the user
+        /// </summary>
+        public const string DisplayName = "ar:displayname";
     }
 }

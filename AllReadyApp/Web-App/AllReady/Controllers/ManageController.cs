@@ -52,6 +52,8 @@ namespace AllReady.Controllers
             var model = new IndexViewModel
             {
                 HasPassword = await _userManager.HasPasswordAsync(user),
+                EmailAddress = user.Email,
+                IsEmailAddressConfirmed = user.EmailConfirmed,
                 PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
                 TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
                 Logins = await _userManager.GetLoginsAsync(user),
@@ -72,15 +74,44 @@ namespace AllReady.Controllers
                 return View(model);
             }
             var user = GetCurrentUser();
-            user.Name = model.Name;
+
+            if (!string.IsNullOrEmpty(user.Name))
+            {
+                user.Name = model.Name;
+                await _userManager.RemoveClaimsAsync(user, User.Claims.Where(c=> c.Type == Security.ClaimTypes.DisplayName));
+                await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.DisplayName, user.Name));
+                
+                await _signInManager.RefreshSignInAsync(user);
+            }
+
             user.AssociatedSkills.RemoveAll(usk => model.AssociatedSkills == null || !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
             if (model.AssociatedSkills != null)
             {
                 user.AssociatedSkills.AddRange(model.AssociatedSkills.Where(msk => !user.AssociatedSkills.Any(usk => usk.SkillId == msk.SkillId)));
             }
             user.AssociatedSkills?.ForEach(usk => usk.UserId = user.Id);
+
             await _dataAccess.UpdateUser(user);
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResendEmailConfirmation()
+        {
+            var user = await _userManager.FindByIdAsync(User.GetUserId());
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+            await _emailSender.SendEmailAsync(user.Email, "Confirm your allReady account",
+                "Please confirm your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+
+            return RedirectToAction(nameof(EmailConfirmationSent));
+        }
+
+        [HttpGet]
+        public IActionResult EmailConfirmationSent()
+        {
+            return View();
         }
 
         // GET: /Account/RemoveLogin

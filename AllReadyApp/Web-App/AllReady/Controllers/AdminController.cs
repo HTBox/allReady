@@ -11,6 +11,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Extensions.OptionsModel;
+using AllReady.Security;
 
 namespace AllReady.Controllers
 {
@@ -73,21 +74,18 @@ namespace AllReady.Controllers
                 if (result.Succeeded)
                 {
                     var user = await _userManager.FindByNameAsync(model.Email);
-                    var claims = await _userManager.GetClaimsAsync(user);
-                    if (claims.Count > 0)
+                    if (user.IsUserType(UserType.SiteAdmin))
                     {
-                        var claimValue = claims.FirstOrDefault(c => c.Type.Equals(Security.ClaimTypes.UserType)).Value;
-
-                        if (claimValue.Equals("TenantAdmin"))
+                        return RedirectToAction(nameof(SiteController.Index), "Site", new { area = "Admin" });
+                    }
+                    else if (user.IsUserType(UserType.TenantAdmin))
                         {
                             return base.RedirectToAction(nameof(Areas.Admin.Controllers.TenantController.Index), "Tenant", new { area = "Admin" });
                         }
-                        else if (claimValue.Equals("SiteAdmin"))
+                    else
                         {
-                            return RedirectToAction(nameof(SiteController.Index), "Site", new { area = "Admin" });
-                        }
+                        return RedirectToAction("Index", "Home");
                     }
-
                 }
                 if (result.RequiresTwoFactor)
                 {

@@ -2,6 +2,8 @@
     margin: 0;
     padding: 0;
     font-family: sans-serif;
+    position: relative;
+    padding-bottom: 16rem;
 }
 
 /* Set widths on the form inputs since otherwise they're 100% wide */
@@ -39,15 +41,21 @@ footer, footer a {
     color: #ab6627;
 }
 
-    footer a:hover {
-        text-decoration: none;
-        color: #efab6c;
-    }
+footer a:hover {
+    text-decoration: none;
+    color: #efab6c;
+}
 
-    footer > p > img {
-        margin-left: 20px;
-        /*margin-right: 10px;*/
-    }
+footer > p > img, footer > p > a > img {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
 
 .date-address {
     color: #555555;
@@ -128,7 +136,6 @@ Navigation
 
 .navbar-default .navbar-nav > li > a, .navbar-default .navbar-nav > li > a:active, .navbar-default .navbar-nav > li > a:visited, .navbar-default .navbar-nav > li > a:focus {
     color: #fff;
-    font-size: 1.4em;
 }
 
 .navbar-default .navbar-nav > li:hover, .navbar-default .navbar-nav > li:active, .navbar-default .navbar-nav > li:focus {
@@ -268,3 +275,41 @@ Navigation
     font-size: 24pt;
     font-family: sans-serif;
 }
+
+/* version information */
+.version{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 9px;
+}
+
+.thermometer{
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.thermometer-liquid{
+    fill: #d32828;
+}
+
+.thermometer-ticks {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.thermometer-ticks text {
+    display: none;
+}
+.thermometer-left-edge {
+    stroke: black;
+}
+.thermometer-right-edge {
+    stroke: black;
+}
+.thermometer-bulb-outline{
+    stroke: black;
+    stroke-width: 3;
+} 		 

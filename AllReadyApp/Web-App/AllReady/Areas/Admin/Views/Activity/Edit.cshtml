@@ -5,15 +5,18 @@
 @{
     //TODO: Need a better way of identifying Create vs Edit. Suggest not binding directly to model class, create view model instead
     var isEdit = Model.Id != 0;
+    string actionTitle;
     string cancelUrl;
     if (isEdit)
     {
         ViewBag.Title = $"Edit Activity";
+        actionTitle = "Save";
         cancelUrl = Url.Action("Details", "Activity", new { id = Model.Id, area = "Admin" });
     }
     else
     {
         ViewBag.Title = "Create Activity";
+        actionTitle = "Create";
         cancelUrl = Url.Action("Details", "Campaign", new { id = Model.CampaignId, area = "Admin" });
     }
 }
@@ -39,13 +42,12 @@
 
 <h2>@ViewBag.Title</h2>
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
+<form asp-controller="Activity" asp-route-area="Admin" method="post" enctype="multipart/form-data">
 
-    <div class="row">
+    <div class="form-horizontal">
+        <hr />
         <div class="form-horizontal col-lg-6 pull-left">
-            <div asp-validation-summary="ValidationSummary.ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ValidationSummary.All" class="text-danger"></div>
             <input asp-for="Id" type="hidden" />
             <input asp-for="CampaignId" type="hidden" />
             <input asp-for="CampaignName" type="hidden" />
@@ -68,31 +70,31 @@
             <div class="form-group">
                 <label asp-for="NumberOfVolunteersRequired" class="control-label col-md-2"></label>
                 <div class="col-md-10">
-                    <input asp-for="NumberOfVolunteersRequired" class="form-control"></input>
+                    <input asp-for="NumberOfVolunteersRequired" class="form-control" />
                     <span asp-validation-for="NumberOfVolunteersRequired" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">
                 <label asp-for="StartDateTime" class="control-label col-md-2"></label>
                 <div class="col-md-10">
-                    <input asp-for="StartDateTime" class="form-control datepicker" />
+                    <input asp-for="StartDateTime" class="form-control datetimepicker" />
                     <span asp-validation-for="StartDateTime" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">
                 <label asp-for="EndDateTime" class="control-label col-md-2"></label>
                 <div class="col-md-10">
-                    <input asp-for="EndDateTime" class="form-control datepicker" />
+                    <input asp-for="EndDateTime" class="form-control datetimepicker" />
                     <span asp-validation-for="EndDateTime" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="RequiredSkills" class="control-label col-md-2"></label>
+                <label asp-for="RequiredSkills" class="control-label col-md-2" style="padding-top: 0"></label>
                 <div class="col-md-10">
                     <div data-bind="foreach: requiredSkills">
                         <div class="form-inline">
                             <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
-                            <span class="fa fa-info" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                            <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
                             <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
                                 <span class="fa fa-remove" aria-hidden="true"></span>
                                 Delete
@@ -101,47 +103,46 @@
                     </div>
                     <a href="#" data-bind="click: addSkill" title="Add required skill">
                         <span class="fa fa-plus" aria-hidden="true"></span>
-                        Add
-                    </a>
+                        Add</a>
+                    <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">@Html.DisplayNameFor(m => m.RequiredSkills) must be unique</span>
                 </div>
             </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <button type="submit" class="btn btn-default" data-bind="enable: requiredSkills.isValid">Save</button>
-                    <a href="@cancelUrl" class="btn btn-default">Cancel</a>
-                    <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">@Html.DisplayNameFor(m => m.RequiredSkills)" must be unique</span>
-                </div>
-            </div>
+
         </div>
         <div class="col-lg-6 pull-right">
             <div id="mapArea" style="width:400px;height:400px"></div>
         </div>
-    </div>
- 
-}
 
-@if (isEdit)
-{
-    <h2>Image</h2>
-    <div class="form-horizontal">
-        <div class="form-group">
-            @Html.LabelFor(model => model.ImageUrl, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <img src="@Model.ImageUrl" class="img-thumbnail img-responsive col-md-4" />
-                <form action="~/Admin/Activity/PostActivityFile" method="post" enctype="multipart/form-data">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" id="activiteyId" value="@Model.Id" />
-                    <div class="form-group">
-                        <div class="col-md-10">
-                            <input type="file" name="file" id="newFile" class="control-label col-md-4" />
-                            <button type="submit" class="btn col-md-1">Upload</button>
-                        </div>
+        <h2>Image</h2>
+        <div class="form-horizontal col-lg-6 pull-left">
+            @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+            {
+                <div class="form-group">
+                    <div class="col-md-2">&nbsp;</div>
+                    <div class="col-md-10">
+                        <img src="@Model.ImageUrl" class="img-thumbnail img-responsive col-md-4" />
                     </div>
-                </form>
+                </div>
+            }
+            <div class="form-group">
+                <label asp-for="FileUpload" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input type="file" asp-for="FileUpload" class="control-label col-md-4" />
+                    <span asp-validation-for="FileUpload" class="text-danger col-md-12"></span>
+                </div>
             </div>
         </div>
+
     </div>
-}
+
+    <div class="row">
+        <div class="col-md-12">
+            <button type="submit" value="@actionTitle" class="btn btn-default" data-bind="enable: requiredSkills.isValid">@actionTitle</button>
+            <a href="@cancelUrl" class="btn btn-default">Cancel</a>        
+        </div>
+    </div>
+</form>
+
 
 @section scripts {
     <script src="~/js/activitymap.js"></script>

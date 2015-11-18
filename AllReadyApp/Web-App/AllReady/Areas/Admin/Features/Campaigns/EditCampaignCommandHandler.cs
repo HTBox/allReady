@@ -1,6 +1,9 @@
-﻿using AllReady.Models;
+﻿using AllReady.Areas.Admin.Models;
+using Microsoft.Data.Entity;
+using AllReady.Models;
 using MediatR;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
@@ -15,8 +18,12 @@ namespace AllReady.Areas.Admin.Features.Campaigns
         }
         public int Handle(EditCampaignCommand message)
         {
-            var campaign = 
-                _context.Campaigns.SingleOrDefault(c => c.Id == message.Campaign.Id);
+            var campaign = _context.Campaigns
+                                    .Include(l => l.Location).ThenInclude(p => p.PostalCode)
+                    .Include(tc => tc.CampaignContacts)
+                    .Include(i => i.CampaignImpact)
+
+                .SingleOrDefault(c => c.Id == message.Campaign.Id);
 
             if (campaign == null)
             {
@@ -28,10 +35,24 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.StartDateTimeUtc = message.Campaign.StartDate;
             campaign.EndDateTimeUtc = message.Campaign.EndDate;
             campaign.ManagingTenantId = message.Campaign.TenantId;
+            campaign.ImageUrl = message.Campaign.ImageUrl;
 
+            campaign = campaign.UpdateCampaignContact(message.Campaign, _context);
+            campaign.CampaignImpact = campaign.CampaignImpact.UpdateModel(message.Campaign.CampaignImpact);
+            campaign.Location = campaign.Location.UpdateModel(message.Campaign.Location);
+            if (campaign.CampaignImpact != null)
+            {
+                _context.Update(campaign.CampaignImpact);
+            }
+            if (campaign.Location != null)
+            {
+                _context.Update(campaign.Location);
+            }
             _context.Update(campaign);
             _context.SaveChanges();
             return campaign.Id;
         }
+
+
     }
 }

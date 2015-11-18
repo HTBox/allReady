@@ -16,7 +16,7 @@ namespace AllReady.UnitTest.Campaigns
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
                 WebUrl = "http://www.htbox.org",
-                Campaigns = new List<Campaign>()
+                Campaigns = new List<Campaign>(),                
             };
             Campaign firePrev = new Campaign()
             {

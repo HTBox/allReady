@@ -27,6 +27,9 @@ namespace AllReady.Areas.Admin.Models
 
         public string ImageUrl { get; set; }
 
+        [Display(Name = "Browse for image")]
+        public string FileUpload { get; set; }
+
         [Display(Name = "Volunteers Required")]
         public int NumberOfVolunteersRequired { get; set; }
         

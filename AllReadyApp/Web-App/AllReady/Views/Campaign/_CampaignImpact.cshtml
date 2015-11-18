@@ -1,16 +1,14 @@
-﻿@model CampaignViewModel
+﻿@using AllReady.ViewModels
+@model CampaignViewModel
 
-@if (Model.CampaignImpact.CampaignImpactType != null)
-{
-    <div class="panel campaign-impact">
-        <div class="panel-heading">Campaign Goal</div>
-        <div class="panel-body">
-            @if (Model.CampaignImpact.CampaignImpactType.Name == "Numeric")
+<div class="panel panel-success campaign-impact">
+    <div class="panel-heading">@Html.Raw(Model.CampaignImpact.TextualImpactGoal) </div>
+    <div class="panel-body" style="height: 350px">
+        @if (Model.CampaignImpact.ImpactType == ImpactType.Numeric)
             {
-                <!-- TODO: Display thermometer showing impact progress -->
-                
-            }
-            @Html.Raw(Model.CampaignImpact.TextualImpactGoal);
-        </div>
+            <div data-control="thermometer" data-max-value="@Model.CampaignImpact.NumericImpactGoal" data-current-value="@Model.CampaignImpact.CurrentImpactLevel">
+
+            </div>
+        }
     </div>
-}
+</div>

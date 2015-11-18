@@ -13,6 +13,11 @@ namespace AllReady.Models
     {
         public string Name { get; set; }
 
+        [Display(Name = "Email Adddress")]
+        public string EmailAddress { get; set; }
+
+        public bool IsEmailAddressConfirmed { get; set; }
+
         public bool HasPassword { get; set; }
 
         public IList<UserLoginInfo> Logins { get; set; }

@@ -19,16 +19,18 @@ namespace AllReady.Areas.Admin.Features.Campaigns
         {
             var campaign = _context.Campaigns
                                   .AsNoTracking()
-                                  .Include(c => c.Activities)    
+                                  .Include(c => c.Activities)
                                   .Include(m => m.ManagingTenant)
                                   .Include(ci => ci.CampaignImpact)
+                                  .Include(c => c.CampaignContacts).ThenInclude(c => c.Contact)
+                                  .Include(l => l.Location).ThenInclude(p => p.PostalCode)
                                   .SingleOrDefault(c => c.Id == message.CampaignId);
 
             CampaignDetailModel result = null;
 
             if (campaign != null)
             {
-                result = new CampaignDetailModel()
+                result = new CampaignDetailModel
                 {
                     Id = campaign.Id,
                     Name = campaign.Name,
@@ -38,8 +40,10 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     ImageUrl = campaign.ImageUrl,
                     StartDate = campaign.StartDateTimeUtc,
                     EndDate = campaign.EndDateTimeUtc,
-					CampaignImpact = campaign.CampaignImpact,
-                    Activities = campaign.Activities.Select(a => new ActivitySummaryModel                    {
+                    CampaignImpact = campaign.CampaignImpact,
+                    Location = campaign.Location.ToModel(),
+                    Activities = campaign.Activities.Select(a => new ActivitySummaryModel
+                    {
                         Id = a.Id,
                         Name = a.Name,
                         Description = a.Description,
@@ -52,8 +56,17 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                         ImageUrl = a.ImageUrl
                     })
                 };
+                if (!campaign.CampaignContacts.Any())// Include isn't including
+                {
+                    campaign.CampaignContacts = _context.CampaignContacts.Include(c => c.Contact).Where(cc => cc.CampaignId == campaign.Id).ToList();
+                }
+                if (campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
+                {
+                    result = (CampaignDetailModel)campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(result);
+                }
             }
             return result;
         }
+         
     }
 }

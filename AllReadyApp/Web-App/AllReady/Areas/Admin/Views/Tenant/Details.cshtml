@@ -1,4 +1,4 @@
-@model AllReady.Models.Tenant
+@model AllReady.Areas.Admin.Models.TenantDetailModel
 
 @{ 
     ViewData["Title"] = Model.Name;
@@ -29,13 +29,43 @@
             <dd>
                 @Html.DisplayFor(model => model.WebUrl)
             </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.PrimaryContactFirstName)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PrimaryContactFirstName)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.PrimaryContactLastName)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PrimaryContactLastName)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.PrimaryContactPhoneNumber)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PrimaryContactPhoneNumber)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.PrimaryContactEmail)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PrimaryContactEmail)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Location)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Location)
+            </dd>
         </dl>
     </div>
 </div>
 <div class="row">
     <div class="col-md-12">
-        @Html.ActionLink("Edit", "Edit", "Tenant", new { id = Model.Id }, new { @class = "btn" }) 
-        @Html.ActionLink("Back to list", "Index", "Tenant", null, new { @class = "btn" })
+        @Html.ActionLink("Edit", "Edit", "Tenant", new { id = Model.Id }, new { @class = "btn btn-primary" }) 
+        @Html.ActionLink("Back to list", "Index", "Tenant", null, new { @class = "btn btn-cancel" })
     </div>
 </div>
 

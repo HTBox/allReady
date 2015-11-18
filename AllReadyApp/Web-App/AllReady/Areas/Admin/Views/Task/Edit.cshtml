@@ -76,21 +76,21 @@
         <div class="form-group">
             <label asp-for="NumberOfVolunteersRequired" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="NumberOfVolunteersRequired" class="form-control"></input>
+                <input asp-for="NumberOfVolunteersRequired" class="form-control">
                 <span asp-validation-for="NumberOfVolunteersRequired" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
             <label asp-for="StartDateTime" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="StartDateTime" class="form-control datepicker" />
+                <input asp-for="StartDateTime" class="form-control datetimepicker" />
                 <span asp-validation-for="StartDateTime" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
             <label asp-for="EndDateTime" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="EndDateTime" class="form-control datepicker" />
+                <input asp-for="EndDateTime" class="form-control datetimepicker" />
                 <span asp-validation-for="EndDateTime" class="text-danger"></span>
             </div>
         </div>
@@ -101,7 +101,7 @@
                 <div data-bind="foreach: requiredSkills">
                     <div class="form-inline">
                         <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
-                        <span class="fa fa-info" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                        <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
                         <a href="#" data-bind="click: $root.deleteSkill" title="Delete required skill">
                             <span class="fa fa-remove" aria-hidden="true"></span>
                             Delete

@@ -1,4 +1,5 @@
 ﻿@model AllReady.Areas.Admin.Models.CampaignDetailModel
+@{ ViewBag.Title = Model.Name; }
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
@@ -9,7 +10,7 @@
 </div>
 
 <div class="row">
-    <div id="col-main" >
+    <div id="col-main">
         <div class="col-md-9"><h2>@Model.Name <a asp-controller="Campaign" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default" title="Edit"><i class="fa fa-edit"></i></a> <a asp-controller="Campaign" asp-action="Delete" asp-route-area="Admin" asp-route-id="@Model.Id" class="btn btn-default"><i class="glyphicon glyphicon-trash"></i></a></h2></div>
     </div>
 </div>
@@ -19,11 +20,53 @@
         <p class="date-address">@Model.StartDate.ToString("D") - @Model.EndDate.ToString("D")</p>
     </div>
 </div>
-
+<div class="row">
+    
+    <div class="col-md-12">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.PrimaryContactFirstName)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PrimaryContactFirstName)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.PrimaryContactLastName)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PrimaryContactLastName)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.PrimaryContactPhoneNumber)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PrimaryContactPhoneNumber)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.PrimaryContactEmail)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PrimaryContactEmail)
+            </dd>
+        </dl>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Location)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Location)
+            </dd>
+        </dl>
+    </div>
+</div>
 <div class="row">
     <div id="col-main" class="col-md-8">
         @if (!String.IsNullOrEmpty(Model.ImageUrl))
-        {
+            {
             <div class="row">
                 <img src="@Model.ImageUrl" class="img-responsive" />
             </div>
@@ -32,7 +75,7 @@
     </div>
     <div class="col-md-4">
         @if (Model.CampaignImpact != null && Model.CampaignImpact.Display)
-        {
+            {
             @Html.Partial("_CampaignImpact")
         }
     </div>
@@ -49,6 +92,6 @@
 <div class="row">
     <div class="col-md-12">
         <h3>Activities</h3>
-    </div>    
+    </div>
 </div>
 @Html.Partial("~/Areas/Admin/Views/Activity/_List.cshtml", Model)

@@ -3,6 +3,7 @@
 
 @{
     ViewBag.Title = $"{Model.Title}";
+
 }
 
 <div class="row">
@@ -37,11 +38,12 @@
                 <h4><a asp-controller="Tenant" asp-action="ShowTenant" asp-route-id="@Model.TenantId">@Model.TenantName</a></h4>
             </div>
         </div>
+
         @if (Model.IsUserVolunteeredForActivity && Model.Tasks.Any())
         {
             <div class="row">
                 <div class="col-sm-12">
-                    <h3>Tasks</h3>
+                    <h3>My Assigned Tasks</h3>
                 </div>
                 <div class="col-sm-12">
                     <div class="form-inline">
@@ -51,7 +53,7 @@
                         <div class="form-group">
                             <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
                                 <i class="fa" data-bind="css: { 'fa-square-o': !tasks.showOld(), 'fa-check-square-o': tasks.showOld }"></i>
-                                Show Old
+                                Show Closed Tasks
                             </button>
                         </div>
                     </div>
@@ -61,12 +63,39 @@
                     <span class="label-warning label hide" data-bind="css: { hide: tasks.filtered().length }">No matching tasks.</span>
                     <ul data-bind="foreach: tasks.filtered">
                         <li>
-                            <span data-bind="text: Name"></span>
-                            <span data-bind="text: Description"></span>
-                            @*S :<span data-bind="text: StartDateTime"></span>
-                                E :<span data-bind="text: EndDateTime"></span>*@
-                            <span><a data-bind="attr: { href:  'Accept/' + Id }">Accept</a> </span> |
-                            <span><a data-bind="attr: { href:  'Reject/' + Id }">Reject</a> </span>
+                            <strong data-bind="text: Name"></strong>
+                            <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                            <span class="label label-info" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', tooltip: { title: 'Assigned' }"><span class="fa fa-arrow-right"></span></span>
+                            <span class="label label-primary" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', tooltip: { title: 'Accepted' }"><span class="fa fa-thumbs-o-up"></span></span>
+                            <span class="label label-warning" data-bind="visible: AssignedVolunteers[0].Status === 'Rejected', tooltip: { title: 'Rejected' }"><span class="fa fa-thumbs-o-down"></span></span>
+                            <span class="label label-success" data-bind="visible: AssignedVolunteers[0].Status === 'Completed', tooltip: { title: 'Completed' }"><span class="fa fa-check"></span></span>
+                            <span class="label label-danger" data-bind="visible: AssignedVolunteers[0].Status === 'CanNotComplete', tooltip: { title: 'Unable to complete (' + AssignedVolunteers[0].StatusDescription + ')' }"><span class="fa fa-times"></span></span>
+                            <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', attr: { href: '/Activity/ChangeStatus?status=Accepted&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Accept</a>
+                            <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', attr: { href: '/Activity/ChangeStatus?status=Rejected&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Reject</a>
+                            <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', attr: { href: '/Activity/ChangeStatus?status=Completed&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Complete</a>
+                            <a class="btn btn-link" href="#" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', attr: { 'data-target': '#cantCompleteReason' + Id }" data-toggle="modal">Unable to Complete</a>
+                            <div class="modal fade" data-bind="if: AssignedVolunteers[0].Status === 'Accepted', attr: { id: 'cantCompleteReason' + Id }" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title" id="cantCompleteLabel">
+                                                Mark <span data-bind="text: Name"></span> as Unable to Complete?
+                                            </h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label data-bind="attr: { 'for': 'notCompleteReason' + Id }">Reason</label>
+                                                <input type="text" class="form-control" data-bind="textInput: NotCompleteReason, attr: { 'id': 'notCompleteReason' + Id }">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a class="btn btn-danger" data-bind="attr: { href: '/Activity/ChangeStatus?status=CanNotComplete&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId + '&statusDesc=' + NotCompleteReason() }">Unable to Complete</a>
+                                            <button type="button" data-dismiss="modal" class="btn btn-link">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -85,7 +114,6 @@
                         }
                         else
                         {
-                            <!-- Trigger modal -->
                             <a href="#" data-toggle="modal" data-target="#volunteerForm" class="btn btn-volunteer">Volunteer</a>
                         }
                     </h2>
@@ -108,7 +136,7 @@
                 <ul data-bind="foreach: skills">
                     <li>
                         <span data-bind="text: HierarchicalName"></span>
-                        <span class="fa fa-info" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                        <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
                         <span class="label label-success" data-bind="visible: IsUserSkill, tooltip: { title: 'You have this skill!', placement: 'top' }">
                             <span class="fa fa-check" aria-hidden="true"></span>
                             Match
@@ -201,7 +229,7 @@
                                                             <label for="@($"skillId{skill.Id}")">@skill.HierarchicalName</label>
                                                             @if (!string.IsNullOrWhiteSpace(skill.Description))
                                                             {
-                                                                <span class="glyphicon glyphicon-info-sign" data-bind="visible: '@skill.Description', tooltip: { title: '@skill.Description', placement: 'top' }" aria-hidden="true"></span>
+                                                                <span class="fa fa-question-circle" data-bind="visible: '@skill.Description', tooltip: { title: '@skill.Description', placement: 'top' }" aria-hidden="true"></span>
                                                             }
                                                         </li>
                                                     }

@@ -109,15 +109,16 @@ namespace AllReady.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        //TODO: This should be an HttpPost but that also requires changes to the view that is calling this
         [HttpGet]
         public async Task<IActionResult> ResetPassword(string userId)
         {
             try
             {
                 var user = _dataAccess.GetUser(userId);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                if (user == null)
                 {
-                    ViewBag.ErrorMessage = $"Failed to reset password for {user.UserName}, email not confirmed.";
+                    ViewBag.ErrorMessage = $"User not found.";
                     return View();
                 }
 
@@ -125,8 +126,8 @@ namespace AllReady.Areas.Admin.Controllers
                 // Send an email with this link
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var callbackUrl = Url.Action("ResetPassword", "Admin", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                //await _emailSender.SendEmailAsync(user.Email, "Reset Password",
-                //   "Please reset your password by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
+                await _emailSender.SendEmailAsync(user.Email, "Reset Password",
+                   "Please reset your password by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
                 ViewBag.SuccessMessage = $"Sent password reset email for {user.UserName}.";
                 return View();
 

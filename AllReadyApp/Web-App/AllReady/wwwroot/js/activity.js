@@ -12,6 +12,7 @@
 
     function ActivityViewModel(tasks, skills, userSkills) {
         this.skills = skills.map(RequiredSkill.bind(null, userSkills));
+        tasks = tasks.map(function (task) { task.NotCompleteReason = ko.observable(); return task; });
         this.tasks = ko.observableArray(tasks).filterBeforeDate("EndDateTime").textFilter(["Name", "Description"]);
         this.enrolled = ko.observable(false);
     }

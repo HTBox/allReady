@@ -8,8 +8,8 @@ namespace AllReady.Models
     public class CampaignImpact
     {
         public int Id { get; set; }
-        public Campaign Campaign { get; set; }
-        public CampaignImpactType CampaignImpactType { get; set; }
+
+        public ImpactType ImpactType { get; set; }
         /// <summary>
         /// If the impact type is numeric, the value is the number
         /// of x to reach the goal.
@@ -30,5 +30,17 @@ namespace AllReady.Models
         /// </summary>
         public string TextualImpactGoal { get; set; }
         public bool Display { get; set; }
+        public int PercentComplete
+        {
+            get
+            {
+                if (NumericImpactGoal > 0)
+                {
+                    return (int)Math.Round(((CurrentImpactLevel * 100.0f) / NumericImpactGoal));
+                }
+                return 0;
+            }
+
+        }
     }
 }

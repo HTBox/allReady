@@ -17,7 +17,7 @@
     <div class="col-md-10">
         <h2>@Model.Name <a asp-controller="Task" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-controller="Task" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
         <p>@Model.Description</p>
-        <p><strong>Duration: </strong> @(Model.StartDateTime.HasValue ? Model.StartDateTime.Value.DateTime.ToString("d") : "*") - @(Model.EndDateTime.HasValue ? Model.EndDateTime.Value.DateTime.ToString("d") : "*")</p>
+        <p><strong>Duration: </strong> @(Model.StartDateTime.HasValue ? Model.StartDateTime.Value.ToString("g") : "*") - @(Model.EndDateTime.HasValue ? Model.EndDateTime.Value.ToString("g") : "*")</p>
 
         <h4>
             Volunteers @if (Model.NumberOfVolunteersRequired > 0)

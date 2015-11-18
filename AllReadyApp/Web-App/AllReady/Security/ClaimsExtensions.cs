@@ -43,6 +43,17 @@ namespace AllReady.Security
             return result;
         }
 
+        public static string GetDisplayName(this ClaimsPrincipal user)
+        {
+            var username = user.GetUserName();
+            if (user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.DisplayName) != null)
+            {
+                username = user.Claims.Single(c => c.Type == ClaimTypes.DisplayName).Value;
+            }
+            return username;
+
+        }
+
         public static int? GetTenantId(this ApplicationUser user)
         {
             int? result = null;

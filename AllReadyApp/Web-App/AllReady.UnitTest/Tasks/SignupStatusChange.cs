@@ -85,13 +85,14 @@ namespace AllReady.UnitTest.Tasks
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommand
             {
-                TaskId = task.Id, UserName = user.UserName, TaskStatus = TaskStatus.Accepted
+                TaskId = task.Id, UserId = user.Id, TaskStatus = TaskStatus.Accepted
             };
             var handler = new TaskStatusChangeHandler(Context, bus.Object);
             var result = handler.Handle(command);
 
+            var taskSignup = Context.TaskSignups.First();
             bus.Verify(b => b.Publish(It.Is<TaskSignupStatusChanged>(notifyCommand =>
-                   notifyCommand.TaskId == task.Id
+                   notifyCommand.SignupId == taskSignup.Id
             )), Times.Once());
         }
     }

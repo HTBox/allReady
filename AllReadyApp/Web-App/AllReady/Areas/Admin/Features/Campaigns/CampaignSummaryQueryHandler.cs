@@ -27,11 +27,13 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                 .AsNoTracking()
                 .Include(ci => ci.CampaignImpact)
                 .Include(mt => mt.ManagingTenant)
+                .Include(l => l.Location).ThenInclude(p => p.PostalCode)
+                .Include(c => c.CampaignContacts).ThenInclude(tc => tc.Contact)
                 .SingleOrDefault(c => c.Id == message.CampaignId);
 
             if (campaign != null)
             {
-                result = new CampaignSummaryModel()
+                result = new CampaignSummaryModel
                 {
                     Id = campaign.Id,
                     Name = campaign.Name,
@@ -42,11 +44,22 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     ImageUrl = campaign.ImageUrl,
                     StartDate = campaign.StartDateTimeUtc,
                     EndDate = campaign.EndDateTimeUtc,
+                    Location = campaign.Location.ToEditModel(),
                     CampaignImpact = campaign.CampaignImpact != null ? campaign.CampaignImpact : new CampaignImpact()
                 };
+                if (!campaign.CampaignContacts.Any())// Include isn't including
+                {
+                    campaign.CampaignContacts = _context.CampaignContacts.Include(c => c.Contact).Where(cc => cc.CampaignId == campaign.Id).ToList();
+                }
+                if (campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
+                {
+                    result = (CampaignSummaryModel)campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(result);
+                }
+
             }
-                    
+
             return result;
         }
+       
     }
 }

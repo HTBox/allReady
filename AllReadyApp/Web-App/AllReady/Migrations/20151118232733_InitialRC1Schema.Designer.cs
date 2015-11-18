@@ -8,7 +8,7 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    [Migration("20151118230838_InitialRC1Schema")]
+    [Migration("20151118232733_InitialRC1Schema")]
     partial class InitialRC1Schema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,7 +32,8 @@ namespace AllReady.Migrations
 
                     b.Property<int?>("LocationId");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.Property<int>("NumberOfVolunteersRequired");
 
@@ -85,7 +86,8 @@ namespace AllReady.Migrations
 
                     b.Property<DateTimeOffset?>("EndDateTimeUtc");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.Property<int>("NumberOfVolunteersRequired");
 
@@ -153,6 +155,8 @@ namespace AllReady.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("CampaignImpactId");
+
                     b.Property<string>("Description");
 
                     b.Property<DateTime>("EndDateTimeUtc");
@@ -160,6 +164,8 @@ namespace AllReady.Migrations
                     b.Property<string>("FullDescription");
 
                     b.Property<string>("ImageUrl");
+
+                    b.Property<int?>("LocationId");
 
                     b.Property<int>("ManagingTenantId");
 
@@ -173,29 +179,33 @@ namespace AllReady.Migrations
                     b.HasKey("Id");
                 });
 
+            modelBuilder.Entity("AllReady.Models.CampaignContact", b =>
+                {
+                    b.Property<int>("CampaignId");
+
+                    b.Property<int>("ContactId");
+
+                    b.Property<int>("ContactType");
+
+                    b.HasKey("CampaignId", "ContactId", "ContactType");
+                });
+
             modelBuilder.Entity("AllReady.Models.CampaignImpact", b =>
                 {
-                    b.Property<int>("Id");
-
-                    b.Property<int?>("CampaignImpactTypeId");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("CurrentImpactLevel");
 
                     b.Property<bool>("Display");
 
+                    b.Property<int>("ImpactType");
+
                     b.Property<int>("NumericImpactGoal");
 
+                    b.Property<int>("PercentComplete");
+
                     b.Property<string>("TextualImpactGoal");
-
-                    b.HasKey("Id");
-                });
-
-            modelBuilder.Entity("AllReady.Models.CampaignImpactType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Name");
 
                     b.HasKey("Id");
                 });
@@ -208,6 +218,22 @@ namespace AllReady.Migrations
                     b.Property<int?>("CampaignId");
 
                     b.Property<int?>("TenantId");
+
+                    b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.Contact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Email");
+
+                    b.Property<string>("FirstName");
+
+                    b.Property<string>("LastName");
+
+                    b.Property<string>("PhoneNumber");
 
                     b.HasKey("Id");
                 });
@@ -316,13 +342,27 @@ namespace AllReady.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("LocationId");
+
                     b.Property<string>("LogoUrl");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.Property<string>("WebUrl");
 
                     b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.TenantContact", b =>
+                {
+                    b.Property<int>("TenantId");
+
+                    b.Property<int>("ContactId");
+
+                    b.Property<int>("ContactType");
+
+                    b.HasKey("TenantId", "ContactId", "ContactType");
                 });
 
             modelBuilder.Entity("AllReady.Models.UserSkill", b =>
@@ -473,6 +513,14 @@ namespace AllReady.Migrations
 
             modelBuilder.Entity("AllReady.Models.Campaign", b =>
                 {
+                    b.HasOne("AllReady.Models.CampaignImpact")
+                        .WithMany()
+                        .HasForeignKey("CampaignImpactId");
+
+                    b.HasOne("AllReady.Models.Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
+
                     b.HasOne("AllReady.Models.Tenant")
                         .WithMany()
                         .HasForeignKey("ManagingTenantId");
@@ -482,15 +530,15 @@ namespace AllReady.Migrations
                         .HasForeignKey("OrganizerId");
                 });
 
-            modelBuilder.Entity("AllReady.Models.CampaignImpact", b =>
+            modelBuilder.Entity("AllReady.Models.CampaignContact", b =>
                 {
-                    b.HasOne("AllReady.Models.CampaignImpactType")
-                        .WithMany()
-                        .HasForeignKey("CampaignImpactTypeId");
-
                     b.HasOne("AllReady.Models.Campaign")
-                        .WithOne()
-                        .HasForeignKey("AllReady.Models.CampaignImpact", "Id");
+                        .WithMany()
+                        .HasForeignKey("CampaignId");
+
+                    b.HasOne("AllReady.Models.Contact")
+                        .WithMany()
+                        .HasForeignKey("ContactId");
                 });
 
             modelBuilder.Entity("AllReady.Models.CampaignSponsors", b =>
@@ -538,6 +586,24 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.AllReadyTask")
                         .WithMany()
                         .HasForeignKey("TaskId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.Tenant", b =>
+                {
+                    b.HasOne("AllReady.Models.Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.TenantContact", b =>
+                {
+                    b.HasOne("AllReady.Models.Contact")
+                        .WithMany()
+                        .HasForeignKey("ContactId");
+
+                    b.HasOne("AllReady.Models.Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
                 });
 
             modelBuilder.Entity("AllReady.Models.UserSkill", b =>

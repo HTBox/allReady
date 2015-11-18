@@ -1,14 +1,10 @@
 ﻿using AllReady.Models;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Models
 {
-    public class CampaignSummaryModel
+    public class CampaignSummaryModel: IPrimaryContactModel
     {
         public CampaignSummaryModel()
         {
@@ -16,6 +12,7 @@ namespace AllReady.Areas.Admin.Models
         }
 
         public int Id { get; set; }
+        [Required]
         public string Name { get; set; }
 
         public string Description { get; set; }
@@ -29,8 +26,10 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Organization")]
         public string TenantName { get; set; }
 
-        [Display(Name = "Image URL")]
         public string ImageUrl { get; set; }
+
+        [Display(Name = "Browse for image")]
+        public string FileUpload { get; set; }
             
         [Display(Name = "Start Date")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
@@ -41,5 +40,23 @@ namespace AllReady.Areas.Admin.Models
         public DateTime EndDate { get; set; }
 
         public CampaignImpact CampaignImpact { get; set; }
+
+        [UIHint("Location")]
+        public LocationEditModel Location { get; set; }
+
+        [Display(Name = "First Name")]
+        public string PrimaryContactFirstName { get; set; }
+
+        [Display(Name = "Last Name")]
+        public string PrimaryContactLastName { get; set; }
+
+        [Display(Name = "Phone Number")]
+        [Phone]
+        public string PrimaryContactPhoneNumber { get; set; }
+
+        [Display(Name = "Email")]
+        [EmailAddress]
+        public string PrimaryContactEmail { get; set; }
+
     }
 }

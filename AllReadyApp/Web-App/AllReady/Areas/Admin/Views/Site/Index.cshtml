@@ -36,6 +36,10 @@
                         {
                             <span class="label label-default"><span class="fa fa-users"></span> Org</span>
                         }
+                        @if(!item.EmailConfirmed)
+                        {
+                            <span class="fa fa-exclamation-triangle text-warning" title="Email Address not confirmed"></span>
+                        }
                     </td>
                     <td>
                         <div class="btn-group btn-group-sm">

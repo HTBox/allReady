@@ -10,16 +10,36 @@ namespace AllReady.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "CampaignImpactType",
+                name: "CampaignImpact",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(nullable: true)
+                    CurrentImpactLevel = table.Column<int>(nullable: false),
+                    Display = table.Column<bool>(nullable: false),
+                    ImpactType = table.Column<int>(nullable: false),
+                    NumericImpactGoal = table.Column<int>(nullable: false),
+                    PercentComplete = table.Column<int>(nullable: false),
+                    TextualImpactGoal = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CampaignImpactType", x => x.Id);
+                    table.PrimaryKey("PK_CampaignImpact", x => x.Id);
+                });
+            migrationBuilder.CreateTable(
+                name: "Contact",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Email = table.Column<string>(nullable: true),
+                    FirstName = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Contact", x => x.Id);
                 });
             migrationBuilder.CreateTable(
                 name: "PostalCodeGeo",
@@ -72,20 +92,6 @@ namespace AllReady.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
             migrationBuilder.CreateTable(
-                name: "Tenant",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    LogoUrl = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
-                    WebUrl = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tenant", x => x.Id);
-                });
-            migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
@@ -124,6 +130,47 @@ namespace AllReady.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
             migrationBuilder.CreateTable(
+                name: "AspNetRoleClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ClaimType = table.Column<string>(nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true),
+                    RoleId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdentityRoleClaim<string>", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_IdentityRoleClaim<string>_IdentityRole_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+            migrationBuilder.CreateTable(
+                name: "Tenant",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    LocationId = table.Column<int>(nullable: true),
+                    LogoUrl = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
+                    WebUrl = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tenant", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tenant_Location_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Location",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+            migrationBuilder.CreateTable(
                 name: "AspNetUsers",
                 columns: table => new
                 {
@@ -156,22 +203,26 @@ namespace AllReady.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
             migrationBuilder.CreateTable(
-                name: "AspNetRoleClaims",
+                name: "TenantContact",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    ClaimType = table.Column<string>(nullable: true),
-                    ClaimValue = table.Column<string>(nullable: true),
-                    RoleId = table.Column<string>(nullable: false)
+                    TenantId = table.Column<int>(nullable: false),
+                    ContactId = table.Column<int>(nullable: false),
+                    ContactType = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityRoleClaim<string>", x => x.Id);
+                    table.PrimaryKey("PK_TenantContact", x => new { x.TenantId, x.ContactId, x.ContactType });
                     table.ForeignKey(
-                        name: "FK_IdentityRoleClaim<string>_IdentityRole_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
+                        name: "FK_TenantContact_Contact_ContactId",
+                        column: x => x.ContactId,
+                        principalTable: "Contact",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TenantContact_Tenant_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenant",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -181,10 +232,12 @@ namespace AllReady.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    CampaignImpactId = table.Column<int>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     EndDateTimeUtc = table.Column<DateTime>(nullable: false),
                     FullDescription = table.Column<string>(nullable: true),
                     ImageUrl = table.Column<string>(nullable: true),
+                    LocationId = table.Column<int>(nullable: true),
                     ManagingTenantId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: false),
                     OrganizerId = table.Column<string>(nullable: true),
@@ -194,11 +247,23 @@ namespace AllReady.Migrations
                 {
                     table.PrimaryKey("PK_Campaign", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Campaign_CampaignImpact_CampaignImpactId",
+                        column: x => x.CampaignImpactId,
+                        principalTable: "CampaignImpact",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Campaign_Location_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Location",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Campaign_Tenant_ManagingTenantId",
                         column: x => x.ManagingTenantId,
                         principalTable: "Tenant",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Campaign_ApplicationUser_OrganizerId",
                         column: x => x.OrganizerId,
@@ -302,7 +367,7 @@ namespace AllReady.Migrations
                     EndDateTimeUtc = table.Column<DateTime>(nullable: false),
                     ImageUrl = table.Column<string>(nullable: true),
                     LocationId = table.Column<int>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
                     NumberOfVolunteersRequired = table.Column<int>(nullable: false),
                     OrganizerId = table.Column<string>(nullable: true),
                     StartDateTimeUtc = table.Column<DateTime>(nullable: false)
@@ -330,29 +395,26 @@ namespace AllReady.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
             migrationBuilder.CreateTable(
-                name: "CampaignImpact",
+                name: "CampaignContact",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
-                    CampaignImpactTypeId = table.Column<int>(nullable: true),
-                    CurrentImpactLevel = table.Column<int>(nullable: false),
-                    Display = table.Column<bool>(nullable: false),
-                    NumericImpactGoal = table.Column<int>(nullable: false),
-                    TextualImpactGoal = table.Column<string>(nullable: true)
+                    CampaignId = table.Column<int>(nullable: false),
+                    ContactId = table.Column<int>(nullable: false),
+                    ContactType = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CampaignImpact", x => x.Id);
+                    table.PrimaryKey("PK_CampaignContact", x => new { x.CampaignId, x.ContactId, x.ContactType });
                     table.ForeignKey(
-                        name: "FK_CampaignImpact_CampaignImpactType_CampaignImpactTypeId",
-                        column: x => x.CampaignImpactTypeId,
-                        principalTable: "CampaignImpactType",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_CampaignImpact_Campaign_Id",
-                        column: x => x.Id,
+                        name: "FK_CampaignContact_Campaign_CampaignId",
+                        column: x => x.CampaignId,
                         principalTable: "Campaign",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CampaignContact_Contact_ContactId",
+                        column: x => x.ContactId,
+                        principalTable: "Contact",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -443,7 +505,7 @@ namespace AllReady.Migrations
                     ActivityId = table.Column<int>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     EndDateTimeUtc = table.Column<DateTimeOffset>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
                     NumberOfVolunteersRequired = table.Column<int>(nullable: false),
                     StartDateTimeUtc = table.Column<DateTimeOffset>(nullable: true),
                     TenantId = table.Column<int>(nullable: true)
@@ -533,26 +595,28 @@ namespace AllReady.Migrations
         {
             migrationBuilder.DropTable("ActivitySignup");
             migrationBuilder.DropTable("ActivitySkill");
-            migrationBuilder.DropTable("CampaignImpact");
+            migrationBuilder.DropTable("CampaignContact");
             migrationBuilder.DropTable("CampaignSponsors");
             migrationBuilder.DropTable("Resource");
             migrationBuilder.DropTable("TaskSignup");
             migrationBuilder.DropTable("TaskSkill");
+            migrationBuilder.DropTable("TenantContact");
             migrationBuilder.DropTable("UserSkill");
             migrationBuilder.DropTable("AspNetRoleClaims");
             migrationBuilder.DropTable("AspNetUserClaims");
             migrationBuilder.DropTable("AspNetUserLogins");
             migrationBuilder.DropTable("AspNetUserRoles");
-            migrationBuilder.DropTable("CampaignImpactType");
             migrationBuilder.DropTable("AllReadyTask");
+            migrationBuilder.DropTable("Contact");
             migrationBuilder.DropTable("Skill");
             migrationBuilder.DropTable("AspNetRoles");
             migrationBuilder.DropTable("Activity");
             migrationBuilder.DropTable("Campaign");
-            migrationBuilder.DropTable("Location");
+            migrationBuilder.DropTable("CampaignImpact");
             migrationBuilder.DropTable("AspNetUsers");
-            migrationBuilder.DropTable("PostalCodeGeo");
             migrationBuilder.DropTable("Tenant");
+            migrationBuilder.DropTable("Location");
+            migrationBuilder.DropTable("PostalCodeGeo");
         }
     }
 }

@@ -35,9 +35,6 @@ namespace AllReady.Models
                 _context.Skills.Any() ||
                 _context.Resources.Any())
             {
-                // Attempt to populate CampaignImpactTypes:
-                InsertCampaignImpactTypes(_context);
-                _context.SaveChanges();
                 return;
             }
             // new up some data
@@ -69,6 +66,7 @@ namespace AllReady.Models
             List<AllReadyTask> tasks = new List<AllReadyTask>();
             List<Resource> resources = new List<Resource>();
             List<ActivitySignup> activitySignups = new List<ActivitySignup>();
+            List<Contact> contacts = GetContacts();
 
             #region Tenant
             Tenant htb = new Tenant()
@@ -76,8 +74,12 @@ namespace AllReady.Models
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
                 WebUrl = "http://www.htbox.org",
-                Campaigns = new List<Campaign>()
+                Location = locations.FirstOrDefault(),
+                Campaigns = new List<Campaign>(), 
+                TenantContacts = new List<TenantContact>(),
+                
             };
+            
             #endregion
 
 
@@ -89,12 +91,22 @@ namespace AllReady.Models
                 ManagingTenant = htb
             };
             htb.Campaigns.Add(firePrev);
+            var smokeDetImpact = new CampaignImpact
+            {
+                ImpactType = ImpactType.Numeric,
+                NumericImpactGoal = 10000,
+                CurrentImpactLevel = 6722,
+                Display = true,
+                TextualImpactGoal = "Total number of smoke detectors installed."
+            };
+            _context.CampaignImpacts.Add(smokeDetImpact);
             Campaign smokeDet = new Campaign()
             {
                 Name = "Working Smoke Detectors Save Lives",
                 ManagingTenant = htb,
                 StartDateTimeUtc = DateTime.Today.AddMonths(-1).ToUniversalTime(),
-                EndDateTimeUtc = DateTime.Today.AddMonths(1).ToUniversalTime()
+                EndDateTimeUtc = DateTime.Today.AddMonths(1).ToUniversalTime(),
+                CampaignImpact = smokeDetImpact
             };
             htb.Campaigns.Add(smokeDet);
             Campaign financial = new Campaign()
@@ -333,7 +345,7 @@ namespace AllReady.Models
             #endregion
 
             #region Insert into DB
-
+            _context.Contacts.AddRange(contacts);
             _context.ActivitySkills.AddRange(activitySkills);
             _context.Locations.AddRange(locations);
             _context.Tenants.AddRange(tenants);
@@ -372,12 +384,16 @@ namespace AllReady.Models
             {
                 for (var j = 0; j < i; j++)
                 {
-                    taskSignups.Add(new TaskSignup() { Task = task, User = users[j] });
+                    taskSignups.Add(new TaskSignup() { Task = task, User = users[j], Status = Areas.Admin.Features.Tasks.TaskStatus.Assigned.ToString() });
                 }
 
                 i = (i + 1) % users.Count;
             }
             _context.TaskSignups.AddRange(taskSignups);
+            #endregion
+
+            #region TennatContacts
+            htb.TenantContacts.Add(new TenantContact { Contact = contacts.First(), Tenant = htb, ContactType = 1 /*Primary*/ });
             #endregion
 
             #region Wrap Up DB  
@@ -387,21 +403,14 @@ namespace AllReady.Models
 
         }
 
-        /// <summary>
-        /// Split this off from the InsertTestData function so we can call this
-        /// even if the "anti-database-pollution" logic bails due to pre-existing
-        /// database records. The reason for this is that we are preventing
-        /// duplicate records already.
-        /// </summary>
-        /// <param name="_context"></param>
-        private static void InsertCampaignImpactTypes(AllReadyContext _context)
+        private List<Contact> GetContacts()
         {
-            var campaignImpactTypes = new List<CampaignImpactType>();
-            var existingImpactTypes = _context.CampaignImpactTypes.ToList();
-            var numeric = GetImpactType(campaignImpactTypes, existingImpactTypes, "Numeric");
-            var textual = GetImpactType(campaignImpactTypes, existingImpactTypes, "Textual");
-            _context.CampaignImpactTypes.AddRange(campaignImpactTypes);
+            var list = new List<Contact>();
+            list.Add(new Contact { FirstName = "Bob", LastName = "Smith", Email = "BobSmith@mailinator.com", PhoneNumber = "999-888-7777" });
+            list.Add(new Contact { FirstName = "George", LastName = "Leone", Email = "GeorgeLeone@mailinator.com", PhoneNumber = "999-888-7777" });
+            return list;
         }
+
 
         private static Skill GetSkill(List<Skill> skills, List<Skill> existingSkills, string skillName, Skill parentSkill = null, string description = null)
         {
@@ -421,22 +430,6 @@ namespace AllReady.Models
             }
             skill.Description = description;
             return skill;
-        }
-
-        private static CampaignImpactType GetImpactType(List<CampaignImpactType> types, List<CampaignImpactType> existingTypes, string typeName)
-        {
-            CampaignImpactType impactType;
-            if (existingTypes.Any(item => item.Name == typeName))
-            {
-                impactType = existingTypes.Single(item => item.Name == typeName);
-            }
-            else
-            {
-                impactType = new CampaignImpactType { Name = typeName };
-
-                types.Add(impactType);
-            }
-            return impactType;
         }
 
         #region Sample Data Helper methods
@@ -489,6 +482,10 @@ namespace AllReady.Models
             if (!existingPostalCode.Any(item => item.PostalCode == "98027")) postalCodes.Add(new PostalCodeGeo() { City = "Issaquah", State = "WA", PostalCode = "98027" });
             if (!existingPostalCode.Any(item => item.PostalCode == "98034")) postalCodes.Add(new PostalCodeGeo() { City = "Kirkland", State = "WA", PostalCode = "98034" });
             if (!existingPostalCode.Any(item => item.PostalCode == "98033")) postalCodes.Add(new PostalCodeGeo() { City = "Kirkland", State = "WA", PostalCode = "98033" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "60505")) postalCodes.Add(new PostalCodeGeo() { City = "Aurora", State = "IL", PostalCode = "60505" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "60506")) postalCodes.Add(new PostalCodeGeo() { City = "Aurora", State = "IL", PostalCode = "60506" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "45231")) postalCodes.Add(new PostalCodeGeo() { City = "Cincinnati", State = "OH", PostalCode = "45231" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "45240")) postalCodes.Add(new PostalCodeGeo() { City = "Cincinnati", State = "OH", PostalCode = "45240" });
             return postalCodes;
         }
 

@@ -10,6 +10,8 @@ using System.Security.Claims;
 using AllReady.Services;
 using MediatR;
 using AllReady.Features.Activity;
+using AllReady.Areas.Admin.Features.Tasks;
+using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.Controllers
 {
@@ -112,6 +114,21 @@ namespace AllReady.Controllers
             }
 
             return RedirectToAction(nameof(ShowActivity), new { id = signupModel.ActivityId });
+        }
+
+        [HttpGet]
+        [Route("/Activity/ChangeStatus")]
+        [Authorize]
+        public IActionResult ChangeStatus(int activityId, int taskId, string userId, TaskStatus status, string statusDesc)
+        {
+            if (userId == null)
+            {
+                return HttpBadRequest();
+            }
+
+            _bus.Send(new TaskStatusChangeCommand { TaskStatus = status, TaskId = taskId, UserId = userId, TaskStatusDescription = statusDesc });
+
+            return RedirectToAction(nameof(ShowActivity), new { id = activityId });
         }
 
     }
