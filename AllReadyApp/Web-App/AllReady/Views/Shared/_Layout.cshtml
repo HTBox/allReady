@@ -75,7 +75,7 @@
                         <li><a href="http://www.htbox.org/blog/">Blog</a></li>
                         <li><a asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
                         <li><a asp-controller="Tenant" asp-action="Index">Organizations</a></li>
-                        @await Html.PartialAsync("_AdminNavigationPartial")                        
+                        @await Html.PartialAsync("_AdminNavigationPartial")
                     </ul>
                     @await Html.PartialAsync("_LoginPartial")
                 </div>
@@ -94,13 +94,13 @@
                 <img src="~/images/youtube-small.png" alt="YouTube" />
             </p>
             <p class="text-center">Powered by <br /><a href="http://www.htbox.org/">Humanitarian Toolbox</a></p>
-            
+
         </footer>
     </div>
     @await Html.PartialAsync("_Version")
     <environment names="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>        
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/lib/bootstrap-toggle/js/bootstrap-toggle.js"></script>
         <script src="~/lib/knockout/dist/knockout.js"></script>
         <script src="~/lib/moment/moment.js"></script>
@@ -108,6 +108,7 @@
         <script src="~/lib/tota11y/build/tota11y.js"></script>
         <script src="~/lib/tinymce/tinymce.js"></script>
         <script src="~/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput.js"></script>
+        <script src="~/lib/d3/d3.js"></script>
     </environment>
     <environment names="Staging,Production">
         <script src="//ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.min.js"
@@ -118,7 +119,7 @@
         <script src="//ajax.aspnetcdn.com/ajax/bootstrap/3.0.0/bootstrap.min.js"
                 asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
-        </script>        
+        </script>
         <script src="//gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"
                 asp-fallback-src="~/lib/bootstrap-toggle/js/bootstrap-toggle.js"
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.bootstrapToggle">
@@ -135,8 +136,12 @@
         <script src="//tinymce.cachefly.net/4.2.6/tinymce.min.js"
                 asp-fallback-src="~/lib/tinymce/tinymce.js">
         </script>
+        <script src="//d3js.org/d3.v3.min.js"
+                asp-fallback-src="~/lib/d3/d3.js">
+        </script>
     </environment>
     <script src="~/lib/knockout-bootstrap/src/knockout-bootstrap.js"></script>
+    <script src="~/lib/system.js/dist/system.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/ko.filterableList.js" asp-append-version="true"></script>
     <script src="~/js/ko.validation.js" asp-append-version="true"></script>
@@ -159,9 +164,9 @@
 							"advlist autolink lists link image charmap print preview anchor",
 							"searchreplace visualblocks code fullscreen",
 							"insertdatetime media table contextmenu paste imagetools"
-            ],
-            toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image",
-            autosave_ask_before_unload: false });
+                ],
+                toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image",
+                autosave_ask_before_unload: false });
         });
     </script>
     @RenderSection("scripts", required: false)
