@@ -1,5 +1,7 @@
 ﻿$(function() {
-
+    $(document).ready(function () {
+        toggleImpactDisplay();
+    });
     // handle the confirm click
     $("#confirmOverwriteContact").click(function ()
     {
@@ -26,5 +28,17 @@
             alert("Ajax Error:" + e);
         });
     });
+    $("#CampaignImpact_ImpactType").on("change", function () {
+        toggleImpactDisplay();
+    });
 
+    function toggleImpactDisplay() {
+        console.log($("#CampaignImpact_ImpactType").val());
+        if ($("#CampaignImpact_ImpactType").val() === "0") {
+            $("#numericImpactSection").show();
+        }
+        else {
+            $("#numericImpactSection").hide();
+        }
+    }
 });
