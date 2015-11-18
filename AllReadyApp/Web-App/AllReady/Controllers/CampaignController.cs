@@ -5,7 +5,7 @@ using AllReady.Models;
 using AllReady.ViewModels;
 using Microsoft.Data.Entity;
 
-namespace AllReady.Areas.Admin.Controllers
+namespace AllReady.Controllers
 {
     [Route("api/[controller]")]
     public class CampaignController : Controller

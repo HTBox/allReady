@@ -9,8 +9,9 @@ using AllReady.Areas.Admin.Models;
 using System.Threading.Tasks;
 using AllReady.Services;
 using AllReady.Extensions;
+using System;
 
-namespace AllReady.Controllers
+namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize("TenantAdmin")]
@@ -54,7 +55,11 @@ namespace AllReady.Controllers
         // GET: Campaign/Create
         public IActionResult Create()
         {
-            return View("Edit", new CampaignSummaryModel());
+            return View("Edit", new CampaignSummaryModel()
+            {
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddMonths(1)
+            });
         }
 
          // GET: Campaign/Edit/5

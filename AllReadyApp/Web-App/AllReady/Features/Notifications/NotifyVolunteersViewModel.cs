@@ -15,5 +15,6 @@ namespace AllReady.Features.Notifications
         public string EmailMessage { get; set; }
         public List<string> EmailRecipients { get; set; }
         public string Subject { get; set; }
+        public string HtmlMessage { get; set; }
     }
 }

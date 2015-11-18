@@ -21,6 +21,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             var campaign = _context.Campaigns
                                     .Include(l => l.Location).ThenInclude(p => p.PostalCode)
                     .Include(tc => tc.CampaignContacts)
+                    .Include(i => i.CampaignImpact)
 
                 .SingleOrDefault(c => c.Id == message.Campaign.Id);
 
@@ -37,7 +38,12 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.ImageUrl = message.Campaign.ImageUrl;
 
             campaign = campaign.UpdateCampaignContact(message.Campaign, _context);
+            campaign.CampaignImpact = campaign.CampaignImpact.UpdateModel(message.Campaign.CampaignImpact);
             campaign.Location = campaign.Location.UpdateModel(message.Campaign.Location);
+            if (campaign.CampaignImpact != null)
+            {
+                _context.Update(campaign.CampaignImpact);
+            }
             if (campaign.Location != null)
             {
                 _context.Update(campaign.Location);

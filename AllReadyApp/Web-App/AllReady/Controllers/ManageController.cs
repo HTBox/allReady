@@ -74,13 +74,23 @@ namespace AllReady.Controllers
                 return View(model);
             }
             var user = GetCurrentUser();
-            user.Name = model.Name;
+
+            if (!string.IsNullOrEmpty(user.Name))
+            {
+                user.Name = model.Name;
+                await _userManager.RemoveClaimsAsync(user, User.Claims.Where(c=> c.Type == Security.ClaimTypes.DisplayName));
+                await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.DisplayName, user.Name));
+                
+                await _signInManager.RefreshSignInAsync(user);
+            }
+
             user.AssociatedSkills.RemoveAll(usk => model.AssociatedSkills == null || !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
             if (model.AssociatedSkills != null)
             {
                 user.AssociatedSkills.AddRange(model.AssociatedSkills.Where(msk => !user.AssociatedSkills.Any(usk => usk.SkillId == msk.SkillId)));
             }
             user.AssociatedSkills?.ForEach(usk => usk.UserId = user.Id);
+
             await _dataAccess.UpdateUser(user);
             return RedirectToAction(nameof(Index));
         }

@@ -43,6 +43,7 @@ namespace AllReady.Areas.Admin.Features.Activities
                     SmsMessage = message.Model.Message,
                     SmsRecipients = smsRecipients,
                     EmailMessage = message.Model.Message,
+                    HtmlMessage = message.Model.Message,
                     EmailRecipients = emailRecipients,
                     Subject = message.Model.Subject
                 }

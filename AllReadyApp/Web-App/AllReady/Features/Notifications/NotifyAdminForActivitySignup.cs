@@ -35,11 +35,13 @@ namespace AllReady.Features.Notifications
 
             if (campaign.Organizer != null)
             {
+                var message = $"Your {campaign.Name} campaign activity '{activity.Name}' has a new volunteer. {volunteer.UserName} can be reached at {volunteer.Email}. {link}";
                 var command = new NotifyVolunteersCommand
                 {
                     ViewModel = new NotifyVolunteersViewModel
                     {
-                        EmailMessage = $"Your {campaign.Name} campaign activity '{activity.Name}' has a new volunteer. {volunteer.UserName} can be reached at {volunteer.Email}. {link}",
+                        EmailMessage = message,
+                        HtmlMessage = message,
                         EmailRecipients = new List<string> { campaign.Organizer.Email },
                         Subject = subject
                     }
