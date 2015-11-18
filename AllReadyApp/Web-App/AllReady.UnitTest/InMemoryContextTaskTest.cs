@@ -1,6 +1,6 @@
 using AllReady.Models;
 using AllReady.UnitTest;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AllReady.UnitTest
 {

@@ -4,7 +4,7 @@ using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
 using Microsoft.AspNet.Identity;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -39,7 +39,6 @@ namespace AllReady.UnitTest.Activities
                 StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
-                Tenant = htb,
                 RequiredSkills = new List<ActivitySkill>(),
             };
 

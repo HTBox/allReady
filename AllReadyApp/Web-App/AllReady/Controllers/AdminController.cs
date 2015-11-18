@@ -2,7 +2,7 @@
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.Framework.Configuration;
+using Microsoft.Extensions.Configuration;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Models;
 using AllReady.Services;
@@ -10,7 +10,7 @@ using AllReady.Services;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.Framework.OptionsModel;
+using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Controllers
 {

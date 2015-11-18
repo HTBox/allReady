@@ -197,7 +197,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-            if (!User.IsTenantAdmin(activity.TenantId))
+            if (!User.IsTenantAdmin(activity.Campaign.ManagingTenantId))
             {
                 return HttpUnauthorized();
             }
@@ -241,7 +241,7 @@ namespace AllReady.Areas.Admin.Controllers
             //TODO: Use a command here
             Activity a = _dataAccess.GetActivity(id);
 
-            a.ImageUrl = await _imageService.UploadActivityImageAsync(a.Id, a.Tenant.Id, file);
+            a.ImageUrl = await _imageService.UploadActivityImageAsync(a.Id, a.Campaign.ManagingTenantId, file);
             await _dataAccess.UpdateActivity(a);
 
             return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Edit", id = id });
@@ -249,7 +249,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         private bool UserIsTenantAdminOfActivity(Activity activity)
         {
-            return User.IsTenantAdmin(activity.TenantId);
+            return User.IsTenantAdmin(activity.Campaign.ManagingTenantId);
         }
 
         private bool UserIsTenantAdminOfActivity(int activityId)

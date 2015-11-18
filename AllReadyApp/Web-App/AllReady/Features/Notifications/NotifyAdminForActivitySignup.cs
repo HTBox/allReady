@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
-using Microsoft.Framework.OptionsModel;
+using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Features.Notifications
 {

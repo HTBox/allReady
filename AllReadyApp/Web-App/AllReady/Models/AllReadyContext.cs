@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Infrastructure;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Framework.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Data.Entity.Metadata.Builders;
+using Microsoft.Data.Entity.Metadata;
 
 namespace AllReady.Models
 {
@@ -33,7 +34,7 @@ namespace AllReady.Models
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.UseSqlServerIdentityColumns();
+            modelBuilder.ForSqlServerUseIdentityColumns();
 
             Map(modelBuilder.Entity<Campaign>());
             Map(modelBuilder.Entity<CampaignSponsors>());
@@ -48,6 +49,13 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<Skill>());
             Map(modelBuilder.Entity<UserSkill>());
             Map(modelBuilder.Entity<ApplicationUser>());
+            Map(modelBuilder.Entity<Tenant>());
+
+        }
+
+        private void Map(EntityTypeBuilder<Tenant> builder)
+        {
+            builder.HasMany(t => t.Campaigns).WithOne(c => c.ManagingTenant).OnDelete(DeleteBehavior.Restrict);
         }
 
         private void Map(EntityTypeBuilder<PostalCodeGeo> builder)
@@ -88,7 +96,6 @@ namespace AllReady.Models
 
         private void Map(EntityTypeBuilder<Activity> builder)
         {
-            builder.HasOne(a => a.Tenant);
             builder.HasOne(a => a.Campaign);
             builder.HasOne(a => a.Location);
             builder.HasMany(a => a.Tasks);
@@ -104,6 +111,7 @@ namespace AllReady.Models
         private void Map(EntityTypeBuilder<Skill> builder)
         {
             builder.HasOne(s => s.ParentSkill);
+            builder.Ignore(s => s.HierarchicalName);
         }
 
         private void Map(EntityTypeBuilder<CampaignSponsors> builder)

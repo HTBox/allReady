@@ -4,7 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Reflection;
 using AllReady.Models;
-using Microsoft.Framework.OptionsModel;
+using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Services
 {
