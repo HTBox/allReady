@@ -30,7 +30,6 @@
     $("#CampaignImpact_ImpactType").on("change", function () {
         toggleImpactDisplay();
     });
-
     function toggleImpactDisplay() {
         console.log($("#CampaignImpact_ImpactType").val());
         if ($("#CampaignImpact_ImpactType").val() === "0") {

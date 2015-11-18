@@ -1,9 +1,9 @@
-﻿/// <reference path="../../tools/typings/tsd.d.ts" />
-System.register([], function (exports_1) {
+/// <reference path="../../tools/typings/tsd.d.ts" />
+System.register([], function(exports_1) {
     var AllReady;
     return {
-        setters: [],
-        execute: function () {
+        setters:[],
+        execute: function() {
             (function (AllReady) {
                 (function (Controls) {
                     var Thermometer = (function () {
