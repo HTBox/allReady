@@ -55,7 +55,12 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<TenantContact>());
             Map(modelBuilder.Entity<CampaignContact>());
             Map(modelBuilder.Entity<Contact>());
+            Map(modelBuilder.Entity<CampaignImpact>());
+        }
 
+        private void Map(EntityTypeBuilder<CampaignImpact> builder)
+        {
+            builder.Ignore(c => c.PercentComplete);
         }
 
         private void Map(EntityTypeBuilder<CampaignContact> builder)

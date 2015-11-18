@@ -202,8 +202,6 @@ namespace AllReady.Migrations
 
                     b.Property<int>("NumericImpactGoal");
 
-                    b.Property<int>("PercentComplete");
-
                     b.Property<string>("TextualImpactGoal");
 
                     b.HasKey("Id");
