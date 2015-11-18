@@ -7,10 +7,15 @@
     <title>@ViewData["Title"] - AllReady</title>
 
     <environment names="Development">
-        <link href="~/vendor/vender.css" rel="stylesheet" />
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/css/mainPage.css" />
     </environment>
     <environment names="Staging,Production">
-        <link href="~/vendor/vender.css" rel="stylesheet" />
+        <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/bootstrap/3.3.5/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/site.css" asp-file-version="true" />
+        <link rel="stylesheet" href="~/css/mainPage.css" asp-file-version="true" />
     </environment>
     @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
 </head>
@@ -51,10 +56,11 @@
         <p class="text-center">Powered by <br /><a href="http://www.htbox.org/">Humanitarian Toolbox</a></p>
     </footer>
     <environment names="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
+        @*<script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/lib/knockout/dist/knockout.js"></script>
-        <script src="~/lib/tota11y/build/tota11y.js"></script>
+        <script src="~/lib/tota11y/build/tota11y.js"></script>*@
+        <script src="~/vendor/vender.js"></script>
     </environment>
     <environment names="Staging,Production">
         <script src="//ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.min.js"
@@ -67,7 +73,6 @@
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
         </script>
     </environment>
-    <script src="~/lib/system.js/dist/system.js"></script>
-.    <script src="~/js/index.js"></script>
+    <script src="~/js/index.js"></script>
 </body>
 </html>

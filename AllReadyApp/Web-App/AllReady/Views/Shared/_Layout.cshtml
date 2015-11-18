@@ -7,11 +7,23 @@
 
     <title>@ViewData["Title"] - AllReady</title>
 
+
     <environment names="Development">
-        <link href="~/vendor/vender.css" rel="stylesheet" />
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css" />
+        <link rel="stylesheet" href="~/lib/bootstrap-toggle/css/bootstrap-toggle.css" />
+        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
+        <link rel="stylesheet" href="~/lib/bootstrap-tagsinput/src/bootstrap-tagsinput.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment names="Staging,Production">
-        <link href="~/vendor/vender.css" rel="stylesheet" />
+        <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/bootstrap/3.0.0/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+        <link rel="stylesheet" href="//gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css"
+              asp-fallback-href="~/lib/bootstrap-toggle/css/bootstrap-toggle.css" />
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     </environment>
     @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
 
@@ -60,7 +72,7 @@
     </div>
 
     <environment names="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
+        @*<script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
         <script src="~/lib/bootstrap-toggle/js/bootstrap-toggle.js"></script>
@@ -68,7 +80,9 @@
         <script src="~/lib/moment/moment.js"></script>
         <script src="~/lib/tota11y/build/tota11y.js"></script>
         <script src="~/lib/tinymce/tinymce.js"></script>
-        <script src="~/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput.js"></script>
+        <script src="~/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput.js"></script>*@
+
+        <script src="~/vendor/vender.js"></script>
     </environment>
     <environment names="Staging,Production">
         <script src="//ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.min.js"
@@ -100,11 +114,10 @@
                 asp-fallback-src="~/lib/tinymce/tinymce.js">
         </script>
     </environment>
-    <script src="~/lib/knockout-bootstrap/src/knockout-bootstrap.js"></script>
-    <script src="~/lib/system.js/dist/system.js"></script>
-    @*<script src="~/js/site.js" asp-append-version="true"></script>*@
-    <script src="~/js/ko.filterableList.js" asp-append-version="true"></script>
-    <script src="~/js/ko.validation.js" asp-append-version="true"></script>
+    @*<script src="~/lib/knockout-bootstrap/src/knockout-bootstrap.js"></script>
+    <script src="~/lib/system.js/dist/system.js"></script>*@
+    @*<script src="~/js/ko.filterableList.js" asp-append-version="true"></script>
+    <script src="~/js/ko.validation.js" asp-append-version="true"></script>*@
     <script>
         $(function () {
             $(".datepicker").datepicker({ format: "m/d/yyyy", autoclose: true });

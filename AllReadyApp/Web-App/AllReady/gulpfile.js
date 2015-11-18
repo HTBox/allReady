@@ -74,6 +74,9 @@ gulp.task('vender:JS', function () {
         'bower_components/tota11y/build/tota11y.js',
         'bower_components/tinymce/tinymce.js',
         'bower_components/system.js/dist/system.js',
+        'bower_components/system.js/dist/system-polyfills.js',
+        paths.webroot + 'js/ko.filterableList.js',
+        paths.webroot + 'js/ko.validation.js',
     ];
 
     gulp.src(list)
@@ -81,21 +84,33 @@ gulp.task('vender:JS', function () {
     .pipe(gulp.dest(paths.webroot + '/vendor'));
 });
 
-gulp.task('vender:CSS', function () {
+gulp.task('vender:CSSLayout', function () {
     var list = [
     'bower_components/bootstrap/dist/css/bootstrap.css',
     'bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
     'bower_components/font-awesome/css/font-awesome.css',
     'bower_components/bootstrap-toggle/css/bootstrap-toggle.css',
     'bower_components/bootstrap-tagsinput/src/bootstrap-tagsinput.css',
-    'wwwroot/css/campaignStyle.css',
-    'wwwroot/css/mainPage.css',
     'wwwroot/css/site.css',
     ];
 
     // place code for your default task here
     gulp.src(list)
-    .pipe(concat('vender.css'))
+    .pipe(concat('venderLayout.css'))
+    .pipe(gulp.dest(paths.webroot + '/vendor'));
+
+});
+
+gulp.task('vender:CSSLayoutMainPage', function () {
+    var list = [
+    'bower_components/bootstrap/dist/css/bootstrap.css',
+    'wwwroot/css/site.css',
+    'wwwroot/css/mainPage.css',
+    ];
+
+    // place code for your default task here
+    gulp.src(list)
+    .pipe(concat('venderMainPage.css'))
     .pipe(gulp.dest(paths.webroot + '/vendor'));
 
 });
