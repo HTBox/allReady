@@ -48,14 +48,10 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var user = _dataAccess.GetUser(userId);
             var tenantId = user.GetTenantId();
-            var viewModel = new EditUserModel()
+            var viewModel = new DeleteUserModel()
             {
                 UserId = userId,
                 UserName = user.UserName,
-                AssociatedSkills = user.AssociatedSkills,
-                IsTenantAdmin = user.IsUserType(UserType.TenantAdmin),
-                IsSiteAdmin = user.IsUserType(UserType.SiteAdmin),
-                Tenant = tenantId != null ? _dataAccess.GetTenant(tenantId.Value) : null
             };
             return View(viewModel);
         }
