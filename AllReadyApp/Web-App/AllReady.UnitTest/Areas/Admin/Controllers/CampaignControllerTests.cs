@@ -34,15 +34,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CampaignDetailReturnsUnauthorizedForNonAdmin()
         {
-            const int tennantId = 1;
-            var controller = SetupCampaignController(tennantId);
+            const int tenantId = 1;
+            var controller = SetupCampaignController(tenantId);
 
             var claimsProvider = new ClaimsPrincipal(
                 new ClaimsIdentity(
                     new[]
                         {
                             new Claim(AllReady.Security.ClaimTypes.UserType, UserType.BasicUser.ToString()),
-                            new Claim(AllReady.Security.ClaimTypes.Tenant, tennantId.ToString()),
+                            new Claim(AllReady.Security.ClaimTypes.Tenant, tenantId.ToString()),
                         }));
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
@@ -59,15 +59,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CampaignDetailReturnsViewForAdmin()
         {
-            const int tennantId = 1;
-            var controller = SetupCampaignController(tennantId);
+            const int tenantId = 1;
+            var controller = SetupCampaignController(tenantId);
 
             var claimsProvider = new ClaimsPrincipal(
                 new ClaimsIdentity(
                     new[]
                         {
                             new Claim(AllReady.Security.ClaimTypes.UserType, UserType.TenantAdmin.ToString()),
-                            new Claim(AllReady.Security.ClaimTypes.Tenant, tennantId.ToString()),
+                            new Claim(AllReady.Security.ClaimTypes.Tenant, tenantId.ToString()),
                         }));
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
@@ -80,11 +80,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<ViewResult>(actionResult);
         }
 
-        private static CampaignController SetupCampaignController(int tennantId)
+        private static CampaignController SetupCampaignController(int tenantId)
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignDetailQuery>()))
-                .Returns(() => new CampaignDetailModel {TenantId = tennantId})
+                .Returns(() => new CampaignDetailModel {TenantId = tenantId})
                 .Verifiable();
             var mockImageService = new Mock<IImageService>();
             var mockDataAccess = new Mock<IAllReadyDataAccess>();
