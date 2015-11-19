@@ -1,7 +1,7 @@
 ﻿using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;

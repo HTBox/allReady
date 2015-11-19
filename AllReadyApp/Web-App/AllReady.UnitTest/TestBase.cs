@@ -1,8 +1,8 @@
 ﻿using AllReady.Models;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Data.Entity;
-using Microsoft.Framework.Configuration;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 

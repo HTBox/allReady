@@ -23,12 +23,6 @@ namespace AllReady.ViewModels
                 CampaignName = activity.Campaign.Name;
             }
 
-            if (activity.Tenant != null)
-            {
-                TenantId = activity.Tenant.Id;
-                TenantName = activity.Tenant.Name;
-            }
-
             Title = activity.Name;
             Description = activity.Description;
 

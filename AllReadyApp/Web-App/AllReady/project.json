@@ -1,76 +1,79 @@
 {
-  "webroot": "wwwroot",
-  "userSecretsId": "aspnet5-AllReady-468aac76-4430-43e6-848e-f4a3b90d61d0",
-  "version": "1.0.0",
-  "description": "AllReady",
+    "webroot": "wwwroot",
+    "userSecretsId": "aspnet5-AllReady-468aac76-4430-43e6-848e-f4a3b90d61d0",
+    "version": "1.0.0",
+    "description": "AllReady",
+    "compilationOptions": {
+        "emitEntryPoint": true
+    },
 
-  "dependencies": {
-    "EntityFramework.SqlServer": "7.0.0-beta8",
-    "EntityFramework.Commands": "7.0.0-beta8",
-    "EntityFramework.InMemory": "7.0.0-beta8",
-    "EntityFramework.Core": "7.0.0-beta8",
-    "Microsoft.ApplicationInsights.AspNet": "1.0.0-beta8",
-    "Microsoft.AspNet.Mvc": "6.0.0-beta8",
-    "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-beta8",
-    "Microsoft.AspNet.Authentication.Cookies": "1.0.0-beta8",
-    "Microsoft.AspNet.Authentication.Facebook": "1.0.0-beta8",
-    "Microsoft.AspNet.Authentication.Google": "1.0.0-beta8",
-    "Microsoft.AspNet.Authentication.MicrosoftAccount": "1.0.0-beta8",
-    "Microsoft.AspNet.Authentication.Twitter": "1.0.0-beta8",
-    "Microsoft.AspNet.Diagnostics": "1.0.0-beta8",
-    "Microsoft.AspNet.Diagnostics.Entity": "7.0.0-beta8",
-    "Microsoft.AspNet.Identity.EntityFramework": "3.0.0-beta8",
-    "Microsoft.AspNet.IISPlatformHandler": "1.0.0-beta8",
-    "Microsoft.AspNet.Server.Kestrel": "1.0.0-beta8",
-    "Microsoft.AspNet.StaticFiles": "1.0.0-beta8",
-    "Microsoft.AspNet.Tooling.Razor": "1.0.0-beta8",
-    "Microsoft.AspNet.Cors": "6.0.0-beta8",
-    "Microsoft.Framework.Configuration.Abstractions": "1.0.0-beta8",
-    "Microsoft.Framework.Configuration.Json": "1.0.0-beta8",
-    "Microsoft.Framework.Configuration.UserSecrets": "1.0.0-beta8",
-    "Microsoft.Framework.Logging": "1.0.0-beta8",
-    "Microsoft.Framework.Logging.Console": "1.0.0-beta8",
-    "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-beta8",
-    "Microsoft.AspNet.Mvc.WebApiCompatShim": "6.0.0-beta8",
-    "ZXing.Net": "0.14.0.1",
-    "WindowsAzure.Storage": "4.4.1-preview",
-    "Autofac": "4.0.0-beta6-110",
-    "Autofac.Framework.DependencyInjection": "4.0.0-beta6-110",
-    "MediatR": "2.0.2",
-    "Sendgrid": "6.1.0",
-    "Twilio": "4.0.3",
-    "Microsoft.Framework.Logging.Debug": "1.0.0-beta8"
-  },
+    "dependencies": {
+        "EntityFramework.MicrosoftSqlServer": "7.0.0-rc1-final",
+        "EntityFramework.Commands": "7.0.0-rc1-final",
+        "EntityFramework.Core": "7.0.0-rc1-final",
+        "Microsoft.ApplicationInsights.AspNet": "1.0.0-rc1",
+        "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
+        "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
+        "Microsoft.AspNet.Authentication.Cookies": "1.0.0-rc1-final",
+        "Microsoft.AspNet.Authentication.Facebook": "1.0.0-rc1-final",
+        "Microsoft.AspNet.Authentication.Google": "1.0.0-rc1-final",
+        "Microsoft.AspNet.Authentication.MicrosoftAccount": "1.0.0-rc1-final",
+        "Microsoft.AspNet.Authentication.Twitter": "1.0.0-rc1-final",
+        "Microsoft.AspNet.Diagnostics": "1.0.0-rc1-final",
+        "Microsoft.AspNet.Diagnostics.Entity": "7.0.0-rc1-final",
+        "Microsoft.AspNet.Identity.EntityFramework": "3.0.0-rc1-final",
+        "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
+        "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
+        "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
+        "Microsoft.AspNet.Tooling.Razor": "1.0.0-rc1-final",
+        "Microsoft.AspNet.Cors": "6.0.0-rc1-final",
+        "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc1-final",
+        "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
+        "Microsoft.Extensions.Configuration.UserSecrets": "1.0.0-rc1-final",
+        "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
+        "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
+        "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-*",
+        "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-rc1-final",
+        "Microsoft.AspNet.Mvc.WebApiCompatShim": "6.0.0-rc1-final",
+        "ZXing.Net": "0.14.0.1",
+        "WindowsAzure.Storage": "4.4.1-preview",
+        "MediatR": "2.0.2",
+        "Sendgrid": "6.1.0",
+        "Twilio": "4.0.3",
+        "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
+        "Autofac": "4.0.0-rc1-177",
+        "Autofac.Extensions.DependencyInjection": "4.0.0-rc1-177"
+    },
 
-  "commands": {
-    "web": "Microsoft.AspNet.Server.Kestrel",
-    "ef": "EntityFramework.Commands"
-  },
+    "commands": {
+        "web": "Microsoft.AspNet.Server.Kestrel",
+        "ef": "EntityFramework.Commands"
+    },
 
-  "frameworks": {
-    "dnx451": {
-      "dependencies": {
-        "AllReady.Models": "1.0.0-*"
-      },
-      "frameworkAssemblies": {
-        "System.Drawing": "4.0.0.0"
-      }
+    "frameworks": {
+        "dnx451": {
+            "dependencies": {
+                "AllReady.Models": "1.0.0-*"
+            },
+            "frameworkAssemblies": {
+                "System.Drawing": "4.0.0.0"
+            }
+        }
+    },
+
+    "exclude": [
+        "wwwroot",
+        "node_modules",
+        "bower_components"
+    ],
+    "publishExclude": [
+        "node_modules",
+        "bower_components",
+        "**.xproj",
+        "**.user",
+        "**.vspscc"
+    ],
+    "scripts": {
+        "prepublish": [ "npm install", "bower install", "gulp clean", "gulp min" ]
     }
-  },
-
-  "exclude": [
-    "wwwroot",
-    "node_modules",
-    "bower_components"
-  ],
-  "publishExclude": [
-    "node_modules",
-    "bower_components",
-    "**.xproj",
-    "**.user",
-    "**.vspscc"
-  ],
-  "scripts": {
-    "prepublish": [ "npm install", "bower install", "gulp clean", "gulp min" ]
-  }
 }

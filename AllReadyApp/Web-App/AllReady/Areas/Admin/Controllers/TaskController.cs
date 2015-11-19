@@ -30,7 +30,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Create(int activityId)
         {
             var activity = _dataAccess.GetActivity(activityId);
-            if (activity == null || !User.IsTenantAdmin(activity.TenantId))
+            if (activity == null || !User.IsTenantAdmin(activity.Campaign.ManagingTenantId))
             {
                 return HttpUnauthorized();
             }
@@ -40,7 +40,7 @@ namespace AllReady.Areas.Admin.Controllers
                 ActivityName = activity.Name,
                 CampaignId = activity.CampaignId,
                 CampaignName = activity.Campaign.Name,
-                TenantId = activity.TenantId
+                TenantId = activity.Campaign.ManagingTenantId
             };
             return View("Edit", viewModel);
         }
@@ -154,7 +154,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         private bool UserIsTenantAdminOfActivity(Activity activity)
         {
-            return User.IsTenantAdmin(activity.TenantId);
+            return User.IsTenantAdmin(activity.Campaign.ManagingTenantId);
         }
 
         private bool UserIsTenantAdminOfActivity(int activityId)

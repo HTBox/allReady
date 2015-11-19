@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Services;
 using Microsoft.AspNet.Identity;
-using Microsoft.Framework.OptionsModel;
+using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Models
 {
@@ -67,7 +67,7 @@ namespace AllReady.Models
             List<Resource> resources = new List<Resource>();
             List<ActivitySignup> activitySignups = new List<ActivitySignup>();
             List<Contact> contacts = GetContacts();
-            
+
             #region Tenant
             Tenant htb = new Tenant()
             {
@@ -142,7 +142,6 @@ namespace AllReady.Models
                 StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
-                Tenant = htb,
                 RequiredSkills = new List<ActivitySkill>()
             };
             queenAnne.Tasks = GetSomeTasks(queenAnne, htb);
@@ -160,8 +159,7 @@ namespace AllReady.Models
                 StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 12, 31, 14, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
-                Tenant = htb
-
+                Campaign = firePrev
             };
             ballard.Tasks = GetSomeTasks(ballard, htb);
             tasks.AddRange(ballard.Tasks);
@@ -171,7 +169,7 @@ namespace AllReady.Models
                 StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 12, 31, 14, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
-                Tenant = htb
+                Campaign = firePrev
             };
             madrona.Tasks = GetSomeTasks(madrona, htb);
             tasks.AddRange(madrona.Tasks);
@@ -181,7 +179,7 @@ namespace AllReady.Models
                 StartDateTimeUtc = new DateTime(2015, 7, 6, 10, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 12, 31, 17, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
-                Tenant = htb
+                Campaign = smokeDet
             };
             southLoopSmoke.Tasks = GetSomeTasks(southLoopSmoke, htb);
             tasks.AddRange(southLoopSmoke.Tasks);
@@ -191,7 +189,7 @@ namespace AllReady.Models
                 StartDateTimeUtc = new DateTime(2015, 7, 6, 10, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 12, 31, 17, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
-                Tenant = htb
+                Campaign = smokeDet
             };
             northLoopSmoke.Tasks = GetSomeTasks(northLoopSmoke, htb);
             tasks.AddRange(northLoopSmoke.Tasks);
@@ -202,7 +200,7 @@ namespace AllReady.Models
                 StartDateTimeUtc = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 7, 11, 17, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
-                Tenant = htb
+                Campaign = financial
             };
             rentersInsurance.Tasks = GetSomeTasks(rentersInsurance, htb);
             tasks.AddRange(rentersInsurance.Tasks);
@@ -213,7 +211,7 @@ namespace AllReady.Models
                 StartDateTimeUtc = new DateTime(2015, 7, 12, 8, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 12, 12, 17, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
-                Tenant = htb
+                Campaign = financial
             };
             rentersInsuranceEd.Tasks = GetSomeTasks(rentersInsuranceEd, htb);
             tasks.AddRange(rentersInsuranceEd.Tasks);
@@ -224,7 +222,7 @@ namespace AllReady.Models
                 StartDateTimeUtc = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
-                Tenant = htb
+                Campaign = safetyKit
             };
             safetyKitBuild.Tasks = GetSomeTasks(safetyKitBuild, htb);
             tasks.AddRange(safetyKitBuild.Tasks);
@@ -236,7 +234,7 @@ namespace AllReady.Models
                 StartDateTimeUtc = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
-                Tenant = htb
+                Campaign = safetyKit
             };
             safetyKitHandout.Tasks = GetSomeTasks(safetyKitHandout, htb);
             tasks.AddRange(safetyKitHandout.Tasks);
@@ -247,7 +245,7 @@ namespace AllReady.Models
                 StartDateTimeUtc = new DateTime(2015, 7, 10, 9, 30, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 12, 10, 15, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
-                Tenant = htb
+                Campaign = carSafe
             };
             carSeatTest1.Tasks = GetSomeTasks(carSeatTest1, htb);
             tasks.AddRange(carSeatTest1.Tasks);
@@ -258,7 +256,7 @@ namespace AllReady.Models
                 StartDateTimeUtc = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 12, 11, 19, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
-                Tenant = htb
+                Campaign = carSafe
             };
             carSeatTest2.Tasks = GetSomeTasks(carSeatTest2, htb);
             tasks.AddRange(carSeatTest2.Tasks);
@@ -269,7 +267,7 @@ namespace AllReady.Models
                 StartDateTimeUtc = new DateTime(2015, 7, 11, 12, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
-                Tenant = htb
+                Campaign = safetyKit
             };
             homeFestival.Tasks = GetSomeTasks(homeFestival, htb);
             tasks.AddRange(homeFestival.Tasks);
@@ -280,7 +278,7 @@ namespace AllReady.Models
                 StartDateTimeUtc = new DateTime(2015, 7, 15, 15, 30, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 12, 15, 20, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
-                Tenant = htb
+                Campaign = escapePlan
             };
             homeEscape.Tasks = GetSomeTasks(homeEscape, htb);
             tasks.AddRange(homeEscape.Tasks);

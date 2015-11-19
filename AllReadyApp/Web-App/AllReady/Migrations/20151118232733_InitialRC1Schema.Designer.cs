@@ -8,9 +8,10 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    partial class AllReadyContextModelSnapshot : ModelSnapshot
+    [Migration("20151118232733_InitialRC1Schema")]
+    partial class InitialRC1Schema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.0-rc1-16341")
@@ -201,6 +202,8 @@ namespace AllReady.Migrations
                     b.Property<int>("ImpactType");
 
                     b.Property<int>("NumericImpactGoal");
+
+                    b.Property<int>("PercentComplete");
 
                     b.Property<string>("TextualImpactGoal");
 
