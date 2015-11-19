@@ -43,6 +43,23 @@ namespace AllReady.Areas.Admin.Controllers
             return View(viewModel);
         }
 
+
+        public IActionResult DeleteUser(string userId)
+        {
+            var user = _dataAccess.GetUser(userId);
+            var tenantId = user.GetTenantId();
+            var viewModel = new EditUserModel()
+            {
+                UserId = userId,
+                UserName = user.UserName,
+                AssociatedSkills = user.AssociatedSkills,
+                IsTenantAdmin = user.IsUserType(UserType.TenantAdmin),
+                IsSiteAdmin = user.IsUserType(UserType.SiteAdmin),
+                Tenant = tenantId != null ? _dataAccess.GetTenant(tenantId.Value) : null
+            };
+            return View(viewModel);
+        }
+
         public IActionResult EditUser(string userId)
         {
             var user = _dataAccess.GetUser(userId);
