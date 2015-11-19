@@ -89,7 +89,6 @@ namespace AllReady.UnitTest
                 {
                     context.Add(activity);
                     context.Add(activity.Campaign);
-                    context.Add(activity.Campaign.ManagingTenant);
                     activitiesAdded++;
                 }
                 context.SaveChanges();
