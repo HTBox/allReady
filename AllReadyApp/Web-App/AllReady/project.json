@@ -41,8 +41,8 @@
         "Sendgrid": "6.1.0",
         "Twilio": "4.0.3",
         "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
-        "Autofac": "4.0.0-rc1-*",
-        "Autofac.Extensions.DependencyInjection": "4.0.0-rc1-*"
+        "Autofac": "4.0.0-rc1-177",
+        "Autofac.Extensions.DependencyInjection": "4.0.0-rc1-177"
     },
 
     "commands": {
