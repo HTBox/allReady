@@ -1,26 +1,26 @@
 {
-  "version": "1.0.0-*",
-  "description": "AllReady.UnitTests",
-  "authors": [ "mattgal" ],
+    "version": "1.0.0-*",
+    "description": "AllReady.UnitTests",
+    "authors": [ "mattgal" ],
 
-  "compilationOptions": {
-    "warningsAsErrors": true
-  },
+    "compilationOptions": {
+        "warningsAsErrors": true
+    },
 
-  "dependencies": {
-    "AllReady": "1.0.0-*",
-    "EntityFramework.InMemory": "7.0.0-rc1-final",
-    "Microsoft.AspNet.TestHost": "1.0.0-rc1-final",
-    "Moq": "4.2.1510.2205",
-    "xunit": "2.1.0-rc2-build3176",
-    "xunit.runner.dnx": "2.1.0-beta6-build191"
-  },
+    "dependencies": {
+        "AllReady": "1.0.0-*",
+        "EntityFramework.InMemory": "7.0.0-rc1-final",
+        "Microsoft.AspNet.TestHost": "1.0.0-rc1-final",
+        "Moq": "4.2.1510.2205",
+        "xunit": "2.1.0",
+        "xunit.runner.dnx": "2.1.0-rc1-build204"
+    },
 
-  "commands": {
-    "test": "xunit.runner.dnx"
-  },
+    "commands": {
+        "test": "xunit.runner.dnx"
+    },
 
-  "frameworks": {
-    "dnx451": { }
-  }
+    "frameworks": {
+        "dnx451": { }
+    }
 }
