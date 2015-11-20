@@ -1,6 +1,13 @@
-﻿using Microsoft.Data.Entity;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Data.Entity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNet.Hosting;
 using Microsoft.Data.Entity.Metadata.Builders;
+using Microsoft.Data.Entity.Metadata;
 
 namespace AllReady.Models
 {
@@ -29,7 +36,7 @@ namespace AllReady.Models
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.UseSqlServerIdentityColumns();
+            modelBuilder.ForSqlServerUseIdentityColumns();
 
             Map(modelBuilder.Entity<Campaign>());
             Map(modelBuilder.Entity<CampaignSponsors>());
@@ -48,7 +55,12 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<TenantContact>());
             Map(modelBuilder.Entity<CampaignContact>());
             Map(modelBuilder.Entity<Contact>());
+            Map(modelBuilder.Entity<CampaignImpact>());
+        }
 
+        private void Map(EntityTypeBuilder<CampaignImpact> builder)
+        {
+            builder.Ignore(c => c.PercentComplete);
         }
 
         private void Map(EntityTypeBuilder<CampaignContact> builder)
@@ -121,7 +133,6 @@ namespace AllReady.Models
 
         private void Map(EntityTypeBuilder<Activity> builder)
         {
-            builder.HasOne(a => a.Tenant);
             builder.HasOne(a => a.Campaign);
             builder.HasOne(a => a.Location);
             builder.HasMany(a => a.Tasks);
@@ -138,7 +149,8 @@ namespace AllReady.Models
 
         private void Map(EntityTypeBuilder<Skill> builder)
         {
-            builder.HasOne(s => s.ParentSkill);             
+            builder.HasOne(s => s.ParentSkill);
+            builder.Ignore(s => s.HierarchicalName);
         }
 
         private void Map(EntityTypeBuilder<CampaignSponsors> builder)

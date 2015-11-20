@@ -1,5 +1,9 @@
-﻿using Microsoft.Framework.Logging;
-using Microsoft.Framework.OptionsModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Services
 {

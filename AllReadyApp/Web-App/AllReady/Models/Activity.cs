@@ -9,11 +9,6 @@ namespace AllReady.Models
     {
         public int Id { get; set; }
 
-        [Display(Name = "Tenant")]
-        public int TenantId { get; set; }
-
-        public Tenant Tenant { get; set; }
-
         [Display(Name = "Campaign")]
         public int CampaignId { get; set; }
 

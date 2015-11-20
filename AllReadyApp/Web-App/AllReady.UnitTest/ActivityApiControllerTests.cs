@@ -6,7 +6,7 @@ using AllReady.Models;
 using AllReady.ViewModels;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Data.Entity;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace AllReady.UnitTest
@@ -89,7 +89,6 @@ namespace AllReady.UnitTest
                 {
                     context.Add(activity);
                     context.Add(activity.Campaign);
-                    context.Add(activity.Tenant);
                     activitiesAdded++;
                 }
                 context.SaveChanges();
@@ -131,7 +130,6 @@ namespace AllReady.UnitTest
                         StartDateTimeUtc = DateTime.MinValue.ToUniversalTime(),
                         Name = string.Format(ActivityNameFormat, n),
                         Description = string.Format(ActivityDescriptionFormat, n),
-                        Tenant = tenants[n - 1],
                         Id = id++
                     }).ToArray();
                 return activities;

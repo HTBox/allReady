@@ -4,7 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using AllReady.Models;
-using Microsoft.Framework.OptionsModel;
+using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Services
 {
@@ -80,9 +80,9 @@ namespace AllReady.Services
                     .GetType()
                     .GetProperties()
                     .Where(prop => !Equals(dr[prop.Name], DBNull.Value)))
-                {
-                    prop.SetValue(obj, dr[prop.Name], null);
-                }
+                    {
+                        prop.SetValue(obj, dr[prop.Name], null);
+                    }
                 list.Add(obj);
             }
             return list;

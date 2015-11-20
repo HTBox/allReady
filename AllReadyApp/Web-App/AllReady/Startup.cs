@@ -5,7 +5,7 @@ using AllReady.Models;
 using AllReady.Services;
 using Autofac;
 using Autofac.Features.Variance;
-using Autofac.Framework.DependencyInjection;
+using Autofac.Extensions.DependencyInjection;
 using MediatR;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
@@ -14,9 +14,10 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Localization;
 using Microsoft.Data.Entity;
 using Microsoft.Dnx.Runtime;
-using Microsoft.Framework.Configuration;
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.PlatformAbstractions;
 using AllReady.Security;
 
 namespace AllReady
@@ -95,11 +96,6 @@ namespace AllReady
                 options.AddPolicy("SiteAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "SiteAdmin"));
             });
 
-            services.AddCookieAuthentication(options =>
-             {
-                 options.AccessDeniedPath = new PathString("/Home/AccessDenied");
-             });
-
             // Add MVC services to the services container.
             services.AddMvc();
 
@@ -144,6 +140,7 @@ namespace AllReady
               var c = ctx.Resolve<IComponentContext>();
               return t => c.Resolve(t);
           });
+
             containerBuilder.Register<MultiInstanceFactory>(ctx =>
             {
                 var c = ctx.Resolve<IComponentContext>();
@@ -198,10 +195,9 @@ namespace AllReady
             var usCultureInfo = new CultureInfo("en-US");
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
-                DefaultRequestCulture = new RequestCulture(usCultureInfo),
                 SupportedCultures = new List<CultureInfo>(new[] { usCultureInfo }),
                 SupportedUICultures = new List<CultureInfo>(new[] { usCultureInfo })
-            });
+            }, new RequestCulture(usCultureInfo));
 
             // Add Application Insights to the request pipeline to track HTTP request telemetry data.
             app.UseApplicationInsightsRequestTelemetry();
@@ -219,6 +215,14 @@ namespace AllReady
                 // sends the request to the following path or controller action.
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            // Setup Cookie Authentication
+            app.UseCookieAuthentication(options =>
+            {
+                options.AccessDeniedPath = new PathString("/Home/AccessDenied");
+            });
+
+
 
             // Track data about exceptions from the application. Should be configured after all error handling middleware in the request pipeline.
             app.UseApplicationInsightsExceptionTelemetry();
@@ -291,5 +295,7 @@ namespace AllReady
                 await sampleData.CreateAdminUser();
             }
         }
+
+        public static void Main(string[] args) => WebApplication.Run<Startup>(args);
     }
 }

@@ -90,12 +90,12 @@ namespace AllReady.Areas.Admin.Controllers
                 ModelState.AddModelError("EndDateTime", "End date cannot be earlier than the start date");
             }
 
-            CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
-            if (campaign == null ||
-                !User.IsTenantAdmin(campaign.TenantId))
-            {
-                return HttpUnauthorized();
-            }
+                CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
+                if (campaign == null ||
+                    !User.IsTenantAdmin(campaign.TenantId))
+                {
+                    return HttpUnauthorized();
+                }
 
             if (activity.StartDateTime < campaign.StartDate)
             {
@@ -252,7 +252,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-            if (!User.IsTenantAdmin(activity.TenantId))
+            if (!User.IsTenantAdmin(activity.Campaign.ManagingTenantId))
             {
                 return HttpUnauthorized();
             }
@@ -289,10 +289,22 @@ namespace AllReady.Areas.Admin.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PostActivityFile(int id, IFormFile file)
+        {
+            //TODO: Use a command here
+            Activity a = _dataAccess.GetActivity(id);
+
+            a.ImageUrl = await _imageService.UploadActivityImageAsync(a.Id, a.Campaign.ManagingTenantId, file);
+            await _dataAccess.UpdateActivity(a);
+
+            return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Edit", id = id });
+        }
 
         private bool UserIsTenantAdminOfActivity(Activity activity)
         {
-            return User.IsTenantAdmin(activity.TenantId);
+            return User.IsTenantAdmin(activity.Campaign.ManagingTenantId);
         }
 
         private bool UserIsTenantAdminOfActivity(int activityId)

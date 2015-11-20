@@ -1,7 +1,7 @@
 ﻿using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,7 +74,6 @@ namespace AllReady.UnitTest.Activities
                 StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTimeUtc = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
-                Tenant = htb,
                 RequiredSkills = new List<ActivitySkill>()
             };
             context.Tenants.Add(htb);
@@ -96,8 +95,8 @@ namespace AllReady.UnitTest.Activities
                 RequiredSkills = queenAnne.RequiredSkills,
                 StartDateTime = queenAnne.StartDateTimeUtc,
                 Tasks = null,
-                TenantId = queenAnne.TenantId,
-                TenantName = queenAnne.Tenant.Name,
+                TenantId = queenAnne.Campaign.ManagingTenantId,
+                TenantName = queenAnne.Campaign.ManagingTenant.Name,
                 Volunteers = null
             };
             var query = new EditActivityCommand { Activity = vm };
