@@ -1,5 +1,5 @@
-<<<<<<< HEAD
-﻿using System.Security.Claims;
+using System;
+using System.Security.Claims;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Models;
@@ -15,77 +15,120 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
     public class CampaignControllerTests
     {
-
+        #region Test returning 404 for campaign not found
         [Fact]
         public void CampaignDetailsNoCampaignReturns404()
         {
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignDetailQuery>())).Returns(() => null).Verifiable();
-            var mockImageService = new Mock<IImageService>();
-            var mockDataAccess = new Mock<IAllReadyDataAccess>();
-            var controller = new CampaignController(
-                mockMediator.Object,
-                mockImageService.Object,
-                mockDataAccess.Object );
+            CampaignController controller;
+            var mockMediator = MockMediator(out controller);
             var actionResult = controller.Details(0);
             Assert.IsType<HttpNotFoundResult>(actionResult);
             mockMediator.Verify(mock => mock.Send(It.IsAny<CampaignDetailQuery>()), Times.Once);
         }
 
         [Fact]
+        public void CampaignEditNoCampaignReturns404()
+        {
+            CampaignController controller;
+            var mockMediator = MockMediator(out controller);
+            var actionResult = controller.Edit(0);
+            Assert.IsType<HttpNotFoundResult>(actionResult);
+            mockMediator.Verify(mock => mock.Send(It.IsAny<CampaignSummaryQuery>()), Times.Once);
+        }
+
+        [Fact]
+        public void CampaignDeleteNoCampaignReturns404()
+        {
+            CampaignController controller;
+            var mockMediator = MockMediator(out controller);
+            var actionResult = controller.Edit(0);
+            Assert.IsType<HttpNotFoundResult>(actionResult);
+            mockMediator.Verify(mock => mock.Send(It.IsAny<CampaignSummaryQuery>()), Times.Once);
+        }
+
+        #endregion
+
+
+        #region Test returing 401 for unauthorized user on a campaign
+        [Fact]
         public void CampaignDetailReturnsUnauthorizedForNonAdmin()
         {
             const int tenantId = 1;
-            var controller = SetupCampaignController(tenantId);
-
-            var claimsProvider = new ClaimsPrincipal(
-                new ClaimsIdentity(
-                    new[]
-                        {
-                            new Claim(AllReady.Security.ClaimTypes.UserType, UserType.BasicUser.ToString()),
-                            new Claim(AllReady.Security.ClaimTypes.Tenant, tenantId.ToString()),
-                        }));
-            var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => claimsProvider);
-            var mockContext = new Mock<ActionContext>();
-            mockContext.Object.HttpContext = mockHttpContext.Object;
-            controller.ActionContext = mockContext.Object;
-
-            var actionResult = controller.Details(0);
-            Assert.IsType<HttpUnauthorizedResult>(actionResult);
+            var controller = CampaignControllerWithDetailQuery(UserType.BasicUser.ToString(), tenantId);
+            
+            Assert.IsType<HttpUnauthorizedResult>(controller.Details(0));
         }
 
+        [Fact]
+        public void CampaignEditReturnsUnauthorizedForNonAdmin()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), tenantId);
+            
+            Assert.IsType<HttpUnauthorizedResult>(controller.Edit(0));
+        }
 
+        [Fact]
+        public void CampaignDeleteReturnsUnauthorizedForNonAdmin()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), tenantId);
+            
+            Assert.IsType<HttpUnauthorizedResult>(controller.Delete(0));
+        }
+        #endregion
+
+
+
+        #region Test returing ViewResult for Tenant Admin on a campaign
         [Fact]
         public void CampaignDetailReturnsViewForAdmin()
         {
             const int tenantId = 1;
-            var controller = SetupCampaignController(tenantId);
-
-            var claimsProvider = new ClaimsPrincipal(
-                new ClaimsIdentity(
-                    new[]
-                        {
-                            new Claim(AllReady.Security.ClaimTypes.UserType, UserType.TenantAdmin.ToString()),
-                            new Claim(AllReady.Security.ClaimTypes.Tenant, tenantId.ToString()),
-                        }));
-            var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => claimsProvider);
-            var mockContext = new Mock<ActionContext>();
-            mockContext.Object.HttpContext = mockHttpContext.Object;
-            controller.ActionContext = mockContext.Object;
-
-            var actionResult = controller.Details(0);
-            Assert.IsType<ViewResult>(actionResult);
+            var controller = CampaignControllerWithDetailQuery(UserType.TenantAdmin.ToString(), tenantId);
+            
+            Assert.IsType<ViewResult>(controller.Details(0));
         }
 
-        private static CampaignController SetupCampaignController(int tenantId)
+        [Fact]
+        public void CampaignEditReturnsViewForAdmin()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+            
+            Assert.IsType<ViewResult>(controller.Edit(0));
+        }
+
+        [Fact]
+        public void CampaignDeleteReturnsViewForAdmin()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+            
+            Assert.IsType<ViewResult>(controller.Delete(0));
+        }
+        #endregion
+
+        #region Helper Methods
+        private static Mock<IMediator> MockMediator(out CampaignController controller)
         {
             var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignDetailQuery>())).Returns(() => null).Verifiable();
+            var mockImageService = new Mock<IImageService>();
+            var mockDataAccess = new Mock<IAllReadyDataAccess>();
+            controller = new CampaignController(
+                mockMediator.Object,
+                mockImageService.Object,
+                mockDataAccess.Object);
+            return mockMediator;
+        }
+
+        private static CampaignController CampaignControllerWithDetailQuery(string userType, int tenantId)
+        {
+            var tid = tenantId;
+            var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignDetailQuery>()))
-                .Returns(() => new CampaignDetailModel {TenantId = tenantId})
+                .Returns(() => new CampaignDetailModel { TenantId = tid })
                 .Verifiable();
             var mockImageService = new Mock<IImageService>();
             var mockDataAccess = new Mock<IAllReadyDataAccess>();
@@ -93,40 +136,50 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 mockMediator.Object,
                 mockImageService.Object,
                 mockDataAccess.Object);
+
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(mock => mock.User)
+                .Returns(() => GetClaimsPrincipal(userType, tenantId));
+            var mockContext = new Mock<ActionContext>();
+            mockContext.Object.HttpContext = mockHttpContext.Object;
+            controller.ActionContext = mockContext.Object;
             return controller;
         }
-    }
-}
-=======
-﻿using AllReady.Areas.Admin.Controllers;
-using AllReady.Areas.Admin.Features.Campaigns;
-using AllReady.Models;
-using AllReady.Services;
-using MediatR;
-using Moq;
-using Xunit;
-using Microsoft.AspNet.Mvc;
 
-namespace AllReady.UnitTest.Areas.Admin.Controllers
-{
-    public class CampaignControllerTests
-    {
-
-        [Fact]
-        public void CampaignDetailsNoCampaignReturns404()
+        private static CampaignController CampaignControllerWithSummaryQuery(string userType, int tenantId)
         {
+            var tid = tenantId;
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignDetailQuery>())).Returns(() => null).Verifiable();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignSummaryQuery>()))
+                .Returns(() => new CampaignSummaryModel { TenantId = tid })
+                .Verifiable();
             var mockImageService = new Mock<IImageService>();
             var mockDataAccess = new Mock<IAllReadyDataAccess>();
             var controller = new CampaignController(
                 mockMediator.Object,
                 mockImageService.Object,
-                mockDataAccess.Object );
-            var actionResult = controller.Details(0);
-            Assert.IsType<HttpNotFoundResult>(actionResult);
-            mockMediator.Verify(mock => mock.Send(It.IsAny<CampaignDetailQuery>()), Times.Once);
+                mockDataAccess.Object);
+            
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(mock => mock.User)
+                .Returns(() => GetClaimsPrincipal(userType, tenantId));
+            var mockContext = new Mock<ActionContext>();
+            mockContext.Object.HttpContext = mockHttpContext.Object;
+            controller.ActionContext = mockContext.Object;
+            return controller;
         }
+
+        private static ClaimsPrincipal GetClaimsPrincipal(string userType, int tenantId)
+        {
+            return new ClaimsPrincipal(
+                new ClaimsIdentity(
+                    new[]
+                    {
+                        new Claim(AllReady.Security.ClaimTypes.UserType, userType),
+                        new Claim(AllReady.Security.ClaimTypes.Tenant, tenantId.ToString()),
+                    }));
+        }
+
+        #endregion
     }
 }
->>>>>>> e13dea11376acaf828faee56f0db1994c4429d0f
