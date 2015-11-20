@@ -19,30 +19,33 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CampaignDetailsNoCampaignReturns404()
         {
+            const int campaignId = 0;
             CampaignController controller;
-            var mockMediator = MockMediator(out controller);
-            var actionResult = controller.Details(0);
-            Assert.IsType<HttpNotFoundResult>(actionResult);
+            var mockMediator = MockMediatorCampaignDetailQuery(out controller);
+            
+            Assert.IsType<HttpNotFoundResult>(controller.Details(campaignId));
             mockMediator.Verify(mock => mock.Send(It.IsAny<CampaignDetailQuery>()), Times.Once);
         }
 
         [Fact]
         public void CampaignEditNoCampaignReturns404()
         {
+            const int campaignId = 0;
             CampaignController controller;
-            var mockMediator = MockMediator(out controller);
-            var actionResult = controller.Edit(0);
-            Assert.IsType<HttpNotFoundResult>(actionResult);
+            var mockMediator = MockMediatorCampaignSummaryQuery(out controller);
+            
+            Assert.IsType<HttpNotFoundResult>(controller.Edit(campaignId));
             mockMediator.Verify(mock => mock.Send(It.IsAny<CampaignSummaryQuery>()), Times.Once);
         }
 
         [Fact]
         public void CampaignDeleteNoCampaignReturns404()
         {
+            const int campaignId = 0;
             CampaignController controller;
-            var mockMediator = MockMediator(out controller);
-            var actionResult = controller.Edit(0);
-            Assert.IsType<HttpNotFoundResult>(actionResult);
+            var mockMediator = MockMediatorCampaignSummaryQuery(out controller);
+            
+            Assert.IsType<HttpNotFoundResult>(controller.Delete(campaignId));
             mockMediator.Verify(mock => mock.Send(It.IsAny<CampaignSummaryQuery>()), Times.Once);
         }
 
@@ -53,28 +56,28 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CampaignDetailReturnsUnauthorizedForNonAdmin()
         {
-            const int tenantId = 1;
+            const int tenantId = 1, campaignId = 0;
             var controller = CampaignControllerWithDetailQuery(UserType.BasicUser.ToString(), tenantId);
             
-            Assert.IsType<HttpUnauthorizedResult>(controller.Details(0));
+            Assert.IsType<HttpUnauthorizedResult>(controller.Details(campaignId));
         }
 
         [Fact]
         public void CampaignEditReturnsUnauthorizedForNonAdmin()
         {
-            const int tenantId = 1;
+            const int tenantId = 1, campaignId = 0;
             var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), tenantId);
             
-            Assert.IsType<HttpUnauthorizedResult>(controller.Edit(0));
+            Assert.IsType<HttpUnauthorizedResult>(controller.Edit(campaignId));
         }
 
         [Fact]
         public void CampaignDeleteReturnsUnauthorizedForNonAdmin()
         {
-            const int tenantId = 1;
+            const int tenantId = 1, campaignId = 0;
             var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), tenantId);
             
-            Assert.IsType<HttpUnauthorizedResult>(controller.Delete(0));
+            Assert.IsType<HttpUnauthorizedResult>(controller.Delete(campaignId));
         }
         #endregion
 
@@ -84,36 +87,49 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CampaignDetailReturnsViewForAdmin()
         {
-            const int tenantId = 1;
+            const int tenantId = 1, campaignId = 0;
             var controller = CampaignControllerWithDetailQuery(UserType.TenantAdmin.ToString(), tenantId);
             
-            Assert.IsType<ViewResult>(controller.Details(0));
+            Assert.IsType<ViewResult>(controller.Details(campaignId));
         }
 
         [Fact]
         public void CampaignEditReturnsViewForAdmin()
         {
-            const int tenantId = 1;
+            const int tenantId = 1, campaignId = 0;
             var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
             
-            Assert.IsType<ViewResult>(controller.Edit(0));
+            Assert.IsType<ViewResult>(controller.Edit(campaignId));
         }
 
         [Fact]
         public void CampaignDeleteReturnsViewForAdmin()
         {
-            const int tenantId = 1;
+            const int tenantId = 1, campaignId = 0;
             var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
             
-            Assert.IsType<ViewResult>(controller.Delete(0));
+            Assert.IsType<ViewResult>(controller.Delete(campaignId));
         }
         #endregion
 
         #region Helper Methods
-        private static Mock<IMediator> MockMediator(out CampaignController controller)
+        private static Mock<IMediator> MockMediatorCampaignDetailQuery(out CampaignController controller)
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignDetailQuery>())).Returns(() => null).Verifiable();
+            var mockImageService = new Mock<IImageService>();
+            var mockDataAccess = new Mock<IAllReadyDataAccess>();
+            controller = new CampaignController(
+                mockMediator.Object,
+                mockImageService.Object,
+                mockDataAccess.Object);
+            return mockMediator;
+        }
+
+        private static Mock<IMediator> MockMediatorCampaignSummaryQuery(out CampaignController controller)
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignSummaryQuery>())).Returns(() => null).Verifiable();
             var mockImageService = new Mock<IImageService>();
             var mockDataAccess = new Mock<IAllReadyDataAccess>();
             controller = new CampaignController(
