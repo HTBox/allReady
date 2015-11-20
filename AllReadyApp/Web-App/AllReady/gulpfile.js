@@ -87,9 +87,9 @@ gulp.task('vender:JS', function () {
 gulp.task('vender:CSSLayout', function () {
     var list = [
     'bower_components/bootstrap/dist/css/bootstrap.css',
-    'bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
-    'bower_components/font-awesome/css/font-awesome.css',
+    'bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.css',
     'bower_components/bootstrap-toggle/css/bootstrap-toggle.css',
+    'bower_components/font-awesome/css/font-awesome.css',
     'bower_components/bootstrap-tagsinput/src/bootstrap-tagsinput.css',
     'wwwroot/css/site.css',
     ];

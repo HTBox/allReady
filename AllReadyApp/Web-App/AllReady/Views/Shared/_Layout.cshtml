@@ -9,12 +9,13 @@
 
 
     <environment names="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css" />
         <link rel="stylesheet" href="~/lib/bootstrap-toggle/css/bootstrap-toggle.css" />
         <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
         <link rel="stylesheet" href="~/lib/bootstrap-tagsinput/src/bootstrap-tagsinput.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/css/site.css" />*@
+        <link href="~/vendor/venderLayout.css" rel="stylesheet" />
     </environment>
     <environment names="Staging,Production">
         <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/bootstrap/3.0.0/css/bootstrap.min.css"
@@ -30,9 +31,6 @@
 </head>
 <body>
     <header>
-        @*<div style="padding: 0 20px;">
-                @await Html.PartialAsync("_LoginPartial")
-            </div>*@
         <nav class="navbar navbar-default">
             <div class="container-fluid">
                 <div class="navbar-header">
