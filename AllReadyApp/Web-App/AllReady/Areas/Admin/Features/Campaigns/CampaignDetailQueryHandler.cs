@@ -38,6 +38,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     TenantId = campaign.ManagingTenantId,
                     TenantName = campaign.ManagingTenant.Name,
                     ImageUrl = campaign.ImageUrl,
+                    TimeZoneId = campaign.TimeZoneId,
                     StartDate = campaign.StartDateTimeUtc,
                     EndDate = campaign.EndDateTimeUtc,
                     CampaignImpact = campaign.CampaignImpact,

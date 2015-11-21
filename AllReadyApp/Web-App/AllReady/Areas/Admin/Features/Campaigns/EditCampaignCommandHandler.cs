@@ -32,6 +32,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
             campaign.Name = message.Campaign.Name;
             campaign.Description = message.Campaign.Description;
+            campaign.TimeZoneId = message.Campaign.TimeZoneId;
             campaign.StartDateTimeUtc = message.Campaign.StartDate;
             campaign.EndDateTimeUtc = message.Campaign.EndDate;
             campaign.ManagingTenantId = message.Campaign.TenantId;

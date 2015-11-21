@@ -268,11 +268,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignDetailQuery>())).Returns(() => null).Verifiable();
             var mockImageService = new Mock<IImageService>();
-            var mockDataAccess = new Mock<IAllReadyDataAccess>();
             controller = new CampaignController(
                 mockMediator.Object,
-                mockImageService.Object,
-                mockDataAccess.Object);
+                mockImageService.Object);
             return mockMediator;
         }
 
@@ -281,11 +279,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignSummaryQuery>())).Returns(() => null).Verifiable();
             var mockImageService = new Mock<IImageService>();
-            var mockDataAccess = new Mock<IAllReadyDataAccess>();
             controller = new CampaignController(
                 mockMediator.Object,
-                mockImageService.Object,
-                mockDataAccess.Object);
+                mockImageService.Object);
             return mockMediator;
         }
 
@@ -297,11 +293,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .Returns(() => new CampaignDetailModel { TenantId = tid })
                 .Verifiable();
             var mockImageService = new Mock<IImageService>();
-            var mockDataAccess = new Mock<IAllReadyDataAccess>();
             var controller = new CampaignController(
                 mockMediator.Object,
-                mockImageService.Object,
-                mockDataAccess.Object);
+                mockImageService.Object);
 
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
@@ -320,11 +314,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .Returns(() => new CampaignSummaryModel { TenantId = tid })
                 .Verifiable();
             var mockImageService = new Mock<IImageService>();
-            var mockDataAccess = new Mock<IAllReadyDataAccess>();
             var controller = new CampaignController(
                 mockMediator.Object,
-                mockImageService.Object,
-                mockDataAccess.Object);
+                mockImageService.Object);
             
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)

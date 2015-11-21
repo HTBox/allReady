@@ -29,6 +29,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Description = c.Description,
                     TenantId = c.ManagingTenantId,
                     TenantName = c.ManagingTenant.Name,
+                    TimeZoneId = c.TimeZoneId,
                     StartDate = c.StartDateTimeUtc,
                     EndDate = c.EndDateTimeUtc
                 });

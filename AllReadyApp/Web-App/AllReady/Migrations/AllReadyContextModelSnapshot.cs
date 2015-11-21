@@ -178,6 +178,9 @@ namespace AllReady.Migrations
 
                     b.Property<DateTime>("StartDateTimeUtc");
 
+                    b.Property<string>("TimeZoneId")
+                        .IsRequired();
+
                     b.HasKey("Id");
                 });
 

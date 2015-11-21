@@ -24,6 +24,10 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Image URL")]
         public string ImageUrl { get; set; }
             
+        [Display(Name = "Time Zone")]
+        [Required]
+        public string TimeZoneId { get; set; }
+
         [Display(Name = "Start Date")]
         public DateTime StartDate { get; set; }
 

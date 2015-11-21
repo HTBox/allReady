@@ -27,6 +27,10 @@ namespace AllReady.Models
         /// </summary>
         public List<CampaignSponsors> ParticipatingTenants { get; set; }
 
+        [Display(Name = "Time Zone")]
+        [Required]
+        public string TimeZoneId { get; set; }
+
         /// <summary>
         /// The date the campaign starts
         /// </summary>
