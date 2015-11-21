@@ -112,6 +112,72 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
         #endregion
 
+        #region Edit Post
+        [Fact]
+        public void CampaignEditPostReturnsBadRequestForNullCampaign()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+
+            var result = controller.Edit(null, null).Result as BadRequestResult;
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void CampaignEditPostReturnsUnAuthorizedForNullCampaign()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), tenantId);
+
+            Assert.IsType<HttpUnauthorizedResult>(
+                controller.Edit(new CampaignSummaryModel { TenantId = tenantId }, null).Result);
+        }
+
+        [Fact]
+        public void CampaignEditPostReturnsUnAuthorizedForBasicUser()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), tenantId);
+
+            Assert.IsType<HttpUnauthorizedResult>(
+                controller.Edit(new CampaignSummaryModel { TenantId = tenantId }, null).Result);
+        }
+
+        [Fact]
+        public void CampaignEditPostReturnsViewResultForInvalidModel()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+            // Force an invalid model
+            controller.ModelState.AddModelError("foo","bar");
+
+            Assert.IsType<ViewResult>(
+                controller.Edit(new CampaignSummaryModel { TenantId = tenantId }, null).Result);
+        }
+
+        [Fact]
+        public void CampaignEditPostReturnsRedirectToActionResultForValidModel()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+
+            Assert.IsType<RedirectToActionResult>(
+                controller.Edit(new CampaignSummaryModel { Name = "Foo", TenantId = tenantId }, null).Result);
+        }
+
+        [Fact]
+        public void CampaignEditPostHasModelErrorWhenInvalidImageFormatIsSupplied()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+            var file = FormFile("");
+
+            var result = controller.Edit(new CampaignSummaryModel { Name = "Foo", TenantId = tenantId }, file).Result;
+            Assert.False(controller.ModelState.IsValid);
+            Assert.True(controller.ModelState.ContainsKey("ImageUrl"));
+        }
+        #endregion
+
         #region Helper Methods
         private static Mock<IMediator> MockMediatorCampaignDetailQuery(out CampaignController controller)
         {
@@ -196,6 +262,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     }));
         }
 
+        private static IFormFile FormFile(string fileType)
+        {
+            var mockFormFile = new Mock<IFormFile>();
+            mockFormFile.Setup(mock => mock.ContentType).Returns(fileType);
+            return mockFormFile.Object;
+        }
         #endregion
     }
 }
