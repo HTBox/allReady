@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Models;
@@ -178,7 +180,45 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<ViewResult>(result);
         }
 
-        // ToDo: Add test for Image Service calls 
+        [Fact]
+        public async void CampaignEditPostUploadsImageToImageService()
+        {
+            const int tenantId = 1;
+            const int campaignId = 100;
+            var mockMediator = new Mock<IMediator>();
+            var mockImageService = new Mock<IImageService>();
+            mockImageService
+                .Setup(mock => mock.UploadCampaignImageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<IFormFile>()))
+                .Returns(() => Task.FromResult(""))
+                .Verifiable();
+            var mockDataAccess = new Mock<IAllReadyDataAccess>();
+            var controller = new CampaignController(
+                mockMediator.Object,
+                mockImageService.Object,
+                mockDataAccess.Object);
+
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(mock => mock.User)
+                .Returns(() => GetClaimsPrincipal(UserType.TenantAdmin.ToString(), tenantId));
+            var mockContext = new Mock<ActionContext>();
+            mockContext.Object.HttpContext = mockHttpContext.Object;
+            controller.ActionContext = mockContext.Object;
+
+            var file = FormFile("image/jpeg");
+
+            await controller.Edit(new CampaignSummaryModel
+            {
+                Name = "Foo",
+                TenantId = tenantId,
+                Id = campaignId
+            }, file);
+            mockImageService.Verify(mock => 
+                mock.UploadCampaignImageAsync(
+                        It.Is<int>(i => i == tenantId), 
+                        It.Is<int>(i => i == campaignId), 
+                        It.Is<IFormFile>(i => i == file)), 
+                Times.Once);
+        }
         #endregion
 
         #region Helper Methods
