@@ -13,7 +13,7 @@ namespace AllReady.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0-rc1-16341")
+                .HasAnnotation("ProductVersion", "7.0.0-rc1-16348")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("AllReady.Models.Activity", b =>
@@ -132,6 +132,9 @@ namespace AllReady.Migrations
                     b.Property<string>("SecurityStamp");
 
                     b.Property<int?>("TenantId");
+
+                    b.Property<string>("TimeZoneId")
+                        .IsRequired();
 
                     b.Property<bool>("TwoFactorEnabled");
 

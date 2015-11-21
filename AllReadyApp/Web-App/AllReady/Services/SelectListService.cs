@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.Mvc.Rendering;
 using AllReady.Extensions;
+using System;
 
 namespace AllReady.Services
 {
@@ -34,6 +35,11 @@ namespace AllReady.Services
                 new SelectListItem { Value = ((int)ImpactType.Text).ToString(), Text = ImpactType.Text.GetDisplayName() },
                 new SelectListItem { Value = ((int)ImpactType.Numeric).ToString(), Text = ImpactType.Numeric.GetDisplayName() }
             };
+        }
+
+        public IEnumerable<SelectListItem> GetTimeZones()
+        {
+            return TimeZoneInfo.GetSystemTimeZones().Select(t => new SelectListItem { Value = t.Id, Text = t.DisplayName });
         }
 
     }

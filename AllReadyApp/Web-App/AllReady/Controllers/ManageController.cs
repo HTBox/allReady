@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 using AllReady.Models;
 using AllReady.Services;
-using AllReady.Areas.Admin.Controllers;
 
 namespace AllReady.Controllers
 {
@@ -59,6 +58,7 @@ namespace AllReady.Controllers
                 Logins = await _userManager.GetLoginsAsync(user),
                 BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
                 AssociatedSkills = user.AssociatedSkills,
+                TimeZoneId = user.TimeZoneId,
                 Name = user.Name
             };
             return View(model);
@@ -78,11 +78,12 @@ namespace AllReady.Controllers
             if (!string.IsNullOrEmpty(user.Name))
             {
                 user.Name = model.Name;
-                await _userManager.RemoveClaimsAsync(user, User.Claims.Where(c=> c.Type == Security.ClaimTypes.DisplayName));
+                await _userManager.RemoveClaimsAsync(user, User.Claims.Where(c => c.Type == Security.ClaimTypes.DisplayName));
                 await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.DisplayName, user.Name));
-                
+
                 await _signInManager.RefreshSignInAsync(user);
             }
+            user.TimeZoneId = model.TimeZoneId;
 
             user.AssociatedSkills.RemoveAll(usk => model.AssociatedSkills == null || !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
             if (model.AssociatedSkills != null)
