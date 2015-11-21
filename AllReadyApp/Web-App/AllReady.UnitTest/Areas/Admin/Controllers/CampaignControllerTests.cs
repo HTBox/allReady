@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Models;
@@ -112,6 +114,113 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
         #endregion
 
+        #region Edit Post
+        [Fact]
+        public void CampaignEditPostReturnsBadRequestForNullCampaign()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+
+            var result = controller.Edit(null, null).Result as BadRequestResult;
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void CampaignEditPostReturnsUnAuthorizedForNullCampaign()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), tenantId);
+
+            Assert.IsType<HttpUnauthorizedResult>(
+                controller.Edit(new CampaignSummaryModel { TenantId = tenantId }, null).Result);
+        }
+
+        [Fact]
+        public void CampaignEditPostReturnsUnAuthorizedForBasicUser()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), tenantId);
+
+            Assert.IsType<HttpUnauthorizedResult>(
+                controller.Edit(new CampaignSummaryModel { TenantId = tenantId }, null).Result);
+        }
+
+        [Fact]
+        public void CampaignEditPostReturnsViewResultForInvalidModel()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+            // Force an invalid model
+            controller.ModelState.AddModelError("foo","bar");
+
+            Assert.IsType<ViewResult>(
+                controller.Edit(new CampaignSummaryModel { TenantId = tenantId }, null).Result);
+        }
+
+        [Fact]
+        public void CampaignEditPostReturnsRedirectToActionResultForValidModel()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+
+            Assert.IsType<RedirectToActionResult>(
+                controller.Edit(new CampaignSummaryModel { Name = "Foo", TenantId = tenantId }, null).Result);
+        }
+
+        [Fact]
+        public void CampaignEditPostHasModelErrorWhenInvalidImageFormatIsSupplied()
+        {
+            const int tenantId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+            var file = FormFile("");
+
+            var result = controller.Edit(new CampaignSummaryModel { Name = "Foo", TenantId = tenantId }, file).Result;
+            Assert.False(controller.ModelState.IsValid);
+            Assert.True(controller.ModelState.ContainsKey("ImageUrl"));
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public async void CampaignEditPostUploadsImageToImageService()
+        {
+            const int tenantId = 1;
+            const int campaignId = 100;
+            var mockMediator = new Mock<IMediator>();
+            var mockImageService = new Mock<IImageService>();
+            mockImageService
+                .Setup(mock => mock.UploadCampaignImageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<IFormFile>()))
+                .Returns(() => Task.FromResult(""))
+                .Verifiable();
+            var mockDataAccess = new Mock<IAllReadyDataAccess>();
+            var controller = new CampaignController(
+                mockMediator.Object,
+                mockImageService.Object,
+                mockDataAccess.Object);
+
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(mock => mock.User)
+                .Returns(() => GetClaimsPrincipal(UserType.TenantAdmin.ToString(), tenantId));
+            var mockContext = new Mock<ActionContext>();
+            mockContext.Object.HttpContext = mockHttpContext.Object;
+            controller.ActionContext = mockContext.Object;
+
+            var file = FormFile("image/jpeg");
+
+            await controller.Edit(new CampaignSummaryModel
+            {
+                Name = "Foo",
+                TenantId = tenantId,
+                Id = campaignId
+            }, file);
+            mockImageService.Verify(mock => 
+                mock.UploadCampaignImageAsync(
+                        It.Is<int>(i => i == tenantId), 
+                        It.Is<int>(i => i == campaignId), 
+                        It.Is<IFormFile>(i => i == file)), 
+                Times.Once);
+        }
+        #endregion
+
         #region Helper Methods
         private static Mock<IMediator> MockMediatorCampaignDetailQuery(out CampaignController controller)
         {
@@ -196,6 +305,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     }));
         }
 
+        private static IFormFile FormFile(string fileType)
+        {
+            var mockFormFile = new Mock<IFormFile>();
+            mockFormFile.Setup(mock => mock.ContentType).Returns(fileType);
+            return mockFormFile.Object;
+        }
         #endregion
     }
 }
