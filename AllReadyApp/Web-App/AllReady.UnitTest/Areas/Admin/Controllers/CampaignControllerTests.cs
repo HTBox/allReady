@@ -175,7 +175,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = controller.Edit(new CampaignSummaryModel { Name = "Foo", TenantId = tenantId }, file).Result;
             Assert.False(controller.ModelState.IsValid);
             Assert.True(controller.ModelState.ContainsKey("ImageUrl"));
+            Assert.IsType<ViewResult>(result);
         }
+
+        // ToDo: Add test for Image Service calls 
         #endregion
 
         #region Helper Methods
