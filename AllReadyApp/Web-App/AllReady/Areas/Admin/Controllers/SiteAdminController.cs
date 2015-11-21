@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using AllReady.Services;
 using AllReady.Areas.Admin.Models;
 using AllReady.Security;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using Microsoft.AspNet.Mvc.Rendering;
 
