@@ -22,19 +22,22 @@ namespace AllReady.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly SampleDataSettings _settings;
+        private readonly GeneralSettings _generalSettings;
 
         public AdminController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            IOptions<SampleDataSettings> options)
+            IOptions<SampleDataSettings> options,
+            IOptions<GeneralSettings> generalSettings)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _settings = options.Value;
+            _generalSettings = generalSettings.Value;
         }
 
         //
@@ -124,7 +127,12 @@ namespace AllReady.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    TimeZoneId = _generalSettings.DefaultTimeZone
+                };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

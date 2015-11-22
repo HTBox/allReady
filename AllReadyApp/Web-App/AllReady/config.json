@@ -13,9 +13,10 @@
     "InsertSampleData": "true",
     "InsertTestUsers": "true"
   },
-  "General": {
-    "SiteBaseUrl": "http://localhost:33310/"
-  },
+    "General": {
+        "SiteBaseUrl": "http://localhost:33310/",
+        "DefaultTimeZone": "Central Standard Time"
+    },
   "ApplicationInsights": {
     "InstrumentationKey": "[instrumentationkey]"
   },

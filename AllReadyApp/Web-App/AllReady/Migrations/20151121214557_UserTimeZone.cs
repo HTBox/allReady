@@ -29,7 +29,7 @@ namespace AllReady.Migrations
                 name: "TimeZoneId",
                 table: "AspNetUsers",
                 nullable: false,
-                defaultValue: "Eastern Standard Time");
+                defaultValue: "Central Standard Time");
             migrationBuilder.AddForeignKey(
                 name: "FK_Activity_Campaign_CampaignId",
                 table: "Activity",

@@ -13,12 +13,14 @@ namespace AllReady.Models
     {
         private readonly AllReadyContext _context;
         private readonly SampleDataSettings _settings;
+        private readonly GeneralSettings _generalSettings;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public SampleDataGenerator(AllReadyContext context, IOptions<SampleDataSettings> options, UserManager<ApplicationUser> userManager)
+        public SampleDataGenerator(AllReadyContext context, IOptions<SampleDataSettings> options, IOptions<GeneralSettings> generalSettings, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _settings = options.Value;
+            _generalSettings = generalSettings.Value;
             _userManager = userManager;
         }
 
@@ -361,13 +363,13 @@ namespace AllReady.Models
             var username2 = $"{_settings.DefaultUsername}2.com";
             var username3 = $"{_settings.DefaultUsername}3.com";
 
-            var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true };
+            var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
             _userManager.CreateAsync(user1, _settings.DefaultAdminPassword).Wait();
             users.Add(user1);
-            var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true };
+            var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
             _userManager.CreateAsync(user2, _settings.DefaultAdminPassword).Wait();
             users.Add(user2);
-            var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true };
+            var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
             _userManager.CreateAsync(user3, _settings.DefaultAdminPassword).Wait();
             users.Add(user3);
             #endregion
@@ -523,19 +525,19 @@ namespace AllReady.Models
             var user = await _userManager.FindByNameAsync(_settings.DefaultAdminUsername);
             if (user == null)
             {
-                user = new ApplicationUser { UserName = _settings.DefaultAdminUsername, Email = _settings.DefaultAdminUsername };
+                user = new ApplicationUser { UserName = _settings.DefaultAdminUsername, Email = _settings.DefaultAdminUsername, TimeZoneId = _generalSettings.DefaultTimeZone };
                 user.EmailConfirmed = true;
                 _userManager.CreateAsync(user, _settings.DefaultAdminPassword).Wait();
                 _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, "SiteAdmin")).Wait();
 
-                var user2 = new ApplicationUser { UserName = _settings.DefaultTenantUsername, Email = _settings.DefaultTenantUsername};
+                var user2 = new ApplicationUser { UserName = _settings.DefaultTenantUsername, Email = _settings.DefaultTenantUsername, TimeZoneId = _generalSettings.DefaultTimeZone };
                 // For the sake of being able to exercise Tenant-specific stuff, we need to associate a tenant.
                 user2.EmailConfirmed = true;
                 await _userManager.CreateAsync(user2, _settings.DefaultAdminPassword);
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.UserType, "TenantAdmin"));
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.Tenant, _context.Tenants.First().Id.ToString()));
 
-                var user3 = new ApplicationUser { UserName = _settings.DefaultUsername, Email = _settings.DefaultUsername };
+                var user3 = new ApplicationUser { UserName = _settings.DefaultUsername, Email = _settings.DefaultUsername, TimeZoneId = _generalSettings.DefaultTimeZone };
                 user3.EmailConfirmed = true;
                 await _userManager.CreateAsync(user3, _settings.DefaultAdminPassword);
             }

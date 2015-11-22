@@ -12,6 +12,7 @@ namespace AllReady
     public class GeneralSettings
     {
         public string SiteBaseUrl { get; set; }
+        public string DefaultTimeZone { get; set; }
     }
 
     public class DatabaseSettings
