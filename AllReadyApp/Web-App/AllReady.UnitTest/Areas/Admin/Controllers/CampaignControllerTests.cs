@@ -53,7 +53,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
         #endregion
 
-
         #region Test returing 401 for unauthorized user on a campaign
         [Fact]
         public void CampaignDetailReturnsUnauthorizedForNonAdmin()
@@ -82,8 +81,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<HttpUnauthorizedResult>(controller.Delete(campaignId));
         }
         #endregion
-
-
 
         #region Test returing ViewResult for Tenant Admin on a campaign
         [Fact]
@@ -218,6 +215,50 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                         It.Is<int>(i => i == campaignId), 
                         It.Is<IFormFile>(i => i == file)), 
                 Times.Once);
+        }
+        #endregion
+
+        #region Delete Contirmed Post
+
+        [Fact]
+        public void CampaignDetailConfirmedReturnsUnauthorizedForNonAdmin()
+        {
+            const int tenantId = 1;
+            const int campaignId = 100;
+            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), tenantId);
+
+            Assert.IsType<HttpUnauthorizedResult>(controller.DeleteConfirmed(campaignId));
+        }
+
+        [Fact]
+        public void CampaignDetailConfirmedMockChecksForAdminUser()
+        {
+            const int tenantId = 1;
+            const int campaignId = 100;
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignSummaryQuery>()))
+                .Returns(() => new CampaignSummaryModel { TenantId = tenantId })
+                .Verifiable();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<DeleteCampaignCommand>()))
+                .Verifiable();
+            var mockImageService = new Mock<IImageService>();
+            var mockDataAccess = new Mock<IAllReadyDataAccess>();
+            var controller = new CampaignController(
+                mockMediator.Object,
+                mockImageService.Object,
+                mockDataAccess.Object);
+
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(mock => mock.User)
+                .Returns(() => GetClaimsPrincipal(UserType.TenantAdmin.ToString(), tenantId));
+            var mockContext = new Mock<ActionContext>();
+            mockContext.Object.HttpContext = mockHttpContext.Object;
+            controller.ActionContext = mockContext.Object;
+
+            var result = controller.DeleteConfirmed(campaignId);
+            Assert.IsType<RedirectToActionResult>(result);
+            mockMediator.Verify(mock => mock.Send(It.Is<CampaignSummaryQuery>(i => i.CampaignId == campaignId)), Times.Once);
+            mockMediator.Verify(mock => mock.Send(It.Is<DeleteCampaignCommand>(i => i.CampaignId == campaignId)), Times.Once);
         }
         #endregion
 
