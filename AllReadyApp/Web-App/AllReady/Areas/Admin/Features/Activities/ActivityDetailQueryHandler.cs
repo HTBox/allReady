@@ -45,8 +45,8 @@ namespace AllReady.Areas.Admin.Features.Activities
                 {
                     Id = t.Id,
                     Name = t.Name,
-                    StartDateTime = t.StartDateTimeUtc,
-                    EndDateTime = t.EndDateTimeUtc,
+                    StartDateTime = t.StartDateTime,
+                    EndDateTime = t.EndDateTime,
                 }).OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList(),
                 RequiredSkills = activity.RequiredSkills,
                 ImageUrl = activity.ImageUrl

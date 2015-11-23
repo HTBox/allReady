@@ -62,8 +62,8 @@ namespace AllReady.UnitTest.Tasks
                 Activity = queenAnne,
                 Description = "Description of a very important task",
                 Name = "Task # 1",
-                EndDateTimeUtc = DateTime.Now.AddDays(5),
-                StartDateTimeUtc = DateTime.Now.AddDays(3),
+                EndDateTime = DateTime.Now.AddDays(5),
+                StartDateTime = DateTime.Now.AddDays(3),
                 Tenant = htb
             };
             newTask.AssignedVolunteers.Add(new TaskSignup()

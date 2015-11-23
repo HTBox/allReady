@@ -20,18 +20,18 @@ namespace AllReady.ViewModels
             Description = task.Description;
 
 
-            if (task.StartDateTimeUtc.HasValue)
+            if (task.StartDateTime.HasValue)
             {
                 DateTime startDateWithUtcKind = DateTime.SpecifyKind(
-                    DateTime.Parse(task.StartDateTimeUtc.Value.ToString()),
+                    DateTime.Parse(task.StartDateTime.Value.ToString()),
                     DateTimeKind.Utc);
                 StartDateTime = new DateTimeOffset(startDateWithUtcKind);
             }
 
-            if (task.EndDateTimeUtc.HasValue)
+            if (task.EndDateTime.HasValue)
             {
                 DateTime endDateWithUtcKind = DateTime.SpecifyKind(
-                    DateTime.Parse(task.EndDateTimeUtc.Value.ToString()),
+                    DateTime.Parse(task.EndDateTime.Value.ToString()),
                     DateTimeKind.Utc);
                 EndDateTime = new DateTimeOffset(endDateWithUtcKind);
             }
@@ -159,8 +159,8 @@ namespace AllReady.ViewModels
             dbtask.Id = taskViewModel.Id;
             dbtask.Description = taskViewModel.Description;
             dbtask.Activity = activity;
-            dbtask.EndDateTimeUtc = taskViewModel.EndDateTime.HasValue ? taskViewModel.EndDateTime.Value.UtcDateTime : new Nullable<DateTime>();
-            dbtask.StartDateTimeUtc = taskViewModel.EndDateTime.HasValue ? taskViewModel.StartDateTime.Value.UtcDateTime : new Nullable<DateTime>();
+            dbtask.EndDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.EndDateTime.Value.UtcDateTime : new Nullable<DateTime>();
+            dbtask.StartDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.StartDateTime.Value.UtcDateTime : new Nullable<DateTime>();
             dbtask.Name = taskViewModel.Name;
             dbtask.RequiredSkills = dbtask.RequiredSkills ?? new List<TaskSkill>();
             taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();

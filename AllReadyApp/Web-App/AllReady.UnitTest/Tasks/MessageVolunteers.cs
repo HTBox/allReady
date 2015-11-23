@@ -61,8 +61,8 @@ namespace AllReady.UnitTest.Tasks
                 Activity = queenAnne,
                 Description = "Description of a very important task",
                 Name = "Task # ",
-                EndDateTimeUtc = DateTime.Now.AddDays(1),
-                StartDateTimeUtc = DateTime.Now.AddDays(-3)
+                EndDateTime = DateTime.Now.AddDays(1),
+                StartDateTime = DateTime.Now.AddDays(-3)
             };
             queenAnne.Tasks.Add(task);
             context.Activities.Add(queenAnne);

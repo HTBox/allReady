@@ -452,8 +452,8 @@ namespace AllReady.Models
                     Activity = activity,
                     Description = "Description of a very important task # " + i,
                     Name = "Task # " + i,
-                    EndDateTimeUtc = DateTime.Now.AddDays(i),
-                    StartDateTimeUtc = DateTime.Now.AddDays(i - 1),
+                    EndDateTime = DateTime.Now.AddDays(i),
+                    StartDateTime = DateTime.Now.AddDays(i - 1),
                     Tenant = tenant
                 });
             }

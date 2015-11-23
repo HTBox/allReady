@@ -83,14 +83,14 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<DateTimeOffset?>("EndDateTimeUtc");
+                    b.Property<DateTimeOffset?>("EndDateTime");
 
                     b.Property<string>("Name")
                         .IsRequired();
 
                     b.Property<int>("NumberOfVolunteersRequired");
 
-                    b.Property<DateTimeOffset?>("StartDateTimeUtc");
+                    b.Property<DateTimeOffset?>("StartDateTime");
 
                     b.Property<int?>("TenantId");
 

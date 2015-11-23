@@ -112,8 +112,8 @@ namespace AllReady.Controllers
             // Changing all the potential properties that the VM could have modified.
             task.Name = value.Name;
             task.Description = value.Description;
-            task.StartDateTimeUtc = value.StartDateTime.Value.UtcDateTime;
-            task.EndDateTimeUtc = value.EndDateTime.Value.UtcDateTime;
+            task.StartDateTime = value.StartDateTime.Value.UtcDateTime;
+            task.EndDateTime = value.EndDateTime.Value.UtcDateTime;
 
             await _allReadyDataAccess.UpdateTaskAsync(task);
         }

@@ -27,8 +27,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
             task.Description = message.Task.Description;
             task.Activity = _context.Activities.SingleOrDefault(a => a.Id == message.Task.ActivityId);
             task.Tenant = _context.Tenants.SingleOrDefault(t => t.Id == message.Task.TenantId);
-            task.StartDateTimeUtc = message.Task.StartDateTime;
-            task.EndDateTimeUtc = message.Task.EndDateTime;
+            task.StartDateTime = message.Task.StartDateTime;
+            task.EndDateTime = message.Task.EndDateTime;
             task.NumberOfVolunteersRequired = message.Task.NumberOfVolunteersRequired;
             if (task.Id > 0)
             {

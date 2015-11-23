@@ -38,8 +38,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 TenantId = task.Activity.Campaign.ManagingTenantId,
                 Name = task.Name,
                 Description = task.Description,
-                StartDateTime = task.StartDateTimeUtc,
-                EndDateTime = task.EndDateTimeUtc,
+                StartDateTime = task.StartDateTime,
+                EndDateTime = task.EndDateTime,
                 NumberOfVolunteersRequired = task.NumberOfVolunteersRequired,
                 AssignedVolunteers = task.AssignedVolunteers.Select(av => new VolunteerModel { UserId = av.User.Id, UserName = av.User.UserName, HasVolunteered = true }).ToList(),
                 AllVolunteers = task.Activity.UsersSignedUp.Select(v => new VolunteerModel { UserId = v.User.Id, UserName = v.User.UserName, HasVolunteered = false }).ToList()

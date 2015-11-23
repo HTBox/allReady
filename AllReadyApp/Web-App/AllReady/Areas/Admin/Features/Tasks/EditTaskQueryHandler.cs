@@ -35,8 +35,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     TenantId = task.Activity.Campaign.ManagingTenantId,
                     Name = task.Name,
                     Description = task.Description,
-                    StartDateTime = task.StartDateTimeUtc,
-                    EndDateTime = task.EndDateTimeUtc,
+                    StartDateTime = task.StartDateTime,
+                    EndDateTime = task.EndDateTime,
                     NumberOfVolunteersRequired = task.NumberOfVolunteersRequired,
                     RequiredSkills = task.RequiredSkills
                 };
