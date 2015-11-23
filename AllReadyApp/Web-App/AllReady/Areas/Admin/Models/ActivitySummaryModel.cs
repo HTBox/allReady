@@ -33,6 +33,8 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Volunteers Required")]
         public int NumberOfVolunteersRequired { get; set; }
         
+        public string TimeZoneId { get; set; }
+
         [Display(Name = "Start Date")]
         public DateTimeOffset StartDateTime { get; set; }
         [Display(Name = "End Date")]

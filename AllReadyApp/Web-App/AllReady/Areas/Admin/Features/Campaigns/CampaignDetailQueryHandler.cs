@@ -48,6 +48,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                         Id = a.Id,
                         Name = a.Name,
                         Description = a.Description,
+                        TimeZoneId = campaign.TimeZoneId,
                         StartDateTime = a.StartDateTime,
                         EndDateTime = a.EndDateTime,
                         CampaignId = campaign.Id,

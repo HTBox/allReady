@@ -22,7 +22,8 @@
         <p>@Model.Description</p>
         @*TODO: Display this in both the campaign's time zone and the user's local time zone
     See -> https://github.com/HTBox/allReady/issues/369*@
-        <p>@Model.StartDateTime.ToString("g") - @Model.EndDateTime.ToString("g")</p>
+        <p>@Model.StartDateTime.ToString("g") - @Model.EndDateTime.ToString("g") 
+        <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em></p>
     </div>
 </div>
 <div class="row">

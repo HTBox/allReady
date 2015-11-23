@@ -27,7 +27,8 @@ namespace AllReady.UnitTest.Activities
             {
                 Id = 1,
                 Name = "Neighborhood Fire Prevention Days",
-                ManagingTenant = htb
+                ManagingTenant = htb,
+                TimeZoneId = "Central Standard Time"
             };
             htb.Campaigns.Add(firePrev);
             context.Tenants.Add(htb);
@@ -35,7 +36,8 @@ namespace AllReady.UnitTest.Activities
 
             var vm = new ActivityDetailModel
             {
-                CampaignId = 1 
+                CampaignId = 1,
+                TimeZoneId = "Central Standard Time"
             };
             var query = new EditActivityCommand { Activity = vm };
             var handler = new EditActivityCommandHandler(context);
@@ -62,7 +64,8 @@ namespace AllReady.UnitTest.Activities
             {
                 Id = 1,
                 Name = "Neighborhood Fire Prevention Days",
-                ManagingTenant = htb
+                ManagingTenant = htb,
+                TimeZoneId = "Central Standard Time"
             };
             htb.Campaigns.Add(firePrev);
             Activity queenAnne = new Activity()
@@ -93,6 +96,7 @@ namespace AllReady.UnitTest.Activities
                 Location = null,
                 Name = NEW_NAME,
                 RequiredSkills = queenAnne.RequiredSkills,
+                TimeZoneId = "Central Standard Time",
                 StartDateTime = queenAnne.StartDateTime,
                 Tasks = null,
                 TenantId = queenAnne.Campaign.ManagingTenantId,

@@ -51,6 +51,7 @@
             <input asp-for="Id" type="hidden" />
             <input asp-for="CampaignId" type="hidden" />
             <input asp-for="CampaignName" type="hidden" />
+            <input asp-for="TimeZoneId" type="hidden"/>
             <input asp-for="TenantId" type="hidden" />
             <input asp-for="TenantName" type="hidden" />
             <div class="form-group">
@@ -78,6 +79,7 @@
                 <label asp-for="StartDateTime" class="control-label col-md-2"></label>
                 <div class="col-md-10">
                     <input asp-for="StartDateTime" class="form-control datetimepicker" />
+                    <time-zone-name time-zone-id="@Model.TimeZoneId" class="text-muted"></time-zone-name>
                     <span asp-validation-for="StartDateTime" class="text-danger"></span>
                 </div>
             </div>
@@ -85,6 +87,7 @@
                 <label asp-for="EndDateTime" class="control-label col-md-2"></label>
                 <div class="col-md-10">
                     <input asp-for="EndDateTime" class="form-control datetimepicker" />
+                    <time-zone-name time-zone-id="@Model.TimeZoneId" class="text-muted"></time-zone-name>
                     <span asp-validation-for="EndDateTime" class="text-danger"></span>
                 </div>
             </div>

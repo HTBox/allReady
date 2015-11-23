@@ -36,6 +36,7 @@ namespace AllReady.Areas.Admin.Features.Activities
                 CampaignId = activity.Campaign.Id,
                 Name = activity.Name,
                 Description = activity.Description,
+                TimeZoneId = activity.Campaign.TimeZoneId,
                 StartDateTime = activity.StartDateTime,
                 EndDateTime = activity.EndDateTime,
                 Volunteers = activity.UsersSignedUp.Select(u => u.User.UserName).ToList(),
