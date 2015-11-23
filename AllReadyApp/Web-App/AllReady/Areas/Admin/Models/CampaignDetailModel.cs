@@ -29,10 +29,10 @@ namespace AllReady.Areas.Admin.Models
         public string TimeZoneId { get; set; }
 
         [Display(Name = "Start Date")]
-        public DateTime StartDate { get; set; }
+        public DateTimeOffset StartDate { get; set; }
 
         [Display(Name = "End Date")]
-        public DateTime EndDate { get; set; }
+        public DateTimeOffset EndDate { get; set; }
 
 		public IEnumerable<ActivitySummaryModel> Activities { get; set; }
         public CampaignImpact CampaignImpact { get; set; }

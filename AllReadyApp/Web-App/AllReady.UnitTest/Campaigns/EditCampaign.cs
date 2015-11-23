@@ -49,9 +49,9 @@ namespace AllReady.UnitTest.Campaigns
             var vm = new CampaignSummaryModel
             {
                 Description = firePrev.Description,
-                EndDate = firePrev.EndDateTimeUtc,
+                EndDate = firePrev.EndDateTime,
                 FullDescription = firePrev.FullDescription,
-                StartDate = firePrev.StartDateTimeUtc,
+                StartDate = firePrev.StartDateTime,
                 Id = firePrev.Id,
                 ImageUrl = firePrev.ImageUrl,
                 Name = NEW_NAME,

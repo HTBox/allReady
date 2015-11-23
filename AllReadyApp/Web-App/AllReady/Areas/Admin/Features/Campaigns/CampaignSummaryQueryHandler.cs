@@ -43,8 +43,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     TenantName = campaign.ManagingTenant.Name,
                     ImageUrl = campaign.ImageUrl,
                     TimeZoneId = campaign.TimeZoneId,
-                    StartDate = campaign.StartDateTimeUtc,
-                    EndDate = campaign.EndDateTimeUtc,
+                    StartDate = campaign.StartDateTime,
+                    EndDate = campaign.EndDateTime,
                     Location = campaign.Location.ToEditModel(),
                     CampaignImpact = campaign.CampaignImpact != null ? campaign.CampaignImpact : new CampaignImpact()
                 };

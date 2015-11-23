@@ -25,8 +25,8 @@ namespace AllReady.ViewModels
             /// Fix sample provider to ensure that property is not null
             //ManagingTenantName = campaign.ManagingTenant.Name;
             //ManagingTenantId = campaign.ManagingTenant.Id;
-            StartDate = new DateTimeOffset(campaign.StartDateTimeUtc, TimeSpan.Zero);
-            EndDate = new DateTimeOffset(campaign.EndDateTimeUtc, TimeSpan.Zero);
+            StartDate = campaign.StartDateTime;
+            EndDate = campaign.EndDateTime;
             Activities = campaign.Activities != null ? campaign.Activities.ToViewModel() : Enumerable.Empty<ActivityViewModel>();
             CampaignImpact = campaign.CampaignImpact;
             ImageUrl = campaign.ImageUrl;
@@ -84,8 +84,8 @@ namespace AllReady.ViewModels
                 ManagingTenant = tenant,
                 ParticipatingTenants = campaign.ParticipatingTenants,
                 Activities = campaign.Activities.ToModel(dataAccess).ToList(),
-                EndDateTimeUtc = campaign.EndDate.UtcDateTime,
-                StartDateTimeUtc = campaign.StartDate.UtcDateTime
+                EndDateTime = campaign.EndDate.UtcDateTime,
+                StartDateTime = campaign.StartDate.UtcDateTime
             };
         }
 

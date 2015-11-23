@@ -39,8 +39,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     TenantName = campaign.ManagingTenant.Name,
                     ImageUrl = campaign.ImageUrl,
                     TimeZoneId = campaign.TimeZoneId,
-                    StartDate = campaign.StartDateTimeUtc,
-                    EndDate = campaign.EndDateTimeUtc,
+                    StartDate = campaign.StartDateTime,
+                    EndDate = campaign.EndDateTime,
                     CampaignImpact = campaign.CampaignImpact,
                     Location = campaign.Location.ToModel(),
                     Activities = campaign.Activities.Select(a => new ActivitySummaryModel

@@ -106,8 +106,8 @@ namespace AllReady.Models
             {
                 Name = "Working Smoke Detectors Save Lives",
                 ManagingTenant = htb,
-                StartDateTimeUtc = DateTime.Today.AddMonths(-1).ToUniversalTime(),
-                EndDateTimeUtc = DateTime.Today.AddMonths(1).ToUniversalTime(),
+                StartDateTime = DateTime.Today.AddMonths(-1).ToUniversalTime(),
+                EndDateTime = DateTime.Today.AddMonths(1).ToUniversalTime(),
                 CampaignImpact = smokeDetImpact
             };
             htb.Campaigns.Add(smokeDet);
