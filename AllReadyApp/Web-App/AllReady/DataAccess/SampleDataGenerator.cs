@@ -141,8 +141,8 @@ namespace AllReady.Models
             Activity queenAnne = new Activity()
             {
                 Name = "Queen Anne Fire Prevention Day",
-                StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 RequiredSkills = new List<ActivitySkill>()
             };
@@ -158,8 +158,8 @@ namespace AllReady.Models
             Activity ballard = new Activity()
             {
                 Name = "Ballard Fire Prevention Day",
-                StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 31, 14, 0, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 31, 14, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Campaign = firePrev
             };
@@ -168,8 +168,8 @@ namespace AllReady.Models
             Activity madrona = new Activity()
             {
                 Name = "Madrona Fire Prevention Day",
-                StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 31, 14, 0, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 31, 14, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Campaign = firePrev
             };
@@ -178,8 +178,8 @@ namespace AllReady.Models
             Activity southLoopSmoke = new Activity()
             {
                 Name = "Smoke Detector Installation and Testing-South Loop",
-                StartDateTimeUtc = new DateTime(2015, 7, 6, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 31, 17, 0, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 6, 10, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 31, 17, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Campaign = smokeDet
             };
@@ -188,8 +188,8 @@ namespace AllReady.Models
             Activity northLoopSmoke = new Activity()
             {
                 Name = "Smoke Detector Installation and Testing-Near North Side",
-                StartDateTimeUtc = new DateTime(2015, 7, 6, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 31, 17, 0, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 6, 10, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 31, 17, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Campaign = smokeDet
             };
@@ -199,8 +199,8 @@ namespace AllReady.Models
             {
                 Name = "Renters Insurance Education Door to Door and a bag of chips",
                 Description = "description for the win",
-                StartDateTimeUtc = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 7, 11, 17, 0, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 7, 11, 17, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Campaign = financial
             };
@@ -210,8 +210,8 @@ namespace AllReady.Models
             {
                 Name = "Renters Insurance Education Door to Door (woop woop)",
                 Description = "another great description",
-                StartDateTimeUtc = new DateTime(2015, 7, 12, 8, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 12, 17, 0, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 12, 8, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 12, 17, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Campaign = financial
             };
@@ -221,8 +221,8 @@ namespace AllReady.Models
             {
                 Name = "Safety Kit Assembly Volunteer Day",
                 Description = "Full day of volunteers building kits",
-                StartDateTimeUtc = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Campaign = safetyKit
             };
@@ -233,8 +233,8 @@ namespace AllReady.Models
             {
                 Name = "Safety Kit Distribution Weekend",
                 Description = "Handing out kits at local fire stations",
-                StartDateTimeUtc = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Campaign = safetyKit
             };
@@ -244,8 +244,8 @@ namespace AllReady.Models
             {
                 Name = "Car Seat Testing-Naperville",
                 Description = "Checking car seats at local fire stations after last day of school year",
-                StartDateTimeUtc = new DateTime(2015, 7, 10, 9, 30, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 10, 15, 30, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 10, 9, 30, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 10, 15, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Campaign = carSafe
             };
@@ -255,8 +255,8 @@ namespace AllReady.Models
             {
                 Name = "Car Seat and Tire Pressure Checking Volunteer Day",
                 Description = "Checking those things all day at downtown train station parking",
-                StartDateTimeUtc = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 11, 19, 30, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 11, 19, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Campaign = carSafe
             };
@@ -266,8 +266,8 @@ namespace AllReady.Models
             {
                 Name = "Park District Home Safety Festival",
                 Description = "At downtown park district(adjacent to pool)",
-                StartDateTimeUtc = new DateTime(2015, 7, 11, 12, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 11, 12, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Campaign = safetyKit
             };
@@ -277,8 +277,8 @@ namespace AllReady.Models
             {
                 Name = "Home Escape Plan Flyer Distribution",
                 Description = "Handing out flyers door to door in several areas of town after school/ work hours.Streets / blocks will vary but number of volunteers.",
-                StartDateTimeUtc = new DateTime(2015, 7, 15, 15, 30, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 15, 20, 30, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 15, 15, 30, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 15, 20, 30, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
                 Campaign = escapePlan
             };

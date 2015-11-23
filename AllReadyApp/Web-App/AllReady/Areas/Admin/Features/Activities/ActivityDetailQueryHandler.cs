@@ -36,8 +36,8 @@ namespace AllReady.Areas.Admin.Features.Activities
                 CampaignId = activity.Campaign.Id,
                 Name = activity.Name,
                 Description = activity.Description,
-                StartDateTime = activity.StartDateTimeUtc,
-                EndDateTime = activity.EndDateTimeUtc,
+                StartDateTime = activity.StartDateTime,
+                EndDateTime = activity.EndDateTime,
                 Volunteers = activity.UsersSignedUp.Select(u => u.User.UserName).ToList(),
                 NumberOfVolunteersRequired = activity.NumberOfVolunteersRequired,
                 Tasks = activity.Tasks.Select(t => new TaskSummaryModel()

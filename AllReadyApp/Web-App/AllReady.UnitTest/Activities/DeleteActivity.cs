@@ -32,8 +32,8 @@ namespace AllReady.UnitTest.Activities
                 Name = "Queen Anne Fire Prevention Day",
                 Campaign = firePrev,
                 CampaignId = firePrev.Id,
-                StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
                 RequiredSkills = new List<ActivitySkill>()
             };

@@ -26,8 +26,8 @@ namespace AllReady.ViewModels
             Title = activity.Name;
             Description = activity.Description;
 
-            StartDateTime = new DateTimeOffset(activity.StartDateTimeUtc, TimeSpan.Zero);
-            EndDateTime = new DateTimeOffset(activity.EndDateTimeUtc, TimeSpan.Zero);
+            StartDateTime = activity.StartDateTime;
+            EndDateTime = activity.EndDateTime;
 
             if (activity.Location != null)
             {
@@ -111,8 +111,8 @@ namespace AllReady.ViewModels
             {
                 Id = activity.Id,
                 Campaign = campaign,
-                EndDateTimeUtc = activity.EndDateTime.UtcDateTime,
-                StartDateTimeUtc = activity.StartDateTime.UtcDateTime,
+                EndDateTime = activity.EndDateTime,
+                StartDateTime = activity.StartDateTime,
                 Location = new Location()
                 {
                     Address1 = activity.Location.Address1,

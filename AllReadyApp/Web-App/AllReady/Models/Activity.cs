@@ -21,10 +21,10 @@ namespace AllReady.Models
         public int NumberOfVolunteersRequired { get; set; }
 
         [Display(Name = "Start date")]
-        public DateTime StartDateTimeUtc { get; set; }
+        public DateTimeOffset StartDateTime { get; set; }
 
         [Display(Name = "End date")]
-        public DateTime EndDateTimeUtc { get; set; }
+        public DateTimeOffset EndDateTime { get; set; }
 
         public Location Location { get; set; }
 

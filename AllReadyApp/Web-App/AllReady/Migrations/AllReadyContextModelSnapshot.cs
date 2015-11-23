@@ -25,7 +25,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<DateTime>("EndDateTimeUtc");
+                    b.Property<DateTimeOffset>("EndDateTime");
 
                     b.Property<string>("ImageUrl");
 
@@ -38,7 +38,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("OrganizerId");
 
-                    b.Property<DateTime>("StartDateTimeUtc");
+                    b.Property<DateTimeOffset>("StartDateTime");
 
                     b.HasKey("Id");
                 });

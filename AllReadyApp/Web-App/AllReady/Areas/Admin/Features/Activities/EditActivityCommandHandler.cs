@@ -28,8 +28,8 @@ namespace AllReady.Areas.Admin.Features.Activities
 
             activity.Name = message.Activity.Name;
             activity.Description = message.Activity.Description;
-            activity.StartDateTimeUtc = message.Activity.StartDateTime;
-            activity.EndDateTimeUtc = message.Activity.EndDateTime;
+            activity.StartDateTime = message.Activity.StartDateTime;
+            activity.EndDateTime = message.Activity.EndDateTime;
             activity.CampaignId = message.Activity.CampaignId;
             activity.ImageUrl = message.Activity.ImageUrl;
             activity.NumberOfVolunteersRequired = message.Activity.NumberOfVolunteersRequired;
