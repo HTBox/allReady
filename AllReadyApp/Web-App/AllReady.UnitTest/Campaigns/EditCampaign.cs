@@ -14,7 +14,10 @@ namespace AllReady.UnitTest.Campaigns
         public void CampaignDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var vm = new CampaignSummaryModel();
+            var vm = new CampaignSummaryModel
+            {
+                TimeZoneId = "Eastern Standard Time"
+            };
             var query = new EditCampaignCommand { Campaign = vm };
             var handler = new EditCampaignCommandHandler(context);
             var result = handler.Handle(query);
@@ -38,7 +41,8 @@ namespace AllReady.UnitTest.Campaigns
             Campaign firePrev = new Campaign()
             {
                 Name = "Neighborhood Fire Prevention Days",
-                ManagingTenant = htb
+                ManagingTenant = htb,
+                TimeZoneId = "Eastern Standard Time"
             };
             htb.Campaigns.Add(firePrev);
             context.Tenants.Add(htb);
@@ -56,7 +60,8 @@ namespace AllReady.UnitTest.Campaigns
                 ImageUrl = firePrev.ImageUrl,
                 Name = NEW_NAME,
                 TenantId = firePrev.ManagingTenantId,
-                TenantName = firePrev.ManagingTenant.Name
+                TenantName = firePrev.ManagingTenant.Name,
+                TimeZoneId = "Eastern Standard Time"
             };
             var query = new EditCampaignCommand { Campaign = vm };
             var handler = new EditCampaignCommandHandler(context);
