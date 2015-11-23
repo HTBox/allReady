@@ -35,6 +35,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     TenantId = task.Activity.Campaign.ManagingTenantId,
                     Name = task.Name,
                     Description = task.Description,
+                    TimeZoneId = task.Activity.Campaign.TimeZoneId,
                     StartDateTime = task.StartDateTime,
                     EndDateTime = task.EndDateTime,
                     NumberOfVolunteersRequired = task.NumberOfVolunteersRequired,
