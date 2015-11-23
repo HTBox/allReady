@@ -74,16 +74,22 @@ namespace AllReady.Controllers
                 return View(model);
             }
             var user = GetCurrentUser();
-
+            var shouldRefreshSignin = false;
             if (!string.IsNullOrEmpty(user.Name))
             {
                 user.Name = model.Name;
                 await _userManager.RemoveClaimsAsync(user, User.Claims.Where(c => c.Type == Security.ClaimTypes.DisplayName));
                 await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.DisplayName, user.Name));
-
-                await _signInManager.RefreshSignInAsync(user);
+                shouldRefreshSignin = true;                
             }
-            user.TimeZoneId = model.TimeZoneId;
+            if (user.TimeZoneId != model.TimeZoneId)
+            {
+                user.TimeZoneId = model.TimeZoneId;
+                await _userManager.RemoveClaimsAsync(user, User.Claims.Where(c => c.Type == Security.ClaimTypes.TimeZoneId));
+                await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.TimeZoneId, user.TimeZoneId));
+                shouldRefreshSignin = true;
+            }
+            
 
             user.AssociatedSkills.RemoveAll(usk => model.AssociatedSkills == null || !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
             if (model.AssociatedSkills != null)
@@ -93,6 +99,10 @@ namespace AllReady.Controllers
             user.AssociatedSkills?.ForEach(usk => usk.UserId = user.Id);
 
             await _dataAccess.UpdateUser(user);
+            if (shouldRefreshSignin)
+            {
+                await _signInManager.RefreshSignInAsync(user);
+            }
             return RedirectToAction(nameof(Index));
         }
 
