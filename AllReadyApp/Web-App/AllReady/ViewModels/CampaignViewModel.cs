@@ -25,6 +25,7 @@ namespace AllReady.ViewModels
             /// Fix sample provider to ensure that property is not null
             //ManagingTenantName = campaign.ManagingTenant.Name;
             //ManagingTenantId = campaign.ManagingTenant.Id;
+            TimeZoneId = campaign.TimeZoneId;
             StartDate = campaign.StartDateTime;
             EndDate = campaign.EndDateTime;
             Activities = campaign.Activities != null ? campaign.Activities.ToViewModel() : Enumerable.Empty<ActivityViewModel>();
@@ -49,6 +50,8 @@ namespace AllReady.ViewModels
         public CampaignImpact CampaignImpact { get; set; }
 
         public List<CampaignSponsors> ParticipatingTenants { get; set; }
+
+        public string TimeZoneId { get; set; }
 
         public DateTimeOffset StartDate { get; set; }
 
@@ -84,6 +87,7 @@ namespace AllReady.ViewModels
                 ManagingTenant = tenant,
                 ParticipatingTenants = campaign.ParticipatingTenants,
                 Activities = campaign.Activities.ToModel(dataAccess).ToList(),
+                TimeZoneId = campaign.TimeZoneId,
                 EndDateTime = campaign.EndDate.UtcDateTime,
                 StartDateTime = campaign.StartDate.UtcDateTime
             };
