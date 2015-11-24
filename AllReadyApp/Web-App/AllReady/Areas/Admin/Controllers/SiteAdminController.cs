@@ -13,6 +13,8 @@ using AllReady.Areas.Admin.Models;
 using AllReady.Security;
 using Microsoft.Extensions.Logging;
 using System;
+using AllReady.Areas.Admin.Features.Users;
+using MediatR;
 using Microsoft.AspNet.Mvc.Rendering;
 
 namespace AllReady.Areas.Admin.Controllers
@@ -25,13 +27,15 @@ namespace AllReady.Areas.Admin.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IAllReadyDataAccess _dataAccess;
         private ILogger<SiteController> _logger;
+        private readonly IMediator _bus;
 
-        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger)
+        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger, IMediator bus)
         {
             _userManager = userManager;
             _emailSender = emailSender;
             _dataAccess = dataAccess;
             _logger = logger;
+            _bus = bus;
         }
 
         public IActionResult Index()
@@ -46,8 +50,8 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult DeleteUser(string userId)
         {
-            var user = _dataAccess.GetUser(userId);
-            var tenantId = user.GetTenantId();
+            var user = _bus.Send(new UserQuery {UserId = userId});
+
             var viewModel = new DeleteUserModel()
             {
                 UserId = userId,
