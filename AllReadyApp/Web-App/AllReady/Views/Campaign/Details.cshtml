@@ -15,8 +15,10 @@
 
 <div class="row">
     <div class="col-md-12">
-        <p class="date-address">@Model.StartDate.ToString("D") - @Model.EndDate.ToString("D")
-        <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em></p>
+        <p class="date-address">
+            <time value="Model.StartDate" format="D"></time> - <time value="Model.EndDate" format="D"></time>        
+            <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
+        </p>
     </div>
 </div>
 

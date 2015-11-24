@@ -70,33 +70,7 @@ namespace AllReady.ViewModels
         public static IEnumerable<CampaignViewModel> ToViewModel(this IEnumerable<Campaign> campaigns)
         {
             return campaigns.Select(campaign => campaign.ToViewModel());
-        }
-
-        public static Campaign ToModel(this CampaignViewModel campaign, IAllReadyDataAccess dataAccess)
-        {
-            var tenant = dataAccess.GetTenant(campaign.ManagingTenantId);
-
-            if (tenant == null)
-                return null;
-
-            return new Campaign
-            {
-                Id = campaign.Id,
-                Description = campaign.Description,
-                Name = campaign.Name,
-                ManagingTenant = tenant,
-                ParticipatingTenants = campaign.ParticipatingTenants,
-                Activities = campaign.Activities.ToModel(dataAccess).ToList(),
-                TimeZoneId = campaign.TimeZoneId,
-                EndDateTime = campaign.EndDate.UtcDateTime,
-                StartDateTime = campaign.StartDate.UtcDateTime
-            };
-        }
-
-        public static IEnumerable<Campaign> ToModel(this IEnumerable<CampaignViewModel> campaigns, IAllReadyDataAccess dataAccess)
-        {
-            return campaigns.Select(campaign => campaign.ToModel(dataAccess));
-        }
+        }       
 
     }
 }

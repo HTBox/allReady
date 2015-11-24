@@ -36,35 +36,5 @@ namespace AllReady.ViewModels
         public string WebUrl { get; set; }
 
         public List<CampaignViewModel> Campaigns { get; set; }
-    }
-
-    public static class TenantViewModelExtensions
-    {
-        public static TenantViewModel ToViewModel(this Tenant campaign)
-        {
-            return new TenantViewModel(campaign);
-        }
-
-        public static IEnumerable<TenantViewModel> ToViewModel(this IEnumerable<Tenant> tenants)
-        {
-            return tenants.Select(x => x.ToViewModel());
-        }
-
-        public static Tenant ToModel(this TenantViewModel tenant, IAllReadyDataAccess dataAccess)
-        {
-            return new Tenant
-            {
-                Id = tenant.Id,
-                Name = tenant.Name,
-                Campaigns = tenant.Campaigns.ToModel(dataAccess).ToList(),
-                LogoUrl = tenant.LogoUrl,
-                WebUrl = tenant.WebUrl
-            };
-        }
-
-        public static IEnumerable<Tenant> ToModel(this IEnumerable<TenantViewModel> tenants, IAllReadyDataAccess dataAccess)
-        {
-            return tenants.Select(x => x.ToModel(dataAccess));
-        }
-    }
+    }    
 }

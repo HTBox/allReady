@@ -10,7 +10,7 @@ namespace AllReady.TagHelpers
     public class TimeTagHelper : TagHelper
     {
         [HtmlAttributeName("value")]
-        public DateTimeOffset Value { get; set; }
+        public DateTimeOffset? Value { get; set; }
 
         [HtmlAttributeName("format")]
         public string Format { get; set; } = "g";
@@ -21,16 +21,24 @@ namespace AllReady.TagHelpers
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             output.TagName = "span";
-            var dateTimeToDisplay = Value;
-            if (!string.IsNullOrEmpty(TargetTimeZoneId))
+            
+            if (!Value.HasValue)
             {
-                TimeZoneInfo targetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(TargetTimeZoneId);
-                var targetOffset = targetTimeZone.GetUtcOffset(dateTimeToDisplay);
-                dateTimeToDisplay = dateTimeToDisplay.ToOffset(targetOffset);
-
+                output.Content.SetContent("*");
             }
-            var formattedTime = dateTimeToDisplay.ToString(Format);
-            output.Content.SetContent(formattedTime);
+            else
+            {
+                var dateTimeToDisplay = Value.Value;
+                if (!string.IsNullOrEmpty(TargetTimeZoneId))
+                {
+                    TimeZoneInfo targetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(TargetTimeZoneId);
+                    var targetOffset = targetTimeZone.GetUtcOffset(dateTimeToDisplay);
+                    dateTimeToDisplay = dateTimeToDisplay.ToOffset(targetOffset);
+
+                }
+                var formattedTime = dateTimeToDisplay.ToString(Format);
+                output.Content.SetContent(formattedTime);
+            }            
         }
     }
 }

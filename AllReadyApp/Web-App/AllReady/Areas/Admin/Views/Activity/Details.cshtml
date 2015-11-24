@@ -24,8 +24,6 @@
     <div class="col-md-10">
         <h2>@Model.Name <a asp-controller="Activity" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-controller="Activity" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a></h2>
         <p>@Model.Description</p>
-        @*TODO: Display this in both the campaign's time zone and the user's local time zone
-    See -> https://github.com/HTBox/allReady/issues/369*@
         <p><time value="Model.StartDateTime"></time> - <time value="Model.EndDateTime"></time> 
         <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em></p>
         @if (!string.IsNullOrEmpty(userTimeZoneId) && Model.TimeZoneId != userTimeZoneId)

@@ -18,7 +18,8 @@
             }
             <div class="@(string.IsNullOrEmpty(Model.ImageUrl) ? "col-sm-12" : "col-sm-10" )">
                 <h2>@Model.Title</h2>
-                <p class="date-address">@Model.StartDateTime.ToString("F") - @Model.EndDateTime.ToString("F")</p>
+                <p class="date-address"><time value="Model.StartDateTime" format="F"></time> - <time value="Model.EndDateTime" format="F"></time>
+<em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em></p>
             </div>
         </div>
         <div class="row">
