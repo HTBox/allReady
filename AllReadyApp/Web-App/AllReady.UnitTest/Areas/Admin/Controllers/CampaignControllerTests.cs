@@ -240,11 +240,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.Send(It.IsAny<DeleteCampaignCommand>()))
                 .Verifiable();
             var mockImageService = new Mock<IImageService>();
-            var mockDataAccess = new Mock<IAllReadyDataAccess>();
             var controller = new CampaignController(
                 mockMediator.Object,
-                mockImageService.Object,
-                mockDataAccess.Object);
+                mockImageService.Object);
 
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
