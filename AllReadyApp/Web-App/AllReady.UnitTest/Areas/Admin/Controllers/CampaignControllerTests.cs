@@ -188,11 +188,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .Setup(mock => mock.UploadCampaignImageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<IFormFile>()))
                 .Returns(() => Task.FromResult(""))
                 .Verifiable();
-            var mockDataAccess = new Mock<IAllReadyDataAccess>();
             var controller = new CampaignController(
                 mockMediator.Object,
-                mockImageService.Object,
-                mockDataAccess.Object);
+                mockImageService.Object);
 
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
