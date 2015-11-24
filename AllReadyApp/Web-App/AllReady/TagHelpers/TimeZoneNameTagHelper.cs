@@ -12,7 +12,7 @@ namespace AllReady.TagHelpers
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             output.TagName = "span";
-            output.Content.SetContent(TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId).DisplayName);
+            output.Content.SetContent(TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId).StandardName);
         }
     }
 }
