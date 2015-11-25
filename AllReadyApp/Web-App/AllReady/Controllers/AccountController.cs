@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
 
 using AllReady.Models;
 using AllReady.Services;
@@ -9,6 +8,7 @@ using AllReady.Services;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Controllers
 {
@@ -18,16 +18,20 @@ namespace AllReady.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
+        private readonly GeneralSettings _generalSettings;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IEmailSender emailSender
+            IEmailSender emailSender,
+            IOptions<GeneralSettings> generalSettings
+
             )
         {
             _emailSender = emailSender;
             _userManager = userManager;
             _signInManager = signInManager;
+            _generalSettings = generalSettings.Value;
         }
 
         // GET: /Account/Login
@@ -84,7 +88,12 @@ namespace AllReady.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    TimeZoneId = _generalSettings.DefaultTimeZone
+                };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -276,7 +285,12 @@ namespace AllReady.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    TimeZoneId = _generalSettings.DefaultTimeZone
+                };
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

@@ -36,16 +36,17 @@ namespace AllReady.Areas.Admin.Features.Activities
                 CampaignId = activity.Campaign.Id,
                 Name = activity.Name,
                 Description = activity.Description,
-                StartDateTime = activity.StartDateTimeUtc,
-                EndDateTime = activity.EndDateTimeUtc,
+                TimeZoneId = activity.Campaign.TimeZoneId,
+                StartDateTime = activity.StartDateTime,
+                EndDateTime = activity.EndDateTime,
                 Volunteers = activity.UsersSignedUp.Select(u => u.User.UserName).ToList(),
                 NumberOfVolunteersRequired = activity.NumberOfVolunteersRequired,
                 Tasks = activity.Tasks.Select(t => new TaskSummaryModel()
                 {
                     Id = t.Id,
                     Name = t.Name,
-                    StartDateTime = t.StartDateTimeUtc,
-                    EndDateTime = t.EndDateTimeUtc,
+                    StartDateTime = t.StartDateTime,
+                    EndDateTime = t.EndDateTime,
                 }).OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList(),
                 RequiredSkills = activity.RequiredSkills,
                 ImageUrl = activity.ImageUrl

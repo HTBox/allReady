@@ -27,19 +27,23 @@ namespace AllReady.Models
         /// </summary>
         public List<CampaignSponsors> ParticipatingTenants { get; set; }
 
+        [Display(Name = "Time Zone")]
+        [Required]
+        public string TimeZoneId { get; set; }
+
         /// <summary>
         /// The date the campaign starts
         /// </summary>
         [Display(Name = "Start date")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
-        public DateTime StartDateTimeUtc { get; set; }
+        public DateTimeOffset StartDateTime { get; set; }
 
         /// <summary>
         /// The date the campaign ends
         /// </summary>
         [Display(Name = "End date")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
-        public DateTime EndDateTimeUtc { get; set; }
+        public DateTimeOffset EndDateTime { get; set; }
 
         public List<Activity> Activities { get; set; }
 

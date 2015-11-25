@@ -17,15 +17,13 @@ namespace AllReady.Areas.Admin.Controllers
     [Authorize("TenantAdmin")]
     public class CampaignController : Controller
     {
-        private readonly IAllReadyDataAccess _dataAccess;
         private readonly IMediator _bus;
         private readonly IImageService _imageService;
 
-        public CampaignController(IMediator bus, IImageService imageService, IAllReadyDataAccess dataAccess)
+        public CampaignController(IMediator bus, IImageService imageService)
         {
             _bus = bus;
             _imageService = imageService;
-            _dataAccess = dataAccess;
         }
 
         // GET: Campaign
@@ -54,11 +52,11 @@ namespace AllReady.Areas.Admin.Controllers
 
         // GET: Campaign/Create
         public IActionResult Create()
-        {
+        {            
             return View("Edit", new CampaignSummaryModel()
             {
                 StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddMonths(1)
+                EndDate = DateTime.Now.AddMonths(1)                
             });
         }
 

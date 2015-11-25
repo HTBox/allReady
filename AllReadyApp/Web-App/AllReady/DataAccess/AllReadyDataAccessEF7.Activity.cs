@@ -20,7 +20,7 @@ namespace AllReady.Models
                                 .Include(a => a.Tasks)
                                 .Include(a => a.RequiredSkills)
                                 .Include(a => a.UsersSignedUp)
-                                .OrderBy(a => a.EndDateTimeUtc)
+                                .OrderBy(a => a.EndDateTime)
                                 .ToList();
             }
         }
@@ -70,7 +70,7 @@ namespace AllReady.Models
                         .Include(x => x.Activity)
                         .ToArray()
                         .Where(x => x.Activity.Id == activityId && x.User.Id == userId)
-                        .OrderBy(x => x.Activity.StartDateTimeUtc);
+                        .OrderBy(x => x.Activity.StartDateTime);
         }
 
         IEnumerable<ActivitySignup> IAllReadyDataAccess.GetActivitySignups(string userId)
@@ -80,7 +80,7 @@ namespace AllReady.Models
                         .Include(x => x.Activity)
                         .ToArray()
                         .Where(x => x.User.Id == userId)
-                        .OrderBy(x => x.Activity.StartDateTimeUtc);
+                        .OrderBy(x => x.Activity.StartDateTime);
         }
 
         IEnumerable<TaskSignup> IAllReadyDataAccess.GetTasksAssignedToUser(int activityId, string userId)

@@ -7,9 +7,9 @@
             this[prop] = item[prop];
         }
         this.displayDate = function () {
-            var start = this.StartDate.split('T')[0];
-            var end = this.EndDate.split('T')[0];
-            return start + ' : ' + end;
+            var start = moment(this.StartDate).utcOffset(this.StartDate).format("dddd, MMMM Do YYYY");
+            var end = moment(this.EndDate).utcOffset(this.EndDate).format("dddd, MMMM Do YYYY");
+            return start + ' - ' + end;
         }
         return this;
     }

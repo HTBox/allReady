@@ -126,8 +126,8 @@ namespace AllReady.UnitTest
                     new Activity()
                     {
                         Campaign = campaigns[n - 1],
-                        EndDateTimeUtc = DateTime.MaxValue.ToUniversalTime(),
-                        StartDateTimeUtc = DateTime.MinValue.ToUniversalTime(),
+                        EndDateTime = DateTime.MaxValue.ToUniversalTime(),
+                        StartDateTime = DateTime.MinValue.ToUniversalTime(),
                         Name = string.Format(ActivityNameFormat, n),
                         Description = string.Format(ActivityDescriptionFormat, n),
                         Id = id++

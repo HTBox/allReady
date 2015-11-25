@@ -84,6 +84,13 @@
             </div>
         </div>
         <div class="form-group">
+            <label asp-for="TimeZoneId" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="TimeZoneId" asp-items="SelectListService.GetTimeZones()" class="form-control"></select>
+                <span asp-validation-for="TimeZoneId" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
             <label asp-for="StartDate" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <input asp-for="StartDate" class="form-control datepicker" />

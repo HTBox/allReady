@@ -36,8 +36,8 @@ namespace AllReady.UnitTest.Tasks
                 Name = "Queen Anne Fire Prevention Day",
                 Campaign = firePrev,
                 CampaignId = firePrev.Id,
-                StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
                 RequiredSkills = new List<ActivitySkill>(),
             };
@@ -62,8 +62,8 @@ namespace AllReady.UnitTest.Tasks
                 Activity = queenAnne,
                 Description = "Description of a very important task",
                 Name = "Task # 1",
-                EndDateTimeUtc = DateTime.Now.AddDays(5),
-                StartDateTimeUtc = DateTime.Now.AddDays(3),
+                EndDateTime = DateTime.Now.AddDays(5),
+                StartDateTime = DateTime.Now.AddDays(3),
                 Tenant = htb
             };
             newTask.AssignedVolunteers.Add(new TaskSignup()

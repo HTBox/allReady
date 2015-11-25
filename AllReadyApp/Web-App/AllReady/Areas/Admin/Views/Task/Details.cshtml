@@ -1,6 +1,8 @@
-﻿@model AllReady.Areas.Admin.Models.TaskSummaryModel
+﻿@using AllReady.Security;
+@model AllReady.Areas.Admin.Models.TaskSummaryModel
 @{
     ViewData["Title"] = "Tasks Details";
+    var userTimeZoneId = User.GetTimeZoneId();
 }
 <div class="row">
     <div class="col-12">
@@ -17,11 +19,25 @@
     <div class="col-md-10">
         <h2>@Model.Name <a asp-controller="Task" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-controller="Task" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
         <p>@Model.Description</p>
-        <p><strong>Duration: </strong> @(Model.StartDateTime.HasValue ? Model.StartDateTime.Value.ToString("g") : "*") - @(Model.EndDateTime.HasValue ? Model.EndDateTime.Value.ToString("g") : "*")</p>
+        <p>
+            <time value="Model.StartDateTime.Value"></time> - <time value="Model.EndDateTime.Value"></time>
+            @if (Model.EndDateTime.HasValue || Model.StartDateTime.HasValue)
+            {
+                <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
+            }
+        </p>
+        @if (!string.IsNullOrEmpty(userTimeZoneId) && Model.TimeZoneId != userTimeZoneId
+                    && (Model.EndDateTime.HasValue || Model.StartDateTime.HasValue))
+        {
+            <p>
+                <time value="Model.StartDateTime" target-time-zone-id="@userTimeZoneId"></time> - <time value="Model.EndDateTime" target-time-zone-id="@userTimeZoneId"></time>
+                <em><time-zone-name time-zone-id="@userTimeZoneId"></time-zone-name></em>
+            </p>
+        }
 
         <h4>
             Volunteers @if (Model.NumberOfVolunteersRequired > 0)
-            { <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span> }            
+            { <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span> }
         </h4>
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#Assigned">Assigned Volunteers</a> </li>
@@ -34,20 +50,20 @@
                 @if (Model.AssignedVolunteers.Any())
             {
                     <button type="button" class="btn btn-primary" disabled="@(!Model.AssignedVolunteers.Any())" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button>
-                    <table class="table">
-                        <tr>
-                            <th>
-                                Volunteer Name
-                            </th>
-                        </tr>
-                        @foreach (var volunteer in Model.AssignedVolunteers)
-                {
+                        <table class="table">
                             <tr>
-                                <td>@volunteer.UserName</td>
-
+                                <th>
+                                    Volunteer Name
+                                </th>
                             </tr>
-                        }
-                    </table>
+                            @foreach (var volunteer in Model.AssignedVolunteers)
+                {
+                                <tr>
+                                    <td>@volunteer.UserName</td>
+
+                                </tr>
+                            }
+                        </table>
                 }
                 else
                 {
@@ -60,7 +76,7 @@
                 @if (Model.AllVolunteers.Count > 0)
                 {
                     <form asp-controller="Task" asp-action="Assign" asp-route-area="Admin" method="post">
-                         
+
                         <input type="hidden" asp-for="Id" />
                         <table class="table">
                             <tr>
@@ -78,18 +94,18 @@
                             }
                         </table>
                         <input type="submit" value="Save" class="btn btn-primary" />
-                        
+
                     </form>
                 }
                 else
                 {
                     < text > No volunteers yet. </ text >
                 }
+            </div>
+
         </div>
 
     </div>
-
-</div>
 </div>
 <!-- Modal -->
 <div class="modal fade" id="messageVolunteersModal" tabindex="-1" role="dialog" aria-labelledby="messageVolunteersLabel">

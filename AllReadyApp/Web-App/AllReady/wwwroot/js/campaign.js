@@ -36,9 +36,9 @@ function ResourcesViewModel(category)
         }
         this.Name = this.Title;
         this.displayDate = function () {
-            var start = this.StartDateTime.split('T')[0];
-            var end = this.EndDateTime.split('T')[0];
-            return start + ' : ' + end;
+            var start = moment(this.StartDateTime).utcOffset(this.StartDateTime).format("dddd, MMMM Do YYYY");
+            var end = moment(this.EndDateTime).utcOffset(this.EndDateTime).format("dddd, MMMM Do YYYY");
+            return start + ' - ' + end;
         }
         return this;
     }

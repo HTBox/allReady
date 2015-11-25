@@ -25,8 +25,9 @@ namespace AllReady.ViewModels
             /// Fix sample provider to ensure that property is not null
             //ManagingTenantName = campaign.ManagingTenant.Name;
             //ManagingTenantId = campaign.ManagingTenant.Id;
-            StartDate = new DateTimeOffset(campaign.StartDateTimeUtc, TimeSpan.Zero);
-            EndDate = new DateTimeOffset(campaign.EndDateTimeUtc, TimeSpan.Zero);
+            TimeZoneId = campaign.TimeZoneId;
+            StartDate = campaign.StartDateTime;
+            EndDate = campaign.EndDateTime;
             Activities = campaign.Activities != null ? campaign.Activities.ToViewModel() : Enumerable.Empty<ActivityViewModel>();
             CampaignImpact = campaign.CampaignImpact;
             ImageUrl = campaign.ImageUrl;
@@ -50,6 +51,8 @@ namespace AllReady.ViewModels
 
         public List<CampaignSponsors> ParticipatingTenants { get; set; }
 
+        public string TimeZoneId { get; set; }
+
         public DateTimeOffset StartDate { get; set; }
 
         public DateTimeOffset EndDate { get; set; }
@@ -67,32 +70,7 @@ namespace AllReady.ViewModels
         public static IEnumerable<CampaignViewModel> ToViewModel(this IEnumerable<Campaign> campaigns)
         {
             return campaigns.Select(campaign => campaign.ToViewModel());
-        }
-
-        public static Campaign ToModel(this CampaignViewModel campaign, IAllReadyDataAccess dataAccess)
-        {
-            var tenant = dataAccess.GetTenant(campaign.ManagingTenantId);
-
-            if (tenant == null)
-                return null;
-
-            return new Campaign
-            {
-                Id = campaign.Id,
-                Description = campaign.Description,
-                Name = campaign.Name,
-                ManagingTenant = tenant,
-                ParticipatingTenants = campaign.ParticipatingTenants,
-                Activities = campaign.Activities.ToModel(dataAccess).ToList(),
-                EndDateTimeUtc = campaign.EndDate.UtcDateTime,
-                StartDateTimeUtc = campaign.StartDate.UtcDateTime
-            };
-        }
-
-        public static IEnumerable<Campaign> ToModel(this IEnumerable<CampaignViewModel> campaigns, IAllReadyDataAccess dataAccess)
-        {
-            return campaigns.Select(campaign => campaign.ToModel(dataAccess));
-        }
+        }       
 
     }
 }

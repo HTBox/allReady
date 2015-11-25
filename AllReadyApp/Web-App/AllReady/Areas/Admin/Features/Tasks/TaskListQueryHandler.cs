@@ -26,8 +26,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 {
                     Id = t.Id,
                     Name = t.Name,
-                    StartDateTime = t.StartDateTimeUtc,
-                    EndDateTime = t.EndDateTimeUtc,
+                    StartDateTime = t.StartDateTime,
+                    EndDateTime = t.EndDateTime,
                     NumberOfVolunteersRequired = t.NumberOfVolunteersRequired,
                     IsUserSignedUpForTask = false
                 });

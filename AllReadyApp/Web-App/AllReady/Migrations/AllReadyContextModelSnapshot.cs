@@ -13,7 +13,7 @@ namespace AllReady.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0-rc1-16341")
+                .HasAnnotation("ProductVersion", "7.0.0-rc1-16348")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("AllReady.Models.Activity", b =>
@@ -25,7 +25,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<DateTime>("EndDateTimeUtc");
+                    b.Property<DateTimeOffset>("EndDateTime");
 
                     b.Property<string>("ImageUrl");
 
@@ -38,7 +38,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("OrganizerId");
 
-                    b.Property<DateTime>("StartDateTimeUtc");
+                    b.Property<DateTimeOffset>("StartDateTime");
 
                     b.HasKey("Id");
                 });
@@ -83,14 +83,14 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<DateTimeOffset?>("EndDateTimeUtc");
+                    b.Property<DateTimeOffset?>("EndDateTime");
 
                     b.Property<string>("Name")
                         .IsRequired();
 
                     b.Property<int>("NumberOfVolunteersRequired");
 
-                    b.Property<DateTimeOffset?>("StartDateTimeUtc");
+                    b.Property<DateTimeOffset?>("StartDateTime");
 
                     b.Property<int?>("TenantId");
 
@@ -133,6 +133,9 @@ namespace AllReady.Migrations
 
                     b.Property<int?>("TenantId");
 
+                    b.Property<string>("TimeZoneId")
+                        .IsRequired();
+
                     b.Property<bool>("TwoFactorEnabled");
 
                     b.Property<string>("UserName")
@@ -158,7 +161,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<DateTime>("EndDateTimeUtc");
+                    b.Property<DateTimeOffset>("EndDateTime");
 
                     b.Property<string>("FullDescription");
 
@@ -173,7 +176,10 @@ namespace AllReady.Migrations
 
                     b.Property<string>("OrganizerId");
 
-                    b.Property<DateTime>("StartDateTimeUtc");
+                    b.Property<DateTimeOffset>("StartDateTime");
+
+                    b.Property<string>("TimeZoneId")
+                        .IsRequired();
 
                     b.HasKey("Id");
                 });

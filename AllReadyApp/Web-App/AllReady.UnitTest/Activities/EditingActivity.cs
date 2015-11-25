@@ -10,7 +10,7 @@ namespace AllReady.UnitTest.Activities
         public EditingActivity()
         {
             // Adding an activity requires a campaign for a tenant ID and an activity to match that in the command
-            Context.Campaigns.Add(new Campaign {Id = 1});
+            Context.Campaigns.Add(new Campaign {Id = 1, TimeZoneId = "Central Standard Time" });
             Context.Activities.Add(new Activity {Id = 1});
             Context.SaveChanges();
         }
@@ -20,7 +20,7 @@ namespace AllReady.UnitTest.Activities
         {
             var sut = new EditActivityCommandHandler(Context);
             int actual =
-                sut.Handle(new EditActivityCommand {Activity = new ActivityDetailModel {CampaignId = 1, Id = 1}});
+                sut.Handle(new EditActivityCommand {Activity = new ActivityDetailModel {CampaignId = 1, Id = 1, TimeZoneId = "Central Standard Time"}});
             Assert.Equal(1, actual);
         }
     }

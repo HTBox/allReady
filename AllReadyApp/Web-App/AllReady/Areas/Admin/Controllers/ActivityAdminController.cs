@@ -71,6 +71,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 CampaignId = campaign.Id,
                 CampaignName = campaign.Name,
+                TimeZoneId = campaign.TimeZoneId,
                 TenantId = campaign.TenantId,
                 TenantName = campaign.TenantName,
                 StartDateTime = DateTime.Today.Date,

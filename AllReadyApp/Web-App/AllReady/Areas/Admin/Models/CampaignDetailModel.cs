@@ -24,11 +24,15 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Image URL")]
         public string ImageUrl { get; set; }
             
+        [Display(Name = "Time Zone")]
+        [Required]
+        public string TimeZoneId { get; set; }
+
         [Display(Name = "Start Date")]
-        public DateTime StartDate { get; set; }
+        public DateTimeOffset StartDate { get; set; }
 
         [Display(Name = "End Date")]
-        public DateTime EndDate { get; set; }
+        public DateTimeOffset EndDate { get; set; }
 
 		public IEnumerable<ActivitySummaryModel> Activities { get; set; }
         public CampaignImpact CampaignImpact { get; set; }

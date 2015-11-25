@@ -18,6 +18,8 @@ namespace AllReady.Areas.Admin.Models
         public string Name { get; set; }
         public string Description { get; set; }
 
+        public string TimeZoneId { get; set; }
+
         [Display(Name = "Start date")]
         public DateTimeOffset? StartDateTime { get; set; }
         
