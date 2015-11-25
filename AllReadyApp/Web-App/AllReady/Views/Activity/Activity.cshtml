@@ -1,9 +1,10 @@
 ﻿@model AllReady.ViewModels.ActivityViewModel
 @using System.Security.Claims
+@using AllReady.Security;
 
 @{
     ViewBag.Title = $"{Model.Title}";
-
+    var userTimeZoneId = User.GetTimeZoneId();
 }
 
 <div class="row">
@@ -20,6 +21,14 @@
                 <h2>@Model.Title</h2>
                 <p class="date-address"><time value="Model.StartDateTime" format="F"></time> - <time value="Model.EndDateTime" format="F"></time>
 <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em></p>
+            @if (!string.IsNullOrEmpty(userTimeZoneId) && Model.TimeZoneId != userTimeZoneId)
+            {
+                <p>
+                    <time value="Model.StartDateTime" target-time-zone-id="@userTimeZoneId" format="F"></time> - <time value="Model.EndDateTime" format="F" target-time-zone-id="@userTimeZoneId"></time>
+                    <em><time-zone-name time-zone-id="@userTimeZoneId"></time-zone-name></em>
+                </p>
+            }
+               
             </div>
         </div>
         <div class="row">
