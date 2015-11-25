@@ -7,6 +7,7 @@
 
 <form asp-controller="Account" asp-action="Register" method="post" class="form-horizontal" role="form">
     <h4>Create a new account.</h4>
+    <p>Password guidance: @Model.PasswordGuidance</p>
     <hr />
     <div asp-validation-summary="ValidationSummary.All" class="text-danger"></div>
     <div class="form-group">

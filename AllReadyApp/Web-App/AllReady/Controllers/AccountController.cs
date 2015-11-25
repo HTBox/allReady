@@ -72,7 +72,8 @@ namespace AllReady.Controllers
         [AllowAnonymous]
         public IActionResult Register()
         {
-            return View();
+            var model = new RegisterViewModel();
+            return View(model);
         }
 
         //
