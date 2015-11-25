@@ -177,7 +177,8 @@ namespace AllReady.Controllers
         [AllowAnonymous]
         public IActionResult ResetPassword(string code = null)
         {
-            return code == null ? View("Error") : View();
+            var model = new ResetPasswordViewModel();
+            return code == null ? View("Error") : View(model);
         }
 
         //

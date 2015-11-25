@@ -47,7 +47,7 @@ namespace AllReady.Models
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = PasswordRequirements.PASSWORD_LENGTH)]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
@@ -57,6 +57,8 @@ namespace AllReady.Models
         public string ConfirmPassword { get; set; }
 
         public string Code { get; set; }
+
+        public string PasswordGuidance = PasswordRequirements.PasswordGuidance;
     }
 
     public class ForgotPasswordViewModel
