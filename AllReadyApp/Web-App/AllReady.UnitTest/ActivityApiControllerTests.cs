@@ -67,6 +67,19 @@ namespace AllReady.UnitTest
             Assert.Equal(activityViewModel.EndDateTime, DateTime.MaxValue.ToUniversalTime());
             Assert.Equal(activityViewModel.StartDateTime, DateTime.MinValue.ToUniversalTime());
         }
+        [Fact]
+        public void ActivityDoesExist()
+        {
+            // Arrange
+            ActivityApiController controller = GetActivityController();
+
+            // Act
+            int recordId = 1;
+            var activityViewModel = controller.Get(recordId);
+
+            Assert.NotNull(activityViewModel);
+
+        }
 
         [Fact]
         public void HandlesInvalidActivityId()
@@ -80,13 +93,6 @@ namespace AllReady.UnitTest
 
             Assert.Null(activityViewModel);
 
-            // Assert
-        //    Assert.Equal(activityViewModel.Id, recordId);
-        //    Assert.Equal(activityViewModel.CampaignName, string.Format(TestActivityModelProvider.CampaignNameFormat, recordId));
-        //    Assert.Equal(activityViewModel.CampaignId, recordId);
-        //    Assert.Equal(activityViewModel.Description, string.Format(TestActivityModelProvider.ActivityDescriptionFormat, recordId));
-        //    Assert.Equal(activityViewModel.EndDateTime, DateTime.MaxValue.ToUniversalTime());
-        //    Assert.Equal(activityViewModel.StartDateTime, DateTime.MinValue.ToUniversalTime());
         }
 
         #region Helper Methods
