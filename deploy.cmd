@@ -1,5 +1,7 @@
 :: @if "%SCM_TRACE_LEVEL%" NEQ "4" @echo off
 
+:: Turn this on to debug @echo on
+
 :: ----------------------
 :: KUDU Deployment Script
 :: Version: 1.0.3
@@ -83,10 +85,10 @@ IF "%DEPLOYMENT_TARGET:~-1%"=="\" (
 
 :: 1. Set DNX Path
 set DNVM_CMD_PATH_FILE="%USERPROFILE%\.dnx\temp-set-envvars.cmd"
-set DNX_RUNTIME="%USERPROFILE%\.dnx\runtimes\dnx-clr-win-x86.1.0.0-beta8"
+set DNX_RUNTIME="%USERPROFILE%\.dnx\runtimes\dnx-clr-win-x86.1.0.0-rc1-final"
 
 :: 2. Install DNX
-call :ExecuteCmd PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "[System.Threading.Thread]::CurrentThread.CurrentCulture = ''; [System.Threading.Thread]::CurrentThread.CurrentUICulture = '';$CmdPathFile='%DNVM_CMD_PATH_FILE%';& '%SCM_DNVM_PS_PATH%' " install 1.0.0-beta8 -arch x86 -r clr %SCM_DNVM_INSTALL_OPTIONS%
+call :ExecuteCmd PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "[System.Threading.Thread]::CurrentThread.CurrentCulture = ''; [System.Threading.Thread]::CurrentThread.CurrentUICulture = '';$CmdPathFile='%DNVM_CMD_PATH_FILE%';& '%SCM_DNVM_PS_PATH%' " install 1.0.0-rc1-final -arch x86 -r clr %SCM_DNVM_INSTALL_OPTIONS%
 IF !ERRORLEVEL! NEQ 0 goto error
 
 
@@ -110,6 +112,14 @@ call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\NotificationsProcessor\No
 :: 4.1. Publish the site:
 call %DNX_RUNTIME%\bin\dnu publish "%DEPLOYMENT_SOURCE%\Web-App\AllReady\project.json" --runtime %DNX_RUNTIME% --out "%DEPLOYMENT_TEMP%" %SCM_DNU_PUBLISH_OPTIONS%
 IF !ERRORLEVEL! NEQ 0 goto error
+
+:: 4.2 Xcopy the webjobs:
+:: Note this uses debug, and I can't find how to read the 
+:: build config.
+
+mkdir "%DEPLOYMENT_TEMP%\wwwroot\app_data\jobs\continuous\notificationsprocessor\"
+
+call xcopy /S "%DEPLOYMENT_SOURCE%\NotificationsProcessor\bin\debug" "%DEPLOYMENT_TEMP%\wwwroot\app_data\jobs\continuous\notificationsprocessor\"
 
 :: 5. KuduSync
 call %KUDU_SYNC_CMD% -v 50 -f "%DEPLOYMENT_TEMP%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"

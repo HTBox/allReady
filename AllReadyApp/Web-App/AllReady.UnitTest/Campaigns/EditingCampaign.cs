@@ -10,7 +10,7 @@ namespace AllReady.UnitTest.Campaigns
         public void ModelIsCreated()
         {
             var sut = new EditCampaignCommandHandler(Context);
-            int actual = sut.Handle(new EditCampaignCommand {Campaign = new CampaignSummaryModel()});
+            int actual = sut.Handle(new EditCampaignCommand {Campaign = new CampaignSummaryModel { TimeZoneId = "Eastern Standard Time" } });
             Assert.NotEqual(0, actual);
         }
     }

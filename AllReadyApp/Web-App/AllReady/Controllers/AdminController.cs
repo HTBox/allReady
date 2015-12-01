@@ -2,7 +2,7 @@
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.Framework.Configuration;
+using Microsoft.Extensions.Configuration;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Models;
 using AllReady.Services;
@@ -10,7 +10,8 @@ using AllReady.Services;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.Framework.OptionsModel;
+using Microsoft.Extensions.OptionsModel;
+using AllReady.Security;
 
 namespace AllReady.Controllers
 {
@@ -21,19 +22,22 @@ namespace AllReady.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly SampleDataSettings _settings;
+        private readonly GeneralSettings _generalSettings;
 
         public AdminController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            IOptions<SampleDataSettings> options)
+            IOptions<SampleDataSettings> options,
+            IOptions<GeneralSettings> generalSettings)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _settings = options.Value;
+            _generalSettings = generalSettings.Value;
         }
 
         //
@@ -73,21 +77,18 @@ namespace AllReady.Controllers
                 if (result.Succeeded)
                 {
                     var user = await _userManager.FindByNameAsync(model.Email);
-                    var claims = await _userManager.GetClaimsAsync(user);
-                    if (claims.Count > 0)
+                    if (user.IsUserType(UserType.SiteAdmin))
                     {
-                        var claimValue = claims.FirstOrDefault(c => c.Type.Equals(Security.ClaimTypes.UserType)).Value;
-
-                        if (claimValue.Equals("TenantAdmin"))
+                        return RedirectToAction(nameof(SiteController.Index), "Site", new { area = "Admin" });
+                    }
+                    else if (user.IsUserType(UserType.TenantAdmin))
                         {
                             return base.RedirectToAction(nameof(Areas.Admin.Controllers.TenantController.Index), "Tenant", new { area = "Admin" });
                         }
-                        else if (claimValue.Equals("SiteAdmin"))
+                    else
                         {
-                            return RedirectToAction(nameof(SiteController.Index), "Site", new { area = "Admin" });
-                        }
+                        return RedirectToAction("Index", "Home");
                     }
-
                 }
                 if (result.RequiresTwoFactor)
                 {
@@ -126,7 +127,12 @@ namespace AllReady.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    TimeZoneId = _generalSettings.DefaultTimeZone
+                };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

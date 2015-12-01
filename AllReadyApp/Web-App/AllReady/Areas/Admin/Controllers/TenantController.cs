@@ -31,7 +31,7 @@ namespace AllReady.Areas.Admin.Controllers
             var tenant = _bus.Send(new TenantDetailQuery { Id = id });
             if (tenant == null)
             {
-                return new HttpStatusCodeResult(404);
+                return HttpNotFound();
             }
 
             return View(tenant);
@@ -64,7 +64,7 @@ namespace AllReady.Areas.Admin.Controllers
             var tenant = _bus.Send(new TenantEditQuery { Id = id });
             if (tenant == null)
             {
-                return new HttpStatusCodeResult(404);
+                return HttpNotFound();
             }
 
             return View("Edit",tenant);
@@ -91,12 +91,12 @@ namespace AllReady.Areas.Admin.Controllers
             // Needs comments:  This method doesn't delete things.
             if (id == null)
             {
-                return new HttpStatusCodeResult(404);
+                return HttpNotFound();
             }
             var tenant = _bus.Send(new TenantDetailQuery { Id = id.Value });
             if (tenant == null)
             {
-                return new HttpStatusCodeResult(404);
+                return HttpNotFound();
             }
 
             return View(tenant);

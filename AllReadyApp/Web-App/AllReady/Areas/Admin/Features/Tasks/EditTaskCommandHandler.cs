@@ -27,8 +27,29 @@ namespace AllReady.Areas.Admin.Features.Tasks
             task.Description = message.Task.Description;
             task.Activity = _context.Activities.SingleOrDefault(a => a.Id == message.Task.ActivityId);
             task.Tenant = _context.Tenants.SingleOrDefault(t => t.Id == message.Task.TenantId);
-            task.StartDateTimeUtc = message.Task.StartDateTime.HasValue ? message.Task.StartDateTime.Value.UtcDateTime : default(DateTime?);
-            task.EndDateTimeUtc = message.Task.EndDateTime.HasValue ? message.Task.EndDateTime.Value.UtcDateTime : default(DateTime?);
+
+            TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(message.Task.TimeZoneId);
+            if (message.Task.StartDateTime.HasValue)
+            {
+                var startDateValue = message.Task.StartDateTime.Value;
+                var startDateTimeOffset = timeZone.GetUtcOffset(startDateValue);
+                task.StartDateTime = new DateTimeOffset(startDateValue.Year, startDateValue.Month, startDateValue.Day, startDateValue.Hour, startDateValue.Minute, 0, startDateTimeOffset);
+            }
+            else
+            {
+                task.StartDateTime = null;
+            }
+
+            if (message.Task.EndDateTime.HasValue)
+            {
+                var endDateValue = message.Task.EndDateTime.Value;
+                var endDateTimeOffset = timeZone.GetUtcOffset(endDateValue);
+                task.EndDateTime = new DateTimeOffset(endDateValue.Year, endDateValue.Month, endDateValue.Day, endDateValue.Hour, endDateValue.Minute, 0, endDateTimeOffset);
+            }
+            else
+            {
+                task.EndDateTime = null;
+            }
             task.NumberOfVolunteersRequired = message.Task.NumberOfVolunteersRequired;
             if (task.Id > 0)
             {

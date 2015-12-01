@@ -18,6 +18,7 @@ using System;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Areas.Admin.Features.Campaigns;
+using AllReady.Extensions;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -70,6 +71,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 CampaignId = campaign.Id,
                 CampaignName = campaign.Name,
+                TimeZoneId = campaign.TimeZoneId,
                 TenantId = campaign.TenantId,
                 TenantName = campaign.TenantName,
                 StartDateTime = DateTime.Today.Date,
@@ -82,19 +84,19 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Activity/Create/{campaignId}")]
-        public IActionResult Create(int campaignId, ActivityDetailModel activity)
+        public async Task<IActionResult> Create(int campaignId, ActivityDetailModel activity, IFormFile fileUpload)
         {
             if (activity.EndDateTime < activity.StartDateTime)
             {
                 ModelState.AddModelError("EndDateTime", "End date cannot be earlier than the start date");
             }
 
-            CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
-            if (campaign == null ||
-                !User.IsTenantAdmin(campaign.TenantId))
-            {
-                return HttpUnauthorized();
-            }
+                CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
+                if (campaign == null ||
+                    !User.IsTenantAdmin(campaign.TenantId))
+                {
+                    return HttpUnauthorized();
+                }
 
             if (activity.StartDateTime < campaign.StartDate)
             {
@@ -108,8 +110,26 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+                if (fileUpload != null)
+                {
+                    if (!fileUpload.IsAcceptableImageContentType())
+                    {
+                        ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
+                        return View("Edit", activity);
+                    }
+                }
+
                 activity.TenantId = campaign.TenantId;
                 var id = _bus.Send(new EditActivityCommand { Activity = activity });
+
+                if (fileUpload != null)
+                {
+                    // resave now that activty has the ImageUrl
+                    activity.Id = id;
+                    activity.ImageUrl = await _imageService.UploadActivityImageAsync(campaign.TenantId, id, fileUpload);
+                    _bus.Send(new EditActivityCommand { Activity = activity });
+                }
+
                 return RedirectToAction("Details", "Activity", new { area = "Admin", id = id });
             }
             return View("Edit", activity);
@@ -135,7 +155,7 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Activity/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(ActivityDetailModel activity)
+        public async Task<IActionResult> Edit(ActivityDetailModel activity, IFormFile fileUpload)
         {
             if (activity == null)
             {
@@ -167,6 +187,19 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+                if (fileUpload != null)
+                {
+                    if (fileUpload.IsAcceptableImageContentType())
+                    {
+                        activity.ImageUrl = await _imageService.UploadActivityImageAsync(campaign.TenantId, activity.Id, fileUpload);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
+                        return View(activity);
+                    }
+                }
+                
                 var id = _bus.Send(new EditActivityCommand { Activity = activity });
                 return RedirectToAction("Details", "Activity", new { area = "Admin", id = id });
             }
@@ -220,7 +253,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-            if (!User.IsTenantAdmin(activity.TenantId))
+            if (!User.IsTenantAdmin(activity.Campaign.ManagingTenantId))
             {
                 return HttpUnauthorized();
             }
@@ -264,7 +297,7 @@ namespace AllReady.Areas.Admin.Controllers
             //TODO: Use a command here
             Activity a = _dataAccess.GetActivity(id);
 
-            a.ImageUrl = await _imageService.UploadActivityImageAsync(a.Id, a.Tenant.Id, file);
+            a.ImageUrl = await _imageService.UploadActivityImageAsync(a.Id, a.Campaign.ManagingTenantId, file);
             await _dataAccess.UpdateActivity(a);
 
             return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Edit", id = id });
@@ -272,7 +305,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         private bool UserIsTenantAdminOfActivity(Activity activity)
         {
-            return User.IsTenantAdmin(activity.TenantId);
+            return User.IsTenantAdmin(activity.Campaign.ManagingTenantId);
         }
 
         private bool UserIsTenantAdminOfActivity(int activityId)

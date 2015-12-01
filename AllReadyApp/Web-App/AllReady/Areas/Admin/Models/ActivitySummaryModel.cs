@@ -25,16 +25,20 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Organization")]
         public string TenantName { get; set; }
 
-        [Display(Name = "Browse for image")]
         public string ImageUrl { get; set; }
+
+        [Display(Name = "Browse for image")]
+        public string FileUpload { get; set; }
 
         [Display(Name = "Volunteers Required")]
         public int NumberOfVolunteersRequired { get; set; }
         
+        public string TimeZoneId { get; set; }
+
         [Display(Name = "Start Date")]
-        public DateTime StartDateTime { get; set; }
+        public DateTimeOffset StartDateTime { get; set; }
         [Display(Name = "End Date")]
-        public DateTime EndDateTime { get; set; }
+        public DateTimeOffset EndDateTime { get; set; }
 
     }
 }

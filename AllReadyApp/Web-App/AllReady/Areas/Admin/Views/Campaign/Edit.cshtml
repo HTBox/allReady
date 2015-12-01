@@ -41,7 +41,14 @@
 
 <form asp-controller="Campaign" asp-route-area="Admin" asp-action="Edit" method="post" enctype="multipart/form-data">
 
-    <button type="button" id="btnGetContactInfo" class="btn btn-info" title="Copy Contact Information from Organizatio">Copy Contact Info</button>
+    <button type="button"
+            id="btnGetContactInfo"
+            class="btn btn-info"
+            data-toggle="modal"
+            data-target="#confirmContactModal"
+            title="Copy Contact Information from Organization">
+        Copy Contact Info
+    </button>
 
 
     <div class="form-horizontal">
@@ -74,6 +81,13 @@
             <div class="col-md-10">
                 <textarea asp-for="FullDescription" class="form-control wysiwyg" rows="6"></textarea>
                 <span asp-validation-for="FullDescription" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="TimeZoneId" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="TimeZoneId" asp-items="SelectListService.GetTimeZones()" class="form-control"></select>
+                <span asp-validation-for="TimeZoneId" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
@@ -125,16 +139,15 @@
                 <span asp-validation-for="PrimaryContactEmail" class="text-danger"></span>
             </div>
         </div>
-        <h2>Image</h2>
         <div class="form-horizontal">
             @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
             {
-            <div class="form-group">
-                <div class="col-md-2">&nbsp;</div>
-                <div class="col-md-10">
-                    <img src="@Model.ImageUrl" class="img-thumbnail img-responsive col-md-4" />
+                <div class="form-group">
+                    <div class="col-md-2">&nbsp;</div>
+                    <div class="col-md-10">
+                        <img src="@Model.ImageUrl" class="img-thumbnail img-responsive col-md-4" />
+                    </div>
                 </div>
-            </div>
             }
             <div class="form-group">
                 <label asp-for="FileUpload" class="col-md-2 control-label"></label>
@@ -149,6 +162,65 @@
                 </div>
             </div>
         </div>
+        @if (isEdit)
+        {
+            <input type="hidden" asp-for="CampaignImpact.Id" />
+            <h3>Campaign Impact Goals</h3>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="alert alert-warning">
+                        <p><strong>Define your campaign's impact in a way that will inspire people to help you reach those goals.</strong></p>
+                        <p>
+                            If you choose <em>numeric</em> as an impact type, then a "thermometer" will be displayed on the landing page
+                            showing the current progress of the campaign as you update the current impact level.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Display Impact Goal</label>
+                    <div class="form-horizontal">
+                        <input type="checkbox" asp-for="CampaignImpact.Display" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Impact Type</label>
+                    <div class="form-horizontal">
+                        @Html.DropDownListFor(model => model.CampaignImpact.ImpactType, SelectListService.GetCampaignImpactTypes(), htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Campaign Impact Goal</label>
+                    <div class="form-horizontal">
+                        <input type="text" asp-for="CampaignImpact.TextualImpactGoal" class="form-control" />
+                    </div>
+                </div>
+                <div id="numericImpactSection">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Current Impact Level</label>
+                        <div class="form-horizontal">
+                            <input type="text" asp-for="CampaignImpact.CurrentImpactLevel" class="form-control" />
+                            <span class="help-block">
+                                <em>
+                                    This value is the current number of x achieved to reach the Numeric Impact Goal value.<br />
+                                    Ideally less than or equal to Numeric Impact Goal, but there may be certain scenarios where it's greater.
+                                </em>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Numeric Impact Goal</label>
+                        <div class="form-horizontal">
+                            <input type="text" asp-for="CampaignImpact.NumericImpactGoal" class="form-control" />
+                            <span class="help-block">
+                                <em>This value is the number of x to reach the goal.</em>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
     <div class="row">
         <div class="col-md-12">
@@ -159,49 +231,28 @@
 
 </form>
 
-@if (isEdit)
-{
-    @*<h2>Image</h2>
-    <div class="form-horizontal">
-        <div class="form-group">
-            <div class="col-md-2">&nbsp;</div>
-            <div class="col-md-10">
-                <img src="@Model.ImageUrl" class="img-thumbnail img-responsive col-md-4" />
+<div class="modal fade" id="confirmContactModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content" role="document">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modalLabel">Confirm Contact Details</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    This will copy in the contact details that you have stored
+                    at the organization levels. If you have contact information
+                    saved here now, it will be overwritten.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="confirmOverwriteContact" type="button" class="btn btn-primary">Overwrite existing details</button>
             </div>
         </div>
-        <div class="form-group">
-            <label asp-for="ImageUrl" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <form asp-controller="Campaign" asp-route-area="Admin" asp-action="PostCampaignFile" method="post" enctype="multipart/form-data">
-                    <input type="hidden" asp-for="Id" />
-                    <div class="form-group">
-                        <div class="col-md-10">
-                            <input type="file" name="file" id="newFile" class="control-label col-md-4" />
-                            <button type="submit" class="btn col-md-1">Upload</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>*@
+    </div>
+</div>
 
-    @*
-        TODO: Implement Impact Goal persistence & numeric fields
-    *@
-    <h2>Campaign Impact Goals</h2>
-    <div class="col-md-5">
-        <p><strong><em>** BETA **</em></strong> Define your campaign's impact in a way that will inspire people to help you reach those goals.</p>
-        <p>
-            If you choose <em>numeric</em> as an impact type, then a "thermometer" will be displayed on the landing page
-            showing the current progress of the campaign as you update the current impact level.
-        </p>
-    </div>
-    <div class="col-md-7">
-        <div class="form-horizontal">
-            <input type="text" asp-for="CampaignImpact.TextualImpactGoal" class="form-control" />
-        </div>
-    </div>
-}
 @section scripts {
     <script src="~/js/campaignadmin.js"></script>
-}  
+}

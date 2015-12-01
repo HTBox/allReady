@@ -1,4 +1,4 @@
-﻿using Microsoft.Framework.OptionsModel;
+﻿using Microsoft.Extensions.OptionsModel;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 
@@ -16,7 +16,7 @@ namespace AllReady.Services
 
         public QueueStorageService(IOptions<AzureStorageSettings> options)
         {
-            var storageAccount = CloudStorageAccount.Parse(options.Value.StorageAccount);
+            var storageAccount = CloudStorageAccount.Parse(options.Value.AzureStorage);
             _client = storageAccount.CreateCloudQueueClient();
         }
 

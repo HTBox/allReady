@@ -1,6 +1,7 @@
 ﻿using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
+using System;
 using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Activities
@@ -28,10 +29,16 @@ namespace AllReady.Areas.Admin.Features.Activities
 
             activity.Name = message.Activity.Name;
             activity.Description = message.Activity.Description;
-            activity.StartDateTimeUtc = message.Activity.StartDateTime;
-            activity.EndDateTimeUtc = message.Activity.EndDateTime;
+
+            TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(message.Activity.TimeZoneId);
+            var startDateTimeOffset = timeZone.GetUtcOffset(message.Activity.StartDateTime);
+            activity.StartDateTime = new DateTimeOffset(message.Activity.StartDateTime.Year, message.Activity.StartDateTime.Month, message.Activity.StartDateTime.Day, message.Activity.StartDateTime.Hour, message.Activity.StartDateTime.Minute, 0, startDateTimeOffset);
+
+            var endDateTimeOffset = timeZone.GetUtcOffset(message.Activity.EndDateTime);
+            activity.EndDateTime = new DateTimeOffset(message.Activity.EndDateTime.Year, message.Activity.EndDateTime.Month, message.Activity.EndDateTime.Day, message.Activity.EndDateTime.Hour, message.Activity.EndDateTime.Minute, 0, endDateTimeOffset);
             activity.CampaignId = message.Activity.CampaignId;
-            activity.TenantId = _context.Campaigns.Single(c => c.Id == activity.CampaignId).ManagingTenantId;
+            
+            activity.ImageUrl = message.Activity.ImageUrl;
             activity.NumberOfVolunteersRequired = message.Activity.NumberOfVolunteersRequired;
 
             if (activity.Id > 0)

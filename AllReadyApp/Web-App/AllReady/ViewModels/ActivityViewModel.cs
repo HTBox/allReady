@@ -23,17 +23,12 @@ namespace AllReady.ViewModels
                 CampaignName = activity.Campaign.Name;
             }
 
-            if (activity.Tenant != null)
-            {
-                TenantId = activity.Tenant.Id;
-                TenantName = activity.Tenant.Name;
-            }
-
             Title = activity.Name;
             Description = activity.Description;
 
-            StartDateTime = new DateTimeOffset(activity.StartDateTimeUtc, TimeSpan.Zero);
-            EndDateTime = new DateTimeOffset(activity.EndDateTimeUtc, TimeSpan.Zero);
+            TimeZoneId = activity.Campaign.TimeZoneId;
+            StartDateTime = activity.StartDateTime;
+            EndDateTime = activity.EndDateTime;
 
             if (activity.Location != null)
             {
@@ -58,6 +53,7 @@ namespace AllReady.ViewModels
         public string Title { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
+        public string TimeZoneId { get; set; }
         public DateTimeOffset StartDateTime { get; set; }
         public DateTimeOffset EndDateTime { get; set; }
         public LocationViewModel Location { get; set; }
@@ -101,54 +97,6 @@ namespace AllReady.ViewModels
         public static IEnumerable<ActivityViewModel> ToViewModel(this IEnumerable<Activity> activities)
         {
             return activities.Select(activity => new ActivityViewModel(activity));
-        }
-
-        /// <summary>
-        /// Returns null when there is no matching campaign for the campaign Id.
-        /// </summary>
-        public static Activity ToModel(this ActivityViewModel activity, IAllReadyDataAccess dataAccess)
-        {
-            var campaign = dataAccess.GetCampaign(activity.CampaignId);
-
-            if (campaign == null)
-                return null;
-
-            Activity newActivity = new Activity()
-            {
-                Id = activity.Id,
-                Campaign = campaign,
-                EndDateTimeUtc = activity.EndDateTime.UtcDateTime,
-                StartDateTimeUtc = activity.StartDateTime.UtcDateTime,
-                Location = new Location()
-                {
-                    Address1 = activity.Location.Address1,
-                    Address2 = activity.Location.Address2,
-                    City = activity.Location.City,
-                    Country = "US",
-                    PostalCode = activity.Location.PostalCode,
-                    State = activity.Location.State
-                },
-                Name = activity.Title
-            };
-            var tasks = new List<AllReadyTask>();
-
-            foreach (TaskViewModel tvm in activity.Tasks)
-            {
-                tasks.Add(new AllReadyTask()
-                {
-                    Activity = newActivity,
-                    Name = tvm.Name,
-                    Id = tvm.Id,
-                    Description = tvm.Description
-                });
-            }
-            newActivity.Tasks = tasks;
-            return newActivity;
-        }
-
-        public static IEnumerable<Activity> ToModel(this IEnumerable<ActivityViewModel> activities, IAllReadyDataAccess dataAccess)
-        {
-            return activities.Select(activity => activity.ToModel(dataAccess));
         }
 
         public static ActivityViewModel WithUserInfo(this ActivityViewModel viewModel, Activity activity, ClaimsPrincipal user, IAllReadyDataAccess dataAccess)

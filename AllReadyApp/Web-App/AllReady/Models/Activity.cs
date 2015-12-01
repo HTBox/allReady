@@ -9,11 +9,6 @@ namespace AllReady.Models
     {
         public int Id { get; set; }
 
-        [Display(Name = "Tenant")]
-        public int TenantId { get; set; }
-
-        public Tenant Tenant { get; set; }
-
         [Display(Name = "Campaign")]
         public int CampaignId { get; set; }
 
@@ -26,10 +21,10 @@ namespace AllReady.Models
         public int NumberOfVolunteersRequired { get; set; }
 
         [Display(Name = "Start date")]
-        public DateTime StartDateTimeUtc { get; set; }
+        public DateTimeOffset StartDateTime { get; set; }
 
         [Display(Name = "End date")]
-        public DateTime EndDateTimeUtc { get; set; }
+        public DateTimeOffset EndDateTime { get; set; }
 
         public Location Location { get; set; }
 

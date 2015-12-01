@@ -47,13 +47,14 @@
     </div>
     <footer class="main-page-footer">
         <p class="text-center">
-            <img src="~/images/fb.png" alt="Like Humanitarian Toolbox on Facebook" /> 
+            <a href="https://www.facebook.com/allReadyApp/"> <img src="~/images/fb.png" alt="Go to allReady on Facebook" /></a> 
             <a href="https://twitter.com/htbox"><img src="~/images/twitter.png" alt="Follow Humanitarian Toolbox on Twitter" /></a> 
-            <img src="~/images/instagram.png" alt="Instagram account" /> 
-            <img src="~/images/youtube.png" alt="YouTube" />
+            <a href="https://twitter.com/HTbox/media"> <img src="~/images/instagram.png" alt="Instagram account" /> </a>
+            <a href="https://www.youtube.com/watch?v=BgV9jUJduwE&index=3&list=PLReL099Y5nRfJCkJtGFHZlVCvx2t8OWdA"><img src="~/images/youtube.png" alt="YouTube" /></a>
         </p>
         <p class="text-center">Powered by <br /><a href="http://www.htbox.org/">Humanitarian Toolbox</a></p>
     </footer>
+    @await Html.PartialAsync("_Version")
     <environment names="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>

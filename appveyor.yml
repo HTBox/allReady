@@ -11,16 +11,17 @@ install:
 
 before_build:
  - ps: "&{$Branch='dev';iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.ps1'))}"
- - cmd: dnvm install 1.0.0-beta8
+ - cmd: dnvm install 1.0.0-rc1-final
  - cmd: dnvm upgrade
  - cmd: dnvm update-self
  - cmd: dnvm list
- - cmd: dnvm use 1.0.0-beta8
+ - cmd: dnvm use 1.0.0-rc1-final
  - cmd: dnu restore AllReadyApp
  - nuget restore AllReadyApp\AllReady.Models\AllReady.Models.csproj -SolutionDirectory .\AllReadyApp
  - nuget restore AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj -SolutionDirectory .\AllReadyApp
 
 build_script:
+ - ps: (Get-Content AllReadyApp\Web-App\AllReady\version.json).replace("GITVERSION", (git rev-parse HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json
  - cmd: msbuild AllReadyApp\AllReady.Models\AllReady.Models.csproj
  - cmd: dnu build AllReadyApp/wrap/AllReady.Models/project.json
  - cmd: dnu build AllReadyApp\Web-App\AllReady\project.json

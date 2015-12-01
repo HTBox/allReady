@@ -10,11 +10,13 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class AssignTaskCommandHandler : RequestHandler<AssignTaskCommand>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
+        private readonly IMediator _bus;
 
-        public AssignTaskCommandHandler(AllReadyContext context)
+        public AssignTaskCommandHandler(AllReadyContext context, IMediator bus)
         {
             _context = context;
+            _bus = bus;
         }
 
         protected override void HandleCore(AssignTaskCommand message)
@@ -56,36 +58,30 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 }
             }
             _context.SaveChanges();
-            /*
-            //TODO: Create Event, for Pub\Sub
+
             // send all notifications to the queue
             var smsRecipients = new List<string>();
             var emailRecipients = new List<string>();
 
-            foreach (var allReadyTask in newVolunteers)
-            {
-                // get all confirmed contact points for the broadcast
-                smsRecipients.AddRange(newVolunteers.Where(u => u.User.PhoneNumberConfirmed).Select(v => v.User.PhoneNumber));
-                emailRecipients.AddRange(newVolunteers.Where(u => u.User.EmailConfirmed).Select(v => v.User.Email));
-            }
+            // get all confirmed contact points for the broadcast
+            smsRecipients.AddRange(newVolunteers.Where(u => u.User.PhoneNumberConfirmed).Select(v => v.User.PhoneNumber));
+            emailRecipients.AddRange(newVolunteers.Where(u => u.User.EmailConfirmed).Select(v => v.User.Email));
 
             var command = new NotifyVolunteersCommand
             {
-                // todo: what information do we add about the task?
-                // todo: should we use a template from the email service provider?
-                // todo: what about non-English volunteers?
                 ViewModel = new NotifyVolunteersViewModel
                 {
                     SmsMessage = "You've been assigned a task from AllReady.",
                     SmsRecipients = smsRecipients,
                     EmailMessage = "You've been assigned a task from AllReady.",
+                    HtmlMessage = "You've been assigned a task from AllReady.",
                     EmailRecipients = emailRecipients,
                     Subject = "You've been assigned a task from AllReady."
                 }
             };
 
             _bus.Send(command);
-            */
+
         }
     }
 }

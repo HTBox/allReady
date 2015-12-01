@@ -1,9 +1,10 @@
 ﻿@model AllReady.ViewModels.ActivityViewModel
 @using System.Security.Claims
+@using AllReady.Security;
 
 @{
     ViewBag.Title = $"{Model.Title}";
-
+    var userTimeZoneId = User.GetTimeZoneId();
 }
 
 <div class="row">
@@ -18,7 +19,16 @@
             }
             <div class="@(string.IsNullOrEmpty(Model.ImageUrl) ? "col-sm-12" : "col-sm-10" )">
                 <h2>@Model.Title</h2>
-                <p class="date-address">@Model.StartDateTime.ToString("F") - @Model.EndDateTime.ToString("F")</p>
+                <p class="date-address"><time value="Model.StartDateTime" format="F"></time> - <time value="Model.EndDateTime" format="F"></time>
+<em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em></p>
+            @if (!string.IsNullOrEmpty(userTimeZoneId) && Model.TimeZoneId != userTimeZoneId)
+            {
+                <p>
+                    <time value="Model.StartDateTime" target-time-zone-id="@userTimeZoneId" format="F"></time> - <time value="Model.EndDateTime" format="F" target-time-zone-id="@userTimeZoneId"></time>
+                    <em><time-zone-name time-zone-id="@userTimeZoneId"></time-zone-name></em>
+                </p>
+            }
+               
             </div>
         </div>
         <div class="row">
@@ -104,33 +114,32 @@
     </div>
     <div class="col-sm-3">
         <div class="row">
-            <div class="col-sm-12">
-                @if (!Model.IsUserVolunteeredForActivity)
+            <div class="col-sm-12">               
+                @if (!User.IsSignedIn())
                 {
                     <h2>
-                        @if (!User.IsSignedIn())
-                        {
-                            <a asp-action="Login" asp-controller="Account" asp-route-ReturnUrl="/Activity/@Model.Id" class="btn btn-volunteer">Volunteer</a>
-                        }
-                        else
-                        {
-                            <a href="#" data-toggle="modal" data-target="#volunteerForm" class="btn btn-volunteer">Volunteer</a>
-                        }
+                        <a asp-action="Login" asp-controller="Account" asp-route-ReturnUrl="/Activity/@Model.Id" class="btn btn-volunteer">Volunteer</a>
                     </h2>
                 }
                 else
                 {
-                    <div class="volunteered">
-                        <center>
-                            Thanks for volunteering!
-                            <br />
-                            <a href="#" class="unvolunteer text-center" data-bind="click: function() {unenroll(@Model.Id);}">Unenroll</a>
-                        </center>
+                    <h2>
+                        <a href="#" data-toggle="modal" data-target="#volunteerForm" class="btn btn-volunteer" data-bind="visible: !enrolled()" style="display: none">Volunteer</a>
+                    </h2>
+                    <div class="volunteered" data-bind="visible: enrolled()" style="display: none">
+                        <div class="text-center">
+                            <p>Thanks for volunteering!</p>
+                            <p><a href="#" class="unvolunteer text-center" data-bind="click: function() {unenroll(@Model.Id);}">Unenroll</a></p>
+                            <p><span class="label label-danger" data-bind="visible: errorUnenrolling" style="display: none">There was a problem unenrolling; please try again.</span></p>
+                        </div>                      
+                        <div class="text-center" id="enrollUnenrollSpinner" style="display: none">
+                            <i class="fa fa-circle-o-notch fa-spin"></i>
+                        </div>
                     </div>
                 }
             </div>
         </div>
-        <div class="row" data-bind="visible: skills.length">
+        <div class="row" data-bind="visible: skills.length" style="display: none">
             <div class="col-sm-12">
                 <h3>Needed Skills</h3>
                 <ul data-bind="foreach: skills">
@@ -268,7 +277,12 @@
                     renderBingMap('bingMap', positionCoordsList);
                 });
         });
-        var modelStuff = @Json.Serialize(new { tasks = Model.Tasks, skills = Model.RequiredSkills, userSkills = Model.UserSkills });
+        var modelStuff = @Json.Serialize(new {
+                        tasks = Model.Tasks,
+                        skills = Model.RequiredSkills,
+                        userSkills = Model.UserSkills,
+                        isVolunteeredForActivity = Model.IsUserVolunteeredForActivity
+                    });
     </script>
     <script type="text/javascript" src="~/js/activity.js"></script>
     <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>

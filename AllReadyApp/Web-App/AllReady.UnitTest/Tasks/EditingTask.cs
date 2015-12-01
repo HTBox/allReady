@@ -10,7 +10,7 @@ namespace AllReady.UnitTest.Tasks
         public void ModelIsCreated()
         {
             var sut = new EditTaskCommandHandler(Context);
-            int actual = sut.Handle(new EditTaskCommand {Task = new TaskEditModel()});
+            int actual = sut.Handle(new EditTaskCommand { Task = new TaskEditModel { TimeZoneId = "Eastern Standard Time"} });            
             Assert.Equal(1, actual);
         }
     }

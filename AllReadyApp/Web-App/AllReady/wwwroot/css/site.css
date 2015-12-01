@@ -275,3 +275,41 @@ Navigation
     font-size: 24pt;
     font-family: sans-serif;
 }
+
+/* version information */
+.version{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 9px;
+}
+
+.thermometer{
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.thermometer-liquid{
+    fill: #d32828;
+}
+
+.thermometer-ticks {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.thermometer-ticks text {
+    display: none;
+}
+.thermometer-left-edge {
+    stroke: black;
+}
+.thermometer-right-edge {
+    stroke: black;
+}
+.thermometer-bulb-outline{
+    stroke: black;
+    stroke-width: 3;
+} 		 

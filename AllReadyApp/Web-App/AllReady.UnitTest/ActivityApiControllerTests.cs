@@ -6,7 +6,7 @@ using AllReady.Models;
 using AllReady.ViewModels;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Data.Entity;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace AllReady.UnitTest
@@ -67,6 +67,33 @@ namespace AllReady.UnitTest
             Assert.Equal(activityViewModel.EndDateTime, DateTime.MaxValue.ToUniversalTime());
             Assert.Equal(activityViewModel.StartDateTime, DateTime.MinValue.ToUniversalTime());
         }
+        [Fact]
+        public void ActivityDoesExist()
+        {
+            // Arrange
+            ActivityApiController controller = GetActivityController();
+
+            // Act
+            int recordId = 1;
+            var activityViewModel = controller.Get(recordId);
+
+            Assert.NotNull(activityViewModel);
+
+        }
+
+        [Fact]
+        public void HandlesInvalidActivityId()
+        {
+            // Arrange
+            ActivityApiController controller = GetActivityController();
+
+            // Act
+            int recordId = -1;
+            var activityViewModel = controller.Get(recordId);
+
+            Assert.Null(activityViewModel);
+
+        }
 
         #region Helper Methods
 
@@ -89,7 +116,6 @@ namespace AllReady.UnitTest
                 {
                     context.Add(activity);
                     context.Add(activity.Campaign);
-                    context.Add(activity.Tenant);
                     activitiesAdded++;
                 }
                 context.SaveChanges();
@@ -127,11 +153,10 @@ namespace AllReady.UnitTest
                     new Activity()
                     {
                         Campaign = campaigns[n - 1],
-                        EndDateTimeUtc = DateTime.MaxValue.ToUniversalTime(),
-                        StartDateTimeUtc = DateTime.MinValue.ToUniversalTime(),
+                        EndDateTime = DateTime.MaxValue.ToUniversalTime(),
+                        StartDateTime = DateTime.MinValue.ToUniversalTime(),
                         Name = string.Format(ActivityNameFormat, n),
                         Description = string.Format(ActivityDescriptionFormat, n),
-                        Tenant = tenants[n - 1],
                         Id = id++
                     }).ToArray();
                 return activities;

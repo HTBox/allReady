@@ -22,7 +22,7 @@ namespace AllReady.Security
         public static bool IsTenantAdmin(this ClaimsPrincipal user, int tenantId)
         {
             int? userTenantId = user.GetTenantId();
-            return user.IsUserType(UserType.SiteAdmin) ||                   
+            return user.IsUserType(UserType.SiteAdmin) ||
                   (user.IsUserType(UserType.TenantAdmin) &&
                    userTenantId.HasValue && userTenantId.Value == tenantId);
         }
@@ -41,6 +41,38 @@ namespace AllReady.Security
             }
 
             return result;
+        }
+
+        public static string GetTimeZoneId(this ClaimsPrincipal user)
+        {
+            string result = null;
+            var timeZoneIdClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.TimeZoneId);
+            if (timeZoneIdClaim != null)
+            {
+                result = timeZoneIdClaim.Value;
+            }
+            return result;
+        }
+
+        public static TimeZoneInfo GetTimeZoneInfo(this ClaimsPrincipal user)
+        {
+            var timeZoneId = user.GetTimeZoneId();
+            if (!string.IsNullOrEmpty(timeZoneId))
+            {
+                return TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+            }
+            return null;
+        }
+
+        public static string GetDisplayName(this ClaimsPrincipal user)
+        {
+            var username = user.GetUserName();
+            if (user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.DisplayName) != null)
+            {
+                username = user.Claims.Single(c => c.Type == ClaimTypes.DisplayName).Value;
+            }
+            return username;
+
         }
 
         public static int? GetTenantId(this ApplicationUser user)

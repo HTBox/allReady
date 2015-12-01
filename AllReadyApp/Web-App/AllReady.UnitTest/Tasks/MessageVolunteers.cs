@@ -5,7 +5,7 @@ using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
 using Microsoft.AspNet.Identity;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -37,10 +37,9 @@ namespace AllReady.UnitTest.Tasks
                 Name = "Queen Anne Fire Prevention Day",
                 Campaign = firePrev,
                 CampaignId = firePrev.Id,
-                StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
-                Tenant = htb,
                 RequiredSkills = new List<ActivitySkill>(),
             };
 
@@ -62,9 +61,8 @@ namespace AllReady.UnitTest.Tasks
                 Activity = queenAnne,
                 Description = "Description of a very important task",
                 Name = "Task # ",
-                EndDateTimeUtc = DateTime.Now.AddDays(1),
-                StartDateTimeUtc = DateTime.Now.AddDays(-3),
-                Tenant = queenAnne.Tenant
+                EndDateTime = DateTime.Now.AddDays(1),
+                StartDateTime = DateTime.Now.AddDays(-3)
             };
             queenAnne.Tasks.Add(task);
             context.Activities.Add(queenAnne);

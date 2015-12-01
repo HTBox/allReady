@@ -13,6 +13,11 @@ namespace AllReady.Models
     {
         public string Name { get; set; }
 
+        [Display(Name = "Email Adddress")]
+        public string EmailAddress { get; set; }
+
+        public bool IsEmailAddressConfirmed { get; set; }
+
         public bool HasPassword { get; set; }
 
         public IList<UserLoginInfo> Logins { get; set; }
@@ -25,6 +30,10 @@ namespace AllReady.Models
 
         [Display(Name = "My skills")]
         public List<UserSkill> AssociatedSkills { get; set; }
+
+        [Display(Name = "Time Zone")]
+        [Required]
+        public string TimeZoneId { get; set; }
     }
 
     public class ManageLoginsViewModel

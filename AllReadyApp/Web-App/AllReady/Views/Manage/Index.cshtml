@@ -9,104 +9,144 @@
 <h2>@ViewData["Title"]</h2>
 <p class="text-success">@ViewData["StatusMessage"]</p>
 <div>
+    <form asp-controller="Manage" asp-action="ResendEmailConfirmation">
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label asp-for="EmailAddress" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    <input type="hidden" asp-for="EmailAddress">
+                    <p class="form-control-static">
+                        <span>
+                            <i class="@(Model.IsEmailAddressConfirmed ? "fa fa-check text-success" : "")"
+                               title="@(Model.IsEmailAddressConfirmed ? "Your email address has been confirmed" : "")"></i> @Model.EmailAddress
+                        </span>
+                        @if (!Model.IsEmailAddressConfirmed)
+                        {
+                            <br />
+                            <div class="alert alert-warning" role="alert">
+                                <i class="fa fa-exclamation-circle"></i> Your email address has not been confirmed.
+                                <br />
+                                allReady cannot send you email notifications until your email adddress has been confirmed.
+                                <br />
+                                Check your inbox for a confirmation email.
+                                <br/>
+                                <button class="btn btn-default" type="submit">Send me a new confirmation email</button>
+                                
+                            </div>
+
+                        }
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </form>
+
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 
         <hr />
-        <div class="form-horizontal">
-            <div class="form-group">
-                <label asp-for="Name" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input type="text" asp-for="Name" class="form-control" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-md-2">Phone number</label>
-                <div class="col-md-10">
-                    <p class="form-control-static">
-                        @(Model.PhoneNumber ?? "None")
-                        @if (Model.PhoneNumber != null)
-                        {
-                            <a asp-controller="Manage" asp-action="AddPhoneNumber">Change</a>
-                            @: &nbsp;|&nbsp;
-                            <a asp-controller="Manage" asp-action="RemovePhoneNumber">Remove</a>
-                        }
-                        else
-                        {
-                            <a asp-controller="Manage" asp-action="AddPhoneNumber">Add</a>
-                        }
-                    </p>
-                </div>
-            </div>
-            @if (User.IsTenantAdmin())
-            {
-                @if (User.IsUserType(UserType.SiteAdmin))
-                {
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Approve users</label>
-                        <div class="col-md-10">
-                            <p class="form-control-static">
-                                <a asp-controller="Site" asp-action="Index" asp-route-area="Admin">Find</a>
-                            </p>
-                        </div>
-                    </div>
-                }
-            }
-            else
-            {
+            <div class="form-horizontal">
                 <div class="form-group">
-                    <label class="control-label col-md-2">External logins</label>
+                    <label asp-for="Name" class="control-label col-md-2"></label>
                     <div class="col-md-10">
-                        <p class="form-control-static">
-                            @Model.Logins.Count [<a asp-controller="Manage" asp-action="ManageLogins">Manage</a>]
-                        </p>
+                        <input type="text" asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
                 </div>
 
-            }
-            <div class="form-group">
-                <label class="control-label col-md-2">Password</label>
-                <div class="col-md-10">
-                    <p class="form-control-static">
-                        @if (Model.HasPassword)
-                        {
-                            <a asp-controller="Manage" asp-action="ChangePassword">Change</a>
-                        }
-                        else
-                        {
-                            <a asp-controller="Manage" asp-action="SetPassword">Create</a>
-                        }
-                    </p>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Phone number</label>
+                    <div class="col-md-10">
+                        <p class="form-control-static">
+                            @(Model.PhoneNumber ?? "None")
+                            @if (Model.PhoneNumber != null)
+                            {
+                                <a asp-controller="Manage" asp-action="AddPhoneNumber">Change</a>
+                                @: &nbsp;|&nbsp;
+                                <a asp-controller="Manage" asp-action="RemovePhoneNumber">Remove</a>
+                            }
+                            else
+                            {
+                                <a asp-controller="Manage" asp-action="AddPhoneNumber">Add</a>
+                            }
+                        </p>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="AssociatedSkills" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <div data-bind="foreach: skills">
-                        <div class="form-inline">
-                            <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
-                            <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
-                            <a href="#" data-bind="click: $root.deleteSkill" title="Delete skill">
-                                <span class="fa fa-remove" aria-hidden="true"></span>
-                                Delete
-                            </a>
+                @if (User.IsTenantAdmin())
+                {
+                    @if (User.IsUserType(UserType.SiteAdmin))
+                    {
+                        <div class="form-group">
+                            <label class="control-label col-md-2">Approve users</label>
+                            <div class="col-md-10">
+                                <p class="form-control-static">
+                                    <a asp-controller="Site" asp-action="Index" asp-route-area="Admin">Find</a>
+                                </p>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="form-group">
+                        <label class="control-label col-md-2">External logins</label>
+                        <div class="col-md-10">
+                            <p class="form-control-static">
+                                @Model.Logins.Count [<a asp-controller="Manage" asp-action="ManageLogins">Manage</a>]
+                            </p>
                         </div>
                     </div>
-                    <a href="#" data-bind="click: addSkill" title="Add skill">
-                        <span class="fa fa-plus" aria-hidden="true"></span>
-                        Add
-                    </a>
+
+                }
+                <div class="form-group">
+                    <label class="control-label col-md-2">Password</label>
+                    <div class="col-md-10">
+                        <p class="form-control-static">
+                            @if (Model.HasPassword)
+                            {
+                                <a asp-controller="Manage" asp-action="ChangePassword">Change</a>
+                            }
+                            else
+                            {
+                                <a asp-controller="Manage" asp-action="SetPassword">Create</a>
+                            }
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  asp-for="TimeZoneId" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <select asp-for="TimeZoneId" asp-items="@SelectListService.GetTimeZones()" class="form-control"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AssociatedSkills" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <div data-bind="foreach: skills">
+                            <div class="form-inline">
+                                <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                                <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                                <a href="#" data-bind="click: $root.deleteSkill" title="Delete skill">
+                                    <span class="fa fa-remove" aria-hidden="true"></span>
+                                    Delete
+                                </a>
+                            </div>
+                        </div>
+                        <a href="#" data-bind="click: addSkill" title="Add skill">
+                            <span class="fa fa-plus" aria-hidden="true"></span>
+                            Add
+                        </a>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button type="submit" class="btn btn-default" data-bind="enable: skills.isValid">Save</button>
+                        <span class="label label-danger" data-bind="visible: !skills.isValid()">"@Html.DisplayNameFor(m => m.AssociatedSkills)" must be unique</span>
+                    </div>
                 </div>
             </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <button type="submit" class="btn btn-default" data-bind="enable: skills.isValid">Save</button>
-                    <span class="label label-danger" data-bind="visible: !skills.isValid()">"@Html.DisplayNameFor(m => m.AssociatedSkills)" must be unique</span>
-                </div>
-            </div>
-        </div>
     }
 </div>
 

@@ -50,9 +50,9 @@
                         <span data-bind="text: Description"></span>
                     </td>
                     <td>
-                        <span data-bind="text: moment(StartDateTime).format('ddd, MMM D, YYYY, h:mm A')"></span>
+                        <span data-bind="text: moment(StartDateTime).utcOffset(StartDateTime).format('ddd, MMM D, YYYY, h:mm A')"></span>
                         to
-                        <span data-bind="text: moment(EndDateTime).format('ddd, MMM D, YYYY, h:mm A')"></span>
+                        <span data-bind="text: moment(EndDateTime).utcOffset(EndDateTime).format('ddd, MMM D, YYYY, h:mm A')"></span>
                     </td>
                 </tr>
                 <!-- /ko -->

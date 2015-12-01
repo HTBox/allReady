@@ -45,6 +45,7 @@
         <input type="hidden" asp-for="ActivityId" />
         <input type="hidden" asp-for="ActivityName" />
         <input type="hidden" asp-for="CampaignId" />
+        <input type="hidden" asp-for="TimeZoneId" />
         <input type="hidden" asp-for="CampaignName" />
         <input type="hidden" asp-for="TenantId" />
         <div class="form-group">
@@ -76,21 +77,23 @@
         <div class="form-group">
             <label asp-for="NumberOfVolunteersRequired" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="NumberOfVolunteersRequired" class="form-control"></input>
+                <input asp-for="NumberOfVolunteersRequired" class="form-control">
                 <span asp-validation-for="NumberOfVolunteersRequired" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
             <label asp-for="StartDateTime" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="StartDateTime" class="form-control datepicker" />
+                <input asp-for="StartDateTime" class="form-control datetimepicker" />
+                <time-zone-name time-zone-id="@Model.TimeZoneId" class="text-muted"></time-zone-name>
                 <span asp-validation-for="StartDateTime" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
             <label asp-for="EndDateTime" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="EndDateTime" class="form-control datepicker" />
+                <input asp-for="EndDateTime" class="form-control datetimepicker" />
+                <time-zone-name time-zone-id="@Model.TimeZoneId" class="text-muted"></time-zone-name>
                 <span asp-validation-for="EndDateTime" class="text-danger"></span>
             </div>
         </div>

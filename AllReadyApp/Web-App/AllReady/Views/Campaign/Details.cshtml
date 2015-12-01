@@ -1,4 +1,7 @@
 ﻿@model CampaignViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
 <div class="row">
     <div id="col-main">
         <div class="col-md-9"><h2>@Model.Name</h2></div>
@@ -12,7 +15,10 @@
 
 <div class="row">
     <div class="col-md-12">
-        <p class="date-address">@Model.StartDate.ToString("D") - @Model.EndDate.ToString("D")</p>
+        <p class="date-address">
+            <time value="Model.StartDate" format="D"></time> - <time value="Model.EndDate" format="D"></time>        
+            <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
+        </p>
     </div>
 </div>
 
@@ -26,16 +32,11 @@
         }
         @Html.Raw(Model.FullDescription)
     </div>
-    <div class="col-md-4">
-        @if (Model.CampaignImpact != null && Model.CampaignImpact.Display)
-        {
-            @Html.Partial("_CampaignImpact")
-        }
-    </div>
+
 </div>
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-8">
         <div class="campaign-sponsor">
             <strong><a asp-controller="Tenant" asp-action="ShowTenant" asp-route-id="@Model.ManagingTenantId">@Model.ManagingTenantName</a></strong>
         </div>
@@ -43,6 +44,7 @@
 </div>
 
 <div class="row">
+
     <div class="col-md-6">
         <h3>Activities for this Campaign</h3>
     </div>
@@ -85,7 +87,13 @@
             <strong>No matching activities.</strong>
         </div>
     </div>
-    <div class="col-md-12">
+    <div class="col-md-2">
+        @if (Model.CampaignImpact != null && Model.CampaignImpact.Display)
+        {
+            @Html.Partial("_CampaignImpact")
+        }
+    </div>
+    <div class="col-md-9">
         <div class="table-responsive">
             <table class="table" data-bind="css: { hide: !activities.filtered().length }">
                 <tr>
@@ -131,4 +139,17 @@
         var modelActivities = @Json.Serialize(Model.Activities);
     </script>
     <script type="text/javascript" src="~/js/campaign.js"></script>
+
+    <script>
+    System.config({
+        baseURL: location.protocol + "//" + location.host + '/js/'
+    });
+
+    System.import('Controls/Thermometer.js').then(function (sys) {
+        if($("[data-control=thermometer]"))
+            new sys.AllReady.Controls.Thermometer($("[data-control=thermometer]"));
+    });;
+
+
+    </script>
 }

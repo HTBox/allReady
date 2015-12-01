@@ -1,7 +1,6 @@
 ﻿///<reference path="../lib/jquery/dist/jquery.js" />
 ///<reference path="../lib/knockout/dist/knockout.js" />
-
-(function (ko, $, tasks, skills, userSkills) {
+(function (ko, $, tasks, skills, userSkills, isVolunteeredForActivity) {
 
     function RequiredSkill(userSkills, skill)
     {
@@ -14,8 +13,11 @@
         this.skills = skills.map(RequiredSkill.bind(null, userSkills));
         tasks = tasks.map(function (task) { task.NotCompleteReason = ko.observable(); return task; });
         this.tasks = ko.observableArray(tasks).filterBeforeDate("EndDateTime").textFilter(["Name", "Description"]);
-        this.enrolled = ko.observable(false);
+        this.enrolled = ko.observable(isVolunteeredForActivity);
+        this.errorUnenrolling = ko.observable(false);
     }
+
+    var activityViewModel;
 
     ActivityViewModel.prototype = {
         enroll: function (activity) {
@@ -31,18 +33,24 @@
             });
         },
         unenroll: function (activity) {
-            // TODO: set up a spinner
+            activityViewModel.errorUnenrolling(false);
+            $("#enrollUnenrollSpinner").show();
             $.ajax({
                 type: "DELETE",
                 url: '/api/activity/' + activity + '/signup',
                 contentType: "application/json",
             }).then(function (data) {
                 activityViewModel.enrolled(false);
+                $("#enrollUnenrollSpinner").hide();
             }).fail(function (fail) {
+                activityViewModel.errorUnenrolling(true);
+                $("#enrollUnenrollSpinner").hide();
                 console.log(fail);
             });
         }
     };
     
-    ko.applyBindings(new ActivityViewModel(tasks, skills, userSkills));
-})(ko, $, modelStuff.tasks, modelStuff.skills, modelStuff.userSkills);
+    activityViewModel = new ActivityViewModel(tasks, skills, userSkills);
+
+    ko.applyBindings(activityViewModel);
+})(ko, $, modelStuff.tasks, modelStuff.skills, modelStuff.userSkills, modelStuff.isVolunteeredForActivity);

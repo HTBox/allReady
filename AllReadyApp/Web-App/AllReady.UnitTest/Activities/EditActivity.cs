@@ -1,7 +1,7 @@
 ﻿using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +27,8 @@ namespace AllReady.UnitTest.Activities
             {
                 Id = 1,
                 Name = "Neighborhood Fire Prevention Days",
-                ManagingTenant = htb
+                ManagingTenant = htb,
+                TimeZoneId = "Central Standard Time"
             };
             htb.Campaigns.Add(firePrev);
             context.Tenants.Add(htb);
@@ -35,7 +36,8 @@ namespace AllReady.UnitTest.Activities
 
             var vm = new ActivityDetailModel
             {
-                CampaignId = 1 
+                CampaignId = 1,
+                TimeZoneId = "Central Standard Time"
             };
             var query = new EditActivityCommand { Activity = vm };
             var handler = new EditActivityCommandHandler(context);
@@ -62,7 +64,8 @@ namespace AllReady.UnitTest.Activities
             {
                 Id = 1,
                 Name = "Neighborhood Fire Prevention Days",
-                ManagingTenant = htb
+                ManagingTenant = htb,
+                TimeZoneId = "Central Standard Time"
             };
             htb.Campaigns.Add(firePrev);
             Activity queenAnne = new Activity()
@@ -71,10 +74,9 @@ namespace AllReady.UnitTest.Activities
                 Name = "Queen Anne Fire Prevention Day",
                 Campaign = firePrev,
                 CampaignId = firePrev.Id,
-                StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
-                Tenant = htb,
                 RequiredSkills = new List<ActivitySkill>()
             };
             context.Tenants.Add(htb);
@@ -83,21 +85,24 @@ namespace AllReady.UnitTest.Activities
 
             const string NEW_NAME = "Some new name value";
 
+            var startDateTime = new DateTime(2015, 7, 12, 4, 15, 0);
+            var endDateTime = new DateTime(2015, 12, 7, 15, 10, 0);
             var vm = new ActivityDetailModel
             {
                 CampaignId = queenAnne.CampaignId,
                 CampaignName = queenAnne.Campaign.Name,
                 Description = queenAnne.Description,
-                EndDateTime = queenAnne.EndDateTimeUtc,
+                EndDateTime = endDateTime,
                 Id = queenAnne.Id,
                 ImageUrl = queenAnne.ImageUrl,
                 Location = null,
                 Name = NEW_NAME,
                 RequiredSkills = queenAnne.RequiredSkills,
-                StartDateTime = queenAnne.StartDateTimeUtc,
+                TimeZoneId = "Central Standard Time",
+                StartDateTime = startDateTime,
                 Tasks = null,
-                TenantId = queenAnne.TenantId,
-                TenantName = queenAnne.Tenant.Name,
+                TenantId = queenAnne.Campaign.ManagingTenantId,
+                TenantName = queenAnne.Campaign.ManagingTenant.Name,
                 Volunteers = null
             };
             var query = new EditActivityCommand { Activity = vm };
@@ -107,6 +112,20 @@ namespace AllReady.UnitTest.Activities
 
             var data = context.Activities.Single(_ => _.Id == result);
             Assert.Equal(NEW_NAME, data.Name);
+
+            Assert.Equal(2015, data.StartDateTime.Year);
+            Assert.Equal(7, data.StartDateTime.Month);
+            Assert.Equal(12, data.StartDateTime.Day);
+            Assert.Equal(4, data.StartDateTime.Hour);
+            Assert.Equal(15, data.StartDateTime.Minute);
+            Assert.Equal(-5, data.StartDateTime.Offset.TotalHours);
+
+            Assert.Equal(2015, data.EndDateTime.Year);
+            Assert.Equal(12, data.EndDateTime.Month);
+            Assert.Equal(7, data.EndDateTime.Day);
+            Assert.Equal(15, data.EndDateTime.Hour);
+            Assert.Equal(10, data.EndDateTime.Minute);
+            Assert.Equal(-6, data.EndDateTime.Offset.TotalHours);
         }
 
     }

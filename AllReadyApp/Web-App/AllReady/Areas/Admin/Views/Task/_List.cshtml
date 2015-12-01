@@ -44,10 +44,10 @@
                     }
 
                     <td>
-                        @(item.StartDateTime.HasValue ? item.StartDateTime.Value.UtcDateTime.ToShortDateString() : "*")
+                        <time value="item.StartDateTime"></time>                        
                     </td>
                     <td>
-                        @(item.EndDateTime.HasValue ? item.EndDateTime.Value.UtcDateTime.ToShortDateString() : "*")
+                        <time value="item.EndDateTime"></time>
                     </td>
                 </tr>
             }

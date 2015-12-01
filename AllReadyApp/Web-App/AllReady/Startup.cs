@@ -5,7 +5,7 @@ using AllReady.Models;
 using AllReady.Services;
 using Autofac;
 using Autofac.Features.Variance;
-using Autofac.Framework.DependencyInjection;
+using Autofac.Extensions.DependencyInjection;
 using MediatR;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
@@ -14,9 +14,11 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Localization;
 using Microsoft.Data.Entity;
 using Microsoft.Dnx.Runtime;
-using Microsoft.Framework.Configuration;
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.PlatformAbstractions;
+using AllReady.Security;
 
 namespace AllReady
 {
@@ -27,6 +29,7 @@ namespace AllReady
             // Setup configuration sources.
             var builder = new ConfigurationBuilder()
                 .SetBasePath(appEnv.ApplicationBasePath)
+                .AddJsonFile("version.json")
                 .AddJsonFile("config.json")
                 .AddJsonFile($"config.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
@@ -58,10 +61,7 @@ namespace AllReady
                 .AddSqlServer()
                 .AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
 
-            services.Configure<AzureStorageSettings>(options =>
-            {
-                options.StorageAccount = Configuration["Data:Storage:AzureStorage"];
-            });
+            services.Configure<AzureStorageSettings>(Configuration.GetSection("Data:Storage"));
             services.Configure<DatabaseSettings>(Configuration.GetSection("Data:DefaultConnection"));
             services.Configure<EmailSettings>(Configuration.GetSection("Email"));
             services.Configure<SampleDataSettings>(Configuration.GetSection("SampleData"));
@@ -79,7 +79,13 @@ namespace AllReady
             });
 
             // Add Identity services to the services container.
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                    {
+                        options.Password.RequiredLength = 10;
+                        options.Password.RequireNonLetterOrDigit = false;
+                        options.Password.RequireDigit = true;
+                        options.Password.RequireUppercase = false;
+                    })
                      .AddEntityFrameworkStores<AllReadyContext>()
                      .AddDefaultTokenProviders();
 
@@ -89,11 +95,6 @@ namespace AllReady
                 options.AddPolicy("TenantAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "TenantAdmin", "SiteAdmin"));
                 options.AddPolicy("SiteAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "SiteAdmin"));
             });
-
-            services.AddCookieAuthentication(options =>
-             {
-                 options.AccessDeniedPath = new PathString("/Home/AccessDenied");
-             });
 
             // Add MVC services to the services container.
             services.AddMvc();
@@ -139,6 +140,7 @@ namespace AllReady
               var c = ctx.Resolve<IComponentContext>();
               return t => c.Resolve(t);
           });
+
             containerBuilder.Register<MultiInstanceFactory>(ctx =>
             {
                 var c = ctx.Resolve<IComponentContext>();
@@ -193,10 +195,9 @@ namespace AllReady
             var usCultureInfo = new CultureInfo("en-US");
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
-                DefaultRequestCulture = new RequestCulture(usCultureInfo),
                 SupportedCultures = new List<CultureInfo>(new[] { usCultureInfo }),
                 SupportedUICultures = new List<CultureInfo>(new[] { usCultureInfo })
-            });
+            }, new RequestCulture(usCultureInfo));
 
             // Add Application Insights to the request pipeline to track HTTP request telemetry data.
             app.UseApplicationInsightsRequestTelemetry();
@@ -215,6 +216,14 @@ namespace AllReady
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            // Setup Cookie Authentication
+            app.UseCookieAuthentication(options =>
+            {
+                options.AccessDeniedPath = new PathString("/Home/AccessDenied");
+            });
+
+
+
             // Track data about exceptions from the application. Should be configured after all error handling middleware in the request pipeline.
             app.UseApplicationInsightsExceptionTelemetry();
 
@@ -232,6 +241,9 @@ namespace AllReady
                 {
                     options.AppId = Configuration["Authentication:Facebook:AppId"];
                     options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                    options.Scope.Add("email");
+                    options.BackchannelHttpHandler = new FacebookBackChannelHandler();
+                    options.UserInformationEndpoint = "https://graph.facebook.com/v2.5/me?fields=id,name,email,first_name,last_name";
                 });
             }
             // app.UseGoogleAuthentication();
@@ -283,5 +295,7 @@ namespace AllReady
                 await sampleData.CreateAdminUser();
             }
         }
+
+        public static void Main(string[] args) => WebApplication.Run<Startup>(args);
     }
 }
