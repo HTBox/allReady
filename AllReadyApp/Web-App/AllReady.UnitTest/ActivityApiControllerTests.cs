@@ -67,6 +67,33 @@ namespace AllReady.UnitTest
             Assert.Equal(activityViewModel.EndDateTime, DateTime.MaxValue.ToUniversalTime());
             Assert.Equal(activityViewModel.StartDateTime, DateTime.MinValue.ToUniversalTime());
         }
+        [Fact]
+        public void ActivityDoesExist()
+        {
+            // Arrange
+            ActivityApiController controller = GetActivityController();
+
+            // Act
+            int recordId = 1;
+            var activityViewModel = controller.Get(recordId);
+
+            Assert.NotNull(activityViewModel);
+
+        }
+
+        [Fact]
+        public void HandlesInvalidActivityId()
+        {
+            // Arrange
+            ActivityApiController controller = GetActivityController();
+
+            // Act
+            int recordId = -1;
+            var activityViewModel = controller.Get(recordId);
+
+            Assert.Null(activityViewModel);
+
+        }
 
         #region Helper Methods
 
