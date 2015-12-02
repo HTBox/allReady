@@ -68,7 +68,6 @@ namespace AllReady.Models
             return _dbContext.ActivitySignup
                         .Include(x => x.User)
                         .Include(x => x.Activity)
-                        .Include(x => x.Activity.Campaign)
                         .ToArray()
                         .Where(x => x.Activity.Id == activityId && x.User.Id == userId)
                         .OrderBy(x => x.Activity.StartDateTime);
@@ -79,7 +78,6 @@ namespace AllReady.Models
             return _dbContext.ActivitySignup
                         .Include(x => x.User)
                         .Include(x => x.Activity)
-                        .Include(x => x.Activity.Campaign)
                         .ToArray()
                         .Where(x => x.User.Id == userId)
                         .OrderBy(x => x.Activity.StartDateTime);
