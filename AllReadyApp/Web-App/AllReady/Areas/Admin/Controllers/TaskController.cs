@@ -40,7 +40,10 @@ namespace AllReady.Areas.Admin.Controllers
                 ActivityName = activity.Name,
                 CampaignId = activity.CampaignId,
                 CampaignName = activity.Campaign.Name,
-                TenantId = activity.Campaign.ManagingTenantId
+                TenantId = activity.Campaign.ManagingTenantId,
+                TimeZoneId = activity.Campaign.TimeZoneId,
+                StartDateTime = activity.StartDateTime.LocalDateTime,
+                EndDateTime = activity.EndDateTime.LocalDateTime,
             };
             return View("Edit", viewModel);
         }
@@ -53,6 +56,15 @@ namespace AllReady.Areas.Admin.Controllers
             if (model.EndDateTime < model.StartDateTime)
             {
                 ModelState.AddModelError("EndDateTime", "Ending time cannot be earlier than the starting time");
+            }
+
+            var activity = _dataAccess.GetActivity(activityId);
+            if ((model.StartDateTime < activity.StartDateTime || model.EndDateTime > activity.EndDateTime) && model.IgnoreWarning == false)
+            {
+                ModelState.AddModelError("", "Although valid, task date and time is out the range of activity date and time of " + 
+                    activity.StartDateTime.LocalDateTime.ToString() + " to " + activity.EndDateTime.LocalDateTime.ToString());
+                ModelState.Remove("IgnoreWarning");
+                model.IgnoreWarning = true;
             }
 
             if (ModelState.IsValid)
@@ -90,6 +102,15 @@ namespace AllReady.Areas.Admin.Controllers
             if (model.EndDateTime < model.StartDateTime)
             {
                 ModelState.AddModelError("EndDateTime", "Ending time cannot be earlier than the starting time");
+            }
+
+            var activity = _dataAccess.GetActivity(model.ActivityId);
+            if ((model.StartDateTime < activity.StartDateTime || model.EndDateTime > activity.EndDateTime) && model.IgnoreWarning == false)
+            {
+                ModelState.AddModelError("", "Although valid, task date and time is out the range of activity date and time of " +
+                    activity.StartDateTime.LocalDateTime.ToString() + " to " + activity.EndDateTime.LocalDateTime.ToString());
+                ModelState.Remove("IgnoreWarning");
+                model.IgnoreWarning = true;
             }
 
             if (ModelState.IsValid)
