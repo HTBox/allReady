@@ -90,8 +90,7 @@ namespace AllReady.Models
             Campaign firePrev = new Campaign()
             {
                 Name = "Neighborhood Fire Prevention Days",
-                ManagingTenant = htb,
-                TimeZoneId = "Central Standard Time"
+                ManagingTenant = htb
             };
             htb.Campaigns.Add(firePrev);
             var smokeDetImpact = new CampaignImpact
@@ -109,36 +108,31 @@ namespace AllReady.Models
                 ManagingTenant = htb,
                 StartDateTime = DateTime.Today.AddMonths(-1).ToUniversalTime(),
                 EndDateTime = DateTime.Today.AddMonths(1).ToUniversalTime(),
-                CampaignImpact = smokeDetImpact,
-                TimeZoneId = "Central Standard Time"
+                CampaignImpact = smokeDetImpact
             };
             htb.Campaigns.Add(smokeDet);
             Campaign financial = new Campaign()
             {
                 Name = "Everyday Financial Safety",
-                ManagingTenant = htb,
-                TimeZoneId = "Central Standard Time"
+                ManagingTenant = htb
             };
             htb.Campaigns.Add(financial);
             Campaign safetyKit = new Campaign()
             {
                 Name = "Simple Safety Kit Building",
-                ManagingTenant = htb,
-                TimeZoneId = "Central Standard Time"
+                ManagingTenant = htb
             };
             htb.Campaigns.Add(safetyKit);
             Campaign carSafe = new Campaign()
             {
                 Name = "Family Safety In the Car",
-                ManagingTenant = htb,
-                TimeZoneId = "Central Standard Time"
+                ManagingTenant = htb
             };
             htb.Campaigns.Add(carSafe);
             Campaign escapePlan = new Campaign()
             {
                 Name = "Be Ready to Get Out: Have a Home Escape Plan",
-                ManagingTenant = htb,
-                TimeZoneId = "Central Standard Time"
+                ManagingTenant = htb
             };
             htb.Campaigns.Add(escapePlan);
             #endregion
