@@ -11,5 +11,7 @@ namespace AllReady.Areas.Admin.Models
     {
         [Display(Name = "Required skills")]
         public IList<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();
+
+        public bool IgnoreWarning { get; set; }
     }
 }
