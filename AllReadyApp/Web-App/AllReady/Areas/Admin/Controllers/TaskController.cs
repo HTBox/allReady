@@ -239,8 +239,8 @@ namespace AllReady.Areas.Admin.Controllers
                     (model.IgnoreTimeRangeWarning == false))
                 {
                     ModelState.AddModelError("", "Although valid, task time is out of range for activity time from " +
-                        activity.StartDateTime.DateTime.ToString() + " to " + activity.EndDateTime.DateTime.ToString() + " " + activity.Campaign.TimeZoneId.ToString());
-                    ModelState.Remove("IgnoreWarning");
+                        activity.StartDateTime.DateTime.ToString("g") + " to " + activity.EndDateTime.DateTime.ToString("g") + " " + activity.Campaign.TimeZoneId.ToString());
+                    ModelState.Remove("IgnoreTimeRangeWarning");
                     model.IgnoreTimeRangeWarning = true;
                 }
             }
