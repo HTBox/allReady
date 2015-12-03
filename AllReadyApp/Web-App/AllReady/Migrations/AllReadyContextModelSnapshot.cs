@@ -308,6 +308,8 @@ namespace AllReady.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<int?>("OwningOrganizationId");
+
                     b.Property<int?>("ParentSkillId");
 
                     b.HasKey("Id");
@@ -564,6 +566,10 @@ namespace AllReady.Migrations
 
             modelBuilder.Entity("AllReady.Models.Skill", b =>
                 {
+                    b.HasOne("AllReady.Models.Tenant")
+                        .WithMany()
+                        .HasForeignKey("OwningOrganizationId");
+
                     b.HasOne("AllReady.Models.Skill")
                         .WithMany()
                         .HasForeignKey("ParentSkillId");
