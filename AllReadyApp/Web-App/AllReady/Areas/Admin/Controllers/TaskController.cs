@@ -40,7 +40,8 @@ namespace AllReady.Areas.Admin.Controllers
                 ActivityName = activity.Name,
                 CampaignId = activity.CampaignId,
                 CampaignName = activity.Campaign.Name,
-                TenantId = activity.Campaign.ManagingTenantId
+                TenantId = activity.Campaign.ManagingTenantId,
+                TimeZoneId = activity.Campaign.TimeZoneId
             };
             return View("Edit", viewModel);
         }
