@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Razor.TagHelpers;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -29,6 +30,9 @@ namespace AllReady.UnitTest.TagHelpers
         [Fact]
         public void ValueShouldBeFormattedUsingDefaultFormat()
         {
+            System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("en-US");
+            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+
             TimeTagHelper tagHelper = new TimeTagHelper();
             tagHelper.Value = new DateTimeOffset(2014, 12, 25, 13, 21, 0, TimeSpan.FromHours(0));
 
