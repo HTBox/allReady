@@ -68,10 +68,10 @@ namespace AllReady.Models
             return _dbContext.ActivitySignup
                         .Include(x => x.User)
                         .Include(x => x.Activity)
-                        .Include(x => x.Activity.Campaign)
-                        .ToArray()
+                        .Include(x => x.Activity.Campaign)                        
                         .Where(x => x.Activity.Id == activityId && x.User.Id == userId)
-                        .OrderBy(x => x.Activity.StartDateTime);
+                        .OrderBy(x => x.Activity.StartDateTime)
+                        .ToArray();
         }
 
         IEnumerable<ActivitySignup> IAllReadyDataAccess.GetActivitySignups(string userId)
@@ -79,10 +79,10 @@ namespace AllReady.Models
             return _dbContext.ActivitySignup
                         .Include(x => x.User)
                         .Include(x => x.Activity)
-                        .Include(x => x.Activity.Campaign)
-                        .ToArray()
+                        .Include(x => x.Activity.Campaign)                        
                         .Where(x => x.User.Id == userId)
-                        .OrderBy(x => x.Activity.StartDateTime);
+                        .OrderBy(x => x.Activity.StartDateTime)
+                        .ToArray();
         }
 
         IEnumerable<TaskSignup> IAllReadyDataAccess.GetTasksAssignedToUser(int activityId, string userId)
