@@ -39,26 +39,14 @@ namespace AllReady.Models
             {
                 return;
             }
-            // new up some data
-            List<Tenant> tenants = new List<Tenant>();
 
             #region postalCodes
             var existingPostalCode = _context.PostalCodes.ToList();
             _context.PostalCodes.AddRange(GetPostalCodes(existingPostalCode));
-            //_context.SaveChanges();
             #endregion
 
-            #region Skills
-            var skills = new List<Skill>();
-            var existingSkills = _context.Skills.ToList();
-            var medical = GetSkill(skills, existingSkills, "Medical", null, "specific enough, right?");
-            var cprCertified = GetSkill(skills, existingSkills, "CPR Certified", medical, "ha ha ha ha, stayin alive");
-            var md = GetSkill(skills, existingSkills, "MD", medical, "Trust me, I'm a doctor");
-            var surgeon = GetSkill(skills, existingSkills, "Surgeon", md, "cut open; sew shut; play 18 holes");
-            _context.Skills.AddRange(skills);
-            //_context.SaveChanges();
-            #endregion
-
+            List<Tenant> tenants = new List<Tenant>();
+            List<Skill> tenantSkills = new List<Skill>();
             List<Location> locations = GetLocations();
             List<ApplicationUser> users = new List<ApplicationUser>();
             List<TaskSignup> taskSignups = new List<TaskSignup>();
@@ -69,6 +57,15 @@ namespace AllReady.Models
             List<Resource> resources = new List<Resource>();
             List<ActivitySignup> activitySignups = new List<ActivitySignup>();
             List<Contact> contacts = GetContacts();
+            var skills = new List<Skill>();
+
+            #region Skills
+            var medical = new Skill() { Name = "Medical", Description = "specific enough, right?" };
+            var cprCertified = new Skill() { Name = "CPR Certified", ParentSkill = medical, Description = "ha ha ha ha, stayin alive" };
+            var md = new Skill() { Name = "MD", ParentSkill = medical, Description = "Trust me, I'm a doctor" };
+            var surgeon = new Skill() { Name = "Surgeon", ParentSkill = md, Description = "cut open; sew shut; play 18 holes" };
+            skills.AddRange(new [] { medical, cprCertified, md, surgeon });
+            #endregion
 
             #region Tenant
             Tenant htb = new Tenant()
@@ -77,13 +74,19 @@ namespace AllReady.Models
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
                 WebUrl = "http://www.htbox.org",
                 Location = locations.FirstOrDefault(),
-                Campaigns = new List<Campaign>(), 
-                TenantContacts = new List<TenantContact>(),
-                
+                Campaigns = new List<Campaign>(),
+                TenantContacts = new List<TenantContact>()
             };
-            
             #endregion
 
+            #region Tenant Skills
+            tenantSkills.Add(new Skill()
+            {
+                Name = "Code Ninja",
+                Description = "Ability to commit flawless code without review or testing",
+                OwningOrganization = htb
+            });
+            #endregion
 
             #region Campaign
 
@@ -353,10 +356,12 @@ namespace AllReady.Models
             #endregion
 
             #region Insert into DB
+            _context.Skills.AddRange(skills);
             _context.Contacts.AddRange(contacts);
             _context.ActivitySkills.AddRange(activitySkills);
             _context.Locations.AddRange(locations);
             _context.Tenants.AddRange(tenants);
+            _context.Skills.AddRange(tenantSkills);
             _context.Tasks.AddRange(tasks);
             _context.Campaigns.AddRange(campaigns);
             _context.Activities.AddRange(activities);
@@ -417,27 +422,6 @@ namespace AllReady.Models
             list.Add(new Contact { FirstName = "Bob", LastName = "Smith", Email = "BobSmith@mailinator.com", PhoneNumber = "999-888-7777" });
             list.Add(new Contact { FirstName = "George", LastName = "Leone", Email = "GeorgeLeone@mailinator.com", PhoneNumber = "999-888-7777" });
             return list;
-        }
-
-
-        private static Skill GetSkill(List<Skill> skills, List<Skill> existingSkills, string skillName, Skill parentSkill = null, string description = null)
-        {
-            Skill skill;
-            if (existingSkills.Any(item => item.Name == skillName))
-            {
-                skill = existingSkills.Single(item => item.Name == skillName);
-            }
-            else
-            {
-                skill = new Skill { Name = skillName };
-                if (parentSkill != null)
-                {
-                    skill.ParentSkill = parentSkill;
-                }
-                skills.Add(skill);
-            }
-            skill.Description = description;
-            return skill;
         }
 
         #region Sample Data Helper methods
