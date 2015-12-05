@@ -10,18 +10,6 @@
     <link rel="stylesheet" href="~/css/campaignStyle.css" asp-file-version="true" />
 </environment>
 
-<div class="row search-banner">
-    <div class="col-md-12 text-center">
-        <input type="search"
-               class="campaign-search "
-               placeholder="Search for campaigns using your zip code"
-               data-bind="value: searchTerm, valueUpdate: 'afterkeydown', event: { keypress: handleEnter }" />
-        <a class="main-search-button" data-bind="click: searchCampaigns" title="Search for campaigns">
-            <img class="campaign-search-button" src="~/images/search-icon.png" alt="Search for campaigns" />
-        </a>
-    </div>
-</div>
-
 <div class="row">
     <div class="col-md-12 text-center">
         <div class="activity-results" data-bind="if: loadingDone">
