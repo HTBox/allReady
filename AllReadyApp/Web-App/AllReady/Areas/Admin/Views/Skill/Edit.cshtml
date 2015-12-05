@@ -1,4 +1,8 @@
 ﻿@model Skill
+@inject AllReady.Services.ISelectListService SelectListService
+@using AllReady.Security;
+@using AllReady.Services;
+
 @{
     var isEdit = Model != null && Model.Id > 0;
     if (isEdit)
@@ -50,6 +54,19 @@
                 </div>
             </div>
         </div>
+        @if (User.IsUserType(UserType.SiteAdmin))
+        {
+            <div class="form-group">
+                <label asp-for="OwningOrganization" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <select asp-for="OwningOrganizationId" asp-items="SelectListService.GetTenants().AddNullOptionToFront()" class="form-control"></select>
+                </div>
+            </div>
+        }
+        else
+        {
+            <input asp-for="OwningOrganizationId" type="hidden" />
+        }
     </div>
     <div class="row">
         <div class="col-md-12">

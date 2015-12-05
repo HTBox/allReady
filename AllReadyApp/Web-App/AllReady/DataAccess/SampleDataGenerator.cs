@@ -64,7 +64,7 @@ namespace AllReady.Models
             var cprCertified = new Skill() { Name = "CPR Certified", ParentSkill = medical, Description = "ha ha ha ha, stayin alive" };
             var md = new Skill() { Name = "MD", ParentSkill = medical, Description = "Trust me, I'm a doctor" };
             var surgeon = new Skill() { Name = "Surgeon", ParentSkill = md, Description = "cut open; sew shut; play 18 holes" };
-            skills.AddRange(new [] { medical, cprCertified, md, surgeon });
+            skills.AddRange(new[] { medical, cprCertified, md, surgeon });
             #endregion
 
             #region Tenant

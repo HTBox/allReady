@@ -43,4 +43,21 @@ namespace AllReady.Services
         }
 
     }
+
+    public static class SelectListExtensions
+    {
+        public static IEnumerable<SelectListItem> AddNullOptionToFront(this IEnumerable<SelectListItem> items, string text = "<None>", string value = "")
+        {
+            var list = items.ToList();
+            list.Insert(0, new SelectListItem() { Text = text, Value = value });
+            return list;
+        }
+
+        public static IEnumerable<SelectListItem> AddNullOptionToEnd(this IEnumerable<SelectListItem> items, string text = "<None>", string value = "")
+        {
+            var list = items.ToList();
+            list.Add(new SelectListItem() { Text = text, Value = value });
+            return list;
+        }
+    }
 }

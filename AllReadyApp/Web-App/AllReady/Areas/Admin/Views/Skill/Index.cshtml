@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<Skill>
+@using AllReady.Security;
+
 @{ ViewData["Title"] = "Skills"; }
 
 <div class="row">
@@ -16,8 +18,15 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Description)
                 </th>
+                @if (User.IsUserType(UserType.SiteAdmin))
+                {
+                    <th>
+                        @Html.DisplayNameFor(model => model.OwningOrganization)
+                    </th>
+                }
                 <th></th>
             </tr>
+
             @foreach (var item in Model.OrderBy(s => s.HierarchicalName)) {
             <tr>
                 <td>
@@ -26,6 +35,12 @@
                 <td>
                     @item.Description
                 </td>
+                @if (User.IsUserType(UserType.SiteAdmin))
+                {
+                    <td>
+                        @(item.OwningOrganization == null ? "" : item.OwningOrganization.Name)
+                    </td>
+                }
                 <td>
                     <a class="btn btn-default" asp-route-area="Admin" asp-controller="Skill" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                     <a class="btn btn-default" asp-route-area="Admin" asp-controller="Skill" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
