@@ -28,7 +28,6 @@ namespace AllReady.Models
                 .Include(z => z.User)
                 .Include(x => x.Activity)
                 .Include(x => x.Activity.UsersSignedUp)
-                .ToArray()
                 .Where(x => x.Activity.Id == id)
                 .Where(x => x.User.Id == userId)
                 .SingleOrDefault();
