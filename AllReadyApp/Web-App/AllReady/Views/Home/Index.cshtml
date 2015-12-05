@@ -3,14 +3,6 @@
     Layout = "_LayoutMainPage";
     @addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
 }
-<div class="row search-banner">
-    <div class="col-md-12 text-center">
-        <input type="search"
-               class="main-search"
-               placeholder="Search for activities using your zip code"
-               data-bind="{ value: searchTerm, valueUpdate: 'afterkeydown', event: { keypress: handleEnter } }" /><a class="main-search-button" data-bind="click: searchActivities" title="Search for activities"><img src="~/images/search_button.png" alt="Search for activities" /></a>
-    </div>
-</div>
 <div class="row">
     <div class="col-md-12 text-center">
         <div data-bind="if: status() === 'noresults'">
