@@ -13,7 +13,7 @@ namespace AllReady.Models
     {
         public string Name { get; set; }
 
-        [Display(Name = "Email Adddress")]
+        [Display(Name = "Email Address")]
         public string EmailAddress { get; set; }
 
         public bool IsEmailAddressConfirmed { get; set; }
