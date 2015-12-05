@@ -41,13 +41,13 @@
 
     <div class="form-horizontal">
         <div asp-validation-summary="ValidationSummary.ModelOnly" class="text-danger"></div>
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <input type="hidden" asp-for="ActivityId" />
         <input type="hidden" asp-for="ActivityName" />
         <input type="hidden" asp-for="CampaignId" />
         <input type="hidden" asp-for="TimeZoneId" />
         <input type="hidden" asp-for="CampaignName" />
         <input type="hidden" asp-for="TenantId" />
+        <input type="hidden" asp-for="IgnoreTimeRangeWarning" />
         <div class="form-group">
             <label asp-for="CampaignName" class="control-label col-md-2"></label>
             <div class="col-md-10">
