@@ -14,10 +14,10 @@ namespace AllReady.Areas.Admin.Features.Tenants
 
         protected override void HandleCore(TenantDeleteCommand message) {
 
-            var tenant = _context.Tenants.SingleOrDefault(t => t.Id == message.Id);
+            var tenant = _context.Organizations.SingleOrDefault(t => t.Id == message.Id);
             if (tenant != null)
             {
-                _context.Tenants.Remove(tenant);
+                _context.Organizations.Remove(tenant);
                 _context.SaveChanges();
             }
         }

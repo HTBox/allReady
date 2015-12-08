@@ -48,10 +48,10 @@ namespace AllReady.ViewModels
                 CampaignName = task.Activity.Campaign.Name;
             }
 
-            if (task.Tenant != null)
+            if (task.Organization != null)
             {
-                TenantId = task.Tenant.Id;
-                TenantName = task.Tenant.Name;
+                TenantId = task.Organization.Id;
+                TenantName = task.Organization.Name;
             }
 
             IsUserSignedUpForTask = false;
