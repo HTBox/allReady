@@ -13,7 +13,7 @@ namespace AllReady.Models
 {
     public class AllReadyContext : IdentityDbContext<ApplicationUser>
     {
-        public virtual DbSet<Tenant> Tenants { get; set; }
+        public virtual DbSet<Organization> Organizations { get; set; }
         public DbSet<ActivitySignup> ActivitySignup { get; set; }
         public DbSet<Campaign> Campaigns { get; set; }
         public DbSet<CampaignImpact> CampaignImpacts { get; set; }
@@ -29,7 +29,7 @@ namespace AllReady.Models
         public DbSet<UserSkill> UserSkills { get; set; }
 
         public DbSet<Contact> Contacts { get; set; }
-        public DbSet<TenantContact> TenantContacts { get; set; }
+        public DbSet<OrganizationContact> OrganizationContacts { get; set; }
         public DbSet<CampaignContact> CampaignContacts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -51,8 +51,8 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<Skill>());
             Map(modelBuilder.Entity<UserSkill>());
             Map(modelBuilder.Entity<ApplicationUser>());
-            Map(modelBuilder.Entity<Tenant>());
-            Map(modelBuilder.Entity<TenantContact>());
+            Map(modelBuilder.Entity<Organization>());
+            Map(modelBuilder.Entity<OrganizationContact>());
             Map(modelBuilder.Entity<CampaignContact>());
             Map(modelBuilder.Entity<Contact>());
             Map(modelBuilder.Entity<CampaignImpact>());
@@ -72,25 +72,22 @@ namespace AllReady.Models
 
         private void Map(EntityTypeBuilder<Contact> builder)
         {
-            builder.HasMany(c => c.TenantContacts);
+            builder.HasMany(c => c.OrganizationContacts);
             builder.HasMany(c => c.CampaignContacts);
         }
 
-        private void Map(EntityTypeBuilder<TenantContact> builder)
+        private void Map(EntityTypeBuilder<OrganizationContact> builder)
         {
-            builder.HasKey(tc => new { tc.TenantId, tc.ContactId, tc.ContactType});
+            builder.HasKey(tc => new { tc.OrganizationId, tc.ContactId, tc.ContactType});
             builder.HasOne(tc => tc.Contact);
-            builder.HasOne(tc => tc.Tenant);
+            builder.HasOne(tc => tc.Organization);
         }
 
-        private void Map(EntityTypeBuilder<Tenant> builder)
+        private void Map(EntityTypeBuilder<Organization> builder)
         {
             builder.HasOne(t => t.Location);
-            builder.HasMany(t => t.TenantContacts);
-            builder.Property(t => t.Name).IsRequired();
-            
-
-
+            builder.HasMany(t => t.OrganizationContacts);
+            builder.Property(t => t.Name).IsRequired();          
         }
 
         private void Map(EntityTypeBuilder<PostalCodeGeo> builder)
@@ -111,11 +108,10 @@ namespace AllReady.Models
         private void Map(EntityTypeBuilder<AllReadyTask> builder)
         {
             builder.HasOne(t => t.Activity);
-            builder.HasOne(t => t.Tenant);
+            builder.HasOne(t => t.Organization);
             builder.HasMany(t => t.AssignedVolunteers);
             builder.HasMany(t => t.RequiredSkills).WithOne(ts => ts.Task);
-            builder.Property(p => p.Name).IsRequired();
-            
+            builder.Property(p => p.Name).IsRequired();            
         }
 
         private void Map(EntityTypeBuilder<TaskSkill> builder)
@@ -138,8 +134,7 @@ namespace AllReady.Models
             builder.HasMany(a => a.Tasks);
             builder.HasMany(a => a.UsersSignedUp);
             builder.HasMany(a => a.RequiredSkills).WithOne(acsk => acsk.Activity);
-            builder.Property(p => p.Name).IsRequired();
-            
+            builder.Property(p => p.Name).IsRequired();            
         }
 
         private void Map(EntityTypeBuilder<ActivitySkill> builder)
@@ -156,19 +151,18 @@ namespace AllReady.Models
         private void Map(EntityTypeBuilder<CampaignSponsors> builder)
         {
             builder.HasOne(s => s.Campaign)
-                   .WithMany(c => c.ParticipatingTenants);
-            builder.HasOne(s => s.Tenant);
+                   .WithMany(c => c.ParticipatingOrganizations);
+            builder.HasOne(s => s.Organization);
         }
 
         private void Map(EntityTypeBuilder<Campaign> builder)
         {
-            builder.HasOne(c => c.ManagingTenant);
+            builder.HasOne(c => c.ManagingOrganization);
             builder.HasOne(c => c.CampaignImpact);
             builder.HasMany(c => c.Activities);
             builder.HasOne(t => t.Location);
             builder.HasMany(t => t.CampaignContacts);
-            builder.Property(a => a.Name).IsRequired();
-            
+            builder.Property(a => a.Name).IsRequired();            
         }
 
         private void Map(EntityTypeBuilder<ApplicationUser> builder)

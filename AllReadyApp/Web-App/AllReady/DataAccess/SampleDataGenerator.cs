@@ -29,7 +29,7 @@ namespace AllReady.Models
         {
             // Avoid polluting the database if there's already something in there.
             if (_context.Locations.Any() ||
-                _context.Tenants.Any() ||
+                _context.Organizations.Any() ||
                 _context.Tasks.Any() ||
                 _context.Campaigns.Any() ||
                 _context.Activities.Any() ||
@@ -40,7 +40,7 @@ namespace AllReady.Models
                 return;
             }
             // new up some data
-            List<Tenant> tenants = new List<Tenant>();
+            List<Organization> tenants = new List<Organization>();
 
             #region postalCodes
             var existingPostalCode = _context.PostalCodes.ToList();
@@ -71,14 +71,14 @@ namespace AllReady.Models
             List<Contact> contacts = GetContacts();
 
             #region Tenant
-            Tenant htb = new Tenant()
+            Organization htb = new Organization()
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
                 WebUrl = "http://www.htbox.org",
                 Location = locations.FirstOrDefault(),
                 Campaigns = new List<Campaign>(), 
-                TenantContacts = new List<TenantContact>(),
+                OrganizationContacts = new List<OrganizationContact>(),
                 
             };
             
@@ -90,7 +90,7 @@ namespace AllReady.Models
             Campaign firePrev = new Campaign()
             {
                 Name = "Neighborhood Fire Prevention Days",
-                ManagingTenant = htb,
+                ManagingOrganization = htb,
                 TimeZoneId = "Central Standard Time"
             };
             htb.Campaigns.Add(firePrev);
@@ -106,7 +106,7 @@ namespace AllReady.Models
             Campaign smokeDet = new Campaign()
             {
                 Name = "Working Smoke Detectors Save Lives",
-                ManagingTenant = htb,
+                ManagingOrganization = htb,
                 StartDateTime = DateTime.Today.AddMonths(-1).ToUniversalTime(),
                 EndDateTime = DateTime.Today.AddMonths(1).ToUniversalTime(),
                 CampaignImpact = smokeDetImpact,
@@ -116,28 +116,28 @@ namespace AllReady.Models
             Campaign financial = new Campaign()
             {
                 Name = "Everyday Financial Safety",
-                ManagingTenant = htb,
+                ManagingOrganization = htb,
                 TimeZoneId = "Central Standard Time"
             };
             htb.Campaigns.Add(financial);
             Campaign safetyKit = new Campaign()
             {
                 Name = "Simple Safety Kit Building",
-                ManagingTenant = htb,
+                ManagingOrganization = htb,
                 TimeZoneId = "Central Standard Time"
             };
             htb.Campaigns.Add(safetyKit);
             Campaign carSafe = new Campaign()
             {
                 Name = "Family Safety In the Car",
-                ManagingTenant = htb,
+                ManagingOrganization = htb,
                 TimeZoneId = "Central Standard Time"
             };
             htb.Campaigns.Add(carSafe);
             Campaign escapePlan = new Campaign()
             {
                 Name = "Be Ready to Get Out: Have a Home Escape Plan",
-                ManagingTenant = htb,
+                ManagingOrganization = htb,
                 TimeZoneId = "Central Standard Time"
             };
             htb.Campaigns.Add(escapePlan);
@@ -356,7 +356,7 @@ namespace AllReady.Models
             _context.Contacts.AddRange(contacts);
             _context.ActivitySkills.AddRange(activitySkills);
             _context.Locations.AddRange(locations);
-            _context.Tenants.AddRange(tenants);
+            _context.Organizations.AddRange(tenants);
             _context.Tasks.AddRange(tasks);
             _context.Campaigns.AddRange(campaigns);
             _context.Activities.AddRange(activities);
@@ -401,7 +401,7 @@ namespace AllReady.Models
             #endregion
 
             #region TennatContacts
-            htb.TenantContacts.Add(new TenantContact { Contact = contacts.First(), Tenant = htb, ContactType = 1 /*Primary*/ });
+            htb.OrganizationContacts.Add(new OrganizationContact { Contact = contacts.First(), Organization = htb, ContactType = 1 /*Primary*/ });
             #endregion
 
             #region Wrap Up DB  
@@ -447,7 +447,7 @@ namespace AllReady.Models
             return list[rand.Next(list.Count)];
         }
 
-        private static List<AllReadyTask> GetSomeTasks(Activity activity, Tenant tenant)
+        private static List<AllReadyTask> GetSomeTasks(Activity activity, Organization tenant)
         {
             List<AllReadyTask> value = new List<AllReadyTask>();
             for (int i = 0; i < 5; i++)
@@ -460,7 +460,7 @@ namespace AllReady.Models
                     Name = "Task # " + i,
                     EndDateTime = DateTime.Now.AddDays(i),
                     StartDateTime = DateTime.Now.AddDays(i - 1),
-                    Tenant = tenant
+                    Organization = tenant
                 });
             }
             return value;
@@ -541,7 +541,7 @@ namespace AllReady.Models
                 user2.EmailConfirmed = true;
                 await _userManager.CreateAsync(user2, _settings.DefaultAdminPassword);
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.UserType, "TenantAdmin"));
-                await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.Tenant, _context.Tenants.First().Id.ToString()));
+                await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.Tenant, _context.Organizations.First().Id.ToString()));
 
                 var user3 = new ApplicationUser { UserName = _settings.DefaultUsername, Email = _settings.DefaultUsername, TimeZoneId = _generalSettings.DefaultTimeZone };
                 user3.EmailConfirmed = true;

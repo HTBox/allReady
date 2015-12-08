@@ -27,8 +27,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Id = c.Id,
                     Name = c.Name,
                     Description = c.Description,
-                    TenantId = c.ManagingTenantId,
-                    TenantName = c.ManagingTenant.Name,
+                    TenantId = c.ManagingOrganizationId,
+                    TenantName = c.ManagingOrganization.Name,
                     TimeZoneId = c.TimeZoneId,
                     StartDate = c.StartDateTime,
                     EndDate = c.EndDateTime

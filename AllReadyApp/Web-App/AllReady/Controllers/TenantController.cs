@@ -19,13 +19,13 @@ namespace AllReady.Controllers
         [Route("Tenants/")]
         public IActionResult Index()
         {
-            return View(_dataAccess.Tenants.Select(t => new TenantViewModel(t)).ToList());
+            return View(_dataAccess.Organziations.Select(t => new TenantViewModel(t)).ToList());
         }
 
         [Route("Tenant/{id}/")]
         public IActionResult ShowTenant(int id)
         {
-            var tenant = _dataAccess.GetTenant(id);
+            var tenant = _dataAccess.GetOrganization(id);
 
             if (tenant == null)
             {

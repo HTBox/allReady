@@ -26,7 +26,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             var campaign = _context.Campaigns
                 .AsNoTracking()
                 .Include(ci => ci.CampaignImpact)
-                .Include(mt => mt.ManagingTenant)
+                .Include(mt => mt.ManagingOrganization)
                 .Include(l => l.Location).ThenInclude(p => p.PostalCode)
                 .Include(c => c.CampaignContacts).ThenInclude(tc => tc.Contact)
                 .SingleOrDefault(c => c.Id == message.CampaignId);
@@ -39,8 +39,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Name = campaign.Name,
                     Description = campaign.Description,
                     FullDescription = campaign.FullDescription,
-                    TenantId = campaign.ManagingTenantId,
-                    TenantName = campaign.ManagingTenant.Name,
+                    TenantId = campaign.ManagingOrganizationId,
+                    TenantName = campaign.ManagingOrganization.Name,
                     ImageUrl = campaign.ImageUrl,
                     TimeZoneId = campaign.TimeZoneId,
                     StartDate = campaign.StartDateTime,

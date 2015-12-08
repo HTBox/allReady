@@ -17,7 +17,7 @@ namespace AllReady.Areas.Admin.Features.Tenants
         }
         public IEnumerable<TenantSummaryModel> Handle(TenantListQuery message)
         {
-            return _context.Tenants.Select(t => new TenantSummaryModel {
+            return _context.Organizations.Select(t => new TenantSummaryModel {
                 Id = t.Id,
                 LogoUrl = t.LogoUrl,
                 Name = t.Name,

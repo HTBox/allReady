@@ -15,12 +15,12 @@ namespace AllReady.Areas.Admin.Features.Tenants
         }
         public TenantDetailModel Handle(TenantDetailQuery message)
         {
-            var t = _context.Tenants
+            var t = _context.Organizations
                  .AsNoTracking()
                 .Include(c => c.Campaigns)
                 .Include(l => l.Location).ThenInclude(p => p.PostalCode)
                 .Include(u => u.Users)
-                .Include(c => c.TenantContacts).ThenInclude(tc => tc.Contact)
+                .Include(c => c.OrganizationContacts).ThenInclude(tc => tc.Contact)
                 .Where(ten => ten.Id == message.Id)
                 .SingleOrDefault();
             if (t == null)
@@ -37,9 +37,9 @@ namespace AllReady.Areas.Admin.Features.Tenants
                 Campaigns = t.Campaigns,
                 Users = t.Users,
             };
-            if (t.TenantContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
+            if (t.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
             {
-                tenant = (TenantDetailModel)t.TenantContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(tenant);
+                tenant = (TenantDetailModel)t.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(tenant);
             }
             return tenant;
         }

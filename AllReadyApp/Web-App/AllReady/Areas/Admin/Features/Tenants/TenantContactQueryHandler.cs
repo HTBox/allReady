@@ -17,10 +17,10 @@ namespace AllReady.Areas.Admin.Features.Tenants
         public ContactInformationModel Handle(TenantContactQuery message)
         {
             var contactInfo = new ContactInformationModel();
-            var t = _context.Tenants
+            var t = _context.Organizations
                 .AsNoTracking()
                .Include(l => l.Location).ThenInclude(p => p.PostalCode)
-               .Include(c => c.TenantContacts).ThenInclude(tc => tc.Contact)
+               .Include(c => c.OrganizationContacts).ThenInclude(tc => tc.Contact)
                .Where(ten => ten.Id == message.Id)
                .SingleOrDefault();
             if (t == null)
@@ -31,7 +31,7 @@ namespace AllReady.Areas.Admin.Features.Tenants
             if (t.Location != null) {
                 contactInfo.Location = t.Location.ToModel();
             }            
-            var contact = t.TenantContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact;
+            var contact = t.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact;
             if (contact != null)
             {
                 //var contact = _context.Contacts.Single(c => c.Id == contactId);

@@ -18,14 +18,14 @@ namespace AllReady.UnitTest.Services
             const int tenantId1 = 1;
             const string tenantName1 = "Tenant Name 1";
 
-            var data = new List<Tenant>
+            var data = new List<Organization>
             {
-                new Tenant
+                new Organization
                 {
                     Id = tenantId1,
                     Name = tenantName1,
                 },
-                 new Tenant
+                 new Organization
                 {
                     Id = 1,
                     Name = "Tenant Name 2",
@@ -33,14 +33,14 @@ namespace AllReady.UnitTest.Services
             }.AsQueryable();
 
 
-            var mockSet = new Mock<DbSet<Tenant>>();
-            mockSet.As<IQueryable<Tenant>>().Setup(m => m.Provider).Returns(data.Provider);
-            mockSet.As<IQueryable<Tenant>>().Setup(m => m.Expression).Returns(data.Expression);
-            mockSet.As<IQueryable<Tenant>>().Setup(m => m.ElementType).Returns(data.ElementType);
-            mockSet.As<IQueryable<Tenant>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
+            var mockSet = new Mock<DbSet<Organization>>();
+            mockSet.As<IQueryable<Organization>>().Setup(m => m.Provider).Returns(data.Provider);
+            mockSet.As<IQueryable<Organization>>().Setup(m => m.Expression).Returns(data.Expression);
+            mockSet.As<IQueryable<Organization>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            mockSet.As<IQueryable<Organization>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
 
             var mockContext = new Mock<AllReadyContext>();
-            mockContext.Setup(c => c.Tenants).Returns(mockSet.Object);
+            mockContext.Setup(c => c.Organizations).Returns(mockSet.Object);
 
             var service = new SelectListService(mockContext.Object);
             var tenants = service.GetTenants().ToList();
