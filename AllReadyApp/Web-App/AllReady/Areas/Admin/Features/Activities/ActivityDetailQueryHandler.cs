@@ -21,7 +21,7 @@ namespace AllReady.Areas.Admin.Features.Activities
 
             var activity = _context.Activities
                 .AsNoTracking()
-                .Include(a => a.Campaign)
+                .Include(a => a.Campaign).ThenInclude(c => c.ManagingTenant)
                 .Include(a => a.Tasks)
                 .Include(a => a.RequiredSkills)
                 .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
@@ -30,27 +30,29 @@ namespace AllReady.Areas.Admin.Features.Activities
             if (activity != null)
             {
                 result = new ActivityDetailModel
-            {
-                Id = activity.Id,
-                CampaignName = activity.Campaign.Name,
-                CampaignId = activity.Campaign.Id,
-                Name = activity.Name,
-                Description = activity.Description,
-                TimeZoneId = activity.Campaign.TimeZoneId,
-                StartDateTime = activity.StartDateTime,
-                EndDateTime = activity.EndDateTime,
-                Volunteers = activity.UsersSignedUp.Select(u => u.User.UserName).ToList(),
-                NumberOfVolunteersRequired = activity.NumberOfVolunteersRequired,
-                Tasks = activity.Tasks.Select(t => new TaskSummaryModel()
                 {
-                    Id = t.Id,
-                    Name = t.Name,
-                    StartDateTime = t.StartDateTime,
-                    EndDateTime = t.EndDateTime,
-                }).OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList(),
-                RequiredSkills = activity.RequiredSkills,
-                ImageUrl = activity.ImageUrl
-            };
+                    Id = activity.Id,
+                    CampaignName = activity.Campaign.Name,
+                    CampaignId = activity.Campaign.Id,
+                    TenantId = activity.Campaign.ManagingTenantId,
+                    TenantName = activity.Campaign.ManagingTenant.Name,
+                    Name = activity.Name,
+                    Description = activity.Description,
+                    TimeZoneId = activity.Campaign.TimeZoneId,
+                    StartDateTime = activity.StartDateTime,
+                    EndDateTime = activity.EndDateTime,
+                    Volunteers = activity.UsersSignedUp.Select(u => u.User.UserName).ToList(),
+                    NumberOfVolunteersRequired = activity.NumberOfVolunteersRequired,
+                    Tasks = activity.Tasks.Select(t => new TaskSummaryModel()
+                    {
+                        Id = t.Id,
+                        Name = t.Name,
+                        StartDateTime = t.StartDateTime,
+                        EndDateTime = t.EndDateTime,
+                    }).OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList(),
+                    RequiredSkills = activity.RequiredSkills,
+                    ImageUrl = activity.ImageUrl
+                };
             }
             return result;
         }
