@@ -69,13 +69,13 @@ namespace AllReady.Areas.Admin.Models
             }
             return campaign;
         }
-        public static Tenant UpdateTenantContact(this Tenant tenant, IPrimaryContactModel contactModel, AllReadyContext _context)
+        public static Organization UpdateTenantContact(this Organization tenant, IPrimaryContactModel contactModel, AllReadyContext _context)
         {
-            if (tenant.TenantContacts == null)
+            if (tenant.OrganizationContacts == null)
             {
-                tenant.TenantContacts = new List<TenantContact>();
+                tenant.OrganizationContacts = new List<OrganizationContact>();
             }
-            var primaryCampaignContact = tenant.TenantContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
+            var primaryCampaignContact = tenant.OrganizationContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
             var contactId = primaryCampaignContact?.ContactId;
             Contact primaryContact;
 
@@ -91,7 +91,7 @@ namespace AllReady.Areas.Admin.Models
             if (string.IsNullOrWhiteSpace(contactInfo) && primaryCampaignContact != null)
             {
                 //Delete
-                _context.TenantContacts.Remove(primaryCampaignContact);
+                _context.OrganizationContacts.Remove(primaryCampaignContact);
                 _context.Remove(primaryCampaignContact);//Not Needed?
                 _context.Remove(primaryCampaignContact.Contact);
 
@@ -106,13 +106,13 @@ namespace AllReady.Areas.Admin.Models
 
                 if (primaryCampaignContact == null)
                 {
-                    primaryCampaignContact = new TenantContact
+                    primaryCampaignContact = new OrganizationContact
                     {
                         Contact = primaryContact,
-                        Tenant = tenant,
+                        Organization = tenant,
                         ContactType = (int)ContactTypes.Primary
                     };
-                    tenant.TenantContacts.Add(primaryCampaignContact);
+                    tenant.OrganizationContacts.Add(primaryCampaignContact);
                     _context.Update(primaryCampaignContact);
                 }
             }

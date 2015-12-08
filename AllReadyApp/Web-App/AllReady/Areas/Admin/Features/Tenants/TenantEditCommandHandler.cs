@@ -18,13 +18,13 @@ namespace AllReady.Areas.Admin.Features.Tenants
         public int Handle(TenantEditCommand message)
         {
             var tenant = _context
-                    .Tenants
+                    .Organizations
                     .Include(l => l.Location).ThenInclude(p => p.PostalCode)
-                    .Include(tc => tc.TenantContacts)
+                    .Include(tc => tc.OrganizationContacts)
                     .SingleOrDefault(t => t.Id == message.Tenant.Id);
             if (tenant == null)
             {
-                tenant = new Tenant();
+                tenant = new Organization();
             }
             tenant.Name = message.Tenant.Name;
             tenant.LogoUrl = message.Tenant.LogoUrl;

@@ -19,7 +19,7 @@ namespace AllReady.UnitTest.Tasks
         protected override void LoadTestData()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            Tenant htb = new Tenant()
+            Organization htb = new Organization()
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
@@ -29,7 +29,7 @@ namespace AllReady.UnitTest.Tasks
             Campaign firePrev = new Campaign()
             {
                 Name = "Neighborhood Fire Prevention Days",
-                ManagingTenant = htb
+                ManagingOrganization = htb
             };
             Activity queenAnne = new Activity()
             {
@@ -54,7 +54,7 @@ namespace AllReady.UnitTest.Tasks
             context.Users.Add(user2);
 
             htb.Campaigns.Add(firePrev);            
-            context.Tenants.Add(htb);
+            context.Organizations.Add(htb);
             
             var task = new AllReadyTask()
             {

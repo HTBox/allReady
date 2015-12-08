@@ -143,7 +143,7 @@ namespace AllReady.UnitTest
                     }).ToArray();
 
                 var tenants = Enumerable.Range(1, 10).Select(n =>
-                    new Tenant()
+                    new Organization()
                     {
                         Name = string.Format(TenantNameFormat, n),
                         Campaigns = new List<Campaign>(new[] { campaigns[n - 1] })

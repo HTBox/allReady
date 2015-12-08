@@ -13,7 +13,7 @@ namespace AllReady.ViewModels
             Campaigns = new List<CampaignViewModel>();
         }
 
-        public TenantViewModel(Tenant tenant)
+        public TenantViewModel(Organization tenant)
         {
             Id = tenant.Id;
             Name = tenant.Name;
