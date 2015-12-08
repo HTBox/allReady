@@ -1,8 +1,6 @@
 ﻿@model IEnumerable<Skill>
 @using AllReady.Security;
 
-@{ ViewData["Title"] = "Skills"; }
-
 <div class="row">
     <div class="cold-md-12">
         <h2>@ViewData["Title"]</h2>
@@ -27,25 +25,26 @@
                 <th></th>
             </tr>
 
-            @foreach (var item in Model.OrderBy(s => s.HierarchicalName)) {
-            <tr>
-                <td>
-                    @item.HierarchicalName
-                </td>
-                <td>
-                    @item.Description
-                </td>
-                @if (User.IsUserType(UserType.SiteAdmin))
-                {
+            @foreach (var item in Model.OrderBy(s => s.HierarchicalName))
+            {
+                <tr>
                     <td>
-                        @(item.OwningOrganization == null ? "" : item.OwningOrganization.Name)
+                        @item.HierarchicalName
                     </td>
-                }
-                <td>
-                    <a class="btn btn-default" asp-route-area="Admin" asp-controller="Skill" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                    <a class="btn btn-default" asp-route-area="Admin" asp-controller="Skill" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
+                    <td>
+                        @item.Description
+                    </td>
+                    @if (User.IsUserType(UserType.SiteAdmin))
+                {
+                        <td>
+                            @(item.OwningOrganization == null ? "" : item.OwningOrganization.Name)
+                        </td>
+                    }
+                    <td>
+                        <a class="btn btn-default" asp-route-area="Admin" asp-controller="Skill" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a class="btn btn-default" asp-route-area="Admin" asp-controller="Skill" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
             }
         </table>
     </div>

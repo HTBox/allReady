@@ -21,10 +21,12 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (User.IsUserType(UserType.SiteAdmin))
             {
+                ViewData["Title"] = "Skills";
                 return View(_dataAccess.Skills);
             }
             else
             {
+                ViewData["Title"] = $"Skills - {_dataAccess.GetTenant(User.GetTenantId().Value).Name}";
                 return View(_dataAccess.Skills.Where(s => s.OwningOrganizationId == User.GetTenantId()));
             }
         }
