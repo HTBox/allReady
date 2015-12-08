@@ -54,7 +54,7 @@ namespace AllReady.Areas.Admin.Controllers
                 AssociatedSkills = user.AssociatedSkills,
                 IsTenantAdmin = user.IsUserType(UserType.TenantAdmin),
                 IsSiteAdmin = user.IsUserType(UserType.SiteAdmin),
-                Tenant = tenantId != null ? _dataAccess.GetTenant(tenantId.Value) : null
+                Tenant = tenantId != null ? _dataAccess.GetOrganization(tenantId.Value) : null
             };
             return View(viewModel);
         }
@@ -166,7 +166,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var tenants = _dataAccess.Tenants
+            var tenants = _dataAccess.Organziations
                 .OrderBy(t => t.Name)
                 .Select(t => new SelectListItem() { Text = t.Name, Value = t.Id.ToString() })
                 .ToList();
@@ -193,7 +193,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                if (_dataAccess.Tenants.Any(t => t.Id == model.TenantId))
+                if (_dataAccess.Organziations.Any(t => t.Id == model.TenantId))
                 {
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.TenantAdmin.ToName()));
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.Tenant, model.TenantId.ToString()));

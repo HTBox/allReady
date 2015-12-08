@@ -11,7 +11,7 @@ namespace AllReady.UnitTest.Campaigns
         protected override void LoadTestData()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            Tenant htb = new Tenant()
+            Organization htb = new Organization()
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
@@ -22,10 +22,10 @@ namespace AllReady.UnitTest.Campaigns
             {
                 Id = 1,
                 Name = "Neighborhood Fire Prevention Days",
-                ManagingTenant = htb
+                ManagingOrganization = htb
             };
             htb.Campaigns.Add(firePrev);
-            context.Tenants.Add(htb);
+            context.Organizations.Add(htb);
             context.SaveChanges();
         }
 

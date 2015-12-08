@@ -91,12 +91,12 @@ namespace AllReady.Areas.Admin.Controllers
                 ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be earlier than the start date");
             }
 
-            CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
-            if (campaign == null ||
-                !User.IsTenantAdmin(campaign.TenantId))
-            {
-                return HttpUnauthorized();
-            }
+                CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
+                if (campaign == null ||
+                    !User.IsTenantAdmin(campaign.TenantId))
+                {
+                    return HttpUnauthorized();
+                }
 
             if (activity.StartDateTime < campaign.StartDate)
             {
@@ -199,7 +199,7 @@ namespace AllReady.Areas.Admin.Controllers
                         return View(activity);
                     }
                 }
-
+                
                 var id = _bus.Send(new EditActivityCommand { Activity = activity });
                 return RedirectToAction("Details", "Activity", new { area = "Admin", id = id });
             }
@@ -253,7 +253,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-            if (!User.IsTenantAdmin(activity.Campaign.ManagingTenantId))
+            if (!User.IsTenantAdmin(activity.Campaign.ManagingOrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -297,7 +297,7 @@ namespace AllReady.Areas.Admin.Controllers
             //TODO: Use a command here
             Activity a = _dataAccess.GetActivity(id);
 
-            a.ImageUrl = await _imageService.UploadActivityImageAsync(a.Id, a.Campaign.ManagingTenantId, file);
+            a.ImageUrl = await _imageService.UploadActivityImageAsync(a.Id, a.Campaign.ManagingOrganizationId, file);
             await _dataAccess.UpdateActivity(a);
 
             return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Edit", id = id });
@@ -305,7 +305,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         private bool UserIsTenantAdminOfActivity(Activity activity)
         {
-            return User.IsTenantAdmin(activity.Campaign.ManagingTenantId);
+            return User.IsTenantAdmin(activity.Campaign.ManagingOrganizationId);
         }
 
         private bool UserIsTenantAdminOfActivity(int activityId)

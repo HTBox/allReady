@@ -26,7 +26,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             task.Name = message.Task.Name;
             task.Description = message.Task.Description;
             task.Activity = _context.Activities.SingleOrDefault(a => a.Id == message.Task.ActivityId);
-            task.Tenant = _context.Tenants.SingleOrDefault(t => t.Id == message.Task.TenantId);
+            task.Organization = _context.Organizations.SingleOrDefault(t => t.Id == message.Task.TenantId);
 
             TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(message.Task.TimeZoneId);
             if (message.Task.StartDateTime.HasValue)

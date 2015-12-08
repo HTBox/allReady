@@ -20,7 +20,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             var campaign = _context.Campaigns
                                   .AsNoTracking()
                                   .Include(c => c.Activities)
-                                  .Include(m => m.ManagingTenant)
+                                  .Include(m => m.ManagingOrganization)
                                   .Include(ci => ci.CampaignImpact)
                                   .Include(c => c.CampaignContacts).ThenInclude(c => c.Contact)
                                   .Include(l => l.Location).ThenInclude(p => p.PostalCode)
@@ -35,8 +35,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Id = campaign.Id,
                     Name = campaign.Name,
                     Description = campaign.Description,
-                    TenantId = campaign.ManagingTenantId,
-                    TenantName = campaign.ManagingTenant.Name,
+                    TenantId = campaign.ManagingOrganizationId,
+                    TenantName = campaign.ManagingOrganization.Name,
                     ImageUrl = campaign.ImageUrl,
                     TimeZoneId = campaign.TimeZoneId,
                     StartDate = campaign.StartDateTime,
@@ -53,8 +53,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                         EndDateTime = a.EndDateTime,
                         CampaignId = campaign.Id,
                         CampaignName = campaign.Name,
-                        TenantId = campaign.ManagingTenantId,
-                        TenantName = campaign.ManagingTenant.Name,
+                        TenantId = campaign.ManagingOrganizationId,
+                        TenantName = campaign.ManagingOrganization.Name,
                         ImageUrl = a.ImageUrl
                     })
                 };
