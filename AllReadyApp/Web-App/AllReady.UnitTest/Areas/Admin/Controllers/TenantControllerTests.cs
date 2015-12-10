@@ -1,4 +1,6 @@
-﻿using AllReady.Areas.Admin.Controllers;
+﻿using System.Collections.Generic;
+using System.Linq;
+using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Models;
 using MediatR;
 using Microsoft.AspNet.Mvc;
@@ -27,14 +29,18 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void CreateNewTenant()
+        public void CreateNewTenantRedirectsToTenantList()
         {
             //arrange
             var sut = new TenantController(MockMediatorCreateTenant().Object);
+            var expectedRouteValues = new {controller = "Tenant", action = "Index"};
             //act
             var result = sut.Create(_stubViewModel);
             //assert
-            Assert.IsType<RedirectToActionResult>(result);
+            Assert.IsType<RedirectToRouteResult>(result);
+            Assert.Equal("areaRoute", ((RedirectToRouteResult) result).RouteName);
+            Assert.Equal("Tenant",((RedirectToRouteResult)result).RouteValues["controller"]); 
+            Assert.Equal("Index",((RedirectToRouteResult)result).RouteValues["action"]); 
         }
 
         [Fact]

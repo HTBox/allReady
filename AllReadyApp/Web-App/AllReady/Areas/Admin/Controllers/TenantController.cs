@@ -53,7 +53,7 @@ namespace AllReady.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 int id = _bus.Send(new TenantEditCommand { Tenant = tenant });
-                return RedirectToAction("Index");
+                return RedirectToRoute("areaRoute", new {controller = "Tenant", action = "Index"});
             }
 
             return View("Create", tenant);
