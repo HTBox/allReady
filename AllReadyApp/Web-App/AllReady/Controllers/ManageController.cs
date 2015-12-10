@@ -75,7 +75,7 @@ namespace AllReady.Controllers
             }
             var user = GetCurrentUser();
             var shouldRefreshSignin = false;
-            if (!string.IsNullOrEmpty(user.Name))
+            if (!string.IsNullOrEmpty(model.Name))
             {
                 user.Name = model.Name;
                 await _userManager.RemoveClaimsAsync(user, User.Claims.Where(c => c.Type == Security.ClaimTypes.DisplayName));
