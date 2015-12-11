@@ -20,7 +20,7 @@
             <div class="@(string.IsNullOrEmpty(Model.ImageUrl) ? "col-sm-12" : "col-sm-10" )">
                 <h2>@Model.Title</h2>
                 <p class="date-address"><time value="Model.StartDateTime" format="F"></time> - <time value="Model.EndDateTime" format="F"></time>
-<em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em></p>
+            <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em></p>
             @if (!string.IsNullOrEmpty(userTimeZoneId) && Model.TimeZoneId != userTimeZoneId)
             {
                 <p>
@@ -205,14 +205,14 @@
                                 <div class="form-group">
                                     <label asp-for="SignupModel.PreferredEmail" class="control-label col-md-4"></label>
                                     <div class="col-md-8">
-                                        <input type="text" asp-for="SignupModel.PreferredEmail" class="form-control" />
+                                        <input type="text" asp-for="SignupModel.PreferredEmail" class="form-control" placeholder="email_address@your_provider.com" />
                                         <span asp-validation-for="SignupModel.PreferredEmail" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="SignupModel.PreferredPhoneNumber" class="control-label col-md-4"></label>
                                     <div class="col-md-8">
-                                        <input type="text" asp-for="SignupModel.PreferredPhoneNumber" class="form-control" />
+                                        <input type="text" id="phone-input" asp-for="SignupModel.PreferredPhoneNumber" class="form-control" placeholder="(XXX) XXX-XXXX" />
                                         <span asp-validation-for="SignupModel.PreferredPhoneNumber" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -283,6 +283,44 @@
                         userSkills = Model.UserSkills,
                         isVolunteeredForActivity = Model.IsUserVolunteeredForActivity
                     });
+
+        $('#phone-input')
+            .keydown(function (e) {
+	        var key = e.charCode || e.keyCode || 0;
+	        $phonenumber = $(this);
+	        if (key !== 8 && key !== 9) {
+	            if ($phonenumber.val().length === 4) {
+	                $phonenumber.val($phonenumber.val() + ')');
+	            }
+	            if ($phonenumber.val().length === 5) {
+	                $phonenumber.val($phonenumber.val() + ' ');
+	            }			
+	            if ($phonenumber.val().length === 9) {
+	                $phonenumber.val($phonenumber.val() + '-');
+	            }
+	        }
+                return (key == 8 || 
+				    key == 9 ||
+				    key == 46 ||
+				    (key >= 48 && key <= 57) ||
+				    (key >= 96 && key <= 105));	
+            })
+            .bind('focus click', function () {
+                $phonenumber = $(this);
+                if ($phonenumber.val().length === 0) {
+                    $phonenumber.val('(');
+                }
+                else {
+	                var val = $phone.val();
+	                $phonenumber.val('').val(val);
+                }
+            })
+            .blur(function () {
+                $phonenumber = $(this);
+                if ($phonenumber.val() === '(') {
+                    $phonenumber.val('');
+                }
+            });
     </script>
     <script type="text/javascript" src="~/js/activity.js"></script>
     <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
