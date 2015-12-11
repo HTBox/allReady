@@ -14,7 +14,7 @@ using System;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("TenantAdmin")]
+    [Authorize("OrgAdmin")]
     public class TaskController : Controller
     {
         private readonly IAllReadyDataAccess _dataAccess;

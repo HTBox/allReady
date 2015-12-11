@@ -47,8 +47,8 @@ namespace AllReady.Models
             _context.PostalCodes.AddRange(GetPostalCodes(existingPostalCode));
             #endregion
 
-            List<Tenant> tenants = new List<Tenant>();
-            List<Skill> tenantSkills = new List<Skill>();
+            List<Organization> organizations = new List<Organization>();
+            List<Skill> organizationSkills = new List<Skill>();
             List<Location> locations = GetLocations();
             List<ApplicationUser> users = new List<ApplicationUser>();
             List<TaskSignup> taskSignups = new List<TaskSignup>();
@@ -83,7 +83,7 @@ namespace AllReady.Models
             #endregion
             
             #region Tenant Skills
-            tenantSkills.Add(new Skill()
+            organizationSkills.Add(new Skill()
             {
                 Name = "Code Ninja",
                 Description = "Ability to commit flawless code without review or testing",

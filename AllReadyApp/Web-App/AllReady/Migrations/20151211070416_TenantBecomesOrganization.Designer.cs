@@ -8,7 +8,7 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    [Migration("20151208185505_TenantBecomesOrganization")]
+    [Migration("20151211070416_TenantBecomesOrganization")]
     partial class TenantBecomesOrganization
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -337,6 +337,8 @@ namespace AllReady.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<int?>("OwningOrganizationId");
+
                     b.Property<int?>("ParentSkillId");
 
                     b.HasKey("Id");
@@ -583,6 +585,10 @@ namespace AllReady.Migrations
 
             modelBuilder.Entity("AllReady.Models.Skill", b =>
                 {
+                    b.HasOne("AllReady.Models.Organization")
+                        .WithMany()
+                        .HasForeignKey("OwningOrganizationId");
+
                     b.HasOne("AllReady.Models.Skill")
                         .WithMany()
                         .HasForeignKey("ParentSkillId");

@@ -18,6 +18,7 @@ namespace AllReady.Migrations
             migrationBuilder.DropForeignKey(name: "FK_CampaignContact_Campaign_CampaignId", table: "CampaignContact");
             migrationBuilder.DropForeignKey(name: "FK_CampaignContact_Contact_ContactId", table: "CampaignContact");
             migrationBuilder.DropForeignKey(name: "FK_CampaignSponsors_Tenant_TenantId", table: "CampaignSponsors");
+            migrationBuilder.DropForeignKey(name: "FK_Skill_Tenant_OwningOrganizationId", table: "Skill");
             migrationBuilder.DropForeignKey(name: "FK_TaskSkill_Skill_SkillId", table: "TaskSkill");
             migrationBuilder.DropForeignKey(name: "FK_TaskSkill_AllReadyTask_TaskId", table: "TaskSkill");
             migrationBuilder.DropForeignKey(name: "FK_UserSkill_Skill_SkillId", table: "UserSkill");
@@ -159,6 +160,13 @@ namespace AllReady.Migrations
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
             migrationBuilder.AddForeignKey(
+                name: "FK_Skill_Organization_OwningOrganizationId",
+                table: "Skill",
+                column: "OwningOrganizationId",
+                principalTable: "Organization",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+            migrationBuilder.AddForeignKey(
                 name: "FK_TaskSkill_Skill_SkillId",
                 table: "TaskSkill",
                 column: "SkillId",
@@ -234,6 +242,7 @@ namespace AllReady.Migrations
             migrationBuilder.DropForeignKey(name: "FK_CampaignContact_Campaign_CampaignId", table: "CampaignContact");
             migrationBuilder.DropForeignKey(name: "FK_CampaignContact_Contact_ContactId", table: "CampaignContact");
             migrationBuilder.DropForeignKey(name: "FK_CampaignSponsors_Organization_OrganizationId", table: "CampaignSponsors");
+            migrationBuilder.DropForeignKey(name: "FK_Skill_Organization_OwningOrganizationId", table: "Skill");
             migrationBuilder.DropForeignKey(name: "FK_TaskSkill_Skill_SkillId", table: "TaskSkill");
             migrationBuilder.DropForeignKey(name: "FK_TaskSkill_AllReadyTask_TaskId", table: "TaskSkill");
             migrationBuilder.DropForeignKey(name: "FK_UserSkill_Skill_SkillId", table: "UserSkill");
@@ -371,6 +380,13 @@ namespace AllReady.Migrations
                 name: "FK_CampaignSponsors_Tenant_TenantId",
                 table: "CampaignSponsors",
                 column: "TenantId",
+                principalTable: "Tenant",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+            migrationBuilder.AddForeignKey(
+                name: "FK_Skill_Tenant_OwningOrganizationId",
+                table: "Skill",
+                column: "OwningOrganizationId",
                 principalTable: "Tenant",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
