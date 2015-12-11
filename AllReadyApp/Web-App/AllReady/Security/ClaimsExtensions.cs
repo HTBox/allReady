@@ -23,7 +23,7 @@ namespace AllReady.Security
         {
             int? userTenantId = user.GetTenantId();
             return user.IsUserType(UserType.SiteAdmin) ||
-                  (user.IsUserType(UserType.TenantAdmin) &&
+                  (user.IsUserType(UserType.OrgAdmin) &&
                    userTenantId.HasValue && userTenantId.Value == tenantId);
         }
 

@@ -17,15 +17,15 @@ namespace AllReady.Models
         public string FullDescription { get; set; }
 
         [Display(Name = "Managing Organization")]
-        public int ManagingTenantId { get; set; }
-        public Tenant ManagingTenant { get; set; }
+        public int ManagingOrganizationId { get; set; }
+        public Organization ManagingOrganization { get; set; }
         [Display(Name = "Image URL")]
         public string ImageUrl { get; set; }
 
         /// <summary>
-        /// Collection of Tenants that are supporting this campaign
+        /// Collection of <see cref="Organization"/>s that are supporting this campaign
         /// </summary>
-        public List<CampaignSponsors> ParticipatingTenants { get; set; }
+        public List<CampaignSponsors> ParticipatingOrganizations { get; set; }
 
         [Display(Name = "Time Zone")]
         [Required]

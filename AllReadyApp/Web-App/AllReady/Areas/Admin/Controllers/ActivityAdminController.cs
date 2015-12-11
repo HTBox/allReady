@@ -23,7 +23,7 @@ using AllReady.Extensions;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("TenantAdmin")]
+    [Authorize("OrgAdmin")]
     public class ActivityController : Controller
     {
         private readonly IAllReadyDataAccess _dataAccess;
@@ -253,7 +253,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-            if (!User.IsTenantAdmin(activity.Campaign.ManagingTenantId))
+            if (!User.IsTenantAdmin(activity.Campaign.ManagingOrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -297,7 +297,7 @@ namespace AllReady.Areas.Admin.Controllers
             //TODO: Use a command here
             Activity a = _dataAccess.GetActivity(id);
 
-            a.ImageUrl = await _imageService.UploadActivityImageAsync(a.Id, a.Campaign.ManagingTenantId, file);
+            a.ImageUrl = await _imageService.UploadActivityImageAsync(a.Id, a.Campaign.ManagingOrganizationId, file);
             await _dataAccess.UpdateActivity(a);
 
             return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Edit", id = id });
@@ -305,7 +305,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         private bool UserIsTenantAdminOfActivity(Activity activity)
         {
-            return User.IsTenantAdmin(activity.Campaign.ManagingTenantId);
+            return User.IsTenantAdmin(activity.Campaign.ManagingOrganizationId);
         }
 
         private bool UserIsTenantAdminOfActivity(int activityId)

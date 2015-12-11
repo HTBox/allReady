@@ -15,7 +15,7 @@ namespace AllReady.UnitTest.Activities
         public void ActivityDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            Tenant htb = new Tenant()
+            Organization htb = new Organization()
             {
                 Id = 123,
                 Name = "Humanitarian Toolbox",
@@ -27,11 +27,11 @@ namespace AllReady.UnitTest.Activities
             {
                 Id = 1,
                 Name = "Neighborhood Fire Prevention Days",
-                ManagingTenant = htb,
+                ManagingOrganization = htb,
                 TimeZoneId = "Central Standard Time"
             };
             htb.Campaigns.Add(firePrev);
-            context.Tenants.Add(htb);
+            context.Organizations.Add(htb);
             context.SaveChanges();
 
             var vm = new ActivityDetailModel
@@ -52,7 +52,7 @@ namespace AllReady.UnitTest.Activities
         public void ExistingActivity()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            Tenant htb = new Tenant()
+            Organization htb = new Organization()
             {
                 Id = 123,
                 Name = "Humanitarian Toolbox",
@@ -64,7 +64,7 @@ namespace AllReady.UnitTest.Activities
             {
                 Id = 1,
                 Name = "Neighborhood Fire Prevention Days",
-                ManagingTenant = htb,
+                ManagingOrganization = htb,
                 TimeZoneId = "Central Standard Time"
             };
             htb.Campaigns.Add(firePrev);
@@ -79,7 +79,7 @@ namespace AllReady.UnitTest.Activities
                 Location = new Location { Id = 1 },
                 RequiredSkills = new List<ActivitySkill>()
             };
-            context.Tenants.Add(htb);
+            context.Organizations.Add(htb);
             context.Activities.Add(queenAnne);
             context.SaveChanges();
 
@@ -101,8 +101,8 @@ namespace AllReady.UnitTest.Activities
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = startDateTime,
                 Tasks = null,
-                TenantId = queenAnne.Campaign.ManagingTenantId,
-                TenantName = queenAnne.Campaign.ManagingTenant.Name,
+                TenantId = queenAnne.Campaign.ManagingOrganizationId,
+                TenantName = queenAnne.Campaign.ManagingOrganization.Name,
                 Volunteers = null
             };
             var query = new EditActivityCommand { Activity = vm };

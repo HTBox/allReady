@@ -21,7 +21,7 @@ namespace AllReady.Areas.Admin.Features.Activities
 
             var activity = _context.Activities
                 .AsNoTracking()
-                .Include(a => a.Campaign).ThenInclude(c => c.ManagingTenant)
+                .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
                 .Include(a => a.Tasks)
                 .Include(a => a.RequiredSkills)
                 .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
@@ -34,8 +34,8 @@ namespace AllReady.Areas.Admin.Features.Activities
                     Id = activity.Id,
                     CampaignName = activity.Campaign.Name,
                     CampaignId = activity.Campaign.Id,
-                    TenantId = activity.Campaign.ManagingTenantId,
-                    TenantName = activity.Campaign.ManagingTenant.Name,
+                    TenantId = activity.Campaign.ManagingOrganizationId,
+                    TenantName = activity.Campaign.ManagingOrganization.Name,
                     Name = activity.Name,
                     Description = activity.Description,
                     TimeZoneId = activity.Campaign.TimeZoneId,

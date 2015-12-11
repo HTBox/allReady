@@ -12,7 +12,7 @@ namespace AllReady.Areas.Admin.Models
         public string UserId { get; set; }
         [Display(Name = "User name")]
         public string UserName { get; set; }
-        public Tenant Tenant { get; set; }
+        public Organization Tenant { get; set; }
         [Display(Name = "Is organization admin?")]
         public bool IsTenantAdmin { get; set; }
         [Display(Name = "Is site admin?")]

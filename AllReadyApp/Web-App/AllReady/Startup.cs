@@ -92,7 +92,7 @@ namespace AllReady
             // Add Authorization rules for the app
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("TenantAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "TenantAdmin", "SiteAdmin"));
+                options.AddPolicy("OrgAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "OrgAdmin", "SiteAdmin"));
                 options.AddPolicy("SiteAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "SiteAdmin"));
             });
 

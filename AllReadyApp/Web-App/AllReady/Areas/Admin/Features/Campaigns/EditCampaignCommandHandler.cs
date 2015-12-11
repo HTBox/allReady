@@ -39,7 +39,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.StartDateTime = new DateTimeOffset(message.Campaign.StartDate.Year, message.Campaign.StartDate.Month, message.Campaign.StartDate.Day, 0, 0, 0, startDateTimeOffset);
             var endDateTimeOffset = timeZoneInfo.GetUtcOffset(message.Campaign.EndDate);
             campaign.EndDateTime = new DateTimeOffset(message.Campaign.EndDate.Year, message.Campaign.EndDate.Month, message.Campaign.EndDate.Day, 23, 59, 59, endDateTimeOffset);
-            campaign.ManagingTenantId = message.Campaign.TenantId;
+            campaign.ManagingOrganizationId = message.Campaign.TenantId;
             campaign.ImageUrl = message.Campaign.ImageUrl;
 
             campaign = campaign.UpdateCampaignContact(message.Campaign, _context);
