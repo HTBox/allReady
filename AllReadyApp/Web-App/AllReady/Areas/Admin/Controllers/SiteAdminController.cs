@@ -52,7 +52,7 @@ namespace AllReady.Areas.Admin.Controllers
                 UserId = userId,
                 UserName = user.UserName,
                 AssociatedSkills = user.AssociatedSkills,
-                IsTenantAdmin = user.IsUserType(UserType.TenantAdmin),
+                IsTenantAdmin = user.IsUserType(UserType.OrgAdmin),
                 IsSiteAdmin = user.IsUserType(UserType.SiteAdmin),
                 Tenant = tenantId != null ? _dataAccess.GetOrganization(tenantId.Value) : null
             };
@@ -81,7 +81,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
             await _dataAccess.UpdateUser(user);
 
-            var tenantAdminClaim = new Claim(Security.ClaimTypes.UserType, "TenantAdmin");
+            var tenantAdminClaim = new Claim(Security.ClaimTypes.UserType, "OrgAdmin");
             if (viewModel.IsTenantAdmin)
             {
                 //add tenant admin claim
@@ -96,7 +96,7 @@ namespace AllReady.Areas.Admin.Controllers
                     return Redirect("Error");
                 }
             }
-            else if (user.IsUserType(UserType.TenantAdmin))
+            else if (user.IsUserType(UserType.OrgAdmin))
             {
                 //remove tenant admin claim
                 var result = await _userManager.RemoveClaimAsync(user, tenantAdminClaim);
@@ -161,7 +161,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult AssignTenantAdmin(string userId)
         {
             var user = _dataAccess.GetUser(userId);
-            if (user.IsUserType(UserType.TenantAdmin) || user.IsUserType(UserType.SiteAdmin))
+            if (user.IsUserType(UserType.OrgAdmin) || user.IsUserType(UserType.SiteAdmin))
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -195,7 +195,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 if (_dataAccess.Organziations.Any(t => t.Id == model.TenantId))
                 {
-                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.TenantAdmin.ToName()));
+                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.OrgAdmin.ToName()));
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.Tenant, model.TenantId.ToString()));
                     return RedirectToAction(nameof(Index));
                 }

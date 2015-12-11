@@ -584,7 +584,7 @@ namespace AllReady.Migrations
 
             modelBuilder.Entity("AllReady.Models.Skill", b =>
                 {
-                    b.HasOne("AllReady.Models.Tenant")
+                    b.HasOne("AllReady.Models.Organization")
                         .WithMany()
                         .HasForeignKey("OwningOrganizationId");
 
