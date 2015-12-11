@@ -23,7 +23,7 @@ using AllReady.Extensions;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("TenantAdmin")]
+    [Authorize("OrgAdmin")]
     public class ActivityController : Controller
     {
         private readonly IAllReadyDataAccess _dataAccess;

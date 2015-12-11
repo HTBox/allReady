@@ -43,7 +43,7 @@ namespace AllReady.UnitTest.Security
                         }
                     ));
 
-            Assert.False(principal.IsUserType(UserType.TenantAdmin));
+            Assert.False(principal.IsUserType(UserType.OrgAdmin));
         }
 
 
@@ -54,11 +54,11 @@ namespace AllReady.UnitTest.Security
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.UserType, "TenantAdmin")
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin")
                         }
                     ));
 
-            Assert.True(principal.IsUserType(UserType.TenantAdmin));
+            Assert.True(principal.IsUserType(UserType.OrgAdmin));
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace AllReady.UnitTest.Security
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.UserType, "TenantAdmin")
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin")
                         }
                     ));
 
@@ -84,12 +84,12 @@ namespace AllReady.UnitTest.Security
                         new[]
                         {
                             new Claim(AllReady.Security.ClaimTypes.UserType, "SiteAdmin"),
-                            new Claim(AllReady.Security.ClaimTypes.UserType, "TenantAdmin"),
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"),
                         }
                     ));
 
             Assert.True(principal.IsUserType(UserType.SiteAdmin));
-            Assert.True(principal.IsUserType(UserType.TenantAdmin));
+            Assert.True(principal.IsUserType(UserType.OrgAdmin));
         }
 
         [Fact]
@@ -142,7 +142,7 @@ namespace AllReady.UnitTest.Security
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.UserType, "TenantAdmin")
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin")
                         }
                     ));
 
@@ -156,7 +156,7 @@ namespace AllReady.UnitTest.Security
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.UserType, "TenantAdmin"),
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"),
                             new Claim(AllReady.Security.ClaimTypes.Tenant, "2")
                         }
                     ));
@@ -171,7 +171,7 @@ namespace AllReady.UnitTest.Security
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.UserType, "TenantAdmin"),
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"),
                             new Claim(AllReady.Security.ClaimTypes.Tenant, "2")
                         }
                     ));

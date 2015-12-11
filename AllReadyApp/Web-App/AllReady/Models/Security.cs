@@ -3,7 +3,7 @@
     public enum UserType
   {
     BasicUser,
-    TenantAdmin,
+    OrgAdmin,
     SiteAdmin
   }
 }

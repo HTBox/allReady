@@ -1,7 +1,7 @@
 ﻿@using System.Security.Claims
 @using AllReady.Security
 
-@if (User.IsUserType(UserType.SiteAdmin) || User.IsUserType(UserType.TenantAdmin))
+@if (User.IsUserType(UserType.SiteAdmin) || User.IsUserType(UserType.OrgAdmin))
 {
     <li class="dropdown dropdown-admin">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">

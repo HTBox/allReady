@@ -12,7 +12,7 @@ namespace AllReady.Models
         public string Description { get; set; }
         public int? OwningOrganizationId { get; set; }
         [Display(Name = "Owning organization")]
-        public Tenant OwningOrganization { get; set; }
+        public Organization OwningOrganization { get; set; }
         public int? ParentSkillId { get; set; }
         [Display(Name = "Parent skill")]
         public virtual Skill ParentSkill { get; set; }

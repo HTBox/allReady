@@ -81,7 +81,7 @@ namespace AllReady.Controllers
                     {
                         return RedirectToAction(nameof(SiteController.Index), "Site", new { area = "Admin" });
                     }
-                    else if (user.IsUserType(UserType.TenantAdmin))
+                    else if (user.IsUserType(UserType.OrgAdmin))
                         {
                             return base.RedirectToAction(nameof(Areas.Admin.Controllers.TenantController.Index), "Tenant", new { area = "Admin" });
                         }
