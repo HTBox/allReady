@@ -7,7 +7,7 @@ using System.Linq;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("SiteAdmin")]
+    [Authorize("TenantAdmin")]
     public class SkillController : Controller
     {
         private readonly IAllReadyDataAccess _dataAccess;
@@ -19,12 +19,21 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            return View(_dataAccess.Skills);
+            if (User.IsUserType(UserType.SiteAdmin))
+            {
+                ViewData["Title"] = "Skills";
+                return View(_dataAccess.Skills);
+            }
+            else
+            {
+                ViewData["Title"] = $"Skills - {_dataAccess.GetTenant(User.GetTenantId().Value).Name}";
+                return View(_dataAccess.Skills.Where(s => s.OwningOrganizationId == User.GetTenantId()));
+            }
         }
 
         public IActionResult Create()
         {
-            return View("Edit").WithSkills(_dataAccess); //Append skills as-is
+            return View("Edit").WithSkills(_dataAccess, !User.IsUserType(UserType.SiteAdmin) ? User.GetTenantId() : null);
         }
 
         [HttpPost]
@@ -33,11 +42,15 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (!User.IsUserType(UserType.SiteAdmin))
+                {
+                    skill.OwningOrganizationId = User.GetTenantId();
+                }
                 _dataAccess.AddSkill(skill).Wait();
                 return RedirectToAction("Index", new { area = "Admin" });
             }
 
-            return View("Edit", skill).WithSkills(_dataAccess);
+            return View("Edit", skill).WithSkills(_dataAccess, !User.IsUserType(UserType.SiteAdmin) ? User.GetTenantId() : null);
         }
 
         public IActionResult Edit(int id)
@@ -48,7 +61,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            return View(skill).WithSkills(_dataAccess);
+            return View(skill).WithSkills(_dataAccess, !User.IsUserType(UserType.SiteAdmin) ? User.GetTenantId() : null);
         }
 
         [HttpPost]
@@ -60,7 +73,7 @@ namespace AllReady.Areas.Admin.Controllers
                 _dataAccess.UpdateSkill(skill).Wait();
                 return RedirectToAction("Index", new { area = "Admin" });
             }
-            return View(skill).WithSkills(_dataAccess);
+            return View(skill).WithSkills(_dataAccess, !User.IsUserType(UserType.SiteAdmin) ? User.GetTenantId() : null);
         }
 
         public IActionResult Delete(int id)

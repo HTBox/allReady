@@ -46,12 +46,12 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (activity == null)
             {
-                return new HttpStatusCodeResult(404);
+                return HttpNotFound();
             }
 
             if (!User.IsTenantAdmin(activity.TenantId))
             {
-                return new HttpUnauthorizedResult();
+                return HttpUnauthorized();
             }
 
             return View(activity);
@@ -64,7 +64,7 @@ namespace AllReady.Areas.Admin.Controllers
             CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
             if (campaign == null || !User.IsTenantAdmin(campaign.TenantId))
             {
-                return new HttpUnauthorizedResult();
+                return HttpUnauthorized();
             }
 
             var activity = new ActivityDetailModel
@@ -141,12 +141,12 @@ namespace AllReady.Areas.Admin.Controllers
             ActivityDetailModel activity = _bus.Send(new ActivityDetailQuery { ActivityId = id });
             if (activity == null)
             {
-                return new HttpStatusCodeResult(404);
+                return HttpNotFound();
             }
 
             if (!User.IsTenantAdmin(activity.TenantId))
             {
-                return new HttpUnauthorizedResult();
+                return HttpUnauthorized();
             }
 
             return View(activity);
@@ -162,8 +162,8 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpBadRequest();
             }
             //TODO: Use the query pattern here
-            int TenantId = _dataAccess.GetManagingTenantId(activity.Id);
-            if (!User.IsTenantAdmin(TenantId))
+            int tenantId = _dataAccess.GetManagingTenantId(activity.Id);
+            if (!User.IsTenantAdmin(tenantId))
             {
                 return HttpUnauthorized();
             }
@@ -213,12 +213,12 @@ namespace AllReady.Areas.Admin.Controllers
             var activity = _bus.Send(new ActivityDetailQuery { ActivityId = id });
             if (activity == null)
             {
-                return new HttpStatusCodeResult(404);
+                return HttpNotFound();
             }
 
             if (!User.IsTenantAdmin(activity.TenantId))
             {
-                return new HttpUnauthorizedResult();
+                return HttpUnauthorized();
             }
 
             return View(activity);

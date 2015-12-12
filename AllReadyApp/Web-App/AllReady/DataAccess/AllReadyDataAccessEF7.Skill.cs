@@ -13,7 +13,10 @@ namespace AllReady.Models
         {
             get
             {
-                return _dbContext.Skills.ToList();
+                return _dbContext.Skills
+                    .Include(s => s.ParentSkill)
+                    .Include(s => s.OwningOrganization)
+                    .ToList();
             }
         }
 
