@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using AllReady.Models;
 using Microsoft.Extensions.OptionsModel;
+using AllReady.Extensions;
 
 namespace AllReady.Services
 {
@@ -17,31 +18,42 @@ namespace AllReady.Services
     public class SqlClosestLocations
         : IClosestLocations
     {
-        private readonly DatabaseSettings _settings;
 
-        public SqlClosestLocations(IOptions<DatabaseSettings> options)
+        private readonly IBaseDatabaseConnection _connection;
+
+        /// <summary>
+        /// Constructor - takes in IBaseDatabaseConnection
+        /// </summary>
+        /// <param name="connection">The database connection</param>
+        public SqlClosestLocations(IBaseDatabaseConnection connection)
         {
-            _settings = options.Value;
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
+
+            _connection = connection;
         }
 
         public IEnumerable<ClosestLocation> GetClosestLocations(LocationQuery query)
         {
             IEnumerable<ClosestLocation> ret;
 
-            using (var connection = new SqlConnection(_settings.ConnectionString))
+            using (var connection = _connection.Get())
             {
-                var cmd = connection.CreateCommand();
-                cmd.CommandText = "GetClosestLocations";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@lat", query.Latitude);
-                cmd.Parameters.AddWithValue("@lon", query.Longitude);
-                cmd.Parameters.AddWithValue("@count", query.MaxRecordsToReturn.HasValue ? query.MaxRecordsToReturn : 10);
-                cmd.Parameters.AddWithValue("@distance", query.Distance.HasValue ? query.Distance : 10);
+                using (var cmd = connection.CreateCommand())
+                {
+                    cmd.CommandText = "GetClosestLocations";
+                    cmd.CommandType = CommandType.StoredProcedure;
 
-                if (cmd.Connection.State != ConnectionState.Open)
-                    cmd.Connection.Open();
+                    cmd.AddInputParameter("@lat", query.Latitude, DbType.Double);
+                    cmd.AddInputParameter("@lon", query.Longitude, DbType.Double);
+                    cmd.AddInputParameter("@count", query.MaxRecordsToReturn.HasValue ? query.MaxRecordsToReturn : 10, DbType.Int32);
+                    cmd.AddInputParameter("@distance", query.Distance.HasValue ? query.Distance : 10, DbType.Int32);
+                    
+                    if (cmd.Connection.State != ConnectionState.Open)
+                        cmd.Connection.Open();
 
-                ret = cmd.ExecuteReader().DataReaderMapToList<ClosestLocation>();
+                    ret = cmd.ExecuteReader().DataReaderMapToList<ClosestLocation>();
+                }
             }
 
             return ret;
@@ -51,17 +63,20 @@ namespace AllReady.Services
         {
             IEnumerable<PostalCodeGeoCoordinate> ret;
 
-            using (var connection = new SqlConnection(_settings.ConnectionString))
+            using (var connection = _connection.Get())
             {
-                var cmd = connection.CreateCommand();
-                cmd.CommandText = "GetCoordinatesForPostalCode";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@postalcode", postalCode);
+                using (var cmd = connection.CreateCommand())
+                {
+                    cmd.CommandText = "GetCoordinatesForPostalCode";
+                    cmd.CommandType = CommandType.StoredProcedure;
 
-                if (cmd.Connection.State != ConnectionState.Open)
-                    cmd.Connection.Open();
+                    cmd.AddInputParameter("@postalcode", postalCode, DbType.String);
+                    
+                    if (cmd.Connection.State != ConnectionState.Open)
+                        cmd.Connection.Open();
 
-                ret = cmd.ExecuteReader().DataReaderMapToList<PostalCodeGeoCoordinate>();
+                    ret = cmd.ExecuteReader().DataReaderMapToList<PostalCodeGeoCoordinate>();
+                }
             }
 
             return ret;
