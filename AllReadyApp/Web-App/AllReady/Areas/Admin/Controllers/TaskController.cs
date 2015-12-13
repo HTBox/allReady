@@ -56,7 +56,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (model.EndDateTime < model.StartDateTime)
             {
-                ModelState.AddModelError(nameof(model.EndDateTime), "Ending time cannot be earlier than the starting time");
+                ModelState.AddModelError("EndDateTime", "Ending time cannot be earlier than the starting time");
             }
 
             WarnDateTimeOutOfRange(ref model);
@@ -95,7 +95,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (model.EndDateTime < model.StartDateTime)
             {
-                ModelState.AddModelError(nameof(model.EndDateTime), "Ending time cannot be earlier than the starting time");
+                ModelState.AddModelError("EndDateTime", "Ending time cannot be earlier than the starting time");
             }
 
             WarnDateTimeOutOfRange(ref model);
