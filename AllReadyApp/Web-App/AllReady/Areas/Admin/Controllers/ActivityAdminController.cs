@@ -88,24 +88,24 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (activity.EndDateTime < activity.StartDateTime)
             {
-                ModelState.AddModelError("EndDateTime", "End date cannot be earlier than the start date");
+                ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be earlier than the start date");
             }
 
-                CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
-                if (campaign == null ||
-                    !User.IsTenantAdmin(campaign.TenantId))
-                {
-                    return HttpUnauthorized();
-                }
+            CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
+            if (campaign == null ||
+                !User.IsTenantAdmin(campaign.TenantId))
+            {
+                return HttpUnauthorized();
+            }
 
             if (activity.StartDateTime < campaign.StartDate)
             {
-                ModelState.AddModelError("StartDateTime", "Start date cannot be earlier than the campaign start date " + campaign.StartDate.ToString("d"));
+                ModelState.AddModelError(nameof(activity.StartDateTime), "Start date cannot be earlier than the campaign start date " + campaign.StartDate.ToString("d"));
             }
 
             if (activity.EndDateTime > campaign.EndDate)
             {
-                ModelState.AddModelError("EndDateTime", "End date cannot be later than the campaign end date " + campaign.EndDate.ToString("d"));
+                ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be later than the campaign end date " + campaign.EndDate.ToString("d"));
             }
 
             if (ModelState.IsValid)
@@ -170,19 +170,19 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (activity.EndDateTime < activity.StartDateTime)
             {
-                ModelState.AddModelError("EndDateTime", "End date cannot be earlier than the start date");
+                ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be earlier than the start date");
             }
 
             CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = activity.CampaignId });
 
             if (activity.StartDateTime < campaign.StartDate)
             {
-                ModelState.AddModelError("StartDateTime", "Start date cannot be earlier than the campaign start date " + campaign.StartDate.ToString("d"));
+                ModelState.AddModelError(nameof(activity.StartDateTime), "Start date cannot be earlier than the campaign start date " + campaign.StartDate.ToString("d"));
             }
 
             if (activity.EndDateTime > campaign.EndDate)
             {
-                ModelState.AddModelError("EndDateTime", "End date cannot be later than the campaign end date " + campaign.EndDate.ToString("d"));
+                ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be later than the campaign end date " + campaign.EndDate.ToString("d"));
             }
 
             if (ModelState.IsValid)
@@ -199,7 +199,7 @@ namespace AllReady.Areas.Admin.Controllers
                         return View(activity);
                     }
                 }
-                
+
                 var id = _bus.Send(new EditActivityCommand { Activity = activity });
                 return RedirectToAction("Details", "Activity", new { area = "Admin", id = id });
             }
