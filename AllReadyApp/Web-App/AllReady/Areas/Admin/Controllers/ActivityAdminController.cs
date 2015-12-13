@@ -88,7 +88,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (activity.EndDateTime < activity.StartDateTime)
             {
-                ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be earlier than the start date");
+                ModelState.AddModelError("EndDateTime", "End date cannot be earlier than the start date");
             }
 
                 CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
@@ -100,12 +100,12 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (activity.StartDateTime < campaign.StartDate)
             {
-                ModelState.AddModelError(nameof(activity.StartDateTime), "Start date cannot be earlier than the campaign start date " + campaign.StartDate.ToString("d"));
+                ModelState.AddModelError("StartDateTime", "Start date cannot be earlier than the campaign start date " + campaign.StartDate.ToString("d"));
             }
 
             if (activity.EndDateTime > campaign.EndDate)
             {
-                ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be later than the campaign end date " + campaign.EndDate.ToString("d"));
+                ModelState.AddModelError("EndDateTime", "End date cannot be later than the campaign end date " + campaign.EndDate.ToString("d"));
             }
 
             if (ModelState.IsValid)
@@ -170,19 +170,19 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (activity.EndDateTime < activity.StartDateTime)
             {
-                ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be earlier than the start date");
+                ModelState.AddModelError("EndDateTime", "End date cannot be earlier than the start date");
             }
 
             CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = activity.CampaignId });
 
             if (activity.StartDateTime < campaign.StartDate)
             {
-                ModelState.AddModelError(nameof(activity.StartDateTime), "Start date cannot be earlier than the campaign start date " + campaign.StartDate.ToString("d"));
+                ModelState.AddModelError("StartDateTime", "Start date cannot be earlier than the campaign start date " + campaign.StartDate.ToString("d"));
             }
 
             if (activity.EndDateTime > campaign.EndDate)
             {
-                ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be later than the campaign end date " + campaign.EndDate.ToString("d"));
+                ModelState.AddModelError("EndDateTime", "End date cannot be later than the campaign end date " + campaign.EndDate.ToString("d"));
             }
 
             if (ModelState.IsValid)
