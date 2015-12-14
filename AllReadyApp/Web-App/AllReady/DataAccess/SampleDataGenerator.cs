@@ -526,8 +526,8 @@ namespace AllReady.Models
                 // For the sake of being able to exercise Tenant-specific stuff, we need to associate a tenant.
                 user2.EmailConfirmed = true;
                 await _userManager.CreateAsync(user2, _settings.DefaultAdminPassword);
-                await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.UserType, "TenantAdmin"));
-                await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.Tenant, _context.Organizations.First().Id.ToString()));
+                await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.UserType, "OrgAdmin"));
+                await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.Organization, _context.Organizations.First().Id.ToString()));
 
                 var user3 = new ApplicationUser { UserName = _settings.DefaultUsername, Email = _settings.DefaultUsername, TimeZoneId = _generalSettings.DefaultTimeZone };
                 user3.EmailConfirmed = true;
