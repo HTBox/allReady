@@ -196,7 +196,7 @@ namespace AllReady.Areas.Admin.Controllers
                 if (_dataAccess.Organziations.Any(t => t.Id == model.TenantId))
                 {
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.OrgAdmin.ToName()));
-                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.Tenant, model.TenantId.ToString()));
+                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.Organization, model.TenantId.ToString()));
                     return RedirectToAction(nameof(Index));
                 }
                 else
@@ -233,7 +233,7 @@ namespace AllReady.Areas.Admin.Controllers
                 var user = _dataAccess.GetUser(userId);
                 var claims = await _userManager.GetClaimsAsync(user);
                 await _userManager.RemoveClaimAsync(user, claims.First(c => c.Type == Security.ClaimTypes.UserType));
-                await _userManager.RemoveClaimAsync(user, claims.First(c => c.Type == Security.ClaimTypes.Tenant));
+                await _userManager.RemoveClaimAsync(user, claims.First(c => c.Type == Security.ClaimTypes.Organization));
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

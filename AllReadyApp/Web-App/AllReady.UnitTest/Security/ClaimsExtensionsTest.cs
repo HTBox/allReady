@@ -99,7 +99,7 @@ namespace AllReady.UnitTest.Security
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.Tenant, "12")
+                            new Claim(AllReady.Security.ClaimTypes.Organization, "12")
                         }
                     ));
 
@@ -113,7 +113,7 @@ namespace AllReady.UnitTest.Security
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.Tenant, "ThisIsWRong")
+                            new Claim(AllReady.Security.ClaimTypes.Organization, "ThisIsWRong")
                         }
                     ));
 
@@ -157,7 +157,7 @@ namespace AllReady.UnitTest.Security
                         new[]
                         {
                             new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"),
-                            new Claim(AllReady.Security.ClaimTypes.Tenant, "2")
+                            new Claim(AllReady.Security.ClaimTypes.Organization, "2")
                         }
                     ));
 
@@ -172,7 +172,7 @@ namespace AllReady.UnitTest.Security
                         new[]
                         {
                             new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"),
-                            new Claim(AllReady.Security.ClaimTypes.Tenant, "2")
+                            new Claim(AllReady.Security.ClaimTypes.Organization, "2")
                         }
                     ));
 
@@ -186,7 +186,7 @@ namespace AllReady.UnitTest.Security
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.Tenant, "2")
+                            new Claim(AllReady.Security.ClaimTypes.Organization, "2")
                         }
                     ));
 

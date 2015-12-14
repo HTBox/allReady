@@ -30,7 +30,7 @@ namespace AllReady.Security
         public static int? GetTenantId(this ClaimsPrincipal user)
         {
             int? result = null;
-            var tenantIdClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Tenant);
+            var tenantIdClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Organization);
             if (tenantIdClaim != null)
             {
                 int tenantId;
@@ -78,7 +78,7 @@ namespace AllReady.Security
         public static int? GetTenantId(this ApplicationUser user)
         {
             int? result = null;
-            var tenantIdClaim = user.Claims.FirstOrDefault(c => c.ClaimType == ClaimTypes.Tenant);
+            var tenantIdClaim = user.Claims.FirstOrDefault(c => c.ClaimType == ClaimTypes.Organization);
             if (tenantIdClaim != null)
             {
                 int tenantId;

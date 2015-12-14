@@ -330,7 +330,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     new[]
                     {
                         new Claim(AllReady.Security.ClaimTypes.UserType, userType),
-                        new Claim(AllReady.Security.ClaimTypes.Tenant, tenantId.ToString()),
+                        new Claim(AllReady.Security.ClaimTypes.Organization, tenantId.ToString()),
                     }));
         }
 
