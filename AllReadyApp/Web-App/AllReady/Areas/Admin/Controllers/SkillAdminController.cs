@@ -1,8 +1,12 @@
-﻿using AllReady.Models;
+﻿using AllReady.Areas.Admin.Features.Skills;
+using AllReady.Areas.Admin.Features.Tenants;
+using AllReady.Models;
 using AllReady.Security;
+using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -11,23 +15,34 @@ namespace AllReady.Areas.Admin.Controllers
     public class SkillController : Controller
     {
         private readonly IAllReadyDataAccess _dataAccess;
+        private readonly IMediator _bus;
 
-        public SkillController(IAllReadyDataAccess dataAccess)
+        public SkillController(IAllReadyDataAccess dataAccess, IMediator bus)
         {
             _dataAccess = dataAccess;
+            _bus = bus;
         }
 
-        public IActionResult Index()
+        // GET
+        public async Task<IActionResult> Index()
         {
             if (User.IsUserType(UserType.SiteAdmin))
             {
                 ViewData["Title"] = "Skills";
-                return View(_dataAccess.Skills);
+                var allSkills = await _bus.SendAsync(new SkillListQueryAsync());
+                return View(allSkills);
             }
             else
             {
-                ViewData["Title"] = $"Skills - {_dataAccess.GetOrganization(User.GetTenantId().Value).Name}";
-                return View(_dataAccess.Skills.Where(s => s.OwningOrganizationId == User.GetTenantId()));
+                int? tenantId = User.GetTenantId().Value;
+                if (!tenantId.HasValue) return new HttpNotFoundResult(); // Edge case of user having Org Admin claim but not Org Id claim
+
+                string tenantName = await _bus.SendAsync(new TenantNameQueryAsync { Id = tenantId.Value });
+                if (string.IsNullOrEmpty(tenantName)) return new HttpNotFoundResult();
+
+                ViewData["Title"] = $"Skills - {tenantName}";
+                var tenantSkills = await _bus.SendAsync(new TenantSkillListQueryAsync { Id = tenantId.Value });
+                return View(tenantSkills);
             }
         }
 
@@ -90,11 +105,10 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            _dataAccess.DeleteSkill(id).Wait();
+            await _bus.SendAsync(new SkillDeleteCommandAsync { Id = id });
             return RedirectToAction("Index", new { area = "Admin" });
         }
-
     }
 }
