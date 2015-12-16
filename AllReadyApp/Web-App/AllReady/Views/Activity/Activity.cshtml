@@ -223,30 +223,18 @@
                                         <span asp-validation-for="SignupModel.AdditionalInfo" class="text-danger"></span>
                                     </div>
                                 </div>
-                                @if (Model.RequiredSkills?.Count > 0)
-                                {
-                                    <div class="form-group">
+                                    <div class="form-group" data-bind="visible: unassociatedSkills.length">
                                         <label class="control-label col-md-4">Associate new skills?</label>
                                         <div class="col-md-8">
-                                            <ul class="list-unstyled form-control-static">
-                                                @foreach (var skill in Model.RequiredSkills)
-                                                {
-                                                    if (!Model.UserSkills.Any(us => us.Id == skill.Id))
-                                                    {
-                                                        <li>
-                                                            <input type="checkbox" id="@($"skillId{skill.Id}")" name="SignupModel.AddSkillIds" value="@skill.Id" />
-                                                            <label for="@($"skillId{skill.Id}")">@skill.HierarchicalName</label>
-                                                            @if (!string.IsNullOrWhiteSpace(skill.Description))
-                                                            {
-                                                                <span class="fa fa-question-circle" data-bind="visible: '@skill.Description', tooltip: { title: '@skill.Description', placement: 'top' }" aria-hidden="true"></span>
-                                                            }
-                                                        </li>
-                                                    }
-                                                }
+                                            <ul class="list-unstyled form-control-static" data-bind="foreach: unassociatedSkills">
+                                                <li>
+                                                    <input type="checkbox" name="SignupModel.AddSkillIds" data-bind="attr: { id: 'skillNumber' + $index()}, value: Id" />
+                                                    <label data-bind="attr: { for: 'skillNumber' + $index()}, text: HierarchicalName"></label>
+                                                    <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
-                                }
                             </div>
                         </div>
                     </div>
