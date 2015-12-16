@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Skill>
+﻿@model IEnumerable<SkillSummaryModel>
 @using AllReady.Security;
 
 <div class="row">
@@ -11,7 +11,7 @@
         <table class="table">
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Name)
+                    @Html.DisplayNameFor(model => model.First().HierarchicalName)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Description)
@@ -19,7 +19,7 @@
                 @if (User.IsUserType(UserType.SiteAdmin))
                 {
                     <th>
-                        @Html.DisplayNameFor(model => model.OwningOrganization)
+                        @Html.DisplayNameFor(model => model.First().OwningOrganizationName)
                     </th>
                 }
                 <th></th>
@@ -37,7 +37,7 @@
                     @if (User.IsUserType(UserType.SiteAdmin))
                 {
                         <td>
-                            @(item.OwningOrganization == null ? "" : item.OwningOrganization.Name)
+                            @(item.OwningOrganizationName == null ? "" : item.OwningOrganizationName)
                         </td>
                     }
                     <td>
