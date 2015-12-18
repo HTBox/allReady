@@ -1,5 +1,6 @@
 ﻿using AllReady.Areas.Admin.Features.Skills;
 using AllReady.Areas.Admin.Features.Tenants;
+using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using AllReady.Security;
 using MediatR;
@@ -23,7 +24,7 @@ namespace AllReady.Areas.Admin.Controllers
             _bus = bus;
         }
 
-        // GET
+        // GET /Admin/Skill
         public async Task<IActionResult> Index()
         {
             if (User.IsUserType(UserType.SiteAdmin))
@@ -46,9 +47,18 @@ namespace AllReady.Areas.Admin.Controllers
             }
         }
 
-        public IActionResult Create()
+        // GET /Admin/Skill/Create
+        public async Task<IActionResult> Create()
         {
-            return View("Edit").WithSkills(_dataAccess, !User.IsUserType(UserType.SiteAdmin) ? User.GetTenantId() : null);
+            // note: this check assumes an Org Admin within an assign Org should not be able to access add sills
+            if (!User.IsUserType(UserType.SiteAdmin) && !User.GetTenantId().HasValue)
+                return new HttpNotFoundResult(); // Edge case of user having Org Admin claim but not Org Id claim - todo discuss correct return in this instance
+
+            var model = new SkillEditModel(); // TODO - Populate lists
+            
+            //model.ParentSelectOptions.AddRange
+
+            return View("Edit", model);
         }
 
         [HttpPost]
