@@ -4,6 +4,8 @@ using System.Linq;
 using Microsoft.AspNet.Mvc.Rendering;
 using AllReady.Extensions;
 using System;
+using Microsoft.Data.Entity;
+using System.Threading.Tasks;
 
 namespace AllReady.Services
 {
@@ -19,6 +21,13 @@ namespace AllReady.Services
         public IEnumerable<SelectListItem> GetTenants()
         {
             return _context.Organizations.Select(t => new SelectListItem {Value = t.Id.ToString(), Text = t.Name });
+        }
+
+        public async Task<IEnumerable<SelectListItem>> GetOrganizationsAsync()
+        {
+            return await _context.Tenants
+                        .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name })
+                        .ToListAsync();
         }
 
         public IEnumerable<Skill> GetSkills()
