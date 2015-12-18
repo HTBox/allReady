@@ -7,7 +7,7 @@ using System.Linq;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("TenantAdmin")]
+    [Authorize("OrgAdmin")]
     public class SkillController : Controller
     {
         private readonly IAllReadyDataAccess _dataAccess;
@@ -26,7 +26,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
             else
             {
-                ViewData["Title"] = $"Skills - {_dataAccess.GetTenant(User.GetTenantId().Value).Name}";
+                ViewData["Title"] = $"Skills - {_dataAccess.GetOrganization(User.GetTenantId().Value).Name}";
                 return View(_dataAccess.Skills.Where(s => s.OwningOrganizationId == User.GetTenantId()));
             }
         }

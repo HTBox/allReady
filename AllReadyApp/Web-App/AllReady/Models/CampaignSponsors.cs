@@ -7,7 +7,6 @@ namespace AllReady.Models
   {
     public int Id { get; set; }
     public Campaign Campaign { get; set; }
-    public Tenant Tenant { get; set; }
-
+    public Organization Organization { get; set; }
   }
 }

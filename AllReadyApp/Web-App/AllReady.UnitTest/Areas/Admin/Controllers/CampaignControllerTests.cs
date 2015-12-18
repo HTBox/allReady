@@ -87,7 +87,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CampaignDetailReturnsViewForAdmin()
         {
             const int tenantId = 1, campaignId = 0;
-            var controller = CampaignControllerWithDetailQuery(UserType.TenantAdmin.ToString(), tenantId);
+            var controller = CampaignControllerWithDetailQuery(UserType.OrgAdmin.ToString(), tenantId);
             
             Assert.IsType<ViewResult>(controller.Details(campaignId));
         }
@@ -96,7 +96,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CampaignEditReturnsViewForAdmin()
         {
             const int tenantId = 1, campaignId = 0;
-            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), tenantId);
             
             Assert.IsType<ViewResult>(controller.Edit(campaignId));
         }
@@ -105,7 +105,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CampaignDeleteReturnsViewForAdmin()
         {
             const int tenantId = 1, campaignId = 0;
-            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), tenantId);
             
             Assert.IsType<ViewResult>(controller.Delete(campaignId));
         }
@@ -116,7 +116,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CampaignEditPostReturnsBadRequestForNullCampaign()
         {
             const int tenantId = 1;
-            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), tenantId);
 
             var result = controller.Edit(null, null).Result as BadRequestResult;
             Assert.NotNull(result);
@@ -146,7 +146,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CampaignEditPostReturnsViewResultForInvalidModel()
         {
             const int tenantId = 1;
-            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), tenantId);
             // Force an invalid model
             controller.ModelState.AddModelError("foo","bar");
 
@@ -158,7 +158,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CampaignEditPostReturnsRedirectToActionResultForValidModel()
         {
             const int tenantId = 1;
-            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), tenantId);
 
             Assert.IsType<RedirectToActionResult>(
                 controller.Edit(new CampaignSummaryModel { Name = "Foo", TenantId = tenantId }, null).Result);
@@ -168,7 +168,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CampaignEditPostHasModelErrorWhenInvalidImageFormatIsSupplied()
         {
             const int tenantId = 1;
-            var controller = CampaignControllerWithSummaryQuery(UserType.TenantAdmin.ToString(), tenantId);
+            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), tenantId);
             var file = FormFile("");
 
             var result = controller.Edit(new CampaignSummaryModel { Name = "Foo", TenantId = tenantId }, file).Result;
@@ -194,7 +194,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => GetClaimsPrincipal(UserType.TenantAdmin.ToString(), tenantId));
+                .Returns(() => GetClaimsPrincipal(UserType.OrgAdmin.ToString(), tenantId));
             var mockContext = new Mock<ActionContext>();
             mockContext.Object.HttpContext = mockHttpContext.Object;
             controller.ActionContext = mockContext.Object;
@@ -246,7 +246,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => GetClaimsPrincipal(UserType.TenantAdmin.ToString(), tenantId));
+                .Returns(() => GetClaimsPrincipal(UserType.OrgAdmin.ToString(), tenantId));
             var mockContext = new Mock<ActionContext>();
             mockContext.Object.HttpContext = mockHttpContext.Object;
             controller.ActionContext = mockContext.Object;
@@ -330,7 +330,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     new[]
                     {
                         new Claim(AllReady.Security.ClaimTypes.UserType, userType),
-                        new Claim(AllReady.Security.ClaimTypes.Tenant, tenantId.ToString()),
+                        new Claim(AllReady.Security.ClaimTypes.Organization, tenantId.ToString()),
                     }));
         }
 

@@ -32,7 +32,7 @@
                         {
                             <span class="label label-warning"><span class="fa fa-user-secret"></span> Site</span>
                         }
-                        @if (item.IsUserType(UserType.TenantAdmin))
+                        @if (item.IsUserType(UserType.OrgAdmin))
                         {
                             <span class="label label-default"><span class="fa fa-users"></span> Org</span>
                         }
@@ -45,7 +45,7 @@
                         <div class="btn-group btn-group-sm">
                             <a asp-action="EditUser" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-edit"></span> Edit</a>
                             <a asp-action="ResetPassword" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-recycle"></span> Reset Password</a>
-                            @if (!item.IsUserType(UserType.SiteAdmin) && !item.IsUserType(UserType.TenantAdmin))
+                            @if (!item.IsUserType(UserType.SiteAdmin) && !item.IsUserType(UserType.OrgAdmin))
                             {
                                 <a asp-action="AssignSiteAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-user-secret"></span> Make Site Admin</a>
                                 <a asp-action="AssignTenantAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-group"></span> Make Org Admin</a>
@@ -54,7 +54,7 @@
                             {
                                 <a asp-action="RevokeSiteAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-user-secret"></span> Revoke Site Admin</a>
                             }
-                            else if (item.IsUserType(UserType.TenantAdmin))
+                            else if (item.IsUserType(UserType.OrgAdmin))
                             {
                                 <a asp-action="RevokeTenantAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-group"></span> Revoke Org Admin</a>
                             }

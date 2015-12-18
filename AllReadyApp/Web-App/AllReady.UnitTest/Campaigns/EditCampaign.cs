@@ -32,7 +32,7 @@ namespace AllReady.UnitTest.Campaigns
         public void ExistingCampaign()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            Tenant htb = new Tenant()
+            Organization htb = new Organization()
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
@@ -42,11 +42,11 @@ namespace AllReady.UnitTest.Campaigns
             Campaign firePrev = new Campaign()
             {
                 Name = "Neighborhood Fire Prevention Days",
-                ManagingTenant = htb,
+                ManagingOrganization = htb,
                 TimeZoneId = "Eastern Standard Time"
             };
             htb.Campaigns.Add(firePrev);
-            context.Tenants.Add(htb);
+            context.Organizations.Add(htb);
             context.SaveChanges();
 
             const string NEW_NAME = "Some new name value";
@@ -62,8 +62,8 @@ namespace AllReady.UnitTest.Campaigns
                 Id = firePrev.Id,
                 ImageUrl = firePrev.ImageUrl,
                 Name = NEW_NAME,
-                TenantId = firePrev.ManagingTenantId,
-                TenantName = firePrev.ManagingTenant.Name,
+                TenantId = firePrev.ManagingOrganizationId,
+                TenantName = firePrev.ManagingOrganization.Name,
                 TimeZoneId = "Eastern Standard Time"
             };
             var query = new EditCampaignCommand { Campaign = vm };

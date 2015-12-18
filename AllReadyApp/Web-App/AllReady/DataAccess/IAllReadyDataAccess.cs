@@ -30,13 +30,13 @@ namespace AllReady.Models
 
         #endregion
 
-        #region Tenant CRUD
+        #region Organization CRUD
 
-        IEnumerable<Tenant> Tenants { get; }
-        Tenant GetTenant(int tenantId);
-        Task AddTenant(Tenant value);
-        Task DeleteTenant(int id);
-        Task UpdateTenant(Tenant value);
+        IEnumerable<Organization> Organziations { get; }
+        Organization GetOrganization(int organizationId);
+        Task AddOrganization(Organization value);
+        Task DeleteOrganization(int id);
+        Task UpdateOrganization(Organization value);
 
         #endregion
 

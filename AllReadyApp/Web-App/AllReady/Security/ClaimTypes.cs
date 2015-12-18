@@ -6,9 +6,9 @@
     public class ClaimTypes
     {
         /// <summary>
-        /// The id of the tenant
+        /// The id of the organization
         /// </summary>
-        public const string Tenant = "ar:tenantid";
+        public const string Organization = "ar:organizationid";
 
         /// <summary>
         /// The type of user

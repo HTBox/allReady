@@ -4,7 +4,7 @@ namespace AllReady.Models
   /// <summary>
   /// The highest level of organization in the application, typically represents a non-government organization (NGO)
   /// </summary>
-  public class Tenant
+  public class Organization
   {
     public int Id { get; set; }
     public string Name { get; set; }
@@ -24,6 +24,6 @@ namespace AllReady.Models
 
         public Location Location { get; set; }
 
-        public List<TenantContact> TenantContacts { get; set; }
+        public List<OrganizationContact> OrganizationContacts { get; set; }
   }
 }

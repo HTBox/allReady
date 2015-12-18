@@ -14,9 +14,9 @@ namespace AllReady.Models
             get
             {
                 return _dbContext.Campaigns
-                   .Include(x => x.ManagingTenant)
+                   .Include(x => x.ManagingOrganization)
                    .Include(x => x.Activities)
-                   .Include(x => x.ParticipatingTenants)
+                   .Include(x => x.ParticipatingOrganizations)
                    .ToList();
             }
         }
@@ -24,10 +24,10 @@ namespace AllReady.Models
         Campaign IAllReadyDataAccess.GetCampaign(int campaignId)
         {
             return _dbContext.Campaigns
-                .Include(x => x.ManagingTenant)
+                .Include(x => x.ManagingOrganization)
                 .Include(x => x.CampaignImpact)
                 .Include(x => x.Activities)
-                .Include(x => x.ParticipatingTenants)
+                .Include(x => x.ParticipatingOrganizations)
                 .SingleOrDefault(x => x.Id == campaignId);
         }
 

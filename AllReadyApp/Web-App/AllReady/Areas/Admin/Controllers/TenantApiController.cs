@@ -14,7 +14,7 @@ namespace AllReady.Areas.Admin.Controllers
     [Route("admin/api/tenant")]
     [Produces("application/json")]
     [Area("Admin")]
-    [Authorize("TenantAdmin")]
+    [Authorize("OrgAdmin")]
 
     public class TenantApiController : Controller
     {
