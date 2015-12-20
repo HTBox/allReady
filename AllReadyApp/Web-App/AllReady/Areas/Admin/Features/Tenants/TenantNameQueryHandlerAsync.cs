@@ -16,7 +16,7 @@ namespace AllReady.Areas.Admin.Features.Tenants
 
         public async Task<string> Handle(TenantNameQueryAsync message)
         {
-            return await _context.Tenants
+            return await _context.Organizations
                 .Where(t => t.Id == message.Id)
                 .Select(t => t.Name)
                 .SingleOrDefaultAsync();

@@ -25,7 +25,7 @@ namespace AllReady.Services
 
         public async Task<IEnumerable<SelectListItem>> GetOrganizationsAsync()
         {
-            return await _context.Tenants
+            return await _context.Organizations
                         .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name })
                         .ToListAsync();
         }
