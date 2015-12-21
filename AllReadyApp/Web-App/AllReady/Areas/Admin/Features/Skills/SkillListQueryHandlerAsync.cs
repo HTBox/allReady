@@ -18,15 +18,35 @@ namespace AllReady.Areas.Admin.Features.Skills
 
         public async Task<IEnumerable<SkillSummaryModel>> Handle(SkillListQueryAsync message)
         {
-            return await _context.Skills
-                .Select(s => new SkillSummaryModel
+            List<Skill> skills = new List<Skill>();
+            if(message.OrganizationId != null)
+            {
+                skills = await _context.Skills.AsNoTracking()
+                    .Include(s => s.ParentSkill)
+                    .Include(s => s.OwningOrganization)
+                    .Where(s=>s.OwningOrganizationId == message.OrganizationId)
+                    .ToListAsync();
+            }
+            else
+            {
+                skills = await _context.Skills.AsNoTracking()
+                    .Include(s => s.ParentSkill)
+                    .Include(s => s.OwningOrganization)
+                    .ToListAsync();
+            }          
+
+            List<SkillSummaryModel> results = new List<SkillSummaryModel>();
+            foreach(var skill in skills)
+            {
+                results.Add(new SkillSummaryModel
                 {
-                    Id = s.Id,
-                    HierarchicalName = s.HierarchicalName,
-                    Description = s.Description,
-                    OwningOrganizationName = s.OwningOrganization.Name
-                })
-                .ToListAsync();
+                    Id = skill.Id,
+                    HierarchicalName = skill.HierarchicalName,
+                    Description = skill.Description,
+                    OwningOrganizationName = skill.OwningOrganization?.Name ?? string.Empty
+                });
+            }
+            return results;
         }
     }
 }
