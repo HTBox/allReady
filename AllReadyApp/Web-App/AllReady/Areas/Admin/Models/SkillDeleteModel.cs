@@ -8,6 +8,8 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Name")]
         public string HierarchicalName { get; set; }
 
+        public int? OwningOrganizationId { get; set; }
+
         [Display(Name = "Children")]
         public IEnumerable<string> ChildrenNames { get; set; }
     }

@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Tenants
 {
-    public class TenantNameQueryHandlerAsync : IAsyncRequestHandler<TenantNameQueryAsync, string>
+    public class OrganizationNameQueryHandlerAsync : IAsyncRequestHandler<OrganizationNameQueryAsync, string>
     {
         private AllReadyContext _context;
-        public TenantNameQueryHandlerAsync(AllReadyContext context)
+        public OrganizationNameQueryHandlerAsync(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<string> Handle(TenantNameQueryAsync message)
+        public async Task<string> Handle(OrganizationNameQueryAsync message)
         {
             return await _context.Organizations
                 .Where(t => t.Id == message.Id)

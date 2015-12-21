@@ -38,6 +38,15 @@ namespace AllReady.Services
                 .OrderBy(s => s.Name);
         }
 
+        public async Task<IEnumerable<Skill>> GetSkillsAsync()
+        {
+            return await _context.Skills.AsNoTracking()
+                //Project HierarchicalName onto Name
+                .Select(s => new Skill { Id = s.Id, Name = s.HierarchicalName, Description = s.Description })
+                .OrderBy(s => s.Name)
+                .ToListAsync();
+        }
+
         public IEnumerable<SelectListItem> GetCampaignImpactTypes()
         {
             return new List<SelectListItem> {
