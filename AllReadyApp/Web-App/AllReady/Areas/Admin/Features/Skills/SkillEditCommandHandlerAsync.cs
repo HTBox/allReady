@@ -30,7 +30,7 @@ namespace AllReady.Areas.Admin.Features.Skills
             skill.ParentSkillId = msgSkill.ParentSkillId;
             skill.Description = msgSkill.Description;
 
-            _context.Update(skill);
+            _context.Skills.Update(skill);
             await _context.SaveChangesAsync();
 
             return skill.Id;
