@@ -4,6 +4,8 @@ using System.Linq;
 using Microsoft.AspNet.Mvc.Rendering;
 using AllReady.Extensions;
 using System;
+using Microsoft.Data.Entity;
+using System.Threading.Tasks;
 
 namespace AllReady.Services
 {
@@ -21,12 +23,28 @@ namespace AllReady.Services
             return _context.Organizations.Select(t => new SelectListItem {Value = t.Id.ToString(), Text = t.Name });
         }
 
+        public async Task<IEnumerable<SelectListItem>> GetOrganizationsAsync()
+        {
+            return await _context.Organizations
+                        .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name })
+                        .ToListAsync();
+        }
+
         public IEnumerable<Skill> GetSkills()
         {
             return _context.Skills.ToList()
                 //Project HierarchicalName onto Name
                 .Select(s => new Skill { Id = s.Id, Name = s.HierarchicalName, Description = s.Description })
                 .OrderBy(s => s.Name);
+        }
+
+        public async Task<IEnumerable<Skill>> GetSkillsAsync()
+        {
+            return await _context.Skills.AsNoTracking()
+                //Project HierarchicalName onto Name
+                .Select(s => new Skill { Id = s.Id, Name = s.HierarchicalName, Description = s.Description })
+                .OrderBy(s => s.Name)
+                .ToListAsync();
         }
 
         public IEnumerable<SelectListItem> GetCampaignImpactTypes()

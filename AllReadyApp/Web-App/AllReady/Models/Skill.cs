@@ -30,5 +30,6 @@ namespace AllReady.Models
                 return retStr;
             }
         }
+        public ICollection<Skill> Children { get; set; }
     }
 }

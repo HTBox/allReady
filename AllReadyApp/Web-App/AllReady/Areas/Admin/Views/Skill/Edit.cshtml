@@ -1,5 +1,5 @@
-﻿@model Skill
-@inject AllReady.Services.ISelectListService SelectListService
+﻿@model SkillEditModel
+
 @using AllReady.Security;
 @using AllReady.Services;
 
@@ -45,7 +45,7 @@
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="ParentSkill" class="control-label col-md-2"></label>
+            <label asp-for="ParentSkillId" class="control-label col-md-2"></label>
             <div class="col-md-10">
                 <div class="form-inline">
                     <select class="form-control" name="ParentSkillId" data-bind="options: availableSkills, optionsText: 'HierarchicalName', optionsValue: 'Id', value: parentSkillId"></select>
@@ -57,9 +57,9 @@
         @if (User.IsUserType(UserType.SiteAdmin))
         {
             <div class="form-group">
-                <label asp-for="OwningOrganization" class="col-md-2 control-label"></label>
+                <label asp-for="OwningOrganizationName" class="col-md-2 control-label"></label>
                 <div class="col-md-10">
-                    <select asp-for="OwningOrganizationId" asp-items="SelectListService.GetTenants().AddNullOptionToFront()" class="form-control"></select>
+                    <select asp-for="OwningOrganizationId" asp-items="Model.OrganizationSelection.AddNullOptionToFront()" class="form-control"></select>
                 </div>
             </div>
         }
@@ -104,8 +104,8 @@
 
             ko.applyBindings(new AdminSkillViewModel(parentSkillId, availableSkills));
         })(ko, $,
-            @Json.Serialize(Model != null ? Model.ParentSkillId : null),
-            @Json.Serialize(ViewData["Skills"]));
+            @Json.Serialize(Model?.ParentSkillId ?? null),
+            @Json.Serialize(Model.ParentSelection));
     </script>
 }
 

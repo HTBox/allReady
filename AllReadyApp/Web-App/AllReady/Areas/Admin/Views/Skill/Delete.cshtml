@@ -1,4 +1,4 @@
-@model Skill
+@model SkillDeleteModel
 
 @{
     ViewData["Title"] = $"Delete skill {Model.HierarchicalName}";
@@ -7,15 +7,15 @@
 <div class="row">
     <div class="col-md-12">
         <h3>Are you sure you want to delete @Model.HierarchicalName?</h3>
-        @if (ViewBag.Children.Count > 0)
+        @if (Model.ChildrenNames.Count() > 0)
         {
             <div class="alert alert-warning" role="alert">
                 <strong>Whoa there!</strong>
                 The following skills will become orphans if you delete @Model.HierarchicalName:
                 <ul>
-                    @foreach (Skill skill in ViewBag.Children)
+                    @foreach (string childSkill in Model.ChildrenNames)
                     {
-                        <li>@skill.HierarchicalName</li>
+                        <li>@childSkill</li>
                     }
                 </ul>
             </div>
