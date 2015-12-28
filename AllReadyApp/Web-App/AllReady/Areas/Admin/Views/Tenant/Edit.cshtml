@@ -1,14 +1,14 @@
-@model AllReady.Areas.Admin.Models.TenantEditModel
+@model AllReady.Areas.Admin.Models.OrganizationEditModel
 
 @{
-    ViewData["Data"] = "Edit tenant " + Model.Name;
+    ViewData["Data"] = "Edit organization " + Model.Name;
 }
 <div class="row">
     <div class="col-md-12">
         <h2>@ViewData["Title"]</h2>
     </div>
 </div>
-<form asp-controller="Tenant" asp-route-area="Admin" asp-action="Edit" method="post">
+<form asp-controller="Organization" asp-route-area="Admin" asp-action="Edit" method="post">
     <div class="row">
         <div class="form-horizontal col-lg-6 pull-left">
             <h4>Organization</h4>
@@ -70,7 +70,7 @@
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
                     <button type="submit" class="btn btn-default">Save</button>
-                    <a asp-controller="Tenant" asp-action="Index" class="btn btn-cancel" />
+                    <a asp-controller="Organization" asp-action="Index" class="btn btn-cancel" />
                 </div>
             </div>
         </div>

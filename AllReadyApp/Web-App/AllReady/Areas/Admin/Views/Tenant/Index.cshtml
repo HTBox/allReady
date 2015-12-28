@@ -1,7 +1,7 @@
-@model IEnumerable<AllReady.Areas.Admin.Models.TenantSummaryModel>
+@model IEnumerable<AllReady.Areas.Admin.Models.OrganizationSummaryModel>
 
 @{
-    ViewData["Title"] = "Currently active tenants";
+    ViewData["Title"] = "Currently active organizations";
 }
 
 <doiv class="row">
@@ -24,7 +24,7 @@
             @foreach (var item in Model) {
                 <tr>
                     <td>
-                        <a href="@Url.Action("Details", "Tenant", new { id = item.Id })">
+                        <a href="@Url.Action("Details", "Organization", new { id = item.Id })">
                         @if (String.IsNullOrEmpty(item.LogoUrl))
                         {
                             @item.Name
@@ -39,8 +39,8 @@
                         @Html.DisplayFor(modelItem => item.WebUrl)
                     </td>
                     <td>
-                        <a href="@Url.Action("Edit", "Tenant", new { id = item.Id })" class="btn btn-default btn-sm" ><span class="fa fa-edit"></span> Edit</a>
-                        <a href="@Url.Action("Delete", "Tenant", new { id = item.Id })" class="btn btn-default btn-sm"><span class="fa fa-trash"></span> Delete</a>
+                        <a href="@Url.Action("Edit", "Organization", new { id = item.Id })" class="btn btn-default btn-sm" ><span class="fa fa-edit"></span> Edit</a>
+                        <a href="@Url.Action("Delete", "Organization", new { id = item.Id })" class="btn btn-default btn-sm"><span class="fa fa-trash"></span> Delete</a>
                     </td>
                 </tr>
             }
@@ -49,6 +49,6 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        @Html.ActionLink("Create New", "Create", "Tenant", null, new { @class = "btn" })
+        @Html.ActionLink("Create New", "Create", "Organization", null, new { @class = "btn" })
     </div>
 </div>

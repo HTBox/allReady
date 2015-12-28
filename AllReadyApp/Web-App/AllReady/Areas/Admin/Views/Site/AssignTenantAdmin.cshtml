@@ -1,4 +1,4 @@
-﻿@model AllReady.Areas.Admin.Models.AssignTenantAdminModel
+﻿@model AllReady.Areas.Admin.Models.AssignOrganizationAdminModel
 @{
     ViewBag.Title = "Assign Organization Admin";
 }
@@ -12,7 +12,7 @@
         <input type="hidden" asp-for="UserId" />
         <div class="form-group">
             <label>Organization:</label>
-            <select asp-for="TenantId" asp-items="ViewBag.Tenants" class="form-control"></select>
+            <select asp-for="OrganizationId" asp-items="ViewBag.Organizations" class="form-control"></select>
         </div>
         <div class="form-group">
             <input type="submit" class="btn btn-success" value="Assign Admin" />

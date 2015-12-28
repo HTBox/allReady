@@ -48,7 +48,7 @@
                             @if (!item.IsUserType(UserType.SiteAdmin) && !item.IsUserType(UserType.OrgAdmin))
                             {
                                 <a asp-action="AssignSiteAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-user-secret"></span> Make Site Admin</a>
-                                <a asp-action="AssignTenantAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-group"></span> Make Org Admin</a>
+                                <a asp-action="AssignOrganizationAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-group"></span> Make Org Admin</a>
                             }
                             else if (item.IsUserType(UserType.SiteAdmin))
                             {
@@ -56,7 +56,7 @@
                             }
                             else if (item.IsUserType(UserType.OrgAdmin))
                             {
-                                <a asp-action="RevokeTenantAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-group"></span> Revoke Org Admin</a>
+                                <a asp-action="RevokeOrganizationAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-group"></span> Revoke Org Admin</a>
                             }
                         </div>
                     </td>
