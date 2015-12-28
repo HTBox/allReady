@@ -4,7 +4,7 @@ using Microsoft.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AllReady.Areas.Admin.Features.Tenants
+namespace AllReady.Areas.Admin.Features.Organizations
 {
     public class OrganizationNameQueryHandlerAsync : IAsyncRequestHandler<OrganizationNameQueryAsync, string>
     {
