@@ -109,13 +109,13 @@ namespace AllReady.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, code);
 
             // If the account confirmation was successful, then send the SiteAdmin an email to approve
-            // this user as a Tenant Admin
-            if(result.Succeeded)
+            // this user as a Organization Admin
+            if (result.Succeeded)
             {
                 var callbackUrl = Url.Action(nameof(SiteController.EditUser), "Site", new { area = "Admin", userId = user.Id }, protocol: HttpContext.Request.Scheme);
                 await _emailSender.SendEmailAsync(
                     _settings.DefaultAdminUsername,
-                    "Approve Tenant user account",
+                    "Approve organization user account",
                     "Please approve this account by clicking this <a href=\"" + callbackUrl + "\">link</a>");
             }
 

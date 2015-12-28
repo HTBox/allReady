@@ -1,5 +1,5 @@
 ﻿using AllReady.Areas.Admin.Features.Skills;
-using AllReady.Areas.Admin.Features.Tenants;
+using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using AllReady.Security;
@@ -34,17 +34,17 @@ namespace AllReady.Areas.Admin.Controllers
             }
             else
             {
-                var tenantId = User.GetTenantId();
-                if (!tenantId.HasValue)
+                var organizationId = User.GetOrganizationId();
+                if (!organizationId.HasValue)
                     return new HttpUnauthorizedResult(); // Edge case of user having Org Admin claim but not Org Id claim
 
-                string organizationName = await _bus.SendAsync(new OrganizationNameQueryAsync { Id = tenantId.Value });
+                string organizationName = await _bus.SendAsync(new OrganizationNameQueryAsync { Id = organizationId.Value });
                 if (string.IsNullOrEmpty(organizationName)) return HttpNotFound();
 
                 ViewData["Title"] = $"Skills - {organizationName}";
-                var tenantSkills = await _bus.SendAsync(new SkillListQueryAsync { OrganizationId = tenantId.Value });
+                var organizationSkills = await _bus.SendAsync(new SkillListQueryAsync { OrganizationId = organizationId.Value });
 
-                return View("Index", tenantSkills);
+                return View("Index", organizationSkills);
             }
         }
 
@@ -52,9 +52,9 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var tenantId = User.GetTenantId();
+            var organizationId = User.GetOrganizationId();
 
-            if (!User.IsUserType(UserType.SiteAdmin) && !tenantId.HasValue)
+            if (!User.IsUserType(UserType.SiteAdmin) && !organizationId.HasValue)
                 return new HttpUnauthorizedResult(); // Edge case of user having Org Admin claim but not Org Id claim
 
             var model = new SkillEditModel();
@@ -66,7 +66,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
             else
             {              
-                model.ParentSelection = await _bus.SendAsync(new SkillListQueryAsync { OrganizationId = tenantId.Value });
+                model.ParentSelection = await _bus.SendAsync(new SkillListQueryAsync { OrganizationId = organizationId.Value });
             }
 
             return View("Edit", model);
@@ -81,7 +81,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 if (!User.IsUserType(UserType.SiteAdmin))
                 {
-                    model.OwningOrganizationId = User.GetTenantId();
+                    model.OwningOrganizationId = User.GetOrganizationId();
                 }
                 await _bus.SendAsync(new SkillEditCommandAsync { Skill = model });
                 return RedirectToAction("Index", new { area = "Admin" });
@@ -94,11 +94,11 @@ namespace AllReady.Areas.Admin.Controllers
             }
             else
             {
-                var tenantId = User.GetTenantId();
-                if (!tenantId.HasValue)
+                var organizationId = User.GetOrganizationId();
+                if (!organizationId.HasValue)
                     return new HttpUnauthorizedResult(); // Edge case of user having Org Admin claim but not Org Id claim
 
-                model.ParentSelection = await _bus.SendAsync(new SkillListQueryAsync { OrganizationId = tenantId.Value });
+                model.ParentSelection = await _bus.SendAsync(new SkillListQueryAsync { OrganizationId = organizationId.Value });
             }
 
             return View("Edit", model);
@@ -122,13 +122,13 @@ namespace AllReady.Areas.Admin.Controllers
             }
             else
             {
-                var tenantId = User.GetTenantId();
+                var organizationId = User.GetOrganizationId();
 
                 // security check to ensure the skill belongs to the same org as the org admin
-                if (!tenantId.HasValue || model.OwningOrganizationId != tenantId)
+                if (!organizationId.HasValue || model.OwningOrganizationId != organizationId)
                     return new HttpUnauthorizedResult();
 
-                model.ParentSelection = await _bus.SendAsync(new SkillListQueryAsync { OrganizationId = tenantId.Value });
+                model.ParentSelection = await _bus.SendAsync(new SkillListQueryAsync { OrganizationId = organizationId.Value });
             }
 
             model.ParentSelection = model.ParentSelection.Where(p => p.Id != model.Id); // remove self from the parent select list
@@ -154,11 +154,11 @@ namespace AllReady.Areas.Admin.Controllers
             }
             else
             {
-                var tenantId = User.GetTenantId();
-                if (!tenantId.HasValue)
+                var organizationId = User.GetOrganizationId();
+                if (!organizationId.HasValue)
                     return new HttpUnauthorizedResult(); // Edge case of user having Org Admin claim but not Org Id claim
 
-                model.ParentSelection = await _bus.SendAsync(new SkillListQueryAsync { OrganizationId = tenantId.Value });
+                model.ParentSelection = await _bus.SendAsync(new SkillListQueryAsync { OrganizationId = organizationId.Value });
             }
 
             model.ParentSelection = model.ParentSelection.Where(p => p.Id != model.Id); // remove self from the parent select list
@@ -180,10 +180,10 @@ namespace AllReady.Areas.Admin.Controllers
             // security check to ensure the skill belongs to the same org as the org admin
             if (!User.IsUserType(UserType.SiteAdmin))
             {
-                var tenantId = User.GetTenantId();
+                var organizationId = User.GetOrganizationId();
 
                 // security check to ensure the skill belongs to the same org as the org admin
-                if (!tenantId.HasValue || model.OwningOrganizationId != tenantId)
+                if (!organizationId.HasValue || model.OwningOrganizationId != organizationId)
                     return new HttpUnauthorizedResult();
             }
 
@@ -205,10 +205,10 @@ namespace AllReady.Areas.Admin.Controllers
             // security check to ensure the skill belongs to the same org as the org admin
             if (!User.IsUserType(UserType.SiteAdmin))
             {
-                var tenantId = User.GetTenantId();
+                var organizationId = User.GetOrganizationId();
 
                 // security check to ensure the skill belongs to the same org as the org admin
-                if (!tenantId.HasValue || model.OwningOrganizationId != tenantId)
+                if (!organizationId.HasValue || model.OwningOrganizationId != organizationId)
                     return new HttpUnauthorizedResult();
             }
 
