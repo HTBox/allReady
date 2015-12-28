@@ -6,7 +6,7 @@ namespace AllReady.Services
 {
     public interface ISelectListService
     {
-        IEnumerable<SelectListItem> GetTenants();
+        IEnumerable<SelectListItem> GetOrganizations();
         IEnumerable<Skill> GetSkills();
         IEnumerable<SelectListItem> GetCampaignImpactTypes();
         IEnumerable<SelectListItem> GetTimeZones();

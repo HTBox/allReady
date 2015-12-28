@@ -18,7 +18,7 @@ namespace AllReady.Services
             _context = context;
         }
 
-        public IEnumerable<SelectListItem> GetTenants()
+        public IEnumerable<SelectListItem> GetOrganizations()
         {
             return _context.Organizations.Select(t => new SelectListItem {Value = t.Id.ToString(), Text = t.Name });
         }

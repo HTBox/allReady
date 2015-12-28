@@ -2,91 +2,91 @@
 using AllReady.Models;
 using Microsoft.AspNet.Authorization;
 using MediatR;
-using AllReady.Areas.Admin.Features.Tenants;
+using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
 
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize("SiteAdmin")]
-    public class TenantController : Controller
+    public class OrganizationController : Controller
     {
         private readonly IMediator _bus;
 
-        public TenantController(IMediator bus)
+        public OrganizationController(IMediator bus)
         {
             _bus = bus;
         }
 
-        // GET: Tenant
+        // GET: Organization
         public IActionResult Index()
         {
-            var list = _bus.Send(new TenantListQuery());
+            var list = _bus.Send(new OrganizationListQuery());
             return View(list);
         }
 
-        // GET: Tenant/Details/5
+        // GET: Organization/Details/5
         public IActionResult Details(int id)
         {
-            var tenant = _bus.Send(new TenantDetailQuery { Id = id });
-            if (tenant == null)
+            var organization = _bus.Send(new OrganizationDetailQuery { Id = id });
+            if (organization == null)
             {
                 return HttpNotFound();
             }
 
-            return View(tenant);
+            return View(organization);
         }
 
-        // GET: Tenant/Create
+        // GET: Organization/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Tenant/Create
+        // POST: Organization/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public  IActionResult Create(TenantEditModel tenant)
+        public  IActionResult Create(OrganizationEditModel organization)
         {
-            if (tenant == null)
+            if (organization == null)
                 return new BadRequestResult();
             if (ModelState.IsValid)
             {
-                int id = _bus.Send(new TenantEditCommand { Tenant = tenant });
-                return RedirectToRoute("areaRoute", new {controller = "Tenant", action = "Index"});
+                int id = _bus.Send(new OrganizationEditCommand { Organization = organization });
+                return RedirectToRoute("areaRoute", new {controller = "Organization", action = "Index"});
             }
 
-            return View("Create", tenant);
+            return View("Create", organization);
         }
 
-        // GET: Tenant/Edit/5
+        // GET: Organization/Edit/5
         public IActionResult Edit(int id)
         {
 
-            var tenant = _bus.Send(new TenantEditQuery { Id = id });
-            if (tenant == null)
+            var organization = _bus.Send(new OrganizationEditQuery { Id = id });
+            if (organization == null)
             {
                 return HttpNotFound();
             }
 
-            return View("Edit",tenant);
+            return View("Edit",organization);
         }
 
-        // POST: Tenant/Edit/5
+        // POST: Organization/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(TenantEditModel tenant)
+        public IActionResult Edit(OrganizationEditModel organization)
         {
             if (ModelState.IsValid)
             {
-                int id = _bus.Send(new TenantEditCommand { Tenant = tenant });
+                int id = _bus.Send(new OrganizationEditCommand { Organization = organization });
                 return RedirectToAction("Details", new { id = id, area = "Admin" });
             }
 
-            return View("Edit", tenant);
+            return View("Edit", organization);
         }
 
-        // GET: Tenant/Delete/5
+        // GET: Organization/Delete/5
         [ActionName("Delete")]
         public IActionResult Delete(int? id)
         {
@@ -95,21 +95,21 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-            var tenant = _bus.Send(new TenantDetailQuery { Id = id.Value });
-            if (tenant == null)
+            var organization = _bus.Send(new OrganizationDetailQuery { Id = id.Value });
+            if (organization == null)
             {
                 return HttpNotFound();
             }
 
-            return View(tenant);
+            return View(organization);
         }
 
-        // POST: Tenant/Delete/5
+        // POST: Organization/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            _bus.Send(new TenantDeleteCommand { Id= id });
+            _bus.Send(new OrganizationDeleteCommand { Id= id });
             return RedirectToAction("Index");
         }
     }

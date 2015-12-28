@@ -104,7 +104,7 @@ namespace AllReady.Models
         [EmailAddress]
         public string Email { get; set; }
 
-        [Display(Name = "Tenant Admin?")]
-        public bool TenantAdmin { get; set; }
+        [Display(Name = "Organization Admin?")]
+        public bool OrganizationAdmin { get; set; }
     }
 }

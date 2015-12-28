@@ -57,8 +57,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CampaignDetailReturnsUnauthorizedForNonAdmin()
         {
-            const int tenantId = 1, campaignId = 0;
-            var controller = CampaignControllerWithDetailQuery(UserType.BasicUser.ToString(), tenantId);
+            const int organizationId = 1, campaignId = 0;
+            var controller = CampaignControllerWithDetailQuery(UserType.BasicUser.ToString(), organizationId);
             
             Assert.IsType<HttpUnauthorizedResult>(controller.Details(campaignId));
         }
@@ -66,8 +66,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CampaignEditReturnsUnauthorizedForNonAdmin()
         {
-            const int tenantId = 1, campaignId = 0;
-            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), tenantId);
+            const int organizationId = 1, campaignId = 0;
+            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), organizationId);
             
             Assert.IsType<HttpUnauthorizedResult>(controller.Edit(campaignId));
         }
@@ -75,19 +75,19 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CampaignDeleteReturnsUnauthorizedForNonAdmin()
         {
-            const int tenantId = 1, campaignId = 0;
-            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), tenantId);
+            const int organizationId = 1, campaignId = 0;
+            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), organizationId);
             
             Assert.IsType<HttpUnauthorizedResult>(controller.Delete(campaignId));
         }
         #endregion
 
-        #region Test returing ViewResult for Tenant Admin on a campaign
+        #region Test returing ViewResult for Organization Admin on a campaign
         [Fact]
         public void CampaignDetailReturnsViewForAdmin()
         {
-            const int tenantId = 1, campaignId = 0;
-            var controller = CampaignControllerWithDetailQuery(UserType.OrgAdmin.ToString(), tenantId);
+            const int organizationId = 1, campaignId = 0;
+            var controller = CampaignControllerWithDetailQuery(UserType.OrgAdmin.ToString(), organizationId);
             
             Assert.IsType<ViewResult>(controller.Details(campaignId));
         }
@@ -95,8 +95,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CampaignEditReturnsViewForAdmin()
         {
-            const int tenantId = 1, campaignId = 0;
-            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), tenantId);
+            const int organizationId = 1, campaignId = 0;
+            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), organizationId);
             
             Assert.IsType<ViewResult>(controller.Edit(campaignId));
         }
@@ -104,8 +104,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CampaignDeleteReturnsViewForAdmin()
         {
-            const int tenantId = 1, campaignId = 0;
-            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), tenantId);
+            const int organizationId = 1, campaignId = 0;
+            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), organizationId);
             
             Assert.IsType<ViewResult>(controller.Delete(campaignId));
         }
@@ -115,8 +115,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CampaignEditPostReturnsBadRequestForNullCampaign()
         {
-            const int tenantId = 1;
-            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), tenantId);
+            const int organizationId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), organizationId);
 
             var result = controller.Edit(null, null).Result as BadRequestResult;
             Assert.NotNull(result);
@@ -125,53 +125,53 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CampaignEditPostReturnsUnAuthorizedForNullCampaign()
         {
-            const int tenantId = 1;
-            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), tenantId);
+            const int organizationId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), organizationId);
 
             Assert.IsType<HttpUnauthorizedResult>(
-                controller.Edit(new CampaignSummaryModel { TenantId = tenantId }, null).Result);
+                controller.Edit(new CampaignSummaryModel { OrganizationId = organizationId }, null).Result);
         }
 
         [Fact]
         public void CampaignEditPostReturnsUnAuthorizedForBasicUser()
         {
-            const int tenantId = 1;
-            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), tenantId);
+            const int organizationId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), organizationId);
 
             Assert.IsType<HttpUnauthorizedResult>(
-                controller.Edit(new CampaignSummaryModel { TenantId = tenantId }, null).Result);
+                controller.Edit(new CampaignSummaryModel { OrganizationId = organizationId }, null).Result);
         }
 
         [Fact]
         public void CampaignEditPostReturnsViewResultForInvalidModel()
         {
-            const int tenantId = 1;
-            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), tenantId);
+            const int organizationId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), organizationId);
             // Force an invalid model
             controller.ModelState.AddModelError("foo","bar");
 
             Assert.IsType<ViewResult>(
-                controller.Edit(new CampaignSummaryModel { TenantId = tenantId }, null).Result);
+                controller.Edit(new CampaignSummaryModel { OrganizationId = organizationId }, null).Result);
         }
 
         [Fact]
         public void CampaignEditPostReturnsRedirectToActionResultForValidModel()
         {
-            const int tenantId = 1;
-            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), tenantId);
+            const int organizationId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), organizationId);
 
             Assert.IsType<RedirectToActionResult>(
-                controller.Edit(new CampaignSummaryModel { Name = "Foo", TenantId = tenantId }, null).Result);
+                controller.Edit(new CampaignSummaryModel { Name = "Foo", OrganizationId = organizationId }, null).Result);
         }
 
         [Fact]
         public void CampaignEditPostHasModelErrorWhenInvalidImageFormatIsSupplied()
         {
-            const int tenantId = 1;
-            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), tenantId);
+            const int organizationId = 1;
+            var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), organizationId);
             var file = FormFile("");
 
-            var result = controller.Edit(new CampaignSummaryModel { Name = "Foo", TenantId = tenantId }, file).Result;
+            var result = controller.Edit(new CampaignSummaryModel { Name = "Foo", OrganizationId = organizationId }, file).Result;
             Assert.False(controller.ModelState.IsValid);
             Assert.True(controller.ModelState.ContainsKey("ImageUrl"));
             Assert.IsType<ViewResult>(result);
@@ -180,7 +180,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async void CampaignEditPostUploadsImageToImageService()
         {
-            const int tenantId = 1;
+            const int organizationId = 1;
             const int campaignId = 100;
             var mockMediator = new Mock<IMediator>();
             var mockImageService = new Mock<IImageService>();
@@ -194,7 +194,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => GetClaimsPrincipal(UserType.OrgAdmin.ToString(), tenantId));
+                .Returns(() => GetClaimsPrincipal(UserType.OrgAdmin.ToString(), organizationId));
             var mockContext = new Mock<ActionContext>();
             mockContext.Object.HttpContext = mockHttpContext.Object;
             controller.ActionContext = mockContext.Object;
@@ -204,12 +204,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await controller.Edit(new CampaignSummaryModel
             {
                 Name = "Foo",
-                TenantId = tenantId,
+                OrganizationId = organizationId,
                 Id = campaignId
             }, file);
             mockImageService.Verify(mock => 
                 mock.UploadCampaignImageAsync(
-                        It.Is<int>(i => i == tenantId), 
+                        It.Is<int>(i => i == organizationId), 
                         It.Is<int>(i => i == campaignId), 
                         It.Is<IFormFile>(i => i == file)), 
                 Times.Once);
@@ -221,9 +221,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CampaignDetailConfirmedReturnsUnauthorizedForNonAdmin()
         {
-            const int tenantId = 1;
+            const int organizationId = 1;
             const int campaignId = 100;
-            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), tenantId);
+            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), organizationId);
 
             Assert.IsType<HttpUnauthorizedResult>(controller.DeleteConfirmed(campaignId));
         }
@@ -231,11 +231,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CampaignDetailConfirmedMockChecksForAdminUser()
         {
-            const int tenantId = 1;
+            const int organizationId = 1;
             const int campaignId = 100;
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignSummaryQuery>()))
-                .Returns(() => new CampaignSummaryModel { TenantId = tenantId })
+                .Returns(() => new CampaignSummaryModel { OrganizationId = organizationId })
                 .Verifiable();
             mockMediator.Setup(mock => mock.Send(It.IsAny<DeleteCampaignCommand>()))
                 .Verifiable();
@@ -246,7 +246,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => GetClaimsPrincipal(UserType.OrgAdmin.ToString(), tenantId));
+                .Returns(() => GetClaimsPrincipal(UserType.OrgAdmin.ToString(), organizationId));
             var mockContext = new Mock<ActionContext>();
             mockContext.Object.HttpContext = mockHttpContext.Object;
             controller.ActionContext = mockContext.Object;
@@ -281,12 +281,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             return mockMediator;
         }
 
-        private static CampaignController CampaignControllerWithDetailQuery(string userType, int tenantId)
+        private static CampaignController CampaignControllerWithDetailQuery(string userType, int organizationId)
         {
-            var tid = tenantId;
+            var tid = organizationId;
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignDetailQuery>()))
-                .Returns(() => new CampaignDetailModel { TenantId = tid })
+                .Returns(() => new CampaignDetailModel { OrganizationId = tid })
                 .Verifiable();
             var mockImageService = new Mock<IImageService>();
             var controller = new CampaignController(
@@ -295,19 +295,19 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => GetClaimsPrincipal(userType, tenantId));
+                .Returns(() => GetClaimsPrincipal(userType, organizationId));
             var mockContext = new Mock<ActionContext>();
             mockContext.Object.HttpContext = mockHttpContext.Object;
             controller.ActionContext = mockContext.Object;
             return controller;
         }
 
-        private static CampaignController CampaignControllerWithSummaryQuery(string userType, int tenantId)
+        private static CampaignController CampaignControllerWithSummaryQuery(string userType, int organizationId)
         {
-            var tid = tenantId;
+            var tid = organizationId;
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignSummaryQuery>()))
-                .Returns(() => new CampaignSummaryModel { TenantId = tid })
+                .Returns(() => new CampaignSummaryModel { OrganizationId = tid })
                 .Verifiable();
             var mockImageService = new Mock<IImageService>();
             var controller = new CampaignController(
@@ -316,21 +316,21 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => GetClaimsPrincipal(userType, tenantId));
+                .Returns(() => GetClaimsPrincipal(userType, organizationId));
             var mockContext = new Mock<ActionContext>();
             mockContext.Object.HttpContext = mockHttpContext.Object;
             controller.ActionContext = mockContext.Object;
             return controller;
         }
 
-        private static ClaimsPrincipal GetClaimsPrincipal(string userType, int tenantId)
+        private static ClaimsPrincipal GetClaimsPrincipal(string userType, int organizationId)
         {
             return new ClaimsPrincipal(
                 new ClaimsIdentity(
                     new[]
                     {
                         new Claim(AllReady.Security.ClaimTypes.UserType, userType),
-                        new Claim(AllReady.Security.ClaimTypes.Organization, tenantId.ToString()),
+                        new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString()),
                     }));
         }
 

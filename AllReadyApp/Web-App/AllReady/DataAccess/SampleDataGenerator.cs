@@ -39,8 +39,6 @@ namespace AllReady.Models
             {
                 return;
             }
-            // new up some data
-            List<Organization> tenants = new List<Organization>();
 
             #region postalCodes
             var existingPostalCode = _context.PostalCodes.ToList();
@@ -69,7 +67,8 @@ namespace AllReady.Models
             skills.AddRange(new[] { medical, cprCertified, md, surgeon });
             #endregion
 
-            #region Tenant
+            #region Organization
+
             Organization htb = new Organization()
             {
                 Name = "Humanitarian Toolbox",
@@ -80,15 +79,18 @@ namespace AllReady.Models
                 OrganizationContacts = new List<OrganizationContact>(),
                 
             };
+
             #endregion
-            
-            #region Tenant Skills
+
+            #region Organization Skills
+
             organizationSkills.Add(new Skill()
             {
                 Name = "Code Ninja",
                 Description = "Ability to commit flawless code without review or testing",
                 OwningOrganization = htb
             });
+
             #endregion
 
             #region Campaign
@@ -319,7 +321,7 @@ namespace AllReady.Models
             escapePlan.Activities.Add(homeEscape);
             #endregion
             #region Add Campaigns and Activities
-            tenants.Add(htb);
+            organizations.Add(htb);
             campaigns.Add(firePrev);
             campaigns.Add(smokeDet);
             campaigns.Add(financial);
@@ -363,7 +365,7 @@ namespace AllReady.Models
             _context.Contacts.AddRange(contacts);
             _context.ActivitySkills.AddRange(activitySkills);
             _context.Locations.AddRange(locations);
-            _context.Organizations.AddRange(tenants);
+            _context.Organizations.AddRange(organizations);
             _context.Tasks.AddRange(tasks);
             _context.Campaigns.AddRange(campaigns);
             _context.Activities.AddRange(activities);
@@ -433,7 +435,7 @@ namespace AllReady.Models
             return list[rand.Next(list.Count)];
         }
 
-        private static List<AllReadyTask> GetSomeTasks(Activity activity, Organization tenant)
+        private static List<AllReadyTask> GetSomeTasks(Activity activity, Organization organization)
         {
             List<AllReadyTask> value = new List<AllReadyTask>();
             for (int i = 0; i < 5; i++)
@@ -446,7 +448,7 @@ namespace AllReady.Models
                     Name = "Task # " + i,
                     EndDateTime = DateTime.Now.AddDays(i),
                     StartDateTime = DateTime.Now.AddDays(i - 1),
-                    Organization = tenant
+                    Organization = organization
                 });
             }
             return value;
@@ -522,8 +524,8 @@ namespace AllReady.Models
                 _userManager.CreateAsync(user, _settings.DefaultAdminPassword).Wait();
                 _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, "SiteAdmin")).Wait();
 
-                var user2 = new ApplicationUser { UserName = _settings.DefaultTenantUsername, Email = _settings.DefaultTenantUsername, TimeZoneId = _generalSettings.DefaultTimeZone };
-                // For the sake of being able to exercise Tenant-specific stuff, we need to associate a tenant.
+                var user2 = new ApplicationUser { UserName = _settings.DefaultOrganizationUsername, Email = _settings.DefaultOrganizationUsername, TimeZoneId = _generalSettings.DefaultTimeZone };
+                // For the sake of being able to exercise Organization-specific stuff, we need to associate a tenant.
                 user2.EmailConfirmed = true;
                 await _userManager.CreateAsync(user2, _settings.DefaultAdminPassword);
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.UserType, "OrgAdmin"));

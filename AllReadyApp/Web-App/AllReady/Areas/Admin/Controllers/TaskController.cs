@@ -31,7 +31,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Create(int activityId)
         {
             var activity = _dataAccess.GetActivity(activityId);
-            if (activity == null || !User.IsTenantAdmin(activity.Campaign.ManagingOrganizationId))
+            if (activity == null || !User.IsOrganizationAdmin(activity.Campaign.ManagingOrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -41,7 +41,7 @@ namespace AllReady.Areas.Admin.Controllers
                 ActivityName = activity.Name,
                 CampaignId = activity.CampaignId,
                 CampaignName = activity.Campaign.Name,
-                TenantId = activity.Campaign.ManagingOrganizationId,
+                OrganizationId = activity.Campaign.ManagingOrganizationId,
                 TimeZoneId = activity.Campaign.TimeZoneId,
                 StartDateTime = activity.StartDateTime,
                 EndDateTime = activity.EndDateTime,
@@ -63,7 +63,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                if (!User.IsTenantAdmin(model.TenantId))
+                if (!User.IsOrganizationAdmin(model.OrganizationId))
                 {
                     return HttpUnauthorized();
                 }
@@ -82,7 +82,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }            
-            if (!User.IsTenantAdmin(task.TenantId))
+            if (!User.IsOrganizationAdmin(task.OrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -102,7 +102,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                if (!User.IsTenantAdmin(model.TenantId))
+                if (!User.IsOrganizationAdmin(model.OrganizationId))
                 {
                     return HttpUnauthorized();
                 }
@@ -121,7 +121,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpNotFound();
             }
             
-            if (!User.IsTenantAdmin(task.TenantId))
+            if (!User.IsOrganizationAdmin(task.OrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -150,7 +150,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-            if (!User.IsTenantAdmin(task.TenantId))
+            if (!User.IsOrganizationAdmin(task.OrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -160,14 +160,14 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
 
-        private bool UserIsTenantAdminOfActivity(Activity activity)
+        private bool UserIsOrganizationAdminOfActivity(Activity activity)
         {
-            return User.IsTenantAdmin(activity.Campaign.ManagingOrganizationId);
+            return User.IsOrganizationAdmin(activity.Campaign.ManagingOrganizationId);
         }
 
-        private bool UserIsTenantAdminOfActivity(int activityId)
+        private bool UserIsOrganizationAdminOfActivity(int activityId)
         {
-            return UserIsTenantAdminOfActivity(_dataAccess.GetActivity(activityId));
+            return UserIsOrganizationAdminOfActivity(_dataAccess.GetActivity(activityId));
         }
 
         [HttpPost]
@@ -176,7 +176,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var task = _bus.Send(new TaskQuery() { TaskId = id });
             
-            if (!UserIsTenantAdminOfActivity(task.ActivityId))
+            if (!UserIsOrganizationAdminOfActivity(task.ActivityId))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -191,7 +191,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult MessageAllVolunteers(MessageTaskVolunteersModel model)
         {
-            //TODO: Query only for the tenant Id rather than the whole activity detail
+            //TODO: Query only for the organization Id rather than the whole activity detail
             if (!ModelState.IsValid)
             {
                 return HttpBadRequest(ModelState);
@@ -203,7 +203,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            if (!User.IsTenantAdmin(task.TenantId))
+            if (!User.IsOrganizationAdmin(task.OrganizationId))
             {
                 return HttpUnauthorized();
             }

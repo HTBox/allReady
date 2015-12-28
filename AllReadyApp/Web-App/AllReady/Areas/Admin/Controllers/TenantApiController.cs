@@ -1,27 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNet.Mvc;
 using AllReady.Areas.Admin.Models;
 using MediatR;
 using AllReady.Models;
-using AllReady.Areas.Admin.Features.Tenants;
+using AllReady.Areas.Admin.Features.Organizations;
 using Microsoft.AspNet.Authorization;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Route("admin/api/tenant")]
+    [Route("admin/api/organization")]
     [Produces("application/json")]
     [Area("Admin")]
     [Authorize("OrgAdmin")]
 
-    public class TenantApiController : Controller
+    public class OrganizationApiController : Controller
     {
-
         private readonly IMediator _bus;
 
-        public TenantApiController(IMediator bus)
+        public OrganizationApiController(IMediator bus)
         {
             _bus = bus;
         }
@@ -31,10 +26,8 @@ namespace AllReady.Areas.Admin.Controllers
         [Produces("application/json", Type = typeof(ContactInformationModel))]
         public ContactInformationModel GetContact(int id)
         {
-            var contact = _bus.Send(new TenantContactQuery { Id = id, ContactType = ContactTypes.Primary });
+            var contact = _bus.Send(new OrganizationContactQuery  { Id = id, ContactType = ContactTypes.Primary });
             return contact;
         }
-
-
     }
 }

@@ -1,21 +1,17 @@
 ﻿using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
 
 using AllReady.Security;
 using AllReady.Models;
 using AllReady.Services;
 using AllReady.ViewModels;
 
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Features.Notifications;
 using MediatR;
 using AllReady.Areas.Admin.Models;
 using System;
-using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Extensions;
@@ -49,7 +45,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            if (!User.IsTenantAdmin(activity.TenantId))
+            if (!User.IsOrganizationAdmin(activity.OrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -62,7 +58,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Create(int campaignId)
         {
             CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
-            if (campaign == null || !User.IsTenantAdmin(campaign.TenantId))
+            if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -72,8 +68,8 @@ namespace AllReady.Areas.Admin.Controllers
                 CampaignId = campaign.Id,
                 CampaignName = campaign.Name,
                 TimeZoneId = campaign.TimeZoneId,
-                TenantId = campaign.TenantId,
-                TenantName = campaign.TenantName,
+                OrganizationId = campaign.OrganizationId,
+                OrganizationName = campaign.OrganizationName,
                 StartDateTime = DateTime.Today.Date,
                 EndDateTime = DateTime.Today.Date.AddMonths(1)
             };
@@ -93,7 +89,7 @@ namespace AllReady.Areas.Admin.Controllers
 
                 CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = campaignId });
                 if (campaign == null ||
-                    !User.IsTenantAdmin(campaign.TenantId))
+                    !User.IsOrganizationAdmin(campaign.OrganizationId))
                 {
                     return HttpUnauthorized();
                 }
@@ -119,14 +115,14 @@ namespace AllReady.Areas.Admin.Controllers
                     }
                 }
 
-                activity.TenantId = campaign.TenantId;
+                activity.OrganizationId = campaign.OrganizationId;
                 var id = _bus.Send(new EditActivityCommand { Activity = activity });
 
                 if (fileUpload != null)
                 {
                     // resave now that activty has the ImageUrl
                     activity.Id = id;
-                    activity.ImageUrl = await _imageService.UploadActivityImageAsync(campaign.TenantId, id, fileUpload);
+                    activity.ImageUrl = await _imageService.UploadActivityImageAsync(campaign.OrganizationId, id, fileUpload);
                     _bus.Send(new EditActivityCommand { Activity = activity });
                 }
 
@@ -144,7 +140,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            if (!User.IsTenantAdmin(activity.TenantId))
+            if (!User.IsOrganizationAdmin(activity.OrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -162,8 +158,8 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpBadRequest();
             }
             //TODO: Use the query pattern here
-            int tenantId = _dataAccess.GetManagingTenantId(activity.Id);
-            if (!User.IsTenantAdmin(tenantId))
+            int organizationId = _dataAccess.GetManagingOrganizationId(activity.Id);
+            if (!User.IsOrganizationAdmin(organizationId))
             {
                 return HttpUnauthorized();
             }
@@ -191,7 +187,7 @@ namespace AllReady.Areas.Admin.Controllers
                 {
                     if (fileUpload.IsAcceptableImageContentType())
                     {
-                        activity.ImageUrl = await _imageService.UploadActivityImageAsync(campaign.TenantId, activity.Id, fileUpload);
+                        activity.ImageUrl = await _imageService.UploadActivityImageAsync(campaign.OrganizationId, activity.Id, fileUpload);
                     }
                     else
                     {
@@ -216,7 +212,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            if (!User.IsTenantAdmin(activity.TenantId))
+            if (!User.IsOrganizationAdmin(activity.OrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -235,7 +231,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-            if (!User.IsTenantAdmin(activity.TenantId))
+            if (!User.IsOrganizationAdmin(activity.OrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -253,7 +249,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-            if (!User.IsTenantAdmin(activity.Campaign.ManagingOrganizationId))
+            if (!User.IsOrganizationAdmin(activity.Campaign.ManagingOrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -269,7 +265,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult MessageAllVolunteers(MessageActivityVolunteersModel model)
         {
-            //TODO: Query only for the tenant Id rather than the whole activity detail
+            //TODO: Query only for the organization Id rather than the whole activity detail
             if (!ModelState.IsValid)
             {
                 return HttpBadRequest(ModelState);
@@ -281,7 +277,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            if (!User.IsTenantAdmin(activity.TenantId))
+            if (!User.IsOrganizationAdmin(activity.OrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -303,14 +299,14 @@ namespace AllReady.Areas.Admin.Controllers
             return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Edit", id = id });
         }
 
-        private bool UserIsTenantAdminOfActivity(Activity activity)
+        private bool UserIsOrganizationAdminOfActivity(Activity activity)
         {
-            return User.IsTenantAdmin(activity.Campaign.ManagingOrganizationId);
+            return User.IsOrganizationAdmin(activity.Campaign.ManagingOrganizationId);
         }
 
-        private bool UserIsTenantAdminOfActivity(int activityId)
+        private bool UserIsOrganizationAdminOfActivity(int activityId)
         {
-            return UserIsTenantAdminOfActivity(_dataAccess.GetActivity(activityId));
+            return UserIsOrganizationAdminOfActivity(_dataAccess.GetActivity(activityId));
         }
 
     }

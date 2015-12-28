@@ -127,7 +127,7 @@ namespace AllReady.UnitTest
         {
             public const string CampaignNameFormat = "Campaign {0}";
             public const string CampaignDescriptionFormat = "Description for campaign {0}";
-            public const string TenantNameFormat = "Test Tenant {0}";
+            public const string OrganizationNameFormat = "Test Organization {0}";
             public const string ActivityNameFormat = "Activity {0}";
             public const string ActivityDescriptionFormat = "Description for activity {0}";
 
@@ -142,10 +142,10 @@ namespace AllReady.UnitTest
                         Id = n
                     }).ToArray();
 
-                var tenants = Enumerable.Range(1, 10).Select(n =>
+                var organizations = Enumerable.Range(1, 10).Select(n =>
                     new Organization()
                     {
-                        Name = string.Format(TenantNameFormat, n),
+                        Name = string.Format(OrganizationNameFormat, n),
                         Campaigns = new List<Campaign>(new[] { campaigns[n - 1] })
                     }).ToArray();
 

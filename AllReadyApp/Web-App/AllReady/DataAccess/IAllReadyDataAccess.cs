@@ -12,7 +12,7 @@ namespace AllReady.Models
         #region Activity CRUD
         IEnumerable<Activity> Activities { get; }
         Activity GetActivity(int activityId);
-        int GetManagingTenantId(int activityId);
+        int GetManagingOrganizationId(int activityId);
         IEnumerable<ActivitySignup> GetActivitySignups(string userId);
         IEnumerable<ActivitySignup> GetActivitySignups(int activityId, string userId);
         Task UpdateActivity(Activity value);

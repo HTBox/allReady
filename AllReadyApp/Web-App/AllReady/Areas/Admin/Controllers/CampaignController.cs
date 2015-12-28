@@ -42,7 +42,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            if (!User.IsTenantAdmin(campaign.TenantId))
+            if (!User.IsOrganizationAdmin(campaign.OrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -70,7 +70,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            if (!User.IsTenantAdmin(campaign.TenantId))
+            if (!User.IsOrganizationAdmin(campaign.OrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -88,7 +88,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpBadRequest();
             }
 
-            if (!User.IsTenantAdmin(campaign.TenantId))
+            if (!User.IsOrganizationAdmin(campaign.OrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -99,7 +99,7 @@ namespace AllReady.Areas.Admin.Controllers
                 {
                     if (fileUpload.IsAcceptableImageContentType())
                     {
-                        campaign.ImageUrl = await _imageService.UploadCampaignImageAsync(campaign.TenantId, campaign.Id, fileUpload);
+                        campaign.ImageUrl = await _imageService.UploadCampaignImageAsync(campaign.OrganizationId, campaign.Id, fileUpload);
                     }
                     else
                     {
@@ -123,7 +123,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-            if (!User.IsTenantAdmin(campaign.TenantId))
+            if (!User.IsOrganizationAdmin(campaign.OrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -138,7 +138,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
 
-            if (!User.IsTenantAdmin(campaign.TenantId))
+            if (!User.IsOrganizationAdmin(campaign.OrganizationId))
             {
                 return HttpUnauthorized();
             }

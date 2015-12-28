@@ -14,7 +14,7 @@ namespace AllReady.Areas.Admin.Models
         public int CampaignId { get; set; }
         [Display(Name = "Campaign")]
         public string CampaignName { get; set; }
-        public int TenantId { get; set; }
+        public int OrganizationId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 

@@ -1,28 +1,26 @@
 ﻿using AllReady.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.ViewModels
 {
-    public class TenantViewModel
+    public class OrganizationViewModel
     {
-        public TenantViewModel()
+        public OrganizationViewModel()
         {
             Campaigns = new List<CampaignViewModel>();
         }
 
-        public TenantViewModel(Organization tenant)
+        public OrganizationViewModel(Organization organization)
         {
-            Id = tenant.Id;
-            Name = tenant.Name;
-            LogoUrl = tenant.LogoUrl;
-            WebUrl = tenant.WebUrl;
+            Id = organization.Id;
+            Name = organization.Name;
+            LogoUrl = organization.LogoUrl;
+            WebUrl = organization.WebUrl;
 
-            if (tenant.Campaigns != null)
+            if (organization.Campaigns != null)
             {
-                Campaigns = tenant.Campaigns.ToViewModel().ToList();
+                Campaigns = organization.Campaigns.ToViewModel().ToList();
             }
             else
             {

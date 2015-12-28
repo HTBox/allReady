@@ -9,13 +9,13 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
-    public class TenantControllerTests
+    public class OrganizationControllerTests
     {
-        private readonly TenantEditModel _stubViewModel;
+        private readonly OrganizationEditModel _stubViewModel;
 
-        public TenantControllerTests()
+        public OrganizationControllerTests()
         {
-            _stubViewModel = new TenantEditModel
+            _stubViewModel = new OrganizationEditModel
             {
                 Id = 0,
                 LogoUrl = "http://www.example.com/image.jpg",
@@ -29,26 +29,26 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void CreateNewTenantRedirectsToTenantList()
+        public void CreateNewOrganizationRedirectsToOrganizationList()
         {
             //arrange
-            var sut = new TenantController(MockMediatorCreateTenant().Object);
-            var expectedRouteValues = new {controller = "Tenant", action = "Index"};
+            var sut = new OrganizationController(MockMediatorCreateOrganization().Object);
+            var expectedRouteValues = new {controller = "Organization", action = "Index"};
             //act
             var result = sut.Create(_stubViewModel);
             //assert
             Assert.IsType<RedirectToRouteResult>(result);
             Assert.Equal("areaRoute", ((RedirectToRouteResult) result).RouteName);
-            Assert.Equal("Tenant",((RedirectToRouteResult)result).RouteValues["controller"]); 
+            Assert.Equal("Organization", ((RedirectToRouteResult)result).RouteValues["controller"]); 
             Assert.Equal("Index",((RedirectToRouteResult)result).RouteValues["action"]); 
         }
 
         [Fact]
-        public void CreateNewTenantPostReturnsBadRequestForNullTenant()
+        public void CreateNewOrganizationPostReturnsBadRequestForNullOrganization()
         {
             //arrange
-            TenantEditModel viewmodel = null;
-            var sut = new TenantController(MockMediatorCreateTenant().Object);
+            OrganizationEditModel viewmodel = null;
+            var sut = new OrganizationController(MockMediatorCreateOrganization().Object);
             //act
             var result = sut.Create(viewmodel);
             //assert 
@@ -56,10 +56,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void CreateNewTenantInvalidModelReturnsCreateView()
+        public void CreateNewOrganizationInvalidModelReturnsCreateView()
         {
             //arrange
-            var sut = new TenantController(MockMediatorCreateTenant().Object);
+            var sut = new OrganizationController(MockMediatorCreateOrganization().Object);
             sut.ModelState.AddModelError("foo", "bar");
             //act
             var result = sut.Create(_stubViewModel);
@@ -68,7 +68,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal("Create", ((ViewResult) result).ViewName);
         }
 
-        private static Mock<IMediator> MockMediatorCreateTenant()
+        private static Mock<IMediator> MockMediatorCreateOrganization()
         {
             var mockMediator = new Mock<IMediator>();
             return mockMediator;

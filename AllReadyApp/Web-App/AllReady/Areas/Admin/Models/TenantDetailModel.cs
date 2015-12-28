@@ -1,13 +1,10 @@
 ﻿using AllReady.Models;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Models
 {
-    public class TenantDetailModel: IPrimaryContactModel
+    public class OrganizationDetailModel : IPrimaryContactModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -15,13 +12,13 @@ namespace AllReady.Areas.Admin.Models
         public string WebUrl { get; set; }
 
         /// <summary>
-        /// Collection of the campaigns directly managed by this Tenant
+        /// Collection of the campaigns directly managed by this Organization
         /// </summary>
         public List<Campaign> Campaigns { get; set; }
 
         /// <summary>
-        /// Application users which are members of this Tenant.
-        /// Users may be members of more than one tenant.
+        /// Application users which are members of this Organization.
+        /// Users may be members of more than one organization.
         /// </summary>
         public List<ApplicationUser> Users { get; set; }
 
