@@ -8,6 +8,7 @@ using Microsoft.AspNet.Mvc;
 using Microsoft.Extensions.OptionsModel;
 using Moq;
 using Xunit;
+using MediatR;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -113,12 +114,14 @@ namespace AllReady.UnitTest.Controllers
                 );
             var emailSenderMock = new Mock<IEmailSender>();
             var generalSettingsMock = new Mock<IOptions<GeneralSettings>>();
+            var mediatorMock = new Mock<IMediator>();
 
             var controller = new AccountController(
                 userManagerMock.Object,
                 signInManagerMock.Object,
                 emailSenderMock.Object,
-                generalSettingsMock.Object);
+                generalSettingsMock.Object,
+                mediatorMock.Object);
             var urlHelperMock = new Mock<IUrlHelper>();
             urlHelperMock
                 .Setup(mock => mock.IsLocalUrl(It.Is<string>(x => x.StartsWith("http"))))

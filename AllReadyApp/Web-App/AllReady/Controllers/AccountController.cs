@@ -6,6 +6,10 @@ using AllReady.Services;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Extensions.OptionsModel;
+using AllReady.Security;
+using AllReady.Areas.Admin.Controllers;
+using MediatR;
+using AllReady.Features.Login;
 
 namespace AllReady.Controllers
 {
@@ -16,19 +20,21 @@ namespace AllReady.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly GeneralSettings _generalSettings;
+        private readonly IMediator _bus;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
-            IOptions<GeneralSettings> generalSettings
-
+            IOptions<GeneralSettings> generalSettings,
+            IMediator bus
             )
         {
             _emailSender = emailSender;
             _userManager = userManager;
             _signInManager = signInManager;
             _generalSettings = generalSettings.Value;
+            _bus = bus;
         }
 
         // GET: /Account/Login
@@ -49,12 +55,33 @@ namespace AllReady.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
+                // Require admin users to have a confirmed email before they can log on.
+                var user = await _bus.SendAsync(new ApplicationUserQuery { UserName = model.Email });
+                if (user != null)
+                {
+                    var isAdminUser = user.IsUserType(UserType.OrgAdmin) ||
+                                      user.IsUserType(UserType.SiteAdmin);
+                    if (isAdminUser && !await _userManager.IsEmailConfirmedAsync(user))
+                    {
+                        ViewData["Message"] = "You must have a confirmed email to log on.";
+                        return View("Error");
+                    }
+                }
+
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    return RedirectToLocal(returnUrl);
+                    return RedirectToLocal(returnUrl, user);        
+                }
+                if (result.RequiresTwoFactor)
+                {
+                    return RedirectToAction(nameof(AdminController.SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                }
+                if (result.IsLockedOut)
+                {
+                    return View("Lockout");
                 }
                 else
                 {
@@ -248,16 +275,18 @@ namespace AllReady.Controllers
 
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+            var email = info.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
+
             if (result.Succeeded)
             {
-                return RedirectToLocal(returnUrl);
+                var user =  await _bus.SendAsync(new ApplicationUserQuery { UserName = email });
+                return RedirectToLocal(returnUrl, user);
             }
             else
             {
                 // If the user does not have an account, then ask the user to create an account.
                 ViewData["ReturnUrl"] = returnUrl;
                 ViewData["LoginProvider"] = info.LoginProvider;
-                var email = info.ExternalPrincipal.FindFirstValue(ClaimTypes.Email);
                 return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
             }
         }
@@ -295,7 +324,7 @@ namespace AllReady.Controllers
                     if (result.Succeeded)
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        return RedirectToLocal(returnUrl);
+                        return RedirectToLocal(returnUrl, user);
                     }
                 }
                 AddErrors(result);
@@ -320,14 +349,25 @@ namespace AllReady.Controllers
             return await _userManager.FindByIdAsync(HttpContext.User.GetUserId());
         }
 
-        private IActionResult RedirectToLocal(string returnUrl)
+        private IActionResult RedirectToLocal(string returnUrl, ApplicationUser user)
         {
             if (Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }
 
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            if (user.IsUserType(UserType.SiteAdmin))
+            {
+                return RedirectToAction(nameof(SiteController.Index), "Site", new { area = "Admin" });
+            }
+            else if (user.IsUserType(UserType.OrgAdmin))
+            {
+                return base.RedirectToAction(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = "Admin" });
+            }
+            else
+            {
+                return RedirectToAction(nameof(HomeController.Index), "Home");
+            }
         }
 
         #endregion
