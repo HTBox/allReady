@@ -525,7 +525,7 @@ namespace AllReady.Models
                 _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, "SiteAdmin")).Wait();
 
                 var user2 = new ApplicationUser { UserName = _settings.DefaultOrganizationUsername, Email = _settings.DefaultOrganizationUsername, TimeZoneId = _generalSettings.DefaultTimeZone };
-                // For the sake of being able to exercise Organization-specific stuff, we need to associate a tenant.
+                // For the sake of being able to exercise Organization-specific stuff, we need to associate a organization.
                 user2.EmailConfirmed = true;
                 await _userManager.CreateAsync(user2, _settings.DefaultAdminPassword);
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.UserType, "OrgAdmin"));

@@ -21,5 +21,5 @@
         this.total = organizations.length;
     }
 
-    ko.applyBindings(new OrganizationViewModel(organizations));
+    ko.applyBindings(new OrganizationsViewModel(organizations));
 })(ko, $, modelOrganizations);
