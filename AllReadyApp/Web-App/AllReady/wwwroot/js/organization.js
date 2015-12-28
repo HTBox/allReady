@@ -13,12 +13,12 @@
         }
         return this;
     }
-    function TenantViewModel(campaigns) {
+    function OrganizationViewModel(campaigns) {
         var list = campaigns.map(function (item) { return new Campaign(item); })
 
         this.campaigns = ko.observableArray(list).filterBeforeDate("EndDate").textFilter(["Name", "Description"]);
         this.total = campaigns.length;
     }
 
-    ko.applyBindings(new TenantViewModel(campaigns));
+    ko.applyBindings(new OrganizationViewModel(campaigns));
 })(ko, $, modelCampaigns);

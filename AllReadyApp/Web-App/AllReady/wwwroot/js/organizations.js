@@ -1,7 +1,7 @@
 ﻿///<reference path="../lib/jquery/dist/jquery.js" />
 ///<reference path="../lib/knockout/dist/knockout.js" />
 
-(function (ko, $, tenants) {
+(function (ko, $, organizations) {
     function Orgainzation(item) {
         for (var prop in item) {
             this[prop] = item[prop];
@@ -14,12 +14,12 @@
         return this;
     }
 
-    function TenantViewModel(tenants) {
-        var list = tenants.map(function (item) { return new Orgainzation(item); })
+    function OrganizationsViewModel(organizations) {
+        var list = organizations.map(function (item) { return new Orgainzation(item); })
 
-        this.tenants = ko.observableArray(tenants).textFilter(["Name", "Description"]);
-        this.total = tenants.length;
+        this.organizations = ko.observableArray(organizations).textFilter(["Name", "Description"]);
+        this.total = organizations.length;
     }
 
-    ko.applyBindings(new TenantViewModel(tenants));
-})(ko, $, modelTenants);
+    ko.applyBindings(new OrganizationViewModel(organizations));
+})(ko, $, modelOrganizations);
