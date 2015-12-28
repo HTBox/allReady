@@ -27,7 +27,7 @@
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.TenantName)
+                    @Html.DisplayNameFor(model => model.OrganizationName)
                 </th>
                 <th>
                     Dates
@@ -46,7 +46,7 @@
                         }
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.TenantName)
+                        @Html.DisplayFor(modelItem => item.OrganizationName)
                     </td>
                     <td>
                         @if (item.StartDate != DateTime.MinValue)

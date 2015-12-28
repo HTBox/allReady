@@ -1,4 +1,4 @@
-﻿@model List<TenantViewModel>
+﻿@model List<OrganizationViewModel>
 @{  
     ViewData["Title"] = "Organizations";
 }
@@ -11,7 +11,7 @@
         <div class="pull-right">
             <div class="form-inline">
                 <div class="form-group">
-                    <input type="text" class="form-control input-sm" data-bind="textInput: tenants.searchTerm" placeholder="Search organizations" />
+                    <input type="text" class="form-control input-sm" data-bind="textInput: organization.searchTerm" placeholder="Search organizations" />
                 </div>
                 <span data-bind="text: '(' + total + ')' "></span>
             </div>
@@ -20,15 +20,15 @@
 </div>
 
 <div class="row">
-    <div class="hide text-center" data-bind="css: { hide: tenants.filtered().length }">
+    <div class="hide text-center" data-bind="css: { hide: organizations.filtered().length }">
         <div class="alert alert-warning" role="alert">
             <strong>No matching organizations.</strong>
         </div>
     </div>
     <div class="col-md-12">
-        <ul data-bind="foreach: tenants.filtered">
+        <ul data-bind="foreach: organizations.filtered">
             <li>
-                <a data-bind="attr: { href: '/Tenant/' + Id }, text: Name"></a>
+                <a data-bind="attr: { href: '/Organization/' + Id }, text: Name"></a>
             </li>
         </ul>
     </div>
@@ -36,7 +36,7 @@
 
 @section scripts {
     <script>
-        var modelTenants = @Json.Serialize(Model);
+        var modelOrganizations = @Json.Serialize(Model);
     </script>
-    <script type="text/javascript" src="~/js/tenants.js"></script>
+    <script type="text/javascript" src="~/js/organizations.js"></script>
 }

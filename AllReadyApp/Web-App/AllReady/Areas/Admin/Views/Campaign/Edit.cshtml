@@ -105,9 +105,9 @@
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="TenantId" class="col-md-2 control-label"></label>
+            <label asp-for="OrganizationId" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.TenantId, SelectListService.GetTenants(), htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.OrganizationId, SelectListService.GetOrganizations(), htmlAttributes: new { @class = "form-control" })
             </div>
         </div>
         @Html.EditorFor(m => m.Location)

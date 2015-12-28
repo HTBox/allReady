@@ -1,4 +1,4 @@
-﻿@model AllReady.ViewModels.TenantViewModel
+﻿@model AllReady.ViewModels.OrganizationViewModel
 @{  ViewData["Title"] = Model.Name; }
 
 <div class="row">
@@ -68,5 +68,5 @@
     <script>
         var modelCampaigns = @Json.Serialize(Model.Campaigns);
     </script>
-    <script type="text/javascript" src="~/js/tenant.js"></script>
+    <script type="text/javascript" src="~/js/organization.js"></script>
 }

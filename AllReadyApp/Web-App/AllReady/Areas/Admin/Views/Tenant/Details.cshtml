@@ -1,4 +1,4 @@
-@model AllReady.Areas.Admin.Models.TenantDetailModel
+@model AllReady.Areas.Admin.Models.OrganizationDetailModel
 
 @{ 
     ViewData["Title"] = Model.Name;
@@ -64,8 +64,8 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        @Html.ActionLink("Edit", "Edit", "Tenant", new { id = Model.Id }, new { @class = "btn btn-primary" }) 
-        @Html.RouteLink("Back to list", "areaRoute", new {area = "Admin", controller = "Tenant", action = "Index"}, new {@class = "btn"})
+        @Html.ActionLink("Edit", "Edit", "Organization", new { id = Model.Id }, new { @class = "btn btn-primary" }) 
+        @Html.RouteLink("Back to list", "areaRoute", new {area = "Admin", controller = "Organization", action = "Index"}, new {@class = "btn"})
     </div>
 </div>
 
