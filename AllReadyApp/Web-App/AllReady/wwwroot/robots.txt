@@ -4,5 +4,5 @@ Disallow: /Admin
 Disallow: /Account
 Disallow: /ClosestLocation
 Disallow: /Manage
-Disallow: /Tenant
+Disallow: /Organization
 Disallow: /Task
