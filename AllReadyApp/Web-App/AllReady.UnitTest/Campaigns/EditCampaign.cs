@@ -62,8 +62,8 @@ namespace AllReady.UnitTest.Campaigns
                 Id = firePrev.Id,
                 ImageUrl = firePrev.ImageUrl,
                 Name = NEW_NAME,
-                TenantId = firePrev.ManagingOrganizationId,
-                TenantName = firePrev.ManagingOrganization.Name,
+                OrganizationId = firePrev.ManagingOrganizationId,
+                OrganizationName = firePrev.ManagingOrganization.Name,
                 TimeZoneId = "Eastern Standard Time"
             };
             var query = new EditCampaignCommand { Campaign = vm };

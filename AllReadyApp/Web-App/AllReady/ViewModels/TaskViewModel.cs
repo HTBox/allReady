@@ -50,8 +50,8 @@ namespace AllReady.ViewModels
 
             if (task.Organization != null)
             {
-                TenantId = task.Organization.Id;
-                TenantName = task.Organization.Name;
+                OrganizationId = task.Organization.Id;
+                OrganizationName = task.Organization.Name;
             }
 
             IsUserSignedUpForTask = false;
@@ -99,8 +99,8 @@ namespace AllReady.ViewModels
         [Display(Name = "Campaign")]
         public string CampaignName { get; set; }
 
-        public int TenantId { get; set; }
-        public string TenantName { get; set; }
+        public int OrganizationId { get; set; }
+        public string OrganizationName { get; set; }
 
         [Display(Name = "Required Skills")]
         public IEnumerable<int> RequiredSkills { get; set; } = new List<int>();

@@ -33,7 +33,7 @@ namespace AllReady.Controllers
 
             if (User.IsUserType(UserType.OrgAdmin))
             {
-                //TODO: Modify to check that user is tenant admin for tenant of task
+                //TODO: Modify to check that user is organization admin for organization of task
                 return true;
             }
 

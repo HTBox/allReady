@@ -30,7 +30,7 @@ namespace AllReady
         public string DefaultAdminUsername { get; set; }
         public string DefaultAdminPassword { get; set; }
         public string DefaultUsername { get; set; }
-        public string DefaultTenantUsername { get; set; }
+        public string DefaultOrganizationUsername { get; set; }
         public string DefaultFromEmailAddress { get; set; }
         public string DefaultFromDisplayName { get; set; }
         public string InsertSampleData { get; set; }

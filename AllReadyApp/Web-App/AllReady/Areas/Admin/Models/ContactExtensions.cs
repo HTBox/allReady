@@ -1,5 +1,4 @@
-﻿
-using AllReady.Models;
+﻿using AllReady.Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -69,13 +68,14 @@ namespace AllReady.Areas.Admin.Models
             }
             return campaign;
         }
-        public static Organization UpdateTenantContact(this Organization tenant, IPrimaryContactModel contactModel, AllReadyContext _context)
+
+        public static Organization UpdateOrganizationContact(this Organization organization, IPrimaryContactModel contactModel, AllReadyContext _context)
         {
-            if (tenant.OrganizationContacts == null)
+            if (organization.OrganizationContacts == null)
             {
-                tenant.OrganizationContacts = new List<OrganizationContact>();
+                organization.OrganizationContacts = new List<OrganizationContact>();
             }
-            var primaryCampaignContact = tenant.OrganizationContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
+            var primaryCampaignContact = organization.OrganizationContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
             var contactId = primaryCampaignContact?.ContactId;
             Contact primaryContact;
 
@@ -109,14 +109,14 @@ namespace AllReady.Areas.Admin.Models
                     primaryCampaignContact = new OrganizationContact
                     {
                         Contact = primaryContact,
-                        Organization = tenant,
+                        Organization = organization,
                         ContactType = (int)ContactTypes.Primary
                     };
-                    tenant.OrganizationContacts.Add(primaryCampaignContact);
+                    organization.OrganizationContacts.Add(primaryCampaignContact);
                     _context.Update(primaryCampaignContact);
                 }
             }
-            return tenant;
+            return organization;
         }
 
     }

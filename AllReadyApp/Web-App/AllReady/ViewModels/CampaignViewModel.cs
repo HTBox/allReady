@@ -21,10 +21,10 @@ namespace AllReady.ViewModels
             Name = campaign.Name;
             Description = campaign.Description;
             FullDescription = campaign.FullDescription;
-            ///TODO: Commented out as campaign.ManagingTenant is null from sample data;
+            ///TODO: Commented out as campaign.ManagingOrganization is null from sample data;
             /// Fix sample provider to ensure that property is not null
-            //ManagingTenantName = campaign.ManagingTenant.Name;
-            //ManagingTenantId = campaign.ManagingTenant.Id;
+            //ManagingOrganizationName = campaign.ManagingOrganization.Name;
+            //ManagingOrganizationId = campaign.ManagingOrganization.Id;
             TimeZoneId = campaign.TimeZoneId;
             StartDate = campaign.StartDateTime;
             EndDate = campaign.EndDateTime;
@@ -43,13 +43,13 @@ namespace AllReady.ViewModels
 
         public string ImageUrl { get; set; }
 
-        public int ManagingTenantId { get; set; }
+        public int ManagingOrganizationId { get; set; }
 
-        public string ManagingTenantName { get; set; }
+        public string ManagingOrganizationName { get; set; }
 
         public CampaignImpact CampaignImpact { get; set; }
 
-        public List<CampaignSponsors> ParticipatingTenants { get; set; }
+        public List<CampaignSponsors> ParticipatingOrganizations { get; set; }
 
         public string TimeZoneId { get; set; }
 

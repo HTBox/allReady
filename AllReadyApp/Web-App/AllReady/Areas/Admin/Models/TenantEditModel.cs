@@ -2,13 +2,12 @@
 
 namespace AllReady.Areas.Admin.Models
 {
-    public class TenantEditModel : IPrimaryContactModel
-    {
-        
+    public class OrganizationEditModel : IPrimaryContactModel
+    {        
         public int Id { get; set; }
+
         [Required]
-        public string Name { get; set; }
-        
+        public string Name { get; set; }        
         public string LogoUrl { get; set; }
         public string WebUrl { get; set; }
           

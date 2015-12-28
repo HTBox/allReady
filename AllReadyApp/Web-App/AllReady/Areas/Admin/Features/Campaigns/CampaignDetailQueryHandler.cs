@@ -35,8 +35,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Id = campaign.Id,
                     Name = campaign.Name,
                     Description = campaign.Description,
-                    TenantId = campaign.ManagingOrganizationId,
-                    TenantName = campaign.ManagingOrganization.Name,
+                    OrganizationId = campaign.ManagingOrganizationId,
+                    OrganizationName = campaign.ManagingOrganization.Name,
                     ImageUrl = campaign.ImageUrl,
                     TimeZoneId = campaign.TimeZoneId,
                     StartDate = campaign.StartDateTime,
@@ -53,8 +53,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                         EndDateTime = a.EndDateTime,
                         CampaignId = campaign.Id,
                         CampaignName = campaign.Name,
-                        TenantId = campaign.ManagingOrganizationId,
-                        TenantName = campaign.ManagingOrganization.Name,
+                        OrganizationId = campaign.ManagingOrganizationId,
+                        OrganizationName = campaign.ManagingOrganization.Name,
                         ImageUrl = a.ImageUrl
                     })
                 };

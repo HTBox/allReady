@@ -9,7 +9,7 @@ namespace AllReady.UnitTest.Activities
     {
         public EditingActivity()
         {
-            // Adding an activity requires a campaign for a tenant ID and an activity to match that in the command
+            // Adding an activity requires a campaign for a organization ID and an activity to match that in the command
             Context.Campaigns.Add(new Campaign {Id = 1, TimeZoneId = "Central Standard Time" });
             Context.Activities.Add(new Activity {Id = 1});
             Context.SaveChanges();

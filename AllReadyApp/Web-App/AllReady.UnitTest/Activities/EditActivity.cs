@@ -101,8 +101,8 @@ namespace AllReady.UnitTest.Activities
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = startDateTime,
                 Tasks = null,
-                TenantId = queenAnne.Campaign.ManagingOrganizationId,
-                TenantName = queenAnne.Campaign.ManagingOrganization.Name,
+                OrganizationId = queenAnne.Campaign.ManagingOrganizationId,
+                OrganizationName = queenAnne.Campaign.ManagingOrganization.Name,
                 Volunteers = null
             };
             var query = new EditActivityCommand { Activity = vm };

@@ -22,11 +22,11 @@ namespace AllReady.Models
 
         Task IAllReadyDataAccess.DeleteOrganization(int id)
         {
-            var tenant = _dbContext.Organizations.SingleOrDefault(c => c.Id == id);
+            var organization = _dbContext.Organizations.SingleOrDefault(c => c.Id == id);
 
-            if (tenant != null)
+            if (organization != null)
             {
-                _dbContext.Organizations.Remove(tenant);
+                _dbContext.Organizations.Remove(organization);
                 return _dbContext.SaveChangesAsync();
             }
             return null;
@@ -34,11 +34,11 @@ namespace AllReady.Models
 
         Task IAllReadyDataAccess.UpdateOrganization(Organization value)
         {
-            var tenant = _dbContext.Organizations.SingleOrDefault(c => c.Id == value.Id);
+            var organization = _dbContext.Organizations.SingleOrDefault(c => c.Id == value.Id);
 
-            if (tenant != null)
+            if (organization != null)
             {
-                _dbContext.Organizations.Update(tenant);
+                _dbContext.Organizations.Update(organization);
                 return _dbContext.SaveChangesAsync();
             }
             return null;

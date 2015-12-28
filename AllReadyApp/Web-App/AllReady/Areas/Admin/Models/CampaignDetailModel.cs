@@ -15,11 +15,11 @@ namespace AllReady.Areas.Admin.Models
         public string FullDescription { get; set; }
 
         [Display(Name = "Organization")]
-        public int TenantId { get; set; }
+        public int OrganizationId { get; set; }
 
 
         [Display(Name = "Organization")]
-        public string TenantName { get; set; }
+        public string OrganizationName { get; set; }
 
         [Display(Name = "Image URL")]
         public string ImageUrl { get; set; }
