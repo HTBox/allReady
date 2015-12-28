@@ -13,22 +13,22 @@ namespace AllReady.UnitTest.Services
     {
 
         [Fact]
-        public void GetTenantsTest()
+        public void GetOrganizationsTest()
         {
-            const int tenantId1 = 1;
-            const string tenantName1 = "Tenant Name 1";
+            const int organizationId1 = 1;
+            const string OrganizationName1 = "Organization Name 1";
 
             var data = new List<Organization>
             {
                 new Organization
                 {
-                    Id = tenantId1,
-                    Name = tenantName1,
+                    Id = organizationId1,
+                    Name = OrganizationName1,
                 },
                  new Organization
                 {
                     Id = 1,
-                    Name = "Tenant Name 2",
+                    Name = "Organization Name 2",
                 }
             }.AsQueryable();
 
@@ -43,11 +43,11 @@ namespace AllReady.UnitTest.Services
             mockContext.Setup(c => c.Organizations).Returns(mockSet.Object);
 
             var service = new SelectListService(mockContext.Object);
-            var tenants = service.GetTenants().ToList();
+            var organizations = service.GetOrganizations().ToList();
 
-            Assert.Equal(2, tenants.Count);
-            Assert.Equal(tenantId1.ToString(), tenants.First().Value);
-            Assert.Equal(tenantName1, tenants.First().Text);
+            Assert.Equal(2, organizations.Count);
+            Assert.Equal(organizationId1.ToString(), organizations.First().Value);
+            Assert.Equal(OrganizationName1, organizations.First().Text);
          
         }
 

@@ -13,30 +13,30 @@ namespace AllReady.Security
             return user.HasClaim(ClaimTypes.UserType, userTypeString);
         }
 
-        public static bool IsTenantAdmin(this ClaimsPrincipal user)
+        public static bool IsOrganizationAdmin(this ClaimsPrincipal user)
         {
-            int? userTenantId = user.GetTenantId();
-            return userTenantId.HasValue && user.IsTenantAdmin(userTenantId.Value);
+            int? userOrganizationId = user.GetOrganizationId();
+            return userOrganizationId.HasValue && user.IsOrganizationAdmin(userOrganizationId.Value);
         }
 
-        public static bool IsTenantAdmin(this ClaimsPrincipal user, int tenantId)
+        public static bool IsOrganizationAdmin(this ClaimsPrincipal user, int organizationId)
         {
-            int? userTenantId = user.GetTenantId();
+            int? userOrganizationId = user.GetOrganizationId();
             return user.IsUserType(UserType.SiteAdmin) ||
                   (user.IsUserType(UserType.OrgAdmin) &&
-                   userTenantId.HasValue && userTenantId.Value == tenantId);
+                   userOrganizationId.HasValue && userOrganizationId.Value == organizationId);
         }
 
-        public static int? GetTenantId(this ClaimsPrincipal user)
+        public static int? GetOrganizationId(this ClaimsPrincipal user)
         {
             int? result = null;
-            var tenantIdClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Organization);
-            if (tenantIdClaim != null)
+            var organizationIdClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Organization);
+            if (organizationIdClaim != null)
             {
-                int tenantId;
-                if (int.TryParse(tenantIdClaim.Value, out tenantId))
+                int organizationId;
+                if (int.TryParse(organizationIdClaim.Value, out organizationId))
                 {
-                    result = tenantId;
+                    result = organizationId;
                 }
             }
 
@@ -75,16 +75,16 @@ namespace AllReady.Security
 
         }
 
-        public static int? GetTenantId(this ApplicationUser user)
+        public static int? GetOrganizationId(this ApplicationUser user)
         {
             int? result = null;
-            var tenantIdClaim = user.Claims.FirstOrDefault(c => c.ClaimType == ClaimTypes.Organization);
-            if (tenantIdClaim != null)
+            var organizationIdClaim = user.Claims.FirstOrDefault(c => c.ClaimType == ClaimTypes.Organization);
+            if (organizationIdClaim != null)
             {
-                int tenantId;
-                if (int.TryParse(tenantIdClaim.ClaimValue, out tenantId))
+                int organizationId;
+                if (int.TryParse(organizationIdClaim.ClaimValue, out organizationId))
                 {
-                    result = tenantId;
+                    result = organizationId;
                 }
             }
 

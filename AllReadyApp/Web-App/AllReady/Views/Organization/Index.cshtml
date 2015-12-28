@@ -1,0 +1,42 @@
+﻿@model List<OrganizationViewModel>
+@{  
+    ViewData["Title"] = "Organizations";
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>@ViewData["Title"]</h2>
+    </div>
+    <div class="col-md-6">
+        <div class="pull-right">
+            <div class="form-inline">
+                <div class="form-group">
+                    <input type="text" class="form-control input-sm" data-bind="textInput: organizations.searchTerm" placeholder="Search organizations" />
+                </div>
+                <span data-bind="text: '(' + total + ')' "></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="hide text-center" data-bind="css: { hide: organizations.filtered().length }">
+        <div class="alert alert-warning" role="alert">
+            <strong>No matching organizations.</strong>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <ul data-bind="foreach: organizations.filtered">
+            <li>
+                <a data-bind="attr: { href: '/Organization/' + Id }, text: Name"></a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        var modelOrganizations = @Json.Serialize(Model);
+    </script>
+    <script type="text/javascript" src="~/js/organizations.js"></script>
+}

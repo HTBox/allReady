@@ -32,7 +32,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     ActivityName = task.Activity.Name,
                     CampaignId = task.Activity.CampaignId,
                     CampaignName = task.Activity.Campaign.Name,
-                    TenantId = task.Activity.Campaign.ManagingOrganizationId,
+                    OrganizationId = task.Activity.Campaign.ManagingOrganizationId,
                     Name = task.Name,
                     Description = task.Description,
                     TimeZoneId = task.Activity.Campaign.TimeZoneId,

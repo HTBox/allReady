@@ -1,0 +1,71 @@
+@model AllReady.Areas.Admin.Models.OrganizationDetailModel
+
+@{ 
+    ViewData["Title"] = Model.Name;
+}
+<div class="row">
+    <div class="col-md-12">
+        <h2>@ViewData["Title"]</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.LogoUrl)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.LogoUrl)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.WebUrl)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.WebUrl)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.PrimaryContactFirstName)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PrimaryContactFirstName)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.PrimaryContactLastName)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PrimaryContactLastName)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.PrimaryContactPhoneNumber)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PrimaryContactPhoneNumber)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.PrimaryContactEmail)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PrimaryContactEmail)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Location)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Location)
+            </dd>
+        </dl>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @Html.ActionLink("Edit", "Edit", "Organization", new { id = Model.Id }, new { @class = "btn btn-primary" }) 
+        @Html.RouteLink("Back to list", "areaRoute", new {area = "Admin", controller = "Organization", action = "Index"}, new {@class = "btn"})
+    </div>
+</div>
+

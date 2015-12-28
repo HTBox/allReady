@@ -46,8 +46,8 @@ namespace AllReady.ViewModels
         }
 
         public int Id { get; set; }
-        public int TenantId { get; set; }
-        public string TenantName { get; set; }
+        public int OrganizationId { get; set; }
+        public string OrganizationName { get; set; }
         public int CampaignId { get; set; }
         public string CampaignName { get; set; }
         public string Title { get; set; }

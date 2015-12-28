@@ -58,7 +58,7 @@ namespace AllReady.Models
                 .SingleOrDefault(a => a.Id == activityId);
         }
 
-        int IAllReadyDataAccess.GetManagingTenantId(int activityId)
+        int IAllReadyDataAccess.GetManagingOrganizationId(int activityId)
         {
             return _dbContext.Activities.Where(a => a.Id == activityId).Select(a => a.Campaign.ManagingOrganizationId).FirstOrDefault();
         }

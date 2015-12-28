@@ -5,8 +5,8 @@
     // handle the confirm click
     $("#confirmOverwriteContact").click(function ()
     {
-        var id = $("select[id=TenantId").val();
-        var getContactInfo = $.ajax({ url: "/admin/api/tenant/" + id + "/Contact", method: "GET", cache: true });
+        var id = $("select[id=OrganizationId").val();
+        var getContactInfo = $.ajax({ url: "/admin/api/organization/" + id + "/Contact", method: "GET", cache: true });
         getContactInfo.then(function (data) {
             if (data != null) {
                 $("#PrimaryContactFirstName").val(data.FirstName);

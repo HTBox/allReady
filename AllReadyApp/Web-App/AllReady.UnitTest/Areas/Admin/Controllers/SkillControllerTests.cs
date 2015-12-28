@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using Microsoft.AspNet.Http;
 using System.Security.Claims;
 using AllReady.Models;
-using AllReady.Areas.Admin.Features.Tenants;
+using AllReady.Areas.Admin.Features.Organizations;
 using Microsoft.AspNet.Mvc.Rendering;
 using System.Linq;
 

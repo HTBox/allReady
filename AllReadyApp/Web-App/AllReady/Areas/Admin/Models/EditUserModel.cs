@@ -1,9 +1,6 @@
 ﻿using AllReady.Models;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Models
 {
@@ -12,9 +9,9 @@ namespace AllReady.Areas.Admin.Models
         public string UserId { get; set; }
         [Display(Name = "User name")]
         public string UserName { get; set; }
-        public Organization Tenant { get; set; }
+        public Organization Organization { get; set; }
         [Display(Name = "Is organization admin?")]
-        public bool IsTenantAdmin { get; set; }
+        public bool IsOrganizationAdmin { get; set; }
         [Display(Name = "Is site admin?")]
         public bool IsSiteAdmin { get; set; }
         [Display(Name = "Associated skills")]

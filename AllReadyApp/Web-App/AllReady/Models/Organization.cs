@@ -11,16 +11,16 @@ namespace AllReady.Models
     public string LogoUrl { get; set; }
     public string WebUrl { get; set; }
 
-    /// <summary>
-    /// Collection of the campaigns directly managed by this Tenant
-    /// </summary>
-    public List<Campaign> Campaigns { get; set; }
+        /// <summary>
+        /// Collection of the campaigns directly managed by this Organization
+        /// </summary>
+        public List<Campaign> Campaigns { get; set; }
 
-    /// <summary>
-    /// Application users which are members of this Tenant.
-    /// Users may be members of more than one tenant.
-    /// </summary>
-    public List<ApplicationUser> Users { get; set; }
+        /// <summary>
+        /// Application users which are members of this Organization.
+        /// Users may be members of more than one organization.
+        /// </summary>
+        public List<ApplicationUser> Users { get; set; }
 
         public Location Location { get; set; }
 

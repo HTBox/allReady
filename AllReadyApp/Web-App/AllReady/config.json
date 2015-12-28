@@ -7,7 +7,7 @@
     "DefaultAdminUsername": "Administrator@example.com",
     "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
     "DefaultUsername": "User@example.com",
-    "DefaultTenantUsername": "tenant@example.com",
+    "DefaultOrganizationUsername": "organization@example.com",
     "DefaultFromEmailAddress": "Administrator@example.com",
     "DefaultFromDisplayName": "allReady.com Administrator",
     "InsertSampleData": "true",
