@@ -101,7 +101,7 @@ namespace AllReady.UnitTest
         {
             var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
             var allReadyDataAccess = new AllReadyDataAccessEF7(allReadyContext);
-            var controller = new ActivityApiController(allReadyDataAccess, null);
+            var controller = new ActivityApiController(allReadyDataAccess);
             PopulateData(allReadyContext);
             return controller;
         }
