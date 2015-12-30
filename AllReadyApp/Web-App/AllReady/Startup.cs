@@ -117,6 +117,7 @@ namespace AllReady
             services.AddSingleton<IImageService, ImageService>();
             //services.AddSingleton<GeoService>();
             services.AddTransient<SampleDataGenerator>();
+            services.AddTransient<IBaseDatabaseConnection, BaseDatabaseConnection>();
 
             if (Configuration["Data:Storage:EnableAzureQueueService"] == "true")
             {
