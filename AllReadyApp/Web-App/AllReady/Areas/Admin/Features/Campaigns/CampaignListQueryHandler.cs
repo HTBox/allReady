@@ -1,6 +1,7 @@
 ﻿using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
+using Microsoft.Data.Entity;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,8 +18,14 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
         public IEnumerable<CampaignSummaryModel> Handle(CampaignListQuery message)
         {
-            var campaigns = _context.Campaigns
-                .Select(c => new CampaignSummaryModel()
+            var campaignsQuery = _context.Campaigns
+                .AsNoTracking();
+            if (message.OrganizationId.HasValue)
+            {
+                campaignsQuery = campaignsQuery.Where(c => c.ManagingOrganizationId == message.OrganizationId);
+            }
+                
+            var campaigns = campaignsQuery.Select(c => new CampaignSummaryModel()
                 {
                     Id = c.Id,
                     Name = c.Name,
