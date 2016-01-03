@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using AllReady.Areas.Admin.Controllers;
+﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
 using MediatR;
 using Microsoft.AspNet.Mvc;
@@ -11,11 +10,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
     public class OrganizationControllerTests
     {
-        private readonly OrganizationEditModel _stubViewModel;
+        private readonly OrganizationEditModel _organizationEditModel;
+        private static Mock<IMediator> _mockMediator;
+        private static OrganizationController _sut;
 
         public OrganizationControllerTests()
         {
-            _stubViewModel = new OrganizationEditModel
+            _organizationEditModel = new OrganizationEditModel
             {
                 Id = 0,
                 LogoUrl = "http://www.example.com/image.jpg",
@@ -31,47 +32,56 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CreateNewOrganizationRedirectsToOrganizationList()
         {
-            //arrange
-            var sut = new OrganizationController(MockMediatorCreateOrganization().Object);
-            var expectedRouteValues = new {controller = "Organization", action = "Index"};
-            //act
-            var result = sut.Create(_stubViewModel);
-            //assert
+            CreateSut();
+
+            var expectedRouteValues = new { controller = "Organization", action = "Index" };
+
+            var result = _sut.Create(_organizationEditModel);
+
             Assert.IsType<RedirectToRouteResult>(result);
-            Assert.Equal("areaRoute", ((RedirectToRouteResult) result).RouteName);
-            Assert.Equal("Organization", ((RedirectToRouteResult)result).RouteValues["controller"]); 
-            Assert.Equal("Index",((RedirectToRouteResult)result).RouteValues["action"]); 
+            Assert.Equal("areaRoute", ((RedirectToRouteResult)result).RouteName);
+            Assert.Equal("Organization", ((RedirectToRouteResult)result).RouteValues["controller"]);
+            Assert.Equal("Index", ((RedirectToRouteResult)result).RouteValues["action"]);
+        }
+
+        [Fact]
+        public void BusShouldBeCalledWithAppropriateData()
+        {
+            CreateSut();
+
+            _sut.Create(_organizationEditModel);
+
+            _mockMediator.Verify(x => x.Send(It.Is<OrganizationEditCommand>( y => y.Organization == _organizationEditModel)));
         }
 
         [Fact]
         public void CreateNewOrganizationPostReturnsBadRequestForNullOrganization()
         {
-            //arrange
             OrganizationEditModel viewmodel = null;
-            var sut = new OrganizationController(MockMediatorCreateOrganization().Object);
-            //act
-            var result = sut.Create(viewmodel);
-            //assert 
+            CreateSut();
+
+            var result = _sut.Create(viewmodel);
+
             Assert.IsType<BadRequestResult>(result);
         }
 
         [Fact]
         public void CreateNewOrganizationInvalidModelReturnsCreateView()
         {
-            //arrange
-            var sut = new OrganizationController(MockMediatorCreateOrganization().Object);
-            sut.ModelState.AddModelError("foo", "bar");
-            //act
-            var result = sut.Create(_stubViewModel);
-            //assert
+            CreateSut();
+            _sut.ModelState.AddModelError("foo", "bar");
+
+            var result = _sut.Create(_organizationEditModel);
+
             Assert.IsType<ViewResult>(result);
             Assert.Equal("Create", ((ViewResult) result).ViewName);
         }
 
-        private static Mock<IMediator> MockMediatorCreateOrganization()
+        private static void CreateSut()
         {
-            var mockMediator = new Mock<IMediator>();
-            return mockMediator;
+            _mockMediator = new Mock<IMediator>();
+
+            _sut = new OrganizationController(_mockMediator.Object);
         }
     }
 }

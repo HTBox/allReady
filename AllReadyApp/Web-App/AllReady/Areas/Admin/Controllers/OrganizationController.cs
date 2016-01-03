@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNet.Mvc;
-using AllReady.Models;
 using Microsoft.AspNet.Authorization;
 using MediatR;
 using AllReady.Areas.Admin.Features.Organizations;
@@ -52,7 +51,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return new BadRequestResult();
             if (ModelState.IsValid)
             {
-                int id = _bus.Send(new OrganizationEditCommand { Organization = organization });
+                _bus.Send(new OrganizationEditCommand { Organization = organization });
                 return RedirectToRoute("areaRoute", new {controller = "Organization", action = "Index"});
             }
 
