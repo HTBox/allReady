@@ -29,7 +29,12 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Campaign
         public IActionResult Index()
         {
-            var campaigns = _bus.Send(new CampaignListQuery());
+            var query = new CampaignListQuery();
+            if (User.IsUserType(UserType.OrgAdmin))
+            {
+                query.OrganizationId = User.GetOrganizationId();
+            }
+            var campaigns = _bus.Send(query);
             return View(campaigns);
         }
 
