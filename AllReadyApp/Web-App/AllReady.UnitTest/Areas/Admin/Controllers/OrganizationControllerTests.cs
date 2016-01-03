@@ -12,8 +12,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
     public class OrganizationControllerTests
     {
         private readonly OrganizationEditModel _organizationEditModel;
+
         private static Mock<IMediator> _bus;
+
         private static OrganizationController _sut;
+
+        private const int Id = 4565;
 
         public OrganizationControllerTests()
         {
@@ -50,11 +54,56 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
         #region DetailsTests
 
+        [Fact]
+        public void DetailsShouldPassTheIdToTheBus()
+        {
+            CreateSut();
+
+            _sut.Details(Id);
+
+            _bus.Verify(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id)));
+        }
+
+        [Fact]
+        public void WhenTheBusReturnsNullForThatIdHttpNotFoundShouldBeReturned()
+        {
+            CreateSut();
+
+            _bus.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns<OrganizationDetailModel>(null);
+
+            var result = _sut.Details(Id);
+
+            Assert.IsType<HttpNotFoundResult>(result);
+        }
+
+        [Fact]
+        public void WhenTheBusReturnsAOrganizationDetailModelForThatIdAViewShouldBeReturned()
+        {
+            CreateSut();
+
+            var model = new OrganizationDetailModel();
+
+            _bus.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns(model);
+
+            var result = (ViewResult)_sut.Details(Id);
+
+            Assert.Same(model, result.ViewData.Model);
+        }
 
 
         #endregion
 
         #region CreateTests
+
+        [Fact]
+        public void CreateWithoutParametersShouldReturnAView()
+        {
+            CreateSut();
+
+            var result = _sut.Create();
+
+            Assert.IsType<ViewResult>(result);
+        }
 
         [Fact]
         public void CreateNewOrganizationRedirectsToOrganizationList()
