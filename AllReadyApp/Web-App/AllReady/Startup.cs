@@ -112,7 +112,6 @@ namespace AllReady
             services.AddSingleton((x) => Configuration);
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
-            services.AddSingleton<IClosestLocations, SqlClosestLocations>();
             services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
             services.AddSingleton<IImageService, ImageService>();
             //services.AddSingleton<GeoService>();

@@ -20,15 +20,11 @@ namespace AllReady.Controllers
     {
         private const double MILES_PER_METER = 0.00062137;
         private readonly IAllReadyDataAccess _allReadyDataAccess;
-        private IClosestLocations _closestLocations;
 
-        public ActivityApiController(IAllReadyDataAccess allReadyDataAccess,
-            //GeoService geoService,
-            IClosestLocations closestLocations)
+
+        public ActivityApiController(IAllReadyDataAccess allReadyDataAccess)
         {
             _allReadyDataAccess = allReadyDataAccess;
-            //_geoService = geoService;
-            _closestLocations = closestLocations;
         }
 
         // GET: api/values

@@ -103,5 +103,12 @@ namespace AllReady.Models
         Task DeleteSkill(int id);
         Task UpdateSkill(Skill value);
         #endregion
+
+        #region Closest Locations
+
+        IEnumerable<ClosestLocation> GetClosestLocations(LocationQuery query);
+        IEnumerable<PostalCodeGeoCoordinate> GetPostalCodeCoordinates(string postalCode);
+
+        #endregion Closest Locations
     }
 }
