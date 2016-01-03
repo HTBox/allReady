@@ -4,6 +4,7 @@ using AllReady.Areas.Admin.Models;
 using MediatR;
 using Microsoft.AspNet.Mvc;
 using Moq;
+using System.Collections.Generic;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
@@ -11,7 +12,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
     public class OrganizationControllerTests
     {
         private readonly OrganizationEditModel _organizationEditModel;
-        private static Mock<IMediator> _mockMediator;
+        private static Mock<IMediator> _bus;
         private static OrganizationController _sut;
 
         public OrganizationControllerTests()
@@ -29,6 +30,32 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             };
         }
 
+        #region IndexTests
+
+        [Fact]
+        public void IndexShouldReturnTheAViewWithTheListReturnedFromTheBus()
+        {
+            CreateSut();
+
+            var organizationSummaryModel = new List<OrganizationSummaryModel> { new OrganizationSummaryModel() };
+
+            _bus.Setup(x => x.Send(It.IsAny<OrganizationListQuery>())).Returns(organizationSummaryModel);
+
+            var result = (ViewResult)_sut.Index();
+
+            Assert.Same(organizationSummaryModel, result.ViewData.Model);
+        }
+
+        #endregion
+
+        #region DetailsTests
+
+
+
+        #endregion
+
+        #region CreateTests
+
         [Fact]
         public void CreateNewOrganizationRedirectsToOrganizationList()
         {
@@ -45,13 +72,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void BusShouldBeCalledWithAppropriateData()
+        public void CreateNewOrganizationMediatorShouldBeCalledWithAppropriateDataWhenModelStateIsValid()
         {
             CreateSut();
 
             _sut.Create(_organizationEditModel);
 
-            _mockMediator.Verify(x => x.Send(It.Is<OrganizationEditCommand>( y => y.Organization == _organizationEditModel)));
+            _bus.Verify(x => x.Send(It.Is<OrganizationEditCommand>( y => y.Organization == _organizationEditModel)));
         }
 
         [Fact]
@@ -77,11 +104,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal("Create", ((ViewResult) result).ViewName);
         }
 
+        #endregion
+        
         private static void CreateSut()
         {
-            _mockMediator = new Mock<IMediator>();
+            _bus = new Mock<IMediator>();
 
-            _sut = new OrganizationController(_mockMediator.Object);
+            _sut = new OrganizationController(_bus.Object);
         }
     }
 }
