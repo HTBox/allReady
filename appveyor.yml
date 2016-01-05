@@ -6,7 +6,7 @@ nuget:
 init:
   - git config --global core.autocrlf true
   
- services:
+services:
   - mssql2014
   
 install:
