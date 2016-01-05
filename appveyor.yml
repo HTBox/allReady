@@ -31,3 +31,6 @@ build_script:
 test_script:
  - ps: cd .\AllReadyApp\Web-App\AllReady.UnitTest
  - cmd: dnx test 
+ - ps: cd ..\AllReady
+ - cmd: dnx web --server.urls http://localhost:33310
+ - cmd: ..\..\AllReady.IntegrationTests\bin\Debug\AllReady.IntegrationTests.exe
