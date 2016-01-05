@@ -8,6 +8,10 @@ using Microsoft.AspNet.Hosting;
 using Microsoft.Data.Entity;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+using Moq;
+using System.Security.Claims;
+using System.Security.Principal;
+using Microsoft.AspNet.Http;
 
 namespace AllReady.UnitTest
 {
@@ -95,6 +99,37 @@ namespace AllReady.UnitTest
 
         }
 
+        [Fact]
+        public async void UnregisterActivityShouldRemoveActivitySignup()
+        {
+            // Arrange
+            int recordId = 5;
+            var controller = GetActivityController();
+            var mockUser = new ClaimsPrincipal();
+            var mockContext = new Mock<HttpContext>();
+            mockUser.AddIdentity(
+                new ClaimsIdentity(
+                    new List<Claim>
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, recordId.ToString())
+                    }
+                )
+            );
+            mockContext.Setup(e => e.User).Returns(mockUser);
+            controller.ActionContext.HttpContext = mockContext.Object;
+
+            // Act
+            var result = await controller.UnregisterActivity(recordId);
+
+            // Assert
+            Assert.NotNull(result);
+            var context = _serviceProvider.GetService<AllReadyContext>();
+            var numOfUsersSignedUp = context.Activities
+                .First(e => e.Id == recordId)
+                .UsersSignedUp.Count;
+            Assert.Equal(0, numOfUsersSignedUp);
+        }
+
         #region Helper Methods
 
         private ActivityApiController GetActivityController()
@@ -130,10 +165,16 @@ namespace AllReady.UnitTest
             public const string OrganizationNameFormat = "Test Organization {0}";
             public const string ActivityNameFormat = "Activity {0}";
             public const string ActivityDescriptionFormat = "Description for activity {0}";
+            public const string UserNameFormat = "User {0}";
 
-            private static int id = 1;
             public static Activity[] GetActivities()
             {
+                var users = Enumerable.Range(1, 10).Select(n =>
+                    new ApplicationUser()
+                    {
+                        Id = n.ToString(),
+                        Name = string.Format(UserNameFormat, n)
+                    }).ToArray();
                 var campaigns = Enumerable.Range(1, 10).Select(n =>
                     new Campaign()
                     {
@@ -157,7 +198,8 @@ namespace AllReady.UnitTest
                         StartDateTime = DateTime.MinValue.ToUniversalTime(),
                         Name = string.Format(ActivityNameFormat, n),
                         Description = string.Format(ActivityDescriptionFormat, n),
-                        Id = id++
+                        Id = n,
+                        UsersSignedUp = new List<ActivitySignup>() { new ActivitySignup() { User = users[n - 1], SignupDateTime = DateTime.Now.ToUniversalTime(), PreferredEmail = "foo@foo.com", PreferredPhoneNumber = "(555) 555-5555" } }
                     }).ToArray();
                 return activities;
             }
