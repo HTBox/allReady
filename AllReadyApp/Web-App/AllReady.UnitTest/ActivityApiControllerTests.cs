@@ -119,6 +119,27 @@ namespace AllReady.UnitTest
             Assert.Equal(0, numOfUsersSignedUp);
         }
 
+
+        [Fact]
+        public async void UnregisterActivityShouldRemoveTaskSignup()
+        {
+            // Arrange
+            int recordId = 5;
+            var controller = GetActivityController()
+                .WithUser(recordId.ToString());
+
+            // Act
+            var result = await controller.UnregisterActivity(recordId);
+
+            // Assert
+            Assert.NotNull(result);
+            var context = _serviceProvider.GetService<AllReadyContext>();
+            var numOfTasksSignedUpFor = context.TaskSignups
+                .Where(e => e.Task.Activity.Id == recordId)
+                .Count();
+            Assert.Equal(0, numOfTasksSignedUpFor);
+        }
+
         #region Helper Methods
 
         private ActivityApiController GetActivityController()
@@ -155,6 +176,7 @@ namespace AllReady.UnitTest
             public const string ActivityNameFormat = "Activity {0}";
             public const string ActivityDescriptionFormat = "Description for activity {0}";
             public const string UserNameFormat = "User {0}";
+            public const string TaskDescriptionFormat = "Task {0}";
 
             public static Activity[] GetActivities()
             {
@@ -188,7 +210,35 @@ namespace AllReady.UnitTest
                         Name = string.Format(ActivityNameFormat, n),
                         Description = string.Format(ActivityDescriptionFormat, n),
                         Id = n,
-                        UsersSignedUp = new List<ActivitySignup>() { new ActivitySignup() { User = users[n - 1], SignupDateTime = DateTime.Now.ToUniversalTime(), PreferredEmail = "foo@foo.com", PreferredPhoneNumber = "(555) 555-5555" } }
+                        UsersSignedUp = new List<ActivitySignup>()
+                        {
+                            new ActivitySignup()
+                            {
+                                User = users[n - 1],
+                                SignupDateTime = DateTime.Now.ToUniversalTime(),
+                                PreferredEmail = "foo@foo.com",
+                                PreferredPhoneNumber = "(555) 555-5555"
+                            }
+                        },
+                        Tasks = new List<AllReadyTask>()
+                        {
+                            new AllReadyTask()
+                            {
+                                Id = n,
+                                Name = string.Format(TaskDescriptionFormat,n),
+                                NumberOfVolunteersRequired = 1,
+                                Organization = organizations[n - 1],
+                                AssignedVolunteers = new List<TaskSignup>()
+                                {
+                                    new TaskSignup()
+                                    {
+                                        User = users[n - 1],
+                                        StatusDateTimeUtc = DateTime.Now.ToUniversalTime(),
+                                        Status = "Ready To Rock And Roll"
+                                    }
+                                }
+                            }
+                        }
                     }).ToArray();
                 return activities;
             }
