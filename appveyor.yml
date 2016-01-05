@@ -6,9 +6,12 @@ nuget:
 init:
   - git config --global core.autocrlf true
   
+ services:
+  - mssql2014
+  
 install:
  - cmd: nuget sources add -Name api.nuget.org -Source https://api.nuget.org/v3/index.json
-
+ 
 before_build:
  - ps: "&{$Branch='dev';iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.ps1'))}"
  - cmd: dnvm install 1.0.0-rc1-final
@@ -32,5 +35,6 @@ test_script:
  - ps: cd .\AllReadyApp\Web-App\AllReady.UnitTest
  - cmd: dnx test 
  - ps: cd ..\AllReady
+ - cmd: set Data:DefaultConnection:ConnectionString=Server=(local)\SQL2014;Database=AllReady;User ID=sa;Password=Password12!
  - cmd: dnx web --server.urls http://localhost:33310
  - cmd: ..\..\AllReady.IntegrationTests\bin\Debug\AllReady.IntegrationTests.exe
