@@ -33,6 +33,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
             campaign.Name = message.Campaign.Name;
             campaign.Description = message.Campaign.Description;
+            campaign.FullDescription = message.Campaign.FullDescription;
             campaign.TimeZoneId = message.Campaign.TimeZoneId;
             TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(campaign.TimeZoneId);
             var startDateTimeOffset = timeZoneInfo.GetUtcOffset(message.Campaign.StartDate);
