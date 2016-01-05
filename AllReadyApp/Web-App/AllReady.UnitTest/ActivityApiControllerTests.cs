@@ -104,19 +104,8 @@ namespace AllReady.UnitTest
         {
             // Arrange
             int recordId = 5;
-            var controller = GetActivityController();
-            var mockUser = new ClaimsPrincipal();
-            var mockContext = new Mock<HttpContext>();
-            mockUser.AddIdentity(
-                new ClaimsIdentity(
-                    new List<Claim>
-                    {
-                        new Claim(ClaimTypes.NameIdentifier, recordId.ToString())
-                    }
-                )
-            );
-            mockContext.Setup(e => e.User).Returns(mockUser);
-            controller.ActionContext.HttpContext = mockContext.Object;
+            var controller = GetActivityController()
+                .WithUser(recordId.ToString());
 
             // Act
             var result = await controller.UnregisterActivity(recordId);
