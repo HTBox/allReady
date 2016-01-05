@@ -36,6 +36,7 @@ test_script:
  - cmd: dnx test 
  - ps: cd ..\AllReady
  - cmd: set Data:DefaultConnection:ConnectionString=Server=(local)\SQL2014;Database=AllReady;User ID=sa;Password=Password12!
+ - cmd: set Hosting:Environment=Development
  - ps: sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [AllReady]"
- - cmd: dnx web --server.urls http://localhost:33310
+ - cmd: dnx web --server.urls http://localhost:33310 
  - cmd: ..\..\AllReady.IntegrationTests\bin\Debug\AllReady.IntegrationTests.exe
