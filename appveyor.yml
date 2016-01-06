@@ -42,5 +42,5 @@ test_script:
  - cmd: echo "== starting web server =="
  - ps: start-process "dnx" "web --server.urls http://localhost:33310"
  - cmd: echo "Finished launching website"
- - cmd: timeout 60
- - cmd: ..\..\AllReady.IntegrationTests\bin\Debug\AllReady.IntegrationTests.exe
+ - cmd: timeout 30
+ - cmd: ..\..\AllReady.IntegrationTest\bin\Debug\AllReady.IntegrationTest.exe
