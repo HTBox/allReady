@@ -11,6 +11,7 @@ services:
   
 install:
  - cmd: nuget sources add -Name api.nuget.org -Source https://api.nuget.org/v3/index.json
+ - choco install firefox
  
 before_build:
  - ps: "&{$Branch='dev';iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.ps1'))}"
@@ -39,4 +40,5 @@ test_script:
  - cmd: set Hosting:Environment=Development
  - ps: sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [AllReady]"
  - cmd: dnx web --server.urls http://localhost:33310 
+ - cmd: echo "Finished launching website"
  - cmd: ..\..\AllReady.IntegrationTests\bin\Debug\AllReady.IntegrationTests.exe
