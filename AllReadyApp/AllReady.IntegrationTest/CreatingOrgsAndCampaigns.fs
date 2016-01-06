@@ -21,7 +21,7 @@ let All baseUrl =
         TopMenu.SelectAdminOrganizations()
 
         "h2" == "Currently active organizations"
-        title() |> is "Currently active organizations - AllReady This is totally not part of the title"
+        title() |> is "Currently active organizations - AllReady"
 
     "Admin can create organization" &&& fun _ ->
         click "Create New"

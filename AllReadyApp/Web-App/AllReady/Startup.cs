@@ -283,21 +283,17 @@ namespace AllReady
             // for production applications, this should either be set to false or deleted.
             if (env.IsDevelopment() || env.IsEnvironment("Staging"))
             {
-                Console.WriteLine("## Running Migrations");
                 context.Database.Migrate();
             }
             if (Configuration["SampleData:InsertSampleData"] == "true")
             {
-                Console.WriteLine("## Inserting Test Data");
                 sampleData.InsertTestData();
             }
             if (Configuration["SampleData:InsertTestUsers"] == "true")
             {
-                Console.WriteLine("## Creating admin user");
                 await sampleData.CreateAdminUser();
             }
 
-            Console.WriteLine("## Configuration Complete");
         }
 
         public static void Main(string[] args) => WebApplication.Run<Startup>(args);

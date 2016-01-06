@@ -5,7 +5,6 @@ nuget:
   
 init:
  - git config --global core.autocrlf true
- - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
  
 services:
   - mssql2014
@@ -50,5 +49,3 @@ test_script:
  - cmd: C:\Projects\allReady\AllReadyApp\AllReady.IntegrationTest\bin\Debug\AllReady.IntegrationTest.exe
  - cmd: echo "== Finished running integration tests =="
 
-on_finish:
-- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
