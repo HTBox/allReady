@@ -24,7 +24,7 @@ before_build:
  - nuget restore AllReadyApp\AllReady.Models\AllReady.Models.csproj -SolutionDirectory .\AllReadyApp
  - nuget restore AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj -SolutionDirectory .\AllReadyApp
  - nuget restore AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj -SolutionDirectory .\AllReadyApp
- - cmd: npm install bower -g
+ - cmd: npm install gulp bower -g
 
 build_script:
  - ps: (Get-Content AllReadyApp\Web-App\AllReady\version.json).replace("GITVERSION", (git rev-parse HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json
