@@ -17,7 +17,7 @@ CreatingOrgsAndCampaigns.All Constants.UrlLocalHost
 //run all tests
 run()
 
-System.Environment.ExitCode <- runner.failedCount
+//System.Environment.ExitCode <- runner.failedCount
 Console.WriteLine(String.Format("{0} passed, {1} failed", runner.passedCount, runner.failedCount))
 
 quit()
