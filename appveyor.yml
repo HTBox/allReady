@@ -24,15 +24,12 @@ before_build:
  - nuget restore AllReadyApp\AllReady.Models\AllReady.Models.csproj -SolutionDirectory .\AllReadyApp
  - nuget restore AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj -SolutionDirectory .\AllReadyApp
  - nuget restore AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj -SolutionDirectory .\AllReadyApp
- - cmd: cd AllReadyApp\Web-App\AllReady
- - cmd: npm install
- - cmd: cd ..\..\..
 
 build_script:
  - ps: (Get-Content AllReadyApp\Web-App\AllReady\version.json).replace("GITVERSION", (git rev-parse HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json
  - cmd: msbuild AllReadyApp\AllReady.Models\AllReady.Models.csproj
  - cmd: dnu build AllReadyApp/wrap/AllReady.Models/project.json
- - cmd: dnu build AllReadyApp\Web-App\AllReady\project.json
+ - cmd: dnu publish AllReadyApp\Web-App\AllReady\project.json --out AllReadyApp\Web-App\AllReady\Published
  - cmd: dnu build AllReadyApp\Web-App\AllReady.UnitTest\project.json
  - cmd: msbuild AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj
  - cmd: msbuild AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj
@@ -40,7 +37,7 @@ build_script:
 test_script:
  - ps: cd .\AllReadyApp\Web-App\AllReady.UnitTest
  - cmd: dnx test 
- - ps: cd ..\AllReady
+ - ps: cd ..\AllReady\Published
  - cmd: set Data:DefaultConnection:ConnectionString=Server=(local)\SQL2014;Database=AllReady;User ID=sa;Password=Password12!
  - cmd: set Hosting:Environment=Development
  - ps: sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [AllReady]"
@@ -48,5 +45,5 @@ test_script:
  - ps: start-process "dnx" "web --server.urls http://localhost:33310"
  - cmd: echo "==Finished launching website=="
  - cmd: timeout 60
- - cmd: ..\..\AllReady.IntegrationTest\bin\Debug\AllReady.IntegrationTest.exe
+ - cmd: ..\..\..\AllReady.IntegrationTest\bin\Debug\AllReady.IntegrationTest.exe
  - cmd: echo "== Finished running integration tests =="
