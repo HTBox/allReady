@@ -96,6 +96,7 @@ namespace AllReady.Controllers
         [HttpPost]
         [Route("/Activity/Signup")]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public IActionResult Signup(ActivitySignupViewModel signupModel)
         {
             if (signupModel == null)
