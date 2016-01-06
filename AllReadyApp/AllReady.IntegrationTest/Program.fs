@@ -12,7 +12,7 @@ resize (1024, 768)
 Console.WriteLine("Launched Firefox")
 
 CreatingOrgsAndCampaigns.All Constants.UrlLocalHost
-CreatingActivitiesForCampaigns.All Constants.UrlLocalHost
+//CreatingActivitiesForCampaigns.All Constants.UrlLocalHost
 
 //run all tests
 run()
