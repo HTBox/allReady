@@ -40,7 +40,7 @@ test_script:
  - cmd: set Hosting:Environment=Development
  - ps: sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [AllReady]"
  - cmd: echo "== starting web server =="
- - cmd: start /b dnx web --server.urls http://localhost:33310 
+ - ps: start-process "dnx" "web --server.urls http://localhost:33310"
  - cmd: echo "Finished launching website"
- - cmd: timeout 60 > NUL
+ - cmd: timeout 60
  - cmd: ..\..\AllReady.IntegrationTests\bin\Debug\AllReady.IntegrationTests.exe

@@ -19,6 +19,6 @@ CreatingActivitiesForCampaigns.All Constants.UrlLocalHost
 run()
 
 System.Environment.ExitCode <- runner.failedCount
-
+Console.WriteLine(String.Format("{0} passed, {1} failed", runner.passedCount, runner.failedCount))
 
 quit()
