@@ -14,7 +14,6 @@ Console.WriteLine("Launched Firefox")
 CreatingOrgsAndCampaigns.All Constants.UrlLocalHost
 CreatingActivitiesForCampaigns.All Constants.UrlLocalHost
 
-
 //run all tests
 run()
 
