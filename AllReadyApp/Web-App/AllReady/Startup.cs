@@ -293,6 +293,7 @@ namespace AllReady
             {
                 await sampleData.CreateAdminUser();
             }
+
         }
 
         public static void Main(string[] args) => WebApplication.Run<Startup>(args);

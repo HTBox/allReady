@@ -4,11 +4,15 @@ nuget:
   account_feed: true
   
 init:
-  - git config --global core.autocrlf true
+ - git config --global core.autocrlf true
+ 
+services:
+  - mssql2014
   
 install:
  - cmd: nuget sources add -Name api.nuget.org -Source https://api.nuget.org/v3/index.json
-
+ - choco install firefox
+ 
 before_build:
  - ps: "&{$Branch='dev';iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.ps1'))}"
  - cmd: dnvm install 1.0.0-rc1-final
@@ -19,15 +23,29 @@ before_build:
  - cmd: dnu restore AllReadyApp
  - nuget restore AllReadyApp\AllReady.Models\AllReady.Models.csproj -SolutionDirectory .\AllReadyApp
  - nuget restore AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj -SolutionDirectory .\AllReadyApp
+ - nuget restore AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj -SolutionDirectory .\AllReadyApp
+ - cmd: npm install gulp bower -g
 
 build_script:
  - ps: (Get-Content AllReadyApp\Web-App\AllReady\version.json).replace("GITVERSION", (git rev-parse HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json
  - cmd: msbuild AllReadyApp\AllReady.Models\AllReady.Models.csproj
  - cmd: dnu build AllReadyApp/wrap/AllReady.Models/project.json
- - cmd: dnu build AllReadyApp\Web-App\AllReady\project.json
+ - cmd: dnu publish AllReadyApp\Web-App\AllReady\project.json --out c:\Published
  - cmd: dnu build AllReadyApp\Web-App\AllReady.UnitTest\project.json
  - cmd: msbuild AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj
+ - cmd: msbuild AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj
 
 test_script:
  - ps: cd .\AllReadyApp\Web-App\AllReady.UnitTest
  - cmd: dnx test 
+ - ps: cd C:\Projects\allReady\AllReadyApp\Web-App\AllReady
+ - cmd: set Data:DefaultConnection:ConnectionString=Server=(local)\SQL2014;Database=AllReady;User ID=sa;Password=Password12!
+ - cmd: set Hosting:Environment=Development
+ - ps: sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [AllReady]"
+ - cmd: echo "== starting web server =="
+ - ps: start-process "dnx" "web --server.urls http://localhost:33310" -RedirectStandardOutput "c:\logs\ketral.log"
+ - cmd: echo "==Finished launching website=="
+ - cmd: timeout 60
+ - cmd: C:\Projects\allReady\AllReadyApp\AllReady.IntegrationTest\bin\Debug\AllReady.IntegrationTest.exe
+ - cmd: echo "== Finished running integration tests =="
+
