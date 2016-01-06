@@ -13,6 +13,8 @@ let All baseUrl =
 
     "Login Admin" &&& fun _ ->
         Actions.GoToHomePage baseUrl
+        let sceenshotName  = Utils.TimestampName "HomePage"
+        screenshot "c:\screenshots" sceenshotName |> ignore
         Actions.Login Constants.SiteAdminUserName Constants.SiteAdminPassword baseUrl
 
     "Admin can Navigate to Organizations" &&& fun _ ->
