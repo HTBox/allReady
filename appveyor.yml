@@ -43,6 +43,7 @@ test_script:
  - ps: sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [AllReady]"
  - cmd: echo "== starting web server =="
  - ps: start-process "dnx" "web --server.urls http://localhost:33310"
- - cmd: echo "Finished launching website"
- - cmd: timeout 30
+ - cmd: echo "==Finished launching website=="
+ - cmd: timeout 60
  - cmd: ..\..\AllReady.IntegrationTest\bin\Debug\AllReady.IntegrationTest.exe
+ - cmd: echo "== Finished running integration tests =="
