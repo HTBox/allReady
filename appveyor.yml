@@ -31,6 +31,7 @@ build_script:
  - cmd: dnu build AllReadyApp\Web-App\AllReady\project.json
  - cmd: dnu build AllReadyApp\Web-App\AllReady.UnitTest\project.json
  - cmd: msbuild AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj
+ - cmd: msbuild AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj
 
 test_script:
  - ps: cd .\AllReadyApp\Web-App\AllReady.UnitTest
