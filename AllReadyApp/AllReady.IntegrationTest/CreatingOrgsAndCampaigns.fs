@@ -21,7 +21,7 @@ let All baseUrl =
         TopMenu.SelectAdminOrganizations()
 
         "h2" == "Currently active organizations"
-        title() |> is "Currently active organizations - AllReady"
+        title() |> is "Currently active organizations - AllReady This is totally not part of the title"
 
     "Admin can create organization" &&& fun _ ->
         click "Create New"
@@ -36,23 +36,23 @@ let All baseUrl =
 
         "h2" == "Campaigns - Admin"
         title() |> is "Campaigns - Admin - AllReady"
-//
-//    "Admin can create new campaign" &&& fun _ ->
-//        AdminCampaigns.SelectCreateNew()
-//        AdminCampaignCreate.PopulateCampaignDetails 
-//            {AdminCampaignCreate.DefaultCampaignDetails with 
-//                Name = testCampaignName; 
-//                Description = "test"; 
-//                FullDescription = "Full Description"; 
-//                OrganizationName = testOrganizationName}
-//        AdminCampaignCreate.Submit()
-//
-//        "h2" == testCampaignName
-//        on AdminCampaignDetails.RelativeUrl
-//        TopMenu.SelectCampaigns()
-//        "td a" *= testCampaignName
-//
-//
-//    "Admin can logout" &&& fun _ ->
-//        click "i.fa-sign-out"
+
+    "Admin can create new campaign" &&& fun _ ->
+        AdminCampaigns.SelectCreateNew()
+        AdminCampaignCreate.PopulateCampaignDetails 
+            {AdminCampaignCreate.DefaultCampaignDetails with 
+                Name = testCampaignName; 
+                Description = "test"; 
+                FullDescription = "Full Description"; 
+                OrganizationName = testOrganizationName}
+        AdminCampaignCreate.Submit()
+
+        "h2" == testCampaignName
+        on AdminCampaignDetails.RelativeUrl
+        TopMenu.SelectCampaigns()
+        "td a" *= testCampaignName
+
+
+    "Admin can logout" &&& fun _ ->
+        click "i.fa-sign-out"
     
