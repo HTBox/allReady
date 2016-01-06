@@ -23,19 +23,19 @@ let All baseUrl =
         "h2" == "Currently active organizations"
         title() |> is "Currently active organizations - AllReady"
 
-//    "Admin can create organization" &&& fun _ ->
-//        click "Create New"
-//        AdminOrganizationCreate.PopulateOrganizationDetails 
-//            {AdminOrganizationCreate.DefaultOrganizationDetails with Name = testOrganizationName;WebUrl="htbox.org"}
-//        AdminOrganizationCreate.Save()
-//
-//        "td a" *= testOrganizationName
-//
-//    "Admin can navigate to campaigns" &&& fun _ ->
-//        TopMenu.SelectAdminCampaigns()
-//
-//        "h2" == "Campaigns - Admin"
-//        title() |> is "Campaigns - Admin - AllReady"
+    "Admin can create organization" &&& fun _ ->
+        click "Create New"
+        AdminOrganizationCreate.PopulateOrganizationDetails 
+            {AdminOrganizationCreate.DefaultOrganizationDetails with Name = testOrganizationName;WebUrl="htbox.org"}
+        AdminOrganizationCreate.Save()
+
+        "td a" *= testOrganizationName
+
+    "Admin can navigate to campaigns" &&& fun _ ->
+        TopMenu.SelectAdminCampaigns()
+
+        "h2" == "Campaigns - Admin"
+        title() |> is "Campaigns - Admin - AllReady"
 //
 //    "Admin can create new campaign" &&& fun _ ->
 //        AdminCampaigns.SelectCreateNew()
