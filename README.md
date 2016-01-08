@@ -23,7 +23,7 @@ The initial launch of development for allReady started on 7/20/2015 during the [
 ##How you can help
 To help make improvements to this project, you can just clone this repository and start coding, testing, and/or designing. 
 
-> **Important** Before jumping in, please review the [solution architecture](https://github.com/HTBox/allReady/wiki/Solution-architecture) and instructions below to [get started](#get-started-with-the-allready-solution). It contains critical information on how to configure the project to run locally and optionally deploy AllReady to Azure.
+> **Important** Before jumping in, please review the [solution architecture](https://github.com/HTBox/allReady/wiki/Solution-architecture) and instructions below to [get started](https://github.com/HTBox/allReady/wiki/Solution-architecture#get-started-with-the-allready-solution). It contains critical information on how to configure the project to run locally and optionally deploy AllReady to Azure.
 
 As of this writing (week of 7/20/2015), we are focused on expanding and filling out our documentation, issues lists, milestones plan and supporting any issues that arise from community engagement with the codebase.  Additionally, you willl find issues of all types (simple bugs, new feature & requirements and architectural updates) upon which you can contribute to the project.  In the meantime, if you find any issues with the codebase or other content in our repository please log an issue and we will work with you to solve it.
 
