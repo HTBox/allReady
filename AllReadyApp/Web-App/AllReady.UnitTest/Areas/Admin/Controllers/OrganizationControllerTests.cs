@@ -182,7 +182,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CreateNewOrganizationInvalidModelReturnsCreateView()
         {
             CreateSut();
-            _sut.ModelState.AddModelError("foo", "bar");
+
+            AddErrorToModelState();
 
             var result = _sut.Create(_organizationEditModel);
 
@@ -245,7 +246,35 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             ShouldHaveHttpPostAttribute("Edit", typeof(OrganizationEditModel));
         }
 
+        [Fact]
+        public void EditPostShouldReturnTheEditViewWithTheModelPassedInIfTheModelStateIsInvalid()
+        {
+            CreateSut();
+            AddErrorToModelState();
 
+            var model = new OrganizationEditModel();
+
+            var result = (ViewResult)_sut.Edit(model);
+
+            Assert.Equal("Edit", result.ViewName);
+            Assert.Same(model, result.ViewData.Model);
+        }
+
+        [Fact]
+        public void EditPostShouldRedirectToDetailsWithTheIdFromTheBusIfModelStateIsValid()
+        {
+            CreateSut();
+
+            var model = new OrganizationEditModel();
+
+            _bus.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
+
+            var result = (RedirectToActionResult)_sut.Edit(model);
+
+            Assert.Equal("Details", result.ActionName);
+            Assert.Equal("Admin", result.RouteValues["area"]);
+            Assert.Equal(Id, result.RouteValues["id"]);
+        }
 
         #endregion
 
@@ -285,5 +314,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             return method;
         }
 
+        private static void AddErrorToModelState()
+        {
+            _sut.ModelState.AddModelError("foo", "bar");
+        }
     }
 }
