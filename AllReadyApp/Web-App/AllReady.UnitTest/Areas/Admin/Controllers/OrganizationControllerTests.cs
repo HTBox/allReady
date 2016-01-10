@@ -23,6 +23,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
         private const int Id = 4565;
 
+        private Type IntType = typeof(int);
+
+        private const string DeleteConst = "Delete";
+
+        private const string DeleteConfirmedConst = "DeleteConfirmed";
+
         public OrganizationControllerTests()
         {
             _organizationEditModel = new OrganizationEditModel
@@ -43,31 +49,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void TheControllerShouldHaveAnAreaAttributeOfAdmin()
         {
-            CreateSut();
-
-            var type = _sut.GetType();
-
-            var areaAttribute = type.CustomAttributes.First(x => x.AttributeType == typeof(AreaAttribute));
-
-            var constructorArg = areaAttribute.ConstructorArguments.First().Value as string;
-                        
-            Assert.Equal("Admin", constructorArg);
+            ClassHasCorrectAttribute(typeof(AreaAttribute), "Admin");
         }
 
         [Fact]
         public void TheControllerShouldHaveAnAuthorizeAttributeOfSiteAdmin()
         {
-            CreateSut();
-
-            var type = _sut.GetType();
-
-            var areaAttribute = type.CustomAttributes.First(x => x.AttributeType == typeof(AuthorizeAttribute));
-
-            var constructorArg = areaAttribute.ConstructorArguments.First().Value as string;
-
-            Assert.Equal("SiteAdmin", constructorArg);
+            ClassHasCorrectAttribute(typeof(AuthorizeAttribute), "SiteAdmin");
         }
-
 
         #endregion
 
@@ -149,12 +138,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var expectedRouteValues = new { controller = "Organization", action = "Index" };
 
-            var result = _sut.Create(_organizationEditModel);
+            var result = (RedirectToRouteResult)_sut.Create(_organizationEditModel);
 
-            Assert.IsType<RedirectToRouteResult>(result);
-            Assert.Equal("areaRoute", ((RedirectToRouteResult)result).RouteName);
-            Assert.Equal("Organization", ((RedirectToRouteResult)result).RouteValues["controller"]);
-            Assert.Equal("Index", ((RedirectToRouteResult)result).RouteValues["action"]);
+            Assert.Equal("areaRoute", result.RouteName);
+            Assert.Equal("Organization", result.RouteValues["controller"]);
+            Assert.Equal("Index", result.RouteValues["action"]);
         }
 
         [Fact]
@@ -182,7 +170,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CreateNewOrganizationInvalidModelReturnsCreateView()
         {
             CreateSut();
-            _sut.ModelState.AddModelError("foo", "bar");
+
+            AddErrorToModelState();
 
             var result = _sut.Create(_organizationEditModel);
 
@@ -193,13 +182,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CreateNewOrganizationPostShouldHaveValidateAntiForgeryTokenAttribute()
         {
-            ShouldHaveValidateAntiForgeryTokenAttribute("Create", typeof(OrganizationEditModel));
+            MethodShouldHaveValidateAntiForgeryTokenAttribute("Create", typeof(OrganizationEditModel));
         }
 
         [Fact]
         public void CreateNewOrganizationPostShouldHavePostAttribute()
         {
-            ShouldHaveHttpPostAttribute("Create", typeof(OrganizationEditModel));
+            MethodShouldHaveHttpPostAttribute("Create", typeof(OrganizationEditModel));
         }
 
         #endregion
@@ -236,16 +225,128 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void EditPostShouldHaveValidateAntiForgeryTokenAttribute()
         {
-            ShouldHaveValidateAntiForgeryTokenAttribute("Edit", typeof(OrganizationEditModel));
+            MethodShouldHaveValidateAntiForgeryTokenAttribute("Edit", typeof(OrganizationEditModel));
         }
 
         [Fact]
         public void EditPostShouldHaveHttpPostAttribute()
         {
-            ShouldHaveHttpPostAttribute("Edit", typeof(OrganizationEditModel));
+            MethodShouldHaveHttpPostAttribute("Edit", typeof(OrganizationEditModel));
         }
 
+        [Fact]
+        public void EditPostShouldReturnTheEditViewWithTheModelPassedInIfTheModelStateIsInvalid()
+        {
+            CreateSut();
+            AddErrorToModelState();
 
+            var model = new OrganizationEditModel();
+
+            var result = (ViewResult)_sut.Edit(model);
+
+            Assert.Equal("Edit", result.ViewName);
+            Assert.Same(model, result.ViewData.Model);
+        }
+
+        [Fact]
+        public void EditPostShouldRedirectToDetailsWithTheIdFromTheBusIfModelStateIsValid()
+        {
+            CreateSut();
+
+            var model = new OrganizationEditModel();
+
+            _bus.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
+
+            var result = (RedirectToActionResult)_sut.Edit(model);
+
+            Assert.Equal("Details", result.ActionName);
+            Assert.Equal("Admin", result.RouteValues["area"]);
+            Assert.Equal(Id, result.RouteValues["id"]);
+        }
+
+        #endregion
+
+        #region DeleteTests
+
+        [Fact]
+        public void DeleteGetShouldHaveActionNameAttributeOfDelete()
+        {
+            MethodShouldHaveCorrectAttribute(DeleteConst, IntType, typeof(ActionNameAttribute), DeleteConst);
+        }
+
+        [Fact]
+        public void DeleteGetWhenIdIsNullItShouldReturnAHttpNotFoundResponseShouldBeReturned()
+        {
+            CreateSut();
+                        
+            var result = _sut.Delete(null);
+
+            Assert.IsType<HttpNotFoundResult>(result);
+        }
+
+        [Fact]
+        public void DeleteGetWhenBusReturnsNullAHttpNotFoundResponseShouldBeReturned()
+        {
+            CreateSut();
+                        
+            _bus.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns<OrganizationDetailModel>(null);
+
+            var result = _sut.Delete(Id);
+
+            Assert.IsType<HttpNotFoundResult>(result);
+        }
+
+        [Fact]
+        public void DeleteGetWhenBusReturnsAnOrganizationAViewOfThatOrganizationShouldBeShown()
+        {
+            CreateSut();
+
+            var organizationModel = new OrganizationDetailModel();
+
+            _bus.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns(organizationModel);
+
+            var result = (ViewResult)_sut.Delete(Id);
+
+            Assert.Same(organizationModel, result.ViewData.Model);
+        }
+
+        [Fact]
+        public void DeletePostShouldHaveValidateAntiForgeryTokenAttribute()
+        {
+            MethodShouldHaveValidateAntiForgeryTokenAttribute(DeleteConfirmedConst, IntType);
+        }
+
+        [Fact]
+        public void DeletePostShouldHaveActionNameAttributeWithDeleteAsAConstructorArguement()
+        {
+            MethodShouldHaveCorrectAttribute(DeleteConfirmedConst, IntType, typeof(ActionNameAttribute), DeleteConst);
+        }
+
+        [Fact]
+        public void DeletePostShouldHaveHttpPostAttribute()
+        {
+            MethodShouldHaveHttpPostAttribute(DeleteConfirmedConst, IntType);
+        }
+
+        [Fact]
+        public void DeletePostShouldSendAMessageWithTheCorrectIdUsingTheBus()
+        {
+            CreateSut();
+
+            _sut.DeleteConfirmed(Id);
+
+            _bus.Verify(x => x.Send(It.Is<OrganizationDeleteCommand>(y => y.Id == Id)));
+        }
+
+        [Fact]
+        public void DeletePostShouldRedirectToTheIndex()
+        {
+            CreateSut();
+
+            var result = (RedirectToActionResult)_sut.DeleteConfirmed(Id);
+
+            Assert.Equal("Index", result.ActionName);
+        }
 
         #endregion
 
@@ -255,25 +356,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             _sut = new OrganizationController(_bus.Object);
         }
-
-        private static void ShouldHaveValidateAntiForgeryTokenAttribute(string methodName, Type paramTypePassedToMethod)
+        
+        private static void AddErrorToModelState()
         {
-            var method = GetMethodInfo(methodName, paramTypePassedToMethod);
-
-            var httpPostAttribute = method.CustomAttributes.First(x => x.AttributeType == typeof(ValidateAntiForgeryTokenAttribute));
-
-            Assert.IsType<CustomAttributeData>(httpPostAttribute);
+            _sut.ModelState.AddModelError("foo", "bar");
         }
 
-        private static void ShouldHaveHttpPostAttribute(string methodName, Type paramTypePassedToMethod)
-        {
-            var method = GetMethodInfo(methodName, paramTypePassedToMethod);
-
-            var httpPostAttribute = method.CustomAttributes.First(x => x.AttributeType == typeof(HttpPostAttribute));
-
-            Assert.IsType<CustomAttributeData>(httpPostAttribute);
-        }
-
+        #region PotentialHelperClass
 
         private static MethodInfo GetMethodInfo(string methodName, Type paramTypePassedToMethod)
         {
@@ -285,5 +374,51 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             return method;
         }
 
+        private static void ClassHasCorrectAttribute(Type attributeType, string valueOfConstructorArgument)
+        {
+            CreateSut();
+
+            var sutType = _sut.GetType();
+
+            var areaAttribute = sutType.CustomAttributes.First(x => x.AttributeType.Equals(attributeType));
+
+            var constructorArg = areaAttribute.ConstructorArguments.First().Value as string;
+
+            Assert.Equal(valueOfConstructorArgument, constructorArg);
+        }
+
+        private static void MethodShouldHaveCorrectAttribute(string methodName, Type paramTypePassedToMethod, Type attributeThatMethodShouldHave, string constructorArgument)
+        {
+            var attribute = ExtractCustomAttributeFromMethod(methodName, paramTypePassedToMethod, attributeThatMethodShouldHave);
+
+            Assert.Equal(constructorArgument, attribute.ConstructorArguments[0].Value);
+        }
+
+        private static void MethodShouldHaveCorrectAttribute(string methodName, Type paramTypePassedToMethod, Type attributeThatMethodShouldHave)
+        {
+            var attribute = ExtractCustomAttributeFromMethod(methodName, paramTypePassedToMethod, attributeThatMethodShouldHave);
+
+            Assert.IsType<CustomAttributeData>(attribute);
+        }
+
+        private static CustomAttributeData ExtractCustomAttributeFromMethod(string methodName, Type paramTypePassedToMethod, Type attributeThatMethodShouldHave)
+        {
+            var method = GetMethodInfo(methodName, paramTypePassedToMethod);
+
+            var attribute = method.CustomAttributes.First(x => x.AttributeType.Equals(attributeThatMethodShouldHave));
+            return attribute;
+        }
+
+        private static void MethodShouldHaveValidateAntiForgeryTokenAttribute(string methodName, Type paramTypePassedToMethod)
+        {
+            MethodShouldHaveCorrectAttribute(methodName, paramTypePassedToMethod, typeof(ValidateAntiForgeryTokenAttribute));
+        }
+
+        private static void MethodShouldHaveHttpPostAttribute(string methodName, Type paramTypePassedToMethod)
+        {
+            MethodShouldHaveCorrectAttribute(methodName, paramTypePassedToMethod, typeof(HttpPostAttribute));
+        }
+
+        #endregion
     }
 }
