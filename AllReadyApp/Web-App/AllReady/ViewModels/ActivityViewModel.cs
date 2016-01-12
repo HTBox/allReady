@@ -35,6 +35,8 @@ namespace AllReady.ViewModels
                 Location = new LocationViewModel(activity.Location);
             }
 
+            IsClosed = EndDateTime.UtcDateTime < DateTimeOffset.UtcNow;
+
             ImageUrl = activity.ImageUrl;
 
             //TODO Location
@@ -65,6 +67,7 @@ namespace AllReady.ViewModels
         public List<Skill> UserSkills { get; set; }
         public int NumberOfVolunteersRequired { get; set; }
         public ActivitySignupViewModel SignupModel { get; set; }
+        public bool IsClosed { get; set; }
     }
 
     public static class ActivityViewModelExtension
