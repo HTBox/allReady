@@ -34,6 +34,8 @@ namespace AllReady.Models
         [Display(Name = "Time Zone")]
         [Required]
         public string TimeZoneId { get; set; }
+
+        public string ProposedNewEmailAddress { get; set; }
     }
 
     public class ManageLoginsViewModel
@@ -81,6 +83,27 @@ namespace AllReady.Models
         public string ConfirmPassword { get; set; }
     }
 
+    /// <summary>
+    /// Models the information required for a change email request
+    /// </summary>
+    public class ChangeEmailViewModel
+    {
+        /// <summary>
+        /// The current password for the user
+        /// </summary>
+        /// <remarks>We collect this since changing the primary email is a sensitive action</remarks>
+        [Required]
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        public string Password { get; set; }
+
+        /// <summary>
+        /// The proposed new email address from the user
+        /// </summary>
+        [Required]
+        [Display(Name = "New email address")]
+        public string NewEmail { get; set; }
+    }
 
     public class AddPhoneNumberViewModel
     {

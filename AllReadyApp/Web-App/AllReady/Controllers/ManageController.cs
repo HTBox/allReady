@@ -59,7 +59,8 @@ namespace AllReady.Controllers
                 BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
                 AssociatedSkills = user.AssociatedSkills,
                 TimeZoneId = user.TimeZoneId,
-                Name = user.Name
+                Name = user.Name,
+                ProposedNewEmailAddress = user.PendingNewEmail
             };
             return View(model);
         }
@@ -285,6 +286,113 @@ namespace AllReady.Controllers
             return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
         }
 
+        // GET: /Manage/ChangeEmail
+        [HttpGet]
+        public IActionResult ChangeEmail()
+        {
+            return View();
+        }
+
+        // POST: /Account/ChangeEmail
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeEmail(ChangeEmailViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = GetCurrentUser();
+            if (user != null)
+            {
+                if(!await _userManager.CheckPasswordAsync(user, model.Password))
+                {
+                    ModelState.AddModelError("Password", "The password supplied is not correct");
+                    return View(model);
+                }
+
+                var existingUser = await _userManager.FindByEmailAsync(model.NewEmail.Normalize());
+                if(existingUser != null)
+                {
+                    // The username/email is already registered
+                    ModelState.AddModelError("NewEmail", "The email supplied is already registered");
+                    return View(model);
+                }
+
+                user.PendingNewEmail = model.NewEmail;
+                await _userManager.UpdateAsync(user);
+
+                var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail);
+                var callbackUrl = Url.Action("ConfirmNewEmail", "Manage", new { token = token }, protocol: HttpContext.Request.Scheme);
+                await _emailSender.SendEmailAsync(user.Email, "Confirm your allReady account",
+                    "Please confirm your new email address for your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>. Note that once confirmed your original email address will cease to be valid as your username.");
+
+                return RedirectToAction(nameof(EmailConfirmationSent));                
+            }
+
+            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
+        }
+
+        // GET: /Manage/ConfirmNewEmail
+        [HttpGet]
+        public async Task<IActionResult> ConfirmNewEmail(string token)
+        {
+            if (token == null)
+            {
+                return View("Error");
+            }
+
+            var user = GetCurrentUser();
+            if (user == null)
+            {
+                return View("Error");
+            }
+
+            var result = await _userManager.ChangeEmailAsync(user, user.PendingNewEmail, token);
+
+            if(result.Succeeded)
+            {
+                await _userManager.SetUserNameAsync(user, user.PendingNewEmail);
+
+                user.PendingNewEmail = null;
+                await _userManager.UpdateAsync(user);
+            }
+
+            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.ChangeEmailSuccess });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResendChangeEmailConfirmation()
+        {
+            var user = GetCurrentUser();
+
+            if(string.IsNullOrEmpty(user.PendingNewEmail))
+            {
+                return View("Error");
+            }
+
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user, user.PendingNewEmail);
+            var callbackUrl = Url.Action("ConfirmNewEmail", "Manage", new { token = token }, protocol: HttpContext.Request.Scheme);
+            await _emailSender.SendEmailAsync(user.Email, "Confirm your allReady account",
+                "Please confirm your new email address for your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>. Note that once confirmed your original email address will cease to be valid as your username.");
+
+            return RedirectToAction(nameof(EmailConfirmationSent));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelChangeEmail()
+        {
+            var user = GetCurrentUser();
+
+            user.PendingNewEmail = null;
+            await _userManager.UpdateAsync(user);
+
+            return RedirectToAction(nameof(Index));
+        }
+
         // GET: /Manage/SetPassword
         [HttpGet]
         public IActionResult SetPassword()
@@ -396,6 +504,7 @@ namespace AllReady.Controllers
             AddPhoneSuccess,
             AddLoginSuccess,
             ChangePasswordSuccess,
+            ChangeEmailSuccess,
             SetTwoFactorSuccess,
             SetPasswordSuccess,
             RemoveLoginSuccess,

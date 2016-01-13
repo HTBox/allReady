@@ -15,5 +15,7 @@ namespace AllReady.Models
         [Display(Name = "Time Zone")]
         [Required]
         public string TimeZoneId { get; set; }
+
+        public string PendingNewEmail { get; set; }
     }
 }
