@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.Models
 {
@@ -30,6 +28,5 @@ namespace AllReady.Models
                 return retStr;
             }
         }
-        public ICollection<Skill> Children { get; set; }
     }
 }
