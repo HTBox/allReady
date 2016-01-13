@@ -145,8 +145,15 @@
                     <div class="volunteered" data-bind="visible: enrolled()" style="display: none">
                         <div class="text-center">
                             <p>Thanks for volunteering!</p>
-                            <p><a href="#" class="unvolunteer text-center" data-bind="click: function() {unenroll(@Model.Id);}">Unenroll</a></p>
-                            <p><span class="label label-danger" data-bind="visible: errorUnenrolling" style="display: none">There was a problem unenrolling; please try again.</span></p>
+                            @if (!Model.IsClosed)
+                            {
+                                <p><a href="#" class="unvolunteer text-center" data-bind="click: function() {unenroll(@Model.Id);}">Unenroll</a></p>
+                                <p><span class="label label-danger" data-bind="visible: errorUnenrolling" style="display: none">There was a problem unenrolling; please try again.</span></p>
+                            }
+                            else
+                            {
+                                <p>This activity is now closed.</p>
+                            }
                         </div>
                         <div class="text-center" id="enrollUnenrollSpinner" style="display: none">
                             <i class="fa fa-circle-o-notch fa-spin"></i>
