@@ -19,17 +19,27 @@ namespace AllReady.Areas.Admin.Features.Skills
             var skill = await _context.Skills.AsNoTracking()
                 .Include(s => s.ParentSkill)
                 .Include(s => s.OwningOrganization)
-                .Include(s => s.Children)
                 .SingleOrDefaultAsync(s => s.Id == message.Id);
 
             if (skill == null) return null;
 
-            return new SkillDeleteModel
+            var model = new SkillDeleteModel
             {
                 HierarchicalName = skill.HierarchicalName,
                 OwningOrganizationId = skill.OwningOrganizationId,
-                ChildrenNames = skill.Children.Select(c => c.HierarchicalName).ToList()
             };
+
+            var children = await _context.Skills
+                .Where(s => s.ParentSkillId == message.Id)
+                .Select(s => s.HierarchicalName)
+                .ToArrayAsync();
+
+            if(children != null)
+            {
+                model.ChildrenNames = children;
+            }
+
+            return model;
         }
     }
 }
