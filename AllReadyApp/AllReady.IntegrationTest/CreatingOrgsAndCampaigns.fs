@@ -54,5 +54,5 @@ let All baseUrl =
 
 
     "Admin can logout" &&& fun _ ->
-        click "i.fa-sign-out"
+        click ".log-out"
     
