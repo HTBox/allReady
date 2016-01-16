@@ -174,7 +174,7 @@ namespace AllReady.Controllers
             // Generate the token and send it
             var user = GetCurrentUser();
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
-            await _smsSender.SendSmsAsync(model.PhoneNumber, "Your security code is: " + code);
+            await _smsSender.SendSmsAsync(model.PhoneNumber, "Your allReady account security code is: " + code);
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = model.PhoneNumber });
         }
 
@@ -186,7 +186,7 @@ namespace AllReady.Controllers
             var user = GetCurrentUser();
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
 
-            await _smsSender.SendSmsAsync(phoneNumber, "Your security code is: " + code);
+            await _smsSender.SendSmsAsync(phoneNumber, "Your allReady account security code is: " + code);
 
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = phoneNumber });
         }
