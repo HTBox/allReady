@@ -96,7 +96,7 @@
                         {
                             <a asp-controller="Manage" asp-action="AddPhoneNumber">Add</a>
                         }
-                        @if (!Model.IsPhoneNumberConfirmed)
+                        @if (!Model.IsPhoneNumberConfirmed && Model.PhoneNumber != null)
                         {
                             <br />
                             <div class="alert alert-warning" role="alert">
@@ -104,7 +104,7 @@
                                 <br />
                                 allReady cannot send you SMS notifications until your phone number has been confirmed.
                                 <br />
-                                Check your messages for your confirmation code.
+                                Please check your messages for your confirmation code.
                             </div>
                         }
                     </p>
