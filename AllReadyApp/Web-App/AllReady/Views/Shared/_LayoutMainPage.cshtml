@@ -36,7 +36,7 @@
 
     <div class="row home-banner">
         <div class="col-md-12">
-          <div class="center"><img src="~/images/Web-Logo.png" alt="Logo image for the project" class="img-responsive center-block" /></div>
+            <div class="center"><img src="~/images/Web-Logo.png" alt="Logo image for the project" class="img-responsive center-block" /></div>
             <h3 class="text-center sub-title">Get connected. Work together. Be prepared.</h3>
         </div>
     </div>
@@ -54,6 +54,7 @@
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/lib/knockout/dist/knockout.js"></script>
+        <script src="~/lib/moment/moment.js"></script>
         <script src="~/lib/tota11y/build/tota11y.js"></script>
     </environment>
     <environment names="Staging,Production">
@@ -65,32 +66,17 @@
         <script src="//ajax.aspnetcdn.com/ajax/bootstrap/3.0.0/bootstrap.min.js"
                 asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
+        
+        </script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"
+                asp-fallback-src="~/lib/moment/moment.js"
+                asp-fallback-test="window.moment">
         </script>
     </environment>
+
     <script src="~/js/site.js"></script>
-    <script src="~/js/index.js"></script>
-    @*<script type="text/javascript">
-            $(function () {
-                $('#doGeo').click(function () {
-                    var geo = new geoHelper(function (position) {
 
-                        // TODO: replace with your own functionality
-                        console.log(position.coords.latitude + ',' + position.coords.longitude);
-
-                    });
-                    geo.getMyLocation();
-                });
-            });
-        </script>*@
-    @*<script type="text/javascript">
-            $(document).ready(function () {
-                var positionCoordsList = [
-                    { latitude: '47.662471771240234', longitude: '-122.12596893310547' },
-                    { latitude: '47.64004938304424', longitude: '-122.12979689240456' }
-                ];
-                renderBingMap('bingMap', positionCoordsList);
-            });
-        </script>
-        <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>*@
+    
+    @RenderSection("scripts", required: false)
 </body>
 </html>

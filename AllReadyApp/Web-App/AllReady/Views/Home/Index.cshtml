@@ -1,29 +1,58 @@
-﻿@{
+﻿@model IList<CampaignViewModel>
+@{
     ViewData["Title"] = "Home Page";
     Layout = "_LayoutMainPage";
     @addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
 }
-<div class="row">
-    <div class="col-md-12 text-center">
-        <div data-bind="if: status() === 'noresults'">
-            <strong>No results were found. Try again, or <a href="#" style="color:#FFFFFF; text-decoration:underline">see more activities</a>.</strong>
-        </div>
-        <div data-bind="if: status() === 'fail'">
-            <strong>There was an error. Please try again later!</strong>
-        </div>
-        <div class="login-text" data-bind="if: !loadingDone">
-            <a href="/Login" style="color:#FFFFFF; text-decoration:underline">Login to your account</a>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Active/Upcoming Campaigns</h2>
         </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-12 text-center">
-        <div class="activity-results" data-bind="if: loadingDone">
-            <h3>Activites near <span data-bind="text: searchTerm"></span></h3>
-            <div class="activity-wrapper" data-bind="foreach: activities">
-                <p><a data-bind="attr: { href: '/Activity/' + Id }, text: Title"></a></p>
+
+    <div class="row">
+        <div class="hide text-center" data-bind="css: { hide: campaigns().length }">
+            <div class="alert alert-warning" role="alert">
+                <strong>No matching campaigns.</strong>
             </div>
-            <a data-bind="attr: { href: '/Activity'}">See more activities</a>
+        </div>
+        <div class="col-md-12">
+            <div id="campaignGrid" class="table-responsive">
+                <table class="table" data-bind="css: { hide: !campaigns().length }">
+                    <tr>
+                        <th><span title="Name of the campaign">Title</span></th>
+                        <th><span title="Description of the campaign">Description</span></th>
+                        <th><span title="Date of the campaign">Dates</span></th>
+                        <th><span title="Locations of the campaign">Locations</span></th>
+                    </tr>
+                    <!-- ko foreach: campaigns -->
+                    <tr>
+                        <td>
+                            <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
+                        </td>
+                        <td>
+                            <span data-bind="text: Description"></span>
+                        </td>
+                        <td>
+                            <span data-bind="text: displayDate()"></span>
+                        </td>
+                        <td>
+                            <a data-bind="attr: { href: '/Campaign/Map/' + Id }">Map</a>
+                        </td>
+                    </tr>
+                    <!-- /ko -->
+                </table>
+            </div>
         </div>
     </div>
-</div>
+
+    @section scripts {
+        <script>
+            var modelCampaigns = @Json.Serialize(Model);
+        </script>
+        <script src="~/js/index.js"></script>
+    }
+
+
+

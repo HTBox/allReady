@@ -1,12 +1,23 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using System;
+using System.Linq;
+using AllReady.Models;
+using AllReady.ViewModels;
+using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IAllReadyDataAccess _dataAccess;
+
+        public HomeController(IAllReadyDataAccess dataAccess)
+        {
+            _dataAccess = dataAccess;
+        }
+
         public IActionResult Index()
         {
-            return View();
+            return View(_dataAccess.Campaigns.Where(c => c.EndDateTime.UtcDateTime.Date > DateTime.UtcNow.Date).ToViewModel().OrderBy(vm => vm.EndDate).ToList());
         }
 
         public IActionResult About()
