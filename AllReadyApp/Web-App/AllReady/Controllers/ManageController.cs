@@ -53,6 +53,7 @@ namespace AllReady.Controllers
                 HasPassword = await _userManager.HasPasswordAsync(user),
                 EmailAddress = user.Email,
                 IsEmailAddressConfirmed = user.EmailConfirmed,
+                IsPhoneNumberConfirmed = user.PhoneNumberConfirmed,
                 PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
                 TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
                 Logins = await _userManager.GetLoginsAsync(user),
@@ -173,8 +174,21 @@ namespace AllReady.Controllers
             // Generate the token and send it
             var user = GetCurrentUser();
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
-            await _smsSender.SendSmsAsync(model.PhoneNumber, "Your security code is: " + code);
+            await _smsSender.SendSmsAsync(model.PhoneNumber, "Your allReady account security code is: " + code);
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = model.PhoneNumber });
+        }
+
+        // POST: /Account/ResendPhoneNumberConfirmation
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResendPhoneNumberConfirmation(string phoneNumber)
+        {
+            var user = GetCurrentUser();
+            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
+
+            await _smsSender.SendSmsAsync(phoneNumber, "Your allReady account security code is: " + code);
+
+            return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = phoneNumber });
         }
 
         // POST: /Manage/EnableTwoFactorAuthentication

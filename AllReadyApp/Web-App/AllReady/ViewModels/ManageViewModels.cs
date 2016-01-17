@@ -18,6 +18,8 @@ namespace AllReady.Models
 
         public bool IsEmailAddressConfirmed { get; set; }
 
+        public bool IsPhoneNumberConfirmed { get; set; }
+
         public bool HasPassword { get; set; }
 
         public IList<UserLoginInfo> Logins { get; set; }

@@ -311,12 +311,16 @@ namespace AllReady.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
+
                 var user = new ApplicationUser
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    TimeZoneId = _generalSettings.DefaultTimeZone
+                    TimeZoneId = _generalSettings.DefaultTimeZone,
+                    Name = model.Name,
+                    PhoneNumber = model.PhoneNumber
                 };
+
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -327,6 +331,7 @@ namespace AllReady.Controllers
                         return RedirectToLocal(returnUrl, user);
                     }
                 }
+
                 AddErrors(result);
             }
 
