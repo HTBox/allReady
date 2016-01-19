@@ -70,10 +70,10 @@
                     <a asp-controller="Home" asp-action="Index" class="navbar-brand"><img src="~/images/Web-Logo-small.png" alt="Web Logo" /></a>
                 </div>
                 <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav">
-                        <li><a asp-controller="Home" asp-action="About">About</a></li>
+                    <ul class="nav navbar-nav">                        
                         <li><a asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
                         <li><a asp-controller="Organization" asp-action="Index">Organizations</a></li>
+                        <li><a asp-controller="Home" asp-action="About">About</a></li>
                         @await Html.PartialAsync("_AdminNavigationPartial")
                     </ul>
                     @await Html.PartialAsync("_LoginPartial")
