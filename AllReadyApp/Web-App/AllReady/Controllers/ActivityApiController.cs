@@ -11,6 +11,8 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AllReady.Features.Notifications;
+using MediatR;
 
 namespace AllReady.Controllers
 {
@@ -20,11 +22,13 @@ namespace AllReady.Controllers
     {
         private const double MILES_PER_METER = 0.00062137;
         private readonly IAllReadyDataAccess _allReadyDataAccess;
+        private readonly IMediator _bus;
 
 
-        public ActivityApiController(IAllReadyDataAccess allReadyDataAccess)
+        public ActivityApiController(IAllReadyDataAccess allReadyDataAccess, IMediator bus)
         {
             _allReadyDataAccess = allReadyDataAccess;
+            _bus = bus;
         }
 
         // GET: api/values
@@ -173,6 +177,10 @@ namespace AllReady.Controllers
             {
                 return HttpNotFound();
             }
+
+            //Notify admins 
+            _bus.Publish(new UserUnenrolls {ActivityId = signedUp.Activity.Id, UserId = signedUp.User.Id});
+
             await _allReadyDataAccess.DeleteActivitySignupAsync(signedUp.Id);
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
