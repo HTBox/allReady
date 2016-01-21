@@ -40,7 +40,7 @@ namespace AllReady.Features.Notifications
             message.AppendLine($"   Campaign: {model.CampaignName}");
             message.AppendLine($"   Activity: {model.ActivityName} ({activityLink})");
             message.AppendLine($"   Volunteer: {signup.User.UserName} ({signup.User.Email})");
-            message.AppendLine($"   Remaining Enrolled Volunteers: {model.UsersSignedUp.Count - 1}");
+            message.AppendLine($"   Remaining/Required Volunteers: {model.UsersSignedUp.Count - 1}/{model.NumberOfVolunteersRequired}");
             message.AppendLine();
 
             var assignedTasks = model.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.UserId == signup.User.Id)).ToList();
