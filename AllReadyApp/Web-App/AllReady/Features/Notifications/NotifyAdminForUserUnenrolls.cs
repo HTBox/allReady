@@ -51,10 +51,10 @@ namespace AllReady.Features.Notifications
             else
             {
                 message.AppendLine("This volunteer had been assigned to the following tasks:");
+                message.AppendLine  ("   Name             Description               Start Date           TaskLink");
                 foreach (var task in assignedTasks)
                 {
                     var taskLink = $"View task: {_options.Value.SiteBaseUrl}Admin/Task/Details/{task.Id}";
-                    message.AppendLine  ("   Name             Description               Start Date           TaskLink");
                     message.AppendFormat("   {0}{1}{2:d}{3}",
                         task.Name?.Substring(0, Math.Min(15, task.Name.Length)).PadRight(17, ' ') ?? "None".PadRight(17, ' '),
                         task.Description?.Substring(0, Math.Min(25, task.Description.Length)).PadRight(26, ' ') ?? "None".PadRight(26,' '),
