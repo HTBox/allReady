@@ -11,6 +11,8 @@ using Xunit;
 using Moq;
 using System.Security.Claims;
 using System.Security.Principal;
+using AllReady.Features.Notifications;
+using MediatR;
 using Microsoft.AspNet.Http;
 
 namespace AllReady.UnitTest
@@ -20,6 +22,7 @@ namespace AllReady.UnitTest
         private static IServiceProvider _serviceProvider;
         private static bool populatedData = false;
         private static int activitiesAdded = 0;
+        private Mock<IMediator> _bus;
 
         public ActivityApiControllerTest()
         {
@@ -146,7 +149,10 @@ namespace AllReady.UnitTest
         {
             var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
             var allReadyDataAccess = new AllReadyDataAccessEF7(allReadyContext);
-            var controller = new ActivityApiController(allReadyDataAccess);
+
+            _bus = new Mock<IMediator>();
+            var controller = new ActivityApiController(allReadyDataAccess, _bus.Object);
+
             PopulateData(allReadyContext);
             return controller;
         }
