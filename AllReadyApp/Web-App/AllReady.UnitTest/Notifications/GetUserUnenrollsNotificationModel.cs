@@ -113,16 +113,10 @@ namespace AllReady.UnitTest.Notifications
             var handler = new UserUnenrollsNotificationQueryHandler(context);
             var result = handler.Handle(query);
             Assert.NotNull(result);
-            Assert.True(_queenAnne.Id == result.ActivityId, "ActivityId does not match");
-            Assert.True(_firePrev.Name == result.CampaignName, "CampaignName does not match");
-            Assert.True(_firePrev.Description == result.Description, "Campaign description does not match");
             Assert.True(_queenAnne.UsersSignedUp.Count == result.UsersSignedUp.Count, "Count of signed up users does not match");
-            Assert.True(_queenAnne.NumberOfVolunteersRequired == result.NumberOfVolunteersRequired, "NumberOfvolunteersRequired doesn't match");
             Assert.True(_queenAnne.Tasks.Count == result.Tasks.Count, "Count of tasks does not match");
-            Assert.True(_queenAnne.Tasks[0].Name == result.Tasks[0].Name, "Task name does not match");
             Assert.True(_queenAnne.Tasks[0].AssignedVolunteers.Count == result.Tasks[0].AssignedVolunteers.Count, "Count of volunteers assigned to tak does not match");
             Assert.True(_firePrev.CampaignContacts.Count == result.CampaignContacts.Count, "Count of campaign contacts does not match");
-            Assert.True(_firePrev.CampaignContacts[0].Contact.Email == result.CampaignContacts[0].Contact.Email, "Contact email does not match");
         }
 
         [Fact]
