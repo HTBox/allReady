@@ -15,6 +15,7 @@ namespace AllReady.Features.Notifications
         private readonly IMediator _bus;
         private readonly IOptions<GeneralSettings> _options;
 
+
         public NotifyAdminForTaskSignupStatusChange(AllReadyContext context, IMediator bus, IOptions<GeneralSettings> options)
         {
             _context = context;
