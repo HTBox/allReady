@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.AspNet.Mvc;
 using AllReady.Models;
 using AllReady.ViewModels;
-using Microsoft.Data.Entity;
 
 namespace AllReady.Controllers
 {
@@ -21,7 +20,7 @@ namespace AllReady.Controllers
         [Route("~/[controller]")]
         public IActionResult Index()
         {
-            return View(_dataAccess.Campaigns.ToViewModel().ToList());
+            return View(_dataAccess.Campaigns.Where(c => c.Locked == false).ToViewModel().ToList());
         }
 
         [HttpGet]
@@ -30,7 +29,7 @@ namespace AllReady.Controllers
         {
             var campaign = _dataAccess.GetCampaign(id);
 
-            if (campaign == null)
+            if (campaign == null || campaign.Locked == false)
                 HttpNotFound();
 
             return View("Details", new CampaignViewModel(campaign));
@@ -53,6 +52,7 @@ namespace AllReady.Controllers
         public IEnumerable<CampaignViewModel> Get()
         {
             return _dataAccess.Campaigns
+                .Where(c => c.Locked == false)
                 .Select(x => new CampaignViewModel(x));
         }
 
@@ -62,7 +62,7 @@ namespace AllReady.Controllers
         {
             var campaign = _dataAccess.GetCampaign(id);
 
-            if (campaign == null)
+            if (campaign == null || campaign.Locked == false)
                 HttpNotFound();
 
             return campaign.ToViewModel();
