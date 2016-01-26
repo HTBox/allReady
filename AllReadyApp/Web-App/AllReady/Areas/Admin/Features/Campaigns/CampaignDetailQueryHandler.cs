@@ -43,6 +43,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     EndDate = campaign.EndDateTime,
                     CampaignImpact = campaign.CampaignImpact,
                     Location = campaign.Location.ToModel(),
+                    Locked = campaign.Locked,
                     Activities = campaign.Activities.Select(a => new ActivitySummaryModel
                     {
                         Id = a.Id,

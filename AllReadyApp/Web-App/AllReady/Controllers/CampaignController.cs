@@ -29,8 +29,8 @@ namespace AllReady.Controllers
         {
             var campaign = _dataAccess.GetCampaign(id);
 
-            if (campaign == null || campaign.Locked == false)
-                HttpNotFound();
+            if (campaign == null || campaign.Locked)
+                return HttpNotFound();
 
             return View("Details", new CampaignViewModel(campaign));
         }
@@ -42,7 +42,7 @@ namespace AllReady.Controllers
             var campaign = _dataAccess.GetCampaign(id);
 
             if (campaign == null)
-                HttpNotFound();
+                return HttpNotFound();
 
             return View("Map", new CampaignViewModel(campaign));
         }
@@ -58,14 +58,16 @@ namespace AllReady.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public CampaignViewModel Get(int id)
+        public ActionResult Get(int id)
         {
             var campaign = _dataAccess.GetCampaign(id);
 
-            if (campaign == null || campaign.Locked == false)
-                HttpNotFound();
+            if (campaign == null || campaign.Locked)
+            {
+                return HttpNotFound();
+            }
 
-            return campaign.ToViewModel();
+            return Json(campaign.ToViewModel());
         }
     }
 }
