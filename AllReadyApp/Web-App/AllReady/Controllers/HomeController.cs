@@ -17,7 +17,7 @@ namespace AllReady.Controllers
 
         public IActionResult Index()
         {
-            return View(_dataAccess.Campaigns.Where(c => c.EndDateTime.UtcDateTime.Date > DateTime.UtcNow.Date).ToViewModel().OrderBy(vm => vm.EndDate).ToList());
+            return View(_dataAccess.Campaigns.Where(c => c.EndDateTime.UtcDateTime.Date > DateTime.UtcNow.Date && c.Locked == false).ToViewModel().OrderBy(vm => vm.EndDate).ToList());
         }
 
         public IActionResult About()
