@@ -2,7 +2,7 @@
 
 namespace AllReady.Features.Notifications
 {
-    public class UserUnenrollsNotificationQuery : IRequest<UserUnenrollsNotificationModel>
+    public class ActivityDetailForNotificationQuery : IRequest<ActivityDetailForNotificationModel>
     {
         public int ActivityId { get; set; }
     }

@@ -109,8 +109,8 @@ namespace AllReady.UnitTest.Notifications
         public void ModelCanBeCreatedFomExistingActivity()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new UserUnenrollsNotificationQuery { ActivityId = 1 };
-            var handler = new UserUnenrollsNotificationQueryHandler(context);
+            var query = new ActivityDetailForNotificationQuery { ActivityId = 1 };
+            var handler = new ActivityDetailForNotificationQueryHandler(context);
             var result = handler.Handle(query);
             Assert.NotNull(result);
             Assert.True(_queenAnne.UsersSignedUp.Count == result.UsersSignedUp.Count, "Count of signed up users does not match");
@@ -123,8 +123,8 @@ namespace AllReady.UnitTest.Notifications
         public void ActivityDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new UserUnenrollsNotificationQuery { ActivityId = 999 };
-            var handler = new UserUnenrollsNotificationQueryHandler(context);
+            var query = new ActivityDetailForNotificationQuery { ActivityId = 999 };
+            var handler = new ActivityDetailForNotificationQueryHandler(context);
             var result = handler.Handle(query);
             Assert.Null(result);
         }

@@ -23,7 +23,7 @@ namespace AllReady.Features.Notifications
 
         public void Handle(UserUnenrolls notification)
         {
-            var model = _bus.Send(new UserUnenrollsNotificationQuery {ActivityId = notification.ActivityId});
+            var model = _bus.Send(new ActivityDetailForNotificationQuery {ActivityId = notification.ActivityId});
             var campaignContact = model.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
 
             if (string.IsNullOrWhiteSpace(campaignContact?.Contact.Email)) return;

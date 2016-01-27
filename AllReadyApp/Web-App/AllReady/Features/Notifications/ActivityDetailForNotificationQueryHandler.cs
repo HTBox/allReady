@@ -7,18 +7,18 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Features.Notifications
 {
-    public class UserUnenrollsNotificationQueryHandler : IRequestHandler<UserUnenrollsNotificationQuery, UserUnenrollsNotificationModel>
+    public class ActivityDetailForNotificationQueryHandler : IRequestHandler<ActivityDetailForNotificationQuery, ActivityDetailForNotificationModel>
     {
         private AllReadyContext _context;
 
-        public UserUnenrollsNotificationQueryHandler(AllReadyContext context)
+        public ActivityDetailForNotificationQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public UserUnenrollsNotificationModel Handle(UserUnenrollsNotificationQuery message)
+        public ActivityDetailForNotificationModel Handle(ActivityDetailForNotificationQuery message)
         {
-            UserUnenrollsNotificationModel result = null;
+            ActivityDetailForNotificationModel result = null;
 
             var activity = _context.Activities
                 .AsNoTracking()
@@ -30,7 +30,7 @@ namespace AllReady.Features.Notifications
 
             if (activity != null)
             {
-                result = new UserUnenrollsNotificationModel
+                result = new ActivityDetailForNotificationModel
                 {
                     ActivityId = activity.Id,
                     CampaignName = activity.Campaign.Name,

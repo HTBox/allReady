@@ -4,7 +4,7 @@ using AllReady.Models;
 
 namespace AllReady.Features.Notifications
 {
-    public class UserUnenrollsNotificationModel
+    public class ActivityDetailForNotificationModel
     {
         public int ActivityId { get; set; }
         public string CampaignName { get; set; }
