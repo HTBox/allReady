@@ -27,7 +27,7 @@ namespace AllReady.Features.Notifications
 
             var signup = model.UsersSignedUp.FirstOrDefault(s => s.User.Id == notification.UserId);
 
-            if (signup == null || !signup.User.EmailConfirmed) return;
+            if (string.IsNullOrWhiteSpace(signup?.PreferredEmail)) return;
 
             var activityLink = $"View activity: {_options.Value.SiteBaseUrl}Admin/Activity/Details/{model.ActivityId}";
             var subject = "allReady Activity Enrollment Confirmation";
@@ -46,7 +46,7 @@ namespace AllReady.Features.Notifications
                 {
                     EmailMessage = message.ToString(),
                     HtmlMessage = message.ToString(),
-                    EmailRecipients = new List<string> { signup.User.Email },
+                    EmailRecipients = new List<string> { signup.PreferredEmail},
                     Subject = subject
                 }
             };
