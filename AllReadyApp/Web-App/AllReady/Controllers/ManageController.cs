@@ -48,22 +48,7 @@ namespace AllReady.Controllers
                 : "";
 
             var user = GetCurrentUser();
-            var model = new IndexViewModel
-            {
-                HasPassword = await _userManager.HasPasswordAsync(user),
-                EmailAddress = user.Email,
-                IsEmailAddressConfirmed = user.EmailConfirmed,
-                IsPhoneNumberConfirmed = user.PhoneNumberConfirmed,
-                PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
-                TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
-                Logins = await _userManager.GetLoginsAsync(user),
-                BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
-                AssociatedSkills = user.AssociatedSkills,
-                TimeZoneId = user.TimeZoneId,
-                Name = user.Name,
-                ProposedNewEmailAddress = user.PendingNewEmail
-            };
-            return View(model);
+            return View(await user.ToViewModel(_userManager, _signInManager));
         }
 
         // POST: /Manage/Index
@@ -71,11 +56,16 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(IndexViewModel model)
         {
+            var user = GetCurrentUser();
+
             if (!ModelState.IsValid)
             {
-                return View(model);
+                var viewModelWithInputs = await user.ToViewModel(_userManager, _signInManager);
+                viewModelWithInputs.Name = model.Name;
+                viewModelWithInputs.TimeZoneId = model.TimeZoneId;
+                viewModelWithInputs.AssociatedSkills = model.AssociatedSkills;
+                return View(viewModelWithInputs);
             }
-            var user = GetCurrentUser();
             var shouldRefreshSignin = false;
             if (!string.IsNullOrEmpty(model.Name))
             {
