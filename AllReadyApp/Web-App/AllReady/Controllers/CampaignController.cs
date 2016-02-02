@@ -32,6 +32,8 @@ namespace AllReady.Controllers
             if (campaign == null || campaign.Locked)
                 return HttpNotFound();
 
+            ViewBag.AbsoluteUrl = System.Net.WebUtility.UrlEncode(Url.Action("Details", "Campaign", null, protocol: Request.Scheme));
+
             return View("Details", new CampaignViewModel(campaign));
         }
 
