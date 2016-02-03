@@ -21,6 +21,8 @@ namespace AllReady.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("ActivityType");
+
                     b.Property<int>("CampaignId");
 
                     b.Property<string>("Description");
