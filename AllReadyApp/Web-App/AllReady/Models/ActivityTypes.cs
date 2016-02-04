@@ -5,12 +5,12 @@ namespace AllReady.Models
     public enum ActivityTypes
     {
         [Display(Name = "Activity Managed")]
-        ActivityManaged,
+        ActivityManaged = 1,
 
         [Display(Name = "Task Managed")]
-        TaskManaged,
+        TaskManaged = 2,
 
         [Display(Name = "Deployment Managed")]
-        DeploymentManaged
+        DeploymentManaged = 3
     }
 }

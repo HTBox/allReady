@@ -63,6 +63,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
 
+
             var activity = new ActivityDetailModel
             {
                 CampaignId = campaign.Id,
@@ -135,6 +136,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Edit(int id)
         {
             ActivityDetailModel activity = _bus.Send(new ActivityDetailQuery { ActivityId = id });
+
             if (activity == null)
             {
                 return HttpNotFound();

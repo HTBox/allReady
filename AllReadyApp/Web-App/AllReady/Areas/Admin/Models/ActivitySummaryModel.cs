@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models
 {
@@ -12,6 +13,12 @@ namespace AllReady.Areas.Admin.Models
 
         [Required]
         public string Name { get; set; }
+
+        [Required]
+        [Range(1, 99, ErrorMessage = "A valid 'Activity Type' is required")]
+        [Display(Name = "Activity Type")]
+        public ActivityTypes ActivityType { get; set; }
+
         public string Description { get; set; }
 
         [Display(Name = "Campaign")]
