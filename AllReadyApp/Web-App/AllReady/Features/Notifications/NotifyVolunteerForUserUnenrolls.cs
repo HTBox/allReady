@@ -26,8 +26,12 @@ namespace AllReady.Features.Notifications
             var model = _bus.Send(new ActivityDetailForNotificationQuery {ActivityId = notification.ActivityId});
 
             var signup = model.UsersSignedUp?.FirstOrDefault(s => s.User.Id == notification.UserId);
+            if (signup == null) return;
 
-            if (string.IsNullOrWhiteSpace(signup?.PreferredEmail)) return;
+            var emailRecipient = !string.IsNullOrWhiteSpace(signup.PreferredEmail)
+                ? signup.PreferredEmail
+                : signup.User?.Email;
+            if (string.IsNullOrWhiteSpace(emailRecipient)) return;
 
             var activityLink = $"View activity: {_options.Value.SiteBaseUrl}Admin/Activity/Details/{model.ActivityId}";
             var subject = "allReady Activity Unenrollment Confirmation";
@@ -46,7 +50,7 @@ namespace AllReady.Features.Notifications
                 {
                     EmailMessage = message.ToString(),
                     HtmlMessage = message.ToString(),
-                    EmailRecipients = new List<string> { signup.PreferredEmail },
+                    EmailRecipients = new List<string> { emailRecipient },
                     Subject = subject
                 }
             };
