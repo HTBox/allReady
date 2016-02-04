@@ -25,7 +25,7 @@ namespace AllReady.Features.Notifications
         {
             var model = _bus.Send(new ActivityDetailForNotificationQuery {ActivityId = notification.ActivityId});
 
-            var signup = model.UsersSignedUp.FirstOrDefault(s => s.User.Id == notification.UserId);
+            var signup = model.UsersSignedUp?.FirstOrDefault(s => s.User.Id == notification.UserId);
 
             if (string.IsNullOrWhiteSpace(signup?.PreferredEmail)) return;
 
