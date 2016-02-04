@@ -33,7 +33,7 @@ namespace AllReady.Features.Notifications
 
             var subject = $"A volunteer has signed up for {activity.Name}";
 
-            var campaignContact = campaign.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
+            var campaignContact = campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
             var adminEmail = campaignContact?.Contact.Email;
 
             if (!string.IsNullOrWhiteSpace(adminEmail))

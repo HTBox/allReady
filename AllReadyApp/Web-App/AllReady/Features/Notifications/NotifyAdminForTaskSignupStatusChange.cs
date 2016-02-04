@@ -36,7 +36,7 @@ namespace AllReady.Features.Notifications
             var activity = task.Activity;
             var campaign = activity.Campaign;
 
-            var campaignContact = campaign.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
+            var campaignContact = campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
             var adminEmail = campaignContact?.Contact.Email;
 
             if (!string.IsNullOrWhiteSpace(adminEmail))
