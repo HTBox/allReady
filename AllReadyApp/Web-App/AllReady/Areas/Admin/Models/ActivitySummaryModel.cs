@@ -37,6 +37,7 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Browse for image")]
         public string FileUpload { get; set; }
 
+        [Range(1, int.MaxValue, ErrorMessage = "'Volunteers Required' must be greater than 0")]
         [Display(Name = "Volunteers Required")]
         public int NumberOfVolunteersRequired { get; set; }
         
