@@ -18,12 +18,10 @@
     </p>
 </div>
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-
+<form asp-action="ConfirmDeleteUser" asp-controller="SiteAdmin" method="post">
     <div class="form-horizontal">
         <hr />
+        @Html.AntiForgeryToken()
         <input asp-for="UserId" type="hidden" />
         <div class="form-group">
             <label asp-for="UserName" class="control-label col-md-2"></label>
@@ -33,13 +31,12 @@
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <button type="submit" class="btn btn-danger" ><span class="fa fa-remove"></span> Delete @Model.UserName</button>
+                <button type="submit" class="btn btn-danger"><span class="fa fa-remove"></span> Delete @Model.UserName</button>
                 <a asp-controller="Site" asp-action="Index" class="btn btn-success">Back to List</a>
             </div>
         </div>
     </div>
-}
-
+</form>
 @section scripts {
 
 }

@@ -64,8 +64,8 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult ConfirmDeleteUser(string userId)
         {
-            // todo: send command to bus
-
+            // send command to bus
+            _bus.Send(new DeleteUserCommand { UserId = userId });
             // follow PRG
             return RedirectToAction("Index");
         }
