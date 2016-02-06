@@ -47,10 +47,10 @@ namespace AllReady.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-
+        [HttpGet]
         public IActionResult DeleteUser(string userId)
         {
-            var user = _bus.Send(new UserQuery {UserId = userId});
+            var user = _bus.Send(new UserQuery { UserId = userId });
 
             var viewModel = new DeleteUserModel()
             {
@@ -58,6 +58,16 @@ namespace AllReady.Areas.Admin.Controllers
                 UserName = user.UserName,
             };
             return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ConfirmDeleteUser(string userId)
+        {
+            // todo: send command to bus
+
+            // follow PRG
+            return RedirectToAction("Index");
         }
 
         public IActionResult EditUser(string userId)
