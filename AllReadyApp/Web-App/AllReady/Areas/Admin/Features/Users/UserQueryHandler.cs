@@ -27,16 +27,16 @@ namespace AllReady.Areas.Admin.Features.Users
                 .Include(u => u.Claims)
                 .SingleOrDefault();
 
-            var tennantId = user.GetTenantId();
+            var organizationId = user.GetOrganizationId();
 
             var viewModel = new EditUserModel()
             {
                 UserId = message.UserId,
                 UserName = user.UserName,
                 AssociatedSkills = user.AssociatedSkills,
-                IsTenantAdmin = user.IsUserType(UserType.OrgAdmin),
+                IsOrganizationAdmin = user.IsUserType(UserType.OrgAdmin),
                 IsSiteAdmin = user.IsUserType(UserType.SiteAdmin),
-                Tenant = tennantId != null ? _context.Organizations.First(t=>t.Id == tennantId.Value) : null
+                Organization = organizationId != null ? _context.Organizations.First(t=>t.Id == organizationId.Value) : null
             };
 
             return viewModel;
