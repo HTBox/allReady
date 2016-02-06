@@ -1,5 +1,6 @@
 using AllReady.Models;
 using AllReady.UnitTest;
+using Microsoft.AspNet.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AllReady.UnitTest
@@ -15,10 +16,13 @@ namespace AllReady.UnitTest
         /// Gets the in-memory database context.
         /// </summary>
         protected AllReadyContext Context { get; private set; }
+        protected UserManager<ApplicationUser> UserManager { get; }
+
 
         protected InMemoryContextTest()
         {
             Context = ServiceProvider.GetService<AllReadyContext>();
+            UserManager = ServiceProvider.GetService<UserManager<ApplicationUser>>();
             LoadTestData();
         }
 

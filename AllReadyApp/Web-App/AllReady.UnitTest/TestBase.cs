@@ -1,5 +1,11 @@
 ﻿using AllReady.Models;
 using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Http.Features;
+using Microsoft.AspNet.Http.Features.Authentication;
+using Microsoft.AspNet.Http.Features.Authentication.Internal;
+using Microsoft.AspNet.Http.Internal;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Data.Entity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +33,13 @@ namespace AllReady.UnitTest
                 services.AddEntityFramework()
                     .AddInMemoryDatabase()
                     .AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase());
+
+                // add identity service
+                services.AddIdentity<ApplicationUser, IdentityRole>()
+                    .AddEntityFrameworkStores<AllReadyContext>();
+                var context = new DefaultHttpContext();
+                context.Features.Set<IHttpAuthenticationFeature>(new HttpAuthenticationFeature());
+                services.AddSingleton<IHttpContextAccessor>(h => new HttpContextAccessor { HttpContext = context });
 
                 // Setup hosting environment
                 IHostingEnvironment hostingEnvironment = new HostingEnvironment();
