@@ -295,43 +295,9 @@
                         isVolunteeredForActivity = Model.IsUserVolunteeredForActivity
                     });
 
-        $('#phone-input')
-            .keydown(function (e) {
-                var key = e.charCode || e.keyCode || 0;
-                $phonenumber = $(this);
-                if (key !== 8 && key !== 9) {
-                    if ($phonenumber.val().length === 4) {
-                        $phonenumber.val($phonenumber.val() + ')');
-                    }
-                    if ($phonenumber.val().length === 5) {
-                        $phonenumber.val($phonenumber.val() + ' ');
-                    }
-                    if ($phonenumber.val().length === 9) {
-                        $phonenumber.val($phonenumber.val() + '-');
-                    }
-                }
-                return (key == 8 ||
-				    key == 9 ||
-				    key == 46 ||
-				    (key >= 48 && key <= 57) ||
-				    (key >= 96 && key <= 105));
-            })
-            .bind('focus click', function () {
-                $phonenumber = $(this);
-                if ($phonenumber.val().length === 0) {
-                    $phonenumber.val('(');
-                }
-                else {
-                    var val = $phone.val();
-                    $phonenumber.val('').val(val);
-                }
-            })
-            .blur(function () {
-                $phonenumber = $(this);
-                if ($phonenumber.val() === '(') {
-                    $phonenumber.val('');
-                }
-            });
+
+        $('#phone-input').mask("(999) 999-9999");
+            
     </script>
     <script type="text/javascript" src="~/js/activity.js"></script>
     <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
