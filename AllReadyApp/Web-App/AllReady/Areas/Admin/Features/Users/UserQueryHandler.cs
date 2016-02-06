@@ -34,9 +34,9 @@ namespace AllReady.Areas.Admin.Features.Users
                 UserId = message.UserId,
                 UserName = user.UserName,
                 AssociatedSkills = user.AssociatedSkills,
-                IsTenantAdmin = user.IsUserType(UserType.TenantAdmin),
+                IsTenantAdmin = user.IsUserType(UserType.OrgAdmin),
                 IsSiteAdmin = user.IsUserType(UserType.SiteAdmin),
-                Tenant = tennantId != null ? _context.Tenants.First(t=>t.Id == tennantId.Value) : null
+                Tenant = tennantId != null ? _context.Organizations.First(t=>t.Id == tennantId.Value) : null
             };
 
             return viewModel;
