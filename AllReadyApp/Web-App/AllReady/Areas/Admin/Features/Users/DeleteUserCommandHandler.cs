@@ -19,10 +19,10 @@ namespace AllReady.Areas.Admin.Features.Users
             _userManager = userManager;
         }
 
-        protected override void HandleCore(DeleteUserCommand message)
+        protected override async void HandleCore(DeleteUserCommand message)
         {
             var user = _userManager.FindByIdAsync(message.UserId).Result;
-            _userManager.DeleteAsync(user);
+            await _userManager.DeleteAsync(user);
         }
     }
 }

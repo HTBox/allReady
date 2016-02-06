@@ -18,10 +18,10 @@
     </p>
 </div>
 
-<form asp-action="ConfirmDeleteUser" asp-controller="SiteAdmin" method="post">
+<form method="post" action="ConfirmDeleteUser" asp-antiforgery="true" >
     <div class="form-horizontal">
         <hr />
-        @Html.AntiForgeryToken()
+        
         <input asp-for="UserId" type="hidden" />
         <div class="form-group">
             <label asp-for="UserName" class="control-label col-md-2"></label>

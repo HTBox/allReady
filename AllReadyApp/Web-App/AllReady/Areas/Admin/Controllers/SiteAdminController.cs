@@ -66,6 +66,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             // send command to bus
             _bus.Send(new DeleteUserCommand { UserId = userId });
+
             // follow PRG
             return RedirectToAction("Index");
         }
