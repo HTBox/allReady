@@ -178,7 +178,7 @@ namespace AllReady.Controllers
                 return HttpNotFound();
             }
 
-            //Notify admins 
+            //Notify admins & volunteer
             _bus.Publish(new UserUnenrolls {ActivityId = signedUp.Activity.Id, UserId = signedUp.User.Id});
 
             await _allReadyDataAccess.DeleteActivitySignupAsync(signedUp.Id);
