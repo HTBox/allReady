@@ -131,6 +131,7 @@ namespace AllReady.Controllers
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account",
                         "Please confirm your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
                     await _signInManager.SignInAsync(user, isPersistent: false);
+                    TempData["ShowUserProfileMessage"] = !user.IsProfileComplete();
                     return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
                 AddErrors(result);
