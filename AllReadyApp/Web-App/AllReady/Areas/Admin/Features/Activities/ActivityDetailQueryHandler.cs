@@ -44,6 +44,8 @@ namespace AllReady.Areas.Admin.Features.Activities
                     EndDateTime = activity.EndDateTime,
                     Volunteers = activity.UsersSignedUp.Select(u => u.User.UserName).ToList(),
                     NumberOfVolunteersRequired = activity.NumberOfVolunteersRequired,
+                    IsLimitVolunteers = activity.IsLimitVolunteers,
+                    IsAllowWaitList = activity.IsAllowWaitList,
                     Tasks = activity.Tasks.Select(t => new TaskSummaryModel()
                     {
                         Id = t.Id,

@@ -29,6 +29,7 @@ namespace AllReady.Areas.Admin.Models
         public bool IsUserSignedUpForTask { get; set; }
 
         [Display(Name = "Volunteers Required")]
+        [Range(1, int.MaxValue, ErrorMessage = "'Volunteers Required' must be greater than 0")]
         public int NumberOfVolunteersRequired { get; set; }
 
         public List<VolunteerModel> AssignedVolunteers { get; set; } = new List<VolunteerModel>();
@@ -36,5 +37,6 @@ namespace AllReady.Areas.Admin.Models
         public List<VolunteerModel> AllVolunteers { get; set; } = new List<VolunteerModel>();
 
         public int AcceptedVolunteerCount => AssignedVolunteers?.Where(v => v.HasVolunteered).Count() ?? 0;
+        public int NumberOfVolunteersSignedUp { get; set; }
     }
 }

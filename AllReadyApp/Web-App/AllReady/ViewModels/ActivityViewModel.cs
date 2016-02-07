@@ -10,7 +10,6 @@ namespace AllReady.ViewModels
     {
         public ActivityViewModel()
         {
-            Tasks = new List<TaskViewModel>();
         }
 
         public ActivityViewModel(Activity activity)
@@ -49,7 +48,12 @@ namespace AllReady.ViewModels
                  ? new List<TaskViewModel>(activity.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
                  : new List<TaskViewModel>();
 
+            SignupModel = new ActivitySignupViewModel();
+
             RequiredSkills = activity.RequiredSkills?.Select(acsk => acsk.Skill).ToList();
+            IsLimitVolunteers = activity.IsLimitVolunteers;
+            IsAllowWaitList = activity.IsAllowWaitList;
+            
         }
 
         public int Id { get; set; }
@@ -65,7 +69,8 @@ namespace AllReady.ViewModels
         public DateTimeOffset StartDateTime { get; set; }
         public DateTimeOffset EndDateTime { get; set; }
         public LocationViewModel Location { get; set; }
-        public List<TaskViewModel> Tasks { get; set; }
+        public List<TaskViewModel> Tasks { get; set; } = new List<TaskViewModel>();
+        public List<TaskViewModel> UserTasks { get; set; } = new List<TaskViewModel>();
         public bool IsUserVolunteeredForActivity { get; set; }
         public List<ApplicationUser> Volunteers { get; set; }
         public string UserId { get; set; }
@@ -75,6 +80,12 @@ namespace AllReady.ViewModels
         public ActivitySignupViewModel SignupModel { get; set; }
         public bool IsClosed { get; set; }
         public bool HasPrivacyPolicy { get; set; }
+        public List<ActivitySignup> UsersSignedUp { get; set; } = new List<ActivitySignup>();
+        public bool IsLimitVolunteers { get; set; } = true;
+        public bool IsAllowWaitList { get; set; } = true;
+        public int NumberOfUsersSignedUp => UsersSignedUp.Count;
+        public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
+        public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
     }
 
     public static class ActivityViewModelExtension
@@ -119,7 +130,9 @@ namespace AllReady.ViewModels
                 viewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => us.Skill).ToList();
                 viewModel.IsUserVolunteeredForActivity = dataAccess.GetActivitySignups(viewModel.Id, userId).Any();
                 var assignedTasks = activity.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
-                viewModel.Tasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
+                viewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
+                var unassignedTasks = activity.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != userId)).ToList();
+                viewModel.Tasks = new List<TaskViewModel>(unassignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
                 viewModel.SignupModel = new ActivitySignupViewModel()
                 {
                     ActivityId = viewModel.Id,
@@ -131,7 +144,7 @@ namespace AllReady.ViewModels
             }
             else
             {
-                viewModel.Tasks = new List<TaskViewModel>();
+                viewModel.UserTasks = new List<TaskViewModel>();
             }
             return viewModel;
         }

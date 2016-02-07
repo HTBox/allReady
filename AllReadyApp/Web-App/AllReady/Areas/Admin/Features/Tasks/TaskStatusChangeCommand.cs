@@ -2,7 +2,7 @@
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class TaskStatusChangeCommand : IRequest
+    public class TaskStatusChangeCommand : IRequest<TaskChangeResult>
     {
         public int TaskId { get; set; }
         public string UserId { get; set; }

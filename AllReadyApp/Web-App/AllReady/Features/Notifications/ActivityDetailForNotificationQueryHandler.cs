@@ -27,13 +27,18 @@ namespace AllReady.Features.Notifications
                 .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
                 .SingleOrDefault(a => a.Id == message.ActivityId);
 
+            var volunteer = _context.Users.Single(u => u.Id == message.UserId);
+
+
             if (activity != null)
             {
                 result = new ActivityDetailForNotificationModel
                 {
                     ActivityId = activity.Id,
+                    ActivityType = activity.ActivityType,
                     CampaignName = activity.Campaign.Name,
                     CampaignContacts = activity.Campaign.CampaignContacts,
+                    Volunteer = volunteer,
                     ActivityName = activity.Name,
                     Description = activity.Description,
                     UsersSignedUp = activity.UsersSignedUp,
@@ -44,11 +49,17 @@ namespace AllReady.Features.Notifications
                         Name = t.Name,
                         StartDateTime = t.StartDateTime,
                         EndDateTime = t.EndDateTime,
+                        NumberOfVolunteersRequired = t.NumberOfVolunteersRequired,
+                        NumberOfVolunteersSignedUp = t.NumberOfUsersSignedUp,
                         AssignedVolunteers = t.AssignedVolunteers.Select(assignedVolunteer => new VolunteerModel
                         {
                             UserId = assignedVolunteer.User.Id,
                             UserName = assignedVolunteer.User.UserName,
-                            HasVolunteered = true
+                            HasVolunteered = true,
+                            Status = assignedVolunteer.Status,
+                            PreferredEmail = assignedVolunteer.PreferredEmail,
+                            PreferredPhoneNumber = assignedVolunteer.PreferredPhoneNumber,
+                            AdditionalInfo = assignedVolunteer.AdditionalInfo
                         }).ToList()
                     }).OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList(),
                 };

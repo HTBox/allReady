@@ -1,10 +1,11 @@
-﻿using System;
+﻿using AllReady.Features.Notifications;
+using AllReady.Models;
+using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Features.Notifications;
-using AllReady.Models;
-using MediatR;
+using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
@@ -21,40 +22,63 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         protected override async Task HandleCore(AssignTaskCommand message)
         {
-            var task = _context.Tasks.SingleOrDefault(c => c.Id == message.TaskId);
-            var newVolunteers = new List<TaskSignup>();
+            var task = _context.Tasks
+                .Include(t => t.Activity).ThenInclude(a => a.UsersSignedUp)
+                .SingleOrDefault(c => c.Id == message.TaskId);
+            var activity = task.Activity;
+            var taskSignups = new List<TaskSignup>();
+
             if (task != null)
             {
                 //New Items, if not in collection add them, save that list for the pub-event
                 foreach (var userId in message.UserIds)
                 {
-                    var av = task.AssignedVolunteers.SingleOrDefault(a => a.User.Id == userId);
-                    if (av == null)
+                    var taskSignup = task.AssignedVolunteers.SingleOrDefault(a => a.User.Id == userId);
+                    if (taskSignup == null)
                     {
-                        var volunteerUser = _context.Users.Single(u => u.Id == userId);
-                        av = new TaskSignup
+                        var user = _context.Users.Single(u => u.Id == userId);
+                        taskSignup = new TaskSignup
                         {
                             Task = task,
-                            User = volunteerUser,
+                            User = user,
+                            PreferredEmail = user.Email,
+                            PreferredPhoneNumber = user.PhoneNumber,
+                            AdditionalInfo = string.Empty,
                             Status = TaskStatus.Assigned.ToString(),
                             StatusDateTimeUtc = DateTime.UtcNow
                         };
+
+                        task.AssignedVolunteers.Add(taskSignup);
+                        taskSignups.Add(taskSignup);
+
+                        // If the user has not already been signed up for the activity, sign them up
+                        if (activity.ActivityType != ActivityTypes.ActivityManaged && activity.UsersSignedUp.All(acsu => acsu.User.Id != userId))
+                        {
+                            activity.UsersSignedUp.Add(new ActivitySignup
+                            {
+                                Activity = activity,
+                                User = user,
+                                PreferredEmail = user.Email,
+                                PreferredPhoneNumber = user.PhoneNumber,
+                                AdditionalInfo = string.Empty,
+                                SignupDateTime = DateTime.UtcNow
+                            });
+                        }
                     }
-                    task.AssignedVolunteers.Add(av);
-                    newVolunteers.Add(av);
                 }
-                //Remove Items Not there, All Volunteers should be in task.AssignedVolunteers
-                var removedVolunteers = new List<TaskSignup>();
-                foreach (var vol in task.AssignedVolunteers)
+
+                //Remove task signups where the the user id is not included in the current list of assigned user id's
+                var taskSignupsToRemove = task.AssignedVolunteers.Where(taskSignup => message.UserIds.All(uid => uid != taskSignup.User.Id)).ToList();
+                taskSignupsToRemove.ForEach(taskSignup => task.AssignedVolunteers.Remove(taskSignup));
+
+                if (activity.ActivityType != ActivityTypes.ActivityManaged)
                 {
-                    if (message.UserIds.All(uid => uid != vol.User.Id))
-                    {
-                        removedVolunteers.Add(vol);
-                    }
-                }                
-                foreach (var vol in removedVolunteers)
-                {
-                    task.AssignedVolunteers.Remove(vol);
+                    // delete the  activity signups where the user is no longer signed up for any tasks
+                    (from taskSignup in taskSignupsToRemove
+                        where !activity.IsUserInAnyTask(taskSignup.User.Id)
+                        select activity.UsersSignedUp.FirstOrDefault(u => u.User.Id == taskSignup.User.Id))
+                        .ToList()
+                        .ForEach(signup => activity.UsersSignedUp.Remove(signup));
                 }
             }
             await _context.SaveChangesAsync();
@@ -64,8 +88,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
             var emailRecipients = new List<string>();
 
             // get all confirmed contact points for the broadcast
-            smsRecipients.AddRange(newVolunteers.Where(u => u.User.PhoneNumberConfirmed).Select(v => v.User.PhoneNumber));
-            emailRecipients.AddRange(newVolunteers.Where(u => u.User.EmailConfirmed).Select(v => v.User.Email));
+            smsRecipients.AddRange(taskSignups.Where(u => u.User.PhoneNumberConfirmed).Select(v => v.User.PhoneNumber));
+            emailRecipients.AddRange(taskSignups.Where(u => u.User.EmailConfirmed).Select(v => v.User.Email));
 
             var command = new NotifyVolunteersCommand
             {

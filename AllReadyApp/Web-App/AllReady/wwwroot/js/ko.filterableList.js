@@ -13,13 +13,21 @@ ko.observableArray.fn.filterList = function (filterFn) {
 
 ko.observableArray.fn.filterBeforeDate = function (dateProperty, showOld, date) {
     var showOld = ko.observable(showOld || false);
+    var hideFull = ko.observable(hideFull || false);
+
     showOld.toggle = function () {
         showOld(!showOld());
     };
+    hideFull.toggle = function () {
+        hideFull(!hideFull());
+    };
+
     this.showOld = showOld;
+    this.hideFull = hideFull;
+
     return this.filterList(function (observableArray) {
         return ko.utils.arrayFilter(observableArray(), function (item) {
-            return showOld() || moment(item[dateProperty]).isAfter(moment(date || undefined));
+            return (showOld() || moment(item[dateProperty]).isAfter(moment(date || undefined))) && (!hideFull() || !item.IsFull);
         });
     });
 };

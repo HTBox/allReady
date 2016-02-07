@@ -58,7 +58,9 @@ namespace AllReady.Controllers
         {
             var viewModel = _mediator.Send(new ShowActivityCommand { ActivityId = id });
             if (viewModel == null) { return HttpNotFound(); }
-            return View("Activity", viewModel);
+            return activity.ActivityType == ActivityTypes.ActivityManaged
+                ? View("Activity", new ActivityViewModel(activity).WithUserInfo(activity, User, _allReadyDataAccess))
+                : View("ActivityWithTasks", new ActivityViewModel(activity).WithUserInfo(activity, User, _allReadyDataAccess));
         }
 
         [HttpPost]

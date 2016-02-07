@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using AllReady.Models;
+using AllReady.Services;
 using AllReady.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -122,7 +124,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         [HttpPost("signup")]
         [Authorize]
-        public async Task<IActionResult> RegisterActivity(ActivitySignupViewModel signupModel)
+        public async Task<object> RegisterActivity(ActivitySignupViewModel signupModel)
         {
             if (signupModel == null)
                 return HttpBadRequest();
@@ -136,7 +138,8 @@ namespace AllReady.Controllers
 
             await _mediator.SendAsync(new ActivitySignupCommand { ActivitySignup = signupModel });
 
-            return new HttpStatusCodeResult((int)HttpStatusCode.OK);
+
+            return new {Status = "success"};
         }
 
         [HttpDelete("{id}/signup")]

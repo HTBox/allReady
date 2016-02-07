@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace AllReady.Models
 {
@@ -41,5 +43,23 @@ namespace AllReady.Models
 
         [Display(Name = "Required skills")]
         public List<ActivitySkill> RequiredSkills { get; set; } = new List<ActivitySkill>();
+
+        public bool IsLimitVolunteers { get; set; } = true;
+
+        public bool IsAllowWaitList { get; set; } = false;
+
+        [NotMapped]
+        public int NumberOfUsersSignedUp => UsersSignedUp.Count;
+
+        [NotMapped]
+        public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
+
+        [NotMapped]
+        public bool IsAllowSignups => !IsLimitVolunteers || !IsFull  || IsAllowWaitList;
+
+        public bool IsUserInAnyTask(string userId)
+        {
+            return Tasks.Any(task => task.AssignedVolunteers.Any(av => av.User.Id == userId));
+        }
     }
 }

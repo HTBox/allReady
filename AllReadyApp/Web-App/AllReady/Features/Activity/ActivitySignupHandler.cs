@@ -61,14 +61,8 @@ namespace AllReady.Features.Activity
 
                     await _context.SaveChangesAsync();
 
-                //Notify admins of a new volunteer
-                var volunteerInformationAdded = new VolunteerInformationAdded
-                {
-                    ActivityId = activitySignup.ActivityId,
-                    UserId = activitySignup.UserId
-                };
-
-                await _mediator.PublishAsync(volunteerInformationAdded).ConfigureAwait(false);
+                    //Notify admins of a new volunteer
+                    await _mediator.PublishAsync(new VolunteerSignupNotification() { ActivityId = activitySignup.ActivityId, UserId = activitySignup.UserId, TaskId = null });
             }
         }
     }

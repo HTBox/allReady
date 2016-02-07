@@ -1,23 +1,40 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Mvc;
+
+using AllReady.Security;
+using AllReady.Models;
+using AllReady.ViewModels;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
-using AllReady.Models;
-using AllReady.Security;
-using AllReady.ViewModels;
-using Microsoft.AspNet.Mvc;
+using System.Threading.Tasks;
+using AllReady.Areas.Admin.Features.Tasks;
+using AllReady.Extensions;
+using AllReady.Features.Activity;
+using AllReady.Features.Notifications;
+using AllReady.Features.Tasks;
+using MediatR;
+using Microsoft.AspNet.Authorization;
+using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.Controllers
 {
+
     [Route("api/task")]
     [Produces("application/json")]
     public class TaskApiController : Controller
     {
         private readonly IAllReadyDataAccess _allReadyDataAccess;
+        private readonly IMediator _bus;
 
-        public TaskApiController(IAllReadyDataAccess allReadyDataAccess)
+
+        public TaskApiController(IAllReadyDataAccess allReadyDataAccess, IMediator bus)
         {
             _allReadyDataAccess = allReadyDataAccess;
+            _bus = bus;
         }
 
         private bool HasTaskEditPermissions(AllReadyTask task)
@@ -131,33 +148,74 @@ namespace AllReady.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("/Signup/{taskId}")]
-        [Produces("application/json", Type = typeof(TaskViewModel))]
-        public async void Signup(int taskId, string userId = "")
+        //[HttpGet]
+        //[Route("/Signup/{taskId}")]
+        //[Produces("application/json", Type = typeof(TaskViewModel))]
+        //public async void Signup(int taskId, string userId = "")
+        //{
+        //    var task = _allReadyDataAccess.GetTask(taskId);
+
+        //    if (task == null)
+        //    {
+        //        HttpNotFound();
+        //    }
+
+        //    ApplicationUser user = _allReadyDataAccess.GetUser(User.GetUserId());
+
+        //    if (task.AssignedVolunteers == null)
+        //    {
+        //        task.AssignedVolunteers = new List<TaskSignup>();
+        //    }
+
+        //    task.AssignedVolunteers.Add(new TaskSignup
+        //    {
+        //        Task = task,
+        //        User = user,
+        //        StatusDateTimeUtc = DateTime.UtcNow
+        //    });
+
+        //    await _allReadyDataAccess.UpdateTaskAsync(task);
+        //}
+
+        [ValidateAntiForgeryToken]
+        [HttpPost("signup")]
+        [Authorize]
+        [Produces("application/json")]
+        public async Task<object> RegisterTask(ActivitySignupViewModel signupModel)
         {
-            var task = _allReadyDataAccess.GetTask(taskId);
-
-            if (task == null)
+            if (signupModel == null)
             {
-                HttpNotFound();
+                return HttpBadRequest();
             }
 
-            ApplicationUser user = _allReadyDataAccess.GetUser(User.GetUserId());
-
-            if (task.AssignedVolunteers == null)
+            if (!ModelState.IsValid)
             {
-                task.AssignedVolunteers = new List<TaskSignup>();
+                // this condition should never be hit because client side validation is being performed
+                // but just to cover the bases, if this does happen send the erros to the client
+                return Json(new { errors = ModelState.GetErrorMessages() });
             }
 
-            task.AssignedVolunteers.Add(new TaskSignup
-            {
-                Task = task,
-                User = user,
-                StatusDateTimeUtc = DateTime.UtcNow
-            });
+            var result = await _bus.SendAsync(new TaskSignupCommand() { TaskSignupModel = signupModel });
+            return new {Status = result.Status, Task = (result.Task == null) ? null : new TaskViewModel(result.Task, signupModel.UserId)};
+        }
 
-            await _allReadyDataAccess.UpdateTaskAsync(task);
+        [HttpDelete("{id}/signup")]
+        [Authorize]
+        public async Task<object> UnregisterTask(int id)
+        {
+            var userId = User.GetUserId();
+            var result = await _bus.SendAsync(new TaskUnenrollCommand() { TaskId = id, UserId = userId});
+            return new { Status = result.Status, Task = (result.Task == null) ? null : new TaskViewModel(result.Task, userId) };
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("changestatus")]
+        [Authorize]
+        public async Task<object> ChangeStatus(TaskChangeModel model)
+        {
+            var result = _bus.Send(new TaskStatusChangeCommand { TaskStatus = model.Status, TaskId = model.TaskId, UserId = model.UserId, TaskStatusDescription = model.StatusDescription });
+            return new { Status = result.Status, Task = (result.Task == null) ? null : new TaskViewModel(result.Task, model.UserId) };
         }
     }
 }

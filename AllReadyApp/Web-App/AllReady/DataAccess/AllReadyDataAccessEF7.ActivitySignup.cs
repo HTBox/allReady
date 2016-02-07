@@ -48,7 +48,7 @@ namespace AllReady.Models
             _dbContext.TaskSignups.RemoveRange(_dbContext.TaskSignups
                 .Where(e => e.Task.Activity.Id == activitySignup.Activity.Id)
                 .Where(e => e.User.Id == activitySignup.User.Id));
-
+                
             return _dbContext.SaveChangesAsync();
         }
 
