@@ -99,6 +99,9 @@ namespace AllReady
             // Add MVC services to the services container.
             services.AddMvc();
 
+            services.AddCaching();
+            services.AddSession();
+
             // configure IoC support
             var container = CreateIoCContainer(services);
             return container.Resolve<IServiceProvider>();
@@ -221,7 +224,7 @@ namespace AllReady
                 options.AccessDeniedPath = new PathString("/Home/AccessDenied");
             });
 
-
+            app.UseSession();
 
             // Track data about exceptions from the application. Should be configured after all error handling middleware in the request pipeline.
             app.UseApplicationInsightsExceptionTelemetry();

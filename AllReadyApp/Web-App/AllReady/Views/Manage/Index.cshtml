@@ -9,6 +9,23 @@
 <h2>@ViewData["Title"]</h2>
 <p class="text-success">@ViewData["StatusMessage"]</p>
 <div>
+
+    @if (!Model.IsProfileComplete)
+    {
+        <div class="alert alert-info" role="alert">
+            <p class="text-info">
+                <i class="fa fa-exclamation-circle"></i> Please complete your allReady account profile
+                <br />
+                <ul>
+                    @foreach(var warning in Model.ProfileCompletenessWarnings)
+                    {
+                        <li>@warning</li>
+                    }
+                </ul>
+            </p>            
+        </div>
+    }
+
     <form asp-controller="Manage" asp-action="ResendEmailConfirmation">
         <div class="form-horizontal">
             <div class="form-group">
@@ -65,7 +82,8 @@
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
-
+        <input asp-for="IsProfileComplete" type="hidden"/>
+        <input asp-for="ProfileCompletenessWarnings" type="hidden" />
         <hr />
         <div class="form-horizontal">
             <div class="form-group">

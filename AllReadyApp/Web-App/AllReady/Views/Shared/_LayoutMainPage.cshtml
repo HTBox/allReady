@@ -7,12 +7,14 @@
 
     <environment names="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
         <link rel="stylesheet" href="~/css/site.css" />
         <link rel="stylesheet" href="~/css/mainPage.css" />
     </environment>
     <environment names="Staging,Production">
         <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/bootstrap/3.3.5/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="~/css/site.css" asp-file-version="true" />
         <link rel="stylesheet" href="~/css/mainPage.css" asp-file-version="true" />
     </environment>
@@ -73,9 +75,26 @@
                 asp-fallback-test="window.moment">
         </script>
     </environment>
-
+    <script src="~/js/Controls/UserProfilePrompt.js" asp-append-version="true"></script>
     <script src="~/js/site.js"></script>
-
+    
+    <script type="text/javascript">
+        $(function() {
+            var showUserProfileMessage;
+            @if(TempData.ContainsKey("ShowUserProfileMessage"))
+            {
+                @:showUserProfileMessage = @Json.Serialize(TempData["ShowUserProfileMessage"]);
+            }
+            else
+            {
+                @:showUserProfileMessage = null;
+            }
+            @if(User.Identity.IsAuthenticated)
+            {
+                @:new HTBox.UserProfilePrompt($("#logoutForm"), showUserProfileMessage);
+            }
+        });
+    </script>
     
     @RenderSection("scripts", required: false)
 </body>

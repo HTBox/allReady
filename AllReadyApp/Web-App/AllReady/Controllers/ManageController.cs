@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using AllReady.Models;
 using AllReady.Services;
+using System;
 
 namespace AllReady.Controllers
 {
@@ -95,6 +96,7 @@ namespace AllReady.Controllers
             {
                 await _signInManager.RefreshSignInAsync(user);
             }
+            TempData["ShowUserProfileMessage"] = !user.IsProfileComplete();
             return RedirectToAction(nameof(Index));
         }
 

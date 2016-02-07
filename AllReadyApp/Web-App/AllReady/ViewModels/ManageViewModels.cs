@@ -46,12 +46,17 @@ namespace AllReady.Models
         public string TimeZoneId { get; set; }
 
         public string ProposedNewEmailAddress { get; set; }
+
+        public bool IsProfileComplete { get; set; }
+
+        public IEnumerable<string> ProfileCompletenessWarnings { get; set; }
     }
 
     public static class IndexViewModelExtensions
     {
         public static async Task<IndexViewModel> ToViewModel(this ApplicationUser user, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
+            var profileCompletenessWarnings = user.ValidateProfileCompleteness();
             var result = new IndexViewModel
             {
                 HasPassword = await userManager.HasPasswordAsync(user),
@@ -65,7 +70,9 @@ namespace AllReady.Models
                 AssociatedSkills = user.AssociatedSkills,
                 TimeZoneId = user.TimeZoneId,
                 Name = user.Name,
-                ProposedNewEmailAddress = user.PendingNewEmail
+                ProposedNewEmailAddress = user.PendingNewEmail,
+                IsProfileComplete = user.IsProfileComplete(),
+                ProfileCompletenessWarnings = profileCompletenessWarnings.Select(p => p.ErrorMessage)
             };
             return result;
         }

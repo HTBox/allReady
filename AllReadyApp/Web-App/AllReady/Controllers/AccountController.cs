@@ -63,6 +63,8 @@ namespace AllReady.Controllers
                                       user.IsUserType(UserType.SiteAdmin);
                     if (isAdminUser && !await _userManager.IsEmailConfirmedAsync(user))
                     {
+                        //TODO: Showing the error page here makes for a bad experience for the user.
+                        //      It would be better if we redirected to a specific page prompting the user to check their email for a confirmation email and providing an option to resend the confirmation email.
                         ViewData["Message"] = "You must have a confirmed email to log on.";
                         return View("Error");
                     }
@@ -73,7 +75,8 @@ namespace AllReady.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    return RedirectToLocal(returnUrl, user);        
+                    TempData["ShowUserProfileMessage"] = !user.IsProfileComplete();
+                    return RedirectToLocal(returnUrl, user);
                 }
                 if (result.RequiresTwoFactor)
                 {
@@ -279,7 +282,7 @@ namespace AllReady.Controllers
 
             if (result.Succeeded)
             {
-                var user =  await _bus.SendAsync(new ApplicationUserQuery { UserName = email });
+                var user = await _bus.SendAsync(new ApplicationUserQuery { UserName = email });
                 return RedirectToLocal(returnUrl, user);
             }
             else
