@@ -25,6 +25,7 @@ namespace AllReady.ViewModels
 
             Title = activity.Name;
             Description = activity.Description;
+            ActivityType = activity.ActivityType;
 
             TimeZoneId = activity.Campaign.TimeZoneId;
             StartDateTime = activity.StartDateTime;
@@ -53,6 +54,7 @@ namespace AllReady.ViewModels
         public int CampaignId { get; set; }
         public string CampaignName { get; set; }
         public string Title { get; set; }
+        public ActivityTypes ActivityType { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
         public string TimeZoneId { get; set; }
