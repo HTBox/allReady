@@ -7,6 +7,8 @@
     var userTimeZoneId = User.GetTimeZoneId();
 }
 
+<div id="alert_placeholder"></div>
+
 <div class="row">
     <div class="col-sm-5">
         <div class="row">
@@ -24,7 +26,7 @@
                     <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
                 </p>
                 @if (!string.IsNullOrEmpty(userTimeZoneId) && Model.TimeZoneId != userTimeZoneId)
-            {
+                {
                     <p>
                         <time value="Model.StartDateTime" target-time-zone-id="@userTimeZoneId" format="f"></time> - <time value="Model.EndDateTime" format="f" target-time-zone-id="@userTimeZoneId"></time>
                         <em><time-zone-name time-zone-id="@userTimeZoneId"></time-zone-name></em>
@@ -120,34 +122,35 @@
             <div class="col-sm-12">
                 @if (!User.IsSignedIn())
                 {
-                    @if (!Model.IsClosed)
-                    {
-                        <h2>
-                            <a asp-action="Login" asp-controller="Account" asp-route-ReturnUrl="/Activity/@Model.Id" class="btn btn-primary  btn-volunteer">Volunteer</a>
-                        </h2>
-                    }
-                    else {
-                        <h2>This activity is closed</h2>
-                    }
+                    if (!Model.IsClosed)
+                     {
+                         <h2>
+                             <a asp-action="Login" asp-controller="Account" asp-route-ReturnUrl="/Activity/@Model.Id" class="btn btn-primary  btn-volunteer">Volunteer</a>
+                         </h2>
+                     }
+                     else
+                     {
+                         <h2>This activity is closed</h2>
+                     }
                 }
                 else
                 {
-                    @if (!Model.IsClosed)
-                    {
-                        <h2>
-                            <button data-toggle="modal" data-target="#volunteerForm" class="btn btn-primary btn-volunteer" data-bind="visible: !enrolled()" style="display: none">Volunteer for this Activity</button>
-                        </h2>
-                    }
-                    else
-                    {
-                        <h2 data-bind="visible: !enrolled()"> This activity is closed</h2>
-                    }
+                    if (!Model.IsClosed)
+                     {
+                         <h2>
+                             <button class="btn btn-primary btn-volunteer" data-bind="visible: !enrolled(), click: signupForActivity" style="display: none">Volunteer for this Activity</button>
+                         </h2>
+                     }
+                     else
+                     {
+                         <h2 data-bind="visible: !enrolled()"> This activity is closed</h2>
+                     }
                     <div class="volunteered" data-bind="visible: enrolled()" style="display: none">
                         <div class="text-center">
-                            <p>Thanks for volunteering!</p>
+                            <p>You have volunteered for this activity!</p>
                             @if (!Model.IsClosed)
                             {
-                                <p><a href="#" class="unvolunteer text-center" data-bind="click: function() {unenroll(@Model.Id);}">Unenroll</a></p>
+                                <p><a href="#" class="unvolunteer text-center" data-bind="click: function() {unenroll(@Model.Id);}">No Longer Able to Volunteer</a></p>
                                 <p><span class="label label-danger" data-bind="visible: errorUnenrolling" style="display: none">There was a problem unenrolling; please try again.</span></p>
                             }
                             else
@@ -197,78 +200,84 @@
 <!-- Volunteer Modal -->
 @if (User.IsSignedIn())
 {
-    <div class="modal fade" id="volunteerForm" tabindex="-1" role="dialog" aria-labelledby="volunteerFormLabel">
-        @using (Html.BeginForm("Signup", "Activity", FormMethod.Post))
-        {
-            @Html.AntiForgeryToken()
+    <script id="VolunteerModal" type="text/html">
+        <div class="modal fade" id="volunteerForm" tabindex="-1" role="dialog" aria-labelledby="volunteerFormLabel">
+            <form data-bind="submit: submitForm">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="volunteerFormLabel">Volunteer for @Model.Title</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group row" data-bind="visible: validationErrors().length">
+                                <div class="col-xs-9 col-xs-offset-3">
+                                    <ul class="list-unstyled form-control-static" data-bind="foreach: validationErrors">
+                                        <li class="text-danger" data-bind="text: $data"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="form-horizontal">
+                                    <input asp-for="SignupModel.Name" type="hidden" />
+                                    @if (!string.IsNullOrWhiteSpace(Model.SignupModel.Name))
+                                    {
+                                        <div class="form-group">
+                                            <label asp-for="SignupModel.Name" class="control-label col-md-4"></label>
+                                            <div class="col-md-8">
+                                                <p class="form-control-static">
+                                                    @Model.SignupModel.Name
+                                                </p>
+                                            </div>
+                                        </div>
+                                    }
 
-            <input asp-for="SignupModel.ActivityId" type="hidden" />
-            <input asp-for="SignupModel.UserId" type="hidden" />
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="volunteerFormLabel">Volunteer for @Model.Title</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="form-horizontal">
-                                <input asp-for="SignupModel.Name" type="hidden" />
-                                @if (!string.IsNullOrWhiteSpace(Model.SignupModel.Name))
-                                {
                                     <div class="form-group">
-                                        <label asp-for="SignupModel.Name" class="control-label col-md-4"></label>
+                                        <label asp-for="SignupModel.PreferredEmail" class="control-label col-md-4"></label>
                                         <div class="col-md-8">
-                                            <p class="form-control-static">
-                                                @Model.SignupModel.Name
-                                            </p>
+                                            <input type="text" class="form-control" placeholder="email_address@your_provider.com" data-bind='value: PreferredEmail' />
+                                            <span asp-validation-for="SignupModel.PreferredEmail" class="text-danger" data-bind='visible: PreferredEmail.showErrors && PreferredEmail.hasError, text: PreferredEmail.validationMessage'></span>
                                         </div>
                                     </div>
-                                }
-                                <div class="form-group">
-                                    <label asp-for="SignupModel.PreferredEmail" class="control-label col-md-4"></label>
-                                    <div class="col-md-8">
-                                        <input type="text" asp-for="SignupModel.PreferredEmail" class="form-control" placeholder="email_address@your_provider.com" />
-                                        <span asp-validation-for="SignupModel.PreferredEmail" class="text-danger"></span>
+                                    <div class="form-group">
+                                        <label asp-for="SignupModel.PreferredPhoneNumber" class="control-label col-md-4"></label>
+                                        <div class="col-md-8">
+                                            <input type="text" id="phone-input" class="form-control" placeholder="(XXX) XXX-XXXX" data-bind="masked: PreferredPhoneNumber, mask: '(999) 999-9999'" />
+                                            <span asp-validation-for="SignupModel.PreferredPhoneNumber" class="text-danger" data-bind='visible: PreferredPhoneNumber.showErrors && PreferredPhoneNumber.hasError, text: PreferredPhoneNumber.validationMessage'></span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="SignupModel.PreferredPhoneNumber" class="control-label col-md-4"></label>
-                                    <div class="col-md-8">
-                                        <input type="text" id="phone-input" asp-for="SignupModel.PreferredPhoneNumber" class="form-control" placeholder="(XXX) XXX-XXXX" />
-                                        <span asp-validation-for="SignupModel.PreferredPhoneNumber" class="text-danger"></span>
+                                    <div class="form-group">
+                                        <label asp-for="SignupModel.AdditionalInfo" class="control-label col-md-4"></label>
+                                        <div class="col-md-8">
+                                            <input type="text" class="form-control" data-bind='value: AdditionalInfo' />
+                                            <span asp-validation-for="SignupModel.AdditionalInfo" class="text-danger"></span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="SignupModel.AdditionalInfo" class="control-label col-md-4"></label>
-                                    <div class="col-md-8">
-                                        <input type="text" asp-for="SignupModel.AdditionalInfo" class="form-control" />
-                                        <span asp-validation-for="SignupModel.AdditionalInfo" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group" data-bind="visible: unassociatedSkills.length">
-                                    <label class="control-label col-md-4">Associate new skills?</label>
-                                    <div class="col-md-8">
-                                        <ul class="list-unstyled form-control-static" data-bind="foreach: unassociatedSkills">
-                                            <li>
-                                                <input type="checkbox" name="SignupModel.AddSkillIds" data-bind="attr: { id: 'skillNumber' + $index()}, value: Id" />
-                                                <label data-bind="attr: { for: 'skillNumber' + $index()}, text: HierarchicalName"></label>
-                                                <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
-                                            </li>
-                                        </ul>
+                                    <div class="form-group" data-bind="visible: unassociatedSkills.length">
+                                        <label class="control-label col-md-4">Associate new skills?</label>
+                                        <div class="col-md-8">
+                                            <ul class="list-unstyled form-control-static" data-bind="foreach: unassociatedSkills">
+                                                <li>
+                                                    <input type="checkbox" name="SignupModel.AddSkillIds" data-bind="checked: $root.AddSkillIds, attr: { id: 'skillNumber' + $index()}, value: Id" />
+                                                    <label data-bind="attr: { for: 'skillNumber' + $index()}, text: HierarchicalName"></label>
+                                                    <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Volunteer</button>
-                        <button type="button" data-dismiss="modal" class="btn btn-link">Cancel</button>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary" data-bind="enable: isValid">Volunteer</button>
+                            <button type="button" data-dismiss="modal" class="btn btn-link">Cancel</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
+            </form>
+        </div>
+    </script>
 }
 
 @section scripts {
@@ -292,13 +301,14 @@
                         tasks = Model.Tasks,
                         skills = Model.RequiredSkills,
                         userSkills = Model.UserSkills,
-                        isVolunteeredForActivity = Model.IsUserVolunteeredForActivity
+                        isVolunteeredForActivity = Model.IsUserVolunteeredForActivity,
+                        signupModelSeed = Model.SignupModel
                     });
 
-
-        $('#phone-input').mask("(999) 999-9999");
-            
-    </script>
+        </script>
+    <script type="text/javascript" src="~/js/ko.bindings.js"></script>
+    <script type="text/javascript" src="~/lib/knockout.mapping/knockout.mapping.js"></script>
     <script type="text/javascript" src="~/js/activity.js"></script>
+    <script type="text/javascript" src="~/js/showmodal.js"></script>
     <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
 }

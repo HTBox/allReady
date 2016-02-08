@@ -1,6 +1,6 @@
 ﻿///<reference path="../lib/jquery/dist/jquery.js" />
 ///<reference path="../lib/knockout/dist/knockout.js" />
-(function (ko, $, tasks, skills, userSkills, isVolunteeredForActivity) {
+(function (ko, $, tasks, skills, userSkills, isVolunteeredForActivity, signupModelSeed) {
 
     function RequiredSkill(userSkills, skill)
     {
@@ -9,49 +9,105 @@
         return obj;
     }
 
-    function ActivityViewModel(tasks, skills, userSkills) {
-        this.skills = skills.map(RequiredSkill.bind(null, userSkills));
-        this.unassociatedSkills = this.skills.filter(function (skill) { return !skill.IsUserSkill; });
+    function ActivityViewModel(tasks, skills, userSkills, signupModel) {
+        var self = this;
+        self.skills = skills.map(RequiredSkill.bind(null, userSkills));
+        self.unassociatedSkills = this.skills.filter(function (skill) { return !skill.IsUserSkill; });
         tasks = tasks.map(function (task) { task.NotCompleteReason = ko.observable(); return task; });
-        this.tasks = ko.observableArray(tasks).filterBeforeDate("EndDateTime").textFilter(["Name", "Description"]);
-        this.enrolled = ko.observable(isVolunteeredForActivity);
-        this.errorUnenrolling = ko.observable(false);
-    }
+        self.tasks = ko.observableArray(tasks).filterBeforeDate("EndDateTime").textFilter(["Name", "Description"]);
+        self.enrolled = ko.observable(isVolunteeredForActivity);
 
-    var activityViewModel;
+        self.signupForActivity = function() {
+             HTBox.showModal({
+                 viewModel: new SignupViewModel(signupModel, self.unassociatedSkills),
+                 template: "VolunteerModal",
+                 context: self
+             }).then(activitySignupSuccess);
+        };
 
-    ActivityViewModel.prototype = {
-        enroll: function (activity) {
+        function activitySignupSuccess() {
+            self.enrolled(true);
+            showalert("<strong>Thanks for volunteering! Your request has been processed and one of the activity coordinators will be in contact with you soon.</strong>", "alert-success", 10);
+        }
+
+        self.unenroll = function (activity) {
             // TODO: set up a spinner
-            $.ajax({
-                type: "POST",
-                url: '/api/activity/' + activity + '/signup',
-                contentType: "application/json",
-            }).then(function (data) {
-                activityViewModel.enrolled(true);
-            }).fail(function (fail) {
-                console.log(fail);
-            });
-        },
-        unenroll: function (activity) {
-            activityViewModel.errorUnenrolling(false);
             $("#enrollUnenrollSpinner").show();
             $.ajax({
                 type: "DELETE",
                 url: '/api/activity/' + activity + '/signup',
-                contentType: "application/json",
+                contentType: "application/json"
             }).then(function (data) {
-                activityViewModel.enrolled(false);
+                self.enrolled(false);
                 $("#enrollUnenrollSpinner").hide();
+                showalert("<strong>Thanks for your interest. Your request has been processed and you are no longer signed up for this activity We hope to see you soon!.</strong>", "alert-success", 10);
             }).fail(function (fail) {
-                activityViewModel.errorUnenrolling(true);
-                $("#enrollUnenrollSpinner").hide();
+                self.errorUnenrolling(true);
                 console.log(fail);
             });
         }
-    };
-    
-    activityViewModel = new ActivityViewModel(tasks, skills, userSkills);
+    }
 
+    function showalert(message, alerttype, timeoutInSecs) {
+        $('#alert_placeholder').append('<div id="alertdiv" class="alert ' +  alerttype + ' fade in"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>')
+        if (timeoutInSecs) {
+            setTimeout(function() {
+                $(".alert").alert('close');
+            }, timeoutInSecs * 1000);
+        };
+    }; 
+
+    SignupViewModel = function (signupModelSeed, unassociatedSkills) {
+        var self = this;
+        ko.mapping.fromJS(signupModelSeed, {}, self);
+        self.unassociatedSkills = unassociatedSkills;
+        self.validationErrors = ko.observableArray([]);
+
+        self.PreferredPhoneNumber.extend({
+            validate: {
+                required: "'Phone Number' is required",
+                phoneNumber: ""
+            }
+        });
+
+        self.PreferredEmail.extend({
+            validate: {
+                required: "'Email' is required",
+                email: ""
+            }
+        });
+
+        self.isValid = ko.computed(function () {
+            var allValidatablesAreValid = true;
+            for (var property in self) {
+                if (self.hasOwnProperty(property) && self[property]["hasError"]) {
+                    allValidatablesAreValid = !self[property].hasError();
+                }
+                if (!allValidatablesAreValid) break;
+            }
+            return allValidatablesAreValid;
+        });
+
+        self.submitForm = function() {
+            // TODO: set up a spinner
+            var dataToSend = ko.mapping.toJS(self);
+            self.validationErrors([]);
+            dataToSend.__RequestVerificationToken = $('input[name=__RequestVerificationToken]').val();
+            $.ajax({
+                type: "POST",
+                url: '/api/activity/signup',
+                data: dataToSend,
+                contentType: "application/x-www-form-urlencoded"
+            }).done(function (data, status) {
+                if (!data) {
+                    self.modal.close("ok");
+                } else {
+                    self.validationErrors(data.errors);
+                }
+            }).fail(function(fail) { console.log(fail); });
+        }
+    };
+
+    var activityViewModel = new ActivityViewModel(tasks, skills, userSkills, signupModelSeed);
     ko.applyBindings(activityViewModel);
-})(ko, $, modelStuff.tasks, modelStuff.skills, modelStuff.userSkills, modelStuff.isVolunteeredForActivity);
+})(ko, $, modelStuff.tasks, modelStuff.skills, modelStuff.userSkills, modelStuff.isVolunteeredForActivity, modelStuff.signupModelSeed);
