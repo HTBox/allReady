@@ -20,14 +20,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
             if (campaign != null)
             {
-                if (campaign.Locked)
-                {
-                    campaign.Locked = false;
-                }
-                else
-                {
-                    campaign.Locked = true;
-                }
+                campaign.Locked = !campaign.Locked;
 
                 _context.Update(campaign);
                 _context.SaveChanges();

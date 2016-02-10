@@ -152,7 +152,6 @@ namespace AllReady.Areas.Admin.Controllers
             return RedirectToAction("Index", new { area = "Admin" });
         }
 
-        // POST: Campaign/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult LockUnlock(int id)
@@ -165,6 +164,5 @@ namespace AllReady.Areas.Admin.Controllers
             _bus.Send(new LockUnlockCampaignCommand { CampaignId = id });
             return RedirectToAction("Details", new { area = "Admin", id = id });
         }
-
     }
 }

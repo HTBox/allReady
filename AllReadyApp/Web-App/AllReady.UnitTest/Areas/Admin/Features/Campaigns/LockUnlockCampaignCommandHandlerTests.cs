@@ -22,7 +22,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         }
 
         [Fact]
-        public void UnlockedCampaignIsUnlocked()
+        public void UnlockedCampaignIsLocked()
         {
             // Arrange
             var handler = new LockUnlockCampaignCommandHandler(Context);

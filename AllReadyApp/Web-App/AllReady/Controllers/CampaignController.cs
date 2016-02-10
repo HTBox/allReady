@@ -20,7 +20,7 @@ namespace AllReady.Controllers
         [Route("~/[controller]")]
         public IActionResult Index()
         {
-            return View(_dataAccess.Campaigns.Where(c => c.Locked == false).ToViewModel().ToList());
+            return View(_dataAccess.Campaigns.Where(c => !c.Locked).ToViewModel().ToList());
         }
 
         [HttpGet]
@@ -52,7 +52,7 @@ namespace AllReady.Controllers
         public IEnumerable<CampaignViewModel> Get()
         {
             return _dataAccess.Campaigns
-                .Where(c => c.Locked == false)
+                .Where(c => !c.Locked)
                 .Select(x => new CampaignViewModel(x));
         }
 
