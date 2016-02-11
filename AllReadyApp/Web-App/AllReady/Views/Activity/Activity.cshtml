@@ -138,7 +138,7 @@
                     if (!Model.IsClosed)
                      {
                          <h2>
-                             <button class="btn btn-primary btn-volunteer" data-bind="visible: !enrolled(), click: signupForActivity" style="display: none">Volunteer for this Activity</button>
+                             <button class="btn btn-primary btn-volunteer" data-bind="visible: !enrolled(), click: signupForActivity" style="display: none">Volunteer<br /> for this Activity</button>
                          </h2>
                      }
                      else
@@ -165,7 +165,7 @@
                 }
             </div>
         </div>
-        <div class="row" data-bind="visible: skills.length" style="display: none">
+        <div class="row" data-bind="visible: skills().length" style="display: none">
             <div class="col-sm-12">
                 <h3>Needed Skills</h3>
                 <ul data-bind="foreach: skills">
@@ -237,14 +237,14 @@
                                         <label asp-for="SignupModel.PreferredEmail" class="control-label col-md-4"></label>
                                         <div class="col-md-8">
                                             <input type="text" class="form-control" placeholder="email_address@your_provider.com" data-bind='value: PreferredEmail' />
-                                            <span asp-validation-for="SignupModel.PreferredEmail" class="text-danger" data-bind='visible: PreferredEmail.showErrors && PreferredEmail.hasError, text: PreferredEmail.validationMessage'></span>
+                                            <span class="text-danger" data-bind='visible: PreferredEmail.isShowValidationMessage(), text: PreferredEmail.validationMessage'></span>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label asp-for="SignupModel.PreferredPhoneNumber" class="control-label col-md-4"></label>
                                         <div class="col-md-8">
                                             <input type="text" id="phone-input" class="form-control" placeholder="(XXX) XXX-XXXX" data-bind="masked: PreferredPhoneNumber, mask: '(999) 999-9999'" />
-                                            <span asp-validation-for="SignupModel.PreferredPhoneNumber" class="text-danger" data-bind='visible: PreferredPhoneNumber.showErrors && PreferredPhoneNumber.hasError, text: PreferredPhoneNumber.validationMessage'></span>
+                                            <span class="text-danger" data-bind='visible: PreferredPhoneNumber.isShowValidationMessage(), text: PreferredPhoneNumber.validationMessage'></span>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -254,7 +254,7 @@
                                             <span asp-validation-for="SignupModel.AdditionalInfo" class="text-danger"></span>
                                         </div>
                                     </div>
-                                    <div class="form-group" data-bind="visible: unassociatedSkills.length">
+                                    <div class="form-group" data-bind="visible: unassociatedSkills().length">
                                         <label class="control-label col-md-4">Associate new skills?</label>
                                         <div class="col-md-8">
                                             <ul class="list-unstyled form-control-static" data-bind="foreach: unassociatedSkills">

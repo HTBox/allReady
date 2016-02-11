@@ -31,6 +31,9 @@ ko.extenders.validate = function (target, options) {
     target.hasError = ko.observable();
     target.validationMessage = ko.observable();
     target.showErrors = ko.observable();
+    target.isShowValidationMessage = ko.computed(function() {
+        return target.hasError() && target.showErrors();
+    });
 
     target.validate = function (newValue, isShowErrors) {
         isShowErrors = typeof isShowErrors !== 'undefined' ? isShowErrors : true;
@@ -59,7 +62,7 @@ ko.extenders.validate = function (target, options) {
         }
     }
 
-    // do initial validation for purpose of determining if the form is valid, but do not show error messages since the 
+    // do initial validation for purpose of determining if the form is valid, but do not show validation messages since the 
     // field has not yet been visited
     target.validate(target(), false);
 

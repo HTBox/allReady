@@ -5,17 +5,18 @@
     function RequiredSkill(userSkills, skill)
     {
         var obj = ko.utils.extend({}, skill);
-        obj.IsUserSkill = userSkills && userSkills.length && userSkills.filter(function (userSkill) { return obj.Id === userSkill.Id }).length > 0;
+        obj.IsUserSkill = ko.observable(userSkills && userSkills.length && userSkills.filter(function (userSkill) { return obj.Id === userSkill.Id }).length > 0);
         return obj;
     }
 
     function ActivityViewModel(tasks, skills, userSkills, signupModel) {
         var self = this;
-        self.skills = skills.map(RequiredSkill.bind(null, userSkills));
-        self.unassociatedSkills = this.skills.filter(function (skill) { return !skill.IsUserSkill; });
+        self.skills = ko.observableArray(skills.map(RequiredSkill.bind(null, userSkills)));
+        self.unassociatedSkills = ko.computed(function () { return self.skills().filter(function (skill) { return !skill.IsUserSkill(); }) }); 
         tasks = tasks.map(function (task) { task.NotCompleteReason = ko.observable(); return task; });
         self.tasks = ko.observableArray(tasks).filterBeforeDate("EndDateTime").textFilter(["Name", "Description"]);
         self.enrolled = ko.observable(isVolunteeredForActivity);
+        self.errorUnenrolling = ko.observable(false);
 
         self.signupForActivity = function() {
              HTBox.showModal({
@@ -25,13 +26,17 @@
              }).then(activitySignupSuccess);
         };
 
-        function activitySignupSuccess() {
+        function activitySignupSuccess(signUpViewModel) {
+            self.skills().forEach(function(skill) {
+                if (signUpViewModel.AddSkillIds().indexOf(skill.Id) >= 0){ skill.IsUserSkill(true) }
+            });
             self.enrolled(true);
-            showalert("<strong>Thanks for volunteering! Your request has been processed and one of the activity coordinators will be in contact with you soon.</strong>", "alert-success", 10);
+            showalert("<strong>Thanks for volunteering! Your request has been processed and one of the activity coordinators will be in contact with you soon.</strong>", "alert-success", 30);
         }
 
         self.unenroll = function (activity) {
             // TODO: set up a spinner
+            self.errorUnenrolling(false);
             $("#enrollUnenrollSpinner").show();
             $.ajax({
                 type: "DELETE",
@@ -40,7 +45,7 @@
             }).then(function (data) {
                 self.enrolled(false);
                 $("#enrollUnenrollSpinner").hide();
-                showalert("<strong>Thanks for your interest. Your request has been processed and you are no longer signed up for this activity We hope to see you soon!.</strong>", "alert-success", 10);
+                showalert("<strong>Thanks for your interest. Your request has been processed and you are no longer signed up for this activity We hope to see you soon!.</strong>", "alert-success", 30);
             }).fail(function (fail) {
                 self.errorUnenrolling(true);
                 console.log(fail);
@@ -55,7 +60,7 @@
                 $(".alert").alert('close');
             }, timeoutInSecs * 1000);
         };
-    }; 
+    };
 
     SignupViewModel = function (signupModelSeed, unassociatedSkills) {
         var self = this;
@@ -100,7 +105,7 @@
                 contentType: "application/x-www-form-urlencoded"
             }).done(function (data, status) {
                 if (!data) {
-                    self.modal.close("ok");
+                    self.modal.close(self);
                 } else {
                     self.validationErrors(data.errors);
                 }
