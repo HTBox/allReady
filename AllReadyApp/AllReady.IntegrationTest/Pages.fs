@@ -92,15 +92,16 @@ module AdminActivityCreate =
         VolunteersRequired:int
         StartDate:string
         EndDate:string
-
+        ActivityType: int
     }
 
     let DefaultActivityDetails = {
         Name = ""
         Description = ""
-        VolunteersRequired = 0
+        VolunteersRequired = 1
         StartDate = ""
         EndDate = ""
+        ActivityType = 1
     }
 
     let PopulateActivityDetails details =
@@ -109,6 +110,7 @@ module AdminActivityCreate =
         "#NumberOfVolunteersRequired" << details.VolunteersRequired.ToString()
         "#StartDateTime" << details.StartDate
         "#EndDateTime" << details.EndDate
+        "#ActivityType" << details.ActivityType.ToString()
 
     let private createBtn = "Create"
 
