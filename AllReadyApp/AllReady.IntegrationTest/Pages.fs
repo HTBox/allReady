@@ -85,6 +85,7 @@ module AdminOrganizationCreate =
         click "Save"
 
 
+
 module AdminActivityCreate =
     type ActivityDetails = {
         Name:string
