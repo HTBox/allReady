@@ -16,11 +16,11 @@ namespace AllReady.Models
                 return _dbContext.Activities
                                 .Include(a => a.Location)
                                 .Include(a => a.Location.PostalCode)
+                                .Include(a => a.Campaign)
                                 .Include(a => a.Campaign.ManagingOrganization)
                                 .Include(a => a.Tasks)
                                 .Include(a => a.RequiredSkills)
                                 .Include(a => a.UsersSignedUp)
-                                .Where(a => !a.Campaign.Locked)
                                 .OrderBy(a => a.EndDateTime)
                                 .ToList();
             }
