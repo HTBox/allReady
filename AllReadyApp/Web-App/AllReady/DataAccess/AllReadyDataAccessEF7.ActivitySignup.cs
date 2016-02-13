@@ -39,24 +39,31 @@ namespace AllReady.Models
             return _dbContext.SaveChangesAsync();
         }
 
-        Task IAllReadyDataAccess.DeleteActivitySignupAsync(int activitySignupId)
+        Task IAllReadyDataAccess.DeleteActivityAndTaskSignupsAsync(int activitySignupId)
         {
             var activity = _dbContext.ActivitySignup.SingleOrDefault(c => c.Id == activitySignupId);
 
-            if (activity != null)
+            if (activity == null) return null;
             {
                 _dbContext.ActivitySignup.Remove(activity);
+
                 var signupIds = _dbContext.TaskSignups
                     .Where(e => e.Task.Activity.Id == activity.Activity.Id)
                     .Where(e => e.User.Id == activity.User.Id)
                     .Select(e => e.Id);
 
-                var tasks = signupIds.Select(id => (this as IAllReadyDataAccess).DeleteTaskAsync(id));
-                Task.WaitAll(tasks.ToArray());
-                
+
+                foreach (var signupId in signupIds)
+                {
+                    var taskSignup = _dbContext.TaskSignups.SingleOrDefault(c => c.Id == signupId);
+                    if (taskSignup != null)
+                    {
+                        _dbContext.TaskSignups.Remove(taskSignup);
+                    }
+                }
+                    
                 return _dbContext.SaveChangesAsync();
             }
-            return null;
         }
 
         Task IAllReadyDataAccess.UpdateActivitySignupAsync(ActivitySignup value)
