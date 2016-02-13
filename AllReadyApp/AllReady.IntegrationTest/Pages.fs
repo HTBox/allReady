@@ -113,7 +113,7 @@ module AdminActivityCreate =
         "#EndDateTime" << details.EndDate
         "#ActivityType" << details.ActivityType.ToString()
 
-    let private createBtn = "Create"
+    let private createBtn = ".submit-form"
 
     let Create _ =
         click createBtn
