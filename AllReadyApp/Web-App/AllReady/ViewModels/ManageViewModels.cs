@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using AllReady.ViewModels;
 using Microsoft.AspNet.Http.Authentication;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc.Rendering;
@@ -11,6 +12,13 @@ namespace AllReady.Models
 {
     public class IndexViewModel
     {
+        public IndexViewModel()
+        {
+            Logins = new List<UserLoginInfo>();
+            AssociatedSkills = new List<UserSkill>();
+        }
+
+        [Required]
         public string Name { get; set; }
 
         [Display(Name = "Email Address")]
@@ -38,6 +46,29 @@ namespace AllReady.Models
         public string TimeZoneId { get; set; }
 
         public string ProposedNewEmailAddress { get; set; }
+    }
+
+    public static class IndexViewModelExtensions
+    {
+        public static async Task<IndexViewModel> ToViewModel(this ApplicationUser user, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        {
+            var result = new IndexViewModel
+            {
+                HasPassword = await userManager.HasPasswordAsync(user),
+                EmailAddress = user.Email,
+                IsEmailAddressConfirmed = user.EmailConfirmed,
+                IsPhoneNumberConfirmed = user.PhoneNumberConfirmed,
+                PhoneNumber = await userManager.GetPhoneNumberAsync(user),
+                TwoFactor = await userManager.GetTwoFactorEnabledAsync(user),
+                Logins = await userManager.GetLoginsAsync(user),
+                BrowserRemembered = await signInManager.IsTwoFactorClientRememberedAsync(user),
+                AssociatedSkills = user.AssociatedSkills,
+                TimeZoneId = user.TimeZoneId,
+                Name = user.Name,
+                ProposedNewEmailAddress = user.PendingNewEmail
+            };
+            return result;
+        }
     }
 
     public class ManageLoginsViewModel
