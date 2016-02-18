@@ -35,7 +35,9 @@ namespace AllReady.Controllers
         [HttpGet]
         public IEnumerable<ActivityViewModel> Get()
         {
-            return _allReadyDataAccess.Activities.Select(a => new ActivityViewModel(a));
+            return _allReadyDataAccess.Activities
+                .Where(c => !c.Campaign.Locked)
+                .Select(a => new ActivityViewModel(a));
         }
 
         // GET api/values/5

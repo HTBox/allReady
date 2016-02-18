@@ -312,4 +312,12 @@ Navigation
 .thermometer-bulb-outline{
     stroke: black;
     stroke-width: 3;
-} 		 
+} 	
+
+.inline-form {
+    display: inline-block;
+}
+
+h2.inline-form {
+    padding-right: 10px;
+}

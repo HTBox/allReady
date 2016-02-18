@@ -86,3 +86,6 @@ input.main-search {
 }
 /* End main page CSS */
 
+.inline-form {
+    display: inline-block;
+}

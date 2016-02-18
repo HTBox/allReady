@@ -19,7 +19,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             var result = handler.Handle(new EditCampaignCommand { Campaign = newCampaign });
 
             // Assert
-            Assert.Equal(3, Context.Campaigns.Count());
+            Assert.Equal(5, Context.Campaigns.Count());
             Assert.True(result > 0);
         }
 
@@ -56,7 +56,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             var savedCampaign = Context.Campaigns.SingleOrDefault(s => s.Id == 2);
 
             // Assert
-            Assert.Equal(2, Context.Campaigns.Count());
+            Assert.Equal(4, Context.Campaigns.Count());
             Assert.Equal(2, result);
 
             Assert.Equal(name, savedCampaign.Name);

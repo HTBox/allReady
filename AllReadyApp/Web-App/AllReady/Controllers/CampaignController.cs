@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.AspNet.Mvc;
 using AllReady.Models;
 using AllReady.ViewModels;
-using Microsoft.Data.Entity;
 
 namespace AllReady.Controllers
 {
@@ -21,7 +20,7 @@ namespace AllReady.Controllers
         [Route("~/[controller]")]
         public IActionResult Index()
         {
-            return View(_dataAccess.Campaigns.ToViewModel().ToList());
+            return View(_dataAccess.Campaigns.Where(c => !c.Locked).ToViewModel().ToList());
         }
 
         [HttpGet]
@@ -30,8 +29,8 @@ namespace AllReady.Controllers
         {
             var campaign = _dataAccess.GetCampaign(id);
 
-            if (campaign == null)
-                HttpNotFound();
+            if (campaign == null || campaign.Locked)
+                return HttpNotFound();
 
             return View("Details", new CampaignViewModel(campaign));
         }
@@ -43,7 +42,7 @@ namespace AllReady.Controllers
             var campaign = _dataAccess.GetCampaign(id);
 
             if (campaign == null)
-                HttpNotFound();
+                return HttpNotFound();
 
             return View("Map", new CampaignViewModel(campaign));
         }
@@ -53,19 +52,22 @@ namespace AllReady.Controllers
         public IEnumerable<CampaignViewModel> Get()
         {
             return _dataAccess.Campaigns
+                .Where(c => !c.Locked)
                 .Select(x => new CampaignViewModel(x));
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public CampaignViewModel Get(int id)
+        public ActionResult Get(int id)
         {
             var campaign = _dataAccess.GetCampaign(id);
 
-            if (campaign == null)
-                HttpNotFound();
+            if (campaign == null || campaign.Locked)
+            {
+                return HttpNotFound();
+            }
 
-            return campaign.ToViewModel();
+            return Json(campaign.ToViewModel());
         }
     }
 }

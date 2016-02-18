@@ -171,6 +171,8 @@ namespace AllReady.Migrations
 
                     b.Property<int?>("LocationId");
 
+                    b.Property<bool>("Locked");
+
                     b.Property<int>("ManagingOrganizationId");
 
                     b.Property<string>("Name")

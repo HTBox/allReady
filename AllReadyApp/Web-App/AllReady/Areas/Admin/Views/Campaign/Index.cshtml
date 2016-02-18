@@ -40,6 +40,10 @@
                     </td>
                     <td>
                         <a asp-controller="Campaign" asp-action="Details" asp-route-area="Admin" asp-route-id="@item.Id">@item.Name</a>
+                        @if (item.Locked)
+                        {
+                            <span title="This campaign is locked" class="fa fa-exclamation-triangle text-warning"></span>
+                        }
                         @if (!string.IsNullOrEmpty(item.Description))
                         {
                             <br/><span class="text-muted">@item.Description</span>
