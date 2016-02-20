@@ -57,15 +57,15 @@ namespace AllReady.Areas.Admin.Controllers
 
         // GET: Campaign/Create
         public IActionResult Create()
-        {            
+        {
             return View("Edit", new CampaignSummaryModel()
             {
                 StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddMonths(1)                
+                EndDate = DateTime.Now.AddMonths(1)
             });
         }
 
-         // GET: Campaign/Edit/5
+        // GET: Campaign/Edit/5
         public IActionResult Edit(int id)
         {
             CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
@@ -98,6 +98,25 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
 
+            // Tempoary code to avoid current database update error when the postcodegeo does not exist in the database.
+            if (campaign.Location != null && !string.IsNullOrEmpty(campaign.Location.PostalCode))
+            {
+                bool validPostcode = await _bus.SendAsync(new CheckValidPostcodeQueryAsync
+                {
+                    Postcode = new PostalCodeGeo
+                    {
+                        City = campaign.Location.City,
+                        State = campaign.Location.State,
+                        PostalCode = campaign.Location.PostalCode
+                    }
+                });
+
+                if (!validPostcode)
+                {
+                    ModelState.AddModelError(campaign.Location.PostalCode, "The city, state and postal code combination is not valid");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 if (fileUpload != null)
@@ -117,7 +136,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return RedirectToAction("Details", new { area = "Admin", id = id });
             }
             return View(campaign);
-        }        
+        }
 
         // GET: Campaign/Delete/5
         public IActionResult Delete(int id)
@@ -148,14 +167,14 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
 
-            _bus.Send(new DeleteCampaignCommand { CampaignId = id });            
+            _bus.Send(new DeleteCampaignCommand { CampaignId = id });
             return RedirectToAction("Index", new { area = "Admin" });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult LockUnlock(int id)
-        {         
+        {
             if (!User.IsUserType(UserType.SiteAdmin))
             {
                 return HttpUnauthorized();
