@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Users
 {
-    public class DeleteUserCommandHandler : RequestHandler<DeleteUserCommand>
+    public class DeleteUserCommandHandler : AsyncRequestHandler<DeleteUserCommand>
     {
         private readonly AllReadyContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -19,7 +19,7 @@ namespace AllReady.Areas.Admin.Features.Users
             _userManager = userManager;
         }
 
-        protected override async void HandleCore(DeleteUserCommand message)
+        protected override async Task HandleCore(DeleteUserCommand message)
         {
             var user = await _userManager.FindByIdAsync(message.UserId);
             await _userManager.DeleteAsync(user);

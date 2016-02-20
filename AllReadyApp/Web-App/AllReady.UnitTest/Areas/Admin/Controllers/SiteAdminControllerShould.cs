@@ -13,14 +13,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
     public class SiteAdminControllerShould
     {
         [Fact]
-        public void PutDeleteCommandOnBusWhenDeletingUsers()
+        public async Task PutDeleteCommandOnBusWhenDeletingUsers()
         {
             var bus = new Mock<IMediator>();
             var controller = new SiteController(null, null, null, null, bus.Object);
             var userId = "foo_id";
 
-            controller.ConfirmDeleteUser(userId);
-            bus.Verify(b => b.Send(It.Is<DeleteUserCommand>(u => u.UserId == userId)));
+            await controller.ConfirmDeleteUser(userId);
+            bus.Verify(b => b.SendAsync(It.Is<DeleteUserCommand>(u => u.UserId == userId)));
 
         }
     }

@@ -62,10 +62,10 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ConfirmDeleteUser(string userId)
+        public async Task<IActionResult> ConfirmDeleteUser(string userId)
         {
             // send command to bus
-            _bus.Send(new DeleteUserCommand { UserId = userId });
+            await _bus.SendAsync(new DeleteUserCommand { UserId = userId });
 
             // follow PRG
             return RedirectToAction("Index");
