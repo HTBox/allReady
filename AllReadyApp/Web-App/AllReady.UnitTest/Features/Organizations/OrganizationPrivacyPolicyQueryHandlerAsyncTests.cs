@@ -25,18 +25,7 @@ namespace AllReady.UnitTest.Features.Organizations
 
             Assert.NotNull(result);
             Assert.Equal("Org 2", result.OrganizationName);
-            Assert.Equal("Line 1<br />Line 2",result.Content);
-        }
-
-        [Fact]
-        public async Task OrgWithHtmlPrivacyPolicy_ReturnsContentWithStrippedHtml()
-        {
-            var handler = new OrganizationPrivacyPolicyQueryHandlerAsync(Context);
-            var result = await handler.Handle(new OrganziationPrivacyPolicyQueryAsync { Id = 3 });
-
-            Assert.NotNull(result);
-            Assert.Equal("Org 3", result.OrganizationName);
-            Assert.Equal("Line 1<br />Line 2", result.Content);
+            Assert.Equal("<h2>Line 1</h2><p>Line 2</p>", result.Content);
         }
 
         [Fact]
