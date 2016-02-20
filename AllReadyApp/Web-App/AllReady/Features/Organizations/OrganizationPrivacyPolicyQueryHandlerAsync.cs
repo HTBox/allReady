@@ -29,21 +29,8 @@ namespace AllReady.Features.Organizations
             return await _context.Organizations
                 .AsNoTracking()
                 .Where(t => t.Id == message.Id)
-                .Select(t => new OrganizationPrivacyPolicyViewModel { OrganizationName = t.Name, Content = CleanContent(t.PrivacyPolicy) })
+                .Select(t => new OrganizationPrivacyPolicyViewModel { OrganizationName = t.Name, Content = t.PrivacyPolicy })
                 .SingleOrDefaultAsync();
-        }
-
-        /// <summary>
-        /// Helper to strip html tags from a source string and then replace carriage returns with br tags
-        /// </summary>
-        /// <param name="source">The source string to process</param>
-        /// <returns>A processed string</returns>
-        private static string CleanContent(string source)
-        {
-            if (string.IsNullOrEmpty(source)) return null;
-
-            var result = Regex.Replace(source, "<.*?>", string.Empty);
-            return result.Replace(Environment.NewLine, "<br />");
         }
     }
 }
