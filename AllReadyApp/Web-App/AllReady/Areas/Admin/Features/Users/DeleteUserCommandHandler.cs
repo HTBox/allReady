@@ -21,7 +21,7 @@ namespace AllReady.Areas.Admin.Features.Users
 
         protected override async void HandleCore(DeleteUserCommand message)
         {
-            var user = _userManager.FindByIdAsync(message.UserId).Result;
+            var user = await _userManager.FindByIdAsync(message.UserId);
             await _userManager.DeleteAsync(user);
         }
     }
