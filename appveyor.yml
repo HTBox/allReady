@@ -8,6 +8,10 @@ init:
  
 services:
   - mssql2014
+
+cache:
+  - AllReadyApp\Web-App\AllReady\node_modules   #node modules for the app
+  - '%APPDATA%\npm-cache'             # npm cache
   
 install:
  - cmd: nuget sources add -Name api.nuget.org -Source https://api.nuget.org/v3/index.json
