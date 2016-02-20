@@ -38,5 +38,10 @@ namespace AllReady.Controllers
         {
             return View("~/Views/Shared/AccessDenied.cshtml");
         }
+
+        public IActionResult PrivacyPolicy()
+        {
+            return View(nameof(PrivacyPolicy));
+        }
     }
 }

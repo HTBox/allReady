@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNet.Mvc;
 using Moq;
 using Xunit;
+using AllReady.Models;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -54,5 +55,18 @@ namespace AllReady.UnitTest.Controllers
             var result = sut.Aesop();
             Assert.IsType<ViewResult>(result);
         }
+
+        [Fact]
+        public void PrivacyPolicy_ReturnsCorrectView()
+        {
+            var dataMock = new Mock<IAllReadyDataAccess>();
+            var controller = new HomeController(dataMock.Object);
+
+            var result = (ViewResult)controller.PrivacyPolicy();
+
+            Assert.NotNull(result);
+            Assert.Equal("PrivacyPolicy", result.ViewName);
+        }
     }
 }
+
