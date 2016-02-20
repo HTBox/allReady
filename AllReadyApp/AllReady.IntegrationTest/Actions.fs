@@ -13,4 +13,4 @@ let Login userName password baseUrl =
     "input#Email" << userName
     "input#Password" << password
     click "#login-submit"
-    "a[title='Manage']" == ("Hello " + userName + "!")
+    "a[title='Manage']" == ("Hello " + userName)
