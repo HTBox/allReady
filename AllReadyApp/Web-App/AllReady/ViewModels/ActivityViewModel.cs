@@ -22,6 +22,9 @@ namespace AllReady.ViewModels
                 CampaignName = activity.Campaign.Name;
             }
 
+            OrganizationId = activity.Campaign.ManagingOrganization.Id;
+            OrganizationName = activity.Campaign.ManagingOrganization.Name;
+
             Title = activity.Name;
             Description = activity.Description;
             ActivityType = activity.ActivityType;
@@ -45,6 +48,11 @@ namespace AllReady.ViewModels
                  : new List<TaskViewModel>();
 
             RequiredSkills = activity.RequiredSkills?.Select(acsk => acsk.Skill).ToList();
+
+            if(!string.IsNullOrEmpty(activity.Campaign.ManagingOrganization.PrivacyPolicy))
+            {
+                HasPrivacyPolicy = true;
+            }
         }
 
         public int Id { get; set; }
@@ -69,6 +77,7 @@ namespace AllReady.ViewModels
         public int NumberOfVolunteersRequired { get; set; }
         public ActivitySignupViewModel SignupModel { get; set; }
         public bool IsClosed { get; set; }
+        public bool HasPrivacyPolicy { get; set; }
     }
 
     public static class ActivityViewModelExtension

@@ -127,7 +127,6 @@
     </div>
 </div>
 
-
 <div class="row">
     <div class="col-sm-12" data-bind="if: resources && resources.length > 0">
         <h3>Resources for this campaign</h3>
@@ -140,6 +139,15 @@
         </div>
     </div>
 </div>
+
+@if (Model.HasPrivacyPolicy)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <p class="text-center"><a asp-controller="Organization" asp-action="OrganizationPrivacyPolicy" asp-route-id="@Model.ManagingOrganizationId">@Model.ManagingOrganizationName Privacy Policy</a></p>
+        </div>
+    </div>
+}
 
 @section scripts {
     <script>

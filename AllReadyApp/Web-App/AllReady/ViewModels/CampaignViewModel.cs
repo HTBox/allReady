@@ -21,16 +21,19 @@ namespace AllReady.ViewModels
             Name = campaign.Name;
             Description = campaign.Description;
             FullDescription = campaign.FullDescription;
-            ///TODO: Commented out as campaign.ManagingOrganization is null from sample data;
-            /// Fix sample provider to ensure that property is not null
-            //ManagingOrganizationName = campaign.ManagingOrganization.Name;
-            //ManagingOrganizationId = campaign.ManagingOrganization.Id;
+            ManagingOrganizationName = campaign.ManagingOrganization.Name;
+            ManagingOrganizationId = campaign.ManagingOrganization.Id;
             TimeZoneId = campaign.TimeZoneId;
             StartDate = campaign.StartDateTime;
             EndDate = campaign.EndDateTime;
             Activities = campaign.Activities != null ? campaign.Activities.ToViewModel() : Enumerable.Empty<ActivityViewModel>();
             CampaignImpact = campaign.CampaignImpact;
             ImageUrl = campaign.ImageUrl;
+
+            if(!string.IsNullOrEmpty(campaign.ManagingOrganization.PrivacyPolicy))
+            {
+                HasPrivacyPolicy = true;
+            }
         }
 
         public int Id { get; set; }
@@ -58,6 +61,8 @@ namespace AllReady.ViewModels
         public DateTimeOffset EndDate { get; set; }
 
         public IEnumerable<ActivityViewModel> Activities { get; set; }
+
+        public bool HasPrivacyPolicy { get; set; }
     }
 
     public static class CampaignViewModelExtensions
