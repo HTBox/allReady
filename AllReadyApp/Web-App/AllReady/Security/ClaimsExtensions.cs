@@ -56,7 +56,7 @@ namespace AllReady.Security
 
         public static bool IsUserProfileIncomplete(this ClaimsPrincipal user)
         {
-            return user.HasClaim(c => c.Type == ClaimTypes.ProfileIncompleted);                        
+            return user.HasClaim(c => c.Type == ClaimTypes.ProfileIncomplete);                        
         }
 
 

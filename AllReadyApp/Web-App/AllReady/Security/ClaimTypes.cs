@@ -28,6 +28,6 @@
         /// <summary>
         /// A claim indicating that the user's profile is incomplete
         /// </summary>
-        public const string ProfileIncompleted = "ar:profileincomplete";
+        public const string ProfileIncomplete = "ar:profileincomplete";
     }
 }
