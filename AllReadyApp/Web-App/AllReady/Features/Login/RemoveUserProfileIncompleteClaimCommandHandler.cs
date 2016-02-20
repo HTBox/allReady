@@ -1,22 +1,16 @@
 ﻿using AllReady.Models;
 using MediatR;
-using Microsoft.AspNet.Identity;
 using Microsoft.Data.Entity;
-using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace AllReady.Features.Login
 {
     public class RemoveUserProfileIncompleteClaimCommandHandler : AsyncRequestHandler<RemoveUserProfileIncompleteClaimCommand>
     {
         private AllReadyContext _context;
-        private SignInManager<ApplicationUser> _signInManager;
 
-        public RemoveUserProfileIncompleteClaimCommandHandler(AllReadyContext context,
-                                                              SignInManager<ApplicationUser> signInManager)
+        public RemoveUserProfileIncompleteClaimCommandHandler(AllReadyContext context)
         {
-            _signInManager = signInManager;
             _context = context;
         }
 
