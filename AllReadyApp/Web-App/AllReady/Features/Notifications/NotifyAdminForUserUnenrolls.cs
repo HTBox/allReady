@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AllReady.Areas.Admin.Features.Activities;
-using AllReady.Features.Login;
+using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyAdminForUserUnenrolls : INotificationHandler<UserUnenrolls>
+    public class NotifyAdminForUserUnenrolls : IAsyncNotificationHandler<UserUnenrolls>
     {
         private readonly IMediator _bus;
         private readonly IOptions<GeneralSettings> _options;
@@ -21,22 +20,24 @@ namespace AllReady.Features.Notifications
             _options = options;
         }
 
-        public void Handle(UserUnenrolls notification)
+        public async Task Handle(UserUnenrolls notification)
         {
             var model = _bus.Send(new ActivityDetailForNotificationQuery {ActivityId = notification.ActivityId});
             var campaignContact = model.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
 
-            if (string.IsNullOrWhiteSpace(campaignContact?.Contact.Email)) return;
+            if (string.IsNullOrWhiteSpace(campaignContact?.Contact.Email))
+                return;
 
             var signup = model.UsersSignedUp.FirstOrDefault(s => s.User.Id == notification.UserId);
 
-            if (signup == null) return;
+            if (signup == null)
+                return;
 
             var activityLink = $"View activity: {_options.Value.SiteBaseUrl}Admin/Activity/Details/{model.ActivityId}";
             var subject = $"A volunteer has unenrolled from {model.ActivityName}";
 
             var message = new StringBuilder();
-            message.AppendLine($"A volunteer has unenrolled from an activity.");
+            message.AppendLine("A volunteer has unenrolled from an activity.");
             message.AppendLine($"   Campaign: {model.CampaignName}");
             message.AppendLine($"   Activity: {model.ActivityName} ({activityLink})");
             message.AppendLine($"   Volunteer: {signup.User.UserName} ({signup.User.Email})");
@@ -73,7 +74,7 @@ namespace AllReady.Features.Notifications
                     Subject = subject
                 }
             };
-            _bus.Send(command);
+            await _bus.SendAsync(command);
         }
     }
 }

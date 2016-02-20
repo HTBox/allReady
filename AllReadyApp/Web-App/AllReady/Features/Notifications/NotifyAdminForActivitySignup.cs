@@ -50,7 +50,7 @@ namespace AllReady.Features.Notifications
                     }
                 };
 
-                _bus.Send(command);
+                _bus.SendAsync(command);
             }
         }
     }

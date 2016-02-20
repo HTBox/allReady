@@ -27,7 +27,7 @@ namespace AllReady.Services
                 }
             };
 
-            _bus.Send(command);
+            _bus.SendAsync(command);
             return Task.FromResult(0);
         }
 
@@ -42,7 +42,7 @@ namespace AllReady.Services
                 }
             };
 
-            _bus.Send(command);
+            _bus.SendAsync(command);
 
             return Task.FromResult(0);
         }

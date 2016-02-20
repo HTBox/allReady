@@ -21,7 +21,6 @@ namespace AllReady.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IMediator _bus;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly SampleDataSettings _settings;
@@ -38,7 +37,6 @@ namespace AllReady.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _bus = bus;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _settings = options.Value;

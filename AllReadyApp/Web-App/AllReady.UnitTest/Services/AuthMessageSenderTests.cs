@@ -23,7 +23,7 @@ namespace AllReady.UnitTest.Services
             var messageSender = new AuthMessageSender(bus.Object);
             messageSender.SendEmailAsync(emailRecipient, emailSubject, emailMessage);
 
-            bus.Verify(mock => mock.Send(
+            bus.Verify(mock => mock.SendAsync(
                 It.Is<NotifyVolunteersCommand>(request => 
                 request.ViewModel.EmailMessage == emailMessage
                 && request.ViewModel.EmailRecipients.SequenceEqual(new List<string> {emailRecipient})
@@ -42,7 +42,7 @@ namespace AllReady.UnitTest.Services
             var bus = MockIMediator();
             var messageSender = new AuthMessageSender(bus.Object);
             messageSender.SendSmsAsync(smsRecipient, smsMesssage);
-            bus.Verify(mock => mock.Send(
+            bus.Verify(mock => mock.SendAsync(
                 It.Is<NotifyVolunteersCommand>(request => 
                 request.ViewModel.SmsMessage == smsMesssage
                 && request.ViewModel.SmsRecipients.SequenceEqual(new List<string> {smsRecipient}))),
@@ -56,7 +56,7 @@ namespace AllReady.UnitTest.Services
         private static Mock<IMediator> MockIMediator()
         {
             var busMock = new Mock<IMediator>();
-            busMock.Setup(mock => mock.Send(It.IsAny<NotifyVolunteersCommand>())).Verifiable();
+            busMock.Setup(mock => mock.SendAsync(It.IsAny<NotifyVolunteersCommand>())).Verifiable();
             return busMock;
         }
     }

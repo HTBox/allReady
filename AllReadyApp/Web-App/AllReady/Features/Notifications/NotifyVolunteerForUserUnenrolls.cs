@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AllReady.Areas.Admin.Features.Activities;
-using AllReady.Features.Login;
-using AllReady.Models;
+using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyVolunteerForUserUnenrolls : INotificationHandler<UserUnenrolls>
+    public class NotifyVolunteerForUserUnenrolls : IAsyncNotificationHandler<UserUnenrolls>
     {
         private readonly IMediator _bus;
         private readonly IOptions<GeneralSettings> _options;
@@ -21,28 +18,30 @@ namespace AllReady.Features.Notifications
             _options = options;
         }
 
-        public void Handle(UserUnenrolls notification)
+        public async Task Handle(UserUnenrolls notification)
         {
             var model = _bus.Send(new ActivityDetailForNotificationQuery {ActivityId = notification.ActivityId});
 
             var signup = model.UsersSignedUp?.FirstOrDefault(s => s.User.Id == notification.UserId);
-            if (signup == null) return;
+            if (signup == null)
+                return;
 
             var emailRecipient = !string.IsNullOrWhiteSpace(signup.PreferredEmail)
                 ? signup.PreferredEmail
                 : signup.User?.Email;
-            if (string.IsNullOrWhiteSpace(emailRecipient)) return;
+            if (string.IsNullOrWhiteSpace(emailRecipient))
+                return;
 
             var activityLink = $"View activity: {_options.Value.SiteBaseUrl}Admin/Activity/Details/{model.ActivityId}";
-            var subject = "allReady Activity Unenrollment Confirmation";
+            var subject = "allReady Activity Un-enrollment Confirmation";
 
             var message = new StringBuilder();
-            message.AppendLine($"This is to confirm that you have elected to unenroll from the following activity:");
+            message.AppendLine("This is to confirm that you have elected to un-enroll from the following activity:");
             message.AppendLine();
             message.AppendLine($"   Campaign: {model.CampaignName}");
             message.AppendLine($"   Activity: {model.ActivityName} ({activityLink})");
             message.AppendLine();
-            message.AppendLine($"Thanks for letting us know that you will not be participating.");
+            message.AppendLine("Thanks for letting us know that you will not be participating.");
 
             var command = new NotifyVolunteersCommand
             {
@@ -54,7 +53,7 @@ namespace AllReady.Features.Notifications
                     Subject = subject
                 }
             };
-            _bus.Send(command);
+            await _bus.SendAsync(command).ConfigureAwait(false);
         }
     }
 }

@@ -55,7 +55,7 @@ namespace AllReady.Features.Notifications
                     Subject = subject
                 }
             };
-            _bus.Send(command);
+            _bus.SendAsync(command);
         }
     }
 }

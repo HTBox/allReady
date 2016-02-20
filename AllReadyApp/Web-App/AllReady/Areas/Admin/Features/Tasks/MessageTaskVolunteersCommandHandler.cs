@@ -50,7 +50,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 }
             };
 
-            _bus.Send(command);
+            _bus.SendAsync(command);
         }
     }
 }

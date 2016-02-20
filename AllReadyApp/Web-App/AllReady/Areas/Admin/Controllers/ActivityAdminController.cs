@@ -265,7 +265,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult MessageAllVolunteers(MessageActivityVolunteersModel model)
+        public async Task<IActionResult> MessageAllVolunteers(MessageActivityVolunteersModel model)
         {
             //TODO: Query only for the organization Id rather than the whole activity detail
             if (!ModelState.IsValid)
@@ -284,7 +284,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
 
-            _bus.Send(new MessageActivityVolunteersCommand { Model = model });
+            await _bus.SendAsync(new MessageActivityVolunteersCommand { Model = model });
             return Ok();
         }
 
