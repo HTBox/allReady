@@ -4,10 +4,6 @@ using MediatR;
 using System;
 using AllReady.Features.Organizations;
 using System.Threading.Tasks;
-using System;
-using System.Threading.Tasks;
-using MediatR;
-using AllReady.Features.Organization;
 
 namespace AllReady.Controllers
 {
@@ -29,6 +25,9 @@ namespace AllReady.Controllers
         [Route("Organization/{id}/")]
         public async Task<IActionResult> ShowOrganization(int id)
         {
+            if (id <= 0)
+                return HttpBadRequest();
+
             var model = await _mediator.SendAsync(new OrganizationDetailsQueryAsync { Id = id });
 
             if (model == null)
@@ -40,7 +39,10 @@ namespace AllReady.Controllers
         [Route("Organization/{id}/PrivacyPolicy")]
         public async Task<IActionResult> OrganizationPrivacyPolicy(int id)
         {
-            var model = await _bus.SendAsync(new OrganziationPrivacyPolicyQueryAsync { Id = id });
+            if (id <= 0)
+                return HttpBadRequest();
+
+            var model = await _mediator.SendAsync(new OrganziationPrivacyPolicyQueryAsync { Id = id });
 
             if (model == null || string.IsNullOrEmpty(model.Content))
                 return RedirectToAction(nameof(ShowOrganization));
