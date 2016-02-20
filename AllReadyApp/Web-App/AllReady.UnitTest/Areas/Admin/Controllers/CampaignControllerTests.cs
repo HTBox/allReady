@@ -171,7 +171,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), organizationId);
             var file = FormFile("");
 
-            var result = controller.Edit(new CampaignSummaryModel { Name = "Foo", OrganizationId = organizationId }, file).Result;
+            var result = controller.Edit(new CampaignSummaryModel { Name = "Foo", OrganizationId = organizationId }, file).GetAwaiter().GetResult();
             Assert.False(controller.ModelState.IsValid);
             Assert.True(controller.ModelState.ContainsKey("ImageUrl"));
             Assert.IsType<ViewResult>(result);

@@ -23,8 +23,8 @@ namespace AllReady.Services
         public void SendMessage(string queueName, string message)
         {
             var queue = _client.GetQueueReference(queueName);
-            queue.CreateIfNotExistsAsync().Wait();
-            queue.AddMessageAsync(new CloudQueueMessage(message)).Wait();
+            queue.CreateIfNotExistsAsync().GetAwaiter().GetResult();
+            queue.AddMessageAsync(new CloudQueueMessage(message)).GetAwaiter().GetResult();
         }
     }
 }
