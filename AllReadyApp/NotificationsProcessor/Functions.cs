@@ -37,18 +37,18 @@ namespace NotificationsProcessor
 
         }
 
-        public static void ProcessEmailQueueMessage([QueueTrigger("email-pending-deliveries")] string message, TextWriter log)
+        public static async Task ProcessEmailQueueMessage([QueueTrigger("email-pending-deliveries")] string message, TextWriter log)
         {
             var emailMessage = JsonConvert.DeserializeObject<QueuedEmailMessage>(message);
 
             // Create the email object first, then add the properties.
-            var from = Environment.GetEnvironmentVariable("Authentication:SendGrid:FromEmail");
-            var myMessage = new SendGridMessage();
-            myMessage.AddTo(emailMessage.Recipient);
-            myMessage.From = new MailAddress(from, "AllReady");
-            myMessage.Subject = emailMessage.Subject;
-            myMessage.Html = emailMessage.HtmlMessage;
-            myMessage.Text = emailMessage.Message;
+            var from = GuardAgainstInvalidEmailAddress(Environment.GetEnvironmentVariable("Authentication:SendGrid:FromEmail"));
+            var email = new SendGridMessage();
+            email.AddTo(emailMessage.Recipient);
+            email.From = new MailAddress(from, "AllReady");
+            email.Subject = emailMessage.Subject;
+            email.Html = emailMessage.HtmlMessage;
+            email.Text = emailMessage.Message;
 
             // Create credentials, specifying your user name and password.
             var username = Environment.GetEnvironmentVariable("Authentication:SendGrid:UserName");
@@ -57,9 +57,20 @@ namespace NotificationsProcessor
 
             // Create an Web transport for sending email, using credentials...
             var transportWeb = new Web(credentials);
-            transportWeb.DeliverAsync(myMessage).Wait();
+            await transportWeb.DeliverAsync(email);
 
-            log.WriteLine(message);
+            await log.WriteLineAsync($"Sent email with subject `{email.Subject}` to `{emailMessage.Recipient}`");
+        }
+
+        private static string GuardAgainstInvalidEmailAddress(string @from)
+        {
+            if (string.IsNullOrWhiteSpace(@from))
+            {
+                throw new InvalidOperationException(
+                    "Environment variable `Authentication:SendGrid:FromEmail` is missing or contains invalid entry.");
+            }
+
+            return @from;
         }
     }
 }
