@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using AllReady.Models;
 using AllReady.Services;
 using System;
+using MediatR;
+using AllReady.Features.Login;
 
 namespace AllReady.Controllers
 {
@@ -20,19 +22,22 @@ namespace AllReady.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly IAllReadyDataAccess _dataAccess;
+        private readonly IMediator _bus;
 
         public ManageController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            IAllReadyDataAccess dataAccess)
+            IAllReadyDataAccess dataAccess,
+            IMediator bus)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _dataAccess = dataAccess;
+            _bus = bus;
         }
 
         // GET: /Manage/Index
@@ -96,16 +101,16 @@ namespace AllReady.Controllers
                 await _signInManager.RefreshSignInAsync(user);
             }
 
-            await CheckUserProfileCompleteness(user);
+            await UpdateUserProfileCompleteness(user);
 
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task CheckUserProfileCompleteness(ApplicationUser user)
+        public async Task UpdateUserProfileCompleteness(ApplicationUser user)
         {
             if (user.IsProfileComplete())
             {
-                await _userManager.RemoveClaimsAsync(user, User.Claims.Where(c => c.Type == Security.ClaimTypes.ProfileIncompleted));
+                await _bus.SendAsync(new RemoveUserProfileIncompleteClaimCommand{ UserId = user.Id });
                 await _signInManager.RefreshSignInAsync(user);
             }
         }
@@ -245,8 +250,8 @@ namespace AllReady.Controllers
                 var result = await _userManager.ChangePhoneNumberAsync(user, model.PhoneNumber, model.Code);
                 if (result.Succeeded)
                 {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    await CheckUserProfileCompleteness(user);
+                    await UpdateUserProfileCompleteness(user);
+                    await _signInManager.SignInAsync(user, isPersistent: false);                    
                     return RedirectToAction(nameof(Index), new { Message = ManageMessageId.AddPhoneSuccess });
                 }
             }
@@ -266,7 +271,7 @@ namespace AllReady.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    await CheckUserProfileCompleteness(user);
+                    await UpdateUserProfileCompleteness(user);
                     return RedirectToAction(nameof(Index), new { Message = ManageMessageId.RemovePhoneSuccess });
                 }
             }

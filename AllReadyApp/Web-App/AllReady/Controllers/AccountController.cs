@@ -131,7 +131,7 @@ namespace AllReady.Controllers
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account",
                         "Please confirm your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncompleted, "NewUser"));
-                    await _signInManager.SignInAsync(user, isPersistent: false);                    
+                    await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
                 AddErrors(result);
@@ -167,7 +167,14 @@ namespace AllReady.Controllers
             }
             var result = await _userManager.ConfirmEmailAsync(user, code);
 
-            //will need to check profile completeness here too..
+            if (result.Succeeded && user.IsProfileComplete())
+            {
+                await _bus.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id });
+                if (User.IsSignedIn())
+                {
+                    await _signInManager.RefreshSignInAsync(user);
+                }
+            }
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
