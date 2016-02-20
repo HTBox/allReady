@@ -29,6 +29,7 @@ namespace AllReady.Areas.Admin.Features.Activities
 
             activity.Name = message.Activity.Name;
             activity.Description = message.Activity.Description;
+            activity.ActivityType = message.Activity.ActivityType;
 
             TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(message.Activity.TimeZoneId);
             var startDateTimeOffset = timeZone.GetUtcOffset(message.Activity.StartDateTime);

@@ -68,6 +68,86 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Assert.Equal(org, savedCampaign.ManagingOrganizationId);
         }
 
+        [Fact]
+        public void UpdatingExistingCampaignUpdatesLocationWithAllProperties()
+        {
+            // Arrange
+            var name = "New Name";
+            var desc = "New Desc";            
+            var org = 2;
+            var address1 = "Address 1";
+            var address2 = "Address 1";
+            var city = "City";
+            var state = "State";
+            var postcode = "45231";
+            var country = "USA";
+
+            var handler = new EditCampaignCommandHandler(Context);
+            var updatedCampaign = new CampaignSummaryModel
+            {
+                Id = 2,
+                Name = name,
+                Description = desc,
+                OrganizationId = org,
+                TimeZoneId = "GMT Standard Time",
+                Location = new LocationEditModel {  Address1 = address1, Address2 = address2, City = city, State = state, PostalCode = postcode }
+            };
+
+            // Act
+            var result = handler.Handle(new EditCampaignCommand { Campaign = updatedCampaign });
+            var savedCampaign = Context.Campaigns.SingleOrDefault(s => s.Id == 2);
+
+            // Assert
+            Assert.Equal(address1, savedCampaign.Location.Address1);
+            Assert.Equal(address2, savedCampaign.Location.Address2);
+            Assert.Equal(city, savedCampaign.Location.City);
+            Assert.Equal(state, savedCampaign.Location.State);
+            Assert.Equal(postcode, savedCampaign.Location.PostalCode.PostalCode);
+            Assert.Equal(country, savedCampaign.Location.Country);
+        }
+
+        [Fact]
+        public void UpdatingExistingCampaignWithNoPriorContactAddsContactWithAllProperties()
+        {
+            // Arrange
+            var name = "New Name";
+            var desc = "New Desc";
+            var org = 2;
+            var contactEmail = "jdoe@example.com";
+            var firstname = "John";
+            var lastname = "Doe";
+            var telephone = "01323 111111";
+
+            var handler = new EditCampaignCommandHandler(Context);
+            var updatedCampaign = new CampaignSummaryModel
+            {
+                Id = 2,
+                Name = name,
+                Description = desc,
+                OrganizationId = org,
+                TimeZoneId = "GMT Standard Time",
+                PrimaryContactEmail = contactEmail,
+                PrimaryContactFirstName =firstname,
+                PrimaryContactLastName = lastname,
+                PrimaryContactPhoneNumber = telephone
+            };
+
+            // Act
+            var result = handler.Handle(new EditCampaignCommand { Campaign = updatedCampaign });
+            var newContact = Context.Contacts.OrderBy(c=>c.Id).LastOrDefault();
+
+            // Assert
+            Assert.Equal(2, Context.CampaignContacts.Count());
+            Assert.Equal(2, Context.Contacts.Count());
+
+            Assert.NotNull(newContact);
+
+            Assert.Equal(contactEmail, newContact.Email);
+            Assert.Equal(firstname, newContact.FirstName);
+            Assert.Equal(lastname, newContact.LastName);
+            Assert.Equal(telephone, newContact.PhoneNumber);
+        }        
+
         protected override void LoadTestData()
         {
             CampaignsHandlerTestHelper.LoadCampaignssHandlerTestData(Context);

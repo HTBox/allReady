@@ -32,6 +32,7 @@ namespace AllReady.Areas.Admin.Features.Activities
                 result = new ActivityDetailModel
                 {
                     Id = activity.Id,
+                    ActivityType = activity.ActivityType,
                     CampaignName = activity.Campaign.Name,
                     CampaignId = activity.Campaign.Id,
                     OrganizationId = activity.Campaign.ManagingOrganizationId,

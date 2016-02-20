@@ -18,6 +18,9 @@ namespace AllReady.Models
 
         public string Description { get; set; }
 
+        [Display(Name = "Activity Type")]
+        public ActivityTypes ActivityType { get; set; }    
+        
         public int NumberOfVolunteersRequired { get; set; }
 
         [Display(Name = "Start date")]
