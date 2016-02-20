@@ -42,8 +42,8 @@ namespace AllReady.UnitTest.Login
             var commandHandler = new RemoveUserProfileIncompleteClaimCommandHandler(Context);
             await commandHandler.Handle(new RemoveUserProfileIncompleteClaimCommand { UserId = _user1.Id});
 
-            var matchingClaims = Context.UserClaims.Where(u => u.UserId == _user1.Id && u.ClaimType == ClaimTypes.ProfileIncomplete).Count();
-            Assert.Equal(0, matchingClaims);            
+            var matchingClaims = Context.UserClaims.Where(u => u.UserId == _user1.Id && u.ClaimType == ClaimTypes.ProfileIncomplete);
+            Assert.Empty(matchingClaims);            
         }
 
         [Fact]
@@ -52,11 +52,11 @@ namespace AllReady.UnitTest.Login
             var commandHandler = new RemoveUserProfileIncompleteClaimCommandHandler(Context);
             await commandHandler.Handle(new RemoveUserProfileIncompleteClaimCommand { UserId = _user2.Id });
 
-            var matchingClaimForUser1 = Context.UserClaims.Where(u => u.UserId == _user1.Id && u.ClaimType == ClaimTypes.ProfileIncomplete).Count();
-            Assert.Equal(1, matchingClaimForUser1);
+            var matchingClaimForUser1 = Context.UserClaims.Where(u => u.UserId == _user1.Id && u.ClaimType == ClaimTypes.ProfileIncomplete);
+            Assert.Single(matchingClaimForUser1);
 
-            var matchingClaimForUser2 = Context.UserClaims.Where(u => u.UserId == _user2.Id && u.ClaimType == "SomeOtherClaim").Count();
-            Assert.Equal(1, matchingClaimForUser2);
+            var matchingClaimForUser2 = Context.UserClaims.Where(u => u.UserId == _user2.Id && u.ClaimType == "SomeOtherClaim");
+            Assert.Single(matchingClaimForUser2);
 
         }
     }

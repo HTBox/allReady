@@ -82,8 +82,6 @@
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
-        <input asp-for="IsProfileComplete" type="hidden"/>
-        <input asp-for="ProfileCompletenessWarnings" type="hidden" />
         <hr />
         <div class="form-horizontal">
             <div class="form-group">

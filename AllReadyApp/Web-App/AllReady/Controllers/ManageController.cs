@@ -100,7 +100,6 @@ namespace AllReady.Controllers
             {
                 await _signInManager.RefreshSignInAsync(user);
             }
-
             await UpdateUserProfileCompleteness(user);
 
             return RedirectToAction(nameof(Index));
