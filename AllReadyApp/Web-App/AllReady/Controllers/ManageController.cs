@@ -71,10 +71,10 @@ namespace AllReady.Controllers
             if (!string.IsNullOrEmpty(model.Name))
             {
                 user.Name = model.Name;
-                await _userManager.RemoveClaimsAsync(user, User.Claims.Where(c => c.Type == Security.ClaimTypes.DisplayName));
-                await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.DisplayName, user.Name));
+                
                 shouldRefreshSignin = true;                
             }
+
             if (user.TimeZoneId != model.TimeZoneId)
             {
                 user.TimeZoneId = model.TimeZoneId;
@@ -82,7 +82,6 @@ namespace AllReady.Controllers
                 await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.TimeZoneId, user.TimeZoneId));
                 shouldRefreshSignin = true;
             }
-            
 
             user.AssociatedSkills.RemoveAll(usk => model.AssociatedSkills == null || !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
             if (model.AssociatedSkills != null)

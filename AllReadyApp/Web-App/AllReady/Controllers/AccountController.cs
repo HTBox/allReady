@@ -10,6 +10,7 @@ using AllReady.Security;
 using AllReady.Areas.Admin.Controllers;
 using MediatR;
 using AllReady.Features.Login;
+using System.Globalization;
 
 namespace AllReady.Controllers
 {
@@ -68,6 +69,8 @@ namespace AllReady.Controllers
                         ViewData["Message"] = "You must have a confirmed email to log on.";
                         return View("Error");
                     }
+                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileCompleted, user.IsProfileComplete().ToString(CultureInfo.InvariantCulture)));
+
                 }
 
                 // This doesn't count login failures towards account lockout
@@ -131,6 +134,7 @@ namespace AllReady.Controllers
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account",
                         "Please confirm your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
                     await _signInManager.SignInAsync(user, isPersistent: false);
+                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileCompleted, false.ToString(CultureInfo.InvariantCulture)));
                     TempData["ShowUserProfileMessage"] = !user.IsProfileComplete();
                     return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
