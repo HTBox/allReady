@@ -68,6 +68,13 @@
                 </div>
             </div>
             <div class="form-group">
+                <label asp-for="PrivacyPolicy" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <textarea rows="10" asp-for="PrivacyPolicy" class="form-control"></textarea>
+                    <span asp-validation-for="PrivacyPolicy" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
                     <button type="submit" class="btn btn-default">Save</button>
                     <a asp-controller="Organization" asp-action="Index" class="btn btn-cancel" />

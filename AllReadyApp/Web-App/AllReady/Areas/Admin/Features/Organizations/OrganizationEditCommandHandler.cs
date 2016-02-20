@@ -36,12 +36,11 @@ namespace AllReady.Areas.Admin.Features.Organizations
             {
                 _context.Update(organization.Location);
             }
+            organization.PrivacyPolicy = message.Organization.PrivacyPolicy;
+
             _context.Update(organization);
             _context.SaveChanges();
             return organization.Id;
-
-        }
-
-       
+        }       
     }
 }

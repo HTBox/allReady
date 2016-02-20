@@ -27,5 +27,8 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Email")]
         [EmailAddress]
         public string PrimaryContactEmail { get; set; }
+
+        [Display(Name = "Privacy Policy")]
+        public string PrivacyPolicy { get; set; }
     }
 }
