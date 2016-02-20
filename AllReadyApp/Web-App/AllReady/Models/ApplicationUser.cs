@@ -37,8 +37,7 @@ namespace AllReady.Models
             {
                 validationResults.Add(new ValidationResult("Add a phone number", new string[] { nameof(PhoneNumber) }));
             }
-
-            if (!string.IsNullOrWhiteSpace(PhoneNumber) && !PhoneNumberConfirmed)
+            else if (!PhoneNumberConfirmed)
             {
                 validationResults.Add(new ValidationResult("Confirm your phone number", new string[] { nameof(PhoneNumberConfirmed) }));
             }
