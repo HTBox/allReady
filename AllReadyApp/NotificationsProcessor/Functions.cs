@@ -42,7 +42,7 @@ namespace NotificationsProcessor
             var emailMessage = JsonConvert.DeserializeObject<QueuedEmailMessage>(message);
 
             // Create the email object first, then add the properties.
-            var from = GuardAgainstInvalidEmailAddress(Environment.GetEnvironmentVariable("Authentication:SendGrid:FromEmail"));
+            var from = GuardAgainstInvalidEmailAddress(EnvironmentHelper.TryGetEnvironmentVariable("Authentication:SendGrid:FromEmail"));
             var email = new SendGridMessage();
             email.AddTo(emailMessage.Recipient);
             email.From = new MailAddress(from, "AllReady");
@@ -51,8 +51,8 @@ namespace NotificationsProcessor
             email.Text = emailMessage.Message;
 
             // Create credentials, specifying your user name and password.
-            var username = Environment.GetEnvironmentVariable("Authentication:SendGrid:UserName");
-            var password = Environment.GetEnvironmentVariable("Authentication:SendGrid:Password");
+            var username = EnvironmentHelper.TryGetEnvironmentVariable("Authentication:SendGrid:UserName");
+            var password = EnvironmentHelper.TryGetEnvironmentVariable("Authentication:SendGrid:Password");
             var credentials = new NetworkCredential(username, password);
 
             // Create an Web transport for sending email, using credentials...
