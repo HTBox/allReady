@@ -16,6 +16,7 @@ namespace AllReady.Models
                 return _dbContext.Activities
                                 .Include(a => a.Location)
                                 .Include(a => a.Location.PostalCode)
+                                .Include(a => a.Campaign)
                                 .Include(a => a.Campaign.ManagingOrganization)
                                 .Include(a => a.Tasks)
                                 .Include(a => a.RequiredSkills)
@@ -90,10 +91,11 @@ namespace AllReady.Models
             var unfilteredTasks = _dbContext.TaskSignups
                 .Include(ts => ts.Task)
                 .ThenInclude(t => t.Activity)
-                .Include(ts => ts.User)
+                .ThenInclude(t => t.Campaign)
+                .Include(ts => ts.User)                
                 .ToList();
 
-            var finalTasks = unfilteredTasks.Where(ts => ts.Task.Activity.Id == activityId && ts.User.Id == userId).ToList();
+            var finalTasks = unfilteredTasks.Where(ts => ts.Task.Activity.Id == activityId && ts.User.Id == userId && !ts.Task.Activity.Campaign.Locked).ToList();
 
             return finalTasks;
         }

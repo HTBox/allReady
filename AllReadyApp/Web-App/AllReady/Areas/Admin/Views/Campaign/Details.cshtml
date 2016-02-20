@@ -1,4 +1,6 @@
 ﻿@model AllReady.Areas.Admin.Models.CampaignDetailModel
+@using AllReady.Security;
+
 @{ ViewBag.Title = Model.Name; }
 <div class="row">
     <div class="col-12">
@@ -11,7 +13,31 @@
 
 <div class="row">
     <div id="col-main">
-        <div class="col-md-9"><h2>@Model.Name <a asp-controller="Campaign" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default" title="Edit"><i class="fa fa-edit"></i></a> <a asp-controller="Campaign" asp-action="Delete" asp-route-area="Admin" asp-route-id="@Model.Id" class="btn btn-default"><i class="glyphicon glyphicon-trash"></i></a></h2></div>
+        <div class="col-md-9">
+            <h2 class="inline-form">
+                @Model.Name
+            </h2>
+            <a asp-controller="Campaign" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Edit"><i class="fa fa-edit"></i></a>
+            <a asp-controller="Campaign" asp-action="Delete" asp-route-area="Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form"><i class="glyphicon glyphicon-trash"></i></a>
+            @if (User.IsUserType(UserType.SiteAdmin))
+            {
+                <form asp-controller="Campaign" asp-route-area="Admin" asp-action="LockUnlock" class="inline-form">
+                    <input asp-for="Id" type="hidden" />
+                    @if (Model.Locked)
+                    {
+                        <button type="submit" class="btn btn-default inline-form" title="This campaign is currently locked">Unlock</button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-default inline-form" title="This campaign is currently unlocked">Lock</button>
+                    }
+                </form>
+            }
+            else if (Model.Locked)
+            {
+                 <span title="This campaign is locked" class="fa fa-exclamation-triangle text-warning"></span><span> This campaign has been locked by a site administrator. Locked campaigns are not visible to the public or to volunteers.</span>
+            }
+        </div>
     </div>
 </div>
 
@@ -24,8 +50,9 @@
 
     </div>
 </div>
+
 <div class="row">
-    
+
     <div class="col-md-12">
         <dl class="dl-horizontal">
             <dt>

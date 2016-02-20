@@ -30,7 +30,7 @@ namespace AllReady.Controllers
         [Authorize]
         public IActionResult GetMyActivities()
         {
-            var myActivities = _allReadyDataAccess.GetActivitySignups(User.GetUserId());
+            var myActivities = _allReadyDataAccess.GetActivitySignups(User.GetUserId()).Where(a => !a.Activity.Campaign.Locked);
             var signedUp = myActivities.Select(a => new ActivityViewModel(a.Activity));
             var viewModel = new MyActivitiesResultsScreenViewModel("My Activities", signedUp);
             return View("MyActivities", viewModel);
@@ -85,7 +85,7 @@ namespace AllReady.Controllers
         {
             var activity = _allReadyDataAccess.GetActivity(id);
 
-            if (activity == null)
+            if (activity == null || activity.Campaign.Locked)
             {
                 return HttpNotFound();
             }

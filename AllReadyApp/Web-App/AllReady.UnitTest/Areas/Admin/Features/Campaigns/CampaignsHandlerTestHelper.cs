@@ -13,6 +13,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             // Campaigns
             context.Campaigns.Add(new Campaign { Name = "Campaign 1", ManagingOrganizationId = 1 });
             context.Campaigns.Add(new Campaign { Name = "Campaign 2", ManagingOrganizationId = 1 });
+            context.Campaigns.Add(new Campaign { Name = "Locked Campaign", ManagingOrganizationId = 1, Locked = true });
+            context.Campaigns.Add(new Campaign { Name = "Unlocked Campaign", ManagingOrganizationId = 1, Locked = false });
 
             context.SaveChanges();
         }
