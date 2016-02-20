@@ -75,26 +75,7 @@
                 asp-fallback-test="window.moment">
         </script>
     </environment>
-    <script src="~/js/Controls/UserProfilePrompt.js" asp-append-version="true"></script>
     <script src="~/js/site.js"></script>
-    
-    <script type="text/javascript">
-        $(function() {
-            var showUserProfileMessage;
-            @if(TempData.ContainsKey("ShowUserProfileMessage"))
-            {
-                @:showUserProfileMessage = @Json.Serialize(TempData["ShowUserProfileMessage"]);
-            }
-            else
-            {
-                @:showUserProfileMessage = null;
-            }
-            @if(User.Identity.IsAuthenticated)
-            {
-                @:new HTBox.UserProfilePrompt($("#logoutForm"), showUserProfileMessage);
-            }
-        });
-    </script>
     
     @RenderSection("scripts", required: false)
 </body>

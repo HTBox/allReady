@@ -137,7 +137,6 @@
     </environment>
     <script src="~/lib/knockout-bootstrap/src/knockout-bootstrap.js"></script>
     <script src="~/lib/system.js/dist/system.js"></script>
-    <script src="~/js/Controls/UserProfilePrompt.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/ko.filterableList.js" asp-append-version="true"></script>
     <script src="~/js/ko.validation.js" asp-append-version="true"></script>
@@ -164,22 +163,6 @@
                 toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image",
                 autosave_ask_before_unload: false
             });
-
-
-            var showUserProfileMessage;
-            @if(TempData.ContainsKey("ShowUserProfileMessage"))
-            {
-                @:showUserProfileMessage = @Json.Serialize(TempData["ShowUserProfileMessage"]);
-            }
-            else
-            {
-                @:showUserProfileMessage = null;
-                        }
-            @if(User.Identity.IsAuthenticated)
-            {
-                @:new HTBox.UserProfilePrompt($("#logoutForm"), showUserProfileMessage);
-
-            }
         });
 
 

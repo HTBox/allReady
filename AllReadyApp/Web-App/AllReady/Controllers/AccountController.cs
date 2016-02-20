@@ -69,8 +69,6 @@ namespace AllReady.Controllers
                         ViewData["Message"] = "You must have a confirmed email to log on.";
                         return View("Error");
                     }
-                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileCompleted, user.IsProfileComplete().ToString(CultureInfo.InvariantCulture)));
-
                 }
 
                 // This doesn't count login failures towards account lockout
@@ -78,7 +76,6 @@ namespace AllReady.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    TempData["ShowUserProfileMessage"] = !user.IsProfileComplete();
                     return RedirectToLocal(returnUrl, user);
                 }
                 if (result.RequiresTwoFactor)
@@ -133,9 +130,8 @@ namespace AllReady.Controllers
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account",
                         "Please confirm your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileCompleted, false.ToString(CultureInfo.InvariantCulture)));
-                    TempData["ShowUserProfileMessage"] = !user.IsProfileComplete();
+                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncompleted, "NewUser"));
+                    await _signInManager.SignInAsync(user, isPersistent: false);                    
                     return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
                 AddErrors(result);
@@ -170,6 +166,8 @@ namespace AllReady.Controllers
                 return View("Error");
             }
             var result = await _userManager.ConfirmEmailAsync(user, code);
+
+            //will need to check profile completeness here too..
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 

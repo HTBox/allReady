@@ -26,8 +26,8 @@
         public const string TimeZoneId = "ar:timezoneid";
 
         /// <summary>
-        /// The "completed" status of the user's profile
+        /// A claim indicating that the user's profile is incomplete
         /// </summary>
-        public const string ProfileCompleted = "ar:profilecompleted";
+        public const string ProfileIncompleted = "ar:profileincomplete";
     }
 }

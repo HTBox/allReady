@@ -95,8 +95,19 @@ namespace AllReady.Controllers
             {
                 await _signInManager.RefreshSignInAsync(user);
             }
-            TempData["ShowUserProfileMessage"] = !user.IsProfileComplete();
+
+            await CheckUserProfileCompleteness(user);
+
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task CheckUserProfileCompleteness(ApplicationUser user)
+        {
+            if (user.IsProfileComplete())
+            {
+                await _userManager.RemoveClaimsAsync(user, User.Claims.Where(c => c.Type == Security.ClaimTypes.ProfileIncompleted));
+                await _signInManager.RefreshSignInAsync(user);
+            }
         }
 
         [HttpPost]
@@ -235,6 +246,7 @@ namespace AllReady.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
+                    await CheckUserProfileCompleteness(user);
                     return RedirectToAction(nameof(Index), new { Message = ManageMessageId.AddPhoneSuccess });
                 }
             }
@@ -254,6 +266,7 @@ namespace AllReady.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
+                    await CheckUserProfileCompleteness(user);
                     return RedirectToAction(nameof(Index), new { Message = ManageMessageId.RemovePhoneSuccess });
                 }
             }

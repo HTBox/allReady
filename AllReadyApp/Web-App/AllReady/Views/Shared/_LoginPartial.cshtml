@@ -4,7 +4,7 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-    <form asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm">
+    <form asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm" class="@(User.IsUserProfileIncomplete() ? "warning" : "")"> 
         <ul class="nav navbar-nav navbar-right login-status">
             <li>
                 <a asp-controller="Manage" asp-action="Index" title="Manage">Hello @User.GetDisplayName()<i class="fa fa-exclamation-circle text-info user-profile-warning" title="Click here to add more details to your profile"></i></a>

@@ -54,15 +54,9 @@ namespace AllReady.Security
             return result;
         }
 
-        public static bool IsUserProfileCompleted(this ClaimsPrincipal user)
+        public static bool IsUserProfileIncomplete(this ClaimsPrincipal user)
         {
-            bool result = false;
-            var profileCompletedClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.ProfileCompleted);
-            if (profileCompletedClaim != null)
-            {
-                bool.TryParse(profileCompletedClaim.Value, out result);
-            }
-            return result;
+            return user.HasClaim(c => c.Type == ClaimTypes.ProfileIncompleted);                        
         }
 
 
