@@ -2,15 +2,24 @@
 using AllReady.Models;
 using AllReady.ViewModels;
 using System.Linq;
+using MediatR;
+using System;
+using AllReady.Features.Organizations;
+using System.Threading.Tasks;
 
 namespace AllReady.Controllers
 {
     public class OrganizationController : Controller
     {
+        private readonly IMediator _bus;
         IAllReadyDataAccess _dataAccess;
 
-        public OrganizationController(IAllReadyDataAccess dataAccess)
+        public OrganizationController(IMediator bus, IAllReadyDataAccess dataAccess)
         {
+            if (bus == null)
+                throw new ArgumentNullException(nameof(bus));
+
+            _bus = bus;
             _dataAccess = dataAccess;
         }
 
@@ -21,16 +30,21 @@ namespace AllReady.Controllers
         }
 
         [Route("Organization/{id}/")]
-        public IActionResult ShowOrganization(int id)
+        public async Task<IActionResult> ShowOrganization(int id)
         {
-            var organization = _dataAccess.GetOrganization(id);
+            if (id <= 0)
+            { 
+                return HttpNotFound();
+            }            
 
-            if (organization == null)
+            OrganizationViewModel model = await _bus.SendAsync(new OrganizationDetailsQueryAsync { Id = id });
+
+            if (model == null)
             {
                 return HttpNotFound();
             }
 
-            return View("Organization", new OrganizationViewModel(organization));
+            return View("Organization", model);
         }
     }
 }
