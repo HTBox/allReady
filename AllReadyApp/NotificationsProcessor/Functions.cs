@@ -57,7 +57,7 @@ namespace NotificationsProcessor
 
             // Create an Web transport for sending email, using credentials...
             var transportWeb = new Web(credentials);
-            transportWeb.DeliverAsync(myMessage).Wait();
+            transportWeb.DeliverAsync(myMessage).GetAwaiter().GetResult();
 
             log.WriteLine(message);
         }

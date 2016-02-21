@@ -35,7 +35,7 @@ namespace AllReady.UnitTest.Controllers
             const string testUrl = "return url";
             var loginViewModel = new LoginViewModel();
 
-            var result = controller.Login(loginViewModel, testUrl).Result;
+            var result = controller.Login(loginViewModel, testUrl).GetAwaiter().GetResult();
             Assert.IsType<ViewResult>(result);
             var resultViewModel = ((ViewResult) result).ViewData.Model;
             Assert.IsType<LoginViewModel>(resultViewModel);
@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Controllers
             var loginViewModel = new LoginViewModel {Email = "", Password = "", RememberMe = false};
 
             const string testRemoteUrl = "http://foo.com/t";
-            var result = controller.Login(loginViewModel, testRemoteUrl).Result;
+            var result = controller.Login(loginViewModel, testRemoteUrl).GetAwaiter().GetResult();
             Assert.IsType<RedirectToActionResult>(result);
             var redirectToAction = (RedirectToActionResult)result;
             Assert.Equal("Home", redirectToAction.ControllerName);
@@ -63,7 +63,7 @@ namespace AllReady.UnitTest.Controllers
             var loginViewModel = new LoginViewModel { Email = "", Password = "", RememberMe = false };
 
             const string testLocalUrl = "/foo/bar";
-            var result = controller.Login(loginViewModel, testLocalUrl).Result;
+            var result = controller.Login(loginViewModel, testLocalUrl).GetAwaiter().GetResult();
             Assert.IsType<RedirectResult>(result);
             var redirectToLocalUrl = (RedirectResult)result;
             Assert.Equal(testLocalUrl, redirectToLocalUrl.Url);
@@ -76,7 +76,7 @@ namespace AllReady.UnitTest.Controllers
             var loginViewModel = new LoginViewModel { Email = "", Password = "", RememberMe = false };
 
             const string testLocalUrl = "/foo/bar";
-            var result = controller.Login(loginViewModel, testLocalUrl).Result;
+            var result = controller.Login(loginViewModel, testLocalUrl).GetAwaiter().GetResult();
 
             Assert.IsType<ViewResult>(result);
             var resultViewModel = ((ViewResult)result).ViewData.Model;
