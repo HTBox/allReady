@@ -62,7 +62,7 @@
         };
     };
 
-    SignupViewModel = function (signupModelSeed, unassociatedSkills) {
+    function SignupViewModel (signupModelSeed, unassociatedSkills) {
         var self = this;
         ko.mapping.fromJS(signupModelSeed, {}, self);
         self.unassociatedSkills = unassociatedSkills;

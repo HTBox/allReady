@@ -145,7 +145,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         [HttpPost("signup")]
         [Authorize]
-        public object RegisterActivity(ActivitySignupViewModel signupModel)
+        public IActionResult RegisterActivity(ActivitySignupViewModel signupModel)
         {
             if (signupModel == null)
             {

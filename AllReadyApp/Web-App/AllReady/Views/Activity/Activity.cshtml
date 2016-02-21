@@ -126,7 +126,7 @@
                     if (!Model.IsClosed)
                      {
                          <h2>
-                             <a asp-action="Login" asp-controller="Account" asp-route-ReturnUrl="/Activity/@Model.Id" class="btn btn-default  btn-volunteer">Volunteer</a>
+                             <a asp-action="Login" asp-controller="Account" asp-route-ReturnUrl="/Activity/@Model.Id" class="btn btn-default  btn-volunteer">Volunteer<br /> for this Activity</a>
                          </h2>
                      }
                      else
@@ -139,7 +139,7 @@
                     if (!Model.IsClosed)
                      {
                          <h2>
-                             <button class="btn btn-default btn-volunteer" data-bind="visible: !enrolled(), click: signupForActivity" style="display: none">Volunteer</button>
+                             <button class="btn btn-default btn-volunteer" data-bind="visible: !enrolled(), click: signupForActivity" style="display: none">Volunteer<br /> for this Activity</button>
                          </h2>
                      }
                      else
