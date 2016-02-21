@@ -85,7 +85,7 @@
         self.isValid = ko.computed(function () {
             var allValidatablesAreValid = true;
             for (var property in self) {
-                if (self.hasOwnProperty(property) && self[property]["hasError"]) {
+                if (self.hasOwnProperty(property) && typeof self[property].hasError === "function") {
                     allValidatablesAreValid = !self[property].hasError();
                 }
                 if (!allValidatablesAreValid) break;
