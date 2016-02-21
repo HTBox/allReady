@@ -45,7 +45,7 @@
             }).then(function (data) {
                 self.enrolled(false);
                 $("#enrollUnenrollSpinner").hide();
-                showalert("<strong>Thanks for your interest. Your request has been processed and you are no longer signed up for this activity We hope to see you soon!.</strong>", "alert-success", 30);
+                showalert("<strong>Thanks for your interest. Your request has been processed and you are no longer signed up for this activity. We hope to see you soon!</strong>", "alert-success", 30);
             }).fail(function (fail) {
                 self.errorUnenrolling(true);
                 console.log(fail);
