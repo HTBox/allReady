@@ -50,23 +50,11 @@ namespace AllReady.Models
             
             _dbContext.ActivitySignup.Remove(activity);
 
-            var signupIds = _dbContext.TaskSignups
+            _dbContext.TaskSignups.RemoveRange(_dbContext.TaskSignups
                 .Where(e => e.Task.Activity.Id == activity.Activity.Id)
-                .Where(e => e.User.Id == activity.User.Id)
-                .Select(e => e.Id);
+                .Where(e => e.User.Id == activity.User.Id));
 
-
-            foreach (var signupId in signupIds)
-            {
-                var taskSignup = _dbContext.TaskSignups.SingleOrDefault(c => c.Id == signupId);
-                if (taskSignup != null)
-                {
-                    _dbContext.TaskSignups.Remove(taskSignup);
-                }
-            }
-                    
             return _dbContext.SaveChangesAsync();
-            
         }
 
         Task IAllReadyDataAccess.UpdateActivitySignupAsync(ActivitySignup value)
