@@ -43,27 +43,30 @@ namespace AllReady.Models
         {
             var activity = _dbContext.ActivitySignup.SingleOrDefault(c => c.Id == activitySignupId);
 
-            if (activity == null) return null;
+            if (activity == null)
             {
-                _dbContext.ActivitySignup.Remove(activity);
-
-                var signupIds = _dbContext.TaskSignups
-                    .Where(e => e.Task.Activity.Id == activity.Activity.Id)
-                    .Where(e => e.User.Id == activity.User.Id)
-                    .Select(e => e.Id);
-
-
-                foreach (var signupId in signupIds)
-                {
-                    var taskSignup = _dbContext.TaskSignups.SingleOrDefault(c => c.Id == signupId);
-                    if (taskSignup != null)
-                    {
-                        _dbContext.TaskSignups.Remove(taskSignup);
-                    }
-                }
-                    
-                return _dbContext.SaveChangesAsync();
+                return null;
             }
+            
+            _dbContext.ActivitySignup.Remove(activity);
+
+            var signupIds = _dbContext.TaskSignups
+                .Where(e => e.Task.Activity.Id == activity.Activity.Id)
+                .Where(e => e.User.Id == activity.User.Id)
+                .Select(e => e.Id);
+
+
+            foreach (var signupId in signupIds)
+            {
+                var taskSignup = _dbContext.TaskSignups.SingleOrDefault(c => c.Id == signupId);
+                if (taskSignup != null)
+                {
+                    _dbContext.TaskSignups.Remove(taskSignup);
+                }
+            }
+                    
+            return _dbContext.SaveChangesAsync();
+            
         }
 
         Task IAllReadyDataAccess.UpdateActivitySignupAsync(ActivitySignup value)
