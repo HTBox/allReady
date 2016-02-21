@@ -1,6 +1,9 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using AllReady.Services;
 using MediatR;
@@ -13,7 +16,7 @@ namespace AllReady.UnitTest.Services
     {
 
         [Fact]
-        public void SendEmailAsyncShouldPutCommandOnBus()
+        public async Task SendEmailAsyncShouldPutCommandOnBus()
         {
             const string emailRecipient = "test@email.com";
             const string emailSubject = "test subject";
@@ -21,9 +24,9 @@ namespace AllReady.UnitTest.Services
 
             var bus = MockIMediator();
             var messageSender = new AuthMessageSender(bus.Object);
-            messageSender.SendEmailAsync(emailRecipient, emailSubject, emailMessage);
+            await messageSender.SendEmailAsync(emailRecipient, emailSubject, emailMessage);
 
-            bus.Verify(mock => mock.Send(
+            bus.Verify(mock => mock.SendAsync(
                 It.Is<NotifyVolunteersCommand>(request => 
                 request.ViewModel.EmailMessage == emailMessage
                 && request.ViewModel.EmailRecipients.SequenceEqual(new List<string> {emailRecipient})
@@ -33,7 +36,7 @@ namespace AllReady.UnitTest.Services
         }
 
         [Fact]
-        public void SendSmsAsyncShouldPutCommandOnBus()
+        public async Task SendSmsAsyncShouldPutCommandOnBus()
         {
 
             const string smsRecipient = "phoneNumber@email.com";
@@ -41,11 +44,11 @@ namespace AllReady.UnitTest.Services
 
             var bus = MockIMediator();
             var messageSender = new AuthMessageSender(bus.Object);
-            messageSender.SendSmsAsync(smsRecipient, smsMesssage);
-            bus.Verify(mock => mock.Send(
-                It.Is<NotifyVolunteersCommand>(request => 
-                request.ViewModel.SmsMessage == smsMesssage
-                && request.ViewModel.SmsRecipients.SequenceEqual(new List<string> {smsRecipient}))),
+            await messageSender.SendSmsAsync(smsRecipient, smsMesssage);
+            bus.Verify(mock => mock.SendAsync(
+                It.Is<NotifyVolunteersCommand>(request =>
+                    request.ViewModel.SmsMessage == smsMesssage
+                    && request.ViewModel.SmsRecipients.SequenceEqual(new List<string> { smsRecipient }))),
                 Times.Exactly(1));
         }
 
@@ -56,7 +59,9 @@ namespace AllReady.UnitTest.Services
         private static Mock<IMediator> MockIMediator()
         {
             var busMock = new Mock<IMediator>();
-            busMock.Setup(mock => mock.Send(It.IsAny<NotifyVolunteersCommand>())).Verifiable();
+            busMock.Setup(mock => mock.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
+                .Returns(Task.FromResult(new Unit()))
+                .Verifiable();
             return busMock;
         }
     }

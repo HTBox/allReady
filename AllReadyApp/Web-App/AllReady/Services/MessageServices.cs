@@ -27,8 +27,7 @@ namespace AllReady.Services
                 }
             };
 
-            _bus.Send(command);
-            return Task.FromResult(0);
+            return _bus.SendAsync(command);
         }
 
         public Task SendSmsAsync(string number, string message)
@@ -42,9 +41,7 @@ namespace AllReady.Services
                 }
             };
 
-            _bus.Send(command);
-
-            return Task.FromResult(0);
+            return _bus.SendAsync(command);
         }
     }
     public interface IEmailSender

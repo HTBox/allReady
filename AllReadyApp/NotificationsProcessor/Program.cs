@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +13,7 @@ namespace NotificationsProcessor
         // AzureWebJobsDashboard and AzureWebJobsStorage
         static void Main()
         {
-            var connectionString = Environment.GetEnvironmentVariable("Data:Storage:AzureStorage");
+            var connectionString = EnvironmentHelper.TryGetEnvironmentVariable("Data:Storage:AzureStorage");
 
             var config = new JobHostConfiguration
             {

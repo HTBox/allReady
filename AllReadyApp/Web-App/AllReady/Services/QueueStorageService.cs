@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.OptionsModel;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.OptionsModel;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 
@@ -20,11 +21,11 @@ namespace AllReady.Services
             _client = storageAccount.CreateCloudQueueClient();
         }
 
-        public void SendMessage(string queueName, string message)
+        public async Task SendMessageAsync(string queueName, string message)
         {
             var queue = _client.GetQueueReference(queueName);
-            queue.CreateIfNotExistsAsync().GetAwaiter().GetResult();
-            queue.AddMessageAsync(new CloudQueueMessage(message)).GetAwaiter().GetResult();
+            await queue.CreateIfNotExistsAsync();
+            await queue.AddMessageAsync(new CloudQueueMessage(message));
         }
     }
 }

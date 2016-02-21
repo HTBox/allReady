@@ -80,7 +80,7 @@ namespace AllReady.UnitTest.Activities
             var handler = new NotifyVolunteersHandler(queueWriter.Object);
             var result = handler.Handle(command);
 
-            queueWriter.Verify(q => q.SendMessage(It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
+            queueWriter.Verify(q => q.SendMessageAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
 
         }
     }

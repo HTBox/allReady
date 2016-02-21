@@ -97,7 +97,7 @@ namespace AllReady.UnitTest.Tasks
             var handler = new MessageTaskVolunteersCommandHandler(Context, bus.Object);
             var result = handler.Handle(command);
 
-            bus.Verify(b => b.Send(It.Is<NotifyVolunteersCommand>(notifyCommand =>
+            bus.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
                    notifyCommand.ViewModel != null &&
                    notifyCommand.ViewModel.EmailMessage == expectedMessage &&
                    notifyCommand.ViewModel.Subject == expectedSubject &&

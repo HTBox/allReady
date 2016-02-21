@@ -226,3 +226,4 @@ FakesAssemblies/
 *.opt
 **/project.lock.json
 /AllReadyApp/Web-App/AllReady/wwwroot/_references.js
+config.development.json

@@ -172,7 +172,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Assign(int id, List<string> userIds)
+        public async Task<IActionResult> Assign(int id, List<string> userIds)
         {
             var task = _bus.Send(new TaskQuery() { TaskId = id });
             
@@ -181,8 +181,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return new HttpUnauthorizedResult();
             }
             
-            _bus.Send(new AssignTaskCommand { TaskId = id, UserIds = userIds });
-
+            await _bus.SendAsync(new AssignTaskCommand { TaskId = id, UserIds = userIds });
 
             return RedirectToRoute(new { controller = "Task", Area = "Admin", action = "Details", id = id });
         }

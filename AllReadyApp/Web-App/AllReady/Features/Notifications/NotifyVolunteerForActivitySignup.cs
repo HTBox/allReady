@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Features.Login;
 using AllReady.Models;
@@ -10,7 +11,7 @@ using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyVolunteerForActivitySignup : INotificationHandler<VolunteerInformationAdded>
+    public class NotifyVolunteerForActivitySignup : IAsyncNotificationHandler<VolunteerInformationAdded>
     {
         private readonly IMediator _bus;
         private readonly IOptions<GeneralSettings> _options;
@@ -21,18 +22,20 @@ namespace AllReady.Features.Notifications
             _options = options;
         }
 
-        public void Handle(VolunteerInformationAdded notification)
+        public async Task Handle(VolunteerInformationAdded notification)
         {
             var model = _bus.Send(new ActivityDetailForNotificationQuery {ActivityId = notification.ActivityId});
 
             var signup = model.UsersSignedUp?.FirstOrDefault(s => s.User.Id == notification.UserId);
-            if (signup == null) return;
+            if (signup == null)
+                return;
 
             var emailRecipient = !string.IsNullOrWhiteSpace(signup.PreferredEmail)
                 ? signup.PreferredEmail
                 : signup.User?.Email;
 
-            if (string.IsNullOrWhiteSpace(emailRecipient)) return;
+            if (string.IsNullOrWhiteSpace(emailRecipient))
+                return;
 
             var activityLink = $"View activity: {_options.Value.SiteBaseUrl}Admin/Activity/Details/{model.ActivityId}";
             var subject = "allReady Activity Enrollment Confirmation";
@@ -55,7 +58,8 @@ namespace AllReady.Features.Notifications
                     Subject = subject
                 }
             };
-            _bus.Send(command);
+
+            await _bus.SendAsync(command).ConfigureAwait(false);
         }
     }
 }

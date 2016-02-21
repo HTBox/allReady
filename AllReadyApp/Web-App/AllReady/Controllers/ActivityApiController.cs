@@ -181,7 +181,7 @@ namespace AllReady.Controllers
             }
 
             //Notify admins & volunteer
-            _bus.Publish(new UserUnenrolls {ActivityId = signedUp.Activity.Id, UserId = signedUp.User.Id});
+            await _bus.PublishAsync(new UserUnenrolls {ActivityId = signedUp.Activity.Id, UserId = signedUp.User.Id});
 
             await _allReadyDataAccess.DeleteActivitySignupAsync(signedUp.Id);
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);

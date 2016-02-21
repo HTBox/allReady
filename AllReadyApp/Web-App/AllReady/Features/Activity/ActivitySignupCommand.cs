@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Features.Activity
 {
-    public class ActivitySignupCommand : IRequest
+    public class ActivitySignupCommand : IAsyncRequest
     {
         public ActivitySignupViewModel ActivitySignup { get; set; }
     }
