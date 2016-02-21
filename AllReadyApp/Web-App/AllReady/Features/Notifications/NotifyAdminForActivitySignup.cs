@@ -9,7 +9,7 @@ using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyAdminForActivitySignup : INotificationHandler<VolunteerInformationAdded>
+    public class NotifyAdminForActivitySignup : IAsyncNotificationHandler<VolunteerInformationAdded>
     {
         private readonly AllReadyContext _context;
         private readonly IMediator _bus;
@@ -22,7 +22,7 @@ namespace AllReady.Features.Notifications
             _options = options;
         }
 
-        public void Handle(VolunteerInformationAdded notification)
+        public async Task Handle(VolunteerInformationAdded notification)
         {
             var volunteer = _context.Users.Single(u => u.Id == notification.UserId);
             var activity = _context.Activities.Single(a => a.Id == notification.ActivityId);
@@ -50,7 +50,7 @@ namespace AllReady.Features.Notifications
                     }
                 };
 
-                _bus.SendAsync(command);
+                await _bus.SendAsync(command).ConfigureAwait(false);
             }
         }
     }

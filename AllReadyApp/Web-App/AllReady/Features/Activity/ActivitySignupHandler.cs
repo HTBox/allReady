@@ -9,10 +9,11 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AllReady.Features.Activity
 {
-    public class ActivitySignupHandler : RequestHandler<ActivitySignupCommand>
+    public class ActivitySignupHandler : AsyncRequestHandler<ActivitySignupCommand>
     {
         private readonly IMediator _bus;
         private readonly AllReadyContext _context;
@@ -23,7 +24,7 @@ namespace AllReady.Features.Activity
             _context = context;
         }
 
-        protected override void HandleCore(ActivitySignupCommand message)
+        protected override async Task HandleCore(ActivitySignupCommand message)
         {
             var activitySignup = message.ActivitySignup;
             var user = _context.Users
@@ -62,14 +63,16 @@ namespace AllReady.Features.Activity
                     _context.Update(user);
                 }
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 //Notify admins of a new volunteer
-                _bus.Publish(new VolunteerInformationAdded()
+                var volunteerInformationAdded = new VolunteerInformationAdded
                 {
                     ActivityId = activitySignup.ActivityId,
                     UserId = activitySignup.UserId
-                });
+                };
+
+                await _bus.PublishAsync(volunteerInformationAdded).ConfigureAwait(false);
             }
         }
     }

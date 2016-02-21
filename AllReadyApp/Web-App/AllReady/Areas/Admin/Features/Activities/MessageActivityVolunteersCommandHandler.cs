@@ -50,7 +50,7 @@ namespace AllReady.Areas.Admin.Features.Activities
                 }
             };
 
-            await _bus.SendAsync(command);
+            await _bus.SendAsync(command).ConfigureAwait(false);
         }
     }
 }

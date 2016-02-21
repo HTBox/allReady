@@ -97,7 +97,7 @@ namespace AllReady.Controllers
         [Route("/Activity/Signup")]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public IActionResult Signup(ActivitySignupViewModel signupModel)
+        public async Task<IActionResult> Signup(ActivitySignupViewModel signupModel)
         {
             if (signupModel == null)
             {
@@ -106,7 +106,7 @@ namespace AllReady.Controllers
 
             if (ModelState.IsValid)
             {
-                _bus.Send(new ActivitySignupCommand() { ActivitySignup = signupModel });
+                await _bus.SendAsync(new ActivitySignupCommand() { ActivitySignup = signupModel });
             }
             else
             {

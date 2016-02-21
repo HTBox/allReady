@@ -57,7 +57,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     task.AssignedVolunteers.Remove(vol);
                 }
             }
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             // send all notifications to the queue
             var smsRecipients = new List<string>();
