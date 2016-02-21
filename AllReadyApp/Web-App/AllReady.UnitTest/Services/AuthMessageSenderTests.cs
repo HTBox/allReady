@@ -59,7 +59,9 @@ namespace AllReady.UnitTest.Services
         private static Mock<IMediator> MockIMediator()
         {
             var busMock = new Mock<IMediator>();
-            busMock.Setup(mock => mock.SendAsync(It.IsAny<NotifyVolunteersCommand>())).Verifiable();
+            busMock.Setup(mock => mock.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
+                .Returns(Task.FromResult(new Unit()))
+                .Verifiable();
             return busMock;
         }
     }
