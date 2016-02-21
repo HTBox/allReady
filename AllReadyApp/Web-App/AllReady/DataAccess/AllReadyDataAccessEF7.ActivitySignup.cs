@@ -41,18 +41,18 @@ namespace AllReady.Models
 
         Task IAllReadyDataAccess.DeleteActivityAndTaskSignupsAsync(int activitySignupId)
         {
-            var activity = _dbContext.ActivitySignup.SingleOrDefault(c => c.Id == activitySignupId);
+            var activitySignup = _dbContext.ActivitySignup.SingleOrDefault(c => c.Id == activitySignupId);
 
-            if (activity == null)
+            if (activitySignup == null)
             {
                 return null;
             }
             
-            _dbContext.ActivitySignup.Remove(activity);
+            _dbContext.ActivitySignup.Remove(activitySignup);
 
             _dbContext.TaskSignups.RemoveRange(_dbContext.TaskSignups
-                .Where(e => e.Task.Activity.Id == activity.Activity.Id)
-                .Where(e => e.User.Id == activity.User.Id));
+                .Where(e => e.Task.Activity.Id == activitySignup.Activity.Id)
+                .Where(e => e.User.Id == activitySignup.User.Id));
 
             return _dbContext.SaveChangesAsync();
         }

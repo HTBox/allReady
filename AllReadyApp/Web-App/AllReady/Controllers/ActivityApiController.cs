@@ -160,7 +160,7 @@ namespace AllReady.Controllers
             }
 
             _bus.Send(new ActivitySignupCommand() { ActivitySignup = signupModel });
-            return new {Status = "success"};
+            return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
         [HttpDelete("{id}/signup")]
