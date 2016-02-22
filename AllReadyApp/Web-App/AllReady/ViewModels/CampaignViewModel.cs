@@ -71,6 +71,5 @@ namespace AllReady.ViewModels
         {
             return campaigns.Select(campaign => campaign.ToViewModel());
         }       
-
     }
 }
