@@ -18,12 +18,13 @@
         self.enrolled = ko.observable(isVolunteeredForActivity);
         self.errorUnenrolling = ko.observable(false);
 
-        self.signupForActivity = function() {
-             HTBox.showModal({
-                 viewModel: new SignupViewModel(signupModel, self.unassociatedSkills),
-                 template: "VolunteerModal",
-                 context: self
-             }).then(activitySignupSuccess);
+        self.signupForActivity = function () {
+            var vm = new SignupViewModel(signupModel, self.unassociatedSkills);
+            vm.modal = HTBox.showModal({
+                viewModel: vm,
+                modalId: "VolunteerModal",
+                onClose: activitySignupSuccess
+            });
         };
 
         function activitySignupSuccess(signUpViewModel) {
@@ -105,7 +106,8 @@
                 contentType: "application/x-www-form-urlencoded"
             }).done(function (data, status) {
                 if (!data) {
-                    self.modal.close(self);
+                    self.modal.hide();
+                    self.modal.onClose(self);
                 } else {
                     self.validationErrors(data.errors);
                 }
@@ -114,5 +116,5 @@
     };
 
     var activityViewModel = new ActivityViewModel(tasks, skills, userSkills, signupModelSeed);
-    ko.applyBindings(activityViewModel);
+    ko.applyBindings(activityViewModel, document.getElementById("MainPage"));
 })(ko, $, modelStuff.tasks, modelStuff.skills, modelStuff.userSkills, modelStuff.isVolunteeredForActivity, modelStuff.signupModelSeed);
