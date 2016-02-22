@@ -6,6 +6,10 @@
     padding-bottom: 16rem;
 }
 
+.logo-background {
+    background-color: #d58033;
+}
+
 /* Set widths on the form inputs since otherwise they're 100% wide */
 input,
 select,
