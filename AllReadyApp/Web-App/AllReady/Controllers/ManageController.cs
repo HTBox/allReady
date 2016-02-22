@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 using AllReady.Models;
 using AllReady.Services;
+using System;
+using MediatR;
+using AllReady.Features.Login;
 
 namespace AllReady.Controllers
 {
@@ -19,19 +22,22 @@ namespace AllReady.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly IAllReadyDataAccess _dataAccess;
+        private readonly IMediator _bus;
 
         public ManageController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            IAllReadyDataAccess dataAccess)
+            IAllReadyDataAccess dataAccess,
+            IMediator bus)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _dataAccess = dataAccess;
+            _bus = bus;
         }
 
         // GET: /Manage/Index
@@ -70,10 +76,10 @@ namespace AllReady.Controllers
             if (!string.IsNullOrEmpty(model.Name))
             {
                 user.Name = model.Name;
-                await _userManager.RemoveClaimsAsync(user, User.Claims.Where(c => c.Type == Security.ClaimTypes.DisplayName));
-                await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.DisplayName, user.Name));
+                
                 shouldRefreshSignin = true;                
             }
+
             if (user.TimeZoneId != model.TimeZoneId)
             {
                 user.TimeZoneId = model.TimeZoneId;
@@ -81,7 +87,6 @@ namespace AllReady.Controllers
                 await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.TimeZoneId, user.TimeZoneId));
                 shouldRefreshSignin = true;
             }
-            
 
             user.AssociatedSkills.RemoveAll(usk => model.AssociatedSkills == null || !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
             if (model.AssociatedSkills != null)
@@ -95,7 +100,18 @@ namespace AllReady.Controllers
             {
                 await _signInManager.RefreshSignInAsync(user);
             }
+            await UpdateUserProfileCompleteness(user);
+
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task UpdateUserProfileCompleteness(ApplicationUser user)
+        {
+            if (user.IsProfileComplete())
+            {
+                await _bus.SendAsync(new RemoveUserProfileIncompleteClaimCommand{ UserId = user.Id });
+                await _signInManager.RefreshSignInAsync(user);
+            }
         }
 
         [HttpPost]
@@ -233,7 +249,8 @@ namespace AllReady.Controllers
                 var result = await _userManager.ChangePhoneNumberAsync(user, model.PhoneNumber, model.Code);
                 if (result.Succeeded)
                 {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    await UpdateUserProfileCompleteness(user);
+                    await _signInManager.SignInAsync(user, isPersistent: false);                    
                     return RedirectToAction(nameof(Index), new { Message = ManageMessageId.AddPhoneSuccess });
                 }
             }
@@ -253,6 +270,7 @@ namespace AllReady.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
+                    await UpdateUserProfileCompleteness(user);
                     return RedirectToAction(nameof(Index), new { Message = ManageMessageId.RemovePhoneSuccess });
                 }
             }

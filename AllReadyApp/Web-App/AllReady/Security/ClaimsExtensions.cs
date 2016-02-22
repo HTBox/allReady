@@ -54,6 +54,12 @@ namespace AllReady.Security
             return result;
         }
 
+        public static bool IsUserProfileIncomplete(this ClaimsPrincipal user)
+        {
+            return user.HasClaim(c => c.Type == ClaimTypes.ProfileIncomplete);                        
+        }
+
+
         public static TimeZoneInfo GetTimeZoneInfo(this ClaimsPrincipal user)
         {
             var timeZoneId = user.GetTimeZoneId();

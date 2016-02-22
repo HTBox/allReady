@@ -220,9 +220,7 @@ namespace AllReady
             {
                 options.AccessDeniedPath = new PathString("/Home/AccessDenied");
             });
-
-
-
+            
             // Track data about exceptions from the application. Should be configured after all error handling middleware in the request pipeline.
             app.UseApplicationInsightsExceptionTelemetry();
 

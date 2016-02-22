@@ -24,5 +24,10 @@
         /// The user's local time zone
         /// </summary>
         public const string TimeZoneId = "ar:timezoneid";
+
+        /// <summary>
+        /// A claim indicating that the user's profile is incomplete
+        /// </summary>
+        public const string ProfileIncomplete = "ar:profileincomplete";
     }
 }

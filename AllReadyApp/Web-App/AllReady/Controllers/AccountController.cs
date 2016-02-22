@@ -10,6 +10,7 @@ using AllReady.Security;
 using AllReady.Areas.Admin.Controllers;
 using MediatR;
 using AllReady.Features.Login;
+using System.Globalization;
 
 namespace AllReady.Controllers
 {
@@ -63,6 +64,8 @@ namespace AllReady.Controllers
                                       user.IsUserType(UserType.SiteAdmin);
                     if (isAdminUser && !await _userManager.IsEmailConfirmedAsync(user))
                     {
+                        //TODO: Showing the error page here makes for a bad experience for the user.
+                        //      It would be better if we redirected to a specific page prompting the user to check their email for a confirmation email and providing an option to resend the confirmation email.
                         ViewData["Message"] = "You must have a confirmed email to log on.";
                         return View("Error");
                     }
@@ -73,7 +76,7 @@ namespace AllReady.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    return RedirectToLocal(returnUrl, user);        
+                    return RedirectToLocal(returnUrl, user);
                 }
                 if (result.RequiresTwoFactor)
                 {
@@ -127,6 +130,7 @@ namespace AllReady.Controllers
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account",
                         "Please confirm your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
@@ -162,6 +166,15 @@ namespace AllReady.Controllers
                 return View("Error");
             }
             var result = await _userManager.ConfirmEmailAsync(user, code);
+
+            if (result.Succeeded && user.IsProfileComplete())
+            {
+                await _bus.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id });
+                if (User.IsSignedIn())
+                {
+                    await _signInManager.RefreshSignInAsync(user);
+                }
+            }
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
@@ -279,7 +292,7 @@ namespace AllReady.Controllers
 
             if (result.Succeeded)
             {
-                var user =  await _bus.SendAsync(new ApplicationUserQuery { UserName = email });
+                var user = await _bus.SendAsync(new ApplicationUserQuery { UserName = email });
                 return RedirectToLocal(returnUrl, user);
             }
             else
