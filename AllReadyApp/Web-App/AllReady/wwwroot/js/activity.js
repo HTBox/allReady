@@ -46,7 +46,8 @@
             }).then(function (data) {
                 self.enrolled(false);
                 $("#enrollUnenrollSpinner").hide();
-                showalert("<strong>Thanks for your interest. Your request has been processed and you are no longer signed up for this activity. We hope to see you soon!</strong>", "alert-success", 30);
+                showalert("<strong>Thanks for your interest. Your request has been processed and you are no longer signed up for this activity. We hope to see you soon!</strong>", "alert-info", 30);
+
             }).fail(function (fail) {
                 self.errorUnenrolling(true);
                 console.log(fail);
@@ -54,14 +55,29 @@
         }
     }
 
-    function showalert(message, alerttype, timeoutInSecs) {
-        $('#alert_placeholder').append('<div id="alertdiv" class="alert ' +  alerttype + ' fade in"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>')
+    self.alertVm = {
+        message: ko.observable(''),
+        type: ko.observable(''),
+        visible: ko.observable(false),
+        close: function (alertVm) {
+            alertVm.visible(false);
+            clearTimeout(alertVm.timer);
+        }
+    };
+
+
+    function showalert(message, alertType, timeoutInSecs) {
+        self.alertVm.message(message);
+        self.alertVm.type(alertType);
+        self.alertVm.visible(true);
+        clearTimeout(self.alertVm.timer);
         if (timeoutInSecs) {
-            setTimeout(function() {
-                $(".alert").alert('close');
+            self.alertVm.timer = setTimeout(function () {
+                self.alertVm.visible(false);
             }, timeoutInSecs * 1000);
         };
     };
+
 
     function SignupViewModel (signupModelSeed, unassociatedSkills) {
         var self = this;
@@ -116,5 +132,5 @@
     };
 
     var activityViewModel = new ActivityViewModel(tasks, skills, userSkills, signupModelSeed);
-    ko.applyBindings(activityViewModel, document.getElementById("MainPage"));
+    ko.applyBindings(activityViewModel, document.getElementById("MainView"));
 })(ko, $, modelStuff.tasks, modelStuff.skills, modelStuff.userSkills, modelStuff.isVolunteeredForActivity, modelStuff.signupModelSeed);

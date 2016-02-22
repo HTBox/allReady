@@ -8,8 +8,10 @@
 }
 
 <div id="MainView">
-    <div id="alert_placeholder"></div>
-    <div data-bind="alert2: { message: message, type: type }"></div>
+    <div data-bind="visible: alertVm.visible, css: alertVm.type()" class="alert fade in">
+        <button class="close" data-bind="click: alertVm.close.bind($data, alertVm)" aria-hidden="true">×</button>
+        <p data-bind="html: alertVm.message()"></p>
+    </div>
 
     <div class="row">
         <div class="col-sm-5">
@@ -280,6 +282,12 @@
         </form>
     </div>
 }
+
+<script type="text/html" id="AlertTemplate">
+    <button class="close" data-bind="click: close" aria-hidden="true">&times;</button>
+    <p data-bind="html: message()"></p>
+</script>
+
 
 @section scripts {
     <script type="text/javascript">
