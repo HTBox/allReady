@@ -307,7 +307,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var tid = organizationId;
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignSummaryQuery>()))
-                .Returns(() => new CampaignSummaryModel { OrganizationId = tid })
+                .Returns(() => new CampaignSummaryModel { OrganizationId = tid, Location = new LocationEditModel() })
                 .Verifiable();
             var mockImageService = new Mock<IImageService>();
             var controller = new CampaignController(
