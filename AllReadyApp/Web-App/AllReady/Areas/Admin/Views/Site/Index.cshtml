@@ -1,4 +1,4 @@
-﻿@using AllReady.Areas.Admin.Models;
+@using AllReady.Areas.Admin.Models;
 @using AllReady.Security;
 
 @model SiteAdminModel
@@ -43,21 +43,24 @@
                     </td>
                     <td>
                         <div class="btn-group btn-group-sm">
-                            <a asp-action="EditUser" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-edit"></span> Edit</a>
-                            <a asp-action="ResetPassword" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-recycle"></span> Reset Password</a>
+                            <a data-toggle="tooltip" data-placement="top" title="Edit" asp-action="EditUser" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-edit"></span></a>
+                            <a data-toggle="tooltip" data-placement="top" title="Reset Password" asp-action="ResetPassword" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-recycle"></span></a>
                             @if (!item.IsUserType(UserType.SiteAdmin) && !item.IsUserType(UserType.OrgAdmin))
                             {
-                                <a asp-action="AssignSiteAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-user-secret"></span> Make Site Admin</a>
-                                <a asp-action="AssignOrganizationAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-group"></span> Make Org Admin</a>
+                                <a data-toggle="tooltip" data-placement="top" title="Make Site Admin" asp-action="AssignSiteAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-user-secret"></span></a>
+                                <a data-toggle="tooltip" data-placement="top" title="Make Org Admin" asp-action="AssignTenantAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-group"></span></a>
                             }
                             else if (item.IsUserType(UserType.SiteAdmin))
                             {
-                                <a asp-action="RevokeSiteAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-user-secret"></span> Revoke Site Admin</a>
+                                <a data-toggle="tooltip" data-placement="top" title="Revoke Site Admin" asp-action="RevokeSiteAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-user-secret"></span></a>
                             }
                             else if (item.IsUserType(UserType.OrgAdmin))
                             {
-                                <a asp-action="RevokeOrganizationAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="text-danger"><span class="fa fa-group"></span> Revoke Org Admin</a>
+                                <a data-toggle="tooltip" data-placement="top" title="Revoke Org Admin" asp-action="RevokeTenantAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-group"></span></a>
                             }
+                        </div>
+                        <div class="btn-group btn-group-sm pull-right">
+                            <a data-toggle="tooltip" data-placement="top" title="Delete" asp-action="DeleteUser" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-danger"><span class="fa fa-remove"></span></a>
                         </div>
                     </td>
                 </tr>
@@ -69,8 +72,8 @@
 
 @section scripts {
     <script type="text/javascript">
-        $(document).ready(function () {
-            $("#resetPwdButton").click(function () { $("#resetPwdForm").submit() });
+        $(document).ready(function() {
+            $('[data-toggle="tooltip"]').tooltip({container:'body'});
         });
     </script>
 }

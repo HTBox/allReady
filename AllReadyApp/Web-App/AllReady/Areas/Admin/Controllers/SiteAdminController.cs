@@ -13,6 +13,8 @@ using AllReady.Areas.Admin.Models;
 using AllReady.Security;
 using Microsoft.Extensions.Logging;
 using System;
+using AllReady.Areas.Admin.Features.Users;
+using MediatR;
 using Microsoft.AspNet.Mvc.Rendering;
 
 namespace AllReady.Areas.Admin.Controllers
@@ -25,13 +27,15 @@ namespace AllReady.Areas.Admin.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IAllReadyDataAccess _dataAccess;
         private ILogger<SiteController> _logger;
+        private readonly IMediator _bus;
 
-        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger)
+        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger, IMediator bus)
         {
             _userManager = userManager;
             _emailSender = emailSender;
             _dataAccess = dataAccess;
             _logger = logger;
+            _bus = bus;
         }
 
         public IActionResult Index()
@@ -41,6 +45,30 @@ namespace AllReady.Areas.Admin.Controllers
                 Users = _dataAccess.Users.OrderBy(u => u.UserName).ToList()
             };
             return View(viewModel);
+        }
+
+        [HttpGet]
+        public IActionResult DeleteUser(string userId)
+        {
+            var user = _bus.Send(new UserQuery { UserId = userId });
+
+            var viewModel = new DeleteUserModel()
+            {
+                UserId = userId,
+                UserName = user.UserName,
+            };
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmDeleteUser(string userId)
+        {
+            // send command to bus
+            await _bus.SendAsync(new DeleteUserCommand { UserId = userId });
+
+            // follow PRG
+            return RedirectToAction("Index");
         }
 
         public IActionResult EditUser(string userId)
