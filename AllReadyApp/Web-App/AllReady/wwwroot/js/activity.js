@@ -46,7 +46,7 @@
             }).then(function (data) {
                 self.enrolled(false);
                 $("#enrollUnenrollSpinner").hide();
-                showalert("<strong>Thanks for your interest. Your request has been processed and you are no longer signed up for this activity. We hope to see you soon!</strong>", "alert-info", 30);
+                showalert("<strong>Thanks for your interest. Your request has been processed and you are no longer signed up for this activity. We hope to see you soon!</strong>", "alert-success", 30);
 
             }).fail(function (fail) {
                 self.errorUnenrolling(true);
@@ -55,17 +55,7 @@
         }
     }
 
-    self.alertVm = {
-        message: ko.observable(''),
-        type: ko.observable(''),
-        visible: ko.observable(false),
-        close: function (alertVm) {
-            alertVm.visible(false);
-            clearTimeout(alertVm.timer);
-        }
-    };
-
-
+    self.alertVm = new AlertViewModel();
     function showalert(message, alertType, timeoutInSecs) {
         self.alertVm.message(message);
         self.alertVm.type(alertType);
@@ -77,7 +67,6 @@
             }, timeoutInSecs * 1000);
         };
     };
-
 
     function SignupViewModel (signupModelSeed, unassociatedSkills) {
         var self = this;
@@ -130,6 +119,18 @@
             }).fail(function(fail) { console.log(fail); });
         }
     };
+
+    function AlertViewModel() {
+        var self = this;
+        self.message = ko.observable('');
+        self.type = ko.observable('');
+        self.visible = ko.observable(false);
+        self.close = function (alertVm) {
+            alertVm.visible(false);
+            clearTimeout(alertVm.timer);
+        }
+    }
+
 
     var activityViewModel = new ActivityViewModel(tasks, skills, userSkills, signupModelSeed);
     ko.applyBindings(activityViewModel, document.getElementById("MainView"));
