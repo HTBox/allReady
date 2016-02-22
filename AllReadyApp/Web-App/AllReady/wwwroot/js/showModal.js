@@ -28,7 +28,7 @@ var HTBox = HTBox || {};
         }
 
         var show = function() {
-            $modalElement.modal("show");
+            this.$modalElement.modal("show");
         }
 
         return {
@@ -39,8 +39,8 @@ var HTBox = HTBox || {};
         }
     };
 
-    function showTwitterBootstrapModal($ui) {
-        $ui.modal({
+    function showTwitterBootstrapModal($modalelement) {
+        $modalelement.modal({
             // Clicking the backdrop, or pressing Escape, shouldn't automatically close the modal by default.
             // The view model should remain in control of when to close.
             backdrop: "static",
