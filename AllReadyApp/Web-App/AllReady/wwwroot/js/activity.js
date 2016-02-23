@@ -81,12 +81,16 @@
             }
         });
 
-        self.PreferredEmail.extend({
-            validate: {
-                required: "'Email' is required",
-                email: ""
-            }
-        });
+        self.PreferredEmail
+            .isRequired("custom 'Email' is required")
+            .validateEmail("custom 'Email' is invalid");
+
+        //self.PreferredEmail.extend({
+        //    validate: {
+        //        required: "'Email' is required",
+        //        email: ""
+        //    }
+        //});
 
         self.isValid = ko.computed(function () {
             var allValidatablesAreValid = true;
