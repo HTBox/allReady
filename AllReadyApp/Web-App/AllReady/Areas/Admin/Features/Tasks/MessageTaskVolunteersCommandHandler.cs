@@ -1,10 +1,9 @@
-﻿using AllReady.Areas.Admin.Models;
+﻿using System.Collections.Generic;
+using System.Linq;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {

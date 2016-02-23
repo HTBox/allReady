@@ -1,6 +1,6 @@
-﻿using AllReady.Models;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models
 {

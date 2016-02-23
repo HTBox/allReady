@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace AllReady.Models
+﻿namespace AllReady.Models
 {
   public class CampaignSponsors
   {

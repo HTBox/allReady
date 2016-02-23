@@ -1,12 +1,8 @@
-﻿using AllReady.Models;
-using AllReady.Services;
-using AllReady.ViewModels;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Mvc;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using AllReady.Models;
+using AllReady.ViewModels;
+using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Controllers
 {

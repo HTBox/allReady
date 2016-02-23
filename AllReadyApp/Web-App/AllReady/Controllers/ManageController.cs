@@ -1,16 +1,13 @@
-﻿using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Mvc;
-
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-
+using AllReady.Features.Login;
 using AllReady.Models;
 using AllReady.Services;
-using System;
 using MediatR;
-using AllReady.Features.Login;
+using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Controllers
 {

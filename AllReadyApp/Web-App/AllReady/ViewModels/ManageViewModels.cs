@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
-using AllReady.ViewModels;
 using Microsoft.AspNet.Http.Authentication;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc.Rendering;

@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;

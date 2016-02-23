@@ -1,9 +1,6 @@
-﻿using AllReady.Models;
+﻿using System.Linq;
+using AllReady.Models;
 using Microsoft.AspNet.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Controllers
 {

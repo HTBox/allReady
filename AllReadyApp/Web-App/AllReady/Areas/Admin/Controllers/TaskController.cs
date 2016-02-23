@@ -1,15 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
-using AllReady.Models;
-using AllReady.ViewModels;
-using AllReady.Security;
-using MediatR;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Models;
-using System;
+using AllReady.Models;
+using AllReady.Security;
+using MediatR;
+using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Areas.Admin.Controllers
 {

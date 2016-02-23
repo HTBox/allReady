@@ -1,10 +1,10 @@
-﻿using AllReady.Features.Notifications;
-using AllReady.Models;
-using MediatR;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Features.Notifications;
+using AllReady.Models;
+using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {

@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace AllReady.Models
 {

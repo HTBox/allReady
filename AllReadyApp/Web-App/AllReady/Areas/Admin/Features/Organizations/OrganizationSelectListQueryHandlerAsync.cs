@@ -1,10 +1,10 @@
-﻿using AllReady.Models;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AllReady.Models;
 using MediatR;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Data.Entity;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {

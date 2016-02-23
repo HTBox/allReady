@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNet.Http;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNet.Http;
 
 namespace AllReady.Services
 {

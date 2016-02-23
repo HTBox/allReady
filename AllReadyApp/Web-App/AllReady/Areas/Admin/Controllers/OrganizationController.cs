@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Authorization;
-using MediatR;
-using AllReady.Areas.Admin.Features.Organizations;
+﻿using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
+using MediatR;
+using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Areas.Admin.Controllers
 {

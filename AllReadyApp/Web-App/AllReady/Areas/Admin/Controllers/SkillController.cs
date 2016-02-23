@@ -1,4 +1,6 @@
-﻿using AllReady.Areas.Admin.Features.Skills;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using AllReady.Areas.Admin.Features.Skills;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
@@ -6,8 +8,6 @@ using AllReady.Security;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Controllers
 {

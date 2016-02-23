@@ -1,10 +1,7 @@
-﻿using AllReady.Models;
-using AllReady.ViewModels;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using AllReady.Models;
+using AllReady.ViewModels;
 
 namespace AllReady.Areas.Admin.Models
 {

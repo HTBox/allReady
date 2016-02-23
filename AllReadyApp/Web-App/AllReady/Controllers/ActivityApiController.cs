@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using AllReady.Models;
-using AllReady.Services;
 using AllReady.ViewModels;
 using System;
 using System.Collections.Generic;

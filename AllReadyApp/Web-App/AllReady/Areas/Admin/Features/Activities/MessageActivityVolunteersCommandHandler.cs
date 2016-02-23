@@ -1,10 +1,10 @@
-﻿using AllReady.Features.Notifications;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Activities
 {

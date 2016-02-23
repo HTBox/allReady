@@ -1,5 +1,5 @@
-﻿using AllReady.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models
 {

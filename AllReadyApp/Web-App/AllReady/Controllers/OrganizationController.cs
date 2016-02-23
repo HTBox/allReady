@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using AllReady.Features.Organizations;
 using AllReady.Models;
 using AllReady.ViewModels;
-using System.Linq;
 using MediatR;
-using System;
-using AllReady.Features.Organizations;
-using System.Threading.Tasks;
+using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Controllers
 {

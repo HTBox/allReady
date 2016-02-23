@@ -1,8 +1,8 @@
-﻿using AllReady.Models;
+﻿using System.Linq;
+using AllReady.Areas.Admin.Models;
+using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
-using System.Linq;
-using AllReady.Areas.Admin.Models;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {

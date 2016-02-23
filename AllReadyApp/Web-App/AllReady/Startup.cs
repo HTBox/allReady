@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using AllReady.Models;
+using AllReady.Security;
 using AllReady.Services;
 using Autofac;
-using Autofac.Features.Variance;
 using Autofac.Extensions.DependencyInjection;
+using Autofac.Features.Variance;
 using MediatR;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
@@ -13,12 +14,10 @@ using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Localization;
 using Microsoft.Data.Entity;
-using Microsoft.Dnx.Runtime;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
-using AllReady.Security;
 
 namespace AllReady
 {

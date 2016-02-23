@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+
 namespace AllReady.Models
 {
   /// <summary>
