@@ -16,9 +16,8 @@ namespace AllReady.UnitTest.Controllers
             if (expression.Body is MethodCallExpression)
                 attributes = Enumerable.Cast<Attribute>((IEnumerable)((MethodCallExpression)expression.Body).Method.GetCustomAttributes(true));
 
-            if (expression.Body is UnaryExpression)
-                if (((UnaryExpression)expression.Body).Operand is MemberExpression)
-                    attributes = Enumerable.Cast<Attribute>((IEnumerable)(((UnaryExpression)expression.Body).Operand as MemberExpression).Member.GetCustomAttributes(true));
+            if (expression.Body is UnaryExpression && (((UnaryExpression)expression.Body).Operand is MemberExpression))
+                attributes = Enumerable.Cast<Attribute>((IEnumerable)(((UnaryExpression)expression.Body).Operand as MemberExpression).Member.GetCustomAttributes(true));
 
             return attributes;
         }
