@@ -1,23 +1,22 @@
-﻿using System;
-using System.Linq;
-using AllReady.Models;
-using AllReady.ViewModels;
+﻿using AllReady.Features.Campaigns;
+using MediatR;
 using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IAllReadyDataAccess _dataAccess;
+        private readonly IMediator _bus;
 
-        public HomeController(IAllReadyDataAccess dataAccess)
+        public HomeController(IMediator bus)
         {
-            _dataAccess = dataAccess;
+            _bus = bus;
         }
 
         public IActionResult Index()
         {
-            return View(_dataAccess.Campaigns.Where(c => c.EndDateTime.UtcDateTime.Date > DateTime.UtcNow.Date && !c.Locked).ToViewModel().OrderBy(vm => vm.EndDate).ToList());
+            var campaignModel = _bus.Send(new CampaignQuery());
+            return View(campaignModel.CampaignViewModels);
         }
 
         public IActionResult About()

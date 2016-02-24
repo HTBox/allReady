@@ -1,11 +1,8 @@
-﻿using System;
-using AllReady.Controllers;
-using AllReady.Models;
+﻿using AllReady.Controllers;
+using AllReady.Features.Campaigns;
+using MediatR;
 using Microsoft.AspNet.Mvc;
 using Moq;
-using System.Collections.Generic;
-using System.Linq;
-using AllReady.ViewModels;
 using Xunit;
 
 namespace AllReady.UnitTest.Controllers
@@ -13,52 +10,22 @@ namespace AllReady.UnitTest.Controllers
     public class HomeControllerTests
     {
         [Fact]
-        public void IndexGetsCampaignsThatAreNotLocked()
+        public void IndexSendsCampaignQuery()
         {
-            var campaign = new Campaign { EndDateTime = DateTime.UtcNow.AddDays(1).Date };
-            var lockedCampaign = new Campaign { EndDateTime = DateTime.UtcNow.AddDays(1).Date, Locked = true };
-            var campaigns = new List<Campaign>
-            {
-                lockedCampaign,
-                campaign
-            };
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(m => m.Send(It.IsAny<CampaignQuery>())).Returns(new CampaignModel());
 
-            var mockDataAccess = new Mock<IAllReadyDataAccess>();
-            mockDataAccess.Setup(x => x.Campaigns).Returns(campaigns);
+            var sut = new HomeController(mockMediator.Object);
+            var result = sut.Index();
 
-            var sut = new HomeController(mockDataAccess.Object);
-
-            var actionResult = (ViewResult)sut.Index();
-            var model = (List<CampaignViewModel>)actionResult.ViewData.Model;
-
-            Assert.Equal(campaign.EndDateTime, model.Select(m => m.EndDate).Single());
-        }
-
-        [Fact]
-        public void IndexGetsCampaignsWithAnEndDateGreaterThanToday()
-        {
-            var campaignThatEndedYesterday = new Campaign { EndDateTime = DateTime.UtcNow.AddDays(-1).Date };
-            var campaignThatEndsTomorrow = new Campaign { EndDateTime = DateTime.UtcNow.AddDays(1).Date };
-            var campaigns = new List<Campaign>
-            {
-                campaignThatEndedYesterday, campaignThatEndsTomorrow
-            };
-
-            var mockDataAccess = new Mock<IAllReadyDataAccess>();
-            mockDataAccess.Setup(x => x.Campaigns).Returns(campaigns);
-
-            var sut = new HomeController(mockDataAccess.Object);
-            var actionResult = (ViewResult)sut.Index();
-            var model = (List<CampaignViewModel>)actionResult.ViewData.Model;
-
-            Assert.Equal(campaignThatEndsTomorrow.EndDateTime, model.Select(m => m.EndDate).Single());
+            mockMediator.Verify(x => x.Send(It.IsAny<CampaignQuery>()), Times.Once());
         }
 
         [Fact]
         public void ErrorReturnsTheCorrectView()
         {
             var controller = new HomeController(null);
-            var result = (ViewResult) controller.Error();
+            var result = (ViewResult)controller.Error();
             Assert.Equal("~/Views/Shared/Error.cshtml", result.ViewName);
         }
 
@@ -71,7 +38,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void AboutShouldReturnAView()
+        public void AboutReturnsAView()
         {
             var sut = new HomeController(null);
             var result = sut.About();
@@ -79,7 +46,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void AesopShouldReturnAView()
+        public void AesopReturnsAView()
         {
             var sut = new HomeController(null);
             var result = sut.Aesop();
