@@ -16,7 +16,7 @@ namespace AllReady.UnitTest.Controllers
             mockMediator.Setup(m => m.Send(It.IsAny<CampaignQuery>())).Returns(new CampaignModel());
 
             var sut = new HomeController(mockMediator.Object);
-            var result = sut.Index();
+            sut.Index();
 
             mockMediator.Verify(x => x.Send(It.IsAny<CampaignQuery>()), Times.Once());
         }
