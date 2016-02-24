@@ -12,19 +12,6 @@ namespace AllReady.UnitTest.Controllers
     public class HomeControllerTests
     {
         [Fact]
-        public void IndexReturnsTheCorrectModel()
-        {
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(m => m.Send(It.IsAny<CampaignQuery>())).Returns(new List<CampaignViewModel>());
-
-            var sut = new HomeController(mockMediator.Object);
-            var result = (ViewResult)sut.Index();
-
-            Assert.Same(mockMediator, result.ViewData.Model);
-            Assert.IsType<ViewResult>(result);
-        }
-
-        [Fact]
         public void IndexSendsCampaignQuery()
         {
             var mockMediator = new Mock<IMediator>();
