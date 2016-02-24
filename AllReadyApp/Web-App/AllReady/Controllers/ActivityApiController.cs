@@ -159,7 +159,7 @@ namespace AllReady.Controllers
                 return Json(new { errors = ModelState.GetErrorMessages() });
             }
 
-            _bus.Send(new ActivitySignupCommand() { ActivitySignup = signupModel });
+            _bus.SendAsync(new ActivitySignupCommand() { ActivitySignup = signupModel });
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
