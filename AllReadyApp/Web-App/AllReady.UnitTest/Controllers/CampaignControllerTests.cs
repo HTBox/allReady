@@ -17,13 +17,14 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(keyAttribute);
         }
 
+        //TODO: write test for [HttpPost, ActionName("Delete")] attributes on DeleteConfirmed action method then delete
+
         [Fact]
         public void IndexHasHttpGetAttribute()
         {
             var sut = new CampaignController(null);
             var httpGetAttribute = sut.GetAttributesOn(x => x.Index()).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(httpGetAttribute);
-            //var attribute = sut.GetMethodAttributesOn(x => x.Index()).OfType<HttpGetAttribute>().SingleOrDefault();
         }
 
         [Fact]
@@ -39,12 +40,9 @@ namespace AllReady.UnitTest.Controllers
         public void ControllerHasARouteAtttributeWithTheCorrectRoute()
         {
             var sut = new CampaignController(null);
-
-            var hasAttribute = sut.HasAttribute(typeof(RouteAttribute));
-            Assert.True(hasAttribute);
-
-            var hasAttributeWithValue = sut.HasAttributeWithValue(typeof (RouteAttribute), "api/[controller]");
-            Assert.True(hasAttributeWithValue);
+            var routeAttribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
+            Assert.Equal(routeAttribute.Template, "api/[controller]");
         }
     }
 }
