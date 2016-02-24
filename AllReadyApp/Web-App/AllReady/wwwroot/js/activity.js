@@ -84,6 +84,7 @@
         self.PreferredEmail
             .isRequired("custom 'Email' is required")
             .validateEmail("custom 'Email' is invalid");
+        self.PreferredEmail.validate();
 
         //self.PreferredEmail.extend({
         //    validate: {
