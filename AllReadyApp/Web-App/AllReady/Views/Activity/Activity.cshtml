@@ -247,7 +247,7 @@
                                 <div class="form-group">
                                     <label asp-for="SignupModel.PreferredPhoneNumber" class="control-label col-md-4"></label>
                                     <div class="col-md-8">
-                                        <input type="text" id="phone-input" class="form-control" placeholder="(XXX) XXX-XXXX" data-bind="value: PreferredPhoneNumber, masked: PreferredPhoneNumber, mask: '(999) 999-9999'" />
+                                        <input type="text" id="phone-input" class="form-control" placeholder="(XXX) XXX-XXXX" data-bind="value: PreferredPhoneNumber, masked: '(999) 999-9999'" />
                                         <span class="text-danger" data-bind='visible: PreferredPhoneNumber.isShowValidationMessage(), text: PreferredPhoneNumber.validationMessage'></span>
                                     </div>
                                 </div>
