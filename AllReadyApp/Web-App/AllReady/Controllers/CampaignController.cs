@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using AllReady.Models;
 using AllReady.ViewModels;
@@ -10,6 +12,9 @@ namespace AllReady.Controllers
     public class CampaignController : Controller
     {
         private readonly IAllReadyDataAccess _dataAccess;
+
+        [Key]
+        public Guid Foo { get; set; }
 
         public CampaignController(IAllReadyDataAccess dataAccess)
         {
