@@ -13,7 +13,6 @@ namespace AllReady.UnitTest.Controllers
             return Enumerable.Cast<Attribute>(type.GetCustomAttributes(true));
         }
 
-        //TODO: test with something like [Key, Column(Order = 0)] or [HttpPost, ActionName("Delete")]
         public static IEnumerable<Attribute> GetAttributesOn<T>(this T obj, Expression<Func<T, object>> expression)
         {
             IEnumerable<Attribute> attributes = new List<Attribute>();

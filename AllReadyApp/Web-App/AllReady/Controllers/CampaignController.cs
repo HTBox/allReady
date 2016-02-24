@@ -13,18 +13,9 @@ namespace AllReady.Controllers
     {
         private readonly IAllReadyDataAccess _dataAccess;
 
-        //TODO: delete Foo and DeleteConfirmed before commiting
+        //TODO: delete this before commiting
         [Key]
         public Guid Foo { get; set; }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
-        {
-            //_bus.Send(new OrganizationDeleteCommand { Id = id });
-            //return RedirectToAction("Index");
-            return View();
-        }
 
         public CampaignController(IAllReadyDataAccess dataAccess)
         {
