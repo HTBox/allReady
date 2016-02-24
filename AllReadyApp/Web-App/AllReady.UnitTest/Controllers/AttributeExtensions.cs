@@ -14,19 +14,11 @@ namespace AllReady.UnitTest.Controllers
             IEnumerable<Attribute> attributes = new List<Attribute>();
 
             if (expression.Body is MethodCallExpression)
-            {
-                attributes = Enumerable.Cast<Attribute>((IEnumerable)(!(expression.Body is UnaryExpression) ?
-                    (MethodCallExpression)expression.Body :
-                    ((UnaryExpression)expression.Body).Operand as MethodCallExpression).Method.GetCustomAttributes(true));
-            }
+                attributes = Enumerable.Cast<Attribute>((IEnumerable)((MethodCallExpression)expression.Body).Method.GetCustomAttributes(true));
 
             if (expression.Body is UnaryExpression)
-            {
                 if (((UnaryExpression)expression.Body).Operand is MemberExpression)
-                {
                     attributes = Enumerable.Cast<Attribute>((IEnumerable)(((UnaryExpression)expression.Body).Operand as MemberExpression).Member.GetCustomAttributes(true));
-                }
-            }
 
             return attributes;
         }
