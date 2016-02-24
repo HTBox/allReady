@@ -15,8 +15,8 @@ namespace AllReady.Controllers
 
         public IActionResult Index()
         {
-            var campaignModel = _bus.Send(new CampaignQuery());
-            return View(campaignModel.CampaignViewModels);
+            var results = _bus.Send(new CampaignQuery());
+            return View(results);
         }
 
         public IActionResult About()

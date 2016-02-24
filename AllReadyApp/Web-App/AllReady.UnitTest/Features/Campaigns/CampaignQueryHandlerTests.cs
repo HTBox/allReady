@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Features.Campaigns
             var sut = new CampaignQueryHandler(mockDataAccess.Object);
             var model = sut.Handle(new CampaignQuery());
 
-            Assert.Equal(campaign.EndDateTime, model.CampaignViewModels.Select(m => m.EndDate).Single());
+            Assert.Equal(campaign.EndDateTime, model.Select(m => m.EndDate).Single());
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace AllReady.UnitTest.Features.Campaigns
             var sut = new CampaignQueryHandler(mockDataAccess.Object);
             var model = sut.Handle(new CampaignQuery());
 
-            Assert.Equal(campaignThatEndsTomorrow.EndDateTime, model.CampaignViewModels.Select(m => m.EndDate).Single());
+            Assert.Equal(campaignThatEndsTomorrow.EndDateTime, model.Select(m => m.EndDate).Single());
         }
 
         [Fact]
@@ -61,7 +61,7 @@ namespace AllReady.UnitTest.Features.Campaigns
             var sut = new CampaignQueryHandler(mockDataAccess.Object);
             var model = sut.Handle(new CampaignQuery());
 
-            Assert.Equal(model.CampaignViewModels.IsOrderedByAscending(x => x.EndDate), true);
+            Assert.Equal(model.IsOrderedByAscending(x => x.EndDate), true);
         }
 
         [Fact]
@@ -70,7 +70,7 @@ namespace AllReady.UnitTest.Features.Campaigns
             var sut = new CampaignQueryHandler(new Mock<IAllReadyDataAccess>().Object);
             var model = sut.Handle(new CampaignQuery());
 
-            Assert.Equal(model.CampaignViewModels.Count, 0);
+            Assert.Equal(model.Count, 0);
         }
     }
 }
