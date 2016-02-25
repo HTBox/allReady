@@ -6,16 +6,16 @@ namespace AllReady.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IMediator _bus;
+        private readonly IMediator mediator;
 
-        public HomeController(IMediator bus)
+        public HomeController(IMediator mediator)
         {
-            _bus = bus;
+            this.mediator = mediator;
         }
 
         public IActionResult Index()
         {
-            var results = _bus.Send(new CampaignQuery());
+            var results = mediator.Send(new CampaignQuery());
             return View(results);
         }
 

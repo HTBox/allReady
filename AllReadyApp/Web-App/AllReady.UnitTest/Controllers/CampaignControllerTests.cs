@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.Linq;
+using AllReady.Features.Campaigns;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels;
+using MediatR;
 using Microsoft.AspNet.Mvc;
 using Moq;
 using Xunit;
@@ -12,13 +13,23 @@ namespace AllReady.UnitTest.Controllers
 {
     public class CampaignControllerTests
     {
-        //TODO: REMOVE THIS BEFORE COMMITING
         [Fact]
-        public void FooHasKeyAttribute()
+        public void IndexSendsCampaignIndexQuery()
         {
-            var sut = new CampaignController(null);
-            var keyAttribute = sut.GetAttributesOn(x => x.Foo).OfType<KeyAttribute>().SingleOrDefault();
-            Assert.NotNull(keyAttribute);
+            var mockMediator = new Mock<IMediator>();
+            var sut = new CampaignController(mockMediator.Object);
+            sut.Index();
+
+            mockMediator.Verify(m => m.Send(It.IsAny<CampaignIndexQuery>()), Times.Once);
+        }
+
+        [Fact]
+        public void IndexReturnsAView()
+        {
+            var sut = new CampaignController(new Mock<IMediator>().Object);
+            var result = sut.Index();
+
+            Assert.IsType<ViewResult>(result);
         }
 
         //need a way to unit test System.Net.WebUtility.UrlEncode and Url.Action
@@ -30,49 +41,40 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void LocationMapReturnsHttpNotFoundWhenCampaignIsNull()
         {
-            var sut = new CampaignController(new Mock<IAllReadyDataAccess>().Object);
+            var sut = new CampaignController(new Mock<IMediator>().Object);
             var result = sut.LocationMap(It.IsAny<int>());
             Assert.IsType<HttpNotFoundResult>(result);
         }
 
         [Fact]
-        public void LocationMapReturnsTheCorrectViewWhenCampaignIsNotNull()
+        public void LocationMapReturnsTheCorrectViewAndCorrectModelWhenCampaignIsNotNull()
         {
-            const int campaignId = 1;
-            var mockedDataAccess = new Mock<IAllReadyDataAccess>();
-            mockedDataAccess.Setup(x => x.GetCampaign(campaignId)).Returns(new Campaign());
+            var mockedMediator = new Mock<IMediator>();
+            mockedMediator.Setup(m => m.Send(It.IsAny<CampaginByCampaignIdQuery>())).Returns(new Campaign());
 
-            var sut = new CampaignController(mockedDataAccess.Object);
-            var result = (ViewResult)sut.LocationMap(campaignId);
+            var sut = new CampaignController(mockedMediator.Object);
+            var result = (ViewResult)sut.LocationMap(It.IsAny<int>());
 
             Assert.Equal("Map", result.ViewName);
-        }
-
-        [Fact]
-        public void LocationMapReturnsTheCorrectModelWhenCampaignIsNotNull()
-        {
-            const int campaignId = 1;
-            var mockedDataAccess = new Mock<IAllReadyDataAccess>();
-            mockedDataAccess.Setup(x => x.GetCampaign(campaignId)).Returns(new Campaign());
-
-            var sut = new CampaignController(mockedDataAccess.Object);
-            var result = (ViewResult)sut.LocationMap(campaignId);
-
             Assert.IsType<CampaignViewModel>(result.ViewData.Model);
         }
 
         [Fact]
-        public void LocationMapCallsGetCampaignWithTheCorrectCampaignId()
+        public void LocationSendsCampaginByCampaignIdQueryWithTheCorrectCampaignId()
         {
             const int campaignId = 1;
-            var mockedDataAccess = new Mock<IAllReadyDataAccess>();
-            mockedDataAccess.Setup(x => x.GetCampaign(campaignId)).Returns(new Campaign());
+            var mockedMediator = new Mock<IMediator>();
+            mockedMediator
+                .Setup(m => m.Send(It.Is<CampaginByCampaignIdQuery>(q => q.CampaignId == campaignId)))
+                .Returns(new Campaign { Id = campaignId });
 
-            var sut = new CampaignController(mockedDataAccess.Object);
+            var sut = new CampaignController(mockedMediator.Object);
             sut.LocationMap(campaignId);
 
-            mockedDataAccess.Verify(x => x.GetCampaign(campaignId), Times.Once);
+            mockedMediator.Verify(m => m.Send(It.Is<CampaginByCampaignIdQuery>(q => q.CampaignId == campaignId)), Times.Once);
         }
+
+        //TODO: start here Get()
 
         [Fact]
         public void ControllerHasARouteAtttributeWithTheCorrectRoute()
