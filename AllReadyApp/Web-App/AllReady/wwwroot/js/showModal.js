@@ -9,8 +9,6 @@ var HTBox = HTBox || {};
     // providing a clear separation of concerns between the view model and UI.
     //
     function showModal(options) {
-        var self = this;
-        self.test = "xxxxx";
         if (typeof options === "undefined") throw new Error("An options argument is required.");
         if (typeof options.viewModel !== "object") throw new Error("options.viewModel is required.");
         if (!options.modalId) throw new Error("options.modalId is required.");
