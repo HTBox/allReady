@@ -241,14 +241,14 @@
                                     <label asp-for="SignupModel.PreferredEmail" class="control-label col-md-4"></label>
                                     <div class="col-md-8">
                                         <input type="text" class="form-control" placeholder="email_address@your_provider.com" data-bind='value: PreferredEmail' />
-                                        <span class="text-danger" data-bind='text: PreferredEmail.validationMessage'></span>
+                                        <span class="text-danger" data-bind='visible: PreferredEmail.hasChangedFromInitial() && !PreferredEmail.isValid(), text: PreferredEmail.validationMessage'></span>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="SignupModel.PreferredPhoneNumber" class="control-label col-md-4"></label>
                                     <div class="col-md-8">
                                         <input type="text" id="phone-input" class="form-control" placeholder="(XXX) XXX-XXXX" data-bind="value: PreferredPhoneNumber, masked: '(999) 999-9999'" />
-                                        <span class="text-danger" data-bind='visible: PreferredPhoneNumber.isShowValidationMessage(), text: PreferredPhoneNumber.validationMessage'></span>
+                                        <span class="text-danger" data-bind='visible: PreferredPhoneNumber.hasChangedFromInitial() && !PreferredPhoneNumber.isValid(), text: PreferredPhoneNumber.validationMessage'></span>
                                     </div>
                                 </div>
                                 <div class="form-group">

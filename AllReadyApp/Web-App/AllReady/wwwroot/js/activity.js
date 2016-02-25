@@ -74,30 +74,21 @@
         self.unassociatedSkills = unassociatedSkills;
         self.validationErrors = ko.observableArray([]);
 
-        self.PreferredPhoneNumber.extend({
-            validate: {
-                required: "'Phone Number' is required",
-                phoneNumber: ""
-            }
-        });
-
         self.PreferredEmail
-            .isRequired("custom 'Email' is required")
-            .validateEmail("custom 'Email' is invalid");
-        self.PreferredEmail.validate();
+            .isRequired()
+            .validateEmail()
+            .notifyChangeFromInitialValue();
 
-        //self.PreferredEmail.extend({
-        //    validate: {
-        //        required: "'Email' is required",
-        //        email: ""
-        //    }
-        //});
+        self.PreferredPhoneNumber
+           .isRequired()
+           .validatePhoneNumber()
+           .notifyChangeFromInitialValue();
 
         self.isValid = ko.computed(function () {
             var allValidatablesAreValid = true;
             for (var property in self) {
-                if (self.hasOwnProperty(property) && typeof self[property].hasError === "function") {
-                    allValidatablesAreValid = !self[property].hasError();
+                if (self.hasOwnProperty(property) && typeof self[property].isValid === "function") {
+                    allValidatablesAreValid = self[property].isValid();
                 }
                 if (!allValidatablesAreValid) break;
             }
