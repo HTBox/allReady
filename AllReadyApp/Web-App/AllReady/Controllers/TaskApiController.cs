@@ -34,12 +34,12 @@ namespace AllReady.Controllers
                 return true;
             }
 
-            if (task.Activity != null && task.Activity.Organizer != null && task.Activity.Organizer.Id == userId)
+            if (task.Activity?.Organizer != null && task.Activity.Organizer.Id == userId)
             {
                 return true;
             }
 
-            if (task.Activity != null && task.Activity.Campaign != null && task.Activity.Campaign.Organizer != null && task.Activity.Campaign.Organizer.Id == userId)
+            if (task.Activity?.Campaign != null && task.Activity.Campaign.Organizer != null && task.Activity.Campaign.Organizer.Id == userId)
             {
                 return true;
             }
@@ -56,7 +56,7 @@ namespace AllReady.Controllers
             else
             {
                 var userId = User.GetUserId();                
-                if (task.AssignedVolunteers != null && task.AssignedVolunteers.FirstOrDefault(x => x.User.Id == userId) != null)
+                if (task.AssignedVolunteers?.FirstOrDefault(x => x.User.Id == userId) != null)
                 {
                     return true;
                 }

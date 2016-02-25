@@ -41,7 +41,7 @@ namespace AllReady.ViewModels
                 ActivityName = task.Activity.Name;
             }
 
-            if (task.Activity != null && task.Activity.Campaign != null)
+            if (task.Activity?.Campaign != null)
             {
                 CampaignId = task.Activity.Campaign.Id;
                 CampaignName = task.Activity.Campaign.Name;

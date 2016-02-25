@@ -98,8 +98,8 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
 
-            // Tempoary code to avoid current database update error when the postcodegeo does not exist in the database.
-            if (campaign.Location != null && !string.IsNullOrEmpty(campaign.Location.PostalCode))
+            // Temporary code to avoid current database update error when the post code geo does not exist in the database.
+            if (!string.IsNullOrEmpty(campaign.Location?.PostalCode))
             {
                 bool validPostcode = await _mediator.SendAsync(new CheckValidPostcodeQueryAsync
                 {

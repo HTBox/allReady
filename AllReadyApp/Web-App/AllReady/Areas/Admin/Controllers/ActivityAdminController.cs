@@ -119,7 +119,7 @@ namespace AllReady.Areas.Admin.Controllers
 
                 if (fileUpload != null)
                 {
-                    // resave now that activty has the ImageUrl
+                    // resave now that activity has the ImageUrl
                     activity.Id = id;
                     activity.ImageUrl = await _imageService.UploadActivityImageAsync(campaign.OrganizationId, id, fileUpload);
                     _mediator.Send(new EditActivityCommand { Activity = activity });
@@ -298,16 +298,5 @@ namespace AllReady.Areas.Admin.Controllers
 
             return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Edit", id = id });
         }
-
-        private bool UserIsOrganizationAdminOfActivity(Activity activity)
-        {
-            return User.IsOrganizationAdmin(activity.Campaign.ManagingOrganizationId);
-        }
-
-        private bool UserIsOrganizationAdminOfActivity(int activityId)
-        {
-            return UserIsOrganizationAdminOfActivity(_dataAccess.GetActivity(activityId));
-        }
-
     }
 }

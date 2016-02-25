@@ -8,9 +8,7 @@ namespace AllReady.Security
     {
         public static bool IsUserType(this ApplicationUser user, UserType userType)
         {
-            return user != null &&
-                   user.Claims != null &&
-                   user.Claims.Any(c => c.ClaimType == ClaimTypes.UserType && c.ClaimValue == Enum.GetName(typeof(UserType), userType));
+            return user?.Claims != null && user.Claims.Any(c => c.ClaimType == ClaimTypes.UserType && c.ClaimValue == Enum.GetName(typeof(UserType), userType));
         }
     }
 }

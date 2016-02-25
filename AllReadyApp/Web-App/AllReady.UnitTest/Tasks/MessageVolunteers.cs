@@ -70,6 +70,7 @@ namespace AllReady.UnitTest.Tasks
                 new TaskSignup() { Task = task, User = user1 },
                 new TaskSignup() { Task = task, User = user2 }
             };
+            };
             context.TaskSignups.AddRange(taskSignups);
 
             context.SaveChanges();
@@ -93,13 +94,13 @@ namespace AllReady.UnitTest.Tasks
             var mediator = new Mock<IMediator>();
             
             var handler = new MessageTaskVolunteersCommandHandler(Context, mediator.Object);
-            var result = handler.Handle(command);
+            handler.Handle(command);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
                    notifyCommand.ViewModel != null &&
                    notifyCommand.ViewModel.EmailMessage == expectedMessage &&
                    notifyCommand.ViewModel.Subject == expectedSubject &&
-                   notifyCommand.ViewModel.EmailRecipients.Count() == 2 &&
+                   notifyCommand.ViewModel.EmailRecipients.Count == 2 &&
                    notifyCommand.ViewModel.EmailRecipients.Contains("blah@1.com") &&
                    notifyCommand.ViewModel.EmailRecipients.Contains("blah@2.com")
 

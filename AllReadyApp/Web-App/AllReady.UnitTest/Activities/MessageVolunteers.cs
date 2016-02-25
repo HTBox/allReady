@@ -88,7 +88,7 @@ namespace AllReady.UnitTest.Activities
                    notifyCommand.ViewModel != null &&
                    notifyCommand.ViewModel.EmailMessage == "This is my message" &&
                    notifyCommand.ViewModel.Subject == "This is my subject" &&
-                   notifyCommand.ViewModel.EmailRecipients.Count() == 2 &&
+                   notifyCommand.ViewModel.EmailRecipients.Count == 2 &&
                    notifyCommand.ViewModel.EmailRecipients.Contains("blah@1.com") &&
                    notifyCommand.ViewModel.EmailRecipients.Contains("blah@2.com")
 
