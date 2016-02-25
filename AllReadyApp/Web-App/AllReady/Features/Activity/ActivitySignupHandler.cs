@@ -63,7 +63,8 @@ namespace AllReady.Features.Activity
                     _context.Update(user);
                 }
 
-                await _context.SaveChangesAsync();
+                    //await _context.SaveChangesAsync();
+                    _context.SaveChanges();
 
                 //Notify admins of a new volunteer
                 var volunteerInformationAdded = new VolunteerInformationAdded
