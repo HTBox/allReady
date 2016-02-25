@@ -22,9 +22,8 @@
             var vm = new SignupViewModel(signupModel, self.unassociatedSkills);
             vm.modal = HTBox.showModal({
                 viewModel: vm,
-                modalId: "VolunteerModal",
-                onClose: activitySignupSuccess
-            });
+                modalId: "VolunteerModal"
+            }).onClose(activitySignupSuccess);
         };
 
         function activitySignupSuccess(signUpViewModel) {
@@ -107,8 +106,7 @@
                 contentType: "application/x-www-form-urlencoded"
             }).done(function (data, status) {
                 if (!data) {
-                    self.modal.hide();
-                    self.modal.onClose(self);
+                    self.modal.close(self);
                 } else {
                     self.validationErrors(data.errors);
                 }
