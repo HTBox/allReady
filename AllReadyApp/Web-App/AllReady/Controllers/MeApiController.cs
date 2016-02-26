@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
 
-using System;
-
 namespace AllReady.Controllers
 {
     [Authorize]

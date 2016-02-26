@@ -1,6 +1,6 @@
-﻿using MediatR;
+﻿using System.Collections.Generic;
+using MediatR;
 using Microsoft.AspNet.Mvc.Rendering;
-using System.Collections.Generic;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {

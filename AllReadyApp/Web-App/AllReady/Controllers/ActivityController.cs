@@ -7,12 +7,10 @@ using AllReady.Models;
 using AllReady.ViewModels;
 using Microsoft.AspNet.Authorization;
 using System.Security.Claims;
-using AllReady.Services;
 using MediatR;
 using AllReady.Features.Activity;
 using AllReady.Areas.Admin.Features.Tasks;
 using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
-
 namespace AllReady.Controllers
 {
     public class ActivityController : Controller

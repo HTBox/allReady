@@ -1,7 +1,4 @@
-﻿
-using Microsoft.WindowsAzure.Storage;
-
-namespace AllReady
+﻿namespace AllReady
 {
     public class AzureStorageSettings
     {

@@ -1,11 +1,8 @@
-﻿using AllReady.Areas.Admin.Models;
-using AllReady.Models;
-using AllReady.ViewModels;
-using MediatR;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using AllReady.Areas.Admin.Models;
+using AllReady.Models;
+using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {

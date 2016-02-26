@@ -1,11 +1,11 @@
-﻿using AllReady.Models;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNet.Mvc.Rendering;
-using AllReady.Extensions;
-using System;
-using Microsoft.Data.Entity;
 using System.Threading.Tasks;
+using AllReady.Extensions;
+using AllReady.Models;
+using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.Data.Entity;
 
 namespace AllReady.Services
 {

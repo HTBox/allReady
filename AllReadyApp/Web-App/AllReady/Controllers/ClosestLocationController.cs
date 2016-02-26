@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNet.Mvc;
-using System.Collections.Generic;
-
-using AllReady.Services;
+﻿using System.Collections.Generic;
 using AllReady.Models;
+using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Controllers
 {

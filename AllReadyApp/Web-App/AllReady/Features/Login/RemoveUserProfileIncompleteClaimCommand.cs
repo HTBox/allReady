@@ -1,5 +1,4 @@
-﻿using AllReady.Models;
-using MediatR;
+﻿using MediatR;
 
 namespace AllReady.Features.Login
 {

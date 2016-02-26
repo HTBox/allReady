@@ -1,10 +1,9 @@
-﻿using AllReady.Areas.Admin.Models;
-using Microsoft.Data.Entity;
+﻿using System;
+using System.Linq;
+using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
-using System.Linq;
-using System.Collections.Generic;
-using System;
+using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {

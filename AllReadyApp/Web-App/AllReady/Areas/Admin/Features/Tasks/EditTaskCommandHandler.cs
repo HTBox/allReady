@@ -1,8 +1,8 @@
-﻿using AllReady.Models;
+﻿using System;
+using System.Linq;
+using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
-using System;
-using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {

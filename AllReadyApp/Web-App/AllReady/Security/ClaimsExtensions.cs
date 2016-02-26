@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using AllReady.Models;
 using System.Security.Claims;
+using AllReady.Models;
 
 namespace AllReady.Security
 {

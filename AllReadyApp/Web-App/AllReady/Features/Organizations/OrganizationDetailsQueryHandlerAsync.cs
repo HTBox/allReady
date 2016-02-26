@@ -1,9 +1,9 @@
-﻿using AllReady.Models;
+﻿using System;
+using System.Threading.Tasks;
+using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
 using Microsoft.Data.Entity;
-using System;
-using System.Threading.Tasks;
 
 namespace AllReady.Features.Organizations
 {

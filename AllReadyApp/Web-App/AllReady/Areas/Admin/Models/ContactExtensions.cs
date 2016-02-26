@@ -1,6 +1,6 @@
-﻿using AllReady.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models
 {

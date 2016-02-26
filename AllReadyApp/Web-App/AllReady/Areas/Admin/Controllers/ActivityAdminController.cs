@@ -1,20 +1,18 @@
-﻿using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc;
-
-using AllReady.Security;
-using AllReady.Models;
-using AllReady.Services;
-using AllReady.ViewModels;
-
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using AllReady.Areas.Admin.Models;
-using System;
 using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Areas.Admin.Features.Campaigns;
+using AllReady.Areas.Admin.Models;
 using AllReady.Extensions;
+using AllReady.Models;
+using AllReady.Security;
+using AllReady.Services;
+using AllReady.ViewModels;
+using MediatR;
+using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Areas.Admin.Controllers
 {

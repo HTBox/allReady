@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models
 {

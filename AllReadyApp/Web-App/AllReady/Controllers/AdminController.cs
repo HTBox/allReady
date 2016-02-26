@@ -1,19 +1,15 @@
-﻿using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.Extensions.Configuration;
+﻿using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Models;
 using AllReady.Services;
-
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.Extensions.OptionsModel;
-using AllReady.Security;
 using MediatR;
-using AllReady.Features.Login;
+using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Controllers
 {

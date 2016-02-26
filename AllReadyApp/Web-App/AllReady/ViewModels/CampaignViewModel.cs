@@ -1,7 +1,7 @@
-﻿using AllReady.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AllReady.Models;
 
 namespace AllReady.ViewModels
 {

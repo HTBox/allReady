@@ -1,7 +1,7 @@
-﻿using AllReady.Models;
+﻿using System.Threading.Tasks;
+using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
-using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Skills
 {

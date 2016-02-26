@@ -1,15 +1,11 @@
-﻿using AllReady.Features.Notifications;
-using AllReady.Models;
-using AllReady.Models.Notifications;
-using AllReady.Services;
-using MediatR;
-using Microsoft.Data.Entity;
-using Newtonsoft.Json;
-using RestSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Features.Notifications;
+using AllReady.Models;
+using MediatR;
+using Microsoft.Data.Entity;
 
 namespace AllReady.Features.Activity
 {
