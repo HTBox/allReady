@@ -14,7 +14,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
             var handler = new SkillDeleteCommandHandlerAsync(Context);
 
             // Act
-            await handler.Handle(new SkillDeleteCommandAsync { Id = 1 });
+            await handler.Handle(new SkillDeleteCommandAsync { Id = 1 }).ConfigureAwait(false);
 
             // Assert
             Assert.Equal(6, Context.Skills.Count());

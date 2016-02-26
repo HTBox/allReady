@@ -19,7 +19,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var controller = new SiteController(null, null, null, null, bus.Object);
             var userId = "foo_id";
 
-            await controller.ConfirmDeleteUser(userId);
+            await controller.ConfirmDeleteUser(userId).ConfigureAwait(false);
             bus.Verify(b => b.SendAsync(It.Is<DeleteUserCommand>(u => u.UserId == userId)));
 
         }

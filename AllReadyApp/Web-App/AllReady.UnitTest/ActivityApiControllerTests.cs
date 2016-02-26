@@ -112,7 +112,7 @@ namespace AllReady.UnitTest
                 .WithUser(recordId.ToString());
 
             // Act
-            var result = await controller.UnregisterActivity(recordId);
+            var result = await controller.UnregisterActivity(recordId).ConfigureAwait(false);
 
             // Assert
             Assert.NotNull(result);
@@ -133,7 +133,7 @@ namespace AllReady.UnitTest
                 .WithUser(recordId.ToString());
 
             // Act
-            var result = await controller.UnregisterActivity(recordId);
+            var result = await controller.UnregisterActivity(recordId).ConfigureAwait(false);
 
             // Assert
             Assert.NotNull(result);

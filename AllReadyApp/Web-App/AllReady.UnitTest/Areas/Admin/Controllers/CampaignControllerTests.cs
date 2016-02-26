@@ -206,7 +206,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 Name = "Foo",
                 OrganizationId = organizationId,
                 Id = campaignId
-            }, file);
+            }, file).ConfigureAwait(false);
             mockImageService.Verify(mock => 
                 mock.UploadCampaignImageAsync(
                         It.Is<int>(i => i == organizationId), 

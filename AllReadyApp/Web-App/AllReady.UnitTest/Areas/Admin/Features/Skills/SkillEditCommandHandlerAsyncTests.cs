@@ -16,7 +16,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
             var newSkill = new SkillEditModel { Id = 2, Name = "New", Description = "Desc", OwningOrganizationId = 1 };
 
             // Act
-            var result = await handler.Handle(new SkillEditCommandAsync { Skill = newSkill });
+            var result = await handler.Handle(new SkillEditCommandAsync { Skill = newSkill }).ConfigureAwait(false);
             var savedSkill = Context.Skills.SingleOrDefault(s => s.Id == 2);
 
             // Assert
@@ -33,7 +33,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
             var newSkill = new SkillEditModel { Name = "New", Description = "Desc" };
 
             // Act
-            var result = await handler.Handle(new SkillEditCommandAsync { Skill = newSkill });
+            var result = await handler.Handle(new SkillEditCommandAsync { Skill = newSkill }).ConfigureAwait(false);
 
             // Assert
             Assert.Equal(8, Context.Skills.Count());

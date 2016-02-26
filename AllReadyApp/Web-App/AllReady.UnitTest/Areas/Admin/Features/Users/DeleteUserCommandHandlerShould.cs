@@ -31,10 +31,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Users
             var userId = "foo_id";
 
             // act
-            await handler.Handle(new DeleteUserCommand { UserId = userId });
+            await handler.Handle(new DeleteUserCommand { UserId = userId }).ConfigureAwait(false);
 
             // assert
-            var user = await UserManager.FindByIdAsync(userId);
+            var user = await UserManager.FindByIdAsync(userId).ConfigureAwait(false);
             Assert.Null(user);
 
 
