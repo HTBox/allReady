@@ -51,7 +51,6 @@ namespace AllReady.UnitTest
     {
         protected InMemoryContextTestAsync() : base()
         {
-            LoadTestData().Wait();
         }
 
         /// <summary>
@@ -59,15 +58,10 @@ namespace AllReady.UnitTest
         /// into the in-memory database context prior
         /// to any tests being executed in your 
         /// test class.
-        /// !!!! Note: because a constructor can't be async,
-        ///   it will block on the invocation of this method
-        ///   which means any awaitable in LoadTestData must
-        ///   include ConfigureAwait(false) to avoid deadlocks
-        ///   http://blog.stephencleary.com/2012/07/dont-block-on-async-code.html
         /// </summary>
         protected virtual async Task LoadTestData()
         {
-            await Task.Delay(0).ConfigureAwait(false); //To prevent compiler warning
+            await Task.Delay(0); //To prevent compiler warning
         }
     }
 }

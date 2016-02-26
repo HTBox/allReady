@@ -26,6 +26,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Users
         [Fact]
         public async Task RemoveUserFromUserManager()
         {
+            await LoadTestData();
+            
             // arrange
             var handler = new DeleteUserCommandHandler(Context, UserManager);
             var userId = "foo_id";
