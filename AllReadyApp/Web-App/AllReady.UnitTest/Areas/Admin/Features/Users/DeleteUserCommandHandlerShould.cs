@@ -20,7 +20,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Users
             var userName = "foo_user";
 
             var testuser = new ApplicationUser() { UserName = userName, Email = userName, Id = userId };
-            var createResult = await UserManager.CreateAsync(testuser).ConfigureAwait(false);
+            var createResult = await UserManager.CreateAsync(testuser);
         }
 
         [Fact]
