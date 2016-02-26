@@ -178,7 +178,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async void CampaignEditPostUploadsImageToImageService()
+        public async Task CampaignEditPostUploadsImageToImageService()
         {
             const int organizationId = 1;
             const int campaignId = 100;

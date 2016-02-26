@@ -14,6 +14,7 @@ using System.Security.Principal;
 using AllReady.Features.Notifications;
 using MediatR;
 using Microsoft.AspNet.Http;
+using System.Threading.Tasks;
 
 namespace AllReady.UnitTest
 {
@@ -103,7 +104,7 @@ namespace AllReady.UnitTest
         }
 
         [Fact]
-        public async void UnregisterActivityShouldRemoveActivitySignup()
+        public async Task UnregisterActivityShouldRemoveActivitySignup()
         {
             // Arrange
             int recordId = 5;
@@ -124,7 +125,7 @@ namespace AllReady.UnitTest
 
 
         [Fact]
-        public async void UnregisterActivityShouldRemoveTaskSignup()
+        public async Task UnregisterActivityShouldRemoveTaskSignup()
         {
             // Arrange
             int recordId = 5;

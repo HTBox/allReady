@@ -4,6 +4,7 @@ using AllReady.Features.Login;
 using Xunit;
 using Microsoft.AspNet.Identity.EntityFramework;
 using AllReady.Security;
+using System.Threading.Tasks;
 
 namespace AllReady.UnitTest.Login
 {
@@ -37,7 +38,7 @@ namespace AllReady.UnitTest.Login
         }
 
         [Fact]
-        public async void RemoveClaimFromUserWithClaim()
+        public async Task RemoveClaimFromUserWithClaim()
         {   
             var commandHandler = new RemoveUserProfileIncompleteClaimCommandHandler(Context);
             await commandHandler.Handle(new RemoveUserProfileIncompleteClaimCommand { UserId = _user1.Id});
@@ -47,7 +48,7 @@ namespace AllReady.UnitTest.Login
         }
 
         [Fact]
-        public async void RemoveClaimFromUserWithoutClaim()
+        public async Task RemoveClaimFromUserWithoutClaim()
         {
             var commandHandler = new RemoveUserProfileIncompleteClaimCommandHandler(Context);
             await commandHandler.Handle(new RemoveUserProfileIncompleteClaimCommand { UserId = _user2.Id });
