@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Services
 
             var bus = MockIMediator();
             var messageSender = new AuthMessageSender(bus.Object);
-            await messageSender.SendEmailAsync(emailRecipient, emailSubject, emailMessage).ConfigureAwait(false);
+            await messageSender.SendEmailAsync(emailRecipient, emailSubject, emailMessage);
 
             bus.Verify(mock => mock.SendAsync(
                 It.Is<NotifyVolunteersCommand>(request => 
@@ -44,7 +44,7 @@ namespace AllReady.UnitTest.Services
 
             var bus = MockIMediator();
             var messageSender = new AuthMessageSender(bus.Object);
-            await messageSender.SendSmsAsync(smsRecipient, smsMesssage).ConfigureAwait(false);
+            await messageSender.SendSmsAsync(smsRecipient, smsMesssage);
             bus.Verify(mock => mock.SendAsync(
                 It.Is<NotifyVolunteersCommand>(request =>
                     request.ViewModel.SmsMessage == smsMesssage

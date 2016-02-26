@@ -34,7 +34,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.Index().ConfigureAwait(false);
+            var result = await controller.Index();
 
             // Assert
             Assert.IsType<ViewResult>(result);
@@ -57,7 +57,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.Index().ConfigureAwait(false) as ViewResult;
+            var result = await controller.Index() as ViewResult;
 
             // Assert 
             Assert.NotNull(result);
@@ -85,7 +85,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.Index().ConfigureAwait(false) as IActionResult;
+            var result = await controller.Index() as IActionResult;
 
             // Assert
             Assert.IsType<HttpUnauthorizedResult>(result);
@@ -107,7 +107,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.Create().ConfigureAwait(false);
+            var result = await controller.Create();
 
             // Assert
             Assert.IsType<HttpUnauthorizedResult>(result);
@@ -126,7 +126,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.Create().ConfigureAwait(false) as ViewResult;
+            var result = await controller.Create() as ViewResult;
 
             // Assert
             Assert.NotNull(result);
@@ -150,7 +150,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.Create().ConfigureAwait(false) as ViewResult;
+            var result = await controller.Create() as ViewResult;
 
             // Assert
             Assert.NotNull(result);
@@ -175,7 +175,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             // Act
             var model = CreateSkillModel();
-            var result = await controller.Create(model).ConfigureAwait(false) as RedirectToActionResult;
+            var result = await controller.Create(model) as RedirectToActionResult;
 
             // Assert
             Assert.NotNull(result);
@@ -196,7 +196,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             // Act
             var model = CreateSkillModel();
-            var result = await controller.Create(model).ConfigureAwait(false) as RedirectToActionResult;
+            var result = await controller.Create(model) as RedirectToActionResult;
 
             // Assert
             Assert.NotNull(result);
@@ -220,7 +220,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             // Act
             var model = CreateSkillModel();
-            var result = await controller.Create(model).ConfigureAwait(false) as ViewResult;
+            var result = await controller.Create(model) as ViewResult;
 
             // Assert
             Assert.NotNull(result);
@@ -247,7 +247,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             // Act
             var model = CreateSkillModel();
-            var result = await controller.Create(model).ConfigureAwait(false) as ViewResult;
+            var result = await controller.Create(model) as ViewResult;
 
             // Assert
             Assert.NotNull(result);
@@ -282,7 +282,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = MockMediatorSkillEditQueryNullModel(out controller);
 
             // Act
-            var result = await controller.Edit(skillId).ConfigureAwait(false);
+            var result = await controller.Edit(skillId);
 
             // Assert
             Assert.IsType<HttpNotFoundResult>(result);
@@ -301,7 +301,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.Edit(skillId).ConfigureAwait(false);
+            var result = await controller.Edit(skillId);
 
             // Assert
             Assert.IsType<HttpUnauthorizedResult>(result);
@@ -321,7 +321,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.Edit(skillId).ConfigureAwait(false) as ViewResult;
+            var result = await controller.Edit(skillId) as ViewResult;
 
             // Assert
             Assert.NotNull(result);
@@ -346,7 +346,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.Edit(skillId).ConfigureAwait(false) as ViewResult;
+            var result = await controller.Edit(skillId) as ViewResult;
 
             // Assert
             Assert.NotNull(result);
@@ -371,7 +371,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.Edit(skillId).ConfigureAwait(false) as HttpUnauthorizedResult;
+            var result = await controller.Edit(skillId) as HttpUnauthorizedResult;
 
             // Assert
             Assert.NotNull(result);
@@ -392,7 +392,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.Edit(model).ConfigureAwait(false) as RedirectToActionResult;
+            var result = await controller.Edit(model) as RedirectToActionResult;
 
             // Assert
             Assert.NotNull(result);
@@ -413,7 +413,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act            
-            var result = await controller.Edit(model).ConfigureAwait(false) as RedirectToActionResult;
+            var result = await controller.Edit(model) as RedirectToActionResult;
 
             // Assert
             Assert.NotNull(result);
@@ -436,7 +436,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ModelState.AddModelError("test", "test");
 
             // Act
-            var result = await controller.Create(model).ConfigureAwait(false) as ViewResult;
+            var result = await controller.Create(model) as ViewResult;
 
             // Assert
             Assert.NotNull(result);
@@ -463,7 +463,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ModelState.AddModelError("test", "test");
 
             // Act
-            var result = await controller.Create(model).ConfigureAwait(false) as ViewResult;
+            var result = await controller.Create(model) as ViewResult;
 
             // Assert
             Assert.NotNull(result);
@@ -499,7 +499,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = MockMediatorSkillDeleteQueryNullModel(out controller);
 
             // Act
-            var result = await controller.Delete(skillId).ConfigureAwait(false) as HttpNotFoundResult;
+            var result = await controller.Delete(skillId) as HttpNotFoundResult;
 
             // Assert
             Assert.NotNull(result);
@@ -518,7 +518,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.Delete(skillId).ConfigureAwait(false);
+            var result = await controller.Delete(skillId);
 
             // Assert
             Assert.IsType<HttpUnauthorizedResult>(result);
@@ -536,7 +536,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.Delete(skillId).ConfigureAwait(false) as ViewResult;
+            var result = await controller.Delete(skillId) as ViewResult;
 
             // Assert
             Assert.NotNull(result);
@@ -555,7 +555,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.Delete(skillId).ConfigureAwait(false) as ViewResult;
+            var result = await controller.Delete(skillId) as ViewResult;
 
             // Assert
             Assert.NotNull(result);
@@ -571,7 +571,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = MockMediatorSkillDeleteQueryNullModel(out controller);
 
             // Act
-            var result = await controller.DeleteConfirmed(skillId).ConfigureAwait(false) as HttpNotFoundResult;
+            var result = await controller.DeleteConfirmed(skillId) as HttpNotFoundResult;
 
             // Assert
             Assert.NotNull(result);
@@ -589,7 +589,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act            
-            var result = await controller.DeleteConfirmed(1).ConfigureAwait(false) as RedirectToActionResult;
+            var result = await controller.DeleteConfirmed(1) as RedirectToActionResult;
 
             // Assert
             Assert.NotNull(result);
@@ -610,7 +610,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.DeleteConfirmed(skillId).ConfigureAwait(false);
+            var result = await controller.DeleteConfirmed(skillId);
 
             // Assert
             Assert.IsType<HttpUnauthorizedResult>(result);

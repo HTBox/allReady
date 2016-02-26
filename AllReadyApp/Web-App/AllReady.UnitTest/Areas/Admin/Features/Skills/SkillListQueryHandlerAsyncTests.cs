@@ -12,7 +12,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
         public async Task AllSkillsReturnedWhenNoIdInMessage()
         {
             var handler = new SkillListQueryHandlerAsync(Context);
-            var result = await handler.Handle(new SkillListQueryAsync()).ConfigureAwait(false);
+            var result = await handler.Handle(new SkillListQueryAsync());
 
             Assert.Equal(7, result.Count());
         }
@@ -21,7 +21,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
         public async Task CorrectSkillsReturnedWhenIdInMessage()
         {
             var handler = new SkillListQueryHandlerAsync(Context);
-            var result = await handler.Handle(new SkillListQueryAsync { OrganizationId = 1 }).ConfigureAwait(false);
+            var result = await handler.Handle(new SkillListQueryAsync { OrganizationId = 1 });
 
             Assert.Equal(3, result.Count());
         }

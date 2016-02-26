@@ -41,7 +41,7 @@ namespace AllReady.UnitTest.Login
         public async Task RemoveClaimFromUserWithClaim()
         {   
             var commandHandler = new RemoveUserProfileIncompleteClaimCommandHandler(Context);
-            await commandHandler.Handle(new RemoveUserProfileIncompleteClaimCommand { UserId = _user1.Id}).ConfigureAwait(false);
+            await commandHandler.Handle(new RemoveUserProfileIncompleteClaimCommand { UserId = _user1.Id});
 
             var matchingClaims = Context.UserClaims.Where(u => u.UserId == _user1.Id && u.ClaimType == ClaimTypes.ProfileIncomplete);
             Assert.Empty(matchingClaims);            
@@ -51,7 +51,7 @@ namespace AllReady.UnitTest.Login
         public async Task RemoveClaimFromUserWithoutClaim()
         {
             var commandHandler = new RemoveUserProfileIncompleteClaimCommandHandler(Context);
-            await commandHandler.Handle(new RemoveUserProfileIncompleteClaimCommand { UserId = _user2.Id }).ConfigureAwait(false);
+            await commandHandler.Handle(new RemoveUserProfileIncompleteClaimCommand { UserId = _user2.Id });
 
             var matchingClaimForUser1 = Context.UserClaims.Where(u => u.UserId == _user1.Id && u.ClaimType == ClaimTypes.ProfileIncomplete);
             Assert.Single(matchingClaimForUser1);
