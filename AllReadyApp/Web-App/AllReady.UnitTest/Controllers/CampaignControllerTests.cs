@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using AllReady.Extensions;
 using AllReady.Features.Campaigns;
 using AllReady.Models;
-using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Mvc;
@@ -23,7 +21,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignController(mockMediator.Object);
             sut.Index();
 
-            mockMediator.Verify(m => m.Send(It.IsAny<CampaignIndexQuery>()), Times.Once);
+            mockMediator.Verify(m => m.Send(It.IsAny<UnlockedCampaignsQuery>()), Times.Once);
         }
 
         [Fact]
@@ -119,7 +117,7 @@ namespace AllReady.UnitTest.Controllers
         public void GetReturnsTheCorrectViewModel()
         {
             var mockedMediator = new Mock<IMediator>();
-            mockedMediator.Setup(m => m.Send(It.IsAny<CampaignGetQuery>())).Returns(new List<CampaignViewModel>());
+            mockedMediator.Setup(m => m.Send(It.IsAny<UnlockedCampaignsQuery>())).Returns(new List<CampaignViewModel>());
 
             var sut = new CampaignController(mockedMediator.Object);
             var result = sut.Get();
@@ -135,7 +133,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignController(mockedMediator.Object);
             sut.Get();
 
-            mockedMediator.Verify(m => m.Send(It.IsAny<CampaignGetQuery>()), Times.Once);
+            mockedMediator.Verify(m => m.Send(It.IsAny<UnlockedCampaignsQuery>()), Times.Once);
         }
 
         [Fact]

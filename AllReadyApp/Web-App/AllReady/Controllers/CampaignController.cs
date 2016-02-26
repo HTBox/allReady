@@ -22,7 +22,8 @@ namespace AllReady.Controllers
         [Route("~/[controller]")]
         public IActionResult Index()
         {
-            return View(_mediator.Send(new CampaignIndexQuery()));
+            var unlockedCampaigns = GetUnlockedCampaigns();
+            return View(unlockedCampaigns);
         }
 
         [HttpGet]
@@ -55,7 +56,7 @@ namespace AllReady.Controllers
         [HttpGet]
         public IEnumerable<CampaignViewModel> Get()
         {
-            return _mediator.Send(new CampaignGetQuery());
+            return GetUnlockedCampaigns();
         }
 
         // GET api/values/5
@@ -69,6 +70,11 @@ namespace AllReady.Controllers
 
             return Json(campaign.ToViewModel());
             }
+
+        private List<CampaignViewModel> GetUnlockedCampaigns()
+        {
+            return _mediator.Send(new UnlockedCampaignsQuery());
+        }
 
         private Campaign GetCampaign(int campaignId)
         {

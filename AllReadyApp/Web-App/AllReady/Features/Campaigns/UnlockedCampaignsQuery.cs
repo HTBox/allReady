@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AllReady.Features.Campaigns
 {
-    public class CampaignGetQuery : IRequest<List<CampaignViewModel>>
+    public class UnlockedCampaignsQuery : IRequest<List<CampaignViewModel>>
     {
     }
 }

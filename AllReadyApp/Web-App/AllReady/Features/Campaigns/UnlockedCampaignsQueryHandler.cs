@@ -6,16 +6,15 @@ using MediatR;
 
 namespace AllReady.Features.Campaigns
 {
-    public class CampaignIndexQueryHandler : IRequestHandler<CampaignIndexQuery, List<CampaignViewModel>>
+    public class UnlockedCampaignsQueryHandler : IRequestHandler<UnlockedCampaignsQuery, List<CampaignViewModel>>
     {
         private readonly IAllReadyDataAccess _dataAccess;
 
-        public CampaignIndexQueryHandler(IAllReadyDataAccess dataAccess)
+        public UnlockedCampaignsQueryHandler(IAllReadyDataAccess dataAccess)
         {
             _dataAccess = dataAccess;
         }
-
-        public List<CampaignViewModel> Handle(CampaignIndexQuery message)
+        public List<CampaignViewModel> Handle(UnlockedCampaignsQuery message)
         {
             return _dataAccess.Campaigns.Where(c => !c.Locked).ToViewModel().ToList();
         }
