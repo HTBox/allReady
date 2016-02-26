@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace AllReady.UnitTest.Extensions
+namespace AllReady.Extensions
 {
     public static class AttributeExtensions
     {

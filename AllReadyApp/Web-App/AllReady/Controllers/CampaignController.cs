@@ -1,24 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.Collections.Generic;
 using AllReady.Features.Campaigns;
 using Microsoft.AspNet.Mvc;
 using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
+using Microsoft.AspNet.Mvc.Routing;
 
 namespace AllReady.Controllers
 {
     [Route("api/[controller]")]
     public class CampaignController : Controller
     {
-        private readonly IAllReadyDataAccess _dataAccess;
         private readonly IMediator _mediator;
-
-        //TODO: delete this before commiting
-        [Key]
-        public Guid Foo { get; set; }
 
         public CampaignController(IMediator mediator)
         {
@@ -41,9 +34,7 @@ namespace AllReady.Controllers
             if (campaign == null || campaign.Locked)
                 return HttpNotFound();
 
-            //"Url.Action("Details", "Campaign", null, protocol: Request.Scheme)" is "http://localhost:48408/Campaign/2"
-            //"System.Net.WebUtility.UrlEncode(Url.Action("Details", "Campaign", null, protocol: Request.Scheme));" is "http%3A%2F%2Flocalhost%3A48408%2FCampaign%2F2"
-            ViewBag.AbsoluteUrl = System.Net.WebUtility.UrlEncode(Url.Action("Details", "Campaign", null, protocol: Request.Scheme));
+            ViewBag.AbsoluteUrl = System.Net.WebUtility.UrlEncode(Url.Action(new UrlActionContext { Action = "Details", Controller = "Campaign", Values = null, Protocol = Request.Scheme }));
 
             return View("Details", new CampaignViewModel(campaign));
         }
@@ -64,9 +55,7 @@ namespace AllReady.Controllers
         [HttpGet]
         public IEnumerable<CampaignViewModel> Get()
         {
-            //TODO: refactor to mediator
-            //CampaingGetQuery
-            return _dataAccess.Campaigns.Where(c => !c.Locked).Select(x => new CampaignViewModel(x));
+            return _mediator.Send(new CampaignGetQuery());
         }
 
         // GET api/values/5
@@ -83,7 +72,7 @@ namespace AllReady.Controllers
 
         private Campaign GetCampaign(int campaignId)
         {
-            return _mediator.Send(new CampaginByCampaignIdQuery { CampaignId = campaignId });
+            return _mediator.Send(new CampaignByCampaignIdQuery { CampaignId = campaignId });
         }
     }
 }

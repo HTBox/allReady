@@ -12,7 +12,7 @@ namespace AllReady.Features.Campaigns
 
         public CampaignIndexQueryHandler(IAllReadyDataAccess dataAccess)
         {
-            this._dataAccess = dataAccess;
+            _dataAccess = dataAccess;
         }
 
         public List<CampaignViewModel> Handle(CampaignIndexQuery message)

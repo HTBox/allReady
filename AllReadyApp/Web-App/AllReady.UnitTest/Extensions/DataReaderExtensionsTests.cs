@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using AllReady.Services;
 using Moq;
 using Xunit;
 using AllReady.Extensions;
