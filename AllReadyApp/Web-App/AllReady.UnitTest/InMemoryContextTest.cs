@@ -45,7 +45,11 @@ namespace AllReady.UnitTest
     }
 
     /// <summary>
-    /// Inherit from this type if LoadTestData needs to await something
+    /// Inherit from this type if LoadTestData needs to await something.
+    /// !!! NOTE: To avoid blocking and deadlocks LoadTestData must be run manually
+    ///   It will not automatically run as part of the constructor.
+    ///   TODO: Refactor this to make the pattern more obvious, but for now just 
+    ///     get the builds to pass.
     /// </summary>
     public abstract class InMemoryContextTestAsync : InMemoryContextTestBase
     {
