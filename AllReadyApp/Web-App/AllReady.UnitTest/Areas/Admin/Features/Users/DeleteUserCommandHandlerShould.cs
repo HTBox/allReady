@@ -11,21 +11,23 @@ using MediatR;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Users
 {
-    public class DeleteUserCommandHandlerShould : InMemoryContextTest
+    public class DeleteUserCommandHandlerShould : InMemoryContextTestAsync
     {
 
-        protected override void LoadTestData()
+        protected override async Task LoadTestData()
         {
             var userId = "foo_id";
             var userName = "foo_user";
 
             var testuser = new ApplicationUser() { UserName = userName, Email = userName, Id = userId };
-            var createResult = UserManager.CreateAsync(testuser).Result;
+            var createResult = await UserManager.CreateAsync(testuser);
         }
 
         [Fact]
         public async Task RemoveUserFromUserManager()
         {
+            await LoadTestData();
+            
             // arrange
             var handler = new DeleteUserCommandHandler(Context, UserManager);
             var userId = "foo_id";

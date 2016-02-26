@@ -15,39 +15,39 @@ namespace AllReady.UnitTest.Controllers
     public class OrganizationControllerTests
     {
         [Fact]
-        public void ShowOrganization_ReturnsCorrectView()
+        public async Task ShowOrganization_ReturnsCorrectView()
         {
             OrganizationController controller;
             var mockMediator = MockMediatorOrganizationDetailsQuery(out controller);
 
-            var result = controller.ShowOrganization(1);
+            var result = await controller.ShowOrganization(1);
 
             Assert.NotNull(result);
-            Assert.IsType<ViewResult>(result.Result);
+            Assert.IsType<ViewResult>(result);
 
-            var finalResult = result.Result as ViewResult;
+            var finalResult = result as ViewResult;
 
             Assert.Equal("Organization", finalResult.ViewName);
         }
 
         [Fact]
-        public void ShowOrganization_ReturnsNotFoundForInvalidId()
+        public async Task ShowOrganization_ReturnsNotFoundForInvalidId()
         {
             OrganizationController controller;
             var mockMediator = MockMediatorOrganizationDetailsQuery(out controller);
 
-            var result = controller.ShowOrganization(0).Result as HttpNotFoundResult;
+            var result = await controller.ShowOrganization(0) as HttpNotFoundResult;
 
             Assert.NotNull(result);
         }
 
         [Fact]
-        public void ShowOrganization_ReturnsNotFoundForNullOrganization()
+        public async Task ShowOrganization_ReturnsNotFoundForNullOrganization()
         {
             OrganizationController controller;
             var mockMediator = MockMediatorOrganizationDetailsQueryNullResult(out controller);
 
-            var result = controller.ShowOrganization(1).Result as HttpNotFoundResult;
+            var result = await controller.ShowOrganization(1) as HttpNotFoundResult;
 
             Assert.NotNull(result);
         }

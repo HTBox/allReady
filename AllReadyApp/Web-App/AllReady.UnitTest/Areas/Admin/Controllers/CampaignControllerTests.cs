@@ -113,37 +113,37 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
         #region Edit Post
         [Fact]
-        public void CampaignEditPostReturnsBadRequestForNullCampaign()
+        public async Task CampaignEditPostReturnsBadRequestForNullCampaign()
         {
             const int organizationId = 1;
             var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), organizationId);
 
-            var result = controller.Edit(null, null).Result as BadRequestResult;
+            var result = await controller.Edit(null, null) as BadRequestResult;
             Assert.NotNull(result);
         }
 
         [Fact]
-        public void CampaignEditPostReturnsUnAuthorizedForNullCampaign()
+        public async Task CampaignEditPostReturnsUnAuthorizedForNullCampaign()
         {
             const int organizationId = 1;
             var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), organizationId);
 
             Assert.IsType<HttpUnauthorizedResult>(
-                controller.Edit(new CampaignSummaryModel { OrganizationId = organizationId }, null).Result);
+                await controller.Edit(new CampaignSummaryModel { OrganizationId = organizationId }, null));
         }
 
         [Fact]
-        public void CampaignEditPostReturnsUnAuthorizedForBasicUser()
+        public async Task CampaignEditPostReturnsUnAuthorizedForBasicUser()
         {
             const int organizationId = 1;
             var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), organizationId);
 
             Assert.IsType<HttpUnauthorizedResult>(
-                controller.Edit(new CampaignSummaryModel { OrganizationId = organizationId }, null).Result);
+                await controller.Edit(new CampaignSummaryModel { OrganizationId = organizationId }, null));
         }
 
         [Fact]
-        public void CampaignEditPostReturnsViewResultForInvalidModel()
+        public async Task CampaignEditPostReturnsViewResultForInvalidModel()
         {
             const int organizationId = 1;
             var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), organizationId);
@@ -151,17 +151,17 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ModelState.AddModelError("foo","bar");
 
             Assert.IsType<ViewResult>(
-                controller.Edit(new CampaignSummaryModel { OrganizationId = organizationId }, null).Result);
+                await controller.Edit(new CampaignSummaryModel { OrganizationId = organizationId }, null));
         }
 
         [Fact]
-        public void CampaignEditPostReturnsRedirectToActionResultForValidModel()
+        public async Task CampaignEditPostReturnsRedirectToActionResultForValidModel()
         {
             const int organizationId = 1;
             var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), organizationId);
 
             Assert.IsType<RedirectToActionResult>(
-                controller.Edit(new CampaignSummaryModel { Name = "Foo", OrganizationId = organizationId }, null).Result);
+                await controller.Edit(new CampaignSummaryModel { Name = "Foo", OrganizationId = organizationId }, null));
         }
 
         [Fact]
@@ -178,7 +178,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async void CampaignEditPostUploadsImageToImageService()
+        public async Task CampaignEditPostUploadsImageToImageService()
         {
             const int organizationId = 1;
             const int campaignId = 100;

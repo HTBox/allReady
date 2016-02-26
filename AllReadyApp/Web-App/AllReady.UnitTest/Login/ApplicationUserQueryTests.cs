@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Login
         }
 
         [Fact]
-        public async void QueryUserThatExists()
+        public async Task QueryUserThatExists()
         {
             var queryHandler = new ApplicationUserQueryHandler(Context);
             var user = await queryHandler.Handle(new ApplicationUserQuery { UserName = "bObLoBlAw@RandomDomain.COM" });
@@ -34,7 +34,7 @@ namespace AllReady.UnitTest.Login
         }
 
         [Fact]
-        public async void QueryUserThatDoesNotExists()
+        public async Task QueryUserThatDoesNotExists()
         {
             var queryHandler = new ApplicationUserQueryHandler(Context);
             var user = await queryHandler.Handle(new ApplicationUserQuery { UserName = "nothere@oursite.com" });
