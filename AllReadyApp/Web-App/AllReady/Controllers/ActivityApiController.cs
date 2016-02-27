@@ -145,7 +145,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         [HttpPost("signup")]
         [Authorize]
-        public IActionResult RegisterActivity(ActivitySignupViewModel signupModel)
+        public async Task<IActionResult> RegisterActivity(ActivitySignupViewModel signupModel)
         {
             if (signupModel == null)
             {
@@ -159,7 +159,7 @@ namespace AllReady.Controllers
                 return Json(new { errors = ModelState.GetErrorMessages() });
             }
 
-            _bus.SendAsync(new ActivitySignupCommand() { ActivitySignup = signupModel });
+            await _bus.SendAsync(new ActivitySignupCommand() { ActivitySignup = signupModel });
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
