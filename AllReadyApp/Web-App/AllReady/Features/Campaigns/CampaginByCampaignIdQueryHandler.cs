@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Features.Campaigns
 {
-    public class CampaginByCampaignIdQueryHandler : IRequestHandler<CampaginByCampaignIdQuery, Campaign>
+    public class CampaginByCampaignIdQueryHandler : IRequestHandler<CampaignByCampaignIdQuery, Campaign>
     {
         private readonly IAllReadyDataAccess _dataAccess;
 
@@ -12,7 +12,7 @@ namespace AllReady.Features.Campaigns
             _dataAccess = dataAccess;
         }
 
-        public Campaign Handle(CampaginByCampaignIdQuery message)
+        public Campaign Handle(CampaignByCampaignIdQuery message)
         {
             return _dataAccess.GetCampaign(message.CampaignId);
         }
