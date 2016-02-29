@@ -192,7 +192,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var organizations = _dataAccess.Organziations
+            var organizations = _dataAccess.Organizations
                 .OrderBy(t => t.Name)
                 .Select(t => new SelectListItem() { Text = t.Name, Value = t.Id.ToString() })
                 .ToList();
@@ -219,7 +219,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                if (_dataAccess.Organziations.Any(t => t.Id == model.OrganizationId))
+                if (_dataAccess.Organizations.Any(t => t.Id == model.OrganizationId))
                 {
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.OrgAdmin.ToName()));
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.Organization, model.OrganizationId.ToString()));

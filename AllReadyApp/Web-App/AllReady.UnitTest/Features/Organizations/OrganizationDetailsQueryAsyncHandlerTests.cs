@@ -4,12 +4,12 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Organizations
 {
-    public class OrganizationDetailsQueryHandlerAsyncTests : InMemoryContextTest
+    public class OrganizationDetailsQueryAsyncHandlerTests : InMemoryContextTest
     {
         [Fact]
         public async Task CorrectOrganizationReturnedWhenIdInMessage()
         {
-            var handler = new OrganizationDetailsQueryHandlerAsync(Context);
+            var handler = new OrganizationDetailsQueryAsyncHandler(Context);
             var result = await handler.Handle(new OrganizationDetailsQueryAsync { Id = 1 });
 
             Assert.NotNull(result);
@@ -19,7 +19,7 @@ namespace AllReady.UnitTest.Features.Organizations
         [Fact]
         public async Task LockedCampaignsAreNotIncludedInTheResults()
         {
-            var handler = new OrganizationDetailsQueryHandlerAsync(Context);
+            var handler = new OrganizationDetailsQueryAsyncHandler(Context);
             var result = await handler.Handle(new OrganizationDetailsQueryAsync { Id = 1 });
 
             Assert.NotNull(result);
@@ -29,7 +29,7 @@ namespace AllReady.UnitTest.Features.Organizations
         [Fact]
         public async Task NullReturnedWhenSkillIdDoesNotExists()
         {
-            var handler = new OrganizationDetailsQueryHandlerAsync(Context);
+            var handler = new OrganizationDetailsQueryAsyncHandler(Context);
             var result = await handler.Handle(new OrganizationDetailsQueryAsync { Id = 100 });
 
             Assert.Null(result);
@@ -38,7 +38,7 @@ namespace AllReady.UnitTest.Features.Organizations
         [Fact]
         public async Task NullReturnedWhenSkillIdNotInMessage()
         {
-            var handler = new OrganizationDetailsQueryHandlerAsync(Context);
+            var handler = new OrganizationDetailsQueryAsyncHandler(Context);
             var result = await handler.Handle(new OrganizationDetailsQueryAsync());
 
             Assert.Null(result);

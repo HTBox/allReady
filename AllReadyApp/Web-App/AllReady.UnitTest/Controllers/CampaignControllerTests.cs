@@ -67,13 +67,13 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<HttpNotFoundResult>(result);
         }
 
-        //TODO: finish when I know how to test Url.Action and System.Net.WebUtility.UrlEncode
+        //TODO: figure out how to test Url.Action and System.Net.WebUtility.UrlEncode
         [Fact]
         public void DetailsReturnsTheCorrectModel()
         {
         }
 
-        //TODO: finish when I know how to test Url.Action and System.Net.WebUtility.UrlEncode
+        //TODO: figure out how to test Url.Action and System.Net.WebUtility.UrlEncode
         [Fact]
         public void DetailsReturnsTheCorrectView()
         {

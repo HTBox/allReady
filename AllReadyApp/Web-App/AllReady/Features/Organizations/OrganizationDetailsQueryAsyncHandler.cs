@@ -7,15 +7,12 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Features.Organizations
 {
-    public class OrganizationDetailsQueryHandlerAsync : IAsyncRequestHandler<OrganizationDetailsQueryAsync, OrganizationViewModel>
+    public class OrganizationDetailsQueryAsyncHandler : IAsyncRequestHandler<OrganizationDetailsQueryAsync, OrganizationViewModel>
     {
         private readonly AllReadyContext _context;
 
-        public OrganizationDetailsQueryHandlerAsync(AllReadyContext context)
+        public OrganizationDetailsQueryAsyncHandler(AllReadyContext context)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
-
             _context = context;
         }
 

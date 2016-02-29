@@ -1,4 +1,5 @@
-﻿using AllReady.Controllers;
+﻿using System.Linq;
+using AllReady.Controllers;
 using AllReady.Features.Organizations;
 using AllReady.Models;
 using AllReady.ViewModels;
@@ -9,11 +10,50 @@ using Moq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
+using AllReady.Extensions;
+using Autofac.Features.ResolveAnything;
 
 namespace AllReady.UnitTest.Controllers
 {
     public class OrganizationControllerTests
     {
+        [Fact]
+        public void IndexReturnsAView()
+        {
+            var controller = new OrganizationController(new Mock<IMediator>().Object);
+            var result = controller.Index();
+
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public void IndexSendsOrganizationsQuery()
+        {
+            var mockedMediator = new Mock<IMediator>();
+            var controller = new OrganizationController(mockedMediator.Object);
+            controller.Index();
+
+            mockedMediator.Verify(x => x.Send(It.IsAny<OrganizationsQuery>()), Times.Once());
+        }
+
+        [Fact]
+        public void IndexHasRouteAttributeWithCorrectRoute()
+        {
+            var sut = new OrganizationController(null);
+            var routeAttribute = sut.GetAttributesOn(x => x.Index()).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
+            Assert.Equal(routeAttribute.Template, "Organizations/");
+        }
+
+        [Fact]
+        public void ShowOrganizationHasRouteAttributeWithCorrectRoute()
+        {
+            var sut = new OrganizationController(null);
+            var routeAttribute = (RouteAttribute)sut.GetAttributesOn(x => x.ShowOrganization(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(RouteAttribute));
+            Assert.NotNull(routeAttribute);
+            Assert.Equal(routeAttribute.Template, "Organization/{id}/");
+        }
+
         [Fact]
         public async Task ShowOrganization_ReturnsCorrectView()
         {
@@ -28,17 +68,6 @@ namespace AllReady.UnitTest.Controllers
             var finalResult = result as ViewResult;
 
             Assert.Equal("Organization", finalResult.ViewName);
-        }
-
-        [Fact]
-        public async Task ShowOrganization_ReturnsNotFoundForInvalidId()
-        {
-            OrganizationController controller;
-            var mockMediator = MockMediatorOrganizationDetailsQuery(out controller);
-
-            var result = await controller.ShowOrganization(0) as HttpNotFoundResult;
-
-            Assert.NotNull(result);
         }
 
         [Fact]
@@ -58,11 +87,12 @@ namespace AllReady.UnitTest.Controllers
         {
             var dataMock = new Mock<IAllReadyDataAccess>();
 
-            if (model == null) model = new OrganizationViewModel { Id = 1, Name = "Org 1" };
+            if (model == null)
+                model = new OrganizationViewModel { Id = 1, Name = "Org 1" };
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationDetailsQueryAsync>())).Returns(() => Task.FromResult(model)).Verifiable();
-            controller = new OrganizationController(mockMediator.Object, dataMock.Object);
+            controller = new OrganizationController(mockMediator.Object);
             return mockMediator;
         }
 
@@ -72,7 +102,7 @@ namespace AllReady.UnitTest.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationDetailsQueryAsync>())).Returns(() => Task.FromResult((OrganizationViewModel)null)).Verifiable();
-            controller = new OrganizationController(mockMediator.Object, dataMock.Object);
+            controller = new OrganizationController(mockMediator.Object);
             return mockMediator;
         }
 
