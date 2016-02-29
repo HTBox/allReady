@@ -1,43 +1,31 @@
-﻿using System;
-using System.Linq;
-using AllReady.Models;
-using AllReady.ViewModels;
+﻿using AllReady.Features.Campaigns;
+using MediatR;
 using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IAllReadyDataAccess _dataAccess;
+        private readonly IMediator mediator;
 
-        public HomeController(IAllReadyDataAccess dataAccess)
+        public HomeController(IMediator mediator)
         {
-            _dataAccess = dataAccess;
+            this.mediator = mediator;
         }
 
         public IActionResult Index()
         {
-            return View(_dataAccess.Campaigns.Where(c => c.EndDateTime.UtcDateTime.Date > DateTime.UtcNow.Date && !c.Locked).ToViewModel().OrderBy(vm => vm.EndDate).ToList());
+            var results = mediator.Send(new CampaignQuery());
+            return View(results);
         }
 
         public IActionResult About()
         {
-            ViewData["Message"] = "Your application description page.";
-
             return View();
         }
 
         public IActionResult Aesop()
         {
-            ViewData["Message"] = "The backstory on why there are ants on the home page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
             return View();
         }
 
