@@ -9,6 +9,8 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AllReady.Extensions;
+using AllReady.Features.Activity;
 using AllReady.Features.Notifications;
 using MediatR;
 
@@ -138,33 +140,24 @@ namespace AllReady.Controllers
             }
         }
 
-        [HttpPost("{id}/signup")]
-        [Authorize] 
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterActivity(int id)
+        [HttpPost("signup")]
+        [Authorize]
+        public async Task<IActionResult> RegisterActivity(ActivitySignupViewModel signupModel)
         {
-            var user = _allReadyDataAccess.GetUser(User.GetUserId());
-
-            var activity = _allReadyDataAccess.GetActivity(id);
-
-            if (activity == null)
+            if (signupModel == null)
             {
-                return HttpNotFound();
+                return HttpBadRequest();
             }
 
-            if (activity.UsersSignedUp == null)
+            if (!ModelState.IsValid)
             {
-                activity.UsersSignedUp = new List<ActivitySignup>();
+                // this condition should never be hit because client side validation is being performed
+                // but just to cover the bases, if this does happen send the erros to the client
+                return Json(new { errors = ModelState.GetErrorMessages() });
             }
 
-            activity.UsersSignedUp.Add(new ActivitySignup
-            {
-                Activity = activity,
-                User = user,
-                SignupDateTime = DateTime.UtcNow
-            });
-
-            await _allReadyDataAccess.UpdateActivity(activity);
+            await _bus.SendAsync(new ActivitySignupCommand() { ActivitySignup = signupModel });
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
@@ -181,7 +174,7 @@ namespace AllReady.Controllers
             //Notify admins & volunteer
             await _bus.PublishAsync(new UserUnenrolls {ActivityId = signedUp.Activity.Id, UserId = signedUp.User.Id});
 
-            await _allReadyDataAccess.DeleteActivitySignupAsync(signedUp.Id);
+            await _allReadyDataAccess.DeleteActivityAndTaskSignupsAsync(signedUp.Id);
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 

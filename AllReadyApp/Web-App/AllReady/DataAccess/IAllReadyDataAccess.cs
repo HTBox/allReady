@@ -59,7 +59,7 @@ namespace AllReady.Models
 
         Task AddActivitySignupAsync(ActivitySignup userSignup);
 
-        Task DeleteActivitySignupAsync(int activitySignupId);
+        Task DeleteActivityAndTaskSignupsAsync(int activitySignupId);
 
         Task UpdateActivitySignupAsync(ActivitySignup value);
 
