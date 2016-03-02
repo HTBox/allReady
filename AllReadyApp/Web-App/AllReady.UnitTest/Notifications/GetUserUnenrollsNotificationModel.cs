@@ -109,7 +109,7 @@ namespace AllReady.UnitTest.Notifications
         public void ModelCanBeCreatedFomExistingActivity()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new ActivityDetailForNotificationQuery { ActivityId = 1 };
+            var query = new ActivityDetailForNotificationQuery { ActivityId = 1, UserId = _user1.Id };
             var handler = new ActivityDetailForNotificationQueryHandler(context);
             var result = handler.Handle(query);
             Assert.NotNull(result);
@@ -123,7 +123,7 @@ namespace AllReady.UnitTest.Notifications
         public void ActivityDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new ActivityDetailForNotificationQuery { ActivityId = 999 };
+            var query = new ActivityDetailForNotificationQuery { ActivityId = 999, UserId = _user1.Id};
             var handler = new ActivityDetailForNotificationQueryHandler(context);
             var result = handler.Handle(query);
             Assert.Null(result);
