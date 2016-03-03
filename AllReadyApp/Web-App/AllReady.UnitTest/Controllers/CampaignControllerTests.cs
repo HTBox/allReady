@@ -6,6 +6,7 @@ using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.Routing;
 using Moq;
 using Xunit;
 using CampaignController = AllReady.Controllers.CampaignController;
@@ -37,6 +38,7 @@ namespace AllReady.UnitTest.Controllers
         public void DetailsSendsCampaignByCampaignIdQueryWithCorrectCampaignId()
         {
             const int campaignId = 1;
+
             var mockedMediator = new Mock<IMediator>();
             mockedMediator.Setup(m => m.Send(It.Is<CampaignByCampaignIdQuery>(q => q.CampaignId == campaignId)));
 
@@ -67,16 +69,91 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<HttpNotFoundResult>(result);
         }
 
-        //TODO: figure out how to test Url.Action and System.Net.WebUtility.UrlEncode
         [Fact]
-        public void DetailsReturnsTheCorrectModel()
+        public void DetailsSetsViewBagAbsoluteUrlToUrlEncodedUrlAction()
         {
+            const string urlEncodedValue = "urlEncodedValue";
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign());
+
+            var sut = new CampaignControllerForDetailsActionMethod(mockMediator.Object, urlEncodedValue)
+            {
+                Url = new Mock<IUrlHelper>().Object
+            };
+            sut.SetDefaultHttpContext();
+
+            sut.Details(It.IsAny<int>());
+
+            Assert.Equal(urlEncodedValue, sut.ViewBag.AbsoluteUrl);
         }
 
-        //TODO: figure out how to test Url.Action and System.Net.WebUtility.UrlEncode
+        [Fact]
+        public void DetailsCallsUrlActionWithTheCorrectUrlActionContextValues()
+        {
+            const string requestScheme = "requestScheme";
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign());
+
+            var mockUrlHelper = new Mock<IUrlHelper>();
+
+            var sut = new CampaignControllerForDetailsActionMethod(mockMediator.Object)
+            {
+                Url = mockUrlHelper.Object
+            };
+            sut.SetFakeHttpContext().SetFakeHttpRequestSchemeTo(requestScheme);
+
+            sut.Details(It.IsAny<int>());
+
+            mockUrlHelper.Verify(mock => mock.Action(It.Is<UrlActionContext>(x =>
+                x.Action == "Details" &&
+                x.Controller == "Campaign" &&
+                x.Values == null &&
+                x.Protocol == requestScheme)));
+        }
+
         [Fact]
         public void DetailsReturnsTheCorrectView()
         {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign());
+
+            var sut = new CampaignControllerForDetailsActionMethod(mockMediator.Object) { Url = new Mock<IUrlHelper>().Object };
+            sut.SetDefaultHttpContext();
+
+            var result = (ViewResult)sut.Details(It.IsAny<int>());
+
+            Assert.Equal("Details", result.ViewName);
+        }
+
+        [Fact]
+        public void DetailsReturnsTheCorrectModel()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign());
+
+            var sut = new CampaignControllerForDetailsActionMethod(mockMediator.Object) { Url = new Mock<IUrlHelper>().Object };
+            sut.SetDefaultHttpContext();
+
+            var result = (ViewResult)sut.Details(It.IsAny<int>());
+
+            Assert.IsType<CampaignViewModel>(result.ViewData.Model);
+        }
+
+        public class CampaignControllerForDetailsActionMethod : CampaignController
+        {
+            private readonly string urlEncodedValue;
+
+            public CampaignControllerForDetailsActionMethod(IMediator mediator, string urlEncodedValue = null) : base(mediator)
+            {
+                this.urlEncodedValue = urlEncodedValue;
+            }
+
+            protected override string UrlEncode(string value)
+            {
+                return urlEncodedValue;
+            }
         }
 
         [Fact]

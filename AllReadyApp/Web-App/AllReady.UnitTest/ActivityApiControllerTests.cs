@@ -9,11 +9,7 @@ using Microsoft.Data.Entity;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Moq;
-using System.Security.Claims;
-using System.Security.Principal;
-using AllReady.Features.Notifications;
 using MediatR;
-using Microsoft.AspNet.Http;
 using System.Threading.Tasks;
 
 namespace AllReady.UnitTest
@@ -21,9 +17,9 @@ namespace AllReady.UnitTest
     public class ActivityApiControllerTest : TestBase
     {
         private static IServiceProvider _serviceProvider;
-        private static bool populatedData = false;
-        private static int activitiesAdded = 0;
-        private Mock<IMediator> _bus;
+        private static bool populatedData;
+        private static int activitiesAdded;
+        private Mock<IMediator> _mediator;
 
         public ActivityApiControllerTest()
         {
@@ -48,7 +44,7 @@ namespace AllReady.UnitTest
         public void GetAllActivities()
         {
             // Arrange
-            ActivityApiController controller = GetActivityController();
+            var controller = GetActivityController();
 
             // Act
             var activities = new List<ActivityViewModel>(controller.Get());
@@ -61,7 +57,7 @@ namespace AllReady.UnitTest
         public void GetSingleActivity()
         {
             // Arrange
-            ActivityApiController controller = GetActivityController();
+            var controller = GetActivityController();
 
             // Act
             int recordId = 5;
@@ -75,41 +71,40 @@ namespace AllReady.UnitTest
             Assert.Equal(activityViewModel.EndDateTime, DateTime.MaxValue.ToUniversalTime());
             Assert.Equal(activityViewModel.StartDateTime, DateTime.MinValue.ToUniversalTime());
         }
+
         [Fact]
         public void ActivityDoesExist()
         {
             // Arrange
-            ActivityApiController controller = GetActivityController();
+            var controller = GetActivityController();
 
             // Act
-            int recordId = 1;
+            const int recordId = 1;
             var activityViewModel = controller.Get(recordId);
 
             Assert.NotNull(activityViewModel);
-
         }
 
         [Fact]
         public void HandlesInvalidActivityId()
         {
             // Arrange
-            ActivityApiController controller = GetActivityController();
+            var controller = GetActivityController();
 
             // Act
-            int recordId = -1;
+            const int recordId = -1;
             var activityViewModel = controller.Get(recordId);
 
             Assert.Null(activityViewModel);
-
         }
 
         [Fact]
         public async Task UnregisterActivityShouldRemoveActivitySignup()
         {
             // Arrange
-            int recordId = 5;
+            const int recordId = 5;
             var controller = GetActivityController()
-                .WithUser(recordId.ToString());
+                .SetFakeUser(recordId.ToString());
 
             // Act
             var result = await controller.UnregisterActivity(recordId);
@@ -123,24 +118,21 @@ namespace AllReady.UnitTest
             Assert.Equal(0, numOfUsersSignedUp);
         }
 
-
         [Fact]
         public async Task UnregisterActivityShouldRemoveTaskSignup()
         {
             // Arrange
-            int recordId = 5;
+            const int recordId = 5;
             var controller = GetActivityController()
-                .WithUser(recordId.ToString());
-
+                .SetFakeUser(recordId.ToString());
+            
             // Act
             var result = await controller.UnregisterActivity(recordId);
 
             // Assert
             Assert.NotNull(result);
             var context = _serviceProvider.GetService<AllReadyContext>();
-            var numOfTasksSignedUpFor = context.TaskSignups
-                .Where(e => e.Task.Activity.Id == recordId)
-                .Count();
+            var numOfTasksSignedUpFor = context.TaskSignups.Count(e => e.Task.Activity.Id == recordId);
             Assert.Equal(0, numOfTasksSignedUpFor);
         }
 
@@ -151,8 +143,8 @@ namespace AllReady.UnitTest
             var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
             var allReadyDataAccess = new AllReadyDataAccessEF7(allReadyContext);
 
-            _bus = new Mock<IMediator>();
-            var controller = new ActivityApiController(allReadyDataAccess, _bus.Object);
+            _mediator = new Mock<IMediator>();
+            var controller = new ActivityApiController(allReadyDataAccess, _mediator.Object);
 
             PopulateData(allReadyContext);
             return controller;
