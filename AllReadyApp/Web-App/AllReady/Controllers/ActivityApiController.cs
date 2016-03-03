@@ -115,7 +115,7 @@ namespace AllReady.Controllers
         }
 
         [HttpPut("{id}/checkin")]
-        [Authorize()] 
+        [Authorize] 
         public async Task<ActionResult> PutCheckin(int id)
         {
             var userId = User.GetUserId();

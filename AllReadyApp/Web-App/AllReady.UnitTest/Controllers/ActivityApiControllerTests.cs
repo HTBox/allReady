@@ -14,6 +14,17 @@ using Xunit;
 
 namespace AllReady.UnitTest.Controllers
 {
+    //GetActivitiesByZip
+    //GetActivitiesByLocation
+    //GetCheckin
+    //PutCheckin
+    //RegisterActivity
+    //UnregisterActivity
+    //    - existing test the needs tests for:
+    //      - GetActivitySignup is made with correct Id and User.GetUserId
+    //        - _mediator.PublishAsync and _allReadyDataAccess.DeleteActivityAndTaskSignupsAsync are called with correct args
+    //GetQrCode: check notes for this one, it's going to be a LOT of work
+
     public class ActivityApiControllerTest : TestBase
     {
         private static IServiceProvider _serviceProvider;
@@ -41,6 +52,81 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
+        public void ControllerHasARouteAtttributeWithTheCorrectRoute()
+        {
+        }
+
+        [Fact]
+        public void ControllerHasAProducesAtttributeWithTheCorrectContentType()
+        {
+        }
+
+        [Fact]
+        public void GetHasHttpGetAttribute()
+        {
+        }
+
+        [Fact]
+        public void GetByIdHasHttpGetAttributeWithCorrectTemplate()
+        {
+        }
+
+        [Fact]
+        public void GetByIdHasProducesAttributeWithCorrectContentTypes()
+        {
+        }
+
+        [Fact]
+        public void GetActivitiesByZipHasRouteAttributeWithRoute()
+        {
+        }
+
+        [Fact]
+        public void GetActivitiesByLocationHasRouteAttributeWithCorrectRoute()
+        {
+        }
+
+        [Fact]
+        public void GetQrCodeHasHttpGetAttributeWithCorrectTemplate()
+        {
+        }
+
+        [Fact]
+        public void GetCheckinHasHttpGetAttributeWithCorrectTemplate()
+        {
+        }
+
+        [Fact]
+        public void PutCheckinHasHttpPutAttributeWithCorrectTemplate()
+        {
+        }
+
+        [Fact]
+        public void PutCheckinHasAuthorizeAttribute()
+        {
+        }
+
+        [Fact]
+        public void RegisterActivityHasValidateAntiForgeryTokenAttribute()
+        {
+        }
+
+        [Fact]
+        public void RegisterActivityHasHttpPostAttributeWithCorrectTemplate()
+        {
+        }
+
+        [Fact]
+        public void UnregisterActivityHasHttpDeleteAttributeWithCorrectTemplate()
+        {
+        }
+
+        [Fact]
+        public void UnregisterActivityHasAuthorizeAttribute()
+        {
+        }
+
+        [Fact]
         public void GetAllActivities()
         {
             // Arrange
@@ -60,7 +146,7 @@ namespace AllReady.UnitTest.Controllers
             var controller = GetActivityController();
 
             // Act
-            int recordId = 5;
+            var recordId = 5;
             var activityViewModel = controller.Get(recordId);
 
             // Assert
@@ -125,7 +211,7 @@ namespace AllReady.UnitTest.Controllers
             const int recordId = 5;
             var controller = GetActivityController()
                 .SetFakeUser(recordId.ToString());
-
+            
             // Act
             var result = await controller.UnregisterActivity(recordId);
 
