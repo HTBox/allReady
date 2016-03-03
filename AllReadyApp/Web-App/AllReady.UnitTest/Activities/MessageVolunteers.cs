@@ -3,12 +3,12 @@ using AllReady.Areas.Admin.Models;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
-using Microsoft.AspNet.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using Xunit;
 
 namespace AllReady.UnitTest.Activities
@@ -18,19 +18,21 @@ namespace AllReady.UnitTest.Activities
         protected override void LoadTestData()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            Organization htb = new Organization()
+            var htb = new Organization()
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
                 WebUrl = "http://www.htbox.org",
                 Campaigns = new List<Campaign>()
             };
-            Campaign firePrev = new Campaign()
+
+            var firePrev = new Campaign()
             {
                 Name = "Neighborhood Fire Prevention Days",
                 ManagingOrganization = htb
             };
-            Activity queenAnne = new Activity()
+
+            var queenAnne = new Activity()
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
@@ -53,10 +55,12 @@ namespace AllReady.UnitTest.Activities
             htb.Campaigns.Add(firePrev);            
             context.Organizations.Add(htb);
             context.Activities.Add(queenAnne);
-            
-            var activitySignups = new List<ActivitySignup>();
-            activitySignups.Add(new ActivitySignup { Activity = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow });
-            activitySignups.Add(new ActivitySignup { Activity = queenAnne, User = user2, SignupDateTime = DateTime.UtcNow });
+
+            var activitySignups = new List<ActivitySignup>
+            {
+                new ActivitySignup { Activity = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow },
+                new ActivitySignup { Activity = queenAnne, User = user2, SignupDateTime = DateTime.UtcNow }
+            };
 
             context.ActivitySignup.AddRange(activitySignups);
             context.SaveChanges();
@@ -75,13 +79,12 @@ namespace AllReady.UnitTest.Activities
                 }
             };
 
-            var bus = new Mock<IMediator>();
+            var mediator = new Mock<IMediator>();
             
-            
-            var handler = new MessageActivityVolunteersCommandHandler(Context, bus.Object);
+            var handler = new MessageActivityVolunteersCommandHandler(Context, mediator.Object);
             var result = handler.Handle(command);
 
-            bus.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
+            mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
                    notifyCommand.ViewModel != null &&
                    notifyCommand.ViewModel.EmailMessage == "This is my message" &&
                    notifyCommand.ViewModel.Subject == "This is my subject" &&
@@ -90,7 +93,6 @@ namespace AllReady.UnitTest.Activities
                    notifyCommand.ViewModel.EmailRecipients.Contains("blah@2.com")
 
             )), Times.Once());
-            
         }
     }
 }

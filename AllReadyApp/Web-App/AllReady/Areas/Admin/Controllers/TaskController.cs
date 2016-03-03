@@ -16,12 +16,12 @@ namespace AllReady.Areas.Admin.Controllers
     public class TaskController : Controller
     {
         private readonly IAllReadyDataAccess _dataAccess;
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
 
-        public TaskController(IAllReadyDataAccess dataAccess, IMediator bus)
+        public TaskController(IAllReadyDataAccess dataAccess, IMediator mediator)
         {
             _dataAccess = dataAccess;
-            _bus = bus;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -65,7 +65,7 @@ namespace AllReady.Areas.Admin.Controllers
                 {
                     return HttpUnauthorized();
                 }
-                _bus.Send(new EditTaskCommand() { Task = model });
+                _mediator.Send(new EditTaskCommand() { Task = model });
                 return RedirectToAction("Details", "Activity", new { id = activityId });
             }
             return View("Edit", model);
@@ -75,7 +75,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Task/Edit/{id}")]
         public IActionResult Edit(int id)
         {
-            var task = _bus.Send(new EditTaskQuery() { TaskId = id });
+            var task = _mediator.Send(new EditTaskQuery() { TaskId = id });
             if (task == null)
             {
                 return HttpNotFound();
@@ -104,7 +104,7 @@ namespace AllReady.Areas.Admin.Controllers
                 {
                     return HttpUnauthorized();
                 }
-                _bus.Send(new EditTaskCommand() { Task = model });
+                _mediator.Send(new EditTaskCommand() { Task = model });
                 return RedirectToAction("Details", "Task", new { id = model.Id });
             }
 
@@ -113,7 +113,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Delete(int id)
         {
-            var task = _bus.Send(new TaskQuery() { TaskId = id });
+            var task = _mediator.Send(new TaskQuery() { TaskId = id });
             if (task == null)
             {
                 return HttpNotFound();
@@ -131,7 +131,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Task/Details/{id}")]
         public IActionResult Details(int id)
         {
-            var task = _bus.Send(new TaskQuery() { TaskId = id });
+            var task = _mediator.Send(new TaskQuery() { TaskId = id });
             if (task == null)
             {
                 return new HttpNotFoundResult();
@@ -143,7 +143,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            var task = _bus.Send(new TaskQuery() { TaskId = id });
+            var task = _mediator.Send(new TaskQuery() { TaskId = id });
             if (task == null)
             {
                 return HttpNotFound();
@@ -153,7 +153,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
             var activityId = task.ActivityId;
-            _bus.Send(new DeleteTaskCommand() { TaskId = id });
+            _mediator.Send(new DeleteTaskCommand() { TaskId = id });
             return RedirectToAction("Details", "Activity", new { id = activityId });
         }
 
@@ -172,14 +172,14 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Assign(int id, List<string> userIds)
         {
-            var task = _bus.Send(new TaskQuery() { TaskId = id });
+            var task = _mediator.Send(new TaskQuery() { TaskId = id });
             
             if (!UserIsOrganizationAdminOfActivity(task.ActivityId))
             {
                 return new HttpUnauthorizedResult();
             }
             
-            await _bus.SendAsync(new AssignTaskCommand { TaskId = id, UserIds = userIds });
+            await _mediator.SendAsync(new AssignTaskCommand { TaskId = id, UserIds = userIds });
 
             return RedirectToRoute(new { controller = "Task", Area = "Admin", action = "Details", id = id });
         }
@@ -194,7 +194,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpBadRequest(ModelState);
             }
 
-            var task = _bus.Send(new TaskQuery { TaskId = model.TaskId });
+            var task = _mediator.Send(new TaskQuery { TaskId = model.TaskId });
             if (task == null)
             {
                 return HttpNotFound();
@@ -205,7 +205,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
 
-            _bus.Send(new MessageTaskVolunteersCommand { Model = model });
+            _mediator.Send(new MessageTaskVolunteersCommand { Model = model });
             return Ok();
         }
 

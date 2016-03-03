@@ -10,12 +10,12 @@ namespace AllReady.Areas.Admin.Features.Tasks
     public class TaskStatusChangeHandler : RequestHandler<TaskStatusChangeCommand>
     {
         private AllReadyContext _context;
-        private IMediator _bus;
+        private IMediator _mediator;
 
-        public TaskStatusChangeHandler(AllReadyContext context, IMediator bus)
+        public TaskStatusChangeHandler(AllReadyContext context, IMediator mediator)
         {
             _context = context;
-            _bus = bus;
+            _mediator = mediator;
         }
 
         protected override void HandleCore(TaskStatusChangeCommand message)
@@ -64,7 +64,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             _context.SaveChanges();
 
             var notification = new TaskSignupStatusChanged { SignupId = taskSignup.Id };
-            _bus.Publish(notification);
+            _mediator.Publish(notification);
         }
     }
 }

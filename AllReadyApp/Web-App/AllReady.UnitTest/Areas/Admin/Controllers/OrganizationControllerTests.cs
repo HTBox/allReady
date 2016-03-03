@@ -17,7 +17,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
     {
         private readonly OrganizationEditModel _organizationEditModel;
 
-        private static Mock<IMediator> _bus;
+        private static Mock<IMediator> _mediator;
 
         private static OrganizationController _sut;
 
@@ -63,13 +63,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         #region IndexTests
 
         [Fact]
-        public void IndexShouldReturnTheAViewWithTheListReturnedFromTheBus()
+        public void IndexShouldReturnTheAViewWithTheListReturnedFromTheMediator()
         {
             CreateSut();
 
             var organizationSummaryModel = new List<OrganizationSummaryModel> { new OrganizationSummaryModel() };
 
-            _bus.Setup(x => x.Send(It.IsAny<OrganizationListQuery>())).Returns(organizationSummaryModel);
+            _mediator.Setup(x => x.Send(It.IsAny<OrganizationListQuery>())).Returns(organizationSummaryModel);
 
             var result = (ViewResult)_sut.Index();
 
@@ -81,21 +81,21 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         #region DetailsTests
 
         [Fact]
-        public void DetailsShouldPassTheIdToTheBus()
+        public void DetailsShouldPassTheIdToTheMediator()
         {
             CreateSut();
 
             _sut.Details(Id);
 
-            _bus.Verify(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id)));
+            _mediator.Verify(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id)));
         }
 
         [Fact]
-        public void WhenTheBusReturnsNullForThatIdHttpNotFoundShouldBeReturned()
+        public void WhenTheMediatorReturnsNullForThatIdHttpNotFoundShouldBeReturned()
         {
             CreateSut();
 
-            _bus.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns<OrganizationDetailModel>(null);
+            _mediator.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns<OrganizationDetailModel>(null);
 
             var result = _sut.Details(Id);
 
@@ -103,13 +103,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void WhenTheBusReturnsAOrganizationDetailModelForThatIdAViewShouldBeReturned()
+        public void WhenTheMediatorReturnsAOrganizationDetailModelForThatIdAViewShouldBeReturned()
         {
             CreateSut();
 
             var model = new OrganizationDetailModel();
 
-            _bus.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns(model);
+            _mediator.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns(model);
 
             var result = (ViewResult)_sut.Details(Id);
 
@@ -152,7 +152,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             _sut.Create(_organizationEditModel);
 
-            _bus.Verify(x => x.Send(It.Is<OrganizationEditCommand>( y => y.Organization == _organizationEditModel)));
+            _mediator.Verify(x => x.Send(It.Is<OrganizationEditCommand>( y => y.Organization == _organizationEditModel)));
         }
 
         [Fact]
@@ -196,11 +196,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         #region EditTests
 
         [Fact]
-        public void EditGetShouldReturnHttpNotFoundWhenBusReturnsNullForId()
+        public void EditGetShouldReturnHttpNotFoundWhenMediatorReturnsNullForId()
         {
             CreateSut();
 
-            _bus.Setup(x => x.Send(It.Is<OrganizationEditQuery>(y => y.Id == Id))).Returns<OrganizationEditModel>(null);
+            _mediator.Setup(x => x.Send(It.Is<OrganizationEditQuery>(y => y.Id == Id))).Returns<OrganizationEditModel>(null);
 
             var result = _sut.Edit(Id);
 
@@ -208,13 +208,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void EditGetShouldReturnEditViewWhenBusReturnsOrganizationEditModel()
+        public void EditGetShouldReturnEditViewWhenMediatorReturnsOrganizationEditModel()
         {
             CreateSut();
 
             var model = new OrganizationEditModel();
 
-            _bus.Setup(x => x.Send(It.Is<OrganizationEditQuery>(y => y.Id == Id))).Returns(model);
+            _mediator.Setup(x => x.Send(It.Is<OrganizationEditQuery>(y => y.Id == Id))).Returns(model);
 
             var result = (ViewResult)_sut.Edit(Id);
 
@@ -249,13 +249,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void EditPostShouldRedirectToDetailsWithTheIdFromTheBusIfModelStateIsValid()
+        public void EditPostShouldRedirectToDetailsWithTheIdFromTheMediatorIfModelStateIsValid()
         {
             CreateSut();
 
             var model = new OrganizationEditModel();
 
-            _bus.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
+            _mediator.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
 
             var result = (RedirectToActionResult)_sut.Edit(model);
 
@@ -285,11 +285,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void DeleteGetWhenBusReturnsNullAHttpNotFoundResponseShouldBeReturned()
+        public void DeleteGetWhenMediatorReturnsNullAHttpNotFoundResponseShouldBeReturned()
         {
             CreateSut();
                         
-            _bus.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns<OrganizationDetailModel>(null);
+            _mediator.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns<OrganizationDetailModel>(null);
 
             var result = _sut.Delete(Id);
 
@@ -297,13 +297,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void DeleteGetWhenBusReturnsAnOrganizationAViewOfThatOrganizationShouldBeShown()
+        public void DeleteGetWhenMediatorReturnsAnOrganizationAViewOfThatOrganizationShouldBeShown()
         {
             CreateSut();
 
             var organizationModel = new OrganizationDetailModel();
 
-            _bus.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns(organizationModel);
+            _mediator.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns(organizationModel);
 
             var result = (ViewResult)_sut.Delete(Id);
 
@@ -329,13 +329,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void DeletePostShouldSendAMessageWithTheCorrectIdUsingTheBus()
+        public void DeletePostShouldSendAMessageWithTheCorrectIdUsingTheMediator()
         {
             CreateSut();
 
             _sut.DeleteConfirmed(Id);
 
-            _bus.Verify(x => x.Send(It.Is<OrganizationDeleteCommand>(y => y.Id == Id)));
+            _mediator.Verify(x => x.Send(It.Is<OrganizationDeleteCommand>(y => y.Id == Id)));
         }
 
         [Fact]
@@ -352,9 +352,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
         private static void CreateSut()
         {
-            _bus = new Mock<IMediator>();
+            _mediator = new Mock<IMediator>();
 
-            _sut = new OrganizationController(_bus.Object);
+            _sut = new OrganizationController(_mediator.Object);
         }
         
         private static void AddErrorToModelState()

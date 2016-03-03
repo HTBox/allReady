@@ -14,11 +14,11 @@ namespace AllReady.Areas.Admin.Controllers
 
     public class OrganizationApiController : Controller
     {
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
 
-        public OrganizationApiController(IMediator bus)
+        public OrganizationApiController(IMediator mediator)
         {
-            _bus = bus;
+            _mediator = mediator;
         }
 
         // GET api/values/5/Contact
@@ -26,7 +26,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Produces("application/json", Type = typeof(ContactInformationModel))]
         public ContactInformationModel GetContact(int id)
         {
-            var contact = _bus.Send(new OrganizationContactQuery  { Id = id, ContactType = ContactTypes.Primary });
+            var contact = _mediator.Send(new OrganizationContactQuery  { Id = id, ContactType = ContactTypes.Primary });
             return contact;
         }
     }

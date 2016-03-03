@@ -19,7 +19,7 @@ namespace AllReady.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly IAllReadyDataAccess _dataAccess;
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
 
         public ManageController(
             UserManager<ApplicationUser> userManager,
@@ -27,14 +27,14 @@ namespace AllReady.Controllers
             IEmailSender emailSender,
             ISmsSender smsSender,
             IAllReadyDataAccess dataAccess,
-            IMediator bus)
+            IMediator mediator)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _dataAccess = dataAccess;
-            _bus = bus;
+            _mediator = mediator;
         }
 
         // GET: /Manage/Index
@@ -106,7 +106,7 @@ namespace AllReady.Controllers
         {
             if (user.IsProfileComplete())
             {
-                await _bus.SendAsync(new RemoveUserProfileIncompleteClaimCommand{ UserId = user.Id });
+                await _mediator.SendAsync(new RemoveUserProfileIncompleteClaimCommand{ UserId = user.Id });
                 await _signInManager.RefreshSignInAsync(user);
             }
         }

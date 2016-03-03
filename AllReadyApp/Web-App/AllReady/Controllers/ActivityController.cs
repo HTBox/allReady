@@ -16,12 +16,12 @@ namespace AllReady.Controllers
     public class ActivityController : Controller
     {
         private readonly IAllReadyDataAccess _allReadyDataAccess;
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
 
-        public ActivityController(IAllReadyDataAccess allReadyDataAccess, IMediator bus)
+        public ActivityController(IAllReadyDataAccess allReadyDataAccess, IMediator mediator)
         {
             _allReadyDataAccess = allReadyDataAccess;
-            _bus = bus;
+            _mediator = mediator;
         }
 
         [Route("~/MyActivities")]
@@ -104,7 +104,7 @@ namespace AllReady.Controllers
 
             if (ModelState.IsValid)
             {
-                await _bus.SendAsync(new ActivitySignupCommand() { ActivitySignup = signupModel });
+                await _mediator.SendAsync(new ActivitySignupCommand() { ActivitySignup = signupModel });
             }
             else
             {
@@ -125,7 +125,7 @@ namespace AllReady.Controllers
                 return HttpBadRequest();
             }
 
-            _bus.Send(new TaskStatusChangeCommand { TaskStatus = status, TaskId = taskId, UserId = userId, TaskStatusDescription = statusDesc });
+            _mediator.Send(new TaskStatusChangeCommand { TaskStatus = status, TaskId = taskId, UserId = userId, TaskStatusDescription = statusDesc });
 
             return RedirectToAction(nameof(ShowActivity), new { id = activityId });
         }

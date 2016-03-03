@@ -11,13 +11,13 @@ namespace AllReady.Features.Notifications
     public class NotifyAdminForActivitySignup : IAsyncNotificationHandler<VolunteerInformationAdded>
     {
         private readonly AllReadyContext _context;
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
 
-        public NotifyAdminForActivitySignup(AllReadyContext context, IMediator bus, IOptions<GeneralSettings> options)
+        public NotifyAdminForActivitySignup(AllReadyContext context, IMediator mediator, IOptions<GeneralSettings> options)
         {
             _context = context;
-            _bus = bus;
+            _mediator = mediator;
             _options = options;
         }
 
@@ -49,7 +49,7 @@ namespace AllReady.Features.Notifications
                     }
                 };
 
-                await _bus.SendAsync(command).ConfigureAwait(false);
+                await _mediator.SendAsync(command).ConfigureAwait(false);
             }
         }
     }

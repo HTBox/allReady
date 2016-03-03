@@ -11,12 +11,12 @@ namespace AllReady.Areas.Admin.Features.Activities
     public class MessageActivityVolunteersCommandHandler : AsyncRequestHandler<MessageActivityVolunteersCommand>
     {
         private AllReadyContext _context;
-        private IMediator _bus;
+        private IMediator _mediator;
 
-        public MessageActivityVolunteersCommandHandler(AllReadyContext context, IMediator bus)
+        public MessageActivityVolunteersCommandHandler(AllReadyContext context, IMediator mediator)
         {
             _context = context;
-            _bus = bus;
+            _mediator = mediator;
         }
 
         protected override async Task HandleCore(MessageActivityVolunteersCommand message)
@@ -50,7 +50,7 @@ namespace AllReady.Areas.Admin.Features.Activities
                 }
             };
 
-            await _bus.SendAsync(command).ConfigureAwait(false);
+            await _mediator.SendAsync(command).ConfigureAwait(false);
         }
     }
 }

@@ -25,15 +25,15 @@ namespace AllReady.Areas.Admin.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IAllReadyDataAccess _dataAccess;
         private ILogger<SiteController> _logger;
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
 
-        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger, IMediator bus)
+        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger, IMediator mediator)
         {
             _userManager = userManager;
             _emailSender = emailSender;
             _dataAccess = dataAccess;
             _logger = logger;
-            _bus = bus;
+            _mediator = mediator;
         }
 
         public IActionResult Index()
@@ -48,7 +48,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult DeleteUser(string userId)
         {
-            var user = _bus.Send(new UserQuery { UserId = userId });
+            var user = _mediator.Send(new UserQuery { UserId = userId });
 
             var viewModel = new DeleteUserModel()
             {
@@ -63,7 +63,7 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> ConfirmDeleteUser(string userId)
         {
             // send command to bus
-            await _bus.SendAsync(new DeleteUserCommand { UserId = userId });
+            await _mediator.SendAsync(new DeleteUserCommand { UserId = userId });
 
             // follow PRG
             return RedirectToAction("Index");
