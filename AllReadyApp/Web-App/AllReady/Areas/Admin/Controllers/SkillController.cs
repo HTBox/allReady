@@ -32,20 +32,18 @@ namespace AllReady.Areas.Admin.Controllers
                 var allSkills = await _mediator.SendAsync(new SkillListQueryAsync());
                 return View(allSkills);
             }
-            else
-            {
-                var organizationId = User.GetOrganizationId();
-                if (!organizationId.HasValue)
-                    return new HttpUnauthorizedResult(); // Edge case of user having Org Admin claim but not Org Id claim
+
+            var organizationId = User.GetOrganizationId();
+            if (!organizationId.HasValue)
+                return new HttpUnauthorizedResult(); // Edge case of user having Org Admin claim but not Org Id claim
 
                 string organizationName = await _mediator.SendAsync(new OrganizationNameQueryAsync { Id = organizationId.Value });
-                if (string.IsNullOrEmpty(organizationName)) return HttpNotFound();
+            if (string.IsNullOrEmpty(organizationName)) return HttpNotFound();
 
-                ViewData["Title"] = $"Skills - {organizationName}";
+            ViewData["Title"] = $"Skills - {organizationName}";
                 var organizationSkills = await _mediator.SendAsync(new SkillListQueryAsync { OrganizationId = organizationId.Value });
 
-                return View("Index", organizationSkills);
-            }
+            return View("Index", organizationSkills);
         }
 
         // GET /Admin/Skill/Create
