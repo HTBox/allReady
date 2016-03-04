@@ -27,7 +27,7 @@ namespace AllReady.Features.Notifications
             // don't let problem with notification keep us from continuing
             try
             {
-            var model = _mediator.Send(new ActivityDetailForNotificationQuery {ActivityId = notification.ActivityId});
+                var notificationModel = _mediator.Send(new ActivityDetailForNotificationQuery { ActivityId = notification.ActivityId, UserId = notification.UserId });
 
                 var campaignContact = notificationModel.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
                 var adminEmail = campaignContact?.Contact.Email;
