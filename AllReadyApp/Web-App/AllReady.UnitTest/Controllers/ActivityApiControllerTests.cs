@@ -7,6 +7,7 @@ using AllReady.Models;
 using AllReady.ViewModels;
 using AllReady.Extensions;
 using MediatR;
+using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Data.Entity;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +26,7 @@ namespace AllReady.UnitTest.Controllers
     //    - existing test the needs tests for:
     //      - GetActivitySignup is made with correct Id and User.GetUserId
     //        - _mediator.PublishAsync and _allReadyDataAccess.DeleteActivityAndTaskSignupsAsync are called with correct args
-    //GetQrCode: check notes for this one, it's going to be a LOT of work
+    //GetQrCode: check notes for this one
 
     public class ActivityApiControllerTest : TestBase
     {
@@ -54,6 +55,89 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
+        public void GetSingleActivity()
+        {
+            // Arrange
+            var controller = GetActivityApiController();
+
+            // Act
+            var recordId = 5;
+            var activityViewModel = controller.Get(recordId);
+
+            // Assert
+            Assert.Equal(activityViewModel.Id, recordId);
+            Assert.Equal(activityViewModel.CampaignName, string.Format(TestActivityModelProvider.CampaignNameFormat, recordId));
+            Assert.Equal(activityViewModel.CampaignId, recordId);
+            Assert.Equal(activityViewModel.Description, string.Format(TestActivityModelProvider.ActivityDescriptionFormat, recordId));
+            Assert.Equal(activityViewModel.EndDateTime, DateTime.MaxValue.ToUniversalTime());
+            Assert.Equal(activityViewModel.StartDateTime, DateTime.MinValue.ToUniversalTime());
+        }
+
+        [Fact]
+        public void ActivityDoesExist()
+        {
+            // Arrange
+            var controller = GetActivityApiController();
+
+            // Act
+            const int recordId = 1;
+            var activityViewModel = controller.Get(recordId);
+
+            Assert.NotNull(activityViewModel);
+        }
+
+        [Fact]
+        public void HandlesInvalidActivityId()
+        {
+            // Arrange
+            var controller = GetActivityApiController();
+
+            // Act
+            const int recordId = -1;
+            var activityViewModel = controller.Get(recordId);
+
+            Assert.Null(activityViewModel);
+        }
+
+        [Fact]
+        public async Task UnregisterActivityShouldRemoveActivitySignup()
+        {
+            // Arrange
+            const int recordId = 5;
+            var controller = GetActivityApiController()
+                .SetFakeUser(recordId.ToString());
+
+            // Act
+            var result = await controller.UnregisterActivity(recordId);
+
+            // Assert
+            Assert.NotNull(result);
+            var context = _serviceProvider.GetService<AllReadyContext>();
+            var numOfUsersSignedUp = context.Activities
+                .First(e => e.Id == recordId)
+                .UsersSignedUp.Count;
+            Assert.Equal(0, numOfUsersSignedUp);
+        }
+
+        [Fact]
+        public async Task UnregisterActivityShouldRemoveTaskSignup()
+        {
+            // Arrange
+            const int recordId = 5;
+            var controller = GetActivityApiController()
+                .SetFakeUser(recordId.ToString());
+            
+            // Act
+            var result = await controller.UnregisterActivity(recordId);
+
+            // Assert
+            Assert.NotNull(result);
+            var context = _serviceProvider.GetService<AllReadyContext>();
+            var numOfTasksSignedUpFor = context.TaskSignups.Count(e => e.Task.Activity.Id == recordId);
+            Assert.Equal(0, numOfTasksSignedUpFor);
+        }
+
+        [Fact]
         public void ControllerHasRouteAtttributeWithTheCorrectRoute()
         {
             var sut = new ActivityApiController(null, null);
@@ -71,11 +155,6 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
         }
 
-        //use this for async methods
-        //var sut = new OrganizationController(null);
-        //var routeAttribute = (RouteAttribute)sut.GetAttributesOn(x => x.ShowOrganization(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(RouteAttribute));
-        //Assert.NotNull(routeAttribute);
-        //Assert.Equal(routeAttribute.Template, "Organization/{id}/");
         [Fact]
         public void GetHasHttpGetAttribute()
         {
@@ -133,43 +212,68 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void GetCheckinHasHttpGetAttributeWithCorrectTemplate()
         {
+            var sut = new ActivityApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.GetCheckin(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "{id}/checkin");
         }
 
         [Fact]
         public void PutCheckinHasHttpPutAttributeWithCorrectTemplate()
         {
+            var sut = new ActivityApiController(null, null);
+            var attribute = (HttpPutAttribute)sut.GetAttributesOn(x => x.PutCheckin(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(HttpPutAttribute));
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "{id}/checkin");
         }
 
         [Fact]
         public void PutCheckinHasAuthorizeAttribute()
         {
+            var sut = new ActivityApiController(null, null);
+            var attribute = (AuthorizeAttribute)sut.GetAttributesOn(x => x.PutCheckin(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(AuthorizeAttribute));
+            Assert.NotNull(attribute);
         }
 
         [Fact]
         public void RegisterActivityHasValidateAntiForgeryTokenAttribute()
         {
+            var sut = new ActivityApiController(null, null);
+            var attribute = (ValidateAntiForgeryTokenAttribute)sut.GetAttributesOn(x => x.RegisterActivity(It.IsAny<ActivitySignupViewModel>())).SingleOrDefault(x => x.GetType() == typeof(ValidateAntiForgeryTokenAttribute));
+            Assert.NotNull(attribute);
         }
 
         [Fact]
         public void RegisterActivityHasHttpPostAttributeWithCorrectTemplate()
         {
+            var sut = new ActivityApiController(null, null);
+            var attribute = (HttpPostAttribute)sut.GetAttributesOn(x => x.RegisterActivity(It.IsAny<ActivitySignupViewModel>())).SingleOrDefault(x => x.GetType() == typeof(HttpPostAttribute));
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "signup");
         }
 
         [Fact]
         public void UnregisterActivityHasHttpDeleteAttributeWithCorrectTemplate()
         {
+            var sut = new ActivityApiController(null, null);
+            var attribute = (HttpDeleteAttribute)sut.GetAttributesOn(x => x.UnregisterActivity(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(HttpDeleteAttribute));
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "{id}/signup");
         }
 
         [Fact]
         public void UnregisterActivityHasAuthorizeAttribute()
         {
+            var sut = new ActivityApiController(null, null);
+            var attribute = (AuthorizeAttribute)sut.GetAttributesOn(x => x.UnregisterActivity(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(AuthorizeAttribute));
+            Assert.NotNull(attribute);
         }
 
         [Fact]
         public void GetAllActivities()
         {
             // Arrange
-            var controller = GetActivityController();
+            var controller = GetActivityApiController();
 
             // Act
             var activities = new List<ActivityViewModel>(controller.Get());
@@ -178,92 +282,9 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(activitiesAdded, activities.Count());
         }
 
-        [Fact]
-        public void GetSingleActivity()
-        {
-            // Arrange
-            var controller = GetActivityController();
-
-            // Act
-            var recordId = 5;
-            var activityViewModel = controller.Get(recordId);
-
-            // Assert
-            Assert.Equal(activityViewModel.Id, recordId);
-            Assert.Equal(activityViewModel.CampaignName, string.Format(TestActivityModelProvider.CampaignNameFormat, recordId));
-            Assert.Equal(activityViewModel.CampaignId, recordId);
-            Assert.Equal(activityViewModel.Description, string.Format(TestActivityModelProvider.ActivityDescriptionFormat, recordId));
-            Assert.Equal(activityViewModel.EndDateTime, DateTime.MaxValue.ToUniversalTime());
-            Assert.Equal(activityViewModel.StartDateTime, DateTime.MinValue.ToUniversalTime());
-        }
-
-        [Fact]
-        public void ActivityDoesExist()
-        {
-            // Arrange
-            var controller = GetActivityController();
-
-            // Act
-            const int recordId = 1;
-            var activityViewModel = controller.Get(recordId);
-
-            Assert.NotNull(activityViewModel);
-        }
-
-        [Fact]
-        public void HandlesInvalidActivityId()
-        {
-            // Arrange
-            var controller = GetActivityController();
-
-            // Act
-            const int recordId = -1;
-            var activityViewModel = controller.Get(recordId);
-
-            Assert.Null(activityViewModel);
-        }
-
-        [Fact]
-        public async Task UnregisterActivityShouldRemoveActivitySignup()
-        {
-            // Arrange
-            const int recordId = 5;
-            var controller = GetActivityController()
-                .SetFakeUser(recordId.ToString());
-
-            // Act
-            var result = await controller.UnregisterActivity(recordId);
-
-            // Assert
-            Assert.NotNull(result);
-            var context = _serviceProvider.GetService<AllReadyContext>();
-            var numOfUsersSignedUp = context.Activities
-                .First(e => e.Id == recordId)
-                .UsersSignedUp.Count;
-            Assert.Equal(0, numOfUsersSignedUp);
-        }
-
-        [Fact]
-        public async Task UnregisterActivityShouldRemoveTaskSignup()
-        {
-            // Arrange
-            const int recordId = 5;
-            var controller = GetActivityController()
-                .SetFakeUser(recordId.ToString());
-            
-            // Act
-            var result = await controller.UnregisterActivity(recordId);
-
-            // Assert
-            Assert.NotNull(result);
-            var context = _serviceProvider.GetService<AllReadyContext>();
-            var numOfTasksSignedUpFor = context.TaskSignups.Count(e => e.Task.Activity.Id == recordId);
-            Assert.Equal(0, numOfTasksSignedUpFor);
-        }
-
         #region Helper Methods
 
-        private ActivityApiController GetActivityController()
+        private ActivityApiController GetActivityApiController()
         {
             var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
             var allReadyDataAccess = new AllReadyDataAccessEF7(allReadyContext);
@@ -275,7 +296,7 @@ namespace AllReady.UnitTest.Controllers
             return controller;
         }
 
-        private void PopulateData(DbContext context)
+        private static void PopulateData(DbContext context)
         {
             if (!populatedData)
             {
@@ -302,7 +323,7 @@ namespace AllReady.UnitTest.Controllers
             public const string UserNameFormat = "User {0}";
             public const string TaskDescriptionFormat = "Task {0}";
 
-            public static Activity[] GetActivities()
+            public static IEnumerable<Activity> GetActivities()
             {
                 var users = Enumerable.Range(1, 10).Select(n =>
                     new ApplicationUser()
