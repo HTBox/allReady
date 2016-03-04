@@ -27,10 +27,7 @@ namespace AllReady.ViewModels
                 Campaigns = new List<CampaignViewModel>();
             }
 
-            if (!string.IsNullOrEmpty(organization.PrivacyPolicy))
-            {
-                HasPrivacyPolicy = true;
-            }
+            HasPrivacyPolicy = !string.IsNullOrEmpty(organization.PrivacyPolicy);
         }
 
         public int Id { get; set; }

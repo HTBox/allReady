@@ -28,7 +28,7 @@ namespace AllReady.Features.Organizations
 
             return await _context.Organizations
                 .AsNoTracking()
-                .Where(t => t.Id == message.Id)
+                .Where(t => t.Id == message.OrganizationId)
                 .Select(t => new OrganizationPrivacyPolicyViewModel { OrganizationName = t.Name, Content = t.PrivacyPolicy })
                 .SingleOrDefaultAsync();
         }

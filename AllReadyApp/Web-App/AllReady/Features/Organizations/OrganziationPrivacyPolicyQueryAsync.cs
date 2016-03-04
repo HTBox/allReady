@@ -5,6 +5,6 @@ namespace AllReady.Features.Organizations
 {
     public class OrganziationPrivacyPolicyQueryAsync : IAsyncRequest<OrganizationPrivacyPolicyViewModel>
     {
-        public int Id { get; set; }
+        public int OrganizationId { get; set; }
     }
 }

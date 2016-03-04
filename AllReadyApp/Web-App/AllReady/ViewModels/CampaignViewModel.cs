@@ -21,8 +21,8 @@ namespace AllReady.ViewModels
             Name = campaign.Name;
             Description = campaign.Description;
             FullDescription = campaign.FullDescription;
-            ManagingOrganizationName = campaign.ManagingOrganization.Name;
-            ManagingOrganizationId = campaign.ManagingOrganization.Id;
+            ManagingOrganizationName = campaign.ManagingOrganization?.Name ?? string.Empty;
+            ManagingOrganizationId = campaign.ManagingOrganization?.Id ?? 0;
             TimeZoneId = campaign.TimeZoneId;
             StartDate = campaign.StartDateTime;
             EndDate = campaign.EndDateTime;
@@ -30,10 +30,7 @@ namespace AllReady.ViewModels
             CampaignImpact = campaign.CampaignImpact;
             ImageUrl = campaign.ImageUrl;
 
-            if(!string.IsNullOrEmpty(campaign.ManagingOrganization.PrivacyPolicy))
-            {
-                HasPrivacyPolicy = true;
-            }
+            HasPrivacyPolicy = !string.IsNullOrEmpty(campaign.ManagingOrganization?.PrivacyPolicy);
         }
 
         public int Id { get; set; }

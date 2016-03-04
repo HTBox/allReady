@@ -49,10 +49,7 @@ namespace AllReady.ViewModels
 
             RequiredSkills = activity.RequiredSkills?.Select(acsk => acsk.Skill).ToList();
 
-            if(!string.IsNullOrEmpty(activity.Campaign.ManagingOrganization.PrivacyPolicy))
-            {
-                HasPrivacyPolicy = true;
-            }
+            HasPrivacyPolicy = !string.IsNullOrEmpty(activity.Campaign.ManagingOrganization.PrivacyPolicy);
         }
 
         public int Id { get; set; }

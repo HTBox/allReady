@@ -8,12 +8,13 @@ using Moq;
 using System.Threading.Tasks;
 using Xunit;
 using AllReady.Extensions;
+using System.Security.Claims;
+using Microsoft.AspNet.Http;
 
 namespace AllReady.UnitTest.Controllers
 {
     public class OrganizationControllerTests
     {
-
         #region ShowOrganization Action Tests 
 
         [Fact]
@@ -81,12 +82,12 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void ShowOrganization_ReturnsNotFoundForZeroId()
+        public async Task ShowOrganization_ReturnsBadRequestForZeroId()
         {
             OrganizationController controller;
-            var mockMediator = MockMediatorOrganizationDetailsQuery(out controller);
+            MockMediatorOrganizationDetailsQuery(out controller);
 
-            var result = controller.ShowOrganization(0).Result as HttpNotFoundResult;
+            var result = await controller.ShowOrganization(0) as BadRequestResult;
 
             Assert.NotNull(result);
         }
@@ -96,54 +97,50 @@ namespace AllReady.UnitTest.Controllers
         #region PrivacyPolicy Action Tests
 
         [Fact]
-        public void PrivacyPolicy_ReturnsCorrectViewWhenOrgHasAPolicyDefined()
+        public async Task PrivacyPolicy_ReturnsCorrectViewWhenOrgHasAPolicyDefined()
         {
             var modelWithPolicy = new OrganizationPrivacyPolicyViewModel { OrganizationName = "Org 2", Content = "A privacy policy" };
 
             OrganizationController controller;
-            var mockMediator = MockMediatorOrganizationPrivacyPolicyQuery(out controller, modelWithPolicy);
+            MockMediatorOrganizationPrivacyPolicyQuery(out controller, modelWithPolicy);
 
-            var result = controller.OrganizationPrivacyPolicy(2);
+            var result = await controller.OrganizationPrivacyPolicy(2) as ViewResult;
 
             Assert.NotNull(result);
-            Assert.IsType<ViewResult>(result.Result);
-
-            var finalResult = result.Result as ViewResult;
-
-            Assert.Equal("OrgPrivacyPolicy", finalResult.ViewName);
+            Assert.Equal("OrgPrivacyPolicy", result.ViewName);
         }
 
         [Fact]
-        public void PrivacyPolicy_ReturnsRedirectToActionWhenOrgHasNoPolicyDefined()
+        public async Task PrivacyPolicy_ReturnsRedirectToActionWhenOrgHasNoPolicyDefined()
         {
             OrganizationController controller;
-            var mockMediator = MockMediatorOrganizationPrivacyPolicyQuery(out controller);
+            MockMediatorOrganizationPrivacyPolicyQuery(out controller);
 
-            var result = controller.OrganizationPrivacyPolicy(2);
-
-            Assert.NotNull(result);
-            Assert.IsType<RedirectToActionResult>(result.Result);
-        }
-
-        [Fact]
-        public void PrivacyPolicy_ReturnsNotFoundForNullOrganization()
-        {
-            OrganizationController controller;
-            var mockMediator = MockMediatorOrganizationPrivacyPolicyQueryNullResult(out controller);
-
-            var result = controller.OrganizationPrivacyPolicy(1).Result as HttpNotFoundResult;
+            var result = await controller.OrganizationPrivacyPolicy(2) as RedirectToActionResult;
 
             Assert.NotNull(result);
         }
 
-
         [Fact]
-        public void PrivacyPolicy_ReturnsNotFoundForZeroId()
+        public async Task PrivacyPolicy_ReturnsRedirectToActionForNullOrganization()
         {
             OrganizationController controller;
-            var mockMediator = MockMediatorOrganizationPrivacyPolicyQuery(out controller);
+            MockMediatorOrganizationPrivacyPolicyQueryNullResult(out controller);
 
-            var result = controller.OrganizationPrivacyPolicy(0).Result as HttpNotFoundResult;
+            var result = await controller.OrganizationPrivacyPolicy(1) as RedirectToActionResult;
+
+            Assert.NotNull(result);
+            Assert.Equal("ShowOrganization", result.ActionName);
+        }
+
+
+        [Fact]
+        public async Task PrivacyPolicy_ReturnsBadRequestForZeroId()
+        {
+            OrganizationController controller;
+            MockMediatorOrganizationPrivacyPolicyQuery(out controller);
+
+            var result = await controller.OrganizationPrivacyPolicy(0) as BadRequestResult;
 
             Assert.NotNull(result);
         }
@@ -166,30 +163,23 @@ namespace AllReady.UnitTest.Controllers
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationDetailsQueryAsync>())).Returns(() => Task.FromResult((OrganizationViewModel)null)).Verifiable();
-            controller = new OrganizationController(mockMediator.Object, dataMock.Object);
-            return mockMediator;
+            controller = new OrganizationController(mockMediator.Object);
         }
 
-        private static Mock<IMediator> MockMediatorOrganizationPrivacyPolicyQuery(out OrganizationController controller, OrganizationPrivacyPolicyViewModel model = null)
+        private static void MockMediatorOrganizationPrivacyPolicyQuery(out OrganizationController controller, OrganizationPrivacyPolicyViewModel model = null)
         {
-            var dataMock = new Mock<IAllReadyDataAccess>();
-
             if (model == null) model = new OrganizationPrivacyPolicyViewModel { OrganizationName = "Org 1", Content = null };
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganziationPrivacyPolicyQueryAsync>())).Returns(() => Task.FromResult(model)).Verifiable();
-            controller = new OrganizationController(mockMediator.Object, dataMock.Object);
-            return mockMediator;
+            controller = new OrganizationController(mockMediator.Object);
         }
 
-        private static Mock<IMediator> MockMediatorOrganizationPrivacyPolicyQueryNullResult(out OrganizationController controller)
+        private static void MockMediatorOrganizationPrivacyPolicyQueryNullResult(out OrganizationController controller)
         {
-            var dataMock = new Mock<IAllReadyDataAccess>();
-
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganziationPrivacyPolicyQueryAsync>())).Returns(() => Task.FromResult((OrganizationPrivacyPolicyViewModel)null)).Verifiable();
-            controller = new OrganizationController(mockMediator.Object, dataMock.Object);
-            return mockMediator;
+            controller = new OrganizationController(mockMediator.Object);
         }
 
         private static Mock<ActionContext> MockActionContextWithUser(ClaimsPrincipal principle)

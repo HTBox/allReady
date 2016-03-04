@@ -25,7 +25,6 @@ namespace AllReady.Controllers
         public AdminController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IMediator bus,
             IEmailSender emailSender,
             ISmsSender smsSender,
             IOptions<SampleDataSettings> options,

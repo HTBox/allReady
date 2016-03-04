@@ -168,7 +168,7 @@ namespace AllReady.UnitTest.Controllers
         public void LocationMapReturnsTheCorrectViewAndCorrectModelWhenCampaignIsNotNull()
         {
             var mockedMediator = new Mock<IMediator>();
-            mockedMediator.Setup(m => m.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign());
+            mockedMediator.Setup(m => m.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign() { ManagingOrganization = new Organization() });
 
             var sut = new CampaignController(mockedMediator.Object);
             var result = (ViewResult)sut.LocationMap(It.IsAny<int>());
@@ -251,7 +251,7 @@ namespace AllReady.UnitTest.Controllers
         public void GetByIdReturnsJsonResult()
         {
             var mockedMediator = new Mock<IMediator>();
-            mockedMediator.Setup(m => m.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign());
+            mockedMediator.Setup(m => m.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign() { ManagingOrganization = new Organization() });
 
             var sut = new CampaignController(mockedMediator.Object);
             var result = sut.Get(It.IsAny<int>());
@@ -263,7 +263,7 @@ namespace AllReady.UnitTest.Controllers
         public void GetByIdReturnsCorrectViewModel()
         {
             var mockedMediator = new Mock<IMediator>();
-            mockedMediator.Setup(m => m.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign());
+            mockedMediator.Setup(m => m.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign() { ManagingOrganization = new Organization() });
 
             var sut = new CampaignController(mockedMediator.Object);
             var result = (JsonResult)sut.Get(It.IsAny<int>());

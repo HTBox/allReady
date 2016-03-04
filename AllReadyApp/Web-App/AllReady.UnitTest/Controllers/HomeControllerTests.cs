@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using AllReady.Controllers;
+﻿using AllReady.Controllers;
 using AllReady.Features.Campaigns;
 using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Mvc;
 using Moq;
+using System.Collections.Generic;
 using Xunit;
-using AllReady.Models;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -59,8 +58,8 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void PrivacyPolicy_ReturnsCorrectView()
         {
-            var dataMock = new Mock<IAllReadyDataAccess>();
-            var controller = new HomeController(dataMock.Object);
+            var mockMediator = new Mock<IMediator>();
+            var controller = new HomeController(mockMediator.Object);
 
             var result = (ViewResult)controller.PrivacyPolicy();
 
@@ -69,4 +68,3 @@ namespace AllReady.UnitTest.Controllers
         }
     }
 }
-

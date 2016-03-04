@@ -14,8 +14,8 @@ namespace AllReady.UnitTest.Features.Campaigns
         [Fact]
         public void CampaignQueryHandlerReturnsCampaignsThatAreNotLocked()
         {
-            var campaign = new Campaign { EndDateTime = DateTime.UtcNow.AddDays(1).Date };
-            var lockedCampaign = new Campaign { EndDateTime = DateTime.UtcNow.AddDays(1).Date, Locked = true };
+            var campaign = new Campaign { EndDateTime = DateTime.UtcNow.AddDays(1).Date, ManagingOrganization = new Organization() };
+            var lockedCampaign = new Campaign { EndDateTime = DateTime.UtcNow.AddDays(1).Date, Locked = true, ManagingOrganization = new Organization() };
             var campaigns = new List<Campaign> { lockedCampaign, campaign };
 
             var mockDataAccess = new Mock<IAllReadyDataAccess>();
@@ -30,8 +30,8 @@ namespace AllReady.UnitTest.Features.Campaigns
         [Fact]
         public void CampaignQueryHandlerReturnsCampaignsWithAnEndDateGreaterThanToday()
         {
-            var campaignThatEndedYesterday = new Campaign { EndDateTime = DateTime.UtcNow.AddDays(-1).Date };
-            var campaignThatEndsTomorrow = new Campaign { EndDateTime = DateTime.UtcNow.AddDays(1).Date };
+            var campaignThatEndedYesterday = new Campaign { EndDateTime = DateTime.UtcNow.AddDays(-1).Date, ManagingOrganization = new Organization() };
+            var campaignThatEndsTomorrow = new Campaign { EndDateTime = DateTime.UtcNow.AddDays(1).Date, ManagingOrganization = new Organization() };
             var campaigns = new List<Campaign>
             {
                 campaignThatEndedYesterday, campaignThatEndsTomorrow
@@ -51,8 +51,8 @@ namespace AllReady.UnitTest.Features.Campaigns
         {
             var campaigns = new List<Campaign>
             {
-                new Campaign { EndDateTime = DateTime.UtcNow.Date }, 
-                new Campaign { EndDateTime = DateTime.UtcNow.AddDays(1).Date }
+                new Campaign { EndDateTime = DateTime.UtcNow.Date, ManagingOrganization = new Organization() }, 
+                new Campaign { EndDateTime = DateTime.UtcNow.AddDays(1).Date, ManagingOrganization = new Organization() }
             };
 
             var mockDataAccess = new Mock<IAllReadyDataAccess>();
