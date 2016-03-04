@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.ViewModels;
+using AllReady.Extensions;
 using MediatR;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Data.Entity;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
+using Microsoft.AspNet.Mvc;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -52,43 +54,80 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void ControllerHasARouteAtttributeWithTheCorrectRoute()
+        public void ControllerHasRouteAtttributeWithTheCorrectRoute()
         {
+            var sut = new ActivityApiController(null, null);
+            var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "api/activity");
         }
 
         [Fact]
-        public void ControllerHasAProducesAtttributeWithTheCorrectContentType()
+        public void ControllerHasProducesAtttributeWithTheCorrectContentType()
         {
+            var sut = new ActivityApiController(null, null);
+            var attribute = sut.GetAttributes().OfType<ProducesAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
         }
 
+        //use this for async methods
+        //var sut = new OrganizationController(null);
+        //var routeAttribute = (RouteAttribute)sut.GetAttributesOn(x => x.ShowOrganization(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(RouteAttribute));
+        //Assert.NotNull(routeAttribute);
+        //Assert.Equal(routeAttribute.Template, "Organization/{id}/");
         [Fact]
         public void GetHasHttpGetAttribute()
         {
+            var sut = new ActivityApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.Get()).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact]
         public void GetByIdHasHttpGetAttributeWithCorrectTemplate()
         {
+            var sut = new ActivityApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.Get(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "{id}");
         }
 
         [Fact]
         public void GetByIdHasProducesAttributeWithCorrectContentTypes()
         {
+            var sut = new ActivityApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.Get(It.IsAny<int>())).OfType<ProducesAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Type, typeof(ActivityViewModel));
+            Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
         }
 
         [Fact]
         public void GetActivitiesByZipHasRouteAttributeWithRoute()
         {
+            var sut = new ActivityApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.GetActivitiesByZip(It.IsAny<string>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "search");
         }
 
         [Fact]
         public void GetActivitiesByLocationHasRouteAttributeWithCorrectRoute()
         {
+            var sut = new ActivityApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.GetActivitiesByLocation(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "searchbylocation");
         }
 
         [Fact]
         public void GetQrCodeHasHttpGetAttributeWithCorrectTemplate()
         {
+            var sut = new ActivityApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.GetQrCode(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "{id}/qrcode");
         }
 
         [Fact]
