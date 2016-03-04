@@ -61,7 +61,7 @@ namespace AllReady.UnitTest.Controllers
             var controller = GetActivityApiController();
 
             // Act
-            var recordId = 5;
+            const int recordId = 5;
             var activityViewModel = controller.Get(recordId);
 
             // Assert
@@ -75,43 +75,31 @@ namespace AllReady.UnitTest.Controllers
 
         [Fact]
         public void ActivityDoesExist()
-        {
-            // Arrange
-            var controller = GetActivityApiController();
-
-            // Act
-            const int recordId = 1;
-            var activityViewModel = controller.Get(recordId);
-
+        { 
+            var controller = GetActivityApiController(); 
+            var activityViewModel = controller.Get(1);
             Assert.NotNull(activityViewModel);
         }
 
         [Fact]
         public void HandlesInvalidActivityId()
         {
-            // Arrange
             var controller = GetActivityApiController();
-
-            // Act
-            const int recordId = -1;
-            var activityViewModel = controller.Get(recordId);
-
+            var activityViewModel = controller.Get(-1);
             Assert.Null(activityViewModel);
         }
 
         [Fact]
         public async Task UnregisterActivityShouldRemoveActivitySignup()
         {
-            // Arrange
             const int recordId = 5;
             var controller = GetActivityApiController()
                 .SetFakeUser(recordId.ToString());
 
-            // Act
             var result = await controller.UnregisterActivity(recordId);
 
-            // Assert
             Assert.NotNull(result);
+
             var context = _serviceProvider.GetService<AllReadyContext>();
             var numOfUsersSignedUp = context.Activities
                 .First(e => e.Id == recordId)
@@ -122,19 +110,25 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task UnregisterActivityShouldRemoveTaskSignup()
         {
-            // Arrange
             const int recordId = 5;
             var controller = GetActivityApiController()
                 .SetFakeUser(recordId.ToString());
             
-            // Act
             var result = await controller.UnregisterActivity(recordId);
 
-            // Assert
             Assert.NotNull(result);
+
             var context = _serviceProvider.GetService<AllReadyContext>();
             var numOfTasksSignedUpFor = context.TaskSignups.Count(e => e.Task.Activity.Id == recordId);
             Assert.Equal(0, numOfTasksSignedUpFor);
+        }
+
+        [Fact]
+        public void GetAllActivities()
+        {
+            var controller = GetActivityApiController();        
+            var activities = new List<ActivityViewModel>(controller.Get());
+            Assert.Equal(activitiesAdded, activities.Count());
         }
 
         [Fact]
@@ -267,19 +261,6 @@ namespace AllReady.UnitTest.Controllers
             var sut = new ActivityApiController(null, null);
             var attribute = (AuthorizeAttribute)sut.GetAttributesOn(x => x.UnregisterActivity(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(AuthorizeAttribute));
             Assert.NotNull(attribute);
-        }
-
-        [Fact]
-        public void GetAllActivities()
-        {
-            // Arrange
-            var controller = GetActivityApiController();
-
-            // Act
-            var activities = new List<ActivityViewModel>(controller.Get());
-
-            // Assert
-            Assert.Equal(activitiesAdded, activities.Count());
         }
 
         #region Helper Methods
