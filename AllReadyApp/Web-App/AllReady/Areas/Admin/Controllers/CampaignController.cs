@@ -17,12 +17,12 @@ namespace AllReady.Areas.Admin.Controllers
     [Authorize("OrgAdmin")]
     public class CampaignController : Controller
     {
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
         private readonly IImageService _imageService;
 
-        public CampaignController(IMediator bus, IImageService imageService)
+        public CampaignController(IMediator mediator, IImageService imageService)
         {
-            _bus = bus;
+            _mediator = mediator;
             _imageService = imageService;
         }
 
@@ -34,13 +34,13 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 query.OrganizationId = User.GetOrganizationId();
             }
-            var campaigns = _bus.Send(query);
+            var campaigns = _mediator.Send(query);
             return View(campaigns);
         }
 
         public IActionResult Details(int id)
         {
-            CampaignDetailModel campaign = _bus.Send(new CampaignDetailQuery { CampaignId = id });
+            CampaignDetailModel campaign = _mediator.Send(new CampaignDetailQuery { CampaignId = id });
 
             if (campaign == null)
             {
@@ -68,7 +68,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Campaign/Edit/5
         public IActionResult Edit(int id)
         {
-            CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
+            CampaignSummaryModel campaign = _mediator.Send(new CampaignSummaryQuery { CampaignId = id });
 
             if (campaign == null)
             {
@@ -101,7 +101,7 @@ namespace AllReady.Areas.Admin.Controllers
             // Tempoary code to avoid current database update error when the postcodegeo does not exist in the database.
             if (campaign.Location != null && !string.IsNullOrEmpty(campaign.Location.PostalCode))
             {
-                bool validPostcode = await _bus.SendAsync(new CheckValidPostcodeQueryAsync
+                bool validPostcode = await _mediator.SendAsync(new CheckValidPostcodeQueryAsync
                 {
                     Postcode = new PostalCodeGeo
                     {
@@ -132,7 +132,7 @@ namespace AllReady.Areas.Admin.Controllers
                     }
                 }
 
-                int id = _bus.Send(new EditCampaignCommand { Campaign = campaign });
+                int id = _mediator.Send(new EditCampaignCommand { Campaign = campaign });
                 return RedirectToAction("Details", new { area = "Admin", id = id });
             }
             return View(campaign);
@@ -141,7 +141,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Campaign/Delete/5
         public IActionResult Delete(int id)
         {
-            CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
+            CampaignSummaryModel campaign = _mediator.Send(new CampaignSummaryQuery { CampaignId = id });
 
             if (campaign == null)
             {
@@ -160,14 +160,14 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            CampaignSummaryModel campaign = _bus.Send(new CampaignSummaryQuery { CampaignId = id });
+            CampaignSummaryModel campaign = _mediator.Send(new CampaignSummaryQuery { CampaignId = id });
 
             if (!User.IsOrganizationAdmin(campaign.OrganizationId))
             {
                 return HttpUnauthorized();
             }
 
-            _bus.Send(new DeleteCampaignCommand { CampaignId = id });
+            _mediator.Send(new DeleteCampaignCommand { CampaignId = id });
             return RedirectToAction("Index", new { area = "Admin" });
         }
 
@@ -180,7 +180,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
 
-            _bus.Send(new LockUnlockCampaignCommand { CampaignId = id });
+            _mediator.Send(new LockUnlockCampaignCommand { CampaignId = id });
             return RedirectToAction("Details", new { area = "Admin", id = id });
         }
     }

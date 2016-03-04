@@ -35,7 +35,7 @@ namespace AllReady.Controllers
             if (campaign == null || campaign.Locked)
                 return HttpNotFound();
 
-            ViewBag.AbsoluteUrl = System.Net.WebUtility.UrlEncode(Url.Action(new UrlActionContext { Action = "Details", Controller = "Campaign", Values = null, Protocol = Request.Scheme }));
+            ViewBag.AbsoluteUrl = UrlEncode(Url.Action(new UrlActionContext { Action = "Details", Controller = "Campaign", Values = null, Protocol = Request.Scheme }));
 
             return View("Details", new CampaignViewModel(campaign));
         }
@@ -69,7 +69,7 @@ namespace AllReady.Controllers
                 return HttpNotFound();
 
             return Json(campaign.ToViewModel());
-            }
+        }
 
         private List<CampaignViewModel> GetUnlockedCampaigns()
         {
@@ -79,6 +79,11 @@ namespace AllReady.Controllers
         private Campaign GetCampaign(int campaignId)
         {
             return _mediator.Send(new CampaignByCampaignIdQuery { CampaignId = campaignId });
+        }
+
+        protected virtual string UrlEncode(string value)
+        {
+            return System.Net.WebUtility.UrlEncode(value);
         }
     }
 }

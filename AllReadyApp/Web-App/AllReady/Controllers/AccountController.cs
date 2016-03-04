@@ -20,21 +20,21 @@ namespace AllReady.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly GeneralSettings _generalSettings;
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             IOptions<GeneralSettings> generalSettings,
-            IMediator bus
+            IMediator mediator
             )
         {
             _emailSender = emailSender;
             _userManager = userManager;
             _signInManager = signInManager;
             _generalSettings = generalSettings.Value;
-            _bus = bus;
+            _mediator = mediator;
         }
 
         // GET: /Account/Login
@@ -56,7 +56,7 @@ namespace AllReady.Controllers
             if (ModelState.IsValid)
             {
                 // Require admin users to have a confirmed email before they can log on.
-                var user = await _bus.SendAsync(new ApplicationUserQuery { UserName = model.Email });
+                var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = model.Email });
                 if (user != null)
                 {
                     var isAdminUser = user.IsUserType(UserType.OrgAdmin) ||
@@ -168,7 +168,7 @@ namespace AllReady.Controllers
 
             if (result.Succeeded && user.IsProfileComplete())
             {
-                await _bus.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id });
+                await _mediator.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id });
                 if (User.IsSignedIn())
                 {
                     await _signInManager.RefreshSignInAsync(user);
@@ -291,7 +291,7 @@ namespace AllReady.Controllers
 
             if (result.Succeeded)
             {
-                var user = await _bus.SendAsync(new ApplicationUserQuery { UserName = email });
+                var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = email });
                 return RedirectToLocal(returnUrl, user);
             }
             else

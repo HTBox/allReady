@@ -10,24 +10,24 @@ namespace AllReady.Areas.Admin.Controllers
     [Authorize("SiteAdmin")]
     public class OrganizationController : Controller
     {
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
 
-        public OrganizationController(IMediator bus)
+        public OrganizationController(IMediator mediator)
         {
-            _bus = bus;
+            _mediator = mediator;
         }
 
         // GET: Organization
         public IActionResult Index()
         {
-            var list = _bus.Send(new OrganizationListQuery());
+            var list = _mediator.Send(new OrganizationListQuery());
             return View(list);
         }
 
         // GET: Organization/Details/5
         public IActionResult Details(int id)
         {
-            var organization = _bus.Send(new OrganizationDetailQuery { Id = id });
+            var organization = _mediator.Send(new OrganizationDetailQuery { Id = id });
             if (organization == null)
             {
                 return HttpNotFound();
@@ -51,7 +51,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return new BadRequestResult();
             if (ModelState.IsValid)
             {
-                _bus.Send(new OrganizationEditCommand { Organization = organization });
+                _mediator.Send(new OrganizationEditCommand { Organization = organization });
                 return RedirectToRoute("areaRoute", new {controller = "Organization", action = "Index"});
             }
 
@@ -62,7 +62,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Edit(int id)
         {
 
-            var organization = _bus.Send(new OrganizationEditQuery { Id = id });
+            var organization = _mediator.Send(new OrganizationEditQuery { Id = id });
             if (organization == null)
             {
                 return HttpNotFound();
@@ -78,7 +78,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                int id = _bus.Send(new OrganizationEditCommand { Organization = organization });
+                int id = _mediator.Send(new OrganizationEditCommand { Organization = organization });
                 return RedirectToAction("Details", new { id = id, area = "Admin" });
             }
 
@@ -94,7 +94,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-            var organization = _bus.Send(new OrganizationDetailQuery { Id = id.Value });
+            var organization = _mediator.Send(new OrganizationDetailQuery { Id = id.Value });
             if (organization == null)
             {
                 return HttpNotFound();
@@ -108,7 +108,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            _bus.Send(new OrganizationDeleteCommand { Id= id });
+            _mediator.Send(new OrganizationDeleteCommand { Id= id });
             return RedirectToAction("Index");
         }
     }

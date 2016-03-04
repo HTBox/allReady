@@ -7,11 +7,11 @@ namespace AllReady.Services
 {
     public class AuthMessageSender : IEmailSender, ISmsSender
     {
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
 
-        public AuthMessageSender(IMediator bus)
+        public AuthMessageSender(IMediator mediator)
         {
-            _bus = bus;
+            _mediator = mediator;
         }
 
         public Task SendEmailAsync(string email, string subject, string message)
@@ -27,7 +27,7 @@ namespace AllReady.Services
                 }
             };
 
-            return _bus.SendAsync(command);
+            return _mediator.SendAsync(command);
         }
 
         public Task SendSmsAsync(string number, string message)
@@ -41,7 +41,7 @@ namespace AllReady.Services
                 }
             };
 
-            return _bus.SendAsync(command);
+            return _mediator.SendAsync(command);
         }
     }
     public interface IEmailSender

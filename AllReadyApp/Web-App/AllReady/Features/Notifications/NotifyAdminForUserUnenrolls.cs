@@ -11,18 +11,18 @@ namespace AllReady.Features.Notifications
 {
     public class NotifyAdminForUserUnenrolls : IAsyncNotificationHandler<UserUnenrolls>
     {
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
 
-        public NotifyAdminForUserUnenrolls(IMediator bus, IOptions<GeneralSettings> options)
+        public NotifyAdminForUserUnenrolls(IMediator mediator, IOptions<GeneralSettings> options)
         {
-            _bus = bus;
+            _mediator = mediator;
             _options = options;
         }
 
         public async Task Handle(UserUnenrolls notification)
         {
-            var model = _bus.Send(new ActivityDetailForNotificationQuery {ActivityId = notification.ActivityId});
+            var model = _mediator.Send(new ActivityDetailForNotificationQuery {ActivityId = notification.ActivityId});
             var campaignContact = model.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
 
             if (string.IsNullOrWhiteSpace(campaignContact?.Contact.Email))
@@ -74,7 +74,7 @@ namespace AllReady.Features.Notifications
                     Subject = subject
                 }
             };
-            await _bus.SendAsync(command).ConfigureAwait(false);
+            await _mediator.SendAsync(command).ConfigureAwait(false);
         }
     }
 }

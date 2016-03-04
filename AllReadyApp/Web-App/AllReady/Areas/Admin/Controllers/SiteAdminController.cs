@@ -25,15 +25,15 @@ namespace AllReady.Areas.Admin.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IAllReadyDataAccess _dataAccess;
         private ILogger<SiteController> _logger;
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
 
-        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger, IMediator bus)
+        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger, IMediator mediator)
         {
             _userManager = userManager;
             _emailSender = emailSender;
             _dataAccess = dataAccess;
             _logger = logger;
-            _bus = bus;
+            _mediator = mediator;
         }
 
         public IActionResult Index()
@@ -48,7 +48,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult DeleteUser(string userId)
         {
-            var user = _bus.Send(new UserQuery { UserId = userId });
+            var user = _mediator.Send(new UserQuery { UserId = userId });
 
             var viewModel = new DeleteUserModel()
             {
@@ -63,7 +63,7 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> ConfirmDeleteUser(string userId)
         {
             // send command to bus
-            await _bus.SendAsync(new DeleteUserCommand { UserId = userId });
+            await _mediator.SendAsync(new DeleteUserCommand { UserId = userId });
 
             // follow PRG
             return RedirectToAction("Index");
@@ -192,7 +192,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var organizations = _dataAccess.Organziations
+            var organizations = _dataAccess.Organizations
                 .OrderBy(t => t.Name)
                 .Select(t => new SelectListItem() { Text = t.Name, Value = t.Id.ToString() })
                 .ToList();
@@ -219,7 +219,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                if (_dataAccess.Organziations.Any(t => t.Id == model.OrganizationId))
+                if (_dataAccess.Organizations.Any(t => t.Id == model.OrganizationId))
                 {
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.OrgAdmin.ToName()));
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.Organization, model.OrganizationId.ToString()));

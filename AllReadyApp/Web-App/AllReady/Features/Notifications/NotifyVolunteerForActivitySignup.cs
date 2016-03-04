@@ -9,18 +9,18 @@ namespace AllReady.Features.Notifications
 {
     public class NotifyVolunteerForActivitySignup : IAsyncNotificationHandler<VolunteerInformationAdded>
     {
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
 
-        public NotifyVolunteerForActivitySignup(IMediator bus, IOptions<GeneralSettings> options)
+        public NotifyVolunteerForActivitySignup(IMediator mediator, IOptions<GeneralSettings> options)
         {
-            _bus = bus;
+            _mediator = mediator;
             _options = options;
         }
 
         public async Task Handle(VolunteerInformationAdded notification)
         {
-            var model = _bus.Send(new ActivityDetailForNotificationQuery {ActivityId = notification.ActivityId});
+            var model = _mediator.Send(new ActivityDetailForNotificationQuery {ActivityId = notification.ActivityId});
 
             var signup = model.UsersSignedUp?.FirstOrDefault(s => s.User.Id == notification.UserId);
             if (signup == null)
@@ -55,7 +55,7 @@ namespace AllReady.Features.Notifications
                 }
             };
 
-            await _bus.SendAsync(command).ConfigureAwait(false);
+            await _mediator.SendAsync(command).ConfigureAwait(false);
         }
     }
 }

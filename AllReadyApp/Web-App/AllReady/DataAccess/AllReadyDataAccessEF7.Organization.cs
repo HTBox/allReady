@@ -42,7 +42,7 @@ namespace AllReady.Models
             return null;
         }
 
-        IEnumerable<Organization> IAllReadyDataAccess.Organziations
+        IEnumerable<Organization> IAllReadyDataAccess.Organizations
         {
             get
             {

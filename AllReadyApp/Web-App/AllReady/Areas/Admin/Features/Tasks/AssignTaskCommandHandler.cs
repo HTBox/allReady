@@ -11,12 +11,12 @@ namespace AllReady.Areas.Admin.Features.Tasks
     public class AssignTaskCommandHandler : AsyncRequestHandler<AssignTaskCommand>
     {
         private readonly AllReadyContext _context;
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
 
-        public AssignTaskCommandHandler(AllReadyContext context, IMediator bus)
+        public AssignTaskCommandHandler(AllReadyContext context, IMediator mediator)
         {
             _context = context;
-            _bus = bus;
+            _mediator = mediator;
         }
 
         protected override async Task HandleCore(AssignTaskCommand message)
@@ -80,7 +80,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 }
             };
 
-            await _bus.SendAsync(command);
+            await _mediator.SendAsync(command);
         }
     }
 }

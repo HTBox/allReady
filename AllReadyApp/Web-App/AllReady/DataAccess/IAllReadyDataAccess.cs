@@ -29,7 +29,7 @@ namespace AllReady.Models
 
         #region Organization CRUD
 
-        IEnumerable<Organization> Organziations { get; }
+        IEnumerable<Organization> Organizations { get; }
         Organization GetOrganization(int organizationId);
         Task AddOrganization(Organization value);
         Task DeleteOrganization(int id);

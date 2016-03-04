@@ -11,12 +11,12 @@ namespace AllReady.Features.Activity
 {
     public class ActivitySignupHandler : AsyncRequestHandler<ActivitySignupCommand>
     {
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
         private readonly AllReadyContext _context;
 
-        public ActivitySignupHandler(IMediator bus, AllReadyContext context)
+        public ActivitySignupHandler(IMediator mediator, AllReadyContext context)
         {
-            _bus = bus;
+            _mediator = mediator;
             _context = context;
         }
 
@@ -68,7 +68,7 @@ namespace AllReady.Features.Activity
                     UserId = activitySignup.UserId
                 };
 
-                await _bus.PublishAsync(volunteerInformationAdded).ConfigureAwait(false);
+                await _mediator.PublishAsync(volunteerInformationAdded).ConfigureAwait(false);
             }
         }
     }
