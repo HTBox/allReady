@@ -67,9 +67,8 @@ namespace AllReady.UnitTest.Tasks
 
             var taskSignups = new List<TaskSignup>
             {
-                new TaskSignup() { Task = task, User = user1 },
-                new TaskSignup() { Task = task, User = user2 }
-            };
+                new TaskSignup { Task = task, User = user1 },
+                new TaskSignup { Task = task, User = user2 }
             };
             context.TaskSignups.AddRange(taskSignups);
 
