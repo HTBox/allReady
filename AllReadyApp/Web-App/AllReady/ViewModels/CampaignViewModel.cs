@@ -45,6 +45,21 @@ namespace AllReady.ViewModels
 
         public Location Location { get; set; }
 
+        public string LocationSummary
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(Location?.City) && !string.IsNullOrEmpty(Location?.State))
+                    return $"{Location.City}, {Location.State}";
+                if (!string.IsNullOrEmpty(Location?.City))
+                    return $"{Location.City}";
+                if (!string.IsNullOrEmpty(Location?.State))
+                    return $"{Location.State}";
+
+                return string.Empty;
+            }
+        }
+
         public int ManagingOrganizationId { get; set; }
 
         public string ManagingOrganizationName { get; set; }
