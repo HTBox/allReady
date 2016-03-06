@@ -148,23 +148,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<BadRequestResult>(result);
         }
 
-
-        [Fact]
-        public void EditOrganizationShouldReturnUnauthorizedWhenUserIsNotSiteAdmin()
-        {
-            var mockMediator = new Mock<IMediator>();
-
-            var controller = new OrganizationController(mockMediator.Object);
-
-            var mockContext = MockActionContextWithUser(OrgAdminWithMissingOrgId());
-            controller.ActionContext = mockContext.Object;
-
-            var result = controller.Edit(_organizationEditModel);
-
-            Assert.IsType<HttpUnauthorizedResult>(result);
-            mockMediator.Verify(x => x.Send(It.IsAny<OrganizationEditCommand>()), Times.Never);
-        }
-
         [Fact]
         public void EditOrganizationMediatorShouldBeCalledWithAppropriateDataWhenModelStateIsValid()
         {

@@ -66,11 +66,6 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpBadRequest();
             }
-
-            if (!User.IsUserType(UserType.SiteAdmin))
-            {
-                return HttpUnauthorized();
-            }
             
             if (ModelState.IsValid)
             {
