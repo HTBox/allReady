@@ -13,193 +13,193 @@
         <p data-bind="html: alertVm.message()"></p>
     </div>
 
-    <div class="row">
-        <div class="col-sm-5">
-            <div class="row">
-                @if (!String.IsNullOrEmpty(Model.ImageUrl))
+<div class="row">
+    <div class="col-sm-5">
+        <div class="row">
+            @if (!String.IsNullOrEmpty(Model.ImageUrl))
             {
-                    <div class="col-sm-2">
-                        <h2></h2>
-                        <img src="@Model.ImageUrl" class="img-responsive" />
-                    </div>
-                }
-                <div class="@(string.IsNullOrEmpty(Model.ImageUrl) ? "col-sm-12" : "col-sm-10" )">
-                    <h2>@Model.Title</h2>
-                    <p class="date-address">
+                <div class="col-sm-2">
+                    <h2></h2>
+                    <img src="@Model.ImageUrl" class="img-responsive" />
+                </div>
+            }
+            <div class="@(string.IsNullOrEmpty(Model.ImageUrl) ? "col-sm-12" : "col-sm-10" )">
+                <h2>@Model.Title</h2>
+                <p class="date-address">
                     <time value="Model.StartDateTime" format="F"></time> - <time value="Model.EndDateTime" format="F"></time>
-                        <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
-                    </p>
-                    @if (!string.IsNullOrEmpty(userTimeZoneId) && Model.TimeZoneId != userTimeZoneId)
-                    {
-                        <p>
+                    <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
+                </p>
+                @if (!string.IsNullOrEmpty(userTimeZoneId) && Model.TimeZoneId != userTimeZoneId)
+            {
+                    <p>
                         <time value="Model.StartDateTime" target-time-zone-id="@userTimeZoneId" format="F"></time> - <time value="Model.EndDateTime" format="F" target-time-zone-id="@userTimeZoneId"></time>
-                            <em><time-zone-name time-zone-id="@userTimeZoneId"></time-zone-name></em>
-                        </p>
-                    }
+                        <em><time-zone-name time-zone-id="@userTimeZoneId"></time-zone-name></em>
+                    </p>
+                }
 
-                </div>
             </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <p>@Model.Description</p>
-                </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <p>@Model.Description</p>
             </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <h3>Campaign</h3>
-                    <p><a href="@Url.Action("Details","Campaign", new { id = Model.CampaignId })">@Model.CampaignName</a></p>
-                </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <h3>Campaign</h3>
+                <p><a href="@Url.Action("Details","Campaign", new { id = Model.CampaignId })">@Model.CampaignName</a></p>
             </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <h3>Campaign Organizer</h3>
-                    <h4><a asp-controller="Organization" asp-action="ShowOrganization" asp-route-id="@Model.OrganizationId">@Model.OrganizationName</a></h4>
-                </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <h3>Campaign Organizer</h3>
+                <h4><a asp-controller="Organization" asp-action="ShowOrganization" asp-route-id="@Model.OrganizationId">@Model.OrganizationName</a></h4>
             </div>
+        </div>
 
             @if ((Model.ActivityType != ActivityTypes.ActivityManaged) && Model.IsUserVolunteeredForActivity && Model.Tasks.Any())
-            {
-                <div class="row">
-                    <div class="col-sm-12">
-                        <h3>My Assigned Tasks</h3>
-                    </div>
-                    <div class="col-sm-12">
-                        <div class="form-inline">
-                            <div class="form-group">
-                                <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
-                                    <i class="fa" data-bind="css: { 'fa-square-o': !tasks.showOld(), 'fa-check-square-o': tasks.showOld }"></i>
-                                    Show Closed Tasks
-                                </button>
-                            </div>
+        {
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3>My Assigned Tasks</h3>
+                </div>
+                <div class="col-sm-12">
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
+                                <i class="fa" data-bind="css: { 'fa-square-o': !tasks.showOld(), 'fa-check-square-o': tasks.showOld }"></i>
+                                Show Closed Tasks
+                            </button>
                         </div>
                     </div>
+                </div>
 
-                    <div class="col-sm-12">
-                        <span class="label-warning label hide" data-bind="css: { hide: tasks.filtered().length }">No matching tasks.</span>
-                        <ul data-bind="foreach: tasks.filtered">
-                            <li>
-                                <strong data-bind="text: Name"></strong>
-                                <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
-                                <span class="label label-info" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', tooltip: { title: 'Assigned' }"><span class="fa fa-arrow-right"></span></span>
-                                <span class="label label-primary" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', tooltip: { title: 'Accepted' }"><span class="fa fa-thumbs-o-up"></span></span>
-                                <span class="label label-warning" data-bind="visible: AssignedVolunteers[0].Status === 'Rejected', tooltip: { title: 'Rejected' }"><span class="fa fa-thumbs-o-down"></span></span>
-                                <span class="label label-success" data-bind="visible: AssignedVolunteers[0].Status === 'Completed', tooltip: { title: 'Completed' }"><span class="fa fa-check"></span></span>
-                                <span class="label label-danger" data-bind="visible: AssignedVolunteers[0].Status === 'CanNotComplete', tooltip: { title: 'Unable to complete (' + AssignedVolunteers[0].StatusDescription + ')' }"><span class="fa fa-times"></span></span>
-                                <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', attr: { href: '/Activity/ChangeStatus?status=Accepted&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Accept</a>
-                                <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', attr: { href: '/Activity/ChangeStatus?status=Rejected&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Reject</a>
-                                <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', attr: { href: '/Activity/ChangeStatus?status=Completed&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Complete</a>
-                                <a class="btn btn-link" href="#" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', attr: { 'data-target': '#cantCompleteReason' + Id }" data-toggle="modal">Unable to Complete</a>
-                                <div class="modal fade" data-bind="if: AssignedVolunteers[0].Status === 'Accepted', attr: { id: 'cantCompleteReason' + Id }" tabindex="-1" role="dialog">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                                <h4 class="modal-title" id="cantCompleteLabel">
-                                                    Mark <span data-bind="text: Name"></span> as Unable to Complete?
-                                                </h4>
+                <div class="col-sm-12">
+                    <span class="label-warning label hide" data-bind="css: { hide: tasks.filtered().length }">No matching tasks.</span>
+                    <ul data-bind="foreach: tasks.filtered">
+                        <li>
+                            <strong data-bind="text: Name"></strong>
+                            <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                            <span class="label label-info" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', tooltip: { title: 'Assigned' }"><span class="fa fa-arrow-right"></span></span>
+                            <span class="label label-primary" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', tooltip: { title: 'Accepted' }"><span class="fa fa-thumbs-o-up"></span></span>
+                            <span class="label label-warning" data-bind="visible: AssignedVolunteers[0].Status === 'Rejected', tooltip: { title: 'Rejected' }"><span class="fa fa-thumbs-o-down"></span></span>
+                            <span class="label label-success" data-bind="visible: AssignedVolunteers[0].Status === 'Completed', tooltip: { title: 'Completed' }"><span class="fa fa-check"></span></span>
+                            <span class="label label-danger" data-bind="visible: AssignedVolunteers[0].Status === 'CanNotComplete', tooltip: { title: 'Unable to complete (' + AssignedVolunteers[0].StatusDescription + ')' }"><span class="fa fa-times"></span></span>
+                            <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', attr: { href: '/Activity/ChangeStatus?status=Accepted&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Accept</a>
+                            <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', attr: { href: '/Activity/ChangeStatus?status=Rejected&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Reject</a>
+                            <a class="btn btn-link" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', attr: { href: '/Activity/ChangeStatus?status=Completed&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId }">Complete</a>
+                            <a class="btn btn-link" href="#" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', attr: { 'data-target': '#cantCompleteReason' + Id }" data-toggle="modal">Unable to Complete</a>
+                            <div class="modal fade" data-bind="if: AssignedVolunteers[0].Status === 'Accepted', attr: { id: 'cantCompleteReason' + Id }" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title" id="cantCompleteLabel">
+                                                Mark <span data-bind="text: Name"></span> as Unable to Complete?
+                                            </h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label data-bind="attr: { 'for': 'notCompleteReason' + Id }">Reason</label>
+                                                <input type="text" class="form-control" data-bind="textInput: NotCompleteReason, attr: { 'id': 'notCompleteReason' + Id }">
                                             </div>
-                                            <div class="modal-body">
-                                                <div class="form-group">
-                                                    <label data-bind="attr: { 'for': 'notCompleteReason' + Id }">Reason</label>
-                                                    <input type="text" class="form-control" data-bind="textInput: NotCompleteReason, attr: { 'id': 'notCompleteReason' + Id }">
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <a class="btn btn-danger" data-bind="attr: { href: '/Activity/ChangeStatus?status=CanNotComplete&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId + '&statusDesc=' + NotCompleteReason() }">Unable to Complete</a>
-                                                <button type="button" data-dismiss="modal" class="btn btn-link">Cancel</button>
-                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a class="btn btn-danger" data-bind="attr: { href: '/Activity/ChangeStatus?status=CanNotComplete&activityId=' + ActivityId + '&taskId=' + Id + '&userId=' + AssignedVolunteers[0].UserId + '&statusDesc=' + NotCompleteReason() }">Unable to Complete</a>
+                                            <button type="button" data-dismiss="modal" class="btn btn-link">Cancel</button>
                                         </div>
                                     </div>
                                 </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            }
-        </div>
-        <div class="col-sm-3">
-
-            <div class="row">
-                <div class="col-sm-12">
-                    @if (!User.IsSignedIn())
-                    {
-                        if (!Model.IsClosed)
-                        {
-                            <h2>
-                                <a asp-action="Login" asp-controller="Account" asp-route-ReturnUrl="/Activity/@Model.Id" class="btn btn-default  btn-volunteer">Volunteer<br /> for this Activity</a>
-                            </h2>
-                        }
-                        else
-                        {
-                            <h2>This activity is closed</h2>
-                        }
-                    }
-                    else
-                    {
-                        if (!Model.IsClosed)
-                        {
-                            <h2>
-                                <button class="btn btn-default btn-volunteer" data-bind="visible: !enrolled(), click: signupForActivity" style="display: none">Volunteer<br /> for this Activity</button>
-                            </h2>
-                        }
-                        else
-                        {
-                            <h2 data-bind="visible: !enrolled()"> This activity is closed</h2>
-                        }
-                        <div class="volunteered" data-bind="visible: enrolled()" style="display: none">
-                            <div class="text-center">
-                                <p>You have volunteered for this activity!</p>
-                                @if (!Model.IsClosed)
-                                {
-                                    <p><a href="#" class="unvolunteer text-center" data-bind="click: function() {unenroll(@Model.Id);}">No Longer Able to Volunteer</a></p>
-                                    <p><span class="label label-danger" data-bind="visible: errorUnenrolling" style="display: none">There was a problem unenrolling; please try again.</span></p>
-                                }
-                                else
-                                {
-                                    <p>This activity is now closed.</p>
-                                }
                             </div>
-                            <div class="text-center" id="enrollUnenrollSpinner" style="display: none">
-                                <i class="fa fa-circle-o-notch fa-spin"></i>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-            <div class="row" data-bind="visible: skills().length" style="display: none">
-                <div class="col-sm-12">
-                    <h3>Needed Skills</h3>
-                    <ul data-bind="foreach: skills">
-                        <li>
-                            <span data-bind="text: HierarchicalName"></span>
-                            <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
-                            <span class="label label-success" data-bind="visible: IsUserSkill, tooltip: { title: 'You have this skill!', placement: 'top' }">
-                                <span class="fa fa-check" aria-hidden="true"></span>
-                                Match
-                            </span>
                         </li>
                     </ul>
                 </div>
             </div>
-        </div>
+        }
+    </div>
+    <div class="col-sm-3">
 
-        <div class="col-sm-4">
-            <h3>Location</h3>
-            <div id="bingMap" style="position:relative"></div>
-            <h3>Address</h3>
-            <p>
-                @Model.Location?.Address1<br />
-                @if (!string.IsNullOrEmpty(Model.Location?.Address2))
-            {
-                    @Model.Location.Address2
+        <div class="row">
+            <div class="col-sm-12">
+                @if (!User.IsSignedIn())
+                {
+                        if (!Model.IsClosed)
+                    {
+                        <h2>
+                                <a asp-action="Login" asp-controller="Account" asp-route-ReturnUrl="/Activity/@Model.Id" class="btn btn-default  btn-volunteer">Volunteer<br /> for this Activity</a>
+                        </h2>
+                    }
+                        else
+                        {
+                        <h2>This activity is closed</h2>
+                    }
                 }
-                @Model.Location?.City @Model.Location?.State @Model.Location?.PostalCode?.PostalCode
-            </p>
+                else
+                {
+                        if (!Model.IsClosed)
+                    {
+                        <h2>
+                                <button class="btn btn-default btn-volunteer" data-bind="visible: !enrolled(), click: signupForActivity" style="display: none">Volunteer<br /> for this Activity</button>
+                        </h2>
+                    }
+                    else
+                    {
+                        <h2 data-bind="visible: !enrolled()"> This activity is closed</h2>
+                    }
+                    <div class="volunteered" data-bind="visible: enrolled()" style="display: none">
+                        <div class="text-center">
+                                <p>You have volunteered for this activity!</p>
+                            @if (!Model.IsClosed)
+                            {
+                                    <p><a href="#" class="unvolunteer text-center" data-bind="click: function() {unenroll(@Model.Id);}">No Longer Able to Volunteer</a></p>
+                                <p><span class="label label-danger" data-bind="visible: errorUnenrolling" style="display: none">There was a problem unenrolling; please try again.</span></p>
+                            }
+                            else
+                            {
+                                <p>This activity is now closed.</p>
+                            }
+                        </div>
+                        <div class="text-center" id="enrollUnenrollSpinner" style="display: none">
+                            <i class="fa fa-circle-o-notch fa-spin"></i>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+            <div class="row" data-bind="visible: skills().length" style="display: none">
+            <div class="col-sm-12">
+                <h3>Needed Skills</h3>
+                <ul data-bind="foreach: skills">
+                    <li>
+                        <span data-bind="text: HierarchicalName"></span>
+                        <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                        <span class="label label-success" data-bind="visible: IsUserSkill, tooltip: { title: 'You have this skill!', placement: 'top' }">
+                            <span class="fa fa-check" aria-hidden="true"></span>
+                            Match
+                        </span>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
+
+    <div class="col-sm-4">
+        <h3>Location</h3>
+        <div id="bingMap" style="position:relative"></div>
+        <h3>Address</h3>
+        <p>
+            @Model.Location?.Address1<br />
+            @if (!string.IsNullOrEmpty(Model.Location?.Address2))
+            {
+                @Model.Location.Address2
+            }
+            @Model.Location?.City @Model.Location?.State @Model.Location?.PostalCode?.PostalCode
+        </p>
+    </div>
+</div>
 </div>
 
 <!-- Volunteer Modal -->
@@ -283,6 +283,15 @@
     </div>
 }
 
+@if (Model.HasPrivacyPolicy)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <p class="text-center"><a asp-controller="Organization" asp-action="OrganizationPrivacyPolicy" asp-route-id="@Model.OrganizationId">@Model.OrganizationName Privacy Policy</a></p>
+        </div>
+    </div>
+}
+
 <script type="text/html" id="AlertTemplate">
     <button class="close" data-bind="click: close" aria-hidden="true">&times;</button>
     <p data-bind="html: message()"></p>
@@ -314,7 +323,7 @@
                         signupModelSeed = Model.SignupModel
                     });
 
-        </script>
+    </script>
     <script type="text/javascript" src="~/js/ko.bindings.js"></script>
     <script type="text/javascript" src="~/lib/knockout.mapping/knockout.mapping.js"></script>
     <script type="text/javascript" src="~/js/activity.js"></script>

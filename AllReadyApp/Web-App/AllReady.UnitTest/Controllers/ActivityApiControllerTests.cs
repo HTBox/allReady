@@ -125,7 +125,7 @@ namespace AllReady.UnitTest.Controllers
             const int recordId = 5;
             var controller = GetActivityController()
                 .SetFakeUser(recordId.ToString());
-            
+
             // Act
             var result = await controller.UnregisterActivity(recordId);
 
@@ -185,19 +185,21 @@ namespace AllReady.UnitTest.Controllers
                         Id = n.ToString(),
                         Name = string.Format(UserNameFormat, n)
                     }).ToArray();
+
+                var organizations = Enumerable.Range(1, 10).Select(n =>
+                    new Organization()
+                    {
+                        Id = n,
+                        Name = string.Format(OrganizationNameFormat, n)
+                    }).ToArray();
+
                 var campaigns = Enumerable.Range(1, 10).Select(n =>
                     new Campaign()
                     {
                         Description = string.Format(CampaignDescriptionFormat, n),
                         Name = string.Format(CampaignNameFormat, n),
-                        Id = n
-                    }).ToArray();
-
-                var organizations = Enumerable.Range(1, 10).Select(n =>
-                    new Organization()
-                    {
-                        Name = string.Format(OrganizationNameFormat, n),
-                        Campaigns = new List<Campaign>(new[] { campaigns[n - 1] })
+                        Id = n,
+                        ManagingOrganization = organizations[n - 1]
                     }).ToArray();
 
                 var activities = Enumerable.Range(1, 10).Select(n =>

@@ -23,12 +23,37 @@ namespace AllReady.Controllers
         [Route("Organization/{id}/")]
         public async Task<IActionResult> ShowOrganization(int id)
         {
+            if (id <= 0)
+            { 
+                return HttpBadRequest();
+            }
+
             var model = await _mediator.SendAsync(new OrganizationDetailsQueryAsync { Id = id });
 
             if (model == null)
+            { 
                 return HttpNotFound();
+            }
 
             return View("Organization", model);
+        }
+
+        [Route("Organization/{id}/PrivacyPolicy")]
+        public async Task<IActionResult> OrganizationPrivacyPolicy(int id)
+        {
+            if (id <= 0)
+            { 
+                return HttpBadRequest();
+            }
+
+            var model = await _mediator.SendAsync(new OrganziationPrivacyPolicyQueryAsync { OrganizationId = id });
+            
+            if (model == null || string.IsNullOrEmpty(model.Content))
+            { 
+                return RedirectToAction(nameof(ShowOrganization));
+            }
+
+            return View("OrgPrivacyPolicy", model);
         }
     }
 }

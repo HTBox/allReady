@@ -14,8 +14,8 @@ namespace AllReady.UnitTest.Features.Campaigns
         {
             var campaigns = new List<Campaign>
             {
-                new Campaign { Id = 1, Locked = false },
-                new Campaign { Id = 2, Locked = true }
+                new Campaign { Id = 1, Locked = false, ManagingOrganization = new Organization() },
+                new Campaign { Id = 2, Locked = true, ManagingOrganization = new Organization() }
             };
 
             var mockedDataAccess = new Mock<IAllReadyDataAccess>();

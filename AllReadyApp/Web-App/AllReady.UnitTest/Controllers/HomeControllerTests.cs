@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using AllReady.Controllers;
+﻿using AllReady.Controllers;
 using AllReady.Features.Campaigns;
 using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Mvc;
 using Moq;
+using System.Collections.Generic;
 using Xunit;
 
 namespace AllReady.UnitTest.Controllers
@@ -53,6 +53,18 @@ namespace AllReady.UnitTest.Controllers
             var sut = new HomeController(null);
             var result = sut.Aesop();
             Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public void PrivacyPolicy_ReturnsCorrectView()
+        {
+            var mockMediator = new Mock<IMediator>();
+            var controller = new HomeController(mockMediator.Object);
+
+            var result = (ViewResult)controller.PrivacyPolicy();
+
+            Assert.NotNull(result);
+            Assert.Equal("PrivacyPolicy", result.ViewName);
         }
     }
 }

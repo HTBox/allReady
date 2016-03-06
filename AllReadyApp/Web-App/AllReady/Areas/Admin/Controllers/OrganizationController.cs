@@ -1,5 +1,7 @@
 ﻿using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
+using AllReady.Models;
+using AllReady.Security;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
@@ -39,23 +41,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Organization/Create
         public IActionResult Create()
         {
-            return View();
-        }
-
-        // POST: Organization/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public  IActionResult Create(OrganizationEditModel organization)
-        {
-            if (organization == null)
-                return new BadRequestResult();
-            if (ModelState.IsValid)
-            {
-                _mediator.Send(new OrganizationEditCommand { Organization = organization });
-                return RedirectToRoute("areaRoute", new {controller = "Organization", action = "Index"});
-            }
-
-            return View("Create", organization);
+            return View("Edit");
         }
 
         // GET: Organization/Edit/5
@@ -76,6 +62,11 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(OrganizationEditModel organization)
         {
+            if (organization == null)
+            {
+                return HttpBadRequest();
+            }
+            
             if (ModelState.IsValid)
             {
                 int id = _mediator.Send(new OrganizationEditCommand { Organization = organization });

@@ -1,4 +1,5 @@
 ﻿using AllReady.Models;
+using System;
 
 namespace AllReady.UnitTest.Features.Organizations
 {
@@ -6,9 +7,11 @@ namespace AllReady.UnitTest.Features.Organizations
     {
         public static void LoadOrganizationHandlerTestData(AllReadyContext context)
         {
+            var htmlPrivacyPolicy = "<h2>Line 1</h2><p>Line 2</p>";
+
             // Organizations
             context.Organizations.Add(new Organization { Id = 1, Name = "Org 1" });
-            context.Organizations.Add(new Organization { Id = 2, Name = "Org 2" });
+            context.Organizations.Add(new Organization { Id = 2, Name = "Org 2", PrivacyPolicy = htmlPrivacyPolicy });
 
             // Campaigns
             context.Campaigns.Add(new Campaign { Name = "Campaign 1", ManagingOrganizationId = 1 });

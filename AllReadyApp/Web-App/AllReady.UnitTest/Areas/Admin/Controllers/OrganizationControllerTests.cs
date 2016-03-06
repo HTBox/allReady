@@ -1,14 +1,17 @@
 ﻿using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
+using AllReady.Models;
 using MediatR;
 using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
@@ -131,69 +134,34 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<ViewResult>(result);
         }
 
+        #endregion
+
+        #region EditTests
+
         [Fact]
-        public void CreateNewOrganizationRedirectsToOrganizationList()
+        public void EditOrganizationShouldReturnBadResultWhenModelIsNull()
         {
             CreateSut();
 
-            var expectedRouteValues = new { controller = "Organization", action = "Index" };
-
-            var result = (RedirectToRouteResult)_sut.Create(_organizationEditModel);
-
-            Assert.Equal("areaRoute", result.RouteName);
-            Assert.Equal("Organization", result.RouteValues["controller"]);
-            Assert.Equal("Index", result.RouteValues["action"]);
-        }
-
-        [Fact]
-        public void CreateNewOrganizationMediatorShouldBeCalledWithAppropriateDataWhenModelStateIsValid()
-        {
-            CreateSut();
-
-            _sut.Create(_organizationEditModel);
-
-            _mediator.Verify(x => x.Send(It.Is<OrganizationEditCommand>( y => y.Organization == _organizationEditModel)));
-        }
-
-        [Fact]
-        public void CreateNewOrganizationPostReturnsBadRequestForNullOrganization()
-        {
-            OrganizationEditModel viewmodel = null;
-            CreateSut();
-
-            var result = _sut.Create(viewmodel);
+            var result = _sut.Edit(null);
 
             Assert.IsType<BadRequestResult>(result);
         }
 
         [Fact]
-        public void CreateNewOrganizationInvalidModelReturnsCreateView()
+        public void EditOrganizationMediatorShouldBeCalledWithAppropriateDataWhenModelStateIsValid()
         {
-            CreateSut();
+            var mockMediator = new Mock<IMediator>();
 
-            AddErrorToModelState();
+            var controller = new OrganizationController(mockMediator.Object);
 
-            var result = _sut.Create(_organizationEditModel);
+            var mockContext = MockActionContextWithUser(SiteAdmin());
+            controller.ActionContext = mockContext.Object;
 
-            Assert.IsType<ViewResult>(result);
-            Assert.Equal("Create", ((ViewResult) result).ViewName);
+            controller.Edit(_organizationEditModel);
+
+            mockMediator.Verify(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == _organizationEditModel)));
         }
-
-        [Fact]
-        public void CreateNewOrganizationPostShouldHaveValidateAntiForgeryTokenAttribute()
-        {
-            MethodShouldHaveValidateAntiForgeryTokenAttribute("Create", typeof(OrganizationEditModel));
-        }
-
-        [Fact]
-        public void CreateNewOrganizationPostShouldHavePostAttribute()
-        {
-            MethodShouldHaveHttpPostAttribute("Create", typeof(OrganizationEditModel));
-        }
-
-        #endregion
-
-        #region EditTests
 
         [Fact]
         public void EditGetShouldReturnHttpNotFoundWhenMediatorReturnsNullForId()
@@ -237,12 +205,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void EditPostShouldReturnTheEditViewWithTheModelPassedInIfTheModelStateIsInvalid()
         {
-            CreateSut();
-            AddErrorToModelState();
+            var controller = new OrganizationController(new Mock<IMediator>().Object);
+
+            var mockContext = MockActionContextWithUser(SiteAdmin());
+            controller.ActionContext = mockContext.Object;
+
+            controller.ModelState.AddModelError("foo", "bar");
 
             var model = new OrganizationEditModel();
 
-            var result = (ViewResult)_sut.Edit(model);
+            var result = (ViewResult)controller.Edit(model);
 
             Assert.Equal("Edit", result.ViewName);
             Assert.Same(model, result.ViewData.Model);
@@ -251,13 +223,18 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void EditPostShouldRedirectToDetailsWithTheIdFromTheMediatorIfModelStateIsValid()
         {
-            CreateSut();
+            var mockMediator = new Mock<IMediator>();
+
+            var controller = new OrganizationController(mockMediator.Object);
+
+            var mockContext = MockActionContextWithUser(SiteAdmin());
+            controller.ActionContext = mockContext.Object;
 
             var model = new OrganizationEditModel();
 
-            _mediator.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
+            mockMediator.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
 
-            var result = (RedirectToActionResult)_sut.Edit(model);
+            var result = (RedirectToActionResult)controller.Edit(model);
 
             Assert.Equal("Details", result.ActionName);
             Assert.Equal("Admin", result.RouteValues["area"]);
@@ -357,11 +334,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             _sut = new OrganizationController(_mediator.Object);
         }
         
-        private static void AddErrorToModelState()
-        {
-            _sut.ModelState.AddModelError("foo", "bar");
-        }
-
         #region PotentialHelperClass
 
         private static MethodInfo GetMethodInfo(string methodName, Type paramTypePassedToMethod)
@@ -417,6 +389,37 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static void MethodShouldHaveHttpPostAttribute(string methodName, Type paramTypePassedToMethod)
         {
             MethodShouldHaveCorrectAttribute(methodName, paramTypePassedToMethod, typeof(HttpPostAttribute));
+        }
+
+        private static ClaimsPrincipal SiteAdmin()
+        {
+            return new ClaimsPrincipal(
+                new ClaimsIdentity(
+                    new[]
+                    {
+                        new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
+                    }));
+        }
+
+        private static ClaimsPrincipal OrgAdminWithMissingOrgId()
+        {
+            return new ClaimsPrincipal(
+                new ClaimsIdentity(
+                    new[]
+                    {
+                        new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString())
+                    }));
+        }
+
+        private static Mock<ActionContext> MockActionContextWithUser(ClaimsPrincipal principle)
+        {
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(mock => mock.User)
+                .Returns(() => principle);
+            var mockContext = new Mock<ActionContext>();
+
+            mockContext.Object.HttpContext = mockHttpContext.Object;
+            return mockContext;
         }
 
         #endregion

@@ -34,16 +34,15 @@ namespace AllReady.Areas.Admin.Features.Organizations
                 Location = t.Location.ToEditModel(),
                 LogoUrl = t.LogoUrl,
                 WebUrl = t.WebUrl,
+                PrivacyPolicy = t.PrivacyPolicy
             };
 
             if (t.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
             {
                 organization = (OrganizationEditModel)t.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(organization);
             }
+            
             return organization;
         }
-
-
-
     }
 }

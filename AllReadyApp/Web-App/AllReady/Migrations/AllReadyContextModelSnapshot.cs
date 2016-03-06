@@ -296,6 +296,8 @@ namespace AllReady.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<string>("PrivacyPolicy");
+
                     b.Property<string>("WebUrl");
 
                     b.HasKey("Id");
