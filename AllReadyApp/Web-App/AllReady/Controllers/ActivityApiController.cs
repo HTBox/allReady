@@ -43,14 +43,14 @@ namespace AllReady.Controllers
         [Produces("application/json", Type = typeof(ActivityViewModel))]
         public ActivityViewModel Get(int id)
         {
-            var dbActivity = _allReadyDataAccess.GetActivity(id);
-            if (dbActivity == null)
+            var activity = _allReadyDataAccess.GetActivity(id);
+            if (activity == null)
             {
                 HttpNotFound();
                 return null;
             }
 
-            return new ActivityViewModel(dbActivity);
+            return new ActivityViewModel(activity);
         }
 
         [Route("search")]
@@ -58,6 +58,7 @@ namespace AllReady.Controllers
         {
             var ret = new List<ActivityViewModel>();
 
+            //TODO: refactor to mediator
             var activities = _allReadyDataAccess.ActivitiesByPostalCode(zip, miles);
 
             foreach (var activity in activities)
@@ -68,6 +69,7 @@ namespace AllReady.Controllers
             return ret;
         }
 
+        //TODO: refactor to mediator
         [Route("searchbylocation")]
         public IEnumerable<ActivityViewModel> GetActivitiesByLocation(double latitude, double longitude, int miles)
         {
@@ -102,14 +104,13 @@ namespace AllReady.Controllers
             }
         }
 
+        //TODO: refactor to mediator
         [HttpGet("{id}/checkin")]
         public ActionResult GetCheckin(int id)
         {
             var dbActivity = _allReadyDataAccess.GetActivity(id);
             if (dbActivity == null)
-            {
                 return HttpNotFound();
-            }
 
             return View("NoUserCheckin", (dbActivity));
         }
@@ -118,14 +119,11 @@ namespace AllReady.Controllers
         [Authorize] 
         public async Task<ActionResult> PutCheckin(int id)
         {
-            var userId = User.GetUserId();
             var dbActivity = _allReadyDataAccess.GetActivity(id);
             if (dbActivity?.UsersSignedUp == null)
-            {
                 return HttpNotFound();
-            }
 
-            var userSignup = dbActivity.UsersSignedUp.FirstOrDefault(u => u.User.Id == userId);
+            var userSignup = dbActivity.UsersSignedUp.FirstOrDefault(u => u.User.Id == User.GetUserId());
             if (userSignup != null && userSignup.CheckinDateTime == null)
             {
                 userSignup.CheckinDateTime = DateTime.UtcNow;
@@ -142,9 +140,7 @@ namespace AllReady.Controllers
         public async Task<IActionResult> RegisterActivity(ActivitySignupViewModel signupModel)
         {
             if (signupModel == null)
-            {
                 return HttpBadRequest();
-            }
 
             if (!ModelState.IsValid)
             {
@@ -159,20 +155,25 @@ namespace AllReady.Controllers
 
         [HttpDelete("{id}/signup")]
         [Authorize]
+        //int id here is really ActivityId
         public async Task<IActionResult> UnregisterActivity(int id)
         {
-            var signedUp = _allReadyDataAccess.GetActivitySignup(id, User.GetUserId());
-            if (signedUp == null)
-            {
+            //TODO: refactor to mediator
+            var activitySignup = _allReadyDataAccess.GetActivitySignup(id, User.GetUserId());
+            if (activitySignup == null)
                 return HttpNotFound();
-            }
 
             //Notify admins & volunteer
-            await _mediator.PublishAsync(new UserUnenrolls {ActivityId = signedUp.Activity.Id, UserId = signedUp.User.Id});
+            await _mediator.PublishAsync(new UserUnenrolls { ActivityId = activitySignup.Activity.Id, UserId = activitySignup.User.Id });
 
-            await _allReadyDataAccess.DeleteActivityAndTaskSignupsAsync(signedUp.Id);
+            //since .GetActivitySignup is called with the ActivityId, which returns and ActivitySignup which has the same Activity entity off of it as a property, then ActivityId line below can
+            //be changed from "ActivityId = activitySignup.Activity.Id" to "ActivityId = id", but I"m not going to do that right now
+            //await _mediator.PublishAsync(new UserUnenrolls { ActivityId = activitySignup.Activity.Id, UserId = activitySignup.User.Id });
+
+            //TODO: refactor to mediator
+            await _allReadyDataAccess.DeleteActivityAndTaskSignupsAsync(activitySignup.Id);
+
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
-
     }
 }

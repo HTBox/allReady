@@ -6,6 +6,7 @@ using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.ViewModels;
 using AllReady.Extensions;
+using AllReady.Features.Notifications;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Hosting;
@@ -54,17 +55,65 @@ namespace AllReady.UnitTest.Controllers
             }
         }
 
+
+        //TODO: refactor to mediator
+        //[Fact]
+        //public void GetActivitiesByZip()
+        //{
+        //}
+        //[Fact]
+        //public void GetActivitiesByLocation()
+        //{
+        //}
+        //[Fact]
+        //public void GetCheckin()
+        //{
+        //}
+        //async invocation of a method off of IAllReadyDataAcces on this one
+        //[Fact]
+        //public void PutCheckin()
+        //{
+        //}
+
+        [Fact]
+        public void GetReturnsActivitiesWitUnlockedCampaigns()
+        {
+            var activities = new List<Activity>
+            {
+                new Activity { Id = 1, Campaign = new Campaign { Locked = false }},
+                new Activity { Id = 2, Campaign = new Campaign { Locked = true }}
+            };
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.Activities).Returns(activities);
+
+            var sut = new ActivityApiController(dataAccess.Object, null);
+            var results = sut.Get().ToList();
+            
+            Assert.Equal(activities[0].Id, results[0].Id);
+        }
+
+        [Fact]
+        public void GetReturnsCorrectModel()
+        {
+            var sut = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), null);
+            var results = sut.Get().ToList();
+            Assert.IsType<List<ActivityViewModel>>(results);
+        }
+
+        //TODO
+        //GetByIdReturnsHttpNotFoundWhenActivityIsNotFoundById
+        //GetByIdReturnsNullWhenActivityIsNotFoundById ???
+        //GetByIdReturnsCorrectViewModel
+
         [Fact]
         public void GetSingleActivity()
         {
-            // Arrange
             var controller = GetActivityApiController();
 
-            // Act
             const int recordId = 5;
             var activityViewModel = controller.Get(recordId);
 
-            // Assert
             Assert.Equal(activityViewModel.Id, recordId);
             Assert.Equal(activityViewModel.CampaignName, string.Format(TestActivityModelProvider.CampaignNameFormat, recordId));
             Assert.Equal(activityViewModel.CampaignId, recordId);
@@ -75,8 +124,8 @@ namespace AllReady.UnitTest.Controllers
 
         [Fact]
         public void ActivityDoesExist()
-        { 
-            var controller = GetActivityApiController(); 
+        {
+            var controller = GetActivityApiController();
             var activityViewModel = controller.Get(1);
             Assert.NotNull(activityViewModel);
         }
@@ -90,45 +139,78 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task UnregisterActivityShouldRemoveActivitySignup()
+        public async Task UnregisterActivityReturnsHttpNotFoundWhenUnableToGetActivitySignupByActivitySignupIdAndUserId()
         {
-            const int recordId = 5;
-            var controller = GetActivityApiController()
-                .SetFakeUser(recordId.ToString());
+            var controller = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), null)
+                .SetFakeUser("1");
 
-            var result = await controller.UnregisterActivity(recordId);
-
-            Assert.NotNull(result);
-
-            var context = _serviceProvider.GetService<AllReadyContext>();
-            var numOfUsersSignedUp = context.Activities
-                .First(e => e.Id == recordId)
-                .UsersSignedUp.Count;
-            Assert.Equal(0, numOfUsersSignedUp);
+            var result = await controller.UnregisterActivity(It.IsAny<int>());
+            Assert.IsType<HttpNotFoundResult>(result);
         }
 
         [Fact]
-        public async Task UnregisterActivityShouldRemoveTaskSignup()
+        public async Task UnregisterActivityGetActivitySignUpIsCalledWithCorrectActivityIdAndUserId()
         {
-            const int recordId = 5;
-            var controller = GetActivityApiController()
-                .SetFakeUser(recordId.ToString());
+            const int activityId = 1;
+            const string userId = "1";
             
-            var result = await controller.UnregisterActivity(recordId);
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivitySignup(It.IsAny<int>(), It.IsAny<string>())).Returns(new ActivitySignup { Activity = new Activity(), User = new ApplicationUser() });
 
-            Assert.NotNull(result);
+            var controller = new ActivityApiController(dataAccess.Object, Mock.Of<IMediator>())
+                .SetFakeUser(userId);
+            
+            await controller.UnregisterActivity(activityId);
 
-            var context = _serviceProvider.GetService<AllReadyContext>();
-            var numOfTasksSignedUpFor = context.TaskSignups.Count(e => e.Task.Activity.Id == recordId);
-            Assert.Equal(0, numOfTasksSignedUpFor);
+            dataAccess.Verify(x => x.GetActivitySignup(activityId, userId), Times.Once);
         }
 
         [Fact]
-        public void GetAllActivities()
+        public async Task UnregisterActivityPublishesUserUnenrollsWithCorrectData()
         {
-            var controller = GetActivityApiController();        
-            var activities = new List<ActivityViewModel>(controller.Get());
-            Assert.Equal(activitiesAdded, activities.Count());
+            const int activityId = 1;
+            const string applicationUserId = "applicationUserId";
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess
+                .Setup(x => x.GetActivitySignup(It.IsAny<int>(), It.IsAny<string>()))
+                .Returns(new ActivitySignup
+                {
+                    Activity = new Activity { Id = activityId },
+                    User = new ApplicationUser { Id = applicationUserId }
+                });
+
+            var mediator = new Mock<IMediator>();
+
+            var controller = new ActivityApiController(dataAccess.Object, mediator.Object)
+                .SetFakeUser("1");
+
+            await controller.UnregisterActivity(activityId);
+
+            mediator.Verify(mock => mock.PublishAsync(It.Is<UserUnenrolls>(ue => ue.ActivityId == activityId && ue.UserId == applicationUserId)), Times.Once);
+        }
+
+        [Fact]
+        public async Task UnregisterActivityDeleteActivityAndTaskSignupsAsyncIsCalledWithCorrectActivitySignupId()
+        {
+            const int activitySignupId = 1;
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess
+                .Setup(x => x.GetActivitySignup(It.IsAny<int>(), It.IsAny<string>()))
+                .Returns(new ActivitySignup
+                {
+                    Id = activitySignupId,
+                    Activity = new Activity (),
+                    User = new ApplicationUser()
+                });
+
+            var controller = new ActivityApiController(dataAccess.Object, Mock.Of<IMediator>())
+                .SetFakeUser("1");
+
+            await controller.UnregisterActivity(2);
+
+            dataAccess.Verify(x => x.DeleteActivityAndTaskSignupsAsync(activitySignupId), Times.Once);
         }
 
         [Fact]
@@ -262,6 +344,10 @@ namespace AllReady.UnitTest.Controllers
             var attribute = (AuthorizeAttribute)sut.GetAttributesOn(x => x.UnregisterActivity(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(AuthorizeAttribute));
             Assert.NotNull(attribute);
         }
+
+        #region old tests the really test Respository code
+
+        #endregion
 
         #region Helper Methods
 

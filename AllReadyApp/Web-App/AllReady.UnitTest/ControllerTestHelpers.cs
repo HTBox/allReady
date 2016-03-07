@@ -30,6 +30,7 @@ namespace AllReady.UnitTest
             return controller;
         }
 
+        //http://www.jerriepelser.com/blog/unit-testing-controllers-aspnet5
         public static T SetFakeUser<T>(this T controller, string userId) where T : Controller
         {
             if (controller.ActionContext.HttpContext == null)

@@ -20,7 +20,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void IndexReturnsAView()
         {
-            var controller = new OrganizationController(new Mock<IMediator>().Object);
+            var controller = new OrganizationController(Mock.Of<IMediator>());
             var result = controller.Index();
 
             Assert.IsType<ViewResult>(result);

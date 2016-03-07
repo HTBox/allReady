@@ -28,7 +28,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void IndexReturnsAView()
         {
-            var sut = new CampaignController(new Mock<IMediator>().Object);
+            var sut = new CampaignController(Mock.Of<IMediator>());
             var result = sut.Index();
 
             Assert.IsType<ViewResult>(result);
@@ -51,7 +51,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DetailsReturnsHttpNotFoundWhenCampaignIsNull()
         {
-            var sut = new CampaignController(new Mock<IMediator>().Object);
+            var sut = new CampaignController(Mock.Of<IMediator>());
             var result = sut.Details(It.IsAny<int>());
 
             Assert.IsType<HttpNotFoundResult>(result);
@@ -159,7 +159,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void LocationMapReturnsHttpNotFoundWhenCampaignIsNull()
         {
-            var sut = new CampaignController(new Mock<IMediator>().Object);
+            var sut = new CampaignController(Mock.Of<IMediator>());
             var result = sut.LocationMap(It.IsAny<int>());
             Assert.IsType<HttpNotFoundResult>(result);
         }
@@ -229,7 +229,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void GetByIdReturnsHttpNotFoundWhenCampaignIsNull()
         {
-            var sut = new CampaignController(new Mock<IMediator>().Object);
+            var sut = new CampaignController(Mock.Of<IMediator>());
             var result = sut.Get(It.IsAny<int>());
 
             Assert.IsType<HttpNotFoundResult>(result);

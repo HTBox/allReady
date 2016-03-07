@@ -12,23 +12,22 @@ namespace AllReady.Models
             get
             {
                 return _dbContext.ActivitySignup
-                        .Include(z => z.User)
-                        .Include(x => x.Activity)
-                        .Include(x => x.Activity.UsersSignedUp)
-                        .ThenInclude(u => u.User)
-                        .ToList();
+                    .Include(z => z.User)
+                    .Include(x => x.Activity)
+                    .Include(x => x.Activity.UsersSignedUp)
+                    .ThenInclude(u => u.User)
+                    .ToList();
             }
         }
 
-        ActivitySignup IAllReadyDataAccess.GetActivitySignup(int id, string userId)
+        ActivitySignup IAllReadyDataAccess.GetActivitySignup(int activityId, string userId)
         {
             return _dbContext.ActivitySignup
                 .Include(z => z.User)
                 .Include(x => x.Activity)
                 .Include(x => x.Activity.UsersSignedUp)
-                .Where(x => x.Activity.Id == id)
-                .Where(x => x.User.Id == userId)
-                .SingleOrDefault();
+                .Where(x => x.Activity.Id == activityId)
+                .SingleOrDefault(x => x.User.Id == userId);
         }
 
         Task IAllReadyDataAccess.AddActivitySignupAsync(ActivitySignup userSignup)
@@ -42,10 +41,8 @@ namespace AllReady.Models
             var activitySignup = _dbContext.ActivitySignup.SingleOrDefault(c => c.Id == activitySignupId);
 
             if (activitySignup == null)
-            {
-                return null;
-            }
-            
+                return Task.FromResult(0);
+
             _dbContext.ActivitySignup.Remove(activitySignup);
 
             _dbContext.TaskSignups.RemoveRange(_dbContext.TaskSignups

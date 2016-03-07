@@ -67,7 +67,7 @@ namespace AllReady.UnitTest.Features.Campaigns
         [Fact]
         public void CampaignQueryHandlerReturnsEmptyModelWhenNoResultFromQuery()
         {
-            var sut = new CampaignQueryHandler(new Mock<IAllReadyDataAccess>().Object);
+            var sut = new CampaignQueryHandler(Mock.Of<IAllReadyDataAccess>());
             var model = sut.Handle(new CampaignQuery());
 
             Assert.Equal(model.Count, 0);
