@@ -7,6 +7,7 @@ using AllReady.Models;
 using AllReady.ViewModels;
 using AllReady.Extensions;
 using AllReady.Features.Notifications;
+using Autofac.Features.ResolveAnything;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Hosting;
@@ -18,7 +19,6 @@ using Microsoft.AspNet.Mvc;
 
 namespace AllReady.UnitTest.Controllers
 {
-    //GetActivitiesByLocation
     //GetCheckin
     //PutCheckin
     //RegisterActivity
@@ -138,13 +138,72 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void GetActivitiesByPostalCodeReturnsCorrectViewModel()
         {
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.ActivitiesByPostalCode(It.IsAny<string>(), It.IsAny<int>())).Returns(new List<Activity>());
-
-            var sut = new ActivityApiController(dataAccess.Object, null);
+            var sut = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), null);
             var result = sut.GetActivitiesByPostalCode(It.IsAny<string>(), It.IsAny<int>());
 
             Assert.IsType<List<ActivityViewModel>>(result);
+        }
+
+        //TODO: refactor to Mediator
+        [Fact]
+        public void GetActivitiesByGeographyCallsActivitiesByGeographyWithCorrectLatitudeLongitudeAndMiles()
+        {
+            const double latitude = 1;
+            const double longitude = 2;
+            const int miles = 100;
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.ActivitiesByGeography(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>())).Returns(new List<Activity>());
+
+            var sut = new ActivityApiController(dataAccess.Object, null);
+            sut.GetActivitiesByGeography(latitude, longitude, miles);
+
+            dataAccess.Verify(x => x.ActivitiesByGeography(latitude, longitude, miles), Times.Once);
+        }
+
+        //TODO: refactor to Mediator
+        [Fact]
+        public void GetActivitiesByGeographyReturnsCorrectViewModel()
+        {
+            var sut = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), null);
+            var result = sut.GetActivitiesByGeography(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>());
+
+            Assert.IsType<List<ActivityViewModel>>(result);
+        }
+
+        //TODO: refactor to Mediator
+        [Fact]
+        public void GetCheckinReturnsHttpNotFoundWhenUnableToFindActivityByActivityId()
+        {
+            var sut = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), null);
+            var result = sut.GetCheckin(It.IsAny<int>());
+            Assert.IsType<HttpNotFoundResult>(result);
+        }
+
+        //TODO: refactor to Mediator
+        [Fact]
+        public void GetCheckinReturnsTheCorrectViewModel()
+        {
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity());
+
+            var sut = new ActivityApiController(dataAccess.Object, null);
+            var result = (ViewResult)sut.GetCheckin(It.IsAny<int>());
+
+            Assert.IsType<Activity>(result.ViewData.Model);
+        }
+
+        //TODO: refactor to Mediator
+        [Fact]
+        public void GetCheckinReturnsTheCorrectView()
+        {
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity());
+
+            var sut = new ActivityApiController(dataAccess.Object, null);
+            var result = (ViewResult)sut.GetCheckin(It.IsAny<int>());
+
+            Assert.Equal("NoUserCheckin", result.ViewName);
         }
 
         [Fact]
@@ -280,7 +339,7 @@ namespace AllReady.UnitTest.Controllers
         public void GetActivitiesByLocationHasRouteAttributeWithCorrectRoute()
         {
             var sut = new ActivityApiController(null, null);
-            var attribute = sut.GetAttributesOn(x => x.GetActivitiesByLocation(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.GetActivitiesByGeography(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "searchbylocation");
         }

@@ -83,18 +83,17 @@ namespace AllReady.Controllers
 
         //TODO: refactor to mediator
         [Route("searchbylocation")]
-        public IEnumerable<ActivityViewModel> GetActivitiesByLocation(double latitude, double longitude, int miles)
+        public IEnumerable<ActivityViewModel> GetActivitiesByGeography(double latitude, double longitude, int miles)
         {
-            var ret = new List<ActivityViewModel>();
-
+            var model = new List<ActivityViewModel>();
             var activities = _allReadyDataAccess.ActivitiesByGeography(latitude, longitude, miles);
 
             foreach (var activity in activities)
             {
-                ret.Add(new ActivityViewModel(activity));
+                model.Add(new ActivityViewModel(activity));
             }
 
-            return ret;
+            return model;
         }
         
         [HttpGet("{id}/qrcode")]
@@ -120,30 +119,30 @@ namespace AllReady.Controllers
         [HttpGet("{id}/checkin")]
         public ActionResult GetCheckin(int id)
         {
-            var dbActivity = _allReadyDataAccess.GetActivity(id);
-            if (dbActivity == null)
+            var activity = _allReadyDataAccess.GetActivity(id);
+            if (activity == null)
                 return HttpNotFound();
 
-            return View("NoUserCheckin", (dbActivity));
+            return View("NoUserCheckin", activity);
         }
 
         [HttpPut("{id}/checkin")]
         [Authorize] 
         public async Task<ActionResult> PutCheckin(int id)
         {
-            var dbActivity = _allReadyDataAccess.GetActivity(id);
-            if (dbActivity?.UsersSignedUp == null)
+            var activity = _allReadyDataAccess.GetActivity(id);
+            if (activity?.UsersSignedUp == null)
                 return HttpNotFound();
 
-            var userSignup = dbActivity.UsersSignedUp.FirstOrDefault(u => u.User.Id == User.GetUserId());
+            var userSignup = activity.UsersSignedUp.FirstOrDefault(u => u.User.Id == User.GetUserId());
             if (userSignup != null && userSignup.CheckinDateTime == null)
             {
                 userSignup.CheckinDateTime = DateTime.UtcNow;
                 await _allReadyDataAccess.AddActivitySignupAsync(userSignup);
-                return Json(new { Activity = new { dbActivity.Name, dbActivity.Description } });
+                return Json(new { Activity = new { activity.Name, activity.Description } });
             }
 
-            return Json(new { NeedsSignup = true, Activity = new { dbActivity.Name, dbActivity.Description } });
+            return Json(new { NeedsSignup = true, Activity = new { activity.Name, activity.Description } });
         }
 
         [ValidateAntiForgeryToken]
