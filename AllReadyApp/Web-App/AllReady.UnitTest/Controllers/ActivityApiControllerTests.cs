@@ -18,7 +18,6 @@ using Microsoft.AspNet.Mvc;
 
 namespace AllReady.UnitTest.Controllers
 {
-    //GetActivitiesByZip
     //GetActivitiesByLocation
     //GetCheckin
     //PutCheckin
@@ -55,12 +54,6 @@ namespace AllReady.UnitTest.Controllers
             }
         }
 
-
-        //TODO: refactor to mediator
-        //[Fact]
-        //public void GetActivitiesByZip()
-        //{
-        //}
         //[Fact]
         //public void GetActivitiesByLocation()
         //{
@@ -101,41 +94,57 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<List<ActivityViewModel>>(results);
         }
 
-        //TODO
-        //GetByIdReturnsHttpNotFoundWhenActivityIsNotFoundById
+        //TODO: come back to these two tests until you hear back from Tony Suram about returning null instead of retruning HttpNotFound
         //GetByIdReturnsNullWhenActivityIsNotFoundById ???
-        //GetByIdReturnsCorrectViewModel
+        //[Fact]
+        //public void GetByIdReturnsHttpNotFoundWhenActivityIsNotFoundById()
+        //{
+        //    var controller = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), null)
+        //        .SetFakeUser("1");
+
+        //    var result = controller.Get(It.IsAny<int>());
+        //    Assert.IsType<HttpNotFoundResult>(result);
+        //}
 
         [Fact]
-        public void GetSingleActivity()
+        public void GetByIdReturnsCorrectViewModel()
         {
-            var controller = GetActivityApiController();
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity { Campaign = new Campaign() });
 
-            const int recordId = 5;
-            var activityViewModel = controller.Get(recordId);
+            var sut = new ActivityApiController(dataAccess.Object, null);
+            var result = sut.Get(It.IsAny<int>());
 
-            Assert.Equal(activityViewModel.Id, recordId);
-            Assert.Equal(activityViewModel.CampaignName, string.Format(TestActivityModelProvider.CampaignNameFormat, recordId));
-            Assert.Equal(activityViewModel.CampaignId, recordId);
-            Assert.Equal(activityViewModel.Description, string.Format(TestActivityModelProvider.ActivityDescriptionFormat, recordId));
-            Assert.Equal(activityViewModel.EndDateTime, DateTime.MaxValue.ToUniversalTime());
-            Assert.Equal(activityViewModel.StartDateTime, DateTime.MinValue.ToUniversalTime());
+            Assert.IsType<ActivityViewModel>(result);
         }
 
+        //TODO: refactor to Mediator
         [Fact]
-        public void ActivityDoesExist()
+        public void GetActivitiesByPostalCodeCallsActivitiesByPostalCodeWithCorrectPostalCodeAndMiles()
         {
-            var controller = GetActivityApiController();
-            var activityViewModel = controller.Get(1);
-            Assert.NotNull(activityViewModel);
+            const string zip = "zip";
+            const int miles = 100;
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.ActivitiesByPostalCode(It.IsAny<string>(), It.IsAny<int>())).Returns(new List<Activity>());
+
+            var sut = new ActivityApiController(dataAccess.Object, null);
+            sut.GetActivitiesByPostalCode(zip, miles);
+
+            dataAccess.Verify(x => x.ActivitiesByPostalCode(zip, miles), Times.Once);
         }
 
+        //TODO: refactor to Mediator
         [Fact]
-        public void HandlesInvalidActivityId()
+        public void GetActivitiesByPostalCodeReturnsCorrectViewModel()
         {
-            var controller = GetActivityApiController();
-            var activityViewModel = controller.Get(-1);
-            Assert.Null(activityViewModel);
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.ActivitiesByPostalCode(It.IsAny<string>(), It.IsAny<int>())).Returns(new List<Activity>());
+
+            var sut = new ActivityApiController(dataAccess.Object, null);
+            var result = sut.GetActivitiesByPostalCode(It.IsAny<string>(), It.IsAny<int>());
+
+            Assert.IsType<List<ActivityViewModel>>(result);
         }
 
         [Fact]
@@ -262,7 +271,7 @@ namespace AllReady.UnitTest.Controllers
         public void GetActivitiesByZipHasRouteAttributeWithRoute()
         {
             var sut = new ActivityApiController(null, null);
-            var attribute = sut.GetAttributesOn(x => x.GetActivitiesByZip(It.IsAny<string>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.GetActivitiesByPostalCode(It.IsAny<string>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "search");
         }

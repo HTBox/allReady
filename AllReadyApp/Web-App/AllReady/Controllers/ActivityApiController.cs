@@ -38,35 +38,47 @@ namespace AllReady.Controllers
                 .Select(a => new ActivityViewModel(a));
         }
 
-        // GET api/values/5
+        //orginial code
         [HttpGet("{id}")]
         [Produces("application/json", Type = typeof(ActivityViewModel))]
         public ActivityViewModel Get(int id)
         {
             var activity = _allReadyDataAccess.GetActivity(id);
-            if (activity == null)
-            {
-                HttpNotFound();
-                return null;
-            }
 
-            return new ActivityViewModel(activity);
+            if (activity != null)
+                return new ActivityViewModel(activity);
+
+            HttpNotFound();
+            return null;
         }
+        //changes ReSharper prompted me to make
+        //[HttpGet("{id}")]
+        //[Produces("application/json", Type = typeof(ActivityViewModel))]
+        //public ActivityViewModel Get(int id)
+        //{
+        //    var dbActivity = _allReadyDataAccess.GetActivity(id);
+        //    if (dbActivity == null)
+        //    {
+        //        HttpNotFound();
+        //        return null;
+        //    }
+        //    return new ActivityViewModel(dbActivity);
+        //}
 
         [Route("search")]
-        public IEnumerable<ActivityViewModel> GetActivitiesByZip(string zip, int miles)
+        public IEnumerable<ActivityViewModel> GetActivitiesByPostalCode(string zip, int miles)
         {
-            var ret = new List<ActivityViewModel>();
+            var model = new List<ActivityViewModel>();
 
             //TODO: refactor to mediator
             var activities = _allReadyDataAccess.ActivitiesByPostalCode(zip, miles);
 
             foreach (var activity in activities)
             {
-                ret.Add(new ActivityViewModel(activity));
+                model.Add(new ActivityViewModel(activity));
             }
 
-            return ret;
+            return model;
         }
 
         //TODO: refactor to mediator
