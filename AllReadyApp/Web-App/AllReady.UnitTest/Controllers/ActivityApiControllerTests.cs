@@ -19,8 +19,6 @@ using Microsoft.AspNet.Mvc;
 
 namespace AllReady.UnitTest.Controllers
 {
-    //GetCheckin
-    //PutCheckin
     //RegisterActivity
     //UnregisterActivity
     //    - existing test the needs tests for:
@@ -118,7 +116,6 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<ActivityViewModel>(result);
         }
 
-        //TODO: refactor to Mediator
         [Fact]
         public void GetActivitiesByPostalCodeCallsActivitiesByPostalCodeWithCorrectPostalCodeAndMiles()
         {
@@ -134,7 +131,6 @@ namespace AllReady.UnitTest.Controllers
             dataAccess.Verify(x => x.ActivitiesByPostalCode(zip, miles), Times.Once);
         }
 
-        //TODO: refactor to Mediator
         [Fact]
         public void GetActivitiesByPostalCodeReturnsCorrectViewModel()
         {
@@ -144,7 +140,6 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<List<ActivityViewModel>>(result);
         }
 
-        //TODO: refactor to Mediator
         [Fact]
         public void GetActivitiesByGeographyCallsActivitiesByGeographyWithCorrectLatitudeLongitudeAndMiles()
         {
@@ -161,7 +156,6 @@ namespace AllReady.UnitTest.Controllers
             dataAccess.Verify(x => x.ActivitiesByGeography(latitude, longitude, miles), Times.Once);
         }
 
-        //TODO: refactor to Mediator
         [Fact]
         public void GetActivitiesByGeographyReturnsCorrectViewModel()
         {
@@ -171,7 +165,6 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<List<ActivityViewModel>>(result);
         }
 
-        //TODO: refactor to Mediator
         [Fact]
         public void GetCheckinReturnsHttpNotFoundWhenUnableToFindActivityByActivityId()
         {
@@ -180,7 +173,6 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<HttpNotFoundResult>(result);
         }
 
-        //TODO: refactor to Mediator
         [Fact]
         public void GetCheckinReturnsTheCorrectViewModel()
         {
@@ -193,7 +185,6 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<Activity>(result.ViewData.Model);
         }
 
-        //TODO: refactor to Mediator
         [Fact]
         public void GetCheckinReturnsTheCorrectView()
         {
@@ -205,6 +196,95 @@ namespace AllReady.UnitTest.Controllers
 
             Assert.Equal("NoUserCheckin", result.ViewName);
         }
+
+        [Fact]
+        public async Task PutCheckinReturnsHttpNotFoundWhenUnableToFindActivityByActivityId()
+        {
+            var sut = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), null);
+            var result = await sut.PutCheckin(It.IsAny<int>());
+
+            Assert.IsType<HttpNotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task PutCheckinCallsGetActivityWithCorrectActivityId()
+        {
+            const int activityId = 1;
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            var sut = new ActivityApiController(dataAccess.Object, null);
+            await sut.PutCheckin(activityId);
+
+            dataAccess.Verify(x => x.GetActivity(activityId), Times.Once);
+        }
+
+        [Fact]
+        public async Task PutCheckinCallsAddActivitySignupAsyncWithCorrectDataWhenUsersSignedUpisNotNullAndCheckinDateTimeIsNull()
+        {
+            const string userId = "userId";
+            var utcNow = DateTime.UtcNow;
+
+            var activity = new Activity();
+            var activitySignup = new ActivitySignup { User = new ApplicationUser { Id = userId }};
+            activity.UsersSignedUp.Add(activitySignup);
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(activity);
+
+            
+            var sut = new ActivityApiController(dataAccess.Object, null) { DateTimeUtcNow = () => utcNow }
+                .SetFakeUser(userId);
+            await sut.PutCheckin(It.IsAny<int>());
+
+            dataAccess.Verify(x => x.AddActivitySignupAsync(activitySignup), Times.Once);
+            dataAccess.Verify(x => x.AddActivitySignupAsync(It.Is<ActivitySignup>(y => y.CheckinDateTime == utcNow)), Times.Once);
+        }
+
+        [Fact]
+        public async Task PutCheckinReturnsCorrectJsonWhenUsersSignedUpIsNotNullAndCheckinDateTimeIsNull()
+        {
+            const string userId = "userId";
+
+            var activity = new Activity { Name = "ActivityName", Description = "ActivityDescription" };
+            var activitySignup = new ActivitySignup { User = new ApplicationUser { Id = userId } };
+            activity.UsersSignedUp.Add(activitySignup);
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(activity);
+
+            var sut = new ActivityApiController(dataAccess.Object, null)
+                .SetFakeUser(userId);
+
+            var expected = $"{{ Activity = {{ Name = {activity.Name}, Description = {activity.Description} }} }}";
+
+            var result = (JsonResult)await sut.PutCheckin(It.IsAny<int>());
+
+            Assert.IsType<JsonResult>(result);
+            Assert.Equal(expected, result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task PutCheckinReturnsCorrectJsonWhenUsersSignedUpIsNullAndCheckinDateTimeIsNotNull()
+        {
+            const string userId = "userId";
+
+            var activity = new Activity { Name = "ActivityName", Description = "ActivityDescription" };
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(activity);
+
+            var sut = new ActivityApiController(dataAccess.Object, null)
+                .SetFakeUser(userId);
+
+            var expected = $"{{ NeedsSignup = True, Activity = {{ Name = {activity.Name}, Description = {activity.Description} }} }}";
+
+            var result = (JsonResult)await sut.PutCheckin(It.IsAny<int>());
+
+            Assert.IsType<JsonResult>(result);
+            Assert.Equal(expected, result.Value.ToString());
+        }
+
+        //TODO: START HERE with .RegisterActivity
 
         [Fact]
         public async Task UnregisterActivityReturnsHttpNotFoundWhenUnableToGetActivitySignupByActivitySignupIdAndUserId()

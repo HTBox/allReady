@@ -22,6 +22,7 @@ namespace AllReady.Controllers
     {
         private readonly IAllReadyDataAccess _allReadyDataAccess;
         private readonly IMediator _mediator;
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
         public ActivityApiController(IAllReadyDataAccess allReadyDataAccess, IMediator mediator)
         {
@@ -131,18 +132,18 @@ namespace AllReady.Controllers
         public async Task<ActionResult> PutCheckin(int id)
         {
             var activity = _allReadyDataAccess.GetActivity(id);
-            if (activity?.UsersSignedUp == null)
+            if (activity == null)
                 return HttpNotFound();
 
             var userSignup = activity.UsersSignedUp.FirstOrDefault(u => u.User.Id == User.GetUserId());
             if (userSignup != null && userSignup.CheckinDateTime == null)
             {
-                userSignup.CheckinDateTime = DateTime.UtcNow;
+                userSignup.CheckinDateTime = DateTimeUtcNow.Invoke();
                 await _allReadyDataAccess.AddActivitySignupAsync(userSignup);
-                return Json(new { Activity = new { activity.Name, activity.Description } });
+                return Json(new { Activity = new { activity.Name, activity.Description }});
             }
 
-            return Json(new { NeedsSignup = true, Activity = new { activity.Name, activity.Description } });
+            return Json(new { NeedsSignup = true, Activity = new { activity.Name, activity.Description }});
         }
 
         [ValidateAntiForgeryToken]
