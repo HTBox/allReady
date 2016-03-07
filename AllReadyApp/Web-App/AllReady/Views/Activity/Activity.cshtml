@@ -157,6 +157,15 @@
 
         <!-- Column 3 -->
         @Html.Partial("_LocationInfo", Model)
+
+        @if (Model.HasPrivacyPolicy)
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="text-center"><a asp-controller="Organization" asp-action="OrganizationPrivacyPolicy" asp-route-id="@Model.OrganizationId">@Model.OrganizationName Privacy Policy</a></p>
+                </div>
+            </div>
+        }
     </div>
 </div>
 
