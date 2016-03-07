@@ -6,52 +6,21 @@ using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.ViewModels;
-using AllReady.Extensions;
 using AllReady.Features.Activity;
 using AllReady.Features.Notifications;
+using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Hosting;
-using Microsoft.Data.Entity;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 using Microsoft.AspNet.Mvc;
 
 namespace AllReady.UnitTest.Controllers
 {
-    //UnregisterActivity
-    //    - existing test the needs tests for:
-    //      - GetActivitySignup is made with correct Id and User.GetUserId
-    //        - _mediator.PublishAsync and _allReadyDataAccess.DeleteActivityAndTaskSignupsAsync are called with correct args
     //GetQrCode: check notes for this one
 
-    public class ActivityApiControllerTest : TestBase
+    public class ActivityApiControllerTest
     {
-        private static IServiceProvider _serviceProvider;
-        private static bool populatedData;
-        private static int activitiesAdded;
-        private Mock<IMediator> _mediator;
-
-        public ActivityApiControllerTest()
-        {
-            if (_serviceProvider == null)
-            {
-                var services = new ServiceCollection();
-
-                // Add EF (Full DB, not In-Memory)
-                services.AddEntityFramework()
-                    .AddInMemoryDatabase()
-                    .AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase());
-
-                // Setup hosting environment
-                IHostingEnvironment hostingEnvironment = new HostingEnvironment();
-                hostingEnvironment.EnvironmentName = "Development";
-                services.AddSingleton(x => hostingEnvironment);
-                _serviceProvider = services.BuildServiceProvider();
-            }
-        }
-
         [Fact]
         public void GetReturnsActivitiesWitUnlockedCampaigns()
         {
@@ -78,7 +47,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<List<ActivityViewModel>>(results);
         }
 
-        //TODO: come back to these two tests until you hear back from Tony Suram about returning null instead of retruning HttpNotFound
+        //TODO: come back to these two tests until you hear back from Tony Surma about returning null instead of retruning HttpNotFound
         //GetByIdReturnsNullWhenActivityIsNotFoundById ???
         //[Fact]
         //public void GetByIdReturnsHttpNotFoundWhenActivityIsNotFoundById()
@@ -522,120 +491,6 @@ namespace AllReady.UnitTest.Controllers
             var attribute = (AuthorizeAttribute)sut.GetAttributesOn(x => x.UnregisterActivity(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(AuthorizeAttribute));
             Assert.NotNull(attribute);
         }
-
-        #region old tests the really test Respository code
-
-        #endregion
-
-        #region Helper Methods
-
-        private ActivityApiController GetActivityApiController()
-        {
-            var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
-            var allReadyDataAccess = new AllReadyDataAccessEF7(allReadyContext);
-
-            _mediator = new Mock<IMediator>();
-            var controller = new ActivityApiController(allReadyDataAccess, _mediator.Object);
-
-            PopulateData(allReadyContext);
-            return controller;
-        }
-
-        private static void PopulateData(DbContext context)
-        {
-            if (!populatedData)
-            {
-                var activities = TestActivityModelProvider.GetActivities();
-
-                foreach (var activity in activities)
-                {
-                    context.Add(activity);
-                    context.Add(activity.Campaign);
-                    activitiesAdded++;
-                }
-                context.SaveChanges();
-                populatedData = true;
-            }
-        }
-
-        private class TestActivityModelProvider
-        {
-            public const string CampaignNameFormat = "Campaign {0}";
-            public const string CampaignDescriptionFormat = "Description for campaign {0}";
-            public const string OrganizationNameFormat = "Test Organization {0}";
-            public const string ActivityNameFormat = "Activity {0}";
-            public const string ActivityDescriptionFormat = "Description for activity {0}";
-            public const string UserNameFormat = "User {0}";
-            public const string TaskDescriptionFormat = "Task {0}";
-
-            public static IEnumerable<Activity> GetActivities()
-            {
-                var users = Enumerable.Range(1, 10).Select(n =>
-                    new ApplicationUser()
-                    {
-                        Id = n.ToString(),
-                        Name = string.Format(UserNameFormat, n)
-                    }).ToArray();
-
-                var organizations = Enumerable.Range(1, 10).Select(n =>
-                    new Organization()
-                    {
-                        Id = n,
-                        Name = string.Format(OrganizationNameFormat, n)
-                    }).ToArray();
-
-                var campaigns = Enumerable.Range(1, 10).Select(n =>
-                    new Campaign()
-                    {
-                        Description = string.Format(CampaignDescriptionFormat, n),
-                        Name = string.Format(CampaignNameFormat, n),
-                        Id = n,
-                        ManagingOrganization = organizations[n - 1]
-                    }).ToArray();
-
-                var activities = Enumerable.Range(1, 10).Select(n =>
-                    new Activity()
-                    {
-                        Campaign = campaigns[n - 1],
-                        EndDateTime = DateTime.MaxValue.ToUniversalTime(),
-                        StartDateTime = DateTime.MinValue.ToUniversalTime(),
-                        Name = string.Format(ActivityNameFormat, n),
-                        Description = string.Format(ActivityDescriptionFormat, n),
-                        Id = n,
-                        UsersSignedUp = new List<ActivitySignup>()
-                        {
-                            new ActivitySignup()
-                            {
-                                User = users[n - 1],
-                                SignupDateTime = DateTime.Now.ToUniversalTime(),
-                                PreferredEmail = "foo@foo.com",
-                                PreferredPhoneNumber = "(555) 555-5555"
-                            }
-                        },
-                        Tasks = new List<AllReadyTask>()
-                        {
-                            new AllReadyTask()
-                            {
-                                Id = n,
-                                Name = string.Format(TaskDescriptionFormat,n),
-                                NumberOfVolunteersRequired = 1,
-                                Organization = organizations[n - 1],
-                                AssignedVolunteers = new List<TaskSignup>()
-                                {
-                                    new TaskSignup()
-                                    {
-                                        User = users[n - 1],
-                                        StatusDateTimeUtc = DateTime.Now.ToUniversalTime(),
-                                        Status = "Ready To Rock And Roll"
-                                    }
-                                }
-                            }
-                        }
-                    }).ToArray();
-                return activities;
-            }
-        }
-        #endregion
     }
 }
 

@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.AspNet.Mvc;
 
-namespace AllReady.Extensions
+namespace AllReady.UnitTest.Extensions
 {
     public static class JsonResultExtensions
     {

@@ -52,19 +52,6 @@ namespace AllReady.Controllers
             HttpNotFound();
             return null;
         }
-        //changes ReSharper prompted me to make
-        //[HttpGet("{id}")]
-        //[Produces("application/json", Type = typeof(ActivityViewModel))]
-        //public ActivityViewModel Get(int id)
-        //{
-        //    var dbActivity = _allReadyDataAccess.GetActivity(id);
-        //    if (dbActivity == null)
-        //    {
-        //        HttpNotFound();
-        //        return null;
-        //    }
-        //    return new ActivityViewModel(dbActivity);
-        //}
 
         [Route("search")]
         public IEnumerable<ActivityViewModel> GetActivitiesByPostalCode(string zip, int miles)

@@ -3,6 +3,7 @@ using System.Linq;
 using AllReady.Extensions;
 using AllReady.Features.Campaigns;
 using AllReady.Models;
+using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Mvc;

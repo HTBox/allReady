@@ -3,10 +3,9 @@ using System.Security.Claims;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Internal;
 using Microsoft.AspNet.Mvc;
-using Microsoft.WindowsAzure.Storage.File;
 using Moq;
 
-namespace AllReady.UnitTest
+namespace AllReady.UnitTest.Extensions
 {
     public static class ControllerTestHelpers
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace AllReady.Extensions
+namespace AllReady.UnitTest.Extensions
 {
     public static class EnumerableExtensions
     {
