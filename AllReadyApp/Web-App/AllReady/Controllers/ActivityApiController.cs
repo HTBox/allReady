@@ -162,6 +162,7 @@ namespace AllReady.Controllers
             }
 
             await _mediator.SendAsync(new ActivitySignupCommand { ActivitySignup = signupModel });
+
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
@@ -177,10 +178,6 @@ namespace AllReady.Controllers
 
             //Notify admins & volunteer
             await _mediator.PublishAsync(new UserUnenrolls { ActivityId = activitySignup.Activity.Id, UserId = activitySignup.User.Id });
-
-            //since .GetActivitySignup is called with the ActivityId, which returns and ActivitySignup which has the same Activity entity off of it as a property, then ActivityId line below can
-            //be changed from "ActivityId = activitySignup.Activity.Id" to "ActivityId = id", but I"m not going to do that right now
-            //await _mediator.PublishAsync(new UserUnenrolls { ActivityId = activitySignup.Activity.Id, UserId = activitySignup.User.Id });
 
             //TODO: refactor to mediator
             await _allReadyDataAccess.DeleteActivityAndTaskSignupsAsync(activitySignup.Id);

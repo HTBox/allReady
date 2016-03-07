@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.ViewModels;
 using AllReady.Extensions;
+using AllReady.Features.Activity;
 using AllReady.Features.Notifications;
-using Autofac.Features.ResolveAnything;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Hosting;
@@ -19,7 +20,6 @@ using Microsoft.AspNet.Mvc;
 
 namespace AllReady.UnitTest.Controllers
 {
-    //RegisterActivity
     //UnregisterActivity
     //    - existing test the needs tests for:
     //      - GetActivitySignup is made with correct Id and User.GetUserId
@@ -51,20 +51,6 @@ namespace AllReady.UnitTest.Controllers
                 _serviceProvider = services.BuildServiceProvider();
             }
         }
-
-        //[Fact]
-        //public void GetActivitiesByLocation()
-        //{
-        //}
-        //[Fact]
-        //public void GetCheckin()
-        //{
-        //}
-        //async invocation of a method off of IAllReadyDataAcces on this one
-        //[Fact]
-        //public void PutCheckin()
-        //{
-        //}
 
         [Fact]
         public void GetReturnsActivitiesWitUnlockedCampaigns()
@@ -284,7 +270,51 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(expected, result.Value.ToString());
         }
 
-        //TODO: START HERE with .RegisterActivity
+        [Fact]
+        public async Task RegisterActivityReturnsHttpBadRequetWhenSignupModelIsNull()
+        {
+            var sut = new ActivityApiController(null, null);
+            var result = await sut.RegisterActivity(null);
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        public async Task RegisterActivityReturnsCorrectJsonWhenModelStateIsNotValid()
+        {
+            const string modelStateErrorMessage = "modelStateErrorMessage";
+
+            var sut = new ActivityApiController(null, null);
+            sut.AddModelStateError(modelStateErrorMessage);
+
+            var jsonResult = (JsonResult)await sut.RegisterActivity(new ActivitySignupViewModel());
+            var result = jsonResult.GetValueForProperty<List<string>>("errors");
+
+            Assert.IsType<JsonResult>(jsonResult);
+            Assert.IsType<List<string>>(result);
+            Assert.Equal(result.First(), modelStateErrorMessage);
+        }
+
+        [Fact]
+        public async Task RegisterActivitySendsActivitySignupCommandAsyncWithCorrectData()
+        {
+            var model = new ActivitySignupViewModel();
+            var mediator = new Mock<IMediator>();
+
+            var sut = new ActivityApiController(null, mediator.Object);
+            await sut.RegisterActivity(model);
+
+            mediator.Verify(x => x.SendAsync(It.Is<ActivitySignupCommand>(command => command.ActivitySignup.Equals(model))));
+        }
+
+        [Fact]
+        public async Task RegisterActivityReturnsHttpStatusResultOfOk()
+        {
+            var sut = new ActivityApiController(null, Mock.Of<IMediator>());
+            var result = (HttpStatusCodeResult)await sut.RegisterActivity(new ActivitySignupViewModel());
+
+            Assert.IsType<HttpStatusCodeResult>(result);
+            Assert.Equal(result.StatusCode, (int)HttpStatusCode.OK);
+        }
 
         [Fact]
         public async Task UnregisterActivityReturnsHttpNotFoundWhenUnableToGetActivitySignupByActivitySignupIdAndUserId()

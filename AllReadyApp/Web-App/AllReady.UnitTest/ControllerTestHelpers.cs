@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Internal;
 using Microsoft.AspNet.Mvc;
+using Microsoft.WindowsAzure.Storage.File;
 using Moq;
 
 namespace AllReady.UnitTest
@@ -42,6 +43,11 @@ namespace AllReady.UnitTest
             Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
 
             return controller;
+        }
+
+        public static void AddModelStateError(this Controller controller, string errorMessage)
+        {
+            controller.ViewData.ModelState.AddModelError("Error", errorMessage);
         }
 
         public static void AddModelStateError(this Controller controller)
