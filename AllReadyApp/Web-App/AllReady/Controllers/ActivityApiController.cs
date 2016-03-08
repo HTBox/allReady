@@ -56,28 +56,20 @@ namespace AllReady.Controllers
         {
             var model = new List<ActivityViewModel>();
 
-            //TODO: refactor to mediator
-            var activities = _allReadyDataAccess.ActivitiesByPostalCode(zip, miles);
-
-            foreach (var activity in activities)
-            {
-                model.Add(new ActivityViewModel(activity));
-            }
+            var activities = _mediator.Send(new AcitivitiesByPostalCodeQuery { PostalCode = zip, Distance = miles });
+            activities.ForEach(activity => model.Add(new ActivityViewModel(activity)));
 
             return model;
         }
 
-        //TODO: refactor to mediator
         [Route("searchbylocation")]
         public IEnumerable<ActivityViewModel> GetActivitiesByGeography(double latitude, double longitude, int miles)
         {
             var model = new List<ActivityViewModel>();
-            var activities = _allReadyDataAccess.ActivitiesByGeography(latitude, longitude, miles);
 
-            foreach (var activity in activities)
-            {
-                model.Add(new ActivityViewModel(activity));
-            }
+            //var activities = _allReadyDataAccess.ActivitiesByGeography(latitude, longitude, miles).ToList();
+            var activities = _mediator.Send(new ActivitiesByGeographyQuery { Latitude = latitude, Longitude = longitude, Miles = miles});
+            activities.ForEach(activity => model.Add(new ActivityViewModel(activity)));
 
             return model;
         }

@@ -116,31 +116,34 @@ namespace AllReady.UnitTest.Controllers
         public class WhenGettingActivitiesByPostalCode
         {
             [Fact]
-            public void GetActivitiesByPostalCodeCallsActivitiesByPostalCodeWithCorrectPostalCodeAndMiles()
+            public void GetActivitiesByPostalCodeSendsAcitivitiesByPostalCodeQueryWithCorrectPostalCodeAndDistance()
             {
                 const string zip = "zip";
                 const int miles = 100;
 
-                var dataAccess = new Mock<IAllReadyDataAccess>();
-                dataAccess.Setup(x => x.ActivitiesByPostalCode(It.IsAny<string>(), It.IsAny<int>())).Returns(new List<Activity>());
+                var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<AcitivitiesByPostalCodeQuery>())).Returns(new List<Activity>());
 
-                var sut = new ActivityApiController(dataAccess.Object, null);
+                var sut = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), mediator.Object);
                 sut.GetActivitiesByPostalCode(zip, miles);
 
-                dataAccess.Verify(x => x.ActivitiesByPostalCode(zip, miles), Times.Once);
+                mediator.Verify(x => x.Send(It.Is<AcitivitiesByPostalCodeQuery>(y => y.PostalCode == zip && y.Distance == miles)));
             }
 
             [Fact]
             public void GetActivitiesByPostalCodeReturnsCorrectViewModel()
             {
-                var sut = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), null);
+                var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<AcitivitiesByPostalCodeQuery>())).Returns(new List<Activity>());
+
+                var sut = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), mediator.Object);
                 var result = sut.GetActivitiesByPostalCode(It.IsAny<string>(), It.IsAny<int>());
 
                 Assert.IsType<List<ActivityViewModel>>(result);
             }
 
             [Fact]
-            public void GetActivitiesByZipHasRouteAttributeWithRoute()
+            public void GetActivitiesByPostalCodeHasRouteAttributeWithRoute()
             {
                 var sut = new ActivityApiController(null, null);
                 var attribute = sut.GetAttributesOn(x => x.GetActivitiesByPostalCode(It.IsAny<string>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
@@ -152,25 +155,28 @@ namespace AllReady.UnitTest.Controllers
         public class WhenGettingActivitiesbyGeography
         {
             [Fact]
-            public void GetActivitiesByGeographyCallsActivitiesByGeographyWithCorrectLatitudeLongitudeAndMiles()
+            public void GetActivitiesByGeographySendsActivitiesByGeographyQueryWithCorrectLatitudeLongitudeAndMiles()
             {
                 const double latitude = 1;
                 const double longitude = 2;
                 const int miles = 100;
 
-                var dataAccess = new Mock<IAllReadyDataAccess>();
-                dataAccess.Setup(x => x.ActivitiesByGeography(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>())).Returns(new List<Activity>());
+                var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<ActivitiesByGeographyQuery>())).Returns(new List<Activity>());
 
-                var sut = new ActivityApiController(dataAccess.Object, null);
+                var sut = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), mediator.Object);
                 sut.GetActivitiesByGeography(latitude, longitude, miles);
 
-                dataAccess.Verify(x => x.ActivitiesByGeography(latitude, longitude, miles), Times.Once);
+                mediator.Verify(x => x.Send(It.Is<ActivitiesByGeographyQuery>(y => y.Latitude == latitude && y.Longitude == longitude && y.Miles == miles)));
             }
 
             [Fact]
             public void GetActivitiesByGeographyReturnsCorrectViewModel()
             {
-                var sut = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), null);
+                var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<ActivitiesByGeographyQuery>())).Returns(new List<Activity>());
+
+                var sut = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), mediator.Object);
                 var result = sut.GetActivitiesByGeography(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>());
 
                 Assert.IsType<List<ActivityViewModel>>(result);
