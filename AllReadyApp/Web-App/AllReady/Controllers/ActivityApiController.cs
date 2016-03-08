@@ -39,12 +39,17 @@ namespace AllReady.Controllers
                 .Select(a => new ActivityViewModel(a));
         }
 
+        private Activity GetActivityBy(int activityId)
+        {
+            return _allReadyDataAccess.GetActivity(activityId);
+        }
+
         //orginial code
         [HttpGet("{id}")]
         [Produces("application/json", Type = typeof(ActivityViewModel))]
         public ActivityViewModel Get(int id)
         {
-            var activity = _allReadyDataAccess.GetActivity(id);
+            var activity = GetActivityBy(id);
 
             if (activity != null)
                 return new ActivityViewModel(activity);
@@ -107,7 +112,7 @@ namespace AllReady.Controllers
         [HttpGet("{id}/checkin")]
         public ActionResult GetCheckin(int id)
         {
-            var activity = _allReadyDataAccess.GetActivity(id);
+            var activity = GetActivityBy(id);
             if (activity == null)
                 return HttpNotFound();
 
@@ -118,7 +123,7 @@ namespace AllReady.Controllers
         [Authorize] 
         public async Task<ActionResult> PutCheckin(int id)
         {
-            var activity = _allReadyDataAccess.GetActivity(id);
+            var activity = GetActivityBy(id);
             if (activity == null)
                 return HttpNotFound();
 
