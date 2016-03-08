@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Activity
 {
-    public class GetActivitiesWithUnlockedCampaignsQueryHandlerTests
+    public class ActivitiesWithUnlockedCampaignsQueryHandlerTests
     {
         [Fact]
         public void HandleReturnsActivitiesWitUnlockedCampaigns()
@@ -20,8 +20,8 @@ namespace AllReady.UnitTest.Features.Activity
             var dataAccess = new Mock<IAllReadyDataAccess>();
             dataAccess.Setup(x => x.Activities).Returns(activities);
 
-            var sut = new GetActivitiesWithUnlockedCampaignsQueryHandler(dataAccess.Object);
-            var results = sut.Handle(new GetActivitiesWithUnlockedCampaignsQuery());
+            var sut = new ActivitiesWithUnlockedCampaignsQueryHandler(dataAccess.Object);
+            var results = sut.Handle(new ActivitiesWithUnlockedCampaignsQuery());
 
             Assert.Equal(activities[0].Id, results[0].Id);
         }

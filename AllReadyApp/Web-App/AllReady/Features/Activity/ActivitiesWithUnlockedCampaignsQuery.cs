@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AllReady.Features.Activity
 {
-    public class GetActivitiesWithUnlockedCampaignsQuery : IRequest<List<ActivityViewModel>>
+    public class ActivitiesWithUnlockedCampaignsQuery : IRequest<List<ActivityViewModel>>
     {
     }
 }

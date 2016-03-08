@@ -30,14 +30,14 @@ namespace AllReady.UnitTest.Controllers
                 var sut = new ActivityApiController(null, mediator.Object);
                 sut.Get();
 
-                mediator.Verify(x => x.Send(It.IsAny<GetActivitiesWithUnlockedCampaignsQuery>()), Times.Once);
+                mediator.Verify(x => x.Send(It.IsAny<ActivitiesWithUnlockedCampaignsQuery>()), Times.Once);
             }
 
             [Fact]
             public void GetReturnsCorrectModel()
             {
                 var mediator = new Mock<IMediator>();
-                mediator.Setup(x => x.Send(It.IsAny<GetActivitiesWithUnlockedCampaignsQuery>())).Returns(new List<ActivityViewModel>());
+                mediator.Setup(x => x.Send(It.IsAny<ActivitiesWithUnlockedCampaignsQuery>())).Returns(new List<ActivityViewModel>());
 
                 var sut = new ActivityApiController(null, mediator.Object);
                 var results = sut.Get();
@@ -57,12 +57,25 @@ namespace AllReady.UnitTest.Controllers
         public class WhenGettingActivitiesbyActivityId
         {
             [Fact]
+            public void GetByIdSendsActivityByActivityIdQueryWithCorrectData()
+            {
+                const int activityId = 1;
+
+                var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganization = new Organization() }});
+                var sut = new ActivityApiController(null, mediator.Object);
+
+                sut.Get(activityId);
+
+                mediator.Verify(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == activityId)));
+            }
+
+            [Fact]
             public void GetByIdReturnsCorrectViewModel()
             {
-                var dataAccess = new Mock<IAllReadyDataAccess>();
-                dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganization =  new Organization() }});
-
-                var sut = new ActivityApiController(dataAccess.Object, null);
+                var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganization = new Organization() }});
+                var sut = new ActivityApiController(null, mediator.Object);
                 var result = sut.Get(It.IsAny<int>());
 
                 Assert.IsType<ActivityViewModel>(result);
@@ -190,7 +203,7 @@ namespace AllReady.UnitTest.Controllers
             [Fact]
             public void GetCheckinReturnsHttpNotFoundWhenUnableToFindActivityByActivityId()
             {
-                var sut = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), null);
+                var sut = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), Mock.Of<IMediator>());
                 var result = sut.GetCheckin(It.IsAny<int>());
                 Assert.IsType<HttpNotFoundResult>(result);
             }
@@ -198,10 +211,10 @@ namespace AllReady.UnitTest.Controllers
             [Fact]
             public void GetCheckinReturnsTheCorrectViewModel()
             {
-                var dataAccess = new Mock<IAllReadyDataAccess>();
-                dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity());
+                var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganization = new Organization() } });
 
-                var sut = new ActivityApiController(dataAccess.Object, null);
+                var sut = new ActivityApiController(null, mediator.Object);
                 var result = (ViewResult)sut.GetCheckin(It.IsAny<int>());
 
                 Assert.IsType<Activity>(result.ViewData.Model);
@@ -210,10 +223,10 @@ namespace AllReady.UnitTest.Controllers
             [Fact]
             public void GetCheckinReturnsTheCorrectView()
             {
-                var dataAccess = new Mock<IAllReadyDataAccess>();
-                dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity());
+                var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganization = new Organization() }});
 
-                var sut = new ActivityApiController(dataAccess.Object, null);
+                var sut = new ActivityApiController(null, mediator.Object);
                 var result = (ViewResult)sut.GetCheckin(It.IsAny<int>());
 
                 Assert.Equal("NoUserCheckin", result.ViewName);
@@ -234,26 +247,30 @@ namespace AllReady.UnitTest.Controllers
             [Fact]
             public async Task PutCheckinReturnsHttpNotFoundWhenUnableToFindActivityByActivityId()
             {
-                var sut = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), null);
+                var sut = new ActivityApiController(null, Mock.Of<IMediator>());
                 var result = await sut.PutCheckin(It.IsAny<int>());
 
                 Assert.IsType<HttpNotFoundResult>(result);
             }
 
             [Fact]
-            public async Task PutCheckinCallsGetActivityWithCorrectActivityId()
+            public async Task PutCheckinSendsActivityByActivityIdQueryWithCorrectActivityId()
             {
                 const int activityId = 1;
 
+                var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity());
+
                 var dataAccess = new Mock<IAllReadyDataAccess>();
-                var sut = new ActivityApiController(dataAccess.Object, null);
+
+                var sut = new ActivityApiController(dataAccess.Object, mediator.Object);
                 await sut.PutCheckin(activityId);
 
-                dataAccess.Verify(x => x.GetActivity(activityId), Times.Once);
+                mediator.Verify(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == activityId)), Times.Once);
             }
 
             [Fact]
-            public async Task PutCheckinCallsAddActivitySignupAsyncWithCorrectDataWhenUsersSignedUpisNotNullAndCheckinDateTimeIsNull()
+            public async Task PutCheckinCallsAddActivitySignupAsyncWithCorrectDataWhenUsersSignedUpIsNotNullAndCheckinDateTimeIsNull()
             {
                 const string userId = "userId";
                 var utcNow = DateTime.UtcNow;
@@ -263,10 +280,11 @@ namespace AllReady.UnitTest.Controllers
                 activity.UsersSignedUp.Add(activitySignup);
 
                 var dataAccess = new Mock<IAllReadyDataAccess>();
-                dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(activity);
 
+                var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(activity);
 
-                var sut = new ActivityApiController(dataAccess.Object, null) { DateTimeUtcNow = () => utcNow }
+                var sut = new ActivityApiController(dataAccess.Object, mediator.Object) { DateTimeUtcNow = () => utcNow }
                     .SetFakeUser(userId);
                 await sut.PutCheckin(It.IsAny<int>());
 
@@ -284,9 +302,11 @@ namespace AllReady.UnitTest.Controllers
                 activity.UsersSignedUp.Add(activitySignup);
 
                 var dataAccess = new Mock<IAllReadyDataAccess>();
-                dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(activity);
 
-                var sut = new ActivityApiController(dataAccess.Object, null)
+                var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(activity);
+
+                var sut = new ActivityApiController(dataAccess.Object, mediator.Object)
                     .SetFakeUser(userId);
 
                 var expected = $"{{ Activity = {{ Name = {activity.Name}, Description = {activity.Description} }} }}";
@@ -305,9 +325,11 @@ namespace AllReady.UnitTest.Controllers
                 var activity = new Activity { Name = "ActivityName", Description = "ActivityDescription" };
 
                 var dataAccess = new Mock<IAllReadyDataAccess>();
-                dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(activity);
 
-                var sut = new ActivityApiController(dataAccess.Object, null)
+                var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(activity);
+
+                var sut = new ActivityApiController(dataAccess.Object, mediator.Object)
                     .SetFakeUser(userId);
 
                 var expected = $"{{ NeedsSignup = True, Activity = {{ Name = {activity.Name}, Description = {activity.Description} }} }}";

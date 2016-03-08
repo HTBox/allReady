@@ -6,16 +6,16 @@ using System.Linq;
 
 namespace AllReady.Features.Activity
 {
-    public class GetActivitiesWithUnlockedCampaignsQueryHandler : IRequestHandler<GetActivitiesWithUnlockedCampaignsQuery, List<ActivityViewModel>>
+    public class ActivitiesWithUnlockedCampaignsQueryHandler : IRequestHandler<ActivitiesWithUnlockedCampaignsQuery, List<ActivityViewModel>>
     {
         private readonly IAllReadyDataAccess dataAccess;
 
-        public GetActivitiesWithUnlockedCampaignsQueryHandler(IAllReadyDataAccess dataAccess)
+        public ActivitiesWithUnlockedCampaignsQueryHandler(IAllReadyDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
         }
 
-        public List<ActivityViewModel> Handle(GetActivitiesWithUnlockedCampaignsQuery message)
+        public List<ActivityViewModel> Handle(ActivitiesWithUnlockedCampaignsQuery message)
         {
             return dataAccess.Activities.Where(c => !c.Campaign.Locked)
                 .Select(a => new ActivityViewModel(a))

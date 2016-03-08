@@ -34,7 +34,7 @@ namespace AllReady.Controllers
         [HttpGet]
         public IEnumerable<ActivityViewModel> Get()
         {
-            return _mediator.Send(new GetActivitiesWithUnlockedCampaignsQuery());
+            return _mediator.Send(new ActivitiesWithUnlockedCampaignsQuery());
         }
 
         //orginial code
@@ -101,7 +101,6 @@ namespace AllReady.Controllers
             }
         }
 
-        //TODO: refactor to mediator
         [HttpGet("{id}/checkin")]
         public ActionResult GetCheckin(int id)
         {
@@ -172,7 +171,7 @@ namespace AllReady.Controllers
 
         private Activity GetActivityBy(int activityId)
         {
-            return _allReadyDataAccess.GetActivity(activityId);
+            return _mediator.Send(new ActivityByActivityIdQuery { ActivityId = activityId });
         }
     }
 }

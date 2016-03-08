@@ -22,7 +22,6 @@ namespace AllReady.ViewModels
                 CampaignName = activity.Campaign.Name;
             }
 
-            //TODO: check for null ManagaingOrganization before accessing properties like activity.Campaign checks for null above?
             OrganizationId = activity.Campaign.ManagingOrganization.Id;
             OrganizationName = activity.Campaign.ManagingOrganization.Name;
 
