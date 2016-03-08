@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Xunit;
 using AllReady.Extensions;
 using System.Security.Claims;
+using AllReady.UnitTest.Extensions;
 using Microsoft.AspNet.Http;
 
 namespace AllReady.UnitTest.Controllers
