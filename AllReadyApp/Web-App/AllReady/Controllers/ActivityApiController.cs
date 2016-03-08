@@ -34,14 +34,7 @@ namespace AllReady.Controllers
         [HttpGet]
         public IEnumerable<ActivityViewModel> Get()
         {
-            return _allReadyDataAccess.Activities
-                .Where(c => !c.Campaign.Locked)
-                .Select(a => new ActivityViewModel(a));
-        }
-
-        private Activity GetActivityBy(int activityId)
-        {
-            return _allReadyDataAccess.GetActivity(activityId);
+            return _mediator.Send(new GetActivitiesWithUnlockedCampaignsQuery());
         }
 
         //orginial code
@@ -175,6 +168,11 @@ namespace AllReady.Controllers
             await _allReadyDataAccess.DeleteActivityAndTaskSignupsAsync(activitySignup.Id);
 
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
+        }
+
+        private Activity GetActivityBy(int activityId)
+        {
+            return _allReadyDataAccess.GetActivity(activityId);
         }
     }
 }

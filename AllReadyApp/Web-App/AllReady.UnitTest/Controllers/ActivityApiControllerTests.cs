@@ -24,28 +24,24 @@ namespace AllReady.UnitTest.Controllers
         public class WhenGettingActivities
         {
             [Fact]
-            public void GetReturnsActivitiesWitUnlockedCampaigns()
+            public void SendsGetActivitiesWithUnlockedCampaignsQuery()
             {
-                var activities = new List<Activity>
-            {
-                new Activity { Id = 1, Campaign = new Campaign { Locked = false }},
-                new Activity { Id = 2, Campaign = new Campaign { Locked = true }}
-            };
+                var mediator = new Mock<IMediator>();
+                var sut = new ActivityApiController(null, mediator.Object);
+                sut.Get();
 
-                var dataAccess = new Mock<IAllReadyDataAccess>();
-                dataAccess.Setup(x => x.Activities).Returns(activities);
-
-                var sut = new ActivityApiController(dataAccess.Object, null);
-                var results = sut.Get().ToList();
-
-                Assert.Equal(activities[0].Id, results[0].Id);
+                mediator.Verify(x => x.Send(It.IsAny<GetActivitiesWithUnlockedCampaignsQuery>()), Times.Once);
             }
 
             [Fact]
             public void GetReturnsCorrectModel()
             {
-                var sut = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), null);
-                var results = sut.Get().ToList();
+                var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<GetActivitiesWithUnlockedCampaignsQuery>())).Returns(new List<ActivityViewModel>());
+
+                var sut = new ActivityApiController(null, mediator.Object);
+                var results = sut.Get();
+
                 Assert.IsType<List<ActivityViewModel>>(results);
             }
 
@@ -64,7 +60,7 @@ namespace AllReady.UnitTest.Controllers
             public void GetByIdReturnsCorrectViewModel()
             {
                 var dataAccess = new Mock<IAllReadyDataAccess>();
-                dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity { Campaign = new Campaign() });
+                dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganization =  new Organization() }});
 
                 var sut = new ActivityApiController(dataAccess.Object, null);
                 var result = sut.Get(It.IsAny<int>());

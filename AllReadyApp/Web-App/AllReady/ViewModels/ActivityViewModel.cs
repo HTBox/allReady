@@ -10,7 +10,7 @@ namespace AllReady.ViewModels
     {
         public ActivityViewModel()
         {
-            this.Tasks = new List<TaskViewModel>();
+            Tasks = new List<TaskViewModel>();
         }
 
         public ActivityViewModel(Activity activity)
@@ -22,6 +22,7 @@ namespace AllReady.ViewModels
                 CampaignName = activity.Campaign.Name;
             }
 
+            //TODO: check for null ManagaingOrganization before accessing properties like activity.Campaign checks for null above?
             OrganizationId = activity.Campaign.ManagingOrganization.Id;
             OrganizationName = activity.Campaign.ManagingOrganization.Name;
 
@@ -81,7 +82,7 @@ namespace AllReady.ViewModels
     {
         public static LocationViewModel ToViewModel(this Location location)
         {
-            LocationViewModel value = new LocationViewModel()
+            var value = new LocationViewModel
             {
                 Address1 = location.Address1,
                 Address2 = location.Address2,
@@ -93,7 +94,7 @@ namespace AllReady.ViewModels
         }
         public static Location ToModel(this LocationViewModel location)
         {
-            Location value = new Location()
+            var value = new Location
             {
                 Address1 = location.Address1,
                 Address2 = location.Address2,
