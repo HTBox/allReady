@@ -114,6 +114,7 @@ namespace AllReady.Controllers
             if (userSignup != null && userSignup.CheckinDateTime == null)
             {
                 userSignup.CheckinDateTime = DateTimeUtcNow.Invoke();
+                //TODO: change to mediator
                 await _allReadyDataAccess.AddActivitySignupAsync(userSignup);
                 return Json(new { Activity = new { activity.Name, activity.Description }});
             }
@@ -152,8 +153,7 @@ namespace AllReady.Controllers
             //Notify admins & volunteer
             await _mediator.PublishAsync(new UserUnenrolls { ActivityId = activitySignup.Activity.Id, UserId = activitySignup.User.Id });
 
-            //TODO: refactor to mediator
-            await _allReadyDataAccess.DeleteActivityAndTaskSignupsAsync(activitySignup.Id);
+            await _mediator.SendAsync(new DeleteActivityAndTaskSignupsCommandAsync { ActivitySignupId = activitySignup.Id });
 
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }

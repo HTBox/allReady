@@ -479,23 +479,21 @@ namespace AllReady.UnitTest.Controllers
             }
 
             [Fact]
-            public async Task UnregisterActivityDeleteActivityAndTaskSignupsAsyncIsCalledWithCorrectActivitySignupId()
+            public async Task UnregisterActivitySendsDeleteActivityAndTaskSignupsCommandAsyncWithCorrectActivitySignupId()
             {
                 const int activityId = 1;
                 const int activitySignupId = 1;
-
-                var dataAccess = new Mock<IAllReadyDataAccess>();
 
                 var mediator = new Mock<IMediator>();
                 mediator.Setup(x => x.Send(It.IsAny<ActivitySignupByActivityIdAndUserIdQuery>()))
                     .Returns(new ActivitySignup { Id = activitySignupId, Activity = new Activity(), User = new ApplicationUser() });
 
-                var controller = new ActivityApiController(dataAccess.Object, mediator.Object);
+                var controller = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), mediator.Object);
                 controller.SetDefaultHttpContext();
 
                 await controller.UnregisterActivity(activityId);
 
-                dataAccess.Verify(x => x.DeleteActivityAndTaskSignupsAsync(activitySignupId), Times.Once);
+                mediator.Verify(x => x.SendAsync(It.Is<DeleteActivityAndTaskSignupsCommandAsync>(y => y.ActivitySignupId == activitySignupId)));
             }
 
             [Fact]
