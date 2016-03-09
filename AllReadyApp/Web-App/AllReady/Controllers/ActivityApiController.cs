@@ -67,7 +67,6 @@ namespace AllReady.Controllers
         {
             var model = new List<ActivityViewModel>();
 
-            //var activities = _allReadyDataAccess.ActivitiesByGeography(latitude, longitude, miles).ToList();
             var activities = _mediator.Send(new ActivitiesByGeographyQuery { Latitude = latitude, Longitude = longitude, Miles = miles});
             activities.ForEach(activity => model.Add(new ActivityViewModel(activity)));
 
@@ -144,11 +143,9 @@ namespace AllReady.Controllers
 
         [HttpDelete("{id}/signup")]
         [Authorize]
-        //int id here is really ActivityId
         public async Task<IActionResult> UnregisterActivity(int id)
         {
-            //TODO: refactor to mediator
-            var activitySignup = _allReadyDataAccess.GetActivitySignup(id, User.GetUserId());
+            var activitySignup = _mediator.Send(new ActivitySignupByActivityIdAndUserIdQuery { ActivityId = id, UserId = User.GetUserId() });
             if (activitySignup == null)
                 return HttpNotFound();
 

@@ -435,28 +435,29 @@ namespace AllReady.UnitTest.Controllers
             [Fact]
             public async Task UnregisterActivityReturnsHttpNotFoundWhenUnableToGetActivitySignupByActivitySignupIdAndUserId()
             {
-                var controller = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), null)
-                    .SetFakeUser("1");
+                var controller = new ActivityApiController(null, Mock.Of<IMediator>());
+                controller.SetDefaultHttpContext();
 
                 var result = await controller.UnregisterActivity(It.IsAny<int>());
                 Assert.IsType<HttpNotFoundResult>(result);
             }
 
             [Fact]
-            public async Task UnregisterActivityGetActivitySignUpIsCalledWithCorrectActivityIdAndUserId()
+            public async Task UnregisterActivitySendsActivitySignupByActivityIdAndUserIdQueryWithCorrectActivityIdAndUserId()
             {
                 const int activityId = 1;
                 const string userId = "1";
 
-                var dataAccess = new Mock<IAllReadyDataAccess>();
-                dataAccess.Setup(x => x.GetActivitySignup(It.IsAny<int>(), It.IsAny<string>())).Returns(new ActivitySignup { Activity = new Activity(), User = new ApplicationUser() });
+                var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<ActivitySignupByActivityIdAndUserIdQuery>()))
+                    .Returns(new ActivitySignup { Activity = new Activity(), User = new ApplicationUser() });
 
-                var controller = new ActivityApiController(dataAccess.Object, Mock.Of<IMediator>())
+                var controller = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), mediator.Object)
                     .SetFakeUser(userId);
 
                 await controller.UnregisterActivity(activityId);
 
-                dataAccess.Verify(x => x.GetActivitySignup(activityId, userId), Times.Once);
+                mediator.Verify(x => x.Send(It.Is<ActivitySignupByActivityIdAndUserIdQuery>(y => y.ActivityId == activityId && y.UserId == userId)));
             }
 
             [Fact]
@@ -465,20 +466,13 @@ namespace AllReady.UnitTest.Controllers
                 const int activityId = 1;
                 const string applicationUserId = "applicationUserId";
 
-                var dataAccess = new Mock<IAllReadyDataAccess>();
-                dataAccess
-                    .Setup(x => x.GetActivitySignup(It.IsAny<int>(), It.IsAny<string>()))
-                    .Returns(new ActivitySignup
-                    {
-                        Activity = new Activity { Id = activityId },
-                        User = new ApplicationUser { Id = applicationUserId }
-                    });
-
                 var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<ActivitySignupByActivityIdAndUserIdQuery>()))
+                    .Returns(new ActivitySignup { Activity = new Activity { Id = activityId }, User = new ApplicationUser { Id = applicationUserId }});
 
-                var controller = new ActivityApiController(dataAccess.Object, mediator.Object)
-                    .SetFakeUser("1");
-
+                var controller = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), mediator.Object);
+                controller.SetDefaultHttpContext();
+                    
                 await controller.UnregisterActivity(activityId);
 
                 mediator.Verify(mock => mock.PublishAsync(It.Is<UserUnenrolls>(ue => ue.ActivityId == activityId && ue.UserId == applicationUserId)), Times.Once);
@@ -487,22 +481,19 @@ namespace AllReady.UnitTest.Controllers
             [Fact]
             public async Task UnregisterActivityDeleteActivityAndTaskSignupsAsyncIsCalledWithCorrectActivitySignupId()
             {
+                const int activityId = 1;
                 const int activitySignupId = 1;
 
                 var dataAccess = new Mock<IAllReadyDataAccess>();
-                dataAccess
-                    .Setup(x => x.GetActivitySignup(It.IsAny<int>(), It.IsAny<string>()))
-                    .Returns(new ActivitySignup
-                    {
-                        Id = activitySignupId,
-                        Activity = new Activity(),
-                        User = new ApplicationUser()
-                    });
 
-                var controller = new ActivityApiController(dataAccess.Object, Mock.Of<IMediator>())
-                    .SetFakeUser("1");
+                var mediator = new Mock<IMediator>();
+                mediator.Setup(x => x.Send(It.IsAny<ActivitySignupByActivityIdAndUserIdQuery>()))
+                    .Returns(new ActivitySignup { Id = activitySignupId, Activity = new Activity(), User = new ApplicationUser() });
 
-                await controller.UnregisterActivity(2);
+                var controller = new ActivityApiController(dataAccess.Object, mediator.Object);
+                controller.SetDefaultHttpContext();
+
+                await controller.UnregisterActivity(activityId);
 
                 dataAccess.Verify(x => x.DeleteActivityAndTaskSignupsAsync(activitySignupId), Times.Once);
             }
