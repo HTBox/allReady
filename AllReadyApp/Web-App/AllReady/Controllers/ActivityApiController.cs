@@ -20,13 +20,11 @@ namespace AllReady.Controllers
     [Produces("application/json")]
     public class ActivityApiController : Controller
     {
-        private readonly IAllReadyDataAccess _allReadyDataAccess;
         private readonly IMediator _mediator;
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        public ActivityApiController(IAllReadyDataAccess allReadyDataAccess, IMediator mediator)
+        public ActivityApiController(IMediator mediator)
         {
-            _allReadyDataAccess = allReadyDataAccess;
             _mediator = mediator;
         }
 
@@ -114,8 +112,7 @@ namespace AllReady.Controllers
             if (userSignup != null && userSignup.CheckinDateTime == null)
             {
                 userSignup.CheckinDateTime = DateTimeUtcNow.Invoke();
-                //TODO: change to mediator
-                await _allReadyDataAccess.AddActivitySignupAsync(userSignup);
+                await _mediator.SendAsync(new AddActivitySignupCommandAsync { ActivitySignup = userSignup });
                 return Json(new { Activity = new { activity.Name, activity.Description }});
             }
 
