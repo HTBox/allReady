@@ -45,15 +45,15 @@ footer, footer a {
     color: #ab6627;
 }
 
-footer a:hover {
-    text-decoration: none;
-    color: #efab6c;
-}
+    footer a:hover {
+        text-decoration: none;
+        color: #efab6c;
+    }
 
-footer > p > img, footer > p > a > img {
-    margin-left: 10px;
-    margin-right: 10px;
-}
+    footer > p > img, footer > p > a > img {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
 
 footer {
     position: absolute;
@@ -121,21 +121,20 @@ ul.nav a:focus {
     text-decoration: underline;
 }
 
-ul.nav.nav-tabs > li > a:hover 
-{
+ul.nav.nav-tabs > li > a:hover {
     /* issue 551 */
     color: #000;
 }
 
-.nav-tabs > li > a, 
-.nav-tabs > li > a:hover, 
+.nav-tabs > li > a,
+.nav-tabs > li > a:hover,
 .nav-tabs > li > a:focus {
     text-decoration: none;
 }
 
 
-.nav-tabs > li.active > a, 
-.nav-tabs > li.active > a:hover, 
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
 .nav-tabs > li.active > a:focus {
     /* prevent tab from losing bottom border */
     border-bottom-color: #fff;
@@ -160,7 +159,10 @@ Navigation
         font-size: 1.5em;
     }
 
-.navbar-default .navbar-nav > li > a, .navbar-default .navbar-nav > li > a:active, .navbar-default .navbar-nav > li > a:visited, .navbar-default .navbar-nav > li > a:focus {
+.navbar-default .navbar-nav > li > a,
+.navbar-default .navbar-nav > li > a:active,
+.navbar-default .navbar-nav > li > a:visited,
+.navbar-default .navbar-nav > li > a:focus {
     color: #fff;
 }
 
@@ -254,8 +256,8 @@ Navigation
     font-size: 1.1em;
 }
 
-.navbar #logoutForm .user-profile-warning{
-    float:right;
+.navbar #logoutForm .user-profile-warning {
+    float: right;
     line-height: 20px;
     font-size: 1.1em;
     margin-left: -7px;
@@ -327,20 +329,20 @@ Navigation
 }
 
 /* version information */
-.version{
+.version {
     position: absolute;
     bottom: 0;
     right: 0;
     font-size: 9px;
 }
 
-.thermometer{
+.thermometer {
     margin-left: auto;
     margin-right: auto;
     display: block;
 }
 
-.thermometer-liquid{
+.thermometer-liquid {
     fill: #d32828;
 }
 
@@ -350,19 +352,22 @@ Navigation
     shape-rendering: crispEdges;
 }
 
-.thermometer-ticks text {
-    display: none;
-}
+    .thermometer-ticks text {
+        display: none;
+    }
+
 .thermometer-left-edge {
     stroke: black;
 }
+
 .thermometer-right-edge {
     stroke: black;
 }
-.thermometer-bulb-outline{
+
+.thermometer-bulb-outline {
     stroke: black;
     stroke-width: 3;
-} 	
+}
 
 .inline-form {
     display: inline-block;
