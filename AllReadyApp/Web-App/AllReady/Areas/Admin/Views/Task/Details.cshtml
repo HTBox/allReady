@@ -1,4 +1,5 @@
-﻿@model AllReady.Areas.Admin.Models.TaskSummaryModel
+﻿@using AllReady.Security;
+@model AllReady.Areas.Admin.Models.TaskSummaryModel
 @{
     ViewData["Title"] = "Tasks Details";
     var userTimeZoneId = User.GetTimeZoneId();
