@@ -20,21 +20,19 @@ namespace AllReady.Controllers
         [Route("search")]
         public IEnumerable<ActivityViewModel> GetCampaignsByPostalCode(string zip, int miles)
         {
-            List<ActivityViewModel> ret = new List<ActivityViewModel>();
+            var model = new List<ActivityViewModel>();
 
-            var campaigns = (from c in _allReadyDataAccess.ActivitiesByPostalCode(zip, miles)
-                              select c.Campaign).Distinct();
+            var campaigns = _allReadyDataAccess.ActivitiesByPostalCode(zip, miles)
+                .Select(x => x.Campaign)
+                .Distinct();
 
-            var activities = (from c in campaigns
-                              from p in c.Activities
-                              select p);                           
+            var activities = campaigns
+                .SelectMany(x => x.Activities)
+                .ToList();
 
-            foreach (Activity activity in activities)
-            {
-                ret.Add(new ActivityViewModel(activity));
-            }
+           activities.ForEach(activity => model.Add(new ActivityViewModel(activity)));
 
-            return ret;
+           return model;
         }
     }
 }
