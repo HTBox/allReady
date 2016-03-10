@@ -369,13 +369,12 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task RegisterActivityReturnsHttpStatusResultOfOk()
+        public async Task RegisterActivityReturnsSuccess()
         {
             var sut = new ActivityApiController(Mock.Of<IMediator>());
-            var result = (HttpStatusCodeResult)await sut.RegisterActivity(new ActivitySignupViewModel());
+            var result = (object)await sut.RegisterActivity(new ActivitySignupViewModel());
 
-            Assert.IsType<HttpStatusCodeResult>(result);
-            Assert.Equal(result.StatusCode, (int)HttpStatusCode.OK);
+            Assert.True(result.ToString().Contains("success"));
         }
 
         [Fact]
