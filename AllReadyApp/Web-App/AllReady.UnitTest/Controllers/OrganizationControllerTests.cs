@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Xunit;
 using AllReady.Extensions;
 using System.Security.Claims;
+using AllReady.UnitTest.Extensions;
 using Microsoft.AspNet.Http;
 
 namespace AllReady.UnitTest.Controllers
@@ -20,7 +21,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void IndexReturnsAView()
         {
-            var controller = new OrganizationController(new Mock<IMediator>().Object);
+            var controller = new OrganizationController(Mock.Of<IMediator>());
             var result = controller.Index();
 
             Assert.IsType<ViewResult>(result);

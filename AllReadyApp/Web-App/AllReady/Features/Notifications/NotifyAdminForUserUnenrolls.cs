@@ -29,7 +29,6 @@ namespace AllReady.Features.Notifications
                 return;
 
             var signup = model.UsersSignedUp.FirstOrDefault(s => s.User.Id == notification.UserId);
-
             if (signup == null)
                 return;
 

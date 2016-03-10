@@ -12,6 +12,5 @@ namespace AllReady.Models
         public Activity Activity { get; set; }
         public DateTime SignupDateTime { get; set; }
         public DateTime? CheckinDateTime { get; set; }
-
     }
 }

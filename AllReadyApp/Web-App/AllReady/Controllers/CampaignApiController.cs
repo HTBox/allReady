@@ -9,18 +9,16 @@ namespace AllReady.Controllers
     [Route("api/campaign")]
     [Produces("application/json")]
     public class CampaignApiController : Controller
-    {        
-        private const double MILES_PER_METER = 0.00062137;
+    {
         private readonly IAllReadyDataAccess _allReadyDataAccess;
         
-
         public CampaignApiController(IAllReadyDataAccess allReadyDataAccess)
         {
             _allReadyDataAccess = allReadyDataAccess;
         }
 
         [Route("search")]
-        public IEnumerable<ActivityViewModel> GetCampaignsByZip(string zip, int miles)
+        public IEnumerable<ActivityViewModel> GetCampaignsByPostalCode(string zip, int miles)
         {
             List<ActivityViewModel> ret = new List<ActivityViewModel>();
 

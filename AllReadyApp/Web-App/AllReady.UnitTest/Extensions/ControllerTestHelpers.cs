@@ -5,7 +5,7 @@ using Microsoft.AspNet.Http.Internal;
 using Microsoft.AspNet.Mvc;
 using Moq;
 
-namespace AllReady.UnitTest
+namespace AllReady.UnitTest.Extensions
 {
     public static class ControllerTestHelpers
     {
@@ -30,6 +30,7 @@ namespace AllReady.UnitTest
             return controller;
         }
 
+        //http://www.jerriepelser.com/blog/unit-testing-controllers-aspnet5
         public static T SetFakeUser<T>(this T controller, string userId) where T : Controller
         {
             if (controller.ActionContext.HttpContext == null)
@@ -41,6 +42,11 @@ namespace AllReady.UnitTest
             Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
 
             return controller;
+        }
+
+        public static void AddModelStateError(this Controller controller, string errorMessage)
+        {
+            controller.ViewData.ModelState.AddModelError("Error", errorMessage);
         }
 
         public static void AddModelStateError(this Controller controller)

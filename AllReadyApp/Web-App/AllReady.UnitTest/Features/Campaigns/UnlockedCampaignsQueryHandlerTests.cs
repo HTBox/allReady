@@ -30,7 +30,7 @@ namespace AllReady.UnitTest.Features.Campaigns
         [Fact]
         public void HandleReturnsCampaignViewModels()
         {
-            var sut = new UnlockedCampaignsQueryHandler(new Mock<IAllReadyDataAccess>().Object);
+            var sut = new UnlockedCampaignsQueryHandler(Mock.Of<IAllReadyDataAccess>());
             var results = sut.Handle(new UnlockedCampaignsQuery());
 
             Assert.IsType<List<CampaignViewModel>>(results);

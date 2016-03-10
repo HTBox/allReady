@@ -1,250 +1,498 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.ViewModels;
+using AllReady.Features.Activity;
+using AllReady.Features.Notifications;
+using AllReady.UnitTest.Extensions;
 using MediatR;
-using Microsoft.AspNet.Hosting;
-using Microsoft.Data.Entity;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNet.Authorization;
 using Moq;
 using Xunit;
+using Microsoft.AspNet.Mvc;
 
 namespace AllReady.UnitTest.Controllers
 {
-    public class ActivityApiControllerTest : TestBase
+    public class ActivityApiControllerTests
     {
-        private static IServiceProvider _serviceProvider;
-        private static bool populatedData;
-        private static int activitiesAdded;
-        private Mock<IMediator> _mediator;
-
-        public ActivityApiControllerTest()
+        [Fact]
+        public void SendsGetActivitiesWithUnlockedCampaignsQuery()
         {
-            if (_serviceProvider == null)
-            {
-                var services = new ServiceCollection();
+            var mediator = new Mock<IMediator>();
+            var sut = new ActivityApiController(mediator.Object);
+            sut.Get();
 
-                // Add EF (Full DB, not In-Memory)
-                services.AddEntityFramework()
-                    .AddInMemoryDatabase()
-                    .AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase());
-
-                // Setup hosting environment
-                IHostingEnvironment hostingEnvironment = new HostingEnvironment();
-                hostingEnvironment.EnvironmentName = "Development";
-                services.AddSingleton(x => hostingEnvironment);
-                _serviceProvider = services.BuildServiceProvider();
-            }
+            mediator.Verify(x => x.Send(It.IsAny<ActivitiesWithUnlockedCampaignsQuery>()), Times.Once);
         }
 
         [Fact]
-        public void GetAllActivities()
+        public void GetReturnsCorrectModel()
         {
-            // Arrange
-            var controller = GetActivityController();
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivitiesWithUnlockedCampaignsQuery>())).Returns(new List<ActivityViewModel>());
 
-            // Act
-            var activities = new List<ActivityViewModel>(controller.Get());
+            var sut = new ActivityApiController(mediator.Object);
+            var results = sut.Get();
 
-            // Assert
-            Assert.Equal(activitiesAdded, activities.Count());
+            Assert.IsType<List<ActivityViewModel>>(results);
         }
 
         [Fact]
-        public void GetSingleActivity()
+        public void GetHasHttpGetAttribute()
         {
-            // Arrange
-            var controller = GetActivityController();
-
-            // Act
-            int recordId = 5;
-            var activityViewModel = controller.Get(recordId);
-
-            // Assert
-            Assert.Equal(activityViewModel.Id, recordId);
-            Assert.Equal(activityViewModel.CampaignName, string.Format(TestActivityModelProvider.CampaignNameFormat, recordId));
-            Assert.Equal(activityViewModel.CampaignId, recordId);
-            Assert.Equal(activityViewModel.Description, string.Format(TestActivityModelProvider.ActivityDescriptionFormat, recordId));
-            Assert.Equal(activityViewModel.EndDateTime, DateTime.MaxValue.ToUniversalTime());
-            Assert.Equal(activityViewModel.StartDateTime, DateTime.MinValue.ToUniversalTime());
+            var sut = new ActivityApiController(null);
+            var attribute = sut.GetAttributesOn(x => x.Get()).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact]
-        public void ActivityDoesExist()
+        public void GetByIdSendsActivityByActivityIdQueryWithCorrectData()
         {
-            // Arrange
-            var controller = GetActivityController();
+            const int activityId = 1;
 
-            // Act
-            const int recordId = 1;
-            var activityViewModel = controller.Get(recordId);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganization = new Organization() }});
+            var sut = new ActivityApiController(mediator.Object);
 
-            Assert.NotNull(activityViewModel);
+            sut.Get(activityId);
+
+            mediator.Verify(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == activityId)));
         }
 
         [Fact]
-        public void HandlesInvalidActivityId()
+        public void GetByIdReturnsCorrectViewModel()
         {
-            // Arrange
-            var controller = GetActivityController();
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganization = new Organization() }});
+            var sut = new ActivityApiController(mediator.Object);
+            var result = sut.Get(It.IsAny<int>());
 
-            // Act
-            const int recordId = -1;
-            var activityViewModel = controller.Get(recordId);
+            Assert.IsType<ActivityViewModel>(result);
+        }
 
-            Assert.Null(activityViewModel);
+        //TODO: come back to these two tests until you hear back from Tony Surma about returning null instead of retruning HttpNotFound
+        //GetByIdReturnsNullWhenActivityIsNotFoundById ???
+        //[Fact]
+        //public void GetByIdReturnsHttpNotFoundWhenActivityIsNotFoundById()
+        //{
+        //    var controller = new ActivityApiController(Mock.Of<IAllReadyDataAccess>(), null)
+        //        .SetFakeUser("1");
+
+        //    var result = controller.Get(It.IsAny<int>());
+        //    Assert.IsType<HttpNotFoundResult>(result);
+        //}
+
+        [Fact]
+        public void GetByIdHasHttpGetAttributeWithCorrectTemplate()
+        {
+            var sut = new ActivityApiController(null);
+            var attribute = sut.GetAttributesOn(x => x.Get(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "{id}");
         }
 
         [Fact]
-        public async Task UnregisterActivityShouldRemoveActivitySignup()
+        public void GetByIdHasProducesAttributeWithCorrectContentTypes()
         {
-            // Arrange
-            const int recordId = 5;
-            var controller = GetActivityController()
-                .SetFakeUser(recordId.ToString());
-
-            // Act
-            var result = await controller.UnregisterActivity(recordId);
-
-            // Assert
-            Assert.NotNull(result);
-            var context = _serviceProvider.GetService<AllReadyContext>();
-            var numOfUsersSignedUp = context.Activities
-                .First(e => e.Id == recordId)
-                .UsersSignedUp.Count;
-            Assert.Equal(0, numOfUsersSignedUp);
+            var sut = new ActivityApiController(null);
+            var attribute = sut.GetAttributesOn(x => x.Get(It.IsAny<int>())).OfType<ProducesAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Type, typeof(ActivityViewModel));
+            Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
         }
 
         [Fact]
-        public async Task UnregisterActivityShouldRemoveTaskSignup()
+        public void GetActivitiesByPostalCodeSendsAcitivitiesByPostalCodeQueryWithCorrectPostalCodeAndDistance()
         {
-            // Arrange
-            const int recordId = 5;
-            var controller = GetActivityController()
-                .SetFakeUser(recordId.ToString());
+            const string zip = "zip";
+            const int miles = 100;
 
-            // Act
-            var result = await controller.UnregisterActivity(recordId);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<AcitivitiesByPostalCodeQuery>())).Returns(new List<Activity>());
 
-            // Assert
-            Assert.NotNull(result);
-            var context = _serviceProvider.GetService<AllReadyContext>();
-            var numOfTasksSignedUpFor = context.TaskSignups.Count(e => e.Task.Activity.Id == recordId);
-            Assert.Equal(0, numOfTasksSignedUpFor);
+            var sut = new ActivityApiController(mediator.Object);
+            sut.GetActivitiesByPostalCode(zip, miles);
+
+            mediator.Verify(x => x.Send(It.Is<AcitivitiesByPostalCodeQuery>(y => y.PostalCode == zip && y.Distance == miles)));
         }
 
-        #region Helper Methods
-
-        private ActivityApiController GetActivityController()
+        [Fact]
+        public void GetActivitiesByPostalCodeReturnsCorrectViewModel()
         {
-            var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
-            var allReadyDataAccess = new AllReadyDataAccessEF7(allReadyContext);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<AcitivitiesByPostalCodeQuery>())).Returns(new List<Activity>());
 
-            _mediator = new Mock<IMediator>();
-            var controller = new ActivityApiController(allReadyDataAccess, _mediator.Object);
+            var sut = new ActivityApiController(mediator.Object);
+            var result = sut.GetActivitiesByPostalCode(It.IsAny<string>(), It.IsAny<int>());
 
-            PopulateData(allReadyContext);
-            return controller;
+            Assert.IsType<List<ActivityViewModel>>(result);
         }
 
-        private void PopulateData(DbContext context)
+        [Fact]
+        public void GetActivitiesByPostalCodeHasRouteAttributeWithRoute()
         {
-            if (!populatedData)
-            {
-                var activities = TestActivityModelProvider.GetActivities();
-
-                foreach (var activity in activities)
-                {
-                    context.Add(activity);
-                    context.Add(activity.Campaign);
-                    activitiesAdded++;
-                }
-                context.SaveChanges();
-                populatedData = true;
-            }
+            var sut = new ActivityApiController(null);
+            var attribute = sut.GetAttributesOn(x => x.GetActivitiesByPostalCode(It.IsAny<string>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "search");
         }
 
-        private class TestActivityModelProvider
+        [Fact]
+        public void GetActivitiesByGeographySendsActivitiesByGeographyQueryWithCorrectLatitudeLongitudeAndMiles()
         {
-            public const string CampaignNameFormat = "Campaign {0}";
-            public const string CampaignDescriptionFormat = "Description for campaign {0}";
-            public const string OrganizationNameFormat = "Test Organization {0}";
-            public const string ActivityNameFormat = "Activity {0}";
-            public const string ActivityDescriptionFormat = "Description for activity {0}";
-            public const string UserNameFormat = "User {0}";
-            public const string TaskDescriptionFormat = "Task {0}";
+            const double latitude = 1;
+            const double longitude = 2;
+            const int miles = 100;
 
-            public static Activity[] GetActivities()
-            {
-                var users = Enumerable.Range(1, 10).Select(n =>
-                    new ApplicationUser()
-                    {
-                        Id = n.ToString(),
-                        Name = string.Format(UserNameFormat, n)
-                    }).ToArray();
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivitiesByGeographyQuery>())).Returns(new List<Activity>());
 
-                var organizations = Enumerable.Range(1, 10).Select(n =>
-                    new Organization()
-                    {
-                        Id = n,
-                        Name = string.Format(OrganizationNameFormat, n)
-                    }).ToArray();
+            var sut = new ActivityApiController(mediator.Object);
+            sut.GetActivitiesByGeography(latitude, longitude, miles);
 
-                var campaigns = Enumerable.Range(1, 10).Select(n =>
-                    new Campaign()
-                    {
-                        Description = string.Format(CampaignDescriptionFormat, n),
-                        Name = string.Format(CampaignNameFormat, n),
-                        Id = n,
-                        ManagingOrganization = organizations[n - 1]
-                    }).ToArray();
-
-                var activities = Enumerable.Range(1, 10).Select(n =>
-                    new Activity()
-                    {
-                        Campaign = campaigns[n - 1],
-                        EndDateTime = DateTime.MaxValue.ToUniversalTime(),
-                        StartDateTime = DateTime.MinValue.ToUniversalTime(),
-                        Name = string.Format(ActivityNameFormat, n),
-                        Description = string.Format(ActivityDescriptionFormat, n),
-                        Id = n,
-                        UsersSignedUp = new List<ActivitySignup>()
-                        {
-                            new ActivitySignup()
-                            {
-                                User = users[n - 1],
-                                SignupDateTime = DateTime.Now.ToUniversalTime(),
-                                PreferredEmail = "foo@foo.com",
-                                PreferredPhoneNumber = "(555) 555-5555"
-                            }
-                        },
-                        Tasks = new List<AllReadyTask>()
-                        {
-                            new AllReadyTask()
-                            {
-                                Id = n,
-                                Name = string.Format(TaskDescriptionFormat,n),
-                                NumberOfVolunteersRequired = 1,
-                                Organization = organizations[n - 1],
-                                AssignedVolunteers = new List<TaskSignup>()
-                                {
-                                    new TaskSignup()
-                                    {
-                                        User = users[n - 1],
-                                        StatusDateTimeUtc = DateTime.Now.ToUniversalTime(),
-                                        Status = "Ready To Rock And Roll"
-                                    }
-                                }
-                            }
-                        }
-                    }).ToArray();
-                return activities;
-            }
+            mediator.Verify(x => x.Send(It.Is<ActivitiesByGeographyQuery>(y => y.Latitude == latitude && y.Longitude == longitude && y.Miles == miles)));
         }
-        #endregion
+
+        [Fact]
+        public void GetActivitiesByGeographyReturnsCorrectViewModel()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivitiesByGeographyQuery>())).Returns(new List<Activity>());
+
+            var sut = new ActivityApiController(mediator.Object);
+            var result = sut.GetActivitiesByGeography(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>());
+
+            Assert.IsType<List<ActivityViewModel>>(result);
+        }
+
+        [Fact]
+        public void GetActivitiesByLocationHasRouteAttributeWithCorrectRoute()
+        {
+            var sut = new ActivityApiController(null);
+            var attribute = sut.GetAttributesOn(x => x.GetActivitiesByGeography(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "searchbylocation");
+        }
+
+        [Fact]
+        public void GetQrCodeHasHttpGetAttributeWithCorrectTemplate()
+        {
+            var sut = new ActivityApiController(null);
+            var attribute = sut.GetAttributesOn(x => x.GetQrCode(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "{id}/qrcode");
+        }
+
+        [Fact]
+        public void GetCheckinReturnsHttpNotFoundWhenUnableToFindActivityByActivityId()
+        {
+            var sut = new ActivityApiController(Mock.Of<IMediator>());
+            var result = sut.GetCheckin(It.IsAny<int>());
+            Assert.IsType<HttpNotFoundResult>(result);
+        }
+
+        [Fact]
+        public void GetCheckinReturnsTheCorrectViewModel()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganization = new Organization() } });
+
+            var sut = new ActivityApiController(mediator.Object);
+            var result = (ViewResult)sut.GetCheckin(It.IsAny<int>());
+
+            Assert.IsType<Activity>(result.ViewData.Model);
+        }
+
+        [Fact]
+        public void GetCheckinReturnsTheCorrectView()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganization = new Organization() }});
+
+            var sut = new ActivityApiController(mediator.Object);
+            var result = (ViewResult)sut.GetCheckin(It.IsAny<int>());
+
+            Assert.Equal("NoUserCheckin", result.ViewName);
+        }
+
+        [Fact]
+        public void GetCheckinHasHttpGetAttributeWithCorrectTemplate()
+        {
+            var sut = new ActivityApiController(null);
+            var attribute = sut.GetAttributesOn(x => x.GetCheckin(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "{id}/checkin");
+        }
+
+        [Fact]
+        public async Task PutCheckinReturnsHttpNotFoundWhenUnableToFindActivityByActivityId()
+        {
+            var sut = new ActivityApiController(Mock.Of<IMediator>());
+            var result = await sut.PutCheckin(It.IsAny<int>());
+
+            Assert.IsType<HttpNotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task PutCheckinSendsActivityByActivityIdQueryWithCorrectActivityId()
+        {
+            const int activityId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity());
+
+            var sut = new ActivityApiController(mediator.Object);
+            await sut.PutCheckin(activityId);
+
+            mediator.Verify(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == activityId)), Times.Once);
+        }
+
+        [Fact]
+        public async Task PutCheckinSendsAddActivitySignupCommandAsyncWithCorrectDataWhenUsersSignedUpIsNotNullAndCheckinDateTimeIsNull()
+        {
+            const string userId = "userId";
+            var utcNow = DateTime.UtcNow;
+
+            var activity = new Activity();
+            var activitySignup = new ActivitySignup { User = new ApplicationUser { Id = userId } };
+            activity.UsersSignedUp.Add(activitySignup);
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(activity);
+
+            var sut = new ActivityApiController(mediator.Object) { DateTimeUtcNow = () => utcNow }
+                .SetFakeUser(userId);
+            await sut.PutCheckin(It.IsAny<int>());
+
+            mediator.Verify(x => x.SendAsync(It.Is<AddActivitySignupCommandAsync>(y => y.ActivitySignup == activitySignup)));
+            mediator.Verify(x => x.SendAsync(It.Is<AddActivitySignupCommandAsync>(y => y.ActivitySignup.CheckinDateTime == utcNow)));
+        }
+
+        [Fact]
+        public async Task PutCheckinReturnsCorrectJsonWhenUsersSignedUpIsNotNullAndCheckinDateTimeIsNull()
+        {
+            const string userId = "userId";
+
+            var activity = new Activity { Name = "ActivityName", Description = "ActivityDescription" };
+            var activitySignup = new ActivitySignup { User = new ApplicationUser { Id = userId } };
+            activity.UsersSignedUp.Add(activitySignup);
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(activity);
+
+            var sut = new ActivityApiController(mediator.Object)
+                .SetFakeUser(userId);
+
+            var expected = $"{{ Activity = {{ Name = {activity.Name}, Description = {activity.Description} }} }}";
+
+            var result = (JsonResult)await sut.PutCheckin(It.IsAny<int>());
+
+            Assert.IsType<JsonResult>(result);
+            Assert.Equal(expected, result.Value.ToString());
+        }
+
+        [Fact]
+        public async Task PutCheckinReturnsCorrectJsonWhenUsersSignedUpIsNullAndCheckinDateTimeIsNotNull()
+        {
+            const string userId = "userId";
+            var activity = new Activity { Name = "ActivityName", Description = "ActivityDescription" };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(activity);
+
+            var sut = new ActivityApiController(mediator.Object)
+                .SetFakeUser(userId);
+
+            var expected = $"{{ NeedsSignup = True, Activity = {{ Name = {activity.Name}, Description = {activity.Description} }} }}";
+
+            var result = (JsonResult)await sut.PutCheckin(It.IsAny<int>());
+
+            Assert.IsType<JsonResult>(result);
+            Assert.Equal(expected, result.Value.ToString());
+        }
+
+        [Fact]
+        public void PutCheckinHasHttpPutAttributeWithCorrectTemplate()
+        {
+            var sut = new ActivityApiController(null);
+            var attribute = (HttpPutAttribute)sut.GetAttributesOn(x => x.PutCheckin(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(HttpPutAttribute));
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "{id}/checkin");
+        }
+
+        [Fact]
+        public void PutCheckinHasAuthorizeAttribute()
+        {
+            var sut = new ActivityApiController(null);
+            var attribute = (AuthorizeAttribute)sut.GetAttributesOn(x => x.PutCheckin(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(AuthorizeAttribute));
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public async Task RegisterActivityReturnsHttpBadRequetWhenSignupModelIsNull()
+        {
+            var sut = new ActivityApiController(null);
+            var result = await sut.RegisterActivity(null);
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        public async Task RegisterActivityReturnsCorrectJsonWhenModelStateIsNotValid()
+        {
+            const string modelStateErrorMessage = "modelStateErrorMessage";
+
+            var sut = new ActivityApiController(null);
+            sut.AddModelStateError(modelStateErrorMessage);
+
+            var jsonResult = (JsonResult)await sut.RegisterActivity(new ActivitySignupViewModel());
+            var result = jsonResult.GetValueForProperty<List<string>>("errors");
+
+            Assert.IsType<JsonResult>(jsonResult);
+            Assert.IsType<List<string>>(result);
+            Assert.Equal(result.First(), modelStateErrorMessage);
+        }
+
+        [Fact]
+        public async Task RegisterActivitySendsActivitySignupCommandAsyncWithCorrectData()
+        {
+            var model = new ActivitySignupViewModel();
+            var mediator = new Mock<IMediator>();
+
+            var sut = new ActivityApiController(mediator.Object);
+            await sut.RegisterActivity(model);
+
+            mediator.Verify(x => x.SendAsync(It.Is<ActivitySignupCommand>(command => command.ActivitySignup.Equals(model))));
+        }
+
+        [Fact]
+        public async Task RegisterActivityReturnsHttpStatusResultOfOk()
+        {
+            var sut = new ActivityApiController(Mock.Of<IMediator>());
+            var result = (HttpStatusCodeResult)await sut.RegisterActivity(new ActivitySignupViewModel());
+
+            Assert.IsType<HttpStatusCodeResult>(result);
+            Assert.Equal(result.StatusCode, (int)HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public void RegisterActivityHasValidateAntiForgeryTokenAttribute()
+        {
+            var sut = new ActivityApiController(null);
+            var attribute = (ValidateAntiForgeryTokenAttribute)sut.GetAttributesOn(x => x.RegisterActivity(It.IsAny<ActivitySignupViewModel>())).SingleOrDefault(x => x.GetType() == typeof(ValidateAntiForgeryTokenAttribute));
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void RegisterActivityHasHttpPostAttributeWithCorrectTemplate()
+        {
+            var sut = new ActivityApiController(null);
+            var attribute = (HttpPostAttribute)sut.GetAttributesOn(x => x.RegisterActivity(It.IsAny<ActivitySignupViewModel>())).SingleOrDefault(x => x.GetType() == typeof(HttpPostAttribute));
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "signup");
+        }
+
+        [Fact]
+        public async Task UnregisterActivityReturnsHttpNotFoundWhenUnableToGetActivitySignupByActivitySignupIdAndUserId()
+        {
+            var controller = new ActivityApiController(Mock.Of<IMediator>());
+            controller.SetDefaultHttpContext();
+
+            var result = await controller.UnregisterActivity(It.IsAny<int>());
+            Assert.IsType<HttpNotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task UnregisterActivitySendsActivitySignupByActivityIdAndUserIdQueryWithCorrectActivityIdAndUserId()
+        {
+            const int activityId = 1;
+            const string userId = "1";
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivitySignupByActivityIdAndUserIdQuery>()))
+                .Returns(new ActivitySignup { Activity = new Activity(), User = new ApplicationUser() });
+
+            var controller = new ActivityApiController(mediator.Object)
+                .SetFakeUser(userId);
+
+            await controller.UnregisterActivity(activityId);
+
+            mediator.Verify(x => x.Send(It.Is<ActivitySignupByActivityIdAndUserIdQuery>(y => y.ActivityId == activityId && y.UserId == userId)));
+        }
+
+        [Fact]
+        public async Task UnregisterActivityPublishesUserUnenrollsWithCorrectData()
+        {
+            const int activityId = 1;
+            const string applicationUserId = "applicationUserId";
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivitySignupByActivityIdAndUserIdQuery>()))
+                .Returns(new ActivitySignup { Activity = new Activity { Id = activityId }, User = new ApplicationUser { Id = applicationUserId }});
+
+            var controller = new ActivityApiController(mediator.Object);
+            controller.SetDefaultHttpContext();
+                    
+            await controller.UnregisterActivity(activityId);
+
+            mediator.Verify(mock => mock.PublishAsync(It.Is<UserUnenrolls>(ue => ue.ActivityId == activityId && ue.UserId == applicationUserId)), Times.Once);
+        }
+
+        [Fact]
+        public async Task UnregisterActivitySendsDeleteActivityAndTaskSignupsCommandAsyncWithCorrectActivitySignupId()
+        {
+            const int activityId = 1;
+            const int activitySignupId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivitySignupByActivityIdAndUserIdQuery>()))
+                .Returns(new ActivitySignup { Id = activitySignupId, Activity = new Activity(), User = new ApplicationUser() });
+
+            var controller = new ActivityApiController(mediator.Object);
+            controller.SetDefaultHttpContext();
+
+            await controller.UnregisterActivity(activityId);
+
+            mediator.Verify(x => x.SendAsync(It.Is<DeleteActivityAndTaskSignupsCommandAsync>(y => y.ActivitySignupId == activitySignupId)));
+        }
+
+        [Fact]
+        public void UnregisterActivityHasHttpDeleteAttributeWithCorrectTemplate()
+        {
+            var sut = new ActivityApiController(null);
+            var attribute = (HttpDeleteAttribute)sut.GetAttributesOn(x => x.UnregisterActivity(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(HttpDeleteAttribute));
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "{id}/signup");
+        }
+
+        [Fact]
+        public void UnregisterActivityHasAuthorizeAttribute()
+        {
+            var sut = new ActivityApiController(null);
+            var attribute = (AuthorizeAttribute)sut.GetAttributesOn(x => x.UnregisterActivity(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(AuthorizeAttribute));
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void ControllerHasRouteAtttributeWithTheCorrectRoute()
+        {
+            var sut = new ActivityApiController(null);
+            var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "api/activity");
+        }
+
+        [Fact]
+        public void ControllerHasProducesAtttributeWithTheCorrectContentType()
+        {
+            var sut = new ActivityApiController(null);
+            var attribute = sut.GetAttributes().OfType<ProducesAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
+        }
     }
 }
 

@@ -62,10 +62,8 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmDeleteUser(string userId)
         {
-            // send command to mediator
             await _mediator.SendAsync(new DeleteUserCommand { UserId = userId });
 
-            // follow PRG
             return RedirectToAction("Index");
         }
 

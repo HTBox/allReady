@@ -33,7 +33,7 @@ namespace AllReady.UnitTest.Features.Organizations
         public void HandleReturnsListOfOrganizationViewModels()
         {
             var message = new OrganizationsQuery();
-            var sut = new OrganizationsQueryHandler(new Mock<IAllReadyDataAccess>().Object);
+            var sut = new OrganizationsQueryHandler(Mock.Of<IAllReadyDataAccess>());
             var results = sut.Handle(message);
 
             Assert.IsType<List<OrganizationViewModel>>(results);
