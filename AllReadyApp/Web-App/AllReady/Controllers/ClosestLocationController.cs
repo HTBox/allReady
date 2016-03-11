@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using AllReady.Features.ClosestLocation;
 using AllReady.Models;
+using MediatR;
 using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Controllers
@@ -7,22 +9,19 @@ namespace AllReady.Controllers
     [Route("api/closest")]
     public class ClosestLocationsController : Controller
     {
-        private IAllReadyDataAccess _dataAccess;
+        private readonly IMediator mediator;
 
-        public ClosestLocationsController(IAllReadyDataAccess dataAccess)
+        public ClosestLocationsController(IMediator mediator)
         {
-            _dataAccess = dataAccess;
+            this.mediator = mediator;
         }
 
         [HttpGet("{lat}/{lon}/{distance}/{count}")]
-        public IEnumerable<ClosestLocation> Get(double lat, double lon, int distance, int count)
+        public IEnumerable<ClosestLocation> Get(double latitude, double longtitude, int distance, int count)
         {
-            var results = _dataAccess.GetClosestLocations(new LocationQuery
+            var results = mediator.Send(new ClosestLocationsQuery
             {
-                Distance = distance,
-                Latitude = lat,
-                Longitude = lon,
-                MaxRecordsToReturn = count
+                LocationQuery = new LocationQuery { Distance = distance, Latitude = latitude, Longitude = longtitude, MaxRecordsToReturn = count }
             });
 
             return results;
