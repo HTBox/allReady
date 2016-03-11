@@ -6,7 +6,7 @@ namespace AllReady.Models
   {
     public double Latitude { get; set; }
     public double Longitude { get; set; }
-    public Nullable<int> Distance { get; set; }
-    public Nullable<int> MaxRecordsToReturn { get; set; }
+    public int? Distance { get; set; }
+    public int? MaxRecordsToReturn { get; set; }
   }
 }
