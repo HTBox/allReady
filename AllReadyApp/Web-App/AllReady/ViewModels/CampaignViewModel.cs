@@ -29,8 +29,8 @@ namespace AllReady.ViewModels
             Activities = campaign.Activities != null ? campaign.Activities.ToViewModel() : Enumerable.Empty<ActivityViewModel>();
             CampaignImpact = campaign.CampaignImpact;
             ImageUrl = campaign.ImageUrl;
-
             HasPrivacyPolicy = !string.IsNullOrEmpty(campaign.ManagingOrganization?.PrivacyPolicy);
+            Location = campaign.Location;
         }
 
         public int Id { get; set; }
@@ -42,6 +42,8 @@ namespace AllReady.ViewModels
         public string FullDescription { get; set; }
 
         public string ImageUrl { get; set; }
+
+        public Location Location { get; set; }
 
         public int ManagingOrganizationId { get; set; }
 
