@@ -7,10 +7,7 @@ using Microsoft.AspNet.Mvc;
 using Moq;
 using System.Threading.Tasks;
 using Xunit;
-using AllReady.Extensions;
-using System.Security.Claims;
 using AllReady.UnitTest.Extensions;
-using Microsoft.AspNet.Http;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -181,17 +178,6 @@ namespace AllReady.UnitTest.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganziationPrivacyPolicyQueryAsync>())).Returns(() => Task.FromResult((OrganizationPrivacyPolicyViewModel)null)).Verifiable();
             controller = new OrganizationController(mockMediator.Object);
-        }
-
-        private static Mock<ActionContext> MockActionContextWithUser(ClaimsPrincipal principle)
-        {
-            var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => principle);
-            var mockContext = new Mock<ActionContext>();
-
-            mockContext.Object.HttpContext = mockHttpContext.Object;
-            return mockContext;
         }
 
         #endregion

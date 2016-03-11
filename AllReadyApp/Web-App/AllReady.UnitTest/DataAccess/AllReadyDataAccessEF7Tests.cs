@@ -15,7 +15,6 @@ namespace AllReady.UnitTest.DataAccess
         private static IServiceProvider _serviceProvider;
         private static bool populatedData;
 
-        //used to be public ActivityApiControllerTest constructor
         public AllReadyDataAccessEF7Tests()
         {
             if (_serviceProvider == null)
@@ -35,12 +34,31 @@ namespace AllReady.UnitTest.DataAccess
             }
         }
 
+        #region Activity
+        [Fact]
+        public void GetResourcesByCategoryReturnsOnlyThoseResourcesWithMatchingCategory()
+        {
+            const string categoryToMatch = "category1";
+
+            var context = _serviceProvider.GetService<AllReadyContext>();
+            context.Resources.Add(new Resource { CategoryTag = categoryToMatch });
+            context.Resources.Add(new Resource { CategoryTag = "shouldNotMatchThisCategory" });
+            context.SaveChanges();
+
+            var sut = (IAllReadyDataAccess)new AllReadyDataAccessEF7(context);
+            var results = sut.GetResourcesByCategory(categoryToMatch).ToList();
+
+            Assert.Equal(results.Single().CategoryTag, categoryToMatch);
+        }
+        #endregion
+
+        #region ActivitySignup
         [Fact]
         public async Task DeleteActivityAndTaskSignupsAsyncDoesNotDeleteActivitySignupsOrTaskSignupsForUnkownActivitySignupId()
         {
             const int anActivitySignupIdThatDoesNotExist = 1000;
 
-            var sut = CreateSutAndPopulateTestData();
+            var sut = CreateSutAndPopulateTestDataForActivitySignup();
 
             var countOfActivitySignupsBeforeMethodInvocation = sut.ActivitySignups.Count();
             var countOfTaskSignupsBeforeMethodInvocation = sut.TaskSignups.Count();
@@ -59,7 +77,7 @@ namespace AllReady.UnitTest.DataAccess
         {
             const int activitySignupId = 5;
 
-            var sut = CreateSutAndPopulateTestData();
+            var sut = CreateSutAndPopulateTestDataForActivitySignup();
             await sut.DeleteActivityAndTaskSignupsAsync(activitySignupId);
 
             var context = _serviceProvider.GetService<AllReadyContext>();
@@ -72,7 +90,7 @@ namespace AllReady.UnitTest.DataAccess
         {
             const int activitySignupId = 5;
 
-            var sut = CreateSutAndPopulateTestData();
+            var sut = CreateSutAndPopulateTestDataForActivitySignup();
             await sut.DeleteActivityAndTaskSignupsAsync(activitySignupId);
 
             var context = _serviceProvider.GetService<AllReadyContext>();
@@ -80,15 +98,15 @@ namespace AllReady.UnitTest.DataAccess
             Assert.Equal(0, numOfTasksSignedUpFor);
         }
 
-        public IAllReadyDataAccess CreateSutAndPopulateTestData()
+        public IAllReadyDataAccess CreateSutAndPopulateTestDataForActivitySignup()
         {
             var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
             var allReadyDataAccess = new AllReadyDataAccessEF7(allReadyContext);
-            PopulateData(allReadyContext);
+            PopulateDataForActivitySignup(allReadyContext);
             return allReadyDataAccess;
         }
 
-        private static void PopulateData(DbContext context)
+        private static void PopulateDataForActivitySignup(DbContext context)
         {
             if (!populatedData)
             {
@@ -180,5 +198,8 @@ namespace AllReady.UnitTest.DataAccess
                 return activities;
             }
         }
+
+        #endregion
+
     }
 }
