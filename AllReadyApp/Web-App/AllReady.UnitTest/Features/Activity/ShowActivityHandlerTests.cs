@@ -1,4 +1,5 @@
-﻿using AllReady.Features.Activity;
+﻿using System.Security.Claims;
+using AllReady.Features.Activity;
 using AllReady.Models;
 using Moq;
 using Shouldly;
@@ -36,7 +37,7 @@ namespace AllReady.UnitTest.Features.Activity
         [Fact]
         public void HappyPath()
         {
-            var showActivityCommand = new ShowActivityCommand { ActivityId = 1 };
+            var showActivityCommand = new ShowActivityCommand { ActivityId = 1, User = ClaimsPrincipal.Current };
             var mockDbAccess = new Mock<IAllReadyDataAccess>();
             var expectedActivity = new Models.Activity { Campaign = new Campaign { Locked = false } };
             mockDbAccess.Setup(x => x.GetActivity(showActivityCommand.ActivityId))
