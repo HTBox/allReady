@@ -308,7 +308,7 @@ Navigation
 }
 
 .unvolunteer {
-    width: 100%;
+    width: 55%;
     text-align: center;
     font-size: 9.5pt;
 }
@@ -372,10 +372,115 @@ Navigation
     stroke-width: 3;
 }
 
-.inline-form {
-    display: inline-block;
+/* Activity Details Page */
+#ActivityDetail h3 {
+    margin-top: 10px;
 }
 
-h2.inline-form {
-    padding-right: 10px;
+.no-matching-tasks {
+    font-size: 15px;
+}
+
+#CampaignInfo .panel-heading {
+    width: 215px;
+    float: left;
+}
+
+#CampaignInfo .toggle-accordion-icon {
+    width: 25px;
+    float: left;
+    margin-top: 25px;
+    margin-left: -39px;   
+}
+
+.task-panel .panel-title {
+    font-size: 14px;
+    margin-left: -10px;
+}
+
+.task-panel .panel-title .toggle-accordion-icon, #CampaignInfo .toggle-accordion-icon
+{
+    width: 25px;
+    float: left;
+    font-size: 24px;
+    color: hsl(28.6, 62.9%, 41.2%);
+}
+
+#CampaignInfo .toggle-accordion-icon {
+    margin-top: 7px;
+}
+
+#CampaignInfo .panel-heading {
+    background-color: white;
+}
+
+#CampaignInfo h3 {
+    margin-top: 1px;
+}
+
+[data-toggle-accordion] {
+    cursor: pointer;
+}
+
+.task-panel .panel-heading {
+    background: #DFDED6 no-repeat top left;
+}
+
+.task-panel .panel-body {
+    background: #E9E6E3 repeat-y top;
+}
+
+.task-panel .task-name {
+    font-weight: bold;
+}
+.task-panel .task-name.isFull {
+    font-weight: normal;
+}
+
+.task-panel .task-datetime {
+    font-size: 13px;
+}
+
+.task-panel .task-skills-container {
+}
+
+.task-panel .btn-group {
+    float: right;
+    margin-top: -32px;
+}
+
+.task-panel .btn-group > .btn {
+    margin-top: -3px;
+}
+
+.task-panel .btn-group > .btn-sm {
+    margin-top: -2px;
+}
+
+.task-list {
+    width: 80%;
+}
+
+#TasksAccordion .task-panel .task-button-container {
+    width: 34%;
+    margin: 0 auto;
+}
+
+#UserTasksAccordion .task-panel .task-button-container {
+    width: 84%;
+    margin: 0 auto;
+}
+
+#UserTasksAccordion .task-panel .task-button-container.twoButtons {
+    width: 46%;
+    margin: 0 auto;
+}
+
+/* Activity Edit Page */
+#IsLimitVolunteers, #IsAllowWaitList {
+    margin-left: -170px;
+}
+
+.inline-form {
+    display: inline-block;
 }

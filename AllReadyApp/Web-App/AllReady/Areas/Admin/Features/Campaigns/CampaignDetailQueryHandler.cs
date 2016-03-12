@@ -56,7 +56,10 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                         CampaignName = campaign.Name,
                         OrganizationId = campaign.ManagingOrganizationId,
                         OrganizationName = campaign.ManagingOrganization.Name,
-                        ImageUrl = a.ImageUrl
+                        ImageUrl = a.ImageUrl,
+                        UsersSignedUp = a.UsersSignedUp,
+                        IsLimitVolunteers = a.IsLimitVolunteers,
+                        IsAllowWaitList = a.IsAllowWaitList
                     })
                 };
                 if (!campaign.CampaignContacts.Any())// Include isn't including

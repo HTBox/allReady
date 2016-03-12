@@ -19,7 +19,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
         {
             var task = _context.Tasks.AsNoTracking()
                 .Include(t => t.Activity).ThenInclude(a => a.Campaign)
-                .Include(t => t.RequiredSkills)
+                .Include(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
                 .SingleOrDefault(t => t.Id == message.TaskId);
             var viewModel = new TaskEditModel()
                 {

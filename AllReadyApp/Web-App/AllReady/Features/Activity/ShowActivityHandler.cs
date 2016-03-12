@@ -24,7 +24,7 @@ namespace AllReady.Features.Activity
             }
 
             return new ActivityViewModel(activity)
-                .WithUserInfo(activity, ClaimsPrincipal.Current, _dataAccess);
+                .WithUserInfo(activity, message.User, _dataAccess);
         }
     }
 }

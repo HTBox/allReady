@@ -17,10 +17,7 @@ namespace AllReady.Areas.Admin.Features.Activities
         }
         public int Handle(EditActivityCommand message)
         {
-            var activity = 
-                _context.Activities
-                .Include(a => a.RequiredSkills)
-                .SingleOrDefault(c => c.Id == message.Activity.Id);
+            var activity = GetActivity(message);
 
             if (activity == null)
             {
@@ -42,6 +39,20 @@ namespace AllReady.Areas.Admin.Features.Activities
             activity.ImageUrl = message.Activity.ImageUrl;
             activity.NumberOfVolunteersRequired = message.Activity.NumberOfVolunteersRequired;
 
+            if (activity.IsLimitVolunteers != message.Activity.IsLimitVolunteers || activity.IsAllowWaitList != message.Activity.IsAllowWaitList)
+            {
+                activity.IsAllowWaitList = message.Activity.IsAllowWaitList;
+                activity.IsLimitVolunteers = message.Activity.IsLimitVolunteers;
+                
+                // cascade values to all tasks associated with this activity
+                foreach (var task in _context.Tasks.Where(task => task.Activity.Id == activity.Id))
+                {
+                    task.IsLimitVolunteers = activity.IsLimitVolunteers;
+                    task.IsAllowWaitList = activity.IsAllowWaitList;
+                    _context.Update(task);
+                }
+            }
+
             if (activity.Id > 0)
             {
                 var skillsToRemove = _context.ActivitySkills.Where(skill => skill.ActivityId == activity.Id && (message.Activity.RequiredSkills == null ||
@@ -56,6 +67,13 @@ namespace AllReady.Areas.Admin.Features.Activities
             _context.Update(activity);
             _context.SaveChanges();
             return activity.Id;
+        }
+
+        private Activity GetActivity(EditActivityCommand message)
+        {
+            return _context.Activities
+                    .Include(a => a.RequiredSkills)
+                    .SingleOrDefault(c => c.Id == message.Activity.Id);
         }
     }
 }

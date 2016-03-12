@@ -52,7 +52,7 @@
             <input asp-for="Id" type="hidden" />
             <input asp-for="CampaignId" type="hidden" />
             <input asp-for="CampaignName" type="hidden" />
-            <input asp-for="TimeZoneId" type="hidden"/>
+            <input asp-for="TimeZoneId" type="hidden" />
             <input asp-for="OrganizationId" type="hidden" />
             <input asp-for="OrganizationName" type="hidden" />
             <div class="form-group">
@@ -85,6 +85,27 @@
                     <span asp-validation-for="NumberOfVolunteersRequired" class="text-danger"></span>
                 </div>
             </div>
+
+            <div class="form-group">
+                <label asp-for="IsLimitVolunteers" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    <input asp-for="IsLimitVolunteers" type="checkbox" class="form-control" />
+                    <span asp-validation-for="IsLimitVolunteers" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Uncomment this code when wait list functionality is completed -->
+            @*@{
+                    var displaySetting = Model.IsLimitVolunteers ? "" : "style=display:none";
+                }
+                <div id="IsAllowWaitListControl" class="form-group" @displaySetting>
+                    <label asp-for="IsAllowWaitList" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <input asp-for="IsAllowWaitList" type="checkbox" class="form-control" />
+                        <span asp-validation-for="IsAllowWaitList" class="text-danger"></span>
+                    </div>
+                </div>*@
+
             <div class="form-group">
                 <label asp-for="StartDateTime" class="control-label col-md-2"></label>
                 <div class="col-md-10">
@@ -116,7 +137,8 @@
                     </div>
                     <a href="#" data-bind="click: addSkill" title="Add required skill">
                         <span class="fa fa-plus" aria-hidden="true"></span>
-                        Add</a>
+                        Add
+                    </a>
                     <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">@Html.DisplayNameFor(m => m.RequiredSkills) must be unique</span>
                 </div>
             </div>
@@ -151,7 +173,7 @@
     <div class="row">
         <div class="col-md-12">
             <button type="submit" value="@actionTitle" class="btn btn-default submit-form" data-bind="enable: requiredSkills.isValid">@actionTitle</button>
-            <a href="@cancelUrl" class="btn btn-default">Cancel</a>        
+            <a href="@cancelUrl" class="btn btn-default">Cancel</a>
         </div>
     </div>
 </form>
@@ -191,6 +213,13 @@
             }
 
             ko.applyBindings(new AdminActivityViewModel(requiredSkills, availableSkills));
+
+            $(document).ready(function(){
+                $('#IsLimitVolunteers').click(function() {
+                    $("#IsAllowWaitListControl").toggle(this.checked);
+                });
+            });
+
         })(ko, $,
             @Json.Serialize(Model.RequiredSkills.Select(rs => new { Id = rs.SkillId })),
             @Json.Serialize(SelectListService.GetSkills()));

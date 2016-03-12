@@ -51,6 +51,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 task.EndDateTime = null;
             }
             task.NumberOfVolunteersRequired = message.Task.NumberOfVolunteersRequired;
+            task.IsLimitVolunteers = task.Activity.IsLimitVolunteers;
+            task.IsAllowWaitList = task.Activity.IsAllowWaitList;
             if (task.Id > 0)
             {
                 var tsToRemove = _context.TaskSkills.Where(ts => ts.TaskId == task.Id && (message.Task.RequiredSkills == null ||

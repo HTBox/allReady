@@ -1,0 +1,81 @@
+﻿@model ActivityViewModel
+
+<!-- Volunteer Modal -->
+<div class="modal fade" id="VolunteerModal" tabindex="-1" role="dialog" aria-labelledby="volunteerFormLabel">
+    <form data-bind="submit: submitForm">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 data-bind="text: Heading" class="modal-title" id="volunteerFormLabel"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row" data-bind="visible: validationErrors().length">
+                        <div class="col-xs-9 col-xs-offset-3">
+                            <ul class="list-unstyled form-control-static" data-bind="foreach: validationErrors">
+                                <li class="text-danger" data-bind="text: $data"></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-horizontal">
+                            <input asp-for="SignupModel.Name" type="hidden" />
+                            @if (!string.IsNullOrWhiteSpace(Model.SignupModel.Name))
+                            {
+                                <div class="form-group">
+                                    <label asp-for="SignupModel.Name" class="control-label col-md-4"></label>
+                                    <div class="col-md-8">
+                                        <p class="form-control-static">
+                                            @Model.SignupModel.Name
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="form-group">
+                                <label asp-for="SignupModel.PreferredEmail" class="control-label col-md-4"></label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" placeholder="email_address@your_provider.com" data-bind='value: PreferredEmail' />
+                                    <span class="text-danger" data-bind='visible: PreferredEmail.hasChangedFromInitial() && !PreferredEmail.isValid(), text: PreferredEmail.validationMessage'></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="SignupModel.PreferredPhoneNumber" class="control-label col-md-4"></label>
+                                <div class="col-md-8">
+                                    <input type="text" id="phone-input" class="form-control" placeholder="(XXX) XXX-XXXX" data-bind="value: PreferredPhoneNumber, masked: '(999) 999-9999'" />
+                                    <span class="text-danger" data-bind='visible: PreferredPhoneNumber.hasChangedFromInitial() && !PreferredPhoneNumber.isValid(), text: PreferredPhoneNumber.validationMessage'></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="SignupModel.AdditionalInfo" class="control-label col-md-4"></label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" data-bind='value: AdditionalInfo' />
+                                    <span asp-validation-for="SignupModel.AdditionalInfo" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="form-group" data-bind="visible: unassociatedSkills().length">
+                                <label class="control-label col-md-4">Associate new skills?</label>
+                                <div class="col-md-8">
+                                    <ul class="list-unstyled form-control-static" data-bind="foreach: unassociatedSkills">
+                                        <li>
+                                            <input type="checkbox" name="SignupModel.AddSkillIds" data-bind="checked: $root.AddSkillIds, attr: { id: 'skillNumber' + $index()}, value: Id" />
+                                            <label data-bind="attr: { for: 'skillNumber' + $index()}, text: HierarchicalName"></label>
+                                            <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" data-bind="enable: isValid && !isSubmitting(), click: submitForm">Volunteer</button>
+                    <button type="button" class="btn btn-link" data-bind="enable: !isSubmitting(), click: cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

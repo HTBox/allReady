@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Features.Activity;
+using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Authorization;
@@ -56,9 +57,13 @@ namespace AllReady.Controllers
         [AllowAnonymous]
         public IActionResult ShowActivity(int id)
         {
-            var viewModel = _mediator.Send(new ShowActivityCommand { ActivityId = id });
+            var viewModel = _mediator.Send(new ShowActivityCommand { ActivityId = id, User = User });
             if (viewModel == null) { return HttpNotFound(); }
-            return View("Activity", viewModel);
+            var test = User;
+            var signedIn = User.IsSignedIn();
+            return viewModel.ActivityType == ActivityTypes.ActivityManaged
+                ? View("Activity", viewModel)
+                : View("ActivityWithTasks", viewModel);
         }
 
         [HttpPost]

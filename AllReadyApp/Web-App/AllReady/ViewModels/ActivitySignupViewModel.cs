@@ -6,6 +6,7 @@ namespace AllReady.ViewModels
     public class ActivitySignupViewModel
     {
         public int ActivityId { get; set; }
+        public int TaskId { get; set; }
         public string UserId { get; set; }
         public string Name { get; set; }
         [Display(Name = "Contact email")]

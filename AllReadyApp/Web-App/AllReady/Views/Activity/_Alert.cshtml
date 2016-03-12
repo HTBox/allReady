@@ -1,0 +1,5 @@
+﻿<!-- Alert -->
+<div data-bind="visible: alertVm.visible, css: alertVm.type()" class="alert fade in">
+    <button class="close" data-bind="click: alertVm.close.bind($data, alertVm)" aria-hidden="true">×</button>
+    <p data-bind="html: alertVm.message()"></p>
+</div>

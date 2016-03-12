@@ -7,7 +7,7 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class TaskStatusChangeHandler : RequestHandler<TaskStatusChangeCommand>
+    public class TaskStatusChangeHandler : IRequestHandler<TaskStatusChangeCommand, TaskChangeResult>
     {
         private AllReadyContext _context;
         private IMediator _mediator;
@@ -18,11 +18,10 @@ namespace AllReady.Areas.Admin.Features.Tasks
             _mediator = mediator;
         }
 
-        protected override void HandleCore(TaskStatusChangeCommand message)
+        public TaskChangeResult Handle(TaskStatusChangeCommand message)
         {
-            var task = _context.Tasks
-                .Include(t => t.AssignedVolunteers).ThenInclude((TaskSignup ts) => ts.User)
-                .SingleOrDefault(c => c.Id == message.TaskId);
+            var task = GetTask(message);
+
             if (task == null)
                 throw new InvalidOperationException($"Task {message.TaskId} does not exist");
 
@@ -39,8 +38,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 case TaskStatus.Assigned:
                     break;
                 case TaskStatus.Accepted:
-                    if (currentStatus != TaskStatus.Assigned)
-                        throw new ArgumentException($"Task must be assigned before being accepted");
+                    if (currentStatus != TaskStatus.Assigned && currentStatus != TaskStatus.CanNotComplete && currentStatus != TaskStatus.Completed) 
+                        throw new ArgumentException($"Task must be assigned before being accepted or undoing CanNotComplete or Completed");
                     break;
                 case TaskStatus.Rejected:
                     if (currentStatus != TaskStatus.Assigned)
@@ -65,6 +64,22 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             var notification = new TaskSignupStatusChanged { SignupId = taskSignup.Id };
             _mediator.Publish(notification);
+            return new TaskChangeResult() {Status = "success", Task = task};
+        }
+
+        private AllReadyTask GetTask(TaskStatusChangeCommand message)
+        {
+            return _context.Tasks
+                .Include(t => t.AssignedVolunteers).ThenInclude((TaskSignup ts) => ts.User)
+                .Include(t => t.RequiredSkills).ThenInclude(s => s.Skill)
+                .SingleOrDefault(c => c.Id == message.TaskId);
         }
     }
+
+    public class TaskChangeResult
+    {
+        public string Status { get; set; }
+        public AllReadyTask Task { get; set; }
+    }
+
 }
