@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AllReady.Models;
+using AllReady.Features.Resource;
 using AllReady.ViewModels;
+using MediatR;
 using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Controllers
@@ -10,27 +11,18 @@ namespace AllReady.Controllers
     [Produces("application/json")]
     public class ResourceApiController :Controller
     {
-        private readonly IAllReadyDataAccess _allReadyDataAccess;
+        private readonly IMediator mediator;
 
-        public ResourceApiController(IAllReadyDataAccess allReadyDataAccess)
+        public ResourceApiController(IMediator mediator)
         {
-            _allReadyDataAccess = allReadyDataAccess;
+            this.mediator = mediator;
         }
 
         [Route("search")]
         public IEnumerable<ResourceViewModel> GetResourcesByCategory(string category)
         {
-            List<ResourceViewModel> ret = new List<ResourceViewModel>();
-
-            var resources = (from c in _allReadyDataAccess.GetResourcesByCategory(category)
-                             select c).Distinct();
-
-            foreach (Resource resource in resources)
-            {
-                ret.Add(new ResourceViewModel(resource));
-            }
-            return ret;
+            var resources = mediator.Send(new ResourcesByCategoryQuery { Category = category });
+            return resources.Select(resource => new ResourceViewModel(resource)).ToList();
         }
-
     }
 }

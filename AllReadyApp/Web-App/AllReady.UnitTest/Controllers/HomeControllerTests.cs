@@ -58,8 +58,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void PrivacyPolicy_ReturnsCorrectView()
         {
-            var mockMediator = new Mock<IMediator>();
-            var controller = new HomeController(mockMediator.Object);
+            var controller = new HomeController(Mock.Of<IMediator>());
 
             var result = (ViewResult)controller.PrivacyPolicy();
 
