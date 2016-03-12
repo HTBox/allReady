@@ -20,10 +20,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public TaskChangeResult Handle(TaskStatusChangeCommand message)
         {
-            var task = _context.Tasks
-                .Include(t => t.AssignedVolunteers).ThenInclude((TaskSignup ts) => ts.User)
-                .Include(t => t.RequiredSkills).ThenInclude(s => s.Skill)
-                .SingleOrDefault(c => c.Id == message.TaskId);
+            var task = GetTask(message);
+
             if (task == null)
                 throw new InvalidOperationException($"Task {message.TaskId} does not exist");
 
@@ -67,6 +65,14 @@ namespace AllReady.Areas.Admin.Features.Tasks
             var notification = new TaskSignupStatusChanged { SignupId = taskSignup.Id };
             _mediator.Publish(notification);
             return new TaskChangeResult() {Status = "success", Task = task};
+        }
+
+        private AllReadyTask GetTask(TaskStatusChangeCommand message)
+        {
+            return _context.Tasks
+                .Include(t => t.AssignedVolunteers).ThenInclude((TaskSignup ts) => ts.User)
+                .Include(t => t.RequiredSkills).ThenInclude(s => s.Skill)
+                .SingleOrDefault(c => c.Id == message.TaskId);
         }
     }
 

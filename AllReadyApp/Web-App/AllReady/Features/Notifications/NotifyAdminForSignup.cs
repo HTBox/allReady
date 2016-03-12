@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Features.Notifications
@@ -16,12 +17,14 @@ namespace AllReady.Features.Notifications
         private readonly AllReadyContext _context;
         private readonly IMediator _bus;
         private readonly IOptions<GeneralSettings> _options;
+        private readonly ILogger<NotifyAdminForUserUnenrolls> _logger;
 
-        public NotifyAdminForSignup(AllReadyContext context, IMediator bus, IOptions<GeneralSettings> options)
+        public NotifyAdminForSignup(AllReadyContext context, IMediator bus, IOptions<GeneralSettings> options, ILogger<NotifyAdminForUserUnenrolls> logger)
         {
             _context = context;
             _bus = bus;
             _options = options;
+            _logger = logger;
         }
 
         public async Task Handle(VolunteerSignupNotification notification)
@@ -126,7 +129,7 @@ namespace AllReady.Features.Notifications
             }
             catch (Exception e)
             {
-                // ignored
+                _logger.LogError($"Exception encountered: message={e.Message}, innerException={e.InnerException}, stacktrace={e.StackTrace}");
             }
         }
 

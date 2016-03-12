@@ -28,13 +28,13 @@ namespace AllReady.Controllers
     public class TaskApiController : Controller
     {
         private readonly IAllReadyDataAccess _allReadyDataAccess;
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
 
 
-        public TaskApiController(IAllReadyDataAccess allReadyDataAccess, IMediator bus)
+        public TaskApiController(IAllReadyDataAccess allReadyDataAccess, IMediator mediator)
         {
             _allReadyDataAccess = allReadyDataAccess;
-            _bus = bus;
+            _mediator = mediator;
         }
 
         private bool HasTaskEditPermissions(AllReadyTask task)
@@ -148,35 +148,6 @@ namespace AllReady.Controllers
             }
         }
 
-        //[HttpGet]
-        //[Route("/Signup/{taskId}")]
-        //[Produces("application/json", Type = typeof(TaskViewModel))]
-        //public async void Signup(int taskId, string userId = "")
-        //{
-        //    var task = _allReadyDataAccess.GetTask(taskId);
-
-        //    if (task == null)
-        //    {
-        //        HttpNotFound();
-        //    }
-
-        //    ApplicationUser user = _allReadyDataAccess.GetUser(User.GetUserId());
-
-        //    if (task.AssignedVolunteers == null)
-        //    {
-        //        task.AssignedVolunteers = new List<TaskSignup>();
-        //    }
-
-        //    task.AssignedVolunteers.Add(new TaskSignup
-        //    {
-        //        Task = task,
-        //        User = user,
-        //        StatusDateTimeUtc = DateTime.UtcNow
-        //    });
-
-        //    await _allReadyDataAccess.UpdateTaskAsync(task);
-        //}
-
         [ValidateAntiForgeryToken]
         [HttpPost("signup")]
         [Authorize]
@@ -195,7 +166,7 @@ namespace AllReady.Controllers
                 return Json(new { errors = ModelState.GetErrorMessages() });
             }
 
-            var result = await _bus.SendAsync(new TaskSignupCommand() { TaskSignupModel = signupModel });
+            var result = await _mediator.SendAsync(new TaskSignupCommand() { TaskSignupModel = signupModel });
             return new {Status = result.Status, Task = (result.Task == null) ? null : new TaskViewModel(result.Task, signupModel.UserId)};
         }
 
@@ -204,7 +175,7 @@ namespace AllReady.Controllers
         public async Task<object> UnregisterTask(int id)
         {
             var userId = User.GetUserId();
-            var result = await _bus.SendAsync(new TaskUnenrollCommand() { TaskId = id, UserId = userId});
+            var result = await _mediator.SendAsync(new TaskUnenrollCommand() { TaskId = id, UserId = userId});
             return new { Status = result.Status, Task = (result.Task == null) ? null : new TaskViewModel(result.Task, userId) };
         }
 
@@ -214,7 +185,7 @@ namespace AllReady.Controllers
         [Authorize]
         public async Task<object> ChangeStatus(TaskChangeModel model)
         {
-            var result = _bus.Send(new TaskStatusChangeCommand { TaskStatus = model.Status, TaskId = model.TaskId, UserId = model.UserId, TaskStatusDescription = model.StatusDescription });
+            var result = _mediator.Send(new TaskStatusChangeCommand { TaskStatus = model.Status, TaskId = model.TaskId, UserId = model.UserId, TaskStatusDescription = model.StatusDescription });
             return new { Status = result.Status, Task = (result.Task == null) ? null : new TaskViewModel(result.Task, model.UserId) };
         }
     }

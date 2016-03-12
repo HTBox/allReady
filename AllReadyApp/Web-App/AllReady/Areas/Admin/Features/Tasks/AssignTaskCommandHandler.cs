@@ -22,9 +22,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         protected override async Task HandleCore(AssignTaskCommand message)
         {
-            var task = _context.Tasks
-                .Include(t => t.Activity).ThenInclude(a => a.UsersSignedUp)
-                .SingleOrDefault(c => c.Id == message.TaskId);
+            var task = GetTask(message);
             var activity = task.Activity;
             var taskSignups = new List<TaskSignup>();
 
@@ -105,6 +103,14 @@ namespace AllReady.Areas.Admin.Features.Tasks
             };
 
             await _mediator.SendAsync(command);
+        }
+
+        private AllReadyTask GetTask(AssignTaskCommand message)
+        {
+            var task = _context.Tasks
+                .Include(t => t.Activity).ThenInclude(a => a.UsersSignedUp)
+                .SingleOrDefault(c => c.Id == message.TaskId);
+            return task;
         }
     }
 }

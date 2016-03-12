@@ -19,13 +19,7 @@ namespace AllReady.Areas.Admin.Features.Activities
         {
             ActivityDetailModel result = null;
 
-            var activity = _context.Activities
-                .AsNoTracking()
-                .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
-                .Include(a => a.Tasks)
-                .Include(a => a.RequiredSkills)
-                .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
-                .SingleOrDefault(a => a.Id == message.ActivityId);
+            var activity = GetActivity(message);
 
             if (activity != null)
             {
@@ -58,6 +52,17 @@ namespace AllReady.Areas.Admin.Features.Activities
                 };
             }
             return result;
+        }
+
+        private Activity GetActivity(ActivityDetailQuery message)
+        {
+            return _context.Activities
+                .AsNoTracking()
+                .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
+                .Include(a => a.Tasks)
+                .Include(a => a.RequiredSkills)
+                .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
+                .SingleOrDefault(a => a.Id == message.ActivityId);
         }
     }
 }

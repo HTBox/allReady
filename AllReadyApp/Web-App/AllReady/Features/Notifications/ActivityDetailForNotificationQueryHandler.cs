@@ -19,17 +19,9 @@ namespace AllReady.Features.Notifications
         {
             ActivityDetailForNotificationModel result = null;
 
-            var activity = _context.Activities
-                .AsNoTracking()
-                .Include(a => a.Campaign)
-                .Include(a => a.Campaign.CampaignContacts).ThenInclude(c => c.Contact)
-                .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(av => av.User)
-                .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
-                .SingleOrDefault(a => a.Id == message.ActivityId);
-
+            var activity = GetActivity(message);
             var volunteer = _context.Users.Single(u => u.Id == message.UserId);
-
-
+            
             if (activity != null)
             {
                 result = new ActivityDetailForNotificationModel
@@ -50,7 +42,6 @@ namespace AllReady.Features.Notifications
                         StartDateTime = t.StartDateTime,
                         EndDateTime = t.EndDateTime,
                         NumberOfVolunteersRequired = t.NumberOfVolunteersRequired,
-                        NumberOfVolunteersSignedUp = t.NumberOfUsersSignedUp,
                         AssignedVolunteers = t.AssignedVolunteers.Select(assignedVolunteer => new VolunteerModel
                         {
                             UserId = assignedVolunteer.User.Id,
@@ -65,6 +56,17 @@ namespace AllReady.Features.Notifications
                 };
             }
             return result;
+        }
+
+        private Models.Activity GetActivity(ActivityDetailForNotificationQuery message)
+        {
+            return _context.Activities
+                .AsNoTracking()
+                .Include(a => a.Campaign)
+                .Include(a => a.Campaign.CampaignContacts).ThenInclude(c => c.Contact)
+                .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(av => av.User)
+                .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
+                .SingleOrDefault(a => a.Id == message.ActivityId);
         }
     }
 }

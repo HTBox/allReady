@@ -36,7 +36,7 @@ namespace AllReady.Areas.Admin.Models
 
         public List<VolunteerModel> AllVolunteers { get; set; } = new List<VolunteerModel>();
 
-        public int AcceptedVolunteerCount => AssignedVolunteers?.Where(v => v.HasVolunteered).Count() ?? 0;
-        public int NumberOfVolunteersSignedUp { get; set; }
+        public int AcceptedVolunteerCount => AssignedVolunteers?.Count(v => v.HasVolunteered) ?? 0;
+        public int NumberOfVolunteersSignedUp => AssignedVolunteers.Count;
     }
 }

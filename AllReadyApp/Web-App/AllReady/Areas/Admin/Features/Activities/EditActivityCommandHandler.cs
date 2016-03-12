@@ -17,10 +17,7 @@ namespace AllReady.Areas.Admin.Features.Activities
         }
         public int Handle(EditActivityCommand message)
         {
-            var activity = 
-                _context.Activities
-                .Include(a => a.RequiredSkills)
-                .SingleOrDefault(c => c.Id == message.Activity.Id);
+            var activity = GetActivity(message);
 
             if (activity == null)
             {
@@ -70,6 +67,13 @@ namespace AllReady.Areas.Admin.Features.Activities
             _context.Update(activity);
             _context.SaveChanges();
             return activity.Id;
+        }
+
+        private Activity GetActivity(EditActivityCommand message)
+        {
+            return _context.Activities
+                    .Include(a => a.RequiredSkills)
+                    .SingleOrDefault(c => c.Id == message.Activity.Id);
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Features.Notifications
@@ -15,11 +16,13 @@ namespace AllReady.Features.Notifications
     {
         private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
+        private readonly ILogger<NotifyAdminForUserUnenrolls> _logger;
 
-        public NotifyAdminForUserUnenrolls(IMediator mediator, IOptions<GeneralSettings> options)
+        public NotifyAdminForUserUnenrolls(IMediator mediator, IOptions<GeneralSettings> options, ILogger<NotifyAdminForUserUnenrolls> logger)
         {
             _mediator = mediator;
             _options = options;
+            _logger = logger;
         }
 
         public async Task Handle(UserUnenrolls notification)
@@ -109,7 +112,7 @@ namespace AllReady.Features.Notifications
             }
             catch (Exception e)
             {
-                // ignored
+                _logger.LogError($"Exception encountered: message={e.Message}, innerException={e.InnerException}, stacktrace={e.StackTrace}");
             }
         }
     }
