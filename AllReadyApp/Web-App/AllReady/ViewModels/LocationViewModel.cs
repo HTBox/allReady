@@ -25,5 +25,19 @@ namespace AllReady.ViewModels
         public string State { get; set; }
         public PostalCodeGeo PostalCode { get; set; }
         public string Country { get; set; }
+
+        public string Summary {
+            get
+            {
+                if (!string.IsNullOrEmpty(City) && !string.IsNullOrEmpty(State))
+                    return $"{City}, {State}";
+                if (!string.IsNullOrEmpty(City))
+                    return $"{City}";
+                if (!string.IsNullOrEmpty(State))
+                    return $"{State}";
+
+                return string.Empty;
+            }
+        }
     }
 }

@@ -26,6 +26,7 @@
             <time value="Model.StartDate" format="D"></time> - <time value="Model.EndDate" format="D"></time>
             <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
         </p>
+        <p>@Model.LocationSummary</p>
     </div>
 </div>
 
@@ -106,6 +107,7 @@
                 <tr>
                     <th><span title="Name of the activity">Title</span></th>
                     <th><span title="Description of the activity">Description</span></th>
+                    <th><span title="Activity Location">Location</span></th>
                     <th><span title="Date of the activity">Dates</span></th>
                 </tr>
                 <!-- ko foreach: activities.filtered -->
@@ -115,6 +117,9 @@
                     </td>
                     <td>
                         <span data-bind="text: Description"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: Location ? Location.Summary : '' "></span>
                     </td>
                     <td>
                         <span data-bind="text: displayDate()"></span>

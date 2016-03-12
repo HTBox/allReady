@@ -24,6 +24,8 @@ namespace AllReady.Models
                 .Include(x => x.ManagingOrganization)
                 .Include(x => x.CampaignImpact)
                 .Include(x => x.Activities)
+                .ThenInclude(a => a.Location)
+                .Include(x => x.Location)
                 .Include(x => x.ParticipatingOrganizations)
                 .SingleOrDefault(x => x.Id == campaignId);
         }

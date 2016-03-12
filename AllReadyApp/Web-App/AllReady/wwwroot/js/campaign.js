@@ -39,7 +39,8 @@ function ResourcesViewModel(category)
             var start = moment(this.StartDateTime).utcOffset(this.StartDateTime).format("dddd, MMMM Do YYYY");
             var end = moment(this.EndDateTime).utcOffset(this.EndDateTime).format("dddd, MMMM Do YYYY");
             return start + ' - ' + end;
-        }
+        };
+        
         return this;
     }
     function CampaignViewModel(activities) {
