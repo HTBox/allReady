@@ -20,16 +20,18 @@ namespace AllReady.ViewModels
             {
                 CampaignId = activity.Campaign.Id;
                 CampaignName = activity.Campaign.Name;
+                TimeZoneId = activity.Campaign.TimeZoneId;
+                if (activity.Campaign.ManagingOrganization != null)
+                {
+                    OrganizationId = activity.Campaign.ManagingOrganization.Id;
+                    OrganizationName = activity.Campaign.ManagingOrganization.Name;
+                    HasPrivacyPolicy = !string.IsNullOrEmpty(activity.Campaign.ManagingOrganization.PrivacyPolicy);
+                }
             }
-
-            OrganizationId = activity.Campaign.ManagingOrganization.Id;
-            OrganizationName = activity.Campaign.ManagingOrganization.Name;
 
             Title = activity.Name;
             Description = activity.Description;
             ActivityType = activity.ActivityType;
-
-            TimeZoneId = activity.Campaign.TimeZoneId;
             StartDateTime = activity.StartDateTime;
             EndDateTime = activity.EndDateTime;
 
@@ -48,8 +50,6 @@ namespace AllReady.ViewModels
                  : new List<TaskViewModel>();
 
             RequiredSkills = activity.RequiredSkills?.Select(acsk => acsk.Skill).ToList();
-
-            HasPrivacyPolicy = !string.IsNullOrEmpty(activity.Campaign.ManagingOrganization.PrivacyPolicy);
         }
 
         public int Id { get; set; }

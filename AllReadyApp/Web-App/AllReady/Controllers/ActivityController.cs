@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Mvc;
-using AllReady.Models;
-using AllReady.ViewModels;
-using Microsoft.AspNet.Authorization;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
-using MediatR;
-using AllReady.Features.Activity;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
+using AllReady.Features.Activity;
+using AllReady.ViewModels;
+using MediatR;
+using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Mvc;
 using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
+
 namespace AllReady.Controllers
 {
     public class ActivityController : Controller
     {
-        private readonly IAllReadyDataAccess _allReadyDataAccess;
         private readonly IMediator _mediator;
 
-        public ActivityController(IAllReadyDataAccess allReadyDataAccess, IMediator mediator)
+        public ActivityController(IMediator mediator)
         {
-            _allReadyDataAccess = allReadyDataAccess;
             _mediator = mediator;
         }
 
@@ -28,9 +24,7 @@ namespace AllReady.Controllers
         [Authorize]
         public IActionResult GetMyActivities()
         {
-            var myActivities = _allReadyDataAccess.GetActivitySignups(User.GetUserId()).Where(a => !a.Activity.Campaign.Locked);
-            var signedUp = myActivities.Select(a => new ActivityViewModel(a.Activity));
-            var viewModel = new MyActivitiesResultsScreenViewModel("My Activities", signedUp);
+            var viewModel = _mediator.Send(new GetMyActivitiesCommand { UserId = User.GetUserId() });
             return View("MyActivities", viewModel);
         }
 
@@ -38,37 +32,18 @@ namespace AllReady.Controllers
         [Authorize]
         public IActionResult GetMyTasks(int id)
         {
-            var tasks = _allReadyDataAccess.GetTasksAssignedToUser(id, User.GetUserId());
-
-            var taskView = tasks.Select(t => new TaskSignupViewModel(t));
-
-            return Json(taskView);
+            var view = _mediator.Send(new GetMyTasksCommand { ActivityId = id, UserId = User.GetUserId() });
+            return Json(view);
         }
 
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
         [Route("~/MyActivities/{id}/tasks")]
-        public async Task<IActionResult> UpdateMyTasks(int id, [FromBody]List<TaskSignupViewModel> model)
+        public async Task<IActionResult> UpdateMyTasks(int id, [FromBody] List<TaskSignupViewModel> model)
         {
-            var currentUser = _allReadyDataAccess.GetUser(User.GetUserId());
-            foreach (var taskSignup in model)
-            {
-                await _allReadyDataAccess.UpdateTaskSignupAsync(new TaskSignup
-                {
-                    Id = taskSignup.Id,
-                    StatusDateTimeUtc = DateTime.UtcNow,
-                    StatusDescription = taskSignup.StatusDescription,
-                    Status = taskSignup.Status,
-                    Task = new AllReadyTask { Id = taskSignup.TaskId },
-                    User = currentUser
-                });
-            }
-            var result = new
-            {
-                success = true
-            };
-            return Json(result);
+            await _mediator.SendAsync(new UpdateMyTasksCommandAsync { TaskSignups = model, UserId = User.GetUserId() });
+            return Json(new { success = true });
         }
 
         [HttpGet]
@@ -81,14 +56,9 @@ namespace AllReady.Controllers
         [AllowAnonymous]
         public IActionResult ShowActivity(int id)
         {
-            var activity = _allReadyDataAccess.GetActivity(id);
-
-            if (activity == null || activity.Campaign.Locked)
-            {
-                return HttpNotFound();
-            }
-
-            return View("Activity", new ActivityViewModel(activity).WithUserInfo(activity, User, _allReadyDataAccess));
+            var viewModel = _mediator.Send(new ShowActivityCommand { ActivityId = id });
+            if (viewModel == null) { return HttpNotFound(); }
+            return View("Activity", viewModel);
         }
 
         [HttpPost]
@@ -129,6 +99,5 @@ namespace AllReady.Controllers
 
             return RedirectToAction(nameof(ShowActivity), new { id = activityId });
         }
-
     }
 }
