@@ -16,7 +16,7 @@ namespace AllReady.Features.Resource
 
         public List<Models.Resource> Handle(ResourcesByCategoryQuery message)
         {
-            return dataAccess.GetResourcesByCategory(message.Category).Distinct().ToList();
+            return dataAccess.GetResourcesByCategory(message.Category).ToList();
         }
     }
 }
