@@ -26,6 +26,7 @@ namespace AllReady.Areas.Admin.Models.Validators
                 result.Add(nameof(model.EndDate), "The end date must fall after the start date.");
             }
 
+            // Temporary code to avoid current database update error when the post code geo does not exist in the database.
             if (!string.IsNullOrEmpty(model.Location?.PostalCode))
             {
                 bool validPostcode = await _mediator.SendAsync(new CheckValidPostcodeQueryAsync
