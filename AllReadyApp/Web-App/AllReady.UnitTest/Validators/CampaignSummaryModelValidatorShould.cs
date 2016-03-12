@@ -32,6 +32,27 @@ namespace AllReady.UnitTest.Validators
             Assert.True(errors.ContainsKey("EndDate"));
         }
 
+        [Fact]
+        public async Task ReportErrorsWhenPostalCodeIsInvalid()
+        {
+            // arrange
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<CheckValidPostcodeQueryAsync>())).ReturnsAsync(false);
+
+            var validator = new CampaignSummaryModelValidator(mediator.Object);
+            var model = new CampaignSummaryModel
+            {
+                Location = new LocationEditModel { PostalCode = "90210" }
+            };
+
+            // act
+            var errors = await validator.Validate(model);
+
+            // assert
+            mediator.Verify(m => m.SendAsync(It.IsAny<CheckValidPostcodeQueryAsync>()));
+            Assert.True(errors.ContainsKey("PostalCode"));
+
+        }
 
     }
 }

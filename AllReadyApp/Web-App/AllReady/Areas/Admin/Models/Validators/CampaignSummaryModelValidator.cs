@@ -26,6 +26,24 @@ namespace AllReady.Areas.Admin.Models.Validators
                 result.Add(nameof(model.EndDate), "The end date must fall after the start date.");
             }
 
+            if (!string.IsNullOrEmpty(model.Location?.PostalCode))
+            {
+                bool validPostcode = await _mediator.SendAsync(new CheckValidPostcodeQueryAsync
+                {
+                    Postcode = new PostalCodeGeo
+                    {
+                        City = model.Location.City,
+                        State = model.Location.State,
+                        PostalCode = model.Location.PostalCode
+                    }
+                });
+
+                if (!validPostcode)
+                {
+                    result.Add(nameof(model.Location.PostalCode), "The city, state and postal code combination is not valid");
+                }
+            }
+
             return result;
         }
     }
