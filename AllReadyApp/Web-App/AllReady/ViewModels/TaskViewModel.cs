@@ -83,7 +83,6 @@ namespace AllReady.ViewModels
 
         }
 
-
         public int Id { get; set; }
         public bool IsNew { get; set; }
 
@@ -147,7 +146,6 @@ namespace AllReady.ViewModels
         {
             IsUserSignedUpForTask = isUserSignedupForTask;
         }
-
     }
 
     public static class TaskViewModelExtensions
@@ -211,7 +209,6 @@ namespace AllReady.ViewModels
             }
             // end workaround
 
-
             if (taskViewModel.AssignedVolunteers != null && taskViewModel.AssignedVolunteers.Count > 0)
             {
                 var taskUsersList = taskViewModel.AssignedVolunteers.Select(tvm => new TaskSignup
@@ -241,13 +238,11 @@ namespace AllReady.ViewModels
             }
 
             return dbtask;
-
         }
 
         public static IEnumerable<AllReadyTask> ToModel(this IEnumerable<TaskViewModel> tasks, IAllReadyDataAccess dataContext)
         {
             return tasks.Select(task => task.ToModel(dataContext));
         }
-
     }
 }
