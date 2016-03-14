@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
@@ -23,7 +22,6 @@ namespace AllReady.UnitTest.Controllers
         //Put
         //Delete
 
-        //RegisterTask
         [Fact]
         public async Task RegisterTaskReturnsHttpBadRequestWhenModelIsNull()
         {
@@ -87,12 +85,10 @@ namespace AllReady.UnitTest.Controllers
 
             var sut = new TaskApiController(null, mediator.Object);
             
-            //var result = await sut.RegisterTask(model);
             var jsonResult = await sut.RegisterTask(model) as JsonResult;
             var result = jsonResult.GetValueForProperty<string>("Task");
 
             Assert.Null(result);
-            //Assert.Equal(result.ToString(), "{ Status = , Task =  }");
         }
 
         [Fact]
@@ -147,7 +143,6 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
         }
 
-        //UnregisterTask
         [Fact]
         public async Task UnregisterTaskSendsTaskUnenrollCommandAsyncWithCorrectTaskIdAndUserId()
         {
@@ -232,7 +227,6 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(attribute.Template, "{id}/signup");
         }
 
-        //ChangeStatus
         [Fact]
         public async Task ChangeStatusInvokesSendAsyncWithCorrectTaskStatusChangeCommand()
         {
@@ -299,6 +293,39 @@ namespace AllReady.UnitTest.Controllers
 
             Assert.IsType<JsonResult>(jsonResult);
             Assert.IsType<TaskViewModel>(result);
+        }
+
+        [Fact]
+        public void ChangeStatusHasHttpPostAttribute()
+        {
+            var sut = new TaskApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<TaskChangeModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void ChangeStatusHasAuthorizeAttribute()
+        {
+            var sut = new TaskApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<TaskChangeModel>())).OfType<AuthorizeAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void ChangeStatusHasValidateAntiForgeryTokenAttribute()
+        {
+            var sut = new TaskApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<TaskChangeModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void ChangeStatusHasRouteAttributeWithCorrectTemplate()
+        {
+            var sut = new TaskApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<TaskChangeModel>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "changestatus");
         }
 
         [Fact]
