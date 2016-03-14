@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AllReady.Models;
+using AllReady.Features.Activity;
 using AllReady.ViewModels;
+using MediatR;
 using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Controllers
@@ -10,11 +11,11 @@ namespace AllReady.Controllers
     [Produces("application/json")]
     public class CampaignApiController : Controller
     {
-        private readonly IAllReadyDataAccess _allReadyDataAccess;
-        
-        public CampaignApiController(IAllReadyDataAccess allReadyDataAccess)
+        private readonly IMediator mediator;
+
+        public CampaignApiController(IMediator mediator)
         {
-            _allReadyDataAccess = allReadyDataAccess;
+            this.mediator = mediator;
         }
 
         [Route("search")]
@@ -22,7 +23,7 @@ namespace AllReady.Controllers
         {
             var model = new List<ActivityViewModel>();
 
-            var campaigns = _allReadyDataAccess.ActivitiesByPostalCode(zip, miles)
+            var campaigns = mediator.Send(new AcitivitiesByPostalCodeQuery { PostalCode = zip, Distance =  miles})
                 .Select(x => x.Campaign)
                 .Distinct();
 

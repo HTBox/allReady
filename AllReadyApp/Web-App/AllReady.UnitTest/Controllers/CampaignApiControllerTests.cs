@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AllReady.Controllers;
+using AllReady.Features.Activity;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels;
+using MediatR;
 using Microsoft.AspNet.Mvc;
 using Moq;
 using Xunit;
@@ -25,39 +27,44 @@ namespace AllReady.UnitTest.Controllers
             activity2.CampaignId = campaign2.Id;
             activity2.Campaign = campaign2;
 
-            activity3.CampaignId= campaign2.Id;
+            activity3.CampaignId = campaign2.Id;
             activity3.Campaign = campaign2;
 
             var allActivities = new List<Activity> { activity1, activity2, activity3 };
 
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.ActivitiesByPostalCode(It.IsAny<string>(), It.IsAny<int>())).Returns(allActivities);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<AcitivitiesByPostalCodeQuery>())).Returns(allActivities);
 
-            var sut = new CampaignApiController(dataAccess.Object);
+            var sut = new CampaignApiController(mediator.Object);
             var results = sut.GetCampaignsByPostalCode(It.IsAny<string>(), It.IsAny<int>());
 
             Assert.Equal(results.Count(), allActivities.Count);
         }
 
         [Fact]
-        public void GetCampaignsByPostalCodeInvokesActivitiesByPostalCodeWithCorrectPostalCodeAndDistance()
+        public void GetCampaignsByPostalCodeSendsAcitivitiesByPostalCodeQueryWithCorrectPostalCodeAndDistance()
         {
             const string zip = "zip";
             const int miles = 1;
 
-            var dataAccess = new Mock<IAllReadyDataAccess>();
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<AcitivitiesByPostalCodeQuery>())).Returns(new List<Activity>());
 
-            var sut = new CampaignApiController(dataAccess.Object);
+            var sut = new CampaignApiController(mediator.Object);
             sut.GetCampaignsByPostalCode(zip, miles);
 
-            dataAccess.Verify(x => x.ActivitiesByPostalCode(zip, miles));
+            mediator.Verify(x => x.Send(It.Is<AcitivitiesByPostalCodeQuery>(y => y.PostalCode == zip && y.Distance == miles)));
         }
         
         [Fact]
         public void GetCampaignsByPostalCodeReturnsCorrectModel()
         {
-            var sut = new CampaignApiController(Mock.Of<IAllReadyDataAccess>());
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<AcitivitiesByPostalCodeQuery>())).Returns(new List<Activity>());
+
+            var sut = new CampaignApiController(mediator.Object);
             var result = sut.GetCampaignsByPostalCode(It.IsAny<string>(), It.IsAny<int>());
+
             Assert.IsType<List<ActivityViewModel>>(result);
         }
 
