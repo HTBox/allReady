@@ -15,15 +15,12 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void GetCampaignsByPostalCodeReturnsCorrectResults()
         {
-            //three activities, two should have same campaign
-            //making the assumption that the Campaign on the Campaign property on Activity is should have the same Id as the CampaignId property on the same Activity instance
+            var activity1 = new Activity { Id = 1, CampaignId = 1 };
+            activity1.Campaign = new Campaign { Id = 1, Activities = new List<Activity> { activity1 }, ManagingOrganization = new Organization() };
+
             var activity2 = new Activity { Id = 2 };
             var activity3 = new Activity { Id = 3 };
-            var campaign2 = new Campaign { Id = 2, ManagingOrganization = new Organization(), Activities = new List<Activity> { activity2, activity3 }};
-
-            var activity1 = new Activity { Id = 1 };
-            activity1.CampaignId = 1;
-            activity1.Campaign = new Campaign { Id = 1, ManagingOrganization = new Organization(), Activities = new List<Activity> { activity1 } };
+            var campaign2 = new Campaign { Id = 2, Activities = new List<Activity> { activity2, activity3 }, ManagingOrganization = new Organization() };
 
             activity2.CampaignId = campaign2.Id;
             activity2.Campaign = campaign2;
@@ -31,7 +28,6 @@ namespace AllReady.UnitTest.Controllers
             activity3.CampaignId= campaign2.Id;
             activity3.Campaign = campaign2;
 
-            //why does the Activity class carry both a Campaign and a CampaignId? When would onen be set to a valid instance and the other is not???
             var allActivities = new List<Activity> { activity1, activity2, activity3 };
 
             var dataAccess = new Mock<IAllReadyDataAccess>();
@@ -40,7 +36,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignApiController(dataAccess.Object);
             var results = sut.GetCampaignsByPostalCode(It.IsAny<string>(), It.IsAny<int>());
 
-            //TODO: figure out what to assert here
+            Assert.Equal(results.Count(), allActivities.Count);
         }
 
         [Fact]
