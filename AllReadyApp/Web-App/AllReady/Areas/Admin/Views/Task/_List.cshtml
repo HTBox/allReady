@@ -35,7 +35,7 @@
                     else if (item.AssignedVolunteers.Count == 1)
                     {
                         <td>@item.AssignedVolunteers[0].UserName</td>
-                        @*<td>@(item.AssignedVolunteers[0].HasVolunteered ? "": "*")</td>*@
+                        <td>@(item.AssignedVolunteers[0]?.Status ?? "*")</td>
                     }
                     else
                     {
