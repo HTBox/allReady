@@ -23,7 +23,7 @@ namespace AllReady.Areas.Admin.Models.Validators
 
             if (model.EndDate < model.StartDate)
             {
-                result.Add(nameof(model.EndDate), "The end date must fall after the start date.");
+                result.Add(nameof(model.EndDate), "The end date must fall on or after the start date.");
             }
 
             // Temporary code to avoid current database update error when the post code geo does not exist in the database.
