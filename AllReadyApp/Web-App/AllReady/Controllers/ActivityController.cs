@@ -96,13 +96,20 @@ namespace AllReady.Controllers
         public async Task<IActionResult> ChangeStatus(int activityId, int taskId, string userId, TaskStatus status, string statusDesc)
         {
             if (userId == null)
+                return HttpBadRequest();
+        [HttpGet]
+        [Route("/Activity/ChangeStatus")]
+        [Authorize]
+        public async Task<IActionResult> ChangeStatus(int activityId, int taskId, string userId, TaskStatus status, string statusDesc)
+        {
+            if (userId == null)
             {
                 return HttpBadRequest();
             }
 
-            await _mediator.SendAsync(new TaskStatusChangeCommand { TaskStatus = status, TaskId = taskId, UserId = userId, TaskStatusDescription = statusDesc });
+            await _mediator.SendAsync(new TaskStatusChangeCommandAsync { TaskStatus = status, TaskId = taskId, UserId = userId, TaskStatusDescription = statusDesc });
 
-        //    return RedirectToAction(nameof(ShowActivity), new { id = activityId });
-        //}
+            return RedirectToAction(nameof(ShowActivity), new { id = activityId });
+        }
     }
 }
