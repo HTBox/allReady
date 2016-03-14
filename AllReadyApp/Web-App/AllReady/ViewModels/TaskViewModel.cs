@@ -12,7 +12,7 @@ namespace AllReady.ViewModels
         {
         }
 
-        public TaskViewModel(AllReadyTask task, string userId=null)
+        public TaskViewModel(AllReadyTask task, string userId = null)
         {
             Id = task.Id;
             Name = task.Name;
@@ -180,8 +180,8 @@ namespace AllReady.ViewModels
             dbtask.Id = taskViewModel.Id;
             dbtask.Description = taskViewModel.Description;
             dbtask.Activity = activity;
-            dbtask.EndDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.EndDateTime.Value.UtcDateTime : new Nullable<DateTime>();
-            dbtask.StartDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.StartDateTime.Value.UtcDateTime : new Nullable<DateTime>();
+            dbtask.EndDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.EndDateTime.Value.UtcDateTime : new DateTime?();
+            dbtask.StartDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.StartDateTime.Value.UtcDateTime : new DateTime?();
             dbtask.Name = taskViewModel.Name;
             dbtask.RequiredSkills = dbtask.RequiredSkills ?? new List<TaskSkill>();
             taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();

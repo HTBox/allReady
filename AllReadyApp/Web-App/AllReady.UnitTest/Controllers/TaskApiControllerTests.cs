@@ -98,7 +98,6 @@ namespace AllReady.UnitTest.Controllers
         //    //var jsonResult = await sut.RegisterTask(model) as JsonResult;
         //    var result = await sut.RegisterTask(model);
 
-        //    //TODO: is there a way to re-serialize an anonynous type in json format?
         //    Assert.Equal(result.ToString(), "{ Status = , Task = AllReady.ViewModels.TaskViewModel }");
         //}
 
@@ -137,6 +136,90 @@ namespace AllReady.UnitTest.Controllers
         }
 
         //UnregisterTask
+        [Fact]
+        public async Task UnregisterTaskSendsTaskUnenrollCommandAsyncWithCorrectTaskIdAndUserId()
+        {
+            const string userId = "1";
+            const int taskId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).Returns(Task.FromResult(new TaskSignupResult()));
+
+            var sut = new TaskApiController(null, mediator.Object)
+                .SetFakeUser(userId);
+            await sut.UnregisterTask(taskId);
+
+            mediator.Verify(x => x.SendAsync(It.Is<TaskUnenrollCommand>(y => y.TaskId == taskId && y.UserId == userId)));
+        }
+
+        [Fact]
+        public async Task UnregisterTaskReturnsCorrectStatus()
+        {
+            const string status = "status";
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).Returns(Task.FromResult(new TaskSignupResult { Status = status }));
+
+            var sut = new TaskApiController(null, mediator.Object);
+            sut.SetDefaultHttpContext();
+
+            var jsonResult = await sut.UnregisterTask(It.IsAny<int>()) as JsonResult;
+            var result = jsonResult.GetValueForProperty<string>("Status");
+
+            Assert.IsType<JsonResult>(jsonResult);
+            Assert.IsType<string>(result);
+            Assert.Equal(result, status);
+        }
+
+        [Fact]
+        public async Task UnregisterTaskReturnsNullForTaskWhenResultTaskIsNull()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).Returns(Task.FromResult(new TaskSignupResult()));
+
+            var sut = new TaskApiController(null, mediator.Object);
+            sut.SetDefaultHttpContext();
+
+            var jsonResult = await sut.UnregisterTask(It.IsAny<int>()) as JsonResult;
+            var result = jsonResult.GetValueForProperty<string>("Task");
+
+            Assert.IsType<JsonResult>(jsonResult);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task UnregisterTaskReturnsTaskViewModelWhenResultTaskIsNotNull()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).Returns(Task.FromResult(new TaskSignupResult { Task = new AllReadyTask() }));
+
+            var sut = new TaskApiController(null, mediator.Object);
+            sut.SetDefaultHttpContext();
+            
+            var jsonResult = await sut.UnregisterTask(It.IsAny<int>()) as JsonResult;
+            var result = jsonResult.GetValueForProperty<TaskViewModel>("Task");
+
+            Assert.IsType<JsonResult>(jsonResult);
+            Assert.IsType<TaskViewModel>(result);
+        }
+
+        [Fact]
+        public void UnregisterTaskHasAuthorizeAttrbiute()
+        {
+            var sut = new TaskApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.UnregisterTask(It.IsAny<int>())).OfType<AuthorizeAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void UnregisterTaskHasHttpDeleteAttributeWithCorrectTemplate()
+        {
+            var sut = new TaskApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.UnregisterTask(It.IsAny<int>())).OfType<HttpDeleteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "{id}/signup");
+        }
+
         //ChangeStatus
 
         [Fact]

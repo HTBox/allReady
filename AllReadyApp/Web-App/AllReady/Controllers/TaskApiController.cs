@@ -105,11 +105,12 @@ namespace AllReady.Controllers
 
         [HttpDelete("{id}/signup")]
         [Authorize]
-        public async Task<object> UnregisterTask(int id)
+        public async Task<ActionResult> UnregisterTask(int id)
         {
             var userId = User.GetUserId();
             var result = await _mediator.SendAsync(new TaskUnenrollCommand { TaskId = id, UserId = userId });
-            return new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, userId) };
+
+            return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, userId) });
         }
 
         [HttpPost]
