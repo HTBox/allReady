@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Controllers;
 using AllReady.Features.Tasks;
 using AllReady.Models;
@@ -12,6 +13,7 @@ using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
 using Moq;
 using Xunit;
+using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -21,13 +23,13 @@ namespace AllReady.UnitTest.Controllers
         //Put
         //Delete
 
-        //these do not use HasEditTaskPermissions
         //RegisterTask
         [Fact]
         public async Task RegisterTaskReturnsHttpBadRequestWhenModelIsNull()
         {
             var sut = new TaskApiController(null, null);
             var result = await sut.RegisterTask(null);
+
             Assert.IsType<BadRequestResult>(result);
         }
 
@@ -39,7 +41,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(null, null);
             sut.AddModelStateError(modelStateErrorMessage);
 
-            var jsonResult = (JsonResult)await sut.RegisterTask(new ActivitySignupViewModel());
+            var jsonResult = await sut.RegisterTask(new ActivitySignupViewModel()) as JsonResult;
             var result = jsonResult.GetValueForProperty<List<string>>("errors");
 
             Assert.IsType<JsonResult>(jsonResult);
@@ -63,14 +65,17 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task RegisterTaskReturnsCorrectValueForStatus()
         {
+            const string taskSignUpResultStatus = "status";
             var model = new ActivitySignupViewModel();
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommand>(y => y.TaskSignupModel == model))).Returns(Task.FromResult(new TaskSignupResult { Status = "status" }));
+            mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommand>(y => y.TaskSignupModel == model))).Returns(Task.FromResult(new TaskSignupResult { Status = taskSignUpResultStatus }));
 
             var sut = new TaskApiController(null, mediator.Object);
-            var result = await sut.RegisterTask(model);
 
-            Assert.Equal(result.ToString(), "{ Status = status, Task =  }");
+            var jsonResult = await sut.RegisterTask(model) as JsonResult;
+            var result = jsonResult.GetValueForProperty<string>("Status");
+
+            Assert.Equal(result, taskSignUpResultStatus);
         }
 
         [Fact]
@@ -81,25 +86,29 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommand>(y => y.TaskSignupModel == model))).Returns(Task.FromResult(new TaskSignupResult()));
 
             var sut = new TaskApiController(null, mediator.Object);
-            var result = await sut.RegisterTask(model);
+            
+            //var result = await sut.RegisterTask(model);
+            var jsonResult = await sut.RegisterTask(model) as JsonResult;
+            var result = jsonResult.GetValueForProperty<string>("Task");
 
-            Assert.Equal(result.ToString(), "{ Status = , Task =  }");
+            Assert.Null(result);
+            //Assert.Equal(result.ToString(), "{ Status = , Task =  }");
         }
 
-        //[Fact]
-        //public async Task RegisterTaskReturnsTaskViewModelWithCorrectDataForTaskIfTaskIsNotNull()
-        //{
-        //    var model = new ActivitySignupViewModel { UserId = "userId" };
-        //    var mediator = new Mock<IMediator>();
-        //    mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommand>(y => y.TaskSignupModel == model))).Returns(Task.FromResult(new TaskSignupResult { Task = new AllReadyTask() }));
+        [Fact]
+        public async Task RegisterTaskReturnsTaskViewModelIfTaskIsNotNull()
+        {
+            var model = new ActivitySignupViewModel { UserId = "userId" };
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommand>(y => y.TaskSignupModel == model))).Returns(Task.FromResult(new TaskSignupResult { Task = new AllReadyTask() }));
 
-        //    var sut = new TaskApiController(null, mediator.Object);
-        //    //this is null when ReigeterTask's return type is ""Task<object>"
-        //    //var jsonResult = await sut.RegisterTask(model) as JsonResult;
-        //    var result = await sut.RegisterTask(model);
+            var sut = new TaskApiController(null, mediator.Object);
+            var jsonResult = await sut.RegisterTask(model) as JsonResult;
+            var result = jsonResult.GetValueForProperty<TaskViewModel>("Task");
 
-        //    Assert.Equal(result.ToString(), "{ Status = , Task = AllReady.ViewModels.TaskViewModel }");
-        //}
+            Assert.IsType<JsonResult>(jsonResult);
+            Assert.IsType<TaskViewModel>(result);
+        }
 
         [Fact]
         public void RegisterTaskHasValidateAntiForgeryTokenAttrbiute()
@@ -114,6 +123,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var sut = new TaskApiController(null, null);
             var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<ActivitySignupViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "signup");
         }
@@ -123,6 +133,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var sut = new TaskApiController(null, null);
             var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<ActivitySignupViewModel>())).OfType<AuthorizeAttribute>().SingleOrDefault();
+
             Assert.NotNull(attribute);
         }
 
@@ -131,6 +142,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var sut = new TaskApiController(null, null);
             var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<ActivitySignupViewModel>())).OfType<ProducesAttribute>().SingleOrDefault();
+
             Assert.NotNull(attribute);
             Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
         }
@@ -221,6 +233,73 @@ namespace AllReady.UnitTest.Controllers
         }
 
         //ChangeStatus
+        [Fact]
+        public async Task ChangeStatusInvokesSendAsyncWithCorrectTaskStatusChangeCommand()
+        {
+            var model = new TaskChangeModel { TaskId = 1, UserId = "1", Status = TaskStatus.Accepted, StatusDescription = "statusDescription" };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskStatusChangeCommandAsync>())).Returns(() => Task.FromResult(new TaskChangeResult()));
+
+            var sut = new TaskApiController(null, mediator.Object);
+            await sut.ChangeStatus(model);
+
+            mediator.Verify(x => x.SendAsync(It.Is<TaskStatusChangeCommandAsync>(y => y.TaskId == model.TaskId && 
+                y.TaskStatus == model.Status && 
+                y.TaskStatusDescription == model.StatusDescription && 
+                y.UserId == model.UserId)));
+        }
+
+        [Fact]
+        public async Task ChangeStatusReturnsCorrectStatus()
+        {
+            const string status = "status";
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskStatusChangeCommandAsync>())).Returns(() => Task.FromResult(new TaskChangeResult { Status = status }));
+
+            var sut = new TaskApiController(null, mediator.Object);
+            sut.SetDefaultHttpContext();
+
+            var jsonResult = await sut.ChangeStatus(new TaskChangeModel()) as JsonResult;
+            var result = jsonResult.GetValueForProperty<string>("Status");
+
+            Assert.IsType<JsonResult>(jsonResult);
+            Assert.IsType<string>(result);
+            Assert.Equal(result, status);
+        }
+
+        [Fact]
+        public async Task ChangeStatusReturnsNullForTaskWhenResultTaskIsNull()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskStatusChangeCommandAsync>())).Returns(() => Task.FromResult(new TaskChangeResult { Status = "status" }));
+
+            var sut = new TaskApiController(null, mediator.Object);
+            sut.SetDefaultHttpContext();
+
+            var jsonResult = await sut.ChangeStatus(new TaskChangeModel()) as JsonResult;
+            var result = jsonResult.GetValueForProperty<string>("Task");
+
+            Assert.IsType<JsonResult>(jsonResult);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task ChangeStatusReturnsTaskViewModelWhenResultTaskIsNotNull()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskStatusChangeCommandAsync>())).Returns(() => Task.FromResult(new TaskChangeResult { Task = new AllReadyTask() }));
+
+            var sut = new TaskApiController(null, mediator.Object);
+            sut.SetDefaultHttpContext();
+
+            var jsonResult = await sut.ChangeStatus(new TaskChangeModel()) as JsonResult;
+            var result = jsonResult.GetValueForProperty<TaskViewModel>("Task");
+
+            Assert.IsType<JsonResult>(jsonResult);
+            Assert.IsType<TaskViewModel>(result);
+        }
 
         [Fact]
         public void ControllerHasRouteAtttributeWithTheCorrectRoute()
@@ -239,7 +318,5 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
             Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
         }
-
-        //method attributes
     }
 }

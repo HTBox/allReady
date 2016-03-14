@@ -84,7 +84,8 @@ namespace AllReady.Controllers
         [HttpPost("signup")]
         [Authorize]
         [Produces("application/json")]
-        public async Task<object> RegisterTask(ActivitySignupViewModel signupModel)
+        //public async Task<object> RegisterTask(ActivitySignupViewModel signupModel)
+        public async Task<ActionResult> RegisterTask(ActivitySignupViewModel signupModel)
         {
             if (signupModel == null)
                 return HttpBadRequest();
@@ -98,9 +99,8 @@ namespace AllReady.Controllers
 
             var result = await _mediator.SendAsync(new TaskSignupCommand { TaskSignupModel = signupModel });
 
-            return new { result.Status, Task = result.Task == null ? 
-                null : 
-                new TaskViewModel(result.Task, signupModel.UserId) };
+            //return new { result.Status, Task = result.Task == null ? null :  new TaskViewModel(result.Task, signupModel.UserId) };
+            return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, signupModel.UserId) });
         }
 
         [HttpDelete("{id}/signup")]
@@ -117,10 +117,33 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         [Route("changestatus")]
         [Authorize]
-        public async Task<object> ChangeStatus(TaskChangeModel model)
+        public async Task<ActionResult> ChangeStatus(TaskChangeModel model)
         {
-            var result = await _mediator.SendAsync(new TaskStatusChangeCommand { TaskStatus = model.Status, TaskId = model.TaskId, UserId = model.UserId, TaskStatusDescription = model.StatusDescription });
-            return new { Status = result.Status, Task = (result.Task == null) ? null : new TaskViewModel(result.Task, model.UserId) };
+            var result = await _mediator.SendAsync(new TaskStatusChangeCommandAsync { TaskStatus = model.Status, TaskId = model.TaskId, UserId = model.UserId, TaskStatusDescription = model.StatusDescription });
+
+            return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, model.UserId) });
+        }
+
+        private bool HasTaskEditPermissions(AllReadyTask task)
+        {
+            var userId = User.GetUserId();
+
+            if (User.IsUserType(UserType.SiteAdmin))
+                return true;
+
+            if (User.IsUserType(UserType.OrgAdmin))
+            {
+                //TODO: Modify to check that user is organization admin for organization of task
+                return true;
+            }
+
+            if (task.Activity?.Organizer != null && task.Activity.Organizer.Id == userId)
+                return true;
+
+            if (task.Activity?.Campaign?.Organizer != null && task.Activity.Campaign.Organizer.Id == userId)
+                return true;
+
+            return false;
         }
     }
 }

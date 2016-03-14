@@ -88,15 +88,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommand
+            var command = new TaskStatusChangeCommandAsync
             {
                 TaskId = task.Id,
                 UserId = user.Id,
                 TaskStatus = TaskStatus.Accepted
             };
-
-            var handler = new TaskStatusChangeHandler(Context, mediator.Object);
-            await handler.Handle(command);
+            var handler = new TaskStatusChangeHandlerAsync(Context, mediator.Object);
+            var result = handler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
