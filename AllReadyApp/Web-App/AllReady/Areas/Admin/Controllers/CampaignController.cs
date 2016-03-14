@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Models;
@@ -10,6 +11,7 @@ using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
+using AllReady.Areas.Admin.Models.Validators;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -88,6 +90,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(CampaignSummaryModel campaign, IFormFile fileUpload)
         {
+
             if (campaign == null)
             {
                 return HttpBadRequest();
@@ -97,25 +100,10 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpUnauthorized();
             }
-
-            // Temporary code to avoid current database update error when the post code geo does not exist in the database.
-            if (!string.IsNullOrEmpty(campaign.Location?.PostalCode))
-            {
-                bool validPostcode = await _mediator.SendAsync(new CheckValidPostcodeQueryAsync
-                {
-                    Postcode = new PostalCodeGeo
-                    {
-                        City = campaign.Location.City,
-                        State = campaign.Location.State,
-                        PostalCode = campaign.Location.PostalCode
-                    }
-                });
-
-                if (!validPostcode)
-                {
-                    ModelState.AddModelError(campaign.Location.PostalCode, "The city, state and postal code combination is not valid");
-                }
-            }
+            
+            var validator = new CampaignSummaryModelValidator(_mediator);
+            var errors = await validator.Validate(campaign);
+            errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)
             {
