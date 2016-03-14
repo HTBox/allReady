@@ -96,9 +96,9 @@ namespace AllReady.Controllers
                 return Json(new { errors = ModelState.GetErrorMessages() });
             }
 
-            var result = await _mediator.SendAsync(new TaskSignupCommand() { TaskSignupModel = signupModel });
+            var result = await _mediator.SendAsync(new TaskSignupCommand { TaskSignupModel = signupModel });
 
-            return new { result.Status, Task = (result.Task == null) ? null : new TaskViewModel(result.Task, signupModel.UserId)};
+            return new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, signupModel.UserId) };
         }
 
         [HttpDelete("{id}/signup")]
