@@ -19,6 +19,30 @@ namespace AllReady.UnitTest.Controllers
     public class TaskApiControllerTests
     {
         //Post
+        [Fact]
+        public void PutHasValidateAntiForgeryTokenAttribute()
+        {
+            var sut = new TaskApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<TaskChangeModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+        [Fact]
+        public void PutHasHttpPostAttribute()
+        {
+            var sut = new TaskApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<TaskChangeModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        //[Fact]
+        //public void ChangeStatusHasRouteAttributeWithCorrectTemplate()
+        //{
+        //    var sut = new TaskApiController(null, null);
+        //    var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<TaskChangeModel>())).OfType<RouteAttribute>().SingleOrDefault();
+        //    Assert.NotNull(attribute);
+        //    Assert.Equal(attribute.Template, "changestatus");
+        //}
+
         //Put
         //Delete
 
