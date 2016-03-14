@@ -33,7 +33,7 @@ namespace AllReady.Controllers
             if (!hasPermissions)
                 HttpUnauthorized();
 
-            var alreadyExists = _allReadyDataAccess.GetTask(task.Id) != null;
+            var alreadyExists = GetTaskBy(task.Id) != null;
             if (alreadyExists)
                 HttpBadRequest();
 
@@ -47,14 +47,13 @@ namespace AllReady.Controllers
         [HttpPut("{id}")]
         public async void Put(int id, [FromBody]TaskViewModel value)
         {
-            var task = _allReadyDataAccess.GetTask(id);
+            var task = GetTaskBy(id);
+            if (task == null) //this call was originally below the HasTaskEditPermissions method check. Moved it up here b/c feeding a null value into that method woulf result in a runtime exception
+                HttpBadRequest();
 
             var hasPermissions = HasTaskEditPermissions(task);
             if (!hasPermissions)
                 HttpUnauthorized();
-
-            if (task == null)
-                HttpBadRequest();
 
             // Changing all the potential properties that the VM could have modified.
             task.Name = value.Name;
@@ -68,7 +67,7 @@ namespace AllReady.Controllers
         [HttpDelete("{id}")]
         public async void Delete(int id)
         {
-            var matchingTask = _allReadyDataAccess.GetTask(id);
+            var matchingTask = GetTaskBy(id);
 
             if (matchingTask != null)
             {
@@ -84,7 +83,6 @@ namespace AllReady.Controllers
         [HttpPost("signup")]
         [Authorize]
         [Produces("application/json")]
-        //public async Task<object> RegisterTask(ActivitySignupViewModel signupModel)
         public async Task<ActionResult> RegisterTask(ActivitySignupViewModel signupModel)
         {
             if (signupModel == null)
@@ -99,7 +97,6 @@ namespace AllReady.Controllers
 
             var result = await _mediator.SendAsync(new TaskSignupCommand { TaskSignupModel = signupModel });
 
-            //return new { result.Status, Task = result.Task == null ? null :  new TaskViewModel(result.Task, signupModel.UserId) };
             return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, signupModel.UserId) });
         }
 
@@ -122,6 +119,11 @@ namespace AllReady.Controllers
             var result = await _mediator.SendAsync(new TaskStatusChangeCommandAsync { TaskStatus = model.Status, TaskId = model.TaskId, UserId = model.UserId, TaskStatusDescription = model.StatusDescription });
 
             return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, model.UserId) });
+        }
+
+        private AllReadyTask GetTaskBy(int taskId)
+        {
+            return _mediator.Send(new TaskByTaskIdQuery { TaskId = taskId });
         }
 
         private bool HasTaskEditPermissions(AllReadyTask task)
