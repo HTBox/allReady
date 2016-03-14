@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Controllers;
+using AllReady.Features.Tasks;
+using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels;
+using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
 using Moq;
@@ -20,6 +23,85 @@ namespace AllReady.UnitTest.Controllers
 
         //these do not use HasEditTaskPermissions
         //RegisterTask
+        [Fact]
+        public async Task RegisterTaskReturnsHttpBadRequestWhenModelIsNull()
+        {
+            var sut = new TaskApiController(null, null);
+            var result = await sut.RegisterTask(null);
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        public async Task RegisterTaskReturnsJsonWhenThereIsModelStateError()
+        {
+            const string modelStateErrorMessage = "modelStateErrorMessage";
+
+            var sut = new TaskApiController(null, null);
+            sut.AddModelStateError(modelStateErrorMessage);
+
+            var jsonResult = (JsonResult)await sut.RegisterTask(new ActivitySignupViewModel());
+            var result = jsonResult.GetValueForProperty<List<string>>("errors");
+
+            Assert.IsType<JsonResult>(jsonResult);
+            Assert.IsType<List<string>>(result);
+            Assert.Equal(result.First(), modelStateErrorMessage);
+        }
+
+        [Fact]
+        public async Task RegisterTaskSendsTaskSignupCommandWithCorrectTaskSignupModel()
+        {
+            var model = new ActivitySignupViewModel();
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommand>(y => y.TaskSignupModel == model))).Returns(Task.FromResult(new TaskSignupResult()));
+
+            var sut = new TaskApiController(null, mediator.Object);
+            await sut.RegisterTask(model);
+
+            mediator.Verify(x => x.SendAsync(It.Is<TaskSignupCommand>(command => command.TaskSignupModel.Equals(model))));
+        }
+
+        [Fact]
+        public async Task RegisterTaskReturnsCorrectValueForStatus()
+        {
+            var model = new ActivitySignupViewModel();
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommand>(y => y.TaskSignupModel == model))).Returns(Task.FromResult(new TaskSignupResult { Status = "status" }));
+
+            var sut = new TaskApiController(null, mediator.Object);
+            var result = await sut.RegisterTask(model);
+
+            Assert.Equal(result.ToString(), "{ Status = status, Task =  }");
+        }
+
+        [Fact]
+        public async Task RegisterTaskReturnsNullForTaskIfTaskIsNull()
+        {
+            var model = new ActivitySignupViewModel();
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommand>(y => y.TaskSignupModel == model))).Returns(Task.FromResult(new TaskSignupResult()));
+
+            var sut = new TaskApiController(null, mediator.Object);
+            var result = await sut.RegisterTask(model);
+
+            Assert.Equal(result.ToString(), "{ Status = , Task =  }");
+        }
+
+        //[Fact]
+        //public async Task RegisterTaskReturnsTaskViewModelWithCorrectDataForTaskIfTaskIsNotNull()
+        //{
+        //    var model = new ActivitySignupViewModel { UserId = "userId" };
+        //    var mediator = new Mock<IMediator>();
+        //    mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommand>(y => y.TaskSignupModel == model))).Returns(Task.FromResult(new TaskSignupResult { Task = new AllReadyTask() }));
+
+        //    var sut = new TaskApiController(null, mediator.Object);
+        //    //this is null when ReigeterTask's return type is ""Task<object>"
+        //    //var jsonResult = await sut.RegisterTask(model) as JsonResult;
+        //    var result = await sut.RegisterTask(model);
+
+        //    //TODO: is there a way to re-serialize an anonynous type in json format?
+        //    Assert.Equal(result.ToString(), "{ Status = , Task = AllReady.ViewModels.TaskViewModel }");
+        //}
+
         [Fact]
         public void RegisterTaskHasValidateAntiForgeryTokenAttrbiute()
         {

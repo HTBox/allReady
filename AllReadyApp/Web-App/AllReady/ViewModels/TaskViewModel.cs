@@ -18,20 +18,15 @@ namespace AllReady.ViewModels
             Name = task.Name;
             Description = task.Description;
 
-
             if (task.StartDateTime.HasValue)
             {
-                DateTime startDateWithUtcKind = DateTime.SpecifyKind(
-                    DateTime.Parse(task.StartDateTime.Value.ToString()),
-                    DateTimeKind.Utc);
+                var startDateWithUtcKind = DateTime.SpecifyKind(DateTime.Parse(task.StartDateTime.Value.ToString()), DateTimeKind.Utc);
                 StartDateTime = new DateTimeOffset(startDateWithUtcKind);
             }
 
             if (task.EndDateTime.HasValue)
             {
-                DateTime endDateWithUtcKind = DateTime.SpecifyKind(
-                    DateTime.Parse(task.EndDateTime.Value.ToString()),
-                    DateTimeKind.Utc);
+                var endDateWithUtcKind = DateTime.SpecifyKind(DateTime.Parse(task.EndDateTime.Value.ToString()), DateTimeKind.Utc);
                 EndDateTime = new DateTimeOffset(endDateWithUtcKind);
             }
 
@@ -60,19 +55,21 @@ namespace AllReady.ViewModels
                 {
                     IsUserSignedUpForTask = task.AssignedVolunteers.Any(au => au.User.Id == userId);
                 }
-                this.AssignedVolunteers = new List<TaskSignupViewModel>();
+
+                AssignedVolunteers = new List<TaskSignupViewModel>();
+
                 if (IsUserSignedUpForTask)
                 {                    
                     foreach (var t in task.AssignedVolunteers.Where(au => au.User.Id == userId))
                     {
-                        this.AssignedVolunteers.Add(new TaskSignupViewModel(t));
+                        AssignedVolunteers.Add(new TaskSignupViewModel(t));
                     }
                 }
             }
 
             if (task.RequiredSkills != null)
             {
-                this.RequiredSkills = task.RequiredSkills.Select(t => t.SkillId);
+                RequiredSkills = task.RequiredSkills.Select(t => t.SkillId);
                 RequiredSkillObjects = task.RequiredSkills?.Select(t => t.Skill).ToList();
             }
 
@@ -167,7 +164,7 @@ namespace AllReady.ViewModels
             if (activity == null)
                 return null;
 
-            bool newTask = true;
+            var newTask = true;
             AllReadyTask dbtask;
 
             if (taskViewModel.Id == 0)

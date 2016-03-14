@@ -371,7 +371,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task RegisterActivityReturnsSuccess()
         {
             var sut = new ActivityApiController(Mock.Of<IMediator>());
-            var result = (object)await sut.RegisterActivity(new ActivitySignupViewModel());
+            var result = await sut.RegisterActivity(new ActivitySignupViewModel());
 
             Assert.True(result.ToString().Contains("success"));
         }

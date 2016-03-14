@@ -98,7 +98,9 @@ namespace AllReady.Controllers
 
             var result = await _mediator.SendAsync(new TaskSignupCommand { TaskSignupModel = signupModel });
 
-            return new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, signupModel.UserId) };
+            return new { result.Status, Task = result.Task == null ? 
+                null : 
+                new TaskViewModel(result.Task, signupModel.UserId) };
         }
 
         [HttpDelete("{id}/signup")]
@@ -106,8 +108,8 @@ namespace AllReady.Controllers
         public async Task<object> UnregisterTask(int id)
         {
             var userId = User.GetUserId();
-            var result = await _mediator.SendAsync(new TaskUnenrollCommand() { TaskId = id, UserId = userId});
-            return new { result.Status, Task = (result.Task == null) ? null : new TaskViewModel(result.Task, userId) };
+            var result = await _mediator.SendAsync(new TaskUnenrollCommand { TaskId = id, UserId = userId });
+            return new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, userId) };
         }
 
         [HttpPost]
