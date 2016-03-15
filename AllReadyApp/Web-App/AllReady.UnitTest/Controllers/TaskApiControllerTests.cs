@@ -27,7 +27,7 @@ namespace AllReady.UnitTest.Controllers
             dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity());
 
             var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
-            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(false);
+            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>())).Returns(false);
 
             var sut = new TaskApiController(dataAccess.Object, null, determineIfATaskIsEditable.Object);
             var result = await sut.Post(new TaskViewModel { ActivityId = 1 });
@@ -45,7 +45,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.Send(It.IsAny<TaskByTaskIdQuery>())).Returns(new AllReadyTask());
 
             var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
-            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>())).Returns(true);
 
             var sut = new TaskApiController(dataAccess.Object, mediator.Object, determineIfATaskIsEditable.Object);
             var result = await sut.Post(new TaskViewModel { ActivityId = 1 });
@@ -57,7 +57,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task PostReturnsBadRequestObjectResultWithCorrectErrorMessageWhenActivityIsNull()
         { 
             var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
-            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>())).Returns(true);
 
             var sut = new TaskApiController(Mock.Of<IAllReadyDataAccess>(), Mock.Of<IMediator>(), determineIfATaskIsEditable.Object);
             var result = await sut.Post(new TaskViewModel()) as BadRequestObjectResult;
@@ -79,7 +79,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
 
             var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
-            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>())).Returns(true);
 
             var sut = new TaskApiController(dataAccess.Object, mediator.Object, determineIfATaskIsEditable.Object);
             await sut.Post(model);
@@ -99,7 +99,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
 
             var provider = new Mock<IDetermineIfATaskIsEditable>();
-            provider.Setup(x => x.For(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+            provider.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>())).Returns(true);
 
             var sut = new TaskApiController(dataAccess.Object, mediator.Object, provider.Object);
             await sut.Post(model);
@@ -119,7 +119,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
 
             var provider = new Mock<IDetermineIfATaskIsEditable>();
-            provider.Setup(x => x.For(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+            provider.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>())).Returns(true);
 
             var sut = new TaskApiController(dataAccess.Object, mediator.Object, provider.Object);
             var result = await sut.Post(model) as HttpStatusCodeResult;
@@ -159,7 +159,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.Send(It.IsAny<TaskByTaskIdQuery>())).Returns(new AllReadyTask());
 
             var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
-            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(false);
+            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>())).Returns(false);
 
             var sut = new TaskApiController(null, mediator.Object, determineIfATaskIsEditable.Object);
             var result = await sut.Put(taskId, It.IsAny<TaskViewModel>());
@@ -177,7 +177,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.Send(It.IsAny<TaskByTaskIdQuery>())).Returns(allReadyTask);
 
             var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
-            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>())).Returns(true);
 
             var dataAccess = new Mock<IAllReadyDataAccess>();
 
@@ -197,7 +197,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.Send(It.IsAny<TaskByTaskIdQuery>())).Returns(allReadyTask);
 
             var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
-            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>())).Returns(true);
 
             var dataAccess = new Mock<IAllReadyDataAccess>();
 
@@ -209,7 +209,62 @@ namespace AllReady.UnitTest.Controllers
         }
 
         //Delete
+        [Fact]
+        public async Task DeleteSendsTaskByTaskIdQueryWithCorrectTaskId()
+        {
+            const int taskId = 1;
 
+            var mediator = new Mock<IMediator>();
+            var sut = new TaskApiController(null, mediator.Object, null);
+            await sut.Delete(taskId);
+
+            mediator.Verify(x => x.Send(It.Is<TaskByTaskIdQuery>(y => y.TaskId == taskId)));
+        }
+
+        [Fact]
+        public async Task DeleteReturnsBadRequestResultWhenCannotFindTaskByTaskId()
+        {
+            var sut = new TaskApiController(null, Mock.Of<IMediator>(), null);
+            var result = await sut.Delete(It.IsAny<int>());
+
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        public async Task DeleteReturnsHttpUnauthorizedResultWhenAUserDoesNotHavePermissionToEditTheTaskOrTheTaskIsNotEditable()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<TaskByTaskIdQuery>())).Returns(new AllReadyTask());
+
+            var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
+            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>())).Returns(false);
+
+            var sut = new TaskApiController(null, mediator.Object, determineIfATaskIsEditable.Object);
+            var result = await sut.Delete(It.IsAny<int>());
+
+            Assert.IsType<HttpUnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public async Task DeleteInvokesDeleteTaskAsyncWithCorrectTaskId()
+        {
+            var allReadyTask = new AllReadyTask { Id = 1 };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<TaskByTaskIdQuery>())).Returns(allReadyTask);
+
+            var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
+            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>())).Returns(true);
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+
+            var sut = new TaskApiController(dataAccess.Object, mediator.Object, determineIfATaskIsEditable.Object);
+            await sut.Delete(It.IsAny<int>());
+
+            dataAccess.Verify(x => x.DeleteTaskAsync(allReadyTask.Id), Times.Once);
+        }
+
+        //RegisterTask
         [Fact]
         public async Task RegisterTaskReturnsHttpBadRequestWhenModelIsNull()
         {

@@ -34,14 +34,14 @@ namespace AllReady.Controllers
         {
             var allReadyTask = task.ToModel(_allReadyDataAccess);
 
-            var hasPermissions = _determineIfATaskIsEditable.For(allReadyTask, User);
+            var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask);
             if (!hasPermissions)
                 return HttpUnauthorized();
 
             if (IfTaskExists(task))
                 return HttpBadRequest();
 
-            //this should not be enforced here, it should be enforced as a guard clause on the constructor of TaskViewModel and tested in a unit test for that class
+            //@mgmccarthy: this should not be enforced here, it should be enforced as a guard clause on the constructor of TaskViewModel and tested in a unit test for that class
             var model = allReadyTask;
             if (model == null)
                 return HttpBadRequest("Should have found a matching activity Id");
@@ -56,41 +56,45 @@ namespace AllReady.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody]TaskViewModel value)
         {
-            var task = GetTaskBy(id);
+            var allReadyTask = GetTaskBy(id);
 
-            if (task == null)
+            if (allReadyTask == null)
                 return HttpBadRequest();
 
-            var hasPermissions = _determineIfATaskIsEditable.For(task, User);
+            var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask);
             if (!hasPermissions)
                 return HttpUnauthorized();
 
             // Changing all the potential properties that the VM could have modified.
-            task.Name = value.Name;
-            task.Description = value.Description;
-            task.StartDateTime = value.StartDateTime.Value.UtcDateTime;
-            task.EndDateTime = value.EndDateTime.Value.UtcDateTime;
+            allReadyTask.Name = value.Name;
+            allReadyTask.Description = value.Description;
+            allReadyTask.StartDateTime = value.StartDateTime.Value.UtcDateTime;
+            allReadyTask.EndDateTime = value.EndDateTime.Value.UtcDateTime;
 
             //TODO:refactor to mediator
-            await _allReadyDataAccess.UpdateTaskAsync(task);
+            await _allReadyDataAccess.UpdateTaskAsync(allReadyTask);
 
             //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
             return new HttpStatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         [HttpDelete("{id}")]
-        public async void Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var matchingTask = GetTaskBy(id);
+            var allReadyTask = GetTaskBy(id);
 
-            if (matchingTask != null)
-            {
-                var hasPermissions = _determineIfATaskIsEditable.For(matchingTask, User);
-                if (!hasPermissions)
-                    HttpUnauthorized();
+            if (allReadyTask == null)
+                return HttpBadRequest();
 
-                await _allReadyDataAccess.DeleteTaskAsync(matchingTask.Id);
-            }
+            var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask);
+            if (!hasPermissions)
+                return HttpUnauthorized();
+
+            //TODO: refactor to mediator
+            await _allReadyDataAccess.DeleteTaskAsync(allReadyTask.Id);
+
+            //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
+            return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
         [ValidateAntiForgeryToken]
@@ -142,12 +146,12 @@ namespace AllReady.Controllers
 
     public interface IDetermineIfATaskIsEditable
     {
-        bool For(AllReadyTask task, ClaimsPrincipal user);
+        bool For(ClaimsPrincipal user, AllReadyTask task);
     }
 
     public class DetermineIfATaskIsEditable : IDetermineIfATaskIsEditable
     {
-        public bool For(AllReadyTask task, ClaimsPrincipal user)
+        public bool For(ClaimsPrincipal user, AllReadyTask task)
         {
             var userId = user.GetUserId();
 
