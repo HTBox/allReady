@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using System.Net;
+using Microsoft.AspNet.Mvc;
 using AllReady.Security;
 using AllReady.Models;
 using AllReady.ViewModels;
@@ -18,6 +19,7 @@ namespace AllReady.Controllers
     {
         private readonly IAllReadyDataAccess _allReadyDataAccess;
         private readonly IMediator _mediator;
+        private readonly IProvideTaskEditPermissions taskEditPermissionsProvider;
 
         public TaskApiController(IAllReadyDataAccess allReadyDataAccess, IMediator mediator)
         {
@@ -25,30 +27,49 @@ namespace AllReady.Controllers
             _mediator = mediator;
         }
 
+        public TaskApiController(IAllReadyDataAccess allReadyDataAccess, IMediator mediator, IProvideTaskEditPermissions taskEditPermissionsProvider)
+        {
+            _allReadyDataAccess = allReadyDataAccess;
+            _mediator = mediator;
+            this.taskEditPermissionsProvider = taskEditPermissionsProvider;
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async void Post([FromBody]TaskViewModel task)
+        //public async void Post([FromBody]TaskViewModel task)
+        //public async Task Post([FromBody]TaskViewModel task) //Sean Feldman
+        public async Task<IActionResult> Post([FromBody]TaskViewModel task)
         {
             var hasPermissions = HasTaskEditPermissions(task.ToModel(_allReadyDataAccess));
+            //var hasPermissions = taskEditPermissionsProvider.HasTaskEditPermissions(task.ToModel(_allReadyDataAccess), User);
             if (!hasPermissions)
-                HttpUnauthorized();
+                return HttpUnauthorized();
 
-            var alreadyExists = GetTaskBy(task.Id) != null;
-            if (alreadyExists)
-                HttpBadRequest();
+            //my code
+            //var allReadyTask = GetTaskBy(task.Id);
+            //  if(allReadyTask != null)
+
+            //original code
+            var taskExists = GetTaskBy(task.Id) != null;
+            if (taskExists)
+                return HttpBadRequest();
 
             var model = task.ToModel(_allReadyDataAccess);
             if (model == null)
-                HttpBadRequest("Should have found a matching activity Id");
+                return HttpBadRequest("Should have found a matching activity Id");
 
             await _allReadyDataAccess.AddTaskAsync(model);
+
+            //http://stackoverflow.com/questions/1860645/create-request-with-post-which-response-codes-200-or-201-and-content
+            return new HttpStatusCodeResult((int)HttpStatusCode.Created);
+            //return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
         [HttpPut("{id}")]
         public async void Put(int id, [FromBody]TaskViewModel value)
         {
             var task = GetTaskBy(id);
-            if (task == null) //this call was originally below the HasTaskEditPermissions method check. Moved it up here b/c feeding a null value into that method woulf result in a runtime exception
+            if (task == null) //MGM: this call was originally below the HasTaskEditPermissions method check. Moved it up here b/c feeding a null value into that method would result in a runtime exception
                 HttpBadRequest();
 
             var hasPermissions = HasTaskEditPermissions(task);
@@ -134,6 +155,43 @@ namespace AllReady.Controllers
                 return true;
 
             if (User.IsUserType(UserType.OrgAdmin))
+            {
+                //TODO: Modify to check that user is organization admin for organization of task
+                return true;
+            }
+
+            //if (task.Activity?.Organizer != null && task.Activity.Organizer.Id == userId)
+            if (task.Activity != null && 
+                task.Activity.Organizer != null && 
+                task.Activity.Organizer.Id == userId)
+                    return true;
+
+            //if (task.Activity?.Campaign?.Organizer != null && task.Activity.Campaign.Organizer.Id == userId)
+            if (task.Activity != null && 
+                task.Activity.Campaign != null && 
+                task.Activity.Campaign.Organizer != null && 
+                task.Activity.Campaign.Organizer.Id == userId)
+                    return true;
+
+            return false;
+        }
+    }
+
+    public interface IProvideTaskEditPermissions
+    {
+        bool HasTaskEditPermissions(AllReadyTask task, ClaimsPrincipal user);
+    }
+
+    public class ProvideTaskEditPermissions : IProvideTaskEditPermissions
+    {
+        public bool HasTaskEditPermissions(AllReadyTask task, ClaimsPrincipal user)
+        {
+            var userId = user.GetUserId();
+
+            if (user.IsUserType(UserType.SiteAdmin))
+                return true;
+
+            if (user.IsUserType(UserType.OrgAdmin))
             {
                 //TODO: Modify to check that user is organization admin for organization of task
                 return true;

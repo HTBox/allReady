@@ -20,28 +20,38 @@ namespace AllReady.UnitTest.Controllers
     {
         //Post
         [Fact]
-        public void PutHasValidateAntiForgeryTokenAttribute()
+        public async Task PostReturnsHttpUnauthorizedWhenUserTypeIsBasicUser()
         {
-            var sut = new TaskApiController(null, null);
-            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<TaskChangeModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
-            Assert.NotNull(attribute);
-        }
-        [Fact]
-        public void PutHasHttpPostAttribute()
-        {
-            var sut = new TaskApiController(null, null);
-            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<TaskChangeModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
-            Assert.NotNull(attribute);
+            var model = new TaskViewModel { ActivityId = 1 };
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(model.ActivityId)).Returns(new Activity());
+
+            //TODO: set to new constructor taking provider
+            var sut = new TaskApiController(dataAccess.Object, null)
+                .SetFakeUserAndUserType("10", UserType.BasicUser);
+            var result = await sut.Post(model);
+
+            Assert.IsType<HttpUnauthorizedResult>(result);
         }
 
-        //[Fact]
-        //public void ChangeStatusHasRouteAttributeWithCorrectTemplate()
-        //{
-        //    var sut = new TaskApiController(null, null);
-        //    var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<TaskChangeModel>())).OfType<RouteAttribute>().SingleOrDefault();
-        //    Assert.NotNull(attribute);
-        //    Assert.Equal(attribute.Template, "changestatus");
-        //}
+        [Fact]
+        public async Task PostReturnsBadRequestResultWhenTaskAlreadyExists()
+        {
+            var model = new TaskViewModel { ActivityId = 1 };
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(model.ActivityId)).Returns(new Activity());
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<TaskByTaskIdQuery>())).Returns(new AllReadyTask());
+
+            //TODO: set to new constructor taking provider
+            var sut = new TaskApiController(dataAccess.Object, mediator.Object)
+                .SetFakeUserAndUserType("10", UserType.SiteAdmin); //SiteAdmin gets me past first controller check
+            var result = await sut.Post(model);
+
+            Assert.IsType<BadRequestResult>(result);
+        }
 
         //Put
         //Delete

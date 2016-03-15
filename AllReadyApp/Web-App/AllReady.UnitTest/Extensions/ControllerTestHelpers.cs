@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
+using AllReady.Models;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Internal;
 using Microsoft.AspNet.Mvc;
@@ -26,6 +28,40 @@ namespace AllReady.UnitTest.Extensions
 
             var claimsPrincipal = new ClaimsPrincipal();
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) }));
+
+            Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
+
+            return controller;
+        }
+
+        public static T SetFakeUserType<T>(this T controller, UserType userType) where T : Controller
+        {
+            if (controller.ActionContext.HttpContext == null)
+                controller.SetFakeHttpContext();
+
+            var claimsPrincipal = new ClaimsPrincipal();
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, "1"),
+                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), userType))
+            }));
+
+            Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
+
+            return controller;
+        }
+
+        public static T SetFakeUserAndUserType<T>(this T controller, string userId, UserType userType) where T : Controller
+        {
+            if (controller.ActionContext.HttpContext == null)
+                controller.SetFakeHttpContext();
+
+            var claimsPrincipal = new ClaimsPrincipal();
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), userType))
+            }));
 
             Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
 
