@@ -32,16 +32,17 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Post([FromBody]TaskViewModel task)
         {
-            var hasPermissions = _determineIfATaskIsEditable.IsEditableFor(task.ToModel(_allReadyDataAccess), User);
+            var allReadyTask = task.ToModel(_allReadyDataAccess);
+
+            var hasPermissions = _determineIfATaskIsEditable.For(allReadyTask, User);
             if (!hasPermissions)
                 return HttpUnauthorized();
 
-            var allReadyTask = GetTaskBy(task.Id);
-            if(allReadyTask != null)
+            if (IfTaskExists(task))
                 return HttpBadRequest();
 
             //this should not be enforced here, it should be enforced as a guard clause on the constructor of TaskViewModel and tested in a unit test for that class
-            var model = task.ToModel(_allReadyDataAccess);
+            var model = allReadyTask;
             if (model == null)
                 return HttpBadRequest("Should have found a matching activity Id");
 
@@ -58,7 +59,7 @@ namespace AllReady.Controllers
             if (task == null) //MGM: this call was originally below the HasTaskEditPermissions method check. Moved it up here b/c feeding a null value into that method would result in a runtime exception
                 HttpBadRequest();
 
-            var hasPermissions = HasTaskEditPermissions(task);
+            var hasPermissions = _determineIfATaskIsEditable.For(task, User);
             if (!hasPermissions)
                 HttpUnauthorized();
 
@@ -78,7 +79,7 @@ namespace AllReady.Controllers
 
             if (matchingTask != null)
             {
-                var hasPermissions = HasTaskEditPermissions(matchingTask);
+                var hasPermissions = _determineIfATaskIsEditable.For(matchingTask, User);
                 if (!hasPermissions)
                     HttpUnauthorized();
 
@@ -128,49 +129,18 @@ namespace AllReady.Controllers
             return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, model.UserId) });
         }
 
-        private AllReadyTask GetTaskBy(int taskId)
-        {
-            return _mediator.Send(new TaskByTaskIdQuery { TaskId = taskId });
-        }
-
-        private bool HasTaskEditPermissions(AllReadyTask task)
-        {
-            var userId = User.GetUserId();
-
-            if (User.IsUserType(UserType.SiteAdmin))
-                return true;
-
-            if (User.IsUserType(UserType.OrgAdmin))
-            {
-                //TODO: Modify to check that user is organization admin for organization of task
-                return true;
-            }
-
-            //if (task.Activity?.Organizer != null && task.Activity.Organizer.Id == userId)
-            if (task.Activity != null &&
-                task.Activity.Organizer != null &&
-                task.Activity.Organizer.Id == userId)
-                return true;
-
-            //if (task.Activity?.Campaign?.Organizer != null && task.Activity.Campaign.Organizer.Id == userId)
-            if (task.Activity != null &&
-                task.Activity.Campaign != null &&
-                task.Activity.Campaign.Organizer != null &&
-                task.Activity.Campaign.Organizer.Id == userId)
-                return true;
-
-            return false;
-        }
+        private bool IfTaskExists(TaskViewModel task) => GetTaskBy(task.Id) != null;
+        private AllReadyTask GetTaskBy(int taskId) => _mediator.Send(new TaskByTaskIdQuery { TaskId = taskId });
     }
 
     public interface IDetermineIfATaskIsEditable
     {
-        bool IsEditableFor(AllReadyTask task, ClaimsPrincipal user);
+        bool For(AllReadyTask task, ClaimsPrincipal user);
     }
 
     public class DetermineIfATaskIsEditable : IDetermineIfATaskIsEditable
     {
-        public bool IsEditableFor(AllReadyTask task, ClaimsPrincipal user)
+        public bool For(AllReadyTask task, ClaimsPrincipal user)
         {
             var userId = user.GetUserId();
 
