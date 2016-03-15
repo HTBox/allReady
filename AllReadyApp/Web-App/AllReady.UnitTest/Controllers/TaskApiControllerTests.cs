@@ -25,10 +25,10 @@ namespace AllReady.UnitTest.Controllers
             var dataAccess = new Mock<IAllReadyDataAccess>();
             dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity());
 
-            var provider = new Mock<IProvideTaskEditPermissions>();
-            provider.Setup(x => x.HasTaskEditPermissions(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(false);
+            var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
+            determineIfATaskIsEditable.Setup(x => x.IsEditableFor(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(false);
 
-            var sut = new TaskApiController(dataAccess.Object, null, provider.Object);
+            var sut = new TaskApiController(dataAccess.Object, null, determineIfATaskIsEditable.Object);
             var result = await sut.Post(new TaskViewModel { ActivityId = 1 });
 
             Assert.IsType<HttpUnauthorizedResult>(result);
@@ -43,10 +43,10 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<TaskByTaskIdQuery>())).Returns(new AllReadyTask());
 
-            var provider = new Mock<IProvideTaskEditPermissions>();
-            provider.Setup(x => x.HasTaskEditPermissions(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+            var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
+            determineIfATaskIsEditable.Setup(x => x.IsEditableFor(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
 
-            var sut = new TaskApiController(dataAccess.Object, mediator.Object, provider.Object);
+            var sut = new TaskApiController(dataAccess.Object, mediator.Object, determineIfATaskIsEditable.Object);
             var result = await sut.Post(new TaskViewModel { ActivityId = 1 });
 
             Assert.IsType<BadRequestResult>(result);
@@ -55,10 +55,10 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task PostReturnsBadRequestObjectResultWithCorrectErrorMessageWhenActivityIsNull()
         { 
-            var provider = new Mock<IProvideTaskEditPermissions>();
-            provider.Setup(x => x.HasTaskEditPermissions(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+            var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
+            determineIfATaskIsEditable.Setup(x => x.IsEditableFor(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
 
-            var sut = new TaskApiController(Mock.Of<IAllReadyDataAccess>(), Mock.Of<IMediator>(), provider.Object);
+            var sut = new TaskApiController(Mock.Of<IAllReadyDataAccess>(), Mock.Of<IMediator>(), determineIfATaskIsEditable.Object);
             var result = await sut.Post(new TaskViewModel()) as BadRequestObjectResult;
 
             Assert.IsType<BadRequestObjectResult>(result);
@@ -77,10 +77,10 @@ namespace AllReady.UnitTest.Controllers
 
             var mediator = new Mock<IMediator>();
 
-            var provider = new Mock<IProvideTaskEditPermissions>();
-            provider.Setup(x => x.HasTaskEditPermissions(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+            var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
+            determineIfATaskIsEditable.Setup(x => x.IsEditableFor(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
 
-            var sut = new TaskApiController(dataAccess.Object, mediator.Object, provider.Object);
+            var sut = new TaskApiController(dataAccess.Object, mediator.Object, determineIfATaskIsEditable.Object);
             await sut.Post(model);
 
             dataAccess.Verify(x => x.AddTaskAsync(allReadyTask), Times.Once);
@@ -97,8 +97,8 @@ namespace AllReady.UnitTest.Controllers
 
             var mediator = new Mock<IMediator>();
 
-            var provider = new Mock<IProvideTaskEditPermissions>();
-            provider.Setup(x => x.HasTaskEditPermissions(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+            var provider = new Mock<IDetermineIfATaskIsEditable>();
+            provider.Setup(x => x.IsEditableFor(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
 
             var sut = new TaskApiController(dataAccess.Object, mediator.Object, provider.Object);
             await sut.Post(model);
@@ -117,8 +117,8 @@ namespace AllReady.UnitTest.Controllers
 
             var mediator = new Mock<IMediator>();
 
-            var provider = new Mock<IProvideTaskEditPermissions>();
-            provider.Setup(x => x.HasTaskEditPermissions(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+            var provider = new Mock<IDetermineIfATaskIsEditable>();
+            provider.Setup(x => x.IsEditableFor(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
 
             var sut = new TaskApiController(dataAccess.Object, mediator.Object, provider.Object);
             var result = await sut.Post(model) as HttpStatusCodeResult;

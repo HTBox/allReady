@@ -19,20 +19,20 @@ namespace AllReady.Controllers
     {
         private readonly IAllReadyDataAccess _allReadyDataAccess;
         private readonly IMediator _mediator;
-        private readonly IProvideTaskEditPermissions _taskEditPermissionsProvider;
+        private readonly IDetermineIfATaskIsEditable _determineIfATaskIsEditable;
 
-        public TaskApiController(IAllReadyDataAccess allReadyDataAccess, IMediator mediator, IProvideTaskEditPermissions taskEditPermissionsProvider)
+        public TaskApiController(IAllReadyDataAccess allReadyDataAccess, IMediator mediator, IDetermineIfATaskIsEditable determineIfATaskIsEditable)
         {
             _allReadyDataAccess = allReadyDataAccess;
             _mediator = mediator;
-            _taskEditPermissionsProvider = taskEditPermissionsProvider;
+            _determineIfATaskIsEditable = determineIfATaskIsEditable;
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Post([FromBody]TaskViewModel task)
         {
-            var hasPermissions = _taskEditPermissionsProvider.HasTaskEditPermissions(task.ToModel(_allReadyDataAccess), User);
+            var hasPermissions = _determineIfATaskIsEditable.IsEditableFor(task.ToModel(_allReadyDataAccess), User);
             if (!hasPermissions)
                 return HttpUnauthorized();
 
@@ -147,30 +147,30 @@ namespace AllReady.Controllers
             }
 
             //if (task.Activity?.Organizer != null && task.Activity.Organizer.Id == userId)
-            if (task.Activity != null && 
-                task.Activity.Organizer != null && 
+            if (task.Activity != null &&
+                task.Activity.Organizer != null &&
                 task.Activity.Organizer.Id == userId)
-                    return true;
+                return true;
 
             //if (task.Activity?.Campaign?.Organizer != null && task.Activity.Campaign.Organizer.Id == userId)
-            if (task.Activity != null && 
-                task.Activity.Campaign != null && 
-                task.Activity.Campaign.Organizer != null && 
+            if (task.Activity != null &&
+                task.Activity.Campaign != null &&
+                task.Activity.Campaign.Organizer != null &&
                 task.Activity.Campaign.Organizer.Id == userId)
-                    return true;
+                return true;
 
             return false;
         }
     }
 
-    public interface IProvideTaskEditPermissions
+    public interface IDetermineIfATaskIsEditable
     {
-        bool HasTaskEditPermissions(AllReadyTask task, ClaimsPrincipal user);
+        bool IsEditableFor(AllReadyTask task, ClaimsPrincipal user);
     }
 
-    public class ProvideTaskEditPermissions : IProvideTaskEditPermissions
+    public class DetermineIfATaskIsEditable : IDetermineIfATaskIsEditable
     {
-        public bool HasTaskEditPermissions(AllReadyTask task, ClaimsPrincipal user)
+        public bool IsEditableFor(AllReadyTask task, ClaimsPrincipal user)
         {
             var userId = user.GetUserId();
 

@@ -113,7 +113,7 @@ namespace AllReady
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
-            services.AddTransient<IProvideTaskEditPermissions, ProvideTaskEditPermissions>();
+            services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
             services.AddSingleton<IImageService, ImageService>();
             //services.AddSingleton<GeoService>();
             services.AddTransient<SampleDataGenerator>();

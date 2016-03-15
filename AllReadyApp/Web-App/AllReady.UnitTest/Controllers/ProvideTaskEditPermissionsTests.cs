@@ -19,8 +19,8 @@ namespace AllReady.UnitTest.Controllers
                 new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), UserType.SiteAdmin))
             }));
 
-            var sut = new ProvideTaskEditPermissions();
-            var result = sut.HasTaskEditPermissions(null, claimsPrincipal);
+            var sut = new DetermineIfATaskIsEditable();
+            var result = sut.IsEditableFor(null, claimsPrincipal);
 
             Assert.True(result);
         }
@@ -35,8 +35,8 @@ namespace AllReady.UnitTest.Controllers
                 new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), UserType.OrgAdmin))
             }));
 
-            var sut = new ProvideTaskEditPermissions();
-            var result = sut.HasTaskEditPermissions(null, claimsPrincipal);
+            var sut = new DetermineIfATaskIsEditable();
+            var result = sut.IsEditableFor(null, claimsPrincipal);
 
             Assert.True(result);
         }
@@ -55,8 +55,8 @@ namespace AllReady.UnitTest.Controllers
 
             var allReadyTask = new AllReadyTask { Activity = new Activity { Organizer = new ApplicationUser { Id = userId }}};
 
-            var sut = new ProvideTaskEditPermissions();
-            var result = sut.HasTaskEditPermissions(allReadyTask, claimsPrincipal);
+            var sut = new DetermineIfATaskIsEditable();
+            var result = sut.IsEditableFor(allReadyTask, claimsPrincipal);
 
             Assert.True(result);
         }
@@ -75,8 +75,8 @@ namespace AllReady.UnitTest.Controllers
 
             var allReadyTask = new AllReadyTask { Activity = new Activity { Campaign = new Campaign { Organizer = new ApplicationUser { Id = userId }}}};
 
-            var sut = new ProvideTaskEditPermissions();
-            var result = sut.HasTaskEditPermissions(allReadyTask, claimsPrincipal);
+            var sut = new DetermineIfATaskIsEditable();
+            var result = sut.IsEditableFor(allReadyTask, claimsPrincipal);
 
             Assert.True(result);
         }
