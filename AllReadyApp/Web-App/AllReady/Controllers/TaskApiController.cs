@@ -21,12 +21,6 @@ namespace AllReady.Controllers
         private readonly IMediator _mediator;
         private readonly IProvideTaskEditPermissions _taskEditPermissionsProvider;
 
-        public TaskApiController(IAllReadyDataAccess allReadyDataAccess, IMediator mediator)
-        {
-            _allReadyDataAccess = allReadyDataAccess;
-            _mediator = mediator;
-        }
-
         public TaskApiController(IAllReadyDataAccess allReadyDataAccess, IMediator mediator, IProvideTaskEditPermissions taskEditPermissionsProvider)
         {
             _allReadyDataAccess = allReadyDataAccess;
