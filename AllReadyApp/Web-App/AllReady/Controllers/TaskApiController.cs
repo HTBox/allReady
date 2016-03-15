@@ -19,7 +19,7 @@ namespace AllReady.Controllers
     {
         private readonly IAllReadyDataAccess _allReadyDataAccess;
         private readonly IMediator _mediator;
-        private readonly IProvideTaskEditPermissions taskEditPermissionsProvider;
+        private readonly IProvideTaskEditPermissions _taskEditPermissionsProvider;
 
         public TaskApiController(IAllReadyDataAccess allReadyDataAccess, IMediator mediator)
         {
@@ -31,29 +31,22 @@ namespace AllReady.Controllers
         {
             _allReadyDataAccess = allReadyDataAccess;
             _mediator = mediator;
-            this.taskEditPermissionsProvider = taskEditPermissionsProvider;
+            _taskEditPermissionsProvider = taskEditPermissionsProvider;
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //public async void Post([FromBody]TaskViewModel task)
-        //public async Task Post([FromBody]TaskViewModel task) //Sean Feldman
         public async Task<IActionResult> Post([FromBody]TaskViewModel task)
         {
-            var hasPermissions = HasTaskEditPermissions(task.ToModel(_allReadyDataAccess));
-            //var hasPermissions = taskEditPermissionsProvider.HasTaskEditPermissions(task.ToModel(_allReadyDataAccess), User);
+            var hasPermissions = _taskEditPermissionsProvider.HasTaskEditPermissions(task.ToModel(_allReadyDataAccess), User);
             if (!hasPermissions)
                 return HttpUnauthorized();
 
-            //my code
-            //var allReadyTask = GetTaskBy(task.Id);
-            //  if(allReadyTask != null)
-
-            //original code
-            var taskExists = GetTaskBy(task.Id) != null;
-            if (taskExists)
+            var allReadyTask = GetTaskBy(task.Id);
+            if(allReadyTask != null)
                 return HttpBadRequest();
 
+            //this should not be enforced here, it should be enforced as a guard clause on the constructor of TaskViewModel and tested in a unit test for that class
             var model = task.ToModel(_allReadyDataAccess);
             if (model == null)
                 return HttpBadRequest("Should have found a matching activity Id");
@@ -62,7 +55,6 @@ namespace AllReady.Controllers
 
             //http://stackoverflow.com/questions/1860645/create-request-with-post-which-response-codes-200-or-201-and-content
             return new HttpStatusCodeResult((int)HttpStatusCode.Created);
-            //return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
         [HttpPut("{id}")]

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Controllers;
@@ -18,18 +19,17 @@ namespace AllReady.UnitTest.Controllers
 {
     public class TaskApiControllerTests
     {
-        //Post
         [Fact]
-        public async Task PostReturnsHttpUnauthorizedWhenUserTypeIsBasicUser()
+        public async Task PostReturnsHttpUnauthorizedWhenUserDoesNotHaveTheAuthorizationToEditTheTaskOrTheTaskIsNotInAnEditableState()
         {
-            var model = new TaskViewModel { ActivityId = 1 };
             var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.GetActivity(model.ActivityId)).Returns(new Activity());
+            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity());
 
-            //TODO: set to new constructor taking provider
-            var sut = new TaskApiController(dataAccess.Object, null)
-                .SetFakeUserAndUserType("10", UserType.BasicUser);
-            var result = await sut.Post(model);
+            var provider = new Mock<IProvideTaskEditPermissions>();
+            provider.Setup(x => x.HasTaskEditPermissions(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(false);
+
+            var sut = new TaskApiController(dataAccess.Object, null, provider.Object);
+            var result = await sut.Post(new TaskViewModel { ActivityId = 1 });
 
             Assert.IsType<HttpUnauthorizedResult>(result);
         }
@@ -37,20 +37,94 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task PostReturnsBadRequestResultWhenTaskAlreadyExists()
         {
-            var model = new TaskViewModel { ActivityId = 1 };
-
             var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.GetActivity(model.ActivityId)).Returns(new Activity());
+            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity());
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<TaskByTaskIdQuery>())).Returns(new AllReadyTask());
 
-            //TODO: set to new constructor taking provider
-            var sut = new TaskApiController(dataAccess.Object, mediator.Object)
-                .SetFakeUserAndUserType("10", UserType.SiteAdmin); //SiteAdmin gets me past first controller check
-            var result = await sut.Post(model);
+            var provider = new Mock<IProvideTaskEditPermissions>();
+            provider.Setup(x => x.HasTaskEditPermissions(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+
+            var sut = new TaskApiController(dataAccess.Object, mediator.Object, provider.Object);
+            var result = await sut.Post(new TaskViewModel { ActivityId = 1 });
 
             Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        public async Task PostReturnsBadRequestObjectResultWithCorrectErrorMessageWhenActivityIsNull()
+        { 
+            var provider = new Mock<IProvideTaskEditPermissions>();
+            provider.Setup(x => x.HasTaskEditPermissions(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+
+            var sut = new TaskApiController(Mock.Of<IAllReadyDataAccess>(), Mock.Of<IMediator>(), provider.Object);
+            var result = await sut.Post(new TaskViewModel()) as BadRequestObjectResult;
+
+            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(result.StatusCode, 400);
+        }
+
+        [Fact]
+        public async Task PostInvokesAddTaskAsyncWithCorrectModel()
+        {
+            var model = new TaskViewModel { ActivityId = 1, Id = 1 };
+            var allReadyTask = new AllReadyTask();
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity());
+            dataAccess.Setup(x => x.GetTask(It.IsAny<int>())).Returns(allReadyTask);
+
+            var mediator = new Mock<IMediator>();
+
+            var provider = new Mock<IProvideTaskEditPermissions>();
+            provider.Setup(x => x.HasTaskEditPermissions(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+
+            var sut = new TaskApiController(dataAccess.Object, mediator.Object, provider.Object);
+            await sut.Post(model);
+
+            dataAccess.Verify(x => x.AddTaskAsync(allReadyTask), Times.Once);
+        }
+
+        [Fact]
+        public async Task PostSendsTaskByTaskIdQueryWithCorrectTaskId()
+        {
+            var model = new TaskViewModel { ActivityId = 1, Id = 1 };
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity());
+            dataAccess.Setup(x => x.GetTask(It.IsAny<int>())).Returns(new AllReadyTask());
+
+            var mediator = new Mock<IMediator>();
+
+            var provider = new Mock<IProvideTaskEditPermissions>();
+            provider.Setup(x => x.HasTaskEditPermissions(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+
+            var sut = new TaskApiController(dataAccess.Object, mediator.Object, provider.Object);
+            await sut.Post(model);
+
+            mediator.Verify(x => x.Send(It.Is<TaskByTaskIdQuery>(y => y.TaskId == model.Id)));
+        }
+
+        [Fact]
+        public async Task PostReturnsHttpStatusCodeResultOf201()
+        {
+            var model = new TaskViewModel { ActivityId = 1, Id = 1 };
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity());
+            dataAccess.Setup(x => x.GetTask(It.IsAny<int>())).Returns(new AllReadyTask());
+
+            var mediator = new Mock<IMediator>();
+
+            var provider = new Mock<IProvideTaskEditPermissions>();
+            provider.Setup(x => x.HasTaskEditPermissions(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+
+            var sut = new TaskApiController(dataAccess.Object, mediator.Object, provider.Object);
+            var result = await sut.Post(model) as HttpStatusCodeResult;
+
+            Assert.IsType<HttpStatusCodeResult>(result);
+            Assert.Equal(result.StatusCode, 201);
         }
 
         //Put
