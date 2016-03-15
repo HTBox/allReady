@@ -46,6 +46,7 @@ namespace AllReady.Controllers
             if (model == null)
                 return HttpBadRequest("Should have found a matching activity Id");
 
+            //TODO: refactor to mediator
             await _allReadyDataAccess.AddTaskAsync(model);
 
             //http://stackoverflow.com/questions/1860645/create-request-with-post-which-response-codes-200-or-201-and-content
@@ -53,15 +54,16 @@ namespace AllReady.Controllers
         }
 
         [HttpPut("{id}")]
-        public async void Put(int id, [FromBody]TaskViewModel value)
+        public async Task<IActionResult> Put(int id, [FromBody]TaskViewModel value)
         {
             var task = GetTaskBy(id);
-            if (task == null) //MGM: this call was originally below the HasTaskEditPermissions method check. Moved it up here b/c feeding a null value into that method would result in a runtime exception
-                HttpBadRequest();
+
+            if (task == null)
+                return HttpBadRequest();
 
             var hasPermissions = _determineIfATaskIsEditable.For(task, User);
             if (!hasPermissions)
-                HttpUnauthorized();
+                return HttpUnauthorized();
 
             // Changing all the potential properties that the VM could have modified.
             task.Name = value.Name;
@@ -69,7 +71,11 @@ namespace AllReady.Controllers
             task.StartDateTime = value.StartDateTime.Value.UtcDateTime;
             task.EndDateTime = value.EndDateTime.Value.UtcDateTime;
 
+            //TODO:refactor to mediator
             await _allReadyDataAccess.UpdateTaskAsync(task);
+
+            //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
+            return new HttpStatusCodeResult((int)HttpStatusCode.NoContent);
         }
 
         [HttpDelete("{id}")]
@@ -130,6 +136,7 @@ namespace AllReady.Controllers
         }
 
         private bool IfTaskExists(TaskViewModel task) => GetTaskBy(task.Id) != null;
+
         private AllReadyTask GetTaskBy(int taskId) => _mediator.Send(new TaskByTaskIdQuery { TaskId = taskId });
     }
 

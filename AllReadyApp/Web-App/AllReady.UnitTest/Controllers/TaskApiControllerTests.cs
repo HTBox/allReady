@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -128,6 +129,84 @@ namespace AllReady.UnitTest.Controllers
         }
 
         //Put
+        [Fact]
+        public async Task PutSendsTaskByTaskIdQueryWithCorrectTaskId()
+        {
+            const int taskId = 1;
+
+            var mediator = new Mock<IMediator>();
+            var sut = new TaskApiController(null, mediator.Object, null);
+            await sut.Put(taskId, It.IsAny<TaskViewModel>());
+
+            mediator.Verify(x => x.Send(It.Is<TaskByTaskIdQuery>(y => y.TaskId == taskId)));
+        }
+
+        [Fact]
+        public async Task PutReturnsBadRequestResultWhenCannotFindTaskByTaskId()
+        {
+            var sut = new TaskApiController(null, Mock.Of<IMediator>(), null);
+            var result = await sut.Put(It.IsAny<int>(), It.IsAny<TaskViewModel>());
+
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        public async Task PutReturnsHttpUnauthorizedResultWhenAUserDoesNotHavePermissionToEditTheTaskOrTheTaskIsNotEditable()
+        {
+            const int taskId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<TaskByTaskIdQuery>())).Returns(new AllReadyTask());
+
+            var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
+            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(false);
+
+            var sut = new TaskApiController(null, mediator.Object, determineIfATaskIsEditable.Object);
+            var result = await sut.Put(taskId, It.IsAny<TaskViewModel>());
+
+            Assert.IsType<HttpUnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public async Task PutInvokesUpdateTaskAsyncWithCorrectAllReadyTask()
+        {
+            var allReadyTask = new AllReadyTask();
+            var model = new TaskViewModel { Name = "name", Description = "description", StartDateTime = DateTime.UtcNow, EndDateTime = DateTime.UtcNow };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<TaskByTaskIdQuery>())).Returns(allReadyTask);
+
+            var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
+            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+
+            var sut = new TaskApiController(dataAccess.Object, mediator.Object, determineIfATaskIsEditable.Object);
+            await sut.Put(It.IsAny<int>(), model);
+
+            dataAccess.Verify(x => x.UpdateTaskAsync(allReadyTask), Times.Once);
+        }
+
+        [Fact]
+        public async Task PutReturnsHttpStatusCodeResultOf204()
+        {
+            var allReadyTask = new AllReadyTask();
+            var model = new TaskViewModel { Name = "name", Description = "description", StartDateTime = DateTime.UtcNow, EndDateTime = DateTime.UtcNow };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<TaskByTaskIdQuery>())).Returns(allReadyTask);
+
+            var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
+            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<AllReadyTask>(), It.IsAny<ClaimsPrincipal>())).Returns(true);
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+
+            var sut = new TaskApiController(dataAccess.Object, mediator.Object, determineIfATaskIsEditable.Object);
+            var result = await sut.Put(It.IsAny<int>(), model) as HttpStatusCodeResult;
+
+            Assert.IsType<HttpStatusCodeResult>(result);
+            Assert.Equal(result.StatusCode, 204);
+        }
 
         //Delete
 
