@@ -109,17 +109,15 @@ namespace AllReady.Controllers
             }
 
             var result = await _mediator.SendAsync(new TaskSignupCommand { TaskSignupModel = signupModel });
-
             return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, signupModel.UserId) });
         }
 
         [HttpDelete("{id}/signup")]
         [Authorize]
-        public async Task<ActionResult> UnregisterTask(int id)
+        public async Task<JsonResult> UnregisterTask(int id)
         {
             var userId = User.GetUserId();
             var result = await _mediator.SendAsync(new TaskUnenrollCommand { TaskId = id, UserId = userId });
-
             return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, userId) });
         }
 
@@ -127,10 +125,9 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         [Route("changestatus")]
         [Authorize]
-        public async Task<ActionResult> ChangeStatus(TaskChangeModel model)
+        public async Task<JsonResult> ChangeStatus(TaskChangeModel model)
         {
             var result = await _mediator.SendAsync(new TaskStatusChangeCommandAsync { TaskStatus = model.Status, TaskId = model.TaskId, UserId = model.UserId, TaskStatusDescription = model.StatusDescription });
-
             return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, model.UserId) });
         }
 

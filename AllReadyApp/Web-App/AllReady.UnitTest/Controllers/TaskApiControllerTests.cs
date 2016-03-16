@@ -448,7 +448,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(null, mediator.Object, null);
             sut.SetDefaultHttpContext();
 
-            var jsonResult = await sut.UnregisterTask(It.IsAny<int>()) as JsonResult;
+            var jsonResult = await sut.UnregisterTask(It.IsAny<int>());
             var result = jsonResult.GetValueForProperty<string>("Status");
 
             Assert.IsType<JsonResult>(jsonResult);
@@ -465,7 +465,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(null, mediator.Object, null);
             sut.SetDefaultHttpContext();
 
-            var jsonResult = await sut.UnregisterTask(It.IsAny<int>()) as JsonResult;
+            var jsonResult = await sut.UnregisterTask(It.IsAny<int>());
             var result = jsonResult.GetValueForProperty<string>("Task");
 
             Assert.IsType<JsonResult>(jsonResult);
@@ -481,7 +481,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(null, mediator.Object, null);
             sut.SetDefaultHttpContext();
             
-            var jsonResult = await sut.UnregisterTask(It.IsAny<int>()) as JsonResult;
+            var jsonResult = await sut.UnregisterTask(It.IsAny<int>());
             var result = jsonResult.GetValueForProperty<TaskViewModel>("Task");
 
             Assert.IsType<JsonResult>(jsonResult);
@@ -535,7 +535,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(null, mediator.Object, null);
             sut.SetDefaultHttpContext();
 
-            var jsonResult = await sut.ChangeStatus(new TaskChangeModel()) as JsonResult;
+            var jsonResult = await sut.ChangeStatus(new TaskChangeModel());
             var result = jsonResult.GetValueForProperty<string>("Status");
 
             Assert.IsType<JsonResult>(jsonResult);
@@ -552,7 +552,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(null, mediator.Object, null);
             sut.SetDefaultHttpContext();
 
-            var jsonResult = await sut.ChangeStatus(new TaskChangeModel()) as JsonResult;
+            var jsonResult = await sut.ChangeStatus(new TaskChangeModel());
             var result = jsonResult.GetValueForProperty<string>("Task");
 
             Assert.IsType<JsonResult>(jsonResult);
@@ -568,7 +568,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(null, mediator.Object, null);
             sut.SetDefaultHttpContext();
 
-            var jsonResult = await sut.ChangeStatus(new TaskChangeModel()) as JsonResult;
+            var jsonResult = await sut.ChangeStatus(new TaskChangeModel());
             var result = jsonResult.GetValueForProperty<TaskViewModel>("Task");
 
             Assert.IsType<JsonResult>(jsonResult);
