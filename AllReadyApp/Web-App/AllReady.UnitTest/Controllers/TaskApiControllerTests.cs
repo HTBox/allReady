@@ -20,6 +20,7 @@ namespace AllReady.UnitTest.Controllers
 {
     public class TaskApiControllerTests
     {
+        #region Post
         [Fact]
         public async Task PostReturnsHttpUnauthorizedWhenUserDoesNotHaveTheAuthorizationToEditTheTaskOrTheTaskIsNotInAnEditableState()
         {
@@ -67,7 +68,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task PostInvokesAddTaskAsyncWithCorrectModel()
+        public async Task PostSendsAddTaskCommandAsyncWithCorrectData()
         {
             var model = new TaskViewModel { ActivityId = 1, Id = 1 };
             var allReadyTask = new AllReadyTask();
@@ -84,7 +85,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(dataAccess.Object, mediator.Object, determineIfATaskIsEditable.Object);
             await sut.Post(model);
 
-            dataAccess.Verify(x => x.AddTaskAsync(allReadyTask), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<AddTaskCommandAsync>(y => y.AllReadyTask == allReadyTask)), Times.Once);
         }
 
         [Fact]
@@ -143,8 +144,9 @@ namespace AllReady.UnitTest.Controllers
             var attribute = sut.GetAttributesOn(x => x.Post(It.IsAny<TaskViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
+        #endregion
 
-        //Put
+        #region Put
         [Fact]
         public async Task PutSendsTaskByTaskIdQueryWithCorrectTaskId()
         {
@@ -184,7 +186,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task PutInvokesUpdateTaskAsyncWithCorrectAllReadyTask()
+        public async Task PutSendsUpdateTaskCommandAsyncWithCorrectAllReadyTask()
         {
             var allReadyTask = new AllReadyTask();
             var model = new TaskViewModel { Name = "name", Description = "description", StartDateTime = DateTime.UtcNow, EndDateTime = DateTime.UtcNow };
@@ -195,12 +197,10 @@ namespace AllReady.UnitTest.Controllers
             var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
             determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>())).Returns(true);
 
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-
-            var sut = new TaskApiController(dataAccess.Object, mediator.Object, determineIfATaskIsEditable.Object);
+            var sut = new TaskApiController(null, mediator.Object, determineIfATaskIsEditable.Object);
             await sut.Put(It.IsAny<int>(), model);
 
-            dataAccess.Verify(x => x.UpdateTaskAsync(allReadyTask), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<UpdateTaskCommandAsync>(y => y.AllReadyTask == allReadyTask)), Times.Once);
         }
 
         [Fact]
@@ -215,9 +215,7 @@ namespace AllReady.UnitTest.Controllers
             var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
             determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>())).Returns(true);
 
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-
-            var sut = new TaskApiController(dataAccess.Object, mediator.Object, determineIfATaskIsEditable.Object);
+            var sut = new TaskApiController(null, mediator.Object, determineIfATaskIsEditable.Object);
             var result = await sut.Put(It.IsAny<int>(), model) as HttpStatusCodeResult;
 
             Assert.IsType<HttpStatusCodeResult>(result);
@@ -232,8 +230,9 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "{id}");
         }
+        #endregion
 
-        //Delete
+        #region Delete
         [Fact]
         public async Task DeleteSendsTaskByTaskIdQueryWithCorrectTaskId()
         {
@@ -271,7 +270,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task DeleteInvokesDeleteTaskAsyncWithCorrectTaskId()
+        public async Task DeleteSendsDeleteTaskCommandAsyncWithCorrectTaskId()
         {
             var allReadyTask = new AllReadyTask { Id = 1 };
 
@@ -281,12 +280,10 @@ namespace AllReady.UnitTest.Controllers
             var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
             determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>())).Returns(true);
 
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-
-            var sut = new TaskApiController(dataAccess.Object, mediator.Object, determineIfATaskIsEditable.Object);
+            var sut = new TaskApiController(null, mediator.Object, determineIfATaskIsEditable.Object);
             await sut.Delete(It.IsAny<int>());
 
-            dataAccess.Verify(x => x.DeleteTaskAsync(allReadyTask.Id), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<DeleteTaskCommandAsync>(y => y.TaskId == allReadyTask.Id)));
         }
 
         [Fact]
@@ -297,8 +294,9 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "{id}");
         }
+        #endregion
 
-        //RegisterTask
+        #region RegisterTask
         [Fact]
         public async Task RegisterTaskReturnsHttpBadRequestWhenModelIsNull()
         {
@@ -419,7 +417,9 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
             Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
         }
+        #endregion
 
+        #region UnregisterTask
         [Fact]
         public async Task UnregisterTaskSendsTaskUnenrollCommandAsyncWithCorrectTaskIdAndUserId()
         {
@@ -503,7 +503,9 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "{id}/signup");
         }
+        #endregion
 
+        #region ChangeStatus
         [Fact]
         public async Task ChangeStatusInvokesSendAsyncWithCorrectTaskStatusChangeCommand()
         {
@@ -604,6 +606,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "changestatus");
         }
+        #endregion
 
         [Fact]
         public void ControllerHasRouteAtttributeWithTheCorrectRoute()

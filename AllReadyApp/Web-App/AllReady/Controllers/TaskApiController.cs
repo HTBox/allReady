@@ -34,6 +34,9 @@ namespace AllReady.Controllers
         {
             var allReadyTask = task.ToModel(_allReadyDataAccess);
 
+            if (allReadyTask == null)
+                return HttpBadRequest("Should have found a matching activity Id");
+
             var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask);
             if (!hasPermissions)
                 return HttpUnauthorized();
@@ -41,13 +44,7 @@ namespace AllReady.Controllers
             if (IfTaskExists(task))
                 return HttpBadRequest();
 
-            //@mgmccarthy: this should not be enforced here, it should be enforced as a guard clause on the constructor of TaskViewModel and tested in a unit test for that class
-            var model = allReadyTask;
-            if (model == null)
-                return HttpBadRequest("Should have found a matching activity Id");
-
-            //TODO: refactor to mediator
-            await _allReadyDataAccess.AddTaskAsync(model);
+            await _mediator.SendAsync(new AddTaskCommandAsync { AllReadyTask = allReadyTask });
 
             //http://stackoverflow.com/questions/1860645/create-request-with-post-which-response-codes-200-or-201-and-content
             return new HttpStatusCodeResult((int)HttpStatusCode.Created);
@@ -71,8 +68,7 @@ namespace AllReady.Controllers
             allReadyTask.StartDateTime = value.StartDateTime.Value.UtcDateTime;
             allReadyTask.EndDateTime = value.EndDateTime.Value.UtcDateTime;
 
-            //TODO:refactor to mediator
-            await _allReadyDataAccess.UpdateTaskAsync(allReadyTask);
+            await _mediator.SendAsync(new UpdateTaskCommandAsync { AllReadyTask = allReadyTask });
 
             //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
             return new HttpStatusCodeResult((int)HttpStatusCode.NoContent);
@@ -90,8 +86,7 @@ namespace AllReady.Controllers
             if (!hasPermissions)
                 return HttpUnauthorized();
 
-            //TODO: refactor to mediator
-            await _allReadyDataAccess.DeleteTaskAsync(allReadyTask.Id);
+            await _mediator.SendAsync(new DeleteTaskCommandAsync { TaskId = allReadyTask.Id });
 
             //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
