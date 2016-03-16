@@ -86,7 +86,7 @@ namespace AllReady.UnitTest.DataAccess
         }
 
         [Fact]
-        public async void DeleteActivityAndTaskSignupsAsyncRemovesTaskSignup()
+        public async Task DeleteActivityAndTaskSignupsAsyncRemovesTaskSignup()
         {
             const int activitySignupId = 5;
 
