@@ -54,6 +54,34 @@ namespace AllReady.UnitTest.Extensions
             controller.ViewData.ModelState.AddModelError("Error", "test");
         }
 
+        public static Mock<HttpContext> GetMockHttpContext(this Controller controller)
+        {
+            if (controller.ActionContext.HttpContext == null)
+                controller.SetFakeHttpContext();
+
+            return Mock.Get(controller.HttpContext);
+        }
+
+        public static Mock<HttpRequest> GetMockHttpRequest(this Controller controller)
+        {
+            if (controller.ActionContext.HttpContext == null)
+                controller.SetFakeHttpContext();
+
+            return Mock.Get(controller.Request);
+        }
+
+        public static Mock<HttpResponse> GetMockHttpResponse(this Controller controller)
+        {
+            SetFakeHttpContextIfNotAlreadySet(controller);
+            return Mock.Get(controller.Response);
+        }
+
+        private static void SetFakeHttpContextIfNotAlreadySet(Controller controller)
+        {
+            if (controller.ActionContext.HttpContext == null)
+                controller.SetFakeHttpContext();
+        }
+
         private static HttpContext FakeHttpContext()
         {
             var mockHttpContext = new Mock<HttpContext>();
@@ -62,6 +90,8 @@ namespace AllReady.UnitTest.Extensions
 
             mockHttpContext.SetupGet(httpContext => httpContext.Request).Returns(mockHttpRequest.Object);
             mockHttpContext.SetupGet(httpContext => httpContext.Response).Returns(mockHttpResponse.Object);
+
+            mockHttpRequest.Setup(httpRequest => httpRequest.Cookies[It.IsAny<string>()]).Returns(() => It.IsAny<string>());
 
             return mockHttpContext.Object;
         }
