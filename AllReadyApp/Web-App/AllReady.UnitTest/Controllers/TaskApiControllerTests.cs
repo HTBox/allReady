@@ -128,6 +128,22 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(result.StatusCode, 201);
         }
 
+        [Fact]
+        public void PostHasHttpPostAttribute()
+        {
+            var sut = new TaskApiController(null, null, null);
+            var attribute = sut.GetAttributesOn(x => x.Post(It.IsAny<TaskViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void PostHasValidateAntiForgeryTokenAttribute()
+        {
+            var sut = new TaskApiController(null, null, null);
+            var attribute = sut.GetAttributesOn(x => x.Post(It.IsAny<TaskViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
         //Put
         [Fact]
         public async Task PutSendsTaskByTaskIdQueryWithCorrectTaskId()
@@ -208,6 +224,15 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(result.StatusCode, 204);
         }
 
+        [Fact]
+        public void PutHasHttpPutAttributeWithCorrectTemplate()
+        {
+            var sut = new TaskApiController(null, null, null);
+            var attribute = sut.GetAttributesOn(x => x.Put(It.IsAny<int>(), It.IsAny<TaskViewModel>())).OfType<HttpPutAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "{id}");
+        }
+
         //Delete
         [Fact]
         public async Task DeleteSendsTaskByTaskIdQueryWithCorrectTaskId()
@@ -262,6 +287,15 @@ namespace AllReady.UnitTest.Controllers
             await sut.Delete(It.IsAny<int>());
 
             dataAccess.Verify(x => x.DeleteTaskAsync(allReadyTask.Id), Times.Once);
+        }
+
+        [Fact]
+        public void DeleteHasHttpDeleteAttributeWithCorrectTemplate()
+        {
+            var sut = new TaskApiController(null, null, null);
+            var attribute = sut.GetAttributesOn(x => x.Delete(It.IsAny<int>())).OfType<HttpDeleteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "{id}");
         }
 
         //RegisterTask
