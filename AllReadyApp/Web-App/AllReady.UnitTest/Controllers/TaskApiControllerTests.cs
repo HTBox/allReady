@@ -312,7 +312,7 @@ namespace AllReady.UnitTest.Controllers
             const string modelStateErrorMessage = "modelStateErrorMessage";
 
             var sut = new TaskApiController(null, null, null);
-            sut.AddModelStateError(modelStateErrorMessage);
+            sut.AddModelStateErrorWithErrorMessage(modelStateErrorMessage);
 
             var jsonResult = await sut.RegisterTask(new ActivitySignupViewModel()) as JsonResult;
             var result = jsonResult.GetValueForProperty<List<string>>("errors");
@@ -429,8 +429,9 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).Returns(Task.FromResult(new TaskSignupResult()));
 
-            var sut = new TaskApiController(null, mediator.Object, null)
-                .SetFakeUser(userId);
+            var sut = new TaskApiController(null, mediator.Object, null);
+            sut.SetFakeUser(userId);
+
             await sut.UnregisterTask(taskId);
 
             mediator.Verify(x => x.SendAsync(It.Is<TaskUnenrollCommand>(y => y.TaskId == taskId && y.UserId == userId)));

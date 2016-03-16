@@ -22,7 +22,7 @@ namespace AllReady.UnitTest.Extensions
             Mock.Get(controller.Request).SetupGet(httpRequest => httpRequest.Scheme).Returns(requestScheme);
         }
 
-        public static T SetFakeUser<T>(this T controller, string userId) where T : Controller
+        public static void SetFakeUser(this Controller controller, string userId)
         {
             SetFakeHttpContextIfNotAlreadySet(controller);
 
@@ -30,11 +30,9 @@ namespace AllReady.UnitTest.Extensions
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) }));
 
             Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
-
-            return controller;
         }
 
-        public static T SetFakeUserType<T>(this T controller, UserType userType) where T : Controller
+        public static void SetFakeUserType(this Controller controller, UserType userType)
         {
             if (controller.ActionContext.HttpContext == null)
                 controller.SetFakeHttpContext();
@@ -47,11 +45,9 @@ namespace AllReady.UnitTest.Extensions
             }));
 
             Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
-
-            return controller;
         }
 
-        public static T SetFakeUserAndUserType<T>(this T controller, string userId, UserType userType) where T : Controller
+        public static void SetFakeUserAndUserType(this Controller controller, string userId, UserType userType)
         {
             if (controller.ActionContext.HttpContext == null)
                 controller.SetFakeHttpContext();
@@ -64,11 +60,9 @@ namespace AllReady.UnitTest.Extensions
             }));
 
             Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
-
-            return controller;
         }
 
-        public static void AddModelStateError(this Controller controller, string errorMessage)
+        public static void AddModelStateErrorWithErrorMessage(this Controller controller, string errorMessage)
         {
             controller.ViewData.ModelState.AddModelError("Error", errorMessage);
         }
