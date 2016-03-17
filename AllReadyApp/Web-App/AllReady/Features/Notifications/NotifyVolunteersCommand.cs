@@ -2,7 +2,7 @@
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyVolunteersCommand : IRequest
+    public class NotifyVolunteersCommand : IAsyncRequest
     {
         public NotifyVolunteersViewModel ViewModel { get; set; }
     }

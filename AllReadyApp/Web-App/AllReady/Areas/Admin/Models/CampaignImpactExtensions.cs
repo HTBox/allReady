@@ -1,6 +1,4 @@
 ﻿using AllReady.Models;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace AllReady.Areas.Admin.Models
 {

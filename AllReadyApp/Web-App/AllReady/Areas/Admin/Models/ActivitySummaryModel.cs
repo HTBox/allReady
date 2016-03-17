@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models
 {
@@ -12,6 +10,12 @@ namespace AllReady.Areas.Admin.Models
 
         [Required]
         public string Name { get; set; }
+
+        [Required]
+        [Range(1, 99, ErrorMessage = "A valid 'Activity Type' is required")]
+        [Display(Name = "Activity Type")]
+        public ActivityTypes ActivityType { get; set; }
+
         public string Description { get; set; }
 
         [Display(Name = "Campaign")]
@@ -20,23 +24,26 @@ namespace AllReady.Areas.Admin.Models
         public string CampaignName { get; set; }
 
         [Display(Name = "Organization")]
-        public int TenantId { get; set; }
+        public int OrganizationId { get; set; }
 
         [Display(Name = "Organization")]
-        public string TenantName { get; set; }
+        public string OrganizationName { get; set; }
 
         public string ImageUrl { get; set; }
 
         [Display(Name = "Browse for image")]
         public string FileUpload { get; set; }
 
+        [Range(1, int.MaxValue, ErrorMessage = "'Volunteers Required' must be greater than 0")]
         [Display(Name = "Volunteers Required")]
         public int NumberOfVolunteersRequired { get; set; }
         
+        public string TimeZoneId { get; set; }
+
         [Display(Name = "Start Date")]
-        public DateTime StartDateTime { get; set; }
+        public DateTimeOffset StartDateTime { get; set; }
         [Display(Name = "End Date")]
-        public DateTime EndDateTime { get; set; }
+        public DateTimeOffset EndDateTime { get; set; }
 
     }
 }

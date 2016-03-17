@@ -33,7 +33,7 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public void SiteAdminUserShouldNotMatchTenantAdmin()
+        public void SiteAdminUserShouldNotMatchOrganizationAdmin()
         {
             ClaimsPrincipal principal = new ClaimsPrincipal(
                 new ClaimsIdentity(
@@ -43,32 +43,32 @@ namespace AllReady.UnitTest.Security
                         }
                     ));
 
-            Assert.False(principal.IsUserType(UserType.TenantAdmin));
+            Assert.False(principal.IsUserType(UserType.OrgAdmin));
         }
 
 
         [Fact]
-        public void TenantAdminUserShouldMatchTenantAdmin()
+        public void OrganizationAdminUserShouldMatchOrganizationAdmin()
         {
             ClaimsPrincipal principal = new ClaimsPrincipal(
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.UserType, "TenantAdmin")
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin")
                         }
                     ));
 
-            Assert.True(principal.IsUserType(UserType.TenantAdmin));
+            Assert.True(principal.IsUserType(UserType.OrgAdmin));
         }
 
         [Fact]
-        public void TenantAdminUserShouldNotMatchSiteAdmin()
+        public void OrganizationAdminUserShouldNotMatchSiteAdmin()
         {
             ClaimsPrincipal principal = new ClaimsPrincipal(
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.UserType, "TenantAdmin")
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin")
                         }
                     ));
 
@@ -84,45 +84,45 @@ namespace AllReady.UnitTest.Security
                         new[]
                         {
                             new Claim(AllReady.Security.ClaimTypes.UserType, "SiteAdmin"),
-                            new Claim(AllReady.Security.ClaimTypes.UserType, "TenantAdmin"),
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"),
                         }
                     ));
 
             Assert.True(principal.IsUserType(UserType.SiteAdmin));
-            Assert.True(principal.IsUserType(UserType.TenantAdmin));
+            Assert.True(principal.IsUserType(UserType.OrgAdmin));
         }
 
         [Fact]
-        public void GetTenantIdShouldReturnTenantId()
+        public void GetOrganizationIdShouldReturnOrganizationId()
         {
             ClaimsPrincipal principal = new ClaimsPrincipal(
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.Tenant, "12")
+                            new Claim(AllReady.Security.ClaimTypes.Organization, "12")
                         }
                     ));
 
-            Assert.Equal(12, principal.GetTenantId());
+            Assert.Equal(12, principal.GetOrganizationId());
         }
 
         [Fact]
-        public void GetTenantIdShouldReturnNullWhenNotAnInteger()
+        public void GetOrganizationIdShouldReturnNullWhenNotAnInteger()
         {
             ClaimsPrincipal principal = new ClaimsPrincipal(
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.Tenant, "ThisIsWRong")
+                            new Claim(AllReady.Security.ClaimTypes.Organization, "ThisIsWRong")
                         }
                     ));
 
-            Assert.Null(principal.GetTenantId());
+            Assert.Null(principal.GetOrganizationId());
         }
 
 
         [Fact]
-        public void SiteAdminShouldBeAdminOfAnyTenantId()
+        public void SiteAdminShouldBeAdminOfAnyOrganizationId()
         {
             ClaimsPrincipal principal = new ClaimsPrincipal(
                 new ClaimsIdentity(
@@ -132,65 +132,65 @@ namespace AllReady.UnitTest.Security
                         }
                     ));
 
-            Assert.True(principal.IsTenantAdmin(12));
+            Assert.True(principal.IsOrganizationAdmin(12));
         }
 
         [Fact]
-        public void WhenTenantIdIsNotSetTenantAdminShouldNotBeAdminOfTenant()
+        public void WhenOrganizationIdIsNotSetOrganizationAdminShouldNotBeAdminOfOrganization()
         {
             ClaimsPrincipal principal = new ClaimsPrincipal(
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.UserType, "TenantAdmin")
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin")
                         }
                     ));
 
-            Assert.False(principal.IsTenantAdmin(1));
+            Assert.False(principal.IsOrganizationAdmin(1));
         }
 
         [Fact]
-        public void WhenTenantIdIsSetTenantAdminShouldBeAdminOfTenant()
+        public void WhenOrganizationIdIsSetOrganizationAdminShouldBeAdminOfOrganization()
         {
             ClaimsPrincipal principal = new ClaimsPrincipal(
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.UserType, "TenantAdmin"),
-                            new Claim(AllReady.Security.ClaimTypes.Tenant, "2")
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"),
+                            new Claim(AllReady.Security.ClaimTypes.Organization, "2")
                         }
                     ));
 
-            Assert.True(principal.IsTenantAdmin(2));
+            Assert.True(principal.IsOrganizationAdmin(2));
         }
 
         [Fact]
-        public void WhenTenantIdIsSetTenantAdminShouldNotBeAdminOfAnotherTenant()
+        public void WhenOrganizationIdIsSetOrganizationAdminShouldNotBeAdminOfAnotherOrganization()
         {
             ClaimsPrincipal principal = new ClaimsPrincipal(
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.UserType, "TenantAdmin"),
-                            new Claim(AllReady.Security.ClaimTypes.Tenant, "2")
+                            new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"),
+                            new Claim(AllReady.Security.ClaimTypes.Organization, "2")
                         }
                     ));
 
-            Assert.False(principal.IsTenantAdmin(1));
+            Assert.False(principal.IsOrganizationAdmin(1));
         }
 
         [Fact]
-        public void WhenTenantIdIsSetNonTenantAdminShouldNotBeAdminOfTenant()
+        public void WhenOrganizationIdIsSetNonOrganizationAdminShouldNotBeAdminOfOrganization()
         {
             ClaimsPrincipal principal = new ClaimsPrincipal(
                 new ClaimsIdentity(
                         new[]
                         {
-                            new Claim(AllReady.Security.ClaimTypes.Tenant, "2")
+                            new Claim(AllReady.Security.ClaimTypes.Organization, "2")
                         }
                     ));
 
-            Assert.False(principal.IsTenantAdmin(2));
+            Assert.False(principal.IsOrganizationAdmin(2));
         }
 
     }

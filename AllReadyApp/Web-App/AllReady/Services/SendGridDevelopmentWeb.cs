@@ -1,10 +1,9 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
 using System.Net.Mail;
-using Microsoft.Extensions.Configuration;
-using SendGrid;
-using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.OptionsModel;
+using SendGrid;
 
 namespace AllReady.Services
 {
@@ -19,12 +18,17 @@ namespace AllReady.Services
 
         public Task DeliverAsync(ISendGrid message)
         {
-            var client = new SmtpClient();
-            var resultObject = new object();
-            client.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
-            client.PickupDirectoryLocation = _settings.EmailFolder;
-            client.SendAsync(new MailMessage(message.From.Address, message.To.FirstOrDefault().Address, message.Subject, message.Html), resultObject);
-            return Task.FromResult(resultObject);
+            var client = new SmtpClient
+            {
+                DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
+                PickupDirectoryLocation = _settings.EmailFolder
+            };
+            var toAddress = message.To.FirstOrDefault();
+            if (toAddress == null)
+            {
+                throw new InvalidOperationException("Can't send email without addressee.");
+            }
+            return client.SendMailAsync(new MailMessage(message.From.Address, toAddress.Address, message.Subject, message.Html));
         }
     }
 }

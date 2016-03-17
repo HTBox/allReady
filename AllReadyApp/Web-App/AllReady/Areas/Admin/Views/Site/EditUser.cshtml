@@ -1,5 +1,4 @@
-﻿@using AllReady.Areas.Admin.Models
-@inject AllReady.Services.ISelectListService SelectListService
+﻿@inject AllReady.Services.ISelectListService SelectListService
 
 @model EditUserModel
 @{
@@ -22,18 +21,18 @@
                 <p class="form-control-static">@Model.UserName</p>
             </div>
         </div>
-        @if (Model.Tenant != null)
+        @if (Model.Organization != null)
         {
             <div class="form-group">
                 <label class="control-label col-md-2">Organization</label>
                 <div class="col-md-10">
-                    <p class="form-control-static">@Model.Tenant.Name</p>
+                    <p class="form-control-static">@Model.Organization.Name</p>
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="IsTenantAdmin" class="control-label col-md-2"></label>
+                <label asp-for="IsOrganizationAdmin" class="control-label col-md-2"></label>
                 <div class="col-md-10">
-                    <input type="checkbox" name="IsTenantAdmin" class="bootstrap-toggle" asp-for="IsTenantAdmin" />
+                    <input type="checkbox" name="IsOrganizationAdmin" class="bootstrap-toggle" asp-for="IsOrganizationAdmin" />
                 </div>
             </div>
         }

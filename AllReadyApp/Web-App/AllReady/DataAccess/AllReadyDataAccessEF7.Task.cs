@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using Microsoft.Data.Entity;
 
 namespace AllReady.Models
@@ -14,7 +13,7 @@ namespace AllReady.Models
             get
             {
                 return _dbContext.Tasks
-                  .Include(x => x.Tenant)
+                  .Include(x => x.Organization)
                   .Include(x => x.Activity)
                   .Include(x => x.Activity.Campaign)
                   .Include(x => x.AssignedVolunteers)
@@ -29,7 +28,7 @@ namespace AllReady.Models
 
             return taskUser == null ? null :
                 _dbContext.Tasks
-                  .Include(x => x.Tenant)
+                  .Include(x => x.Organization)
                   .Include(x => x.Activity)
                   .Include(x => x.Activity.Campaign)
                   .Include(x => x.AssignedVolunteers)
@@ -39,7 +38,7 @@ namespace AllReady.Models
         AllReadyTask IAllReadyDataAccess.GetTask(int taskId)
         {
             return _dbContext.Tasks
-                .Include(x => x.Tenant)
+                .Include(x => x.Organization)
                 .Include(x => x.Activity)
                 .Include(x => x.Activity.Campaign)
                 .Include(x => x.AssignedVolunteers).ThenInclude(v => v.User)

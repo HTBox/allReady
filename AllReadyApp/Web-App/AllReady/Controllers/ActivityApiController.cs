@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using AllReady.Models;
-using AllReady.Services;
 using AllReady.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -11,6 +9,10 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AllReady.Extensions;
+using AllReady.Features.Activity;
+using AllReady.Features.Notifications;
+using MediatR;
 
 namespace AllReady.Controllers
 {
@@ -18,85 +20,70 @@ namespace AllReady.Controllers
     [Produces("application/json")]
     public class ActivityApiController : Controller
     {
-        private const double MILES_PER_METER = 0.00062137;
-        private readonly IAllReadyDataAccess _allReadyDataAccess;
-        private IClosestLocations _closestLocations;
+        private readonly IMediator _mediator;
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        public ActivityApiController(IAllReadyDataAccess allReadyDataAccess,
-            //GeoService geoService,
-            IClosestLocations closestLocations)
+        public ActivityApiController(IMediator mediator)
         {
-            _allReadyDataAccess = allReadyDataAccess;
-            //_geoService = geoService;
-            _closestLocations = closestLocations;
+            _mediator = mediator;
         }
 
         // GET: api/values
         [HttpGet]
         public IEnumerable<ActivityViewModel> Get()
         {
-            return _allReadyDataAccess.Activities.Select(a => new ActivityViewModel(a));
+            return _mediator.Send(new ActivitiesWithUnlockedCampaignsQuery());
         }
 
-        // GET api/values/5
-
+        //orginial code
         [HttpGet("{id}")]
         [Produces("application/json", Type = typeof(ActivityViewModel))]
         public ActivityViewModel Get(int id)
         {
-            var dbActivity = _allReadyDataAccess.GetActivity(id);
+            var activity = GetActivityBy(id);
 
-            if (dbActivity != null)
-            {
-                return new ActivityViewModel(dbActivity);
-            }
-            this.HttpNotFound();
+            if (activity != null)
+                return new ActivityViewModel(activity);
+
+            HttpNotFound();
             return null;
         }
 
         [Route("search")]
-        public IEnumerable<ActivityViewModel> GetActivitiesByZip(string zip, int miles)
+        public IEnumerable<ActivityViewModel> GetActivitiesByPostalCode(string zip, int miles)
         {
-            List<ActivityViewModel> ret = new List<ActivityViewModel>();
+            var model = new List<ActivityViewModel>();
 
-            var activities = _allReadyDataAccess.ActivitiesByPostalCode(zip, miles);
+            var activities = _mediator.Send(new AcitivitiesByPostalCodeQuery { PostalCode = zip, Distance = miles });
+            activities.ForEach(activity => model.Add(new ActivityViewModel(activity)));
 
-            foreach (Activity activity in activities)
-            {
-                ret.Add(new ActivityViewModel(activity));
-            }
-
-            return ret;
+            return model;
         }
 
         [Route("searchbylocation")]
-        public IEnumerable<ActivityViewModel> GetActivitiesByLocation(double latitude, double longitude, int miles)
+        public IEnumerable<ActivityViewModel> GetActivitiesByGeography(double latitude, double longitude, int miles)
         {
-            List<ActivityViewModel> ret = new List<ActivityViewModel>();
+            var model = new List<ActivityViewModel>();
 
-            var activities = _allReadyDataAccess.ActivitiesByGeography(latitude, longitude, miles);
+            var activities = _mediator.Send(new ActivitiesByGeographyQuery { Latitude = latitude, Longitude = longitude, Miles = miles});
+            activities.ForEach(activity => model.Add(new ActivityViewModel(activity)));
 
-            foreach (Activity activity in activities)
-            {
-                ret.Add(new ActivityViewModel(activity));
-            }
-
-            return ret;
+            return model;
         }
         
         [HttpGet("{id}/qrcode")]
         public ActionResult GetQrCode(int id)
         {
-            ZXing.BarcodeWriter barcodeWriter = new ZXing.BarcodeWriter { Format = ZXing.BarcodeFormat.QR_CODE };
+            var barcodeWriter = new ZXing.BarcodeWriter { Format = ZXing.BarcodeFormat.QR_CODE };
             barcodeWriter.Options.Width = 200;
             barcodeWriter.Options.Height = 200;
 
             // The QR code should point users to /api/activity/{id}/checkin
-            string path = this.Request.Path.ToString();
-            string checkinPath = path.Substring(0, path.Length - "qrcode".Length) + "checkin";
+            var path = Request.Path.ToString();
+            var checkinPath = path.Substring(0, path.Length - "qrcode".Length) + "checkin";
 
-            var bitmap = barcodeWriter.Write(String.Format("https://{0}/{1}", this.Request.Host, checkinPath));
-            using (MemoryStream stream = new MemoryStream())
+            var bitmap = barcodeWriter.Write($"https://{Request.Host}/{checkinPath}");
+            using (var stream = new MemoryStream())
             {
                 bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
                 return File(stream.ToArray(), "image/png");
@@ -106,65 +93,49 @@ namespace AllReady.Controllers
         [HttpGet("{id}/checkin")]
         public ActionResult GetCheckin(int id)
         {
-            var dbActivity = _allReadyDataAccess.GetActivity(id);
-            if (dbActivity == null)
-            {
-                return this.HttpNotFound();
-            }
-            return View("NoUserCheckin", (dbActivity));
+            var activity = GetActivityBy(id);
+            if (activity == null)
+                return HttpNotFound();
+
+            return View("NoUserCheckin", activity);
         }
 
         [HttpPut("{id}/checkin")]
-        [Authorize()] 
+        [Authorize] 
         public async Task<ActionResult> PutCheckin(int id)
         {
-            var userId = User.GetUserId();
-            var dbActivity = _allReadyDataAccess.GetActivity(id);
-            if (dbActivity == null || dbActivity.UsersSignedUp == null)
-            {
-                return this.HttpNotFound();
-            }
+            var activity = GetActivityBy(id);
+            if (activity == null)
+                return HttpNotFound();
 
-            var userSignup = dbActivity.UsersSignedUp.FirstOrDefault(u => u.User.Id == userId);
+            var userSignup = activity.UsersSignedUp.FirstOrDefault(u => u.User.Id == User.GetUserId());
             if (userSignup != null && userSignup.CheckinDateTime == null)
             {
-                userSignup.CheckinDateTime = DateTime.UtcNow;
-                await _allReadyDataAccess.AddActivitySignupAsync(userSignup);
-                return Json(new { Activity = new { Name = dbActivity.Name, Description = dbActivity.Description } });
+                userSignup.CheckinDateTime = DateTimeUtcNow.Invoke();
+                await _mediator.SendAsync(new AddActivitySignupCommandAsync { ActivitySignup = userSignup });
+                return Json(new { Activity = new { activity.Name, activity.Description }});
             }
-            else
-            {
-                return Json(new { NeedsSignup = true, Activity = new { Name = dbActivity.Name, Description = dbActivity.Description } });
-            }
+
+            return Json(new { NeedsSignup = true, Activity = new { activity.Name, activity.Description }});
         }
 
-        [HttpPost("{id}/signup")]
-        [Authorize] 
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterActivity(int id)
+        [HttpPost("signup")]
+        [Authorize]
+        public async Task<IActionResult> RegisterActivity(ActivitySignupViewModel signupModel)
         {
-            var user = _allReadyDataAccess.GetUser(User.GetUserId());
+            if (signupModel == null)
+                return HttpBadRequest();
 
-            var activity = _allReadyDataAccess.GetActivity(id);
-
-            if (activity == null)
+            if (!ModelState.IsValid)
             {
-                return HttpNotFound();
+                // this condition should never be hit because client side validation is being performed
+                // but just to cover the bases, if this does happen send the erros to the client
+                return Json(new { errors = ModelState.GetErrorMessages() });
             }
 
-            if (activity.UsersSignedUp == null)
-            {
-                activity.UsersSignedUp = new List<ActivitySignup>();
-            }
+            await _mediator.SendAsync(new ActivitySignupCommand { ActivitySignup = signupModel });
 
-            activity.UsersSignedUp.Add(new ActivitySignup
-            {
-                Activity = activity,
-                User = user,
-                SignupDateTime = DateTime.UtcNow
-            });
-
-            await _allReadyDataAccess.UpdateActivity(activity);
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
@@ -172,14 +143,21 @@ namespace AllReady.Controllers
         [Authorize]
         public async Task<IActionResult> UnregisterActivity(int id)
         {
-            var signedUp = _allReadyDataAccess.GetActivitySignup(id, User.GetUserId());
-            if (signedUp == null)
-            {
+            var activitySignup = _mediator.Send(new ActivitySignupByActivityIdAndUserIdQuery { ActivityId = id, UserId = User.GetUserId() });
+            if (activitySignup == null)
                 return HttpNotFound();
-            }
-            await _allReadyDataAccess.DeleteActivitySignupAsync(signedUp.Id);
+
+            //Notify admins & volunteer
+            await _mediator.PublishAsync(new UserUnenrolls { ActivityId = activitySignup.Activity.Id, UserId = activitySignup.User.Id });
+
+            await _mediator.SendAsync(new DeleteActivityAndTaskSignupsCommandAsync { ActivitySignupId = activitySignup.Id });
+
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
+        private Activity GetActivityBy(int activityId)
+        {
+            return _mediator.Send(new ActivityByActivityIdQuery { ActivityId = activityId });
+        }
     }
 }

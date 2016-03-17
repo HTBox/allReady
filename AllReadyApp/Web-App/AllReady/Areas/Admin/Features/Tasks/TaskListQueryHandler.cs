@@ -1,11 +1,8 @@
-﻿using AllReady.Areas.Admin.Models;
-using AllReady.Models;
-using AllReady.ViewModels;
-using MediatR;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using AllReady.Areas.Admin.Models;
+using AllReady.Models;
+using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
@@ -26,8 +23,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 {
                     Id = t.Id,
                     Name = t.Name,
-                    StartDateTime = t.StartDateTimeUtc,
-                    EndDateTime = t.EndDateTimeUtc,
+                    StartDateTime = t.StartDateTime,
+                    EndDateTime = t.EndDateTime,
                     NumberOfVolunteersRequired = t.NumberOfVolunteersRequired,
                     IsUserSignedUpForTask = false
                 });

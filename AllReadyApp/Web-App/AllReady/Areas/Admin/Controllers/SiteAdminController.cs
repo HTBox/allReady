@@ -1,19 +1,19 @@
-﻿using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
-
-using AllReady.Extensions;
-using AllReady.Models;
-
+﻿using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using AllReady.Services;
+using AllReady.Areas.Admin.Features.Users;
 using AllReady.Areas.Admin.Models;
+using AllReady.Extensions;
+using AllReady.Models;
 using AllReady.Security;
-using Microsoft.Extensions.Logging;
-using System;
+using AllReady.Services;
+using MediatR;
+using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -25,13 +25,15 @@ namespace AllReady.Areas.Admin.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IAllReadyDataAccess _dataAccess;
         private ILogger<SiteController> _logger;
+        private readonly IMediator _mediator;
 
-        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger)
+        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger, IMediator mediator)
         {
             _userManager = userManager;
             _emailSender = emailSender;
             _dataAccess = dataAccess;
             _logger = logger;
+            _mediator = mediator;
         }
 
         public IActionResult Index()
@@ -43,18 +45,40 @@ namespace AllReady.Areas.Admin.Controllers
             return View(viewModel);
         }
 
+        [HttpGet]
+        public IActionResult DeleteUser(string userId)
+        {
+            var user = _mediator.Send(new UserQuery { UserId = userId });
+
+            var viewModel = new DeleteUserModel()
+            {
+                UserId = userId,
+                UserName = user.UserName,
+            };
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmDeleteUser(string userId)
+        {
+            await _mediator.SendAsync(new DeleteUserCommand { UserId = userId });
+
+            return RedirectToAction("Index");
+        }
+
         public IActionResult EditUser(string userId)
         {
             var user = _dataAccess.GetUser(userId);
-            var tenantId = user.GetTenantId();
+            var organizationId = user.GetOrganizationId();
             var viewModel = new EditUserModel()
             {
                 UserId = userId,
                 UserName = user.UserName,
                 AssociatedSkills = user.AssociatedSkills,
-                IsTenantAdmin = user.IsUserType(UserType.TenantAdmin),
+                IsOrganizationAdmin = user.IsUserType(UserType.OrgAdmin),
                 IsSiteAdmin = user.IsUserType(UserType.SiteAdmin),
-                Tenant = tenantId != null ? _dataAccess.GetTenant(tenantId.Value) : null
+                Organization = organizationId != null ? _dataAccess.GetOrganization(organizationId.Value) : null
             };
             return View(viewModel);
         }
@@ -81,11 +105,11 @@ namespace AllReady.Areas.Admin.Controllers
             }
             await _dataAccess.UpdateUser(user);
 
-            var tenantAdminClaim = new Claim(Security.ClaimTypes.UserType, "TenantAdmin");
-            if (viewModel.IsTenantAdmin)
+            var organizationAdminClaim = new Claim(Security.ClaimTypes.UserType, "OrgAdmin");
+            if (viewModel.IsOrganizationAdmin)
             {
-                //add tenant admin claim
-                var result = await _userManager.AddClaimAsync(user, tenantAdminClaim);
+                //add organization admin claim
+                var result = await _userManager.AddClaimAsync(user, organizationAdminClaim);
                 if (result.Succeeded)
                 {
                     var callbackUrl = Url.Action("Login", "Admin", new { Email = user.Email }, protocol: HttpContext.Request.Scheme);
@@ -96,10 +120,10 @@ namespace AllReady.Areas.Admin.Controllers
                     return Redirect("Error");
                 }
             }
-            else if (user.IsUserType(UserType.TenantAdmin))
+            else if (user.IsUserType(UserType.OrgAdmin))
             {
-                //remove tenant admin claim
-                var result = await _userManager.RemoveClaimAsync(user, tenantAdminClaim);
+                //remove organization admin claim
+                var result = await _userManager.RemoveClaimAsync(user, organizationAdminClaim);
                 if (!result.Succeeded)
                 {
                     return Redirect("Error");
@@ -158,50 +182,50 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult AssignTenantAdmin(string userId)
+        public IActionResult AssignOrganizationAdmin(string userId)
         {
             var user = _dataAccess.GetUser(userId);
-            if (user.IsUserType(UserType.TenantAdmin) || user.IsUserType(UserType.SiteAdmin))
+            if (user.IsUserType(UserType.OrgAdmin) || user.IsUserType(UserType.SiteAdmin))
             {
                 return RedirectToAction(nameof(Index));
             }
 
-            var tenants = _dataAccess.Tenants
+            var organizations = _dataAccess.Organizations
                 .OrderBy(t => t.Name)
                 .Select(t => new SelectListItem() { Text = t.Name, Value = t.Id.ToString() })
                 .ToList();
 
-            ViewBag.Tenants = new SelectListItem[] 
+            ViewBag.Organizations = new SelectListItem[] 
             {
                 new SelectListItem() { Selected = true, Text = "<Select One>", Value = "0" }
-            }.Union(tenants);
+            }.Union(organizations);
 
-            return View(new AssignTenantAdminModel() { UserId = userId });
+            return View(new AssignOrganizationAdminModel() { UserId = userId });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AssignTenantAdmin(AssignTenantAdminModel model)
+        public async Task<IActionResult> AssignOrganizationAdmin(AssignOrganizationAdminModel model)
         {
             var user = _dataAccess.GetUser(model.UserId);
             if (user == null) return RedirectToAction(nameof(Index));
 
-            if (model.TenantId == 0)
+            if (model.OrganizationId == 0)
             {
-                ModelState.AddModelError(nameof(AssignTenantAdminModel.TenantId), "You must pick a valid organization.");
+                ModelState.AddModelError(nameof(AssignOrganizationAdminModel.OrganizationId), "You must pick a valid organization.");
             }
 
             if (ModelState.IsValid)
             {
-                if (_dataAccess.Tenants.Any(t => t.Id == model.TenantId))
+                if (_dataAccess.Organizations.Any(t => t.Id == model.OrganizationId))
                 {
-                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.TenantAdmin.ToName()));
-                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.Tenant, model.TenantId.ToString()));
+                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.OrgAdmin.ToName()));
+                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.Organization, model.OrganizationId.ToString()));
                     return RedirectToAction(nameof(Index));
                 }
                 else
                 {
-                    ModelState.AddModelError(nameof(AssignTenantAdminModel.TenantId), "Invalid Organization. Please contact support.");
+                    ModelState.AddModelError(nameof(AssignOrganizationAdminModel.OrganizationId), "Invalid Organization. Please contact support.");
                 }
             }
 
@@ -226,14 +250,14 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> RevokeTenantAdmin(string userId)
+        public async Task<IActionResult> RevokeOrganizationAdmin(string userId)
         {
             try
             {
                 var user = _dataAccess.GetUser(userId);
                 var claims = await _userManager.GetClaimsAsync(user);
                 await _userManager.RemoveClaimAsync(user, claims.First(c => c.Type == Security.ClaimTypes.UserType));
-                await _userManager.RemoveClaimAsync(user, claims.First(c => c.Type == Security.ClaimTypes.Tenant));
+                await _userManager.RemoveClaimAsync(user, claims.First(c => c.Type == Security.ClaimTypes.Organization));
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

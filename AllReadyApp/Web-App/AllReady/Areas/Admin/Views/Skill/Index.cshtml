@@ -1,5 +1,5 @@
-﻿@model IEnumerable<Skill>
-@{ ViewData["Title"] = "Skills"; }
+﻿@model IEnumerable<SkillSummaryModel>
+@using AllReady.Security;
 
 <div class="row">
     <div class="cold-md-12">
@@ -11,26 +11,40 @@
         <table class="table">
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Name)
+                    @Html.DisplayNameFor(model => model.First().HierarchicalName)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Description)
                 </th>
+                @if (User.IsUserType(UserType.SiteAdmin))
+                {
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().OwningOrganizationName)
+                    </th>
+                }
                 <th></th>
             </tr>
-            @foreach (var item in Model.OrderBy(s => s.HierarchicalName)) {
-            <tr>
-                <td>
-                    @item.HierarchicalName
-                </td>
-                <td>
-                    @item.Description
-                </td>
-                <td>
-                    <a class="btn btn-default" asp-route-area="Admin" asp-controller="Skill" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                    <a class="btn btn-default" asp-route-area="Admin" asp-controller="Skill" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
+
+            @foreach (var item in Model.OrderBy(s => s.HierarchicalName))
+            {
+                <tr>
+                    <td>
+                        @item.HierarchicalName
+                    </td>
+                    <td>
+                        @item.Description
+                    </td>
+                    @if (User.IsUserType(UserType.SiteAdmin))
+                {
+                        <td>
+                            @(item.OwningOrganizationName == null ? "" : item.OwningOrganizationName)
+                        </td>
+                    }
+                    <td>
+                        <a class="btn btn-default" asp-route-area="Admin" asp-controller="Skill" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a class="btn btn-default" asp-route-area="Admin" asp-controller="Skill" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
             }
         </table>
     </div>

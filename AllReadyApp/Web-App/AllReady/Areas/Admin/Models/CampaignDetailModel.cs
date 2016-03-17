@@ -1,7 +1,7 @@
-﻿using AllReady.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models
 {
@@ -15,20 +15,24 @@ namespace AllReady.Areas.Admin.Models
         public string FullDescription { get; set; }
 
         [Display(Name = "Organization")]
-        public int TenantId { get; set; }
+        public int OrganizationId { get; set; }
 
 
         [Display(Name = "Organization")]
-        public string TenantName { get; set; }
+        public string OrganizationName { get; set; }
 
         [Display(Name = "Image URL")]
         public string ImageUrl { get; set; }
             
+        [Display(Name = "Time Zone")]
+        [Required]
+        public string TimeZoneId { get; set; }
+
         [Display(Name = "Start Date")]
-        public DateTime StartDate { get; set; }
+        public DateTimeOffset StartDate { get; set; }
 
         [Display(Name = "End Date")]
-        public DateTime EndDate { get; set; }
+        public DateTimeOffset EndDate { get; set; }
 
 		public IEnumerable<ActivitySummaryModel> Activities { get; set; }
         public CampaignImpact CampaignImpact { get; set; }
@@ -48,6 +52,8 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Email")]
         [EmailAddress]
         public string PrimaryContactEmail { get; set; }
+
+        public bool Locked { get; set; }
 
     }
 }

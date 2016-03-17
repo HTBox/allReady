@@ -1,12 +1,8 @@
-﻿using AllReady.Areas.Admin.Models;
+﻿using System.Linq;
+using AllReady.Areas.Admin.Models;
 using AllReady.Models;
-using AllReady.ViewModels;
 using MediatR;
-using System;
-using System.Collections.Generic;
 using Microsoft.Data.Entity;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
@@ -26,7 +22,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             var campaign = _context.Campaigns
                 .AsNoTracking()
                 .Include(ci => ci.CampaignImpact)
-                .Include(mt => mt.ManagingTenant)
+                .Include(mt => mt.ManagingOrganization)
                 .Include(l => l.Location).ThenInclude(p => p.PostalCode)
                 .Include(c => c.CampaignContacts).ThenInclude(tc => tc.Contact)
                 .SingleOrDefault(c => c.Id == message.CampaignId);
@@ -39,11 +35,12 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Name = campaign.Name,
                     Description = campaign.Description,
                     FullDescription = campaign.FullDescription,
-                    TenantId = campaign.ManagingTenantId,
-                    TenantName = campaign.ManagingTenant.Name,
+                    OrganizationId = campaign.ManagingOrganizationId,
+                    OrganizationName = campaign.ManagingOrganization.Name,
                     ImageUrl = campaign.ImageUrl,
-                    StartDate = campaign.StartDateTimeUtc,
-                    EndDate = campaign.EndDateTimeUtc,
+                    TimeZoneId = campaign.TimeZoneId,
+                    StartDate = campaign.StartDateTime,
+                    EndDate = campaign.EndDateTime,
                     Location = campaign.Location.ToEditModel(),
                     CampaignImpact = campaign.CampaignImpact != null ? campaign.CampaignImpact : new CampaignImpact()
                 };

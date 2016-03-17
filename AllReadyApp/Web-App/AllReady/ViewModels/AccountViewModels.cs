@@ -9,6 +9,11 @@ namespace AllReady.Models
         [Required]
         [EmailAddress]
         public string Email { get; set; }
+
+        public string Name { get; set; }
+
+        [Display(Name="Phone number")]
+        public string PhoneNumber { get; set; }
     }
 
     public class SendCodeViewModel
@@ -46,7 +51,7 @@ namespace AllReady.Models
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 10)]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
@@ -87,7 +92,7 @@ namespace AllReady.Models
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 10)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
@@ -104,7 +109,7 @@ namespace AllReady.Models
         [EmailAddress]
         public string Email { get; set; }
 
-        [Display(Name = "Tenant Admin?")]
-        public bool TenantAdmin { get; set; }
+        [Display(Name = "Organization Admin?")]
+        public bool OrganizationAdmin { get; set; }
     }
 }

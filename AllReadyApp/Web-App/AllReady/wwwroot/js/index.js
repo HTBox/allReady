@@ -1,33 +1,20 @@
-﻿(function (ko, $, navigator) {
-
-    var indexViewModel = {
-        status: ko.observable(),
-        searchTerm: ko.observable(),
-        activities: ko.observableArray(),
-        loadingDone: ko.observable(false),
-        handleEnter: function(data, event) {
-            if (event.keyCode === 13) {
-                this.searchActivities();
-            }
-            return true;
-        },
-        searchActivities: function () {
-            var self = this;
-            var term = this.searchTerm();
-            if (term !== undefined) {
-                $.get('/api/activity/search/?zip=' + term + '&miles=10')
-                .done(function (data) {
-                    if (data) {
-                        indexViewModel.activities(data.slice(0, 3));
-                        indexViewModel.loadingDone(true);
-                    } else {
-                        self.status('noresults');
-                    }
-                }).fail(function () {
-                    self.status('fail');
-                });
-            }
+﻿(function (ko, $, navigator, campaigns) {
+    function Campaign(item) {
+        for (var prop in item) {
+            this[prop] = item[prop];
         }
-    };
-    ko.applyBindings(indexViewModel);
-})(ko, $, window.navigator);
+        this.displayDate = function () {
+            var start = moment(this.StartDate).utcOffset(this.StartDate).format("dddd, MMMM Do YYYY");
+            var end = moment(this.EndDate).utcOffset(this.EndDate).format("dddd, MMMM Do YYYY");
+            return start + ' - ' + end;
+        }
+        return this;
+    }
+
+    function IndexViewModel(campaigns) {
+        var list = campaigns.map(function (item) { return new Campaign(item); })
+        this.campaigns = ko.observableArray(list);
+    }
+
+    ko.applyBindings(new IndexViewModel(campaigns));
+})(ko, $, window.navigator, modelCampaigns);

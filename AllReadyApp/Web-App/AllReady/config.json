@@ -7,15 +7,16 @@
     "DefaultAdminUsername": "Administrator@example.com",
     "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
     "DefaultUsername": "User@example.com",
-    "DefaultTenantUsername": "tenant@example.com",
+    "DefaultOrganizationUsername": "organization@example.com",
     "DefaultFromEmailAddress": "Administrator@example.com",
     "DefaultFromDisplayName": "allReady.com Administrator",
     "InsertSampleData": "true",
     "InsertTestUsers": "true"
   },
-  "General": {
-    "SiteBaseUrl": "http://localhost:33310/"
-  },
+    "General": {
+        "SiteBaseUrl": "http://localhost:33310/",
+        "DefaultTimeZone": "Central Standard Time"
+    },
   "ApplicationInsights": {
     "InstrumentationKey": "[instrumentationkey]"
   },
@@ -33,8 +34,8 @@
   },
   "Authentication": {
     "Facebook": {
-      "AppId": "[facebookappId]",
-      "AppSecret": "[facebookappsecret]"
+      "AppId": "167952183568521",
+      "AppSecret": "a8053ceca7eefbaa4821ca531929f339"
     },
     "Twitter": {
       "ConsumerKey": "[twitterkey]",

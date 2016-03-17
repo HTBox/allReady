@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
@@ -12,13 +10,13 @@ namespace AllReady.Features.Notifications
     public class NotifyAdminForTaskSignupStatusChange : INotificationHandler<TaskSignupStatusChanged>
     {
         private readonly AllReadyContext _context;
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
-
-        public NotifyAdminForTaskSignupStatusChange(AllReadyContext context, IMediator bus, IOptions<GeneralSettings> options)
+        
+        public NotifyAdminForTaskSignupStatusChange(AllReadyContext context, IMediator mediator, IOptions<GeneralSettings> options)
         {
             _context = context;
-            _bus = bus;
+            _mediator = mediator;
             _options = options;
         }
 
@@ -28,7 +26,7 @@ namespace AllReady.Features.Notifications
                 .Include(ts => ts.Task)
                     .ThenInclude(t => t.Activity).ThenInclude(a => a.Organizer)
                 .Include(ts => ts.Task)
-                    .ThenInclude(t => t.Activity).ThenInclude(a => a.Campaign).ThenInclude(c => c.Organizer)
+                    .ThenInclude(t => t.Activity).ThenInclude(a => a.Campaign).ThenInclude(c => c.CampaignContacts).ThenInclude(cc => cc.Contact)
                 .Include(ts => ts.User)
                 .Single(ts => ts.Id == notification.SignupId);
             var volunteer = taskSignup.User;
@@ -36,12 +34,9 @@ namespace AllReady.Features.Notifications
             var activity = task.Activity;
             var campaign = activity.Campaign;
 
-            //Prefer activity organizer email; fallback to campaign organizer email
-            var adminEmail = taskSignup.Task.Activity.Organizer?.Email;
-            if (string.IsNullOrWhiteSpace(adminEmail))
-            {
-                adminEmail = taskSignup.Task.Activity.Campaign.Organizer?.Email;
-            }
+            var campaignContact = campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
+            var adminEmail = campaignContact?.Contact.Email;
+
             if (!string.IsNullOrWhiteSpace(adminEmail))
             {
                 var link = $"View activity: http://{_options.Value.SiteBaseUrl}/Admin/Task/Details/{taskSignup.Task.Id}";
@@ -65,7 +60,7 @@ namespace AllReady.Features.Notifications
                     }
                 };
 
-                _bus.Send(command);
+                _mediator.SendAsync(command);
             }
         }
     }

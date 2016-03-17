@@ -1,12 +1,8 @@
-﻿using AllReady.Areas.Admin.Models;
+﻿using System.Linq;
+using AllReady.Areas.Admin.Models;
 using AllReady.Models;
-using AllReady.ViewModels;
 using MediatR;
 using Microsoft.Data.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
@@ -35,11 +31,12 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 ActivityName = task.Activity.Name,
                 CampaignId = task.Activity.CampaignId,
                 CampaignName = task.Activity.Campaign.Name,
-                TenantId = task.Activity.Campaign.ManagingTenantId,
+                OrganizationId = task.Activity.Campaign.ManagingOrganizationId,
                 Name = task.Name,
                 Description = task.Description,
-                StartDateTime = task.StartDateTimeUtc,
-                EndDateTime = task.EndDateTimeUtc,
+                TimeZoneId = task.Activity.Campaign.TimeZoneId,
+                StartDateTime = task.StartDateTime,
+                EndDateTime = task.EndDateTime,
                 NumberOfVolunteersRequired = task.NumberOfVolunteersRequired,
                 AssignedVolunteers = task.AssignedVolunteers.Select(av => new VolunteerModel { UserId = av.User.Id, UserName = av.User.UserName, HasVolunteered = true }).ToList(),
                 AllVolunteers = task.Activity.UsersSignedUp.Select(v => new VolunteerModel { UserId = v.User.Id, UserName = v.User.UserName, HasVolunteered = false }).ToList()

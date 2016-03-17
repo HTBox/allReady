@@ -1,0 +1,41 @@
+﻿@inject AllReady.Services.ISelectListService SelectListService
+
+@model DeleteUserModel
+@{
+    ViewData["Title"] = $"Delete User - {Model.UserName}";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="alert alert-danger">
+    <p>
+        <b>Warning:</b> Deleting a user may have severe consequences and will
+        permanently remove them from the system. There may be factors of their
+        account - such as pre-existing data - that prevents them from being
+        removed. This is an irrevocable action and user data deleted cannot be
+        restored.
+    </p>
+</div>
+
+<form method="post" action="ConfirmDeleteUser" asp-antiforgery="true" >
+    <div class="form-horizontal">
+        <hr />
+        
+        <input asp-for="UserId" type="hidden" />
+        <div class="form-group">
+            <label asp-for="UserName" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <p class="form-control-static">@Model.UserName</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-danger"><span class="fa fa-remove"></span> Delete @Model.UserName</button>
+                <a asp-controller="Site" asp-action="Index" class="btn btn-success">Back to List</a>
+            </div>
+        </div>
+    </div>
+</form>
+@section scripts {
+
+}

@@ -1,25 +1,23 @@
-﻿using Microsoft.AspNet.Mvc;
-using System.Collections.Generic;
-
-using AllReady.Services;
+﻿using System.Collections.Generic;
 using AllReady.Models;
+using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Controllers
 {
     [Route("api/closest")]
     public class ClosestLocationsController : Controller
     {
-        private IClosestLocations _closestLocations;
+        private IAllReadyDataAccess _dataAccess;
 
-        public ClosestLocationsController(IClosestLocations closestLocations)
+        public ClosestLocationsController(IAllReadyDataAccess dataAccess)
         {
-            _closestLocations = closestLocations;
+            _dataAccess = dataAccess;
         }
 
         [HttpGet("{lat}/{lon}/{distance}/{count}")]
         public IEnumerable<ClosestLocation> Get(double lat, double lon, int distance, int count)
         {
-            var results = _closestLocations.GetClosestLocations(new LocationQuery
+            var results = _dataAccess.GetClosestLocations(new LocationQuery
             {
                 Distance = distance,
                 Latitude = lat,

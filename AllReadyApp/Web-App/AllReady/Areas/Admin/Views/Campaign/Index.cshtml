@@ -27,7 +27,7 @@
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.TenantName)
+                    @Html.DisplayNameFor(model => model.OrganizationName)
                 </th>
                 <th>
                     Dates
@@ -40,18 +40,22 @@
                     </td>
                     <td>
                         <a asp-controller="Campaign" asp-action="Details" asp-route-area="Admin" asp-route-id="@item.Id">@item.Name</a>
+                        @if (item.Locked)
+                        {
+                            <span title="This campaign is locked" class="fa fa-exclamation-triangle text-warning"></span>
+                        }
                         @if (!string.IsNullOrEmpty(item.Description))
                         {
                             <br/><span class="text-muted">@item.Description</span>
                         }
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.TenantName)
+                        @Html.DisplayFor(modelItem => item.OrganizationName)
                     </td>
                     <td>
                         @if (item.StartDate != DateTime.MinValue)
                         {
-                            @:@Html.DisplayFor(modelItem => item.StartDate) - @Html.DisplayFor(modelItem => item.EndDate)
+                            @:@Html.DisplayFor(modelItem => item.StartDate) - @Html.DisplayFor(modelItem => item.EndDate)                            
                         }
                     </td>
                 </tr>

@@ -1,22 +1,21 @@
-﻿using AllReady.Areas.Admin.Models;
+﻿using System.Collections.Generic;
+using System.Linq;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class MessageTaskVolunteersCommandHandler : RequestHandler<MessageTaskVolunteersCommand>
     {
         private AllReadyContext _context;
-        private IMediator _bus;
+        private IMediator _mediator;
 
-        public MessageTaskVolunteersCommandHandler(AllReadyContext context, IMediator bus)
+        public MessageTaskVolunteersCommandHandler(AllReadyContext context, IMediator mediator)
         {
             _context = context;
-            _bus = bus;
+            _mediator = mediator;
         }
 
         protected override void HandleCore(MessageTaskVolunteersCommand message)
@@ -50,7 +49,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 }
             };
 
-            _bus.Send(command);
+            _mediator.SendAsync(command);
         }
     }
 }

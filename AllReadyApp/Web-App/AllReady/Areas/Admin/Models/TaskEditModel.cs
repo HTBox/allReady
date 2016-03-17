@@ -1,9 +1,6 @@
-﻿using AllReady.Models;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models
 {
@@ -11,5 +8,7 @@ namespace AllReady.Areas.Admin.Models
     {
         [Display(Name = "Required skills")]
         public IList<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();
+
+        public bool IgnoreTimeRangeWarning { get; set; }
     }
 }

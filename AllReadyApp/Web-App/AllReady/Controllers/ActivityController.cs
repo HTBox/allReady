@@ -7,30 +7,28 @@ using AllReady.Models;
 using AllReady.ViewModels;
 using Microsoft.AspNet.Authorization;
 using System.Security.Claims;
-using AllReady.Services;
 using MediatR;
 using AllReady.Features.Activity;
 using AllReady.Areas.Admin.Features.Tasks;
 using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
-
 namespace AllReady.Controllers
 {
     public class ActivityController : Controller
     {
         private readonly IAllReadyDataAccess _allReadyDataAccess;
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
 
-        public ActivityController(IAllReadyDataAccess allReadyDataAccess, IMediator bus)
+        public ActivityController(IAllReadyDataAccess allReadyDataAccess, IMediator mediator)
         {
             _allReadyDataAccess = allReadyDataAccess;
-            _bus = bus;
+            _mediator = mediator;
         }
 
         [Route("~/MyActivities")]
         [Authorize]
         public IActionResult GetMyActivities()
         {
-            var myActivities = _allReadyDataAccess.GetActivitySignups(User.GetUserId());
+            var myActivities = _allReadyDataAccess.GetActivitySignups(User.GetUserId()).Where(a => !a.Activity.Campaign.Locked);
             var signedUp = myActivities.Select(a => new ActivityViewModel(a.Activity));
             var viewModel = new MyActivitiesResultsScreenViewModel("My Activities", signedUp);
             return View("MyActivities", viewModel);
@@ -85,7 +83,7 @@ namespace AllReady.Controllers
         {
             var activity = _allReadyDataAccess.GetActivity(id);
 
-            if (activity == null)
+            if (activity == null || activity.Campaign.Locked)
             {
                 return HttpNotFound();
             }
@@ -96,7 +94,8 @@ namespace AllReady.Controllers
         [HttpPost]
         [Route("/Activity/Signup")]
         [Authorize]
-        public IActionResult Signup(ActivitySignupViewModel signupModel)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Signup(ActivitySignupViewModel signupModel)
         {
             if (signupModel == null)
             {
@@ -105,7 +104,7 @@ namespace AllReady.Controllers
 
             if (ModelState.IsValid)
             {
-                _bus.Send(new ActivitySignupCommand() { ActivitySignup = signupModel });
+                await _mediator.SendAsync(new ActivitySignupCommand() { ActivitySignup = signupModel });
             }
             else
             {
@@ -126,7 +125,7 @@ namespace AllReady.Controllers
                 return HttpBadRequest();
             }
 
-            _bus.Send(new TaskStatusChangeCommand { TaskStatus = status, TaskId = taskId, UserId = userId, TaskStatusDescription = statusDesc });
+            _mediator.Send(new TaskStatusChangeCommand { TaskStatus = status, TaskId = taskId, UserId = userId, TaskStatusDescription = statusDesc });
 
             return RedirectToAction(nameof(ShowActivity), new { id = activityId });
         }

@@ -1,9 +1,8 @@
-﻿using AllReady.Models;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using AllReady.Models;
 
 namespace AllReady.ViewModels
 {
@@ -20,18 +19,18 @@ namespace AllReady.ViewModels
             Description = task.Description;
 
 
-            if (task.StartDateTimeUtc.HasValue)
+            if (task.StartDateTime.HasValue)
             {
                 DateTime startDateWithUtcKind = DateTime.SpecifyKind(
-                    DateTime.Parse(task.StartDateTimeUtc.Value.ToString()),
+                    DateTime.Parse(task.StartDateTime.Value.ToString()),
                     DateTimeKind.Utc);
                 StartDateTime = new DateTimeOffset(startDateWithUtcKind);
             }
 
-            if (task.EndDateTimeUtc.HasValue)
+            if (task.EndDateTime.HasValue)
             {
                 DateTime endDateWithUtcKind = DateTime.SpecifyKind(
-                    DateTime.Parse(task.EndDateTimeUtc.Value.ToString()),
+                    DateTime.Parse(task.EndDateTime.Value.ToString()),
                     DateTimeKind.Utc);
                 EndDateTime = new DateTimeOffset(endDateWithUtcKind);
             }
@@ -42,16 +41,16 @@ namespace AllReady.ViewModels
                 ActivityName = task.Activity.Name;
             }
 
-            if (task.Activity != null && task.Activity.Campaign != null)
+            if (task.Activity?.Campaign != null)
             {
                 CampaignId = task.Activity.Campaign.Id;
                 CampaignName = task.Activity.Campaign.Name;
             }
 
-            if (task.Tenant != null)
+            if (task.Organization != null)
             {
-                TenantId = task.Tenant.Id;
-                TenantName = task.Tenant.Name;
+                OrganizationId = task.Organization.Id;
+                OrganizationName = task.Organization.Name;
             }
 
             IsUserSignedUpForTask = false;
@@ -99,8 +98,8 @@ namespace AllReady.ViewModels
         [Display(Name = "Campaign")]
         public string CampaignName { get; set; }
 
-        public int TenantId { get; set; }
-        public string TenantName { get; set; }
+        public int OrganizationId { get; set; }
+        public string OrganizationName { get; set; }
 
         [Display(Name = "Required Skills")]
         public IEnumerable<int> RequiredSkills { get; set; } = new List<int>();
@@ -159,8 +158,8 @@ namespace AllReady.ViewModels
             dbtask.Id = taskViewModel.Id;
             dbtask.Description = taskViewModel.Description;
             dbtask.Activity = activity;
-            dbtask.EndDateTimeUtc = taskViewModel.EndDateTime.HasValue ? taskViewModel.EndDateTime.Value.UtcDateTime : new Nullable<DateTime>();
-            dbtask.StartDateTimeUtc = taskViewModel.EndDateTime.HasValue ? taskViewModel.StartDateTime.Value.UtcDateTime : new Nullable<DateTime>();
+            dbtask.EndDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.EndDateTime.Value.UtcDateTime : new Nullable<DateTime>();
+            dbtask.StartDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.StartDateTime.Value.UtcDateTime : new Nullable<DateTime>();
             dbtask.Name = taskViewModel.Name;
             dbtask.RequiredSkills = dbtask.RequiredSkills ?? new List<TaskSkill>();
             taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();

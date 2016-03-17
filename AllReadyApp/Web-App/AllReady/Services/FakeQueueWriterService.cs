@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.OptionsModel;
 
@@ -18,9 +15,10 @@ namespace AllReady.Services
             _options = options;
         }
 
-        public void SendMessage(string queueName, string message)
+        public Task SendMessageAsync(string queueName, string message)
         {
             _logger.LogInformation("Message to {queueName} queue: {message}", queueName, message);
+            return Task.FromResult(0);
         }
     }
 }

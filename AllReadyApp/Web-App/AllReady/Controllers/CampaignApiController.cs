@@ -1,39 +1,24 @@
-﻿using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Mvc;
-using AllReady.Models;
-using AllReady.Services;
-using AllReady.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using AllReady.Models;
+using AllReady.ViewModels;
+using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Controllers
 {
     [Route("api/campaign")]
     [Produces("application/json")]
     public class CampaignApiController : Controller
-    {        
-        private const double MILES_PER_METER = 0.00062137;
+    {
         private readonly IAllReadyDataAccess _allReadyDataAccess;
-        private IClosestLocations _closestLocations;
-
-
-        public CampaignApiController(IAllReadyDataAccess allReadyDataAccess,
-            //GeoService geoService,
-            IClosestLocations closestLocations)
+        
+        public CampaignApiController(IAllReadyDataAccess allReadyDataAccess)
         {
             _allReadyDataAccess = allReadyDataAccess;
-            //_geoService = geoService;
-            _closestLocations = closestLocations;
         }
 
         [Route("search")]
-        public IEnumerable<ActivityViewModel> GetCampaignsByZip(string zip, int miles)
+        public IEnumerable<ActivityViewModel> GetCampaignsByPostalCode(string zip, int miles)
         {
             List<ActivityViewModel> ret = new List<ActivityViewModel>();
 

@@ -2,20 +2,30 @@
 @{
     ViewData["Title"] = Model.Name;
 }
+
 <div class="row">
     <div id="col-main">
         <div class="col-md-9"><h2>@Model.Name</h2></div>
         <div class="col-md-3 share-buttons">
-            <img src="~/images/share-shareaholic.png" alt="Share via Shareaholic" />
-            <img src="~/images/share-twitter.png" alt="Share via Twitter" />
-            <img src="~/images/share-fb.png" alt="Share via Facebook" />
+            <a href="mailto:?subject=Check out @Model.Name&body=Check it out at @ViewBag.AbsoluteUrl" title="Share by Email">
+                <img src="~/images/share-email.png">
+            </a>
+            <a href="http://twitter.com/intent/tweet?url=@ViewBag.AbsoluteUrl&via=htbox" title="Share via Twitter">
+                <img src="~/images/share-twitter.png" alt="Share via Twitter" />
+            </a>
+            <a href="http://www.facebook.com/sharer/sharer.php?u=@ViewBag.AbsoluteUrl" title="Share via Facebook" target="_blank">
+                <img src="~/images/share-fb.png" alt="Share via Facebook" />
+            </a>
         </div>
     </div>
 </div>
 
 <div class="row">
     <div class="col-md-12">
-        <p class="date-address">@Model.StartDate.ToString("D") - @Model.EndDate.ToString("D")</p>
+        <p class="date-address">
+            <time value="Model.StartDate" format="D"></time> - <time value="Model.EndDate" format="D"></time>
+            <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
+        </p>
     </div>
 </div>
 
@@ -35,7 +45,7 @@
 <div class="row">
     <div class="col-md-8">
         <div class="campaign-sponsor">
-            <strong><a asp-controller="Tenant" asp-action="ShowTenant" asp-route-id="@Model.ManagingTenantId">@Model.ManagingTenantName</a></strong>
+            <strong><a asp-controller="Organization" asp-action="ShowOrganization" asp-route-id="@Model.ManagingOrganizationId">@Model.ManagingOrganizationName</a></strong>
         </div>
     </div>
 </div>
@@ -117,7 +127,6 @@
     </div>
 </div>
 
-
 <div class="row">
     <div class="col-sm-12" data-bind="if: resources && resources.length > 0">
         <h3>Resources for this campaign</h3>
@@ -131,6 +140,15 @@
     </div>
 </div>
 
+@if (Model.HasPrivacyPolicy)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <p class="text-center"><a asp-controller="Organization" asp-action="OrganizationPrivacyPolicy" asp-route-id="@Model.ManagingOrganizationId">@Model.ManagingOrganizationName Privacy Policy</a></p>
+        </div>
+    </div>
+}
+
 @section scripts {
     <script>
         var modelActivities = @Json.Serialize(Model.Activities);
@@ -138,15 +156,15 @@
     <script type="text/javascript" src="~/js/campaign.js"></script>
 
     <script>
-    System.config({
-        baseURL: location.protocol + "//" + location.host + '/js/'
-    });
+        System.config({
+            baseURL: location.protocol + "//" + location.host + '/js/'
+        });
 
-    System.import('Controls/Thermometer.js').then(function (sys) {
-        if($("[data-control=thermometer]"))
-            new sys.AllReady.Controls.Thermometer($("[data-control=thermometer]"));
-    });;
-
-
+        System.import('Controls/Thermometer.js').then(function (sys) {
+            if($("[data-control=thermometer]"))
+                new sys.AllReady.Controls.Thermometer($("[data-control=thermometer]"));
+        });;
     </script>
+
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 }

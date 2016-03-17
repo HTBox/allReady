@@ -21,32 +21,32 @@ namespace AllReady.Services
 
         /*
         Blob path conventions
-        images/tenantid/imagename
-        images/tenant/activityId/imagename
+        images/organizationId/imagename
+        images/organization/activityId/imagename
         image/guid/imagename
         */
 
         /// <summary>
-        /// Uploads an image given a unique tenant ID. Passing in the same params will overwrite the existing file.
+        /// Uploads an image given a unique organization ID. Passing in the same params will overwrite the existing file.
         /// </summary>
-        /// <param name="tenantId">int ID</param>
+        /// <param name="organizationId">int ID</param>
         /// <param name="image">a image from Microsoft.AspNet.Http</param>
         /// <returns></returns>
-        public async Task<string> UploadTenantImageAsync(int tenantId, IFormFile image)
+        public async Task<string> UploadOrganizationImageAsync(int organizationId, IFormFile image)
         {
-            var blobPath = tenantId.ToString();
+            var blobPath = organizationId.ToString();
             return await UploadImageAsync(blobPath, image);
         }
 
-        public async Task<string> UploadActivityImageAsync(int tenantId, int activityId, IFormFile image)
+        public async Task<string> UploadActivityImageAsync(int organizationId, int activityId, IFormFile image)
         {
-            var blobPath = tenantId + @"/activities/" + activityId;
+            var blobPath = organizationId + @"/activities/" + activityId;
             return await UploadImageAsync(blobPath, image);
         }
 
-        public async Task<string> UploadCampaignImageAsync(int tenantId, int campaignId, IFormFile image)
+        public async Task<string> UploadCampaignImageAsync(int organizationId, int campaignId, IFormFile image)
         {
-            var blobPath = tenantId + @"/campaigns/" + campaignId;
+            var blobPath = organizationId + @"/campaigns/" + campaignId;
             return await UploadImageAsync(blobPath, image);
         }
 

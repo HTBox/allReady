@@ -1,32 +1,31 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using AllReady.Features.Campaigns;
+using MediatR;
+using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IMediator mediator;
+
+        public HomeController(IMediator mediator)
+        {
+            this.mediator = mediator;
+        }
+
         public IActionResult Index()
         {
-            return View();
+            var results = mediator.Send(new CampaignQuery());
+            return View(results);
         }
 
         public IActionResult About()
         {
-            ViewData["Message"] = "Your application description page.";
-
             return View();
         }
 
         public IActionResult Aesop()
         {
-            ViewData["Message"] = "The backstory on why there are ants on the home page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
             return View();
         }
 
@@ -38,6 +37,11 @@ namespace AllReady.Controllers
         public IActionResult AccessDenied()
         {
             return View("~/Views/Shared/AccessDenied.cshtml");
+        }
+
+        public IActionResult PrivacyPolicy()
+        {
+            return View(nameof(PrivacyPolicy));
         }
     }
 }

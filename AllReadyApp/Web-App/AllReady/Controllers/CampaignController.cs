@@ -1,37 +1,41 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using AllReady.Features.Campaigns;
 using Microsoft.AspNet.Mvc;
 using AllReady.Models;
 using AllReady.ViewModels;
-using Microsoft.Data.Entity;
+using MediatR;
+using Microsoft.AspNet.Mvc.Routing;
 
 namespace AllReady.Controllers
 {
     [Route("api/[controller]")]
     public class CampaignController : Controller
     {
-        private readonly IAllReadyDataAccess _dataAccess;
+        private readonly IMediator _mediator;
 
-        public CampaignController(IAllReadyDataAccess dataAccess)
+        public CampaignController(IMediator mediator)
         {
-            _dataAccess = dataAccess;
+            _mediator = mediator;
         }
 
         [HttpGet]
         [Route("~/[controller]")]
         public IActionResult Index()
         {
-            return View(_dataAccess.Campaigns.ToViewModel().ToList());
+            var unlockedCampaigns = GetUnlockedCampaigns();
+            return View(unlockedCampaigns);
         }
 
         [HttpGet]
         [Route("~/[controller]/{id}")]
         public IActionResult Details(int id)
         {
-            var campaign = _dataAccess.GetCampaign(id);
+            var campaign = GetCampaign(id);
 
-            if (campaign == null)
-                HttpNotFound();
+            if (campaign == null || campaign.Locked)
+                return HttpNotFound();
+
+            ViewBag.AbsoluteUrl = UrlEncode(Url.Action(new UrlActionContext { Action = "Details", Controller = "Campaign", Values = null, Protocol = Request.Scheme }));
 
             return View("Details", new CampaignViewModel(campaign));
         }
@@ -40,10 +44,10 @@ namespace AllReady.Controllers
         [Route("~/[controller]/map/{id}")]
         public IActionResult LocationMap(int id)
         {
-            var campaign = _dataAccess.GetCampaign(id);
+            var campaign = GetCampaign(id);
 
             if (campaign == null)
-                HttpNotFound();
+                return HttpNotFound();
 
             return View("Map", new CampaignViewModel(campaign));
         }
@@ -52,20 +56,34 @@ namespace AllReady.Controllers
         [HttpGet]
         public IEnumerable<CampaignViewModel> Get()
         {
-            return _dataAccess.Campaigns
-                .Select(x => new CampaignViewModel(x));
+            return GetUnlockedCampaigns();
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public CampaignViewModel Get(int id)
+        public ActionResult Get(int id)
         {
-            var campaign = _dataAccess.GetCampaign(id);
+            var campaign = GetCampaign(id);
 
-            if (campaign == null)
-                HttpNotFound();
+            if (campaign == null || campaign.Locked)
+                return HttpNotFound();
 
-            return campaign.ToViewModel();
+            return Json(campaign.ToViewModel());
+        }
+
+        private List<CampaignViewModel> GetUnlockedCampaigns()
+        {
+            return _mediator.Send(new UnlockedCampaignsQuery());
+        }
+
+        private Campaign GetCampaign(int campaignId)
+        {
+            return _mediator.Send(new CampaignByCampaignIdQuery { CampaignId = campaignId });
+        }
+
+        protected virtual string UrlEncode(string value)
+        {
+            return System.Net.WebUtility.UrlEncode(value);
         }
     }
 }

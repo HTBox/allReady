@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using Microsoft.Data.Entity;
 
 namespace AllReady.Models
@@ -16,11 +14,11 @@ namespace AllReady.Models
                 return _dbContext.Activities
                                 .Include(a => a.Location)
                                 .Include(a => a.Location.PostalCode)
-                                .Include(a => a.Campaign.ManagingTenant)
+                                .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
                                 .Include(a => a.Tasks)
                                 .Include(a => a.RequiredSkills)
                                 .Include(a => a.UsersSignedUp)
-                                .OrderBy(a => a.EndDateTimeUtc)
+                                .OrderBy(a => a.EndDateTime)
                                 .ToList();
             }
         }
@@ -51,16 +49,16 @@ namespace AllReady.Models
             return _dbContext.Activities
                 .Include(a => a.Location)
                 .Include(a => a.Location.PostalCode)
-                .Include(a => a.Campaign)
+                .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
                 .Include(a => a.RequiredSkills).ThenInclude(rs => rs.Skill).ThenInclude(s => s.ParentSkill)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(tu => tu.User)
                 .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
                 .SingleOrDefault(a => a.Id == activityId);
         }
 
-        int IAllReadyDataAccess.GetManagingTenantId(int activityId)
+        int IAllReadyDataAccess.GetManagingOrganizationId(int activityId)
         {
-            return _dbContext.Activities.Where(a => a.Id == activityId).Select(a => a.Campaign.ManagingTenantId).FirstOrDefault();
+            return _dbContext.Activities.Where(a => a.Id == activityId).Select(a => a.Campaign.ManagingOrganizationId).FirstOrDefault();
         }
 
         IEnumerable<ActivitySignup> IAllReadyDataAccess.GetActivitySignups(int activityId, string userId)
@@ -68,9 +66,10 @@ namespace AllReady.Models
             return _dbContext.ActivitySignup
                         .Include(x => x.User)
                         .Include(x => x.Activity)
-                        .ToArray()
+                        .Include(x => x.Activity.Campaign)                        
                         .Where(x => x.Activity.Id == activityId && x.User.Id == userId)
-                        .OrderBy(x => x.Activity.StartDateTimeUtc);
+                        .OrderBy(x => x.Activity.StartDateTime)
+                        .ToArray();
         }
 
         IEnumerable<ActivitySignup> IAllReadyDataAccess.GetActivitySignups(string userId)
@@ -78,9 +77,10 @@ namespace AllReady.Models
             return _dbContext.ActivitySignup
                         .Include(x => x.User)
                         .Include(x => x.Activity)
-                        .ToArray()
+                        .Include(x => x.Activity.Campaign)                        
                         .Where(x => x.User.Id == userId)
-                        .OrderBy(x => x.Activity.StartDateTimeUtc);
+                        .OrderBy(x => x.Activity.StartDateTime)
+                        .ToArray();
         }
 
         IEnumerable<TaskSignup> IAllReadyDataAccess.GetTasksAssignedToUser(int activityId, string userId)
@@ -88,10 +88,11 @@ namespace AllReady.Models
             var unfilteredTasks = _dbContext.TaskSignups
                 .Include(ts => ts.Task)
                 .ThenInclude(t => t.Activity)
-                .Include(ts => ts.User)
+                .ThenInclude(t => t.Campaign)
+                .Include(ts => ts.User)                
                 .ToList();
 
-            var finalTasks = unfilteredTasks.Where(ts => ts.Task.Activity.Id == activityId && ts.User.Id == userId).ToList();
+            var finalTasks = unfilteredTasks.Where(ts => ts.Task.Activity.Id == activityId && ts.User.Id == userId && !ts.Task.Activity.Campaign.Locked).ToList();
 
             return finalTasks;
         }

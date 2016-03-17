@@ -1,13 +1,12 @@
-﻿using AllReady.Models;
+﻿using System.Threading.Tasks;
 using AllReady.Models.Notifications;
 using AllReady.Services;
 using MediatR;
 using Newtonsoft.Json;
-using RestSharp;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyVolunteersHandler : RequestHandler<NotifyVolunteersCommand>
+    public class NotifyVolunteersHandler : AsyncRequestHandler<NotifyVolunteersCommand>
     {
         private readonly IQueueStorageService _storageService;
         public NotifyVolunteersHandler(IQueueStorageService storageService)
@@ -15,8 +14,10 @@ namespace AllReady.Features.Notifications
             _storageService = storageService;
         }
 
-        protected override void HandleCore(NotifyVolunteersCommand message)
+        protected override async Task HandleCore(NotifyVolunteersCommand message)
         {
+            // TODO: both SMS and email sent to the same email service?
+
             // push messages to azure
             foreach (var recipient in message.ViewModel.SmsRecipients)
             {
@@ -26,7 +27,7 @@ namespace AllReady.Features.Notifications
                     Message = message.ViewModel.SmsMessage
                 };
                 var sms = JsonConvert.SerializeObject(queuedSms);
-                _storageService.SendMessage(QueueStorageService.Queues.SmsQueue, sms);
+                await _storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
             }
 
             foreach (var recipient in message.ViewModel.EmailRecipients)
@@ -39,7 +40,7 @@ namespace AllReady.Features.Notifications
                     Subject = message.ViewModel.Subject
                 };
                 var email = JsonConvert.SerializeObject(queuedEmail);
-                _storageService.SendMessage(QueueStorageService.Queues.EmailQueue, email);
+                await _storageService.SendMessageAsync(QueueStorageService.Queues.EmailQueue, email);
             }
 
         }

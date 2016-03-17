@@ -1,0 +1,80 @@
+﻿@model AllReady.ViewModels.OrganizationViewModel
+@{  ViewData["Title"] = Model.Name; }
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>@ViewData["Title"]</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h3>Campaigns</h3>
+    </div>
+
+    <div class="col-md-6">
+        <div class="pull-right">
+            <div class="form-inline">
+                <div class="form-group">
+                    <input type="text" class="form-control input-sm" data-bind="textInput: campaigns.searchTerm" placeholder="Search campaigns" />
+                </div>
+
+                <div class="form-group">
+                    <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: campaigns.showOld }, click: campaigns.showOld.toggle">
+                        <i class="fa" data-bind="css: { 'fa-square-o': !campaigns.showOld(), 'fa-check-square-o': campaigns.showOld }"></i>
+                        Show Completed Campaigns
+                    </button>
+                    <span data-bind="text: '(' + total + ')' "></span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="hide text-center" data-bind="css: { hide: campaigns.filtered().length }">
+        <div class="alert alert-warning" role="alert">
+            <strong>No matching campaigns.</strong>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div id="campaignGrid" class="table-responsive">
+            <table class="table" data-bind="css: { hide: !campaigns.filtered().length }">
+                <tr>
+                    <th><span title="Name of the campaign">Title</span></th>
+                    <th><span title="Description of the campaign">Description</span></th>
+                    <th><span title="Date of the campaign">Dates</span></th>
+                </tr>
+                <!-- ko foreach: campaigns.filtered -->
+                <tr>
+                    <td>
+                        <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
+                    </td>
+                    <td>
+                        <span data-bind="text: Description"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: displayDate()"></span>
+                    </td>
+                </tr>
+                <!-- /ko -->
+            </table>
+        </div>
+    </div>
+</div>
+
+@if (Model.HasPrivacyPolicy)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <p class="text-center"><a asp-controller="Organization" asp-action="OrganizationPrivacyPolicy">@Model.Name Privacy Policy</a></p>
+        </div>
+    </div>
+}
+
+@section scripts {
+    <script>
+        var modelCampaigns = @Json.Serialize(Model.Campaigns);
+    </script>
+    <script type="text/javascript" src="~/js/organization.js"></script>
+}

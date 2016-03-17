@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using Microsoft.Data.Entity;
 
 namespace AllReady.Models
@@ -18,7 +16,7 @@ namespace AllReady.Models
                           .Include(x => x.User)
                           .Include(x => x.Task.Activity)
                           .Include(x => x.Task.Activity.Campaign)
-                          .Include(x => x.Task.Tenant)
+                          .Include(x => x.Task.Organization)
                           .ToArray();
             }
         }

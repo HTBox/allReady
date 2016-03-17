@@ -1,7 +1,7 @@
-﻿using AllReady.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AllReady.Models;
 
 namespace AllReady.ViewModels
 {
@@ -21,15 +21,16 @@ namespace AllReady.ViewModels
             Name = campaign.Name;
             Description = campaign.Description;
             FullDescription = campaign.FullDescription;
-            ///TODO: Commented out as campaign.ManagingTenant is null from sample data;
-            /// Fix sample provider to ensure that property is not null
-            //ManagingTenantName = campaign.ManagingTenant.Name;
-            //ManagingTenantId = campaign.ManagingTenant.Id;
-            StartDate = new DateTimeOffset(campaign.StartDateTimeUtc, TimeSpan.Zero);
-            EndDate = new DateTimeOffset(campaign.EndDateTimeUtc, TimeSpan.Zero);
+            ManagingOrganizationName = campaign.ManagingOrganization?.Name ?? string.Empty;
+            ManagingOrganizationId = campaign.ManagingOrganization?.Id ?? 0;
+            TimeZoneId = campaign.TimeZoneId;
+            StartDate = campaign.StartDateTime;
+            EndDate = campaign.EndDateTime;
             Activities = campaign.Activities != null ? campaign.Activities.ToViewModel() : Enumerable.Empty<ActivityViewModel>();
             CampaignImpact = campaign.CampaignImpact;
             ImageUrl = campaign.ImageUrl;
+
+            HasPrivacyPolicy = !string.IsNullOrEmpty(campaign.ManagingOrganization?.PrivacyPolicy);
         }
 
         public int Id { get; set; }
@@ -42,19 +43,23 @@ namespace AllReady.ViewModels
 
         public string ImageUrl { get; set; }
 
-        public int ManagingTenantId { get; set; }
+        public int ManagingOrganizationId { get; set; }
 
-        public string ManagingTenantName { get; set; }
+        public string ManagingOrganizationName { get; set; }
 
         public CampaignImpact CampaignImpact { get; set; }
 
-        public List<CampaignSponsors> ParticipatingTenants { get; set; }
+        public List<CampaignSponsors> ParticipatingOrganizations { get; set; }
+
+        public string TimeZoneId { get; set; }
 
         public DateTimeOffset StartDate { get; set; }
 
         public DateTimeOffset EndDate { get; set; }
 
         public IEnumerable<ActivityViewModel> Activities { get; set; }
+
+        public bool HasPrivacyPolicy { get; set; }
     }
 
     public static class CampaignViewModelExtensions
@@ -67,32 +72,6 @@ namespace AllReady.ViewModels
         public static IEnumerable<CampaignViewModel> ToViewModel(this IEnumerable<Campaign> campaigns)
         {
             return campaigns.Select(campaign => campaign.ToViewModel());
-        }
-
-        public static Campaign ToModel(this CampaignViewModel campaign, IAllReadyDataAccess dataAccess)
-        {
-            var tenant = dataAccess.GetTenant(campaign.ManagingTenantId);
-
-            if (tenant == null)
-                return null;
-
-            return new Campaign
-            {
-                Id = campaign.Id,
-                Description = campaign.Description,
-                Name = campaign.Name,
-                ManagingTenant = tenant,
-                ParticipatingTenants = campaign.ParticipatingTenants,
-                Activities = campaign.Activities.ToModel(dataAccess).ToList(),
-                EndDateTimeUtc = campaign.EndDate.UtcDateTime,
-                StartDateTimeUtc = campaign.StartDate.UtcDateTime
-            };
-        }
-
-        public static IEnumerable<Campaign> ToModel(this IEnumerable<CampaignViewModel> campaigns, IAllReadyDataAccess dataAccess)
-        {
-            return campaigns.Select(campaign => campaign.ToModel(dataAccess));
-        }
-
+        }       
     }
 }

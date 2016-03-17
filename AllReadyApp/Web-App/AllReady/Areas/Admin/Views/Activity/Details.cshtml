@@ -1,5 +1,9 @@
+@using AllReady.Security
 @model AllReady.Areas.Admin.Models.ActivityDetailModel
-@{ ViewBag.Title = Model.Name; }
+@{ 
+    ViewBag.Title = Model.Name;
+    var userTimeZoneId = User.GetTimeZoneId();
+}
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
@@ -20,9 +24,15 @@
     <div class="col-md-10">
         <h2>@Model.Name <a asp-controller="Activity" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-controller="Activity" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a></h2>
         <p>@Model.Description</p>
-        @*TODO: Display this in both the campaign's time zone and the user's local time zone
-    See -> https://github.com/HTBox/allReady/issues/369*@
-        <p>@Model.StartDateTime.ToString("g") - @Model.EndDateTime.ToString("g")</p>
+        <p><time value="Model.StartDateTime"></time> - <time value="Model.EndDateTime"></time> 
+        <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em></p>
+        @if (!string.IsNullOrEmpty(userTimeZoneId) && Model.TimeZoneId != userTimeZoneId)
+        { 
+            <p>
+                <time value="Model.StartDateTime" target-time-zone-id="@userTimeZoneId"></time> - <time value="Model.EndDateTime" target-time-zone-id="@userTimeZoneId"></time>
+                <em><time-zone-name time-zone-id="@userTimeZoneId"></time-zone-name></em>
+            </p>
+        }               
     </div>
 </div>
 <div class="row">

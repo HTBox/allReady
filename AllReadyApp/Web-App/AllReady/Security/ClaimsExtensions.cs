@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using AllReady.Models;
 using System.Security.Claims;
+using AllReady.Models;
 
 namespace AllReady.Security
 {
@@ -13,34 +13,61 @@ namespace AllReady.Security
             return user.HasClaim(ClaimTypes.UserType, userTypeString);
         }
 
-        public static bool IsTenantAdmin(this ClaimsPrincipal user)
+        public static bool IsOrganizationAdmin(this ClaimsPrincipal user)
         {
-            int? userTenantId = user.GetTenantId();
-            return userTenantId.HasValue && user.IsTenantAdmin(userTenantId.Value);
+            int? userOrganizationId = user.GetOrganizationId();
+            return userOrganizationId.HasValue && user.IsOrganizationAdmin(userOrganizationId.Value);
         }
 
-        public static bool IsTenantAdmin(this ClaimsPrincipal user, int tenantId)
+        public static bool IsOrganizationAdmin(this ClaimsPrincipal user, int organizationId)
         {
-            int? userTenantId = user.GetTenantId();
-            return user.IsUserType(UserType.SiteAdmin) ||                   
-                  (user.IsUserType(UserType.TenantAdmin) &&
-                   userTenantId.HasValue && userTenantId.Value == tenantId);
+            int? userOrganizationId = user.GetOrganizationId();
+            return user.IsUserType(UserType.SiteAdmin) ||
+                  (user.IsUserType(UserType.OrgAdmin) &&
+                   userOrganizationId.HasValue && userOrganizationId.Value == organizationId);
         }
 
-        public static int? GetTenantId(this ClaimsPrincipal user)
+        public static int? GetOrganizationId(this ClaimsPrincipal user)
         {
             int? result = null;
-            var tenantIdClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Tenant);
-            if (tenantIdClaim != null)
+            var organizationIdClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Organization);
+            if (organizationIdClaim != null)
             {
-                int tenantId;
-                if (int.TryParse(tenantIdClaim.Value, out tenantId))
+                int organizationId;
+                if (int.TryParse(organizationIdClaim.Value, out organizationId))
                 {
-                    result = tenantId;
+                    result = organizationId;
                 }
             }
 
             return result;
+        }
+
+        public static string GetTimeZoneId(this ClaimsPrincipal user)
+        {
+            string result = null;
+            var timeZoneIdClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.TimeZoneId);
+            if (timeZoneIdClaim != null)
+            {
+                result = timeZoneIdClaim.Value;
+            }
+            return result;
+        }
+
+        public static bool IsUserProfileIncomplete(this ClaimsPrincipal user)
+        {
+            return user.HasClaim(c => c.Type == ClaimTypes.ProfileIncomplete);                        
+        }
+
+
+        public static TimeZoneInfo GetTimeZoneInfo(this ClaimsPrincipal user)
+        {
+            var timeZoneId = user.GetTimeZoneId();
+            if (!string.IsNullOrEmpty(timeZoneId))
+            {
+                return TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+            }
+            return null;
         }
 
         public static string GetDisplayName(this ClaimsPrincipal user)
@@ -54,16 +81,16 @@ namespace AllReady.Security
 
         }
 
-        public static int? GetTenantId(this ApplicationUser user)
+        public static int? GetOrganizationId(this ApplicationUser user)
         {
             int? result = null;
-            var tenantIdClaim = user.Claims.FirstOrDefault(c => c.ClaimType == ClaimTypes.Tenant);
-            if (tenantIdClaim != null)
+            var organizationIdClaim = user.Claims.FirstOrDefault(c => c.ClaimType == ClaimTypes.Organization);
+            if (organizationIdClaim != null)
             {
-                int tenantId;
-                if (int.TryParse(tenantIdClaim.ClaimValue, out tenantId))
+                int organizationId;
+                if (int.TryParse(organizationIdClaim.ClaimValue, out organizationId))
                 {
-                    result = tenantId;
+                    result = organizationId;
                 }
             }
 

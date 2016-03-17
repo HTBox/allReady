@@ -12,7 +12,7 @@ namespace AllReady.UnitTest.Activities
         protected override void LoadTestData()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            Tenant htb = new Tenant()
+            Organization htb = new Organization()
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
@@ -22,7 +22,7 @@ namespace AllReady.UnitTest.Activities
             Campaign firePrev = new Campaign()
             {
                 Name = "Neighborhood Fire Prevention Days",
-                ManagingTenant = htb
+                ManagingOrganization = htb
             };
             htb.Campaigns.Add(firePrev);
             Activity queenAnne = new Activity()
@@ -31,12 +31,12 @@ namespace AllReady.UnitTest.Activities
                 Name = "Queen Anne Fire Prevention Day",
                 Campaign = firePrev,
                 CampaignId = firePrev.Id,
-                StartDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
-                EndDateTimeUtc = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
+                StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
                 RequiredSkills = new List<ActivitySkill>()
             };
-            context.Tenants.Add(htb);
+            context.Organizations.Add(htb);
             context.Activities.Add(queenAnne);
             context.SaveChanges();
         }

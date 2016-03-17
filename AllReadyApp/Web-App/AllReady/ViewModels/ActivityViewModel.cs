@@ -1,9 +1,8 @@
-﻿using AllReady.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
+using AllReady.Models;
 
 namespace AllReady.ViewModels
 {
@@ -11,7 +10,7 @@ namespace AllReady.ViewModels
     {
         public ActivityViewModel()
         {
-            this.Tasks = new List<TaskViewModel>();
+            Tasks = new List<TaskViewModel>();
         }
 
         public ActivityViewModel(Activity activity)
@@ -23,16 +22,23 @@ namespace AllReady.ViewModels
                 CampaignName = activity.Campaign.Name;
             }
 
+            OrganizationId = activity.Campaign.ManagingOrganization.Id;
+            OrganizationName = activity.Campaign.ManagingOrganization.Name;
+
             Title = activity.Name;
             Description = activity.Description;
+            ActivityType = activity.ActivityType;
 
-            StartDateTime = new DateTimeOffset(activity.StartDateTimeUtc, TimeSpan.Zero);
-            EndDateTime = new DateTimeOffset(activity.EndDateTimeUtc, TimeSpan.Zero);
+            TimeZoneId = activity.Campaign.TimeZoneId;
+            StartDateTime = activity.StartDateTime;
+            EndDateTime = activity.EndDateTime;
 
             if (activity.Location != null)
             {
                 Location = new LocationViewModel(activity.Location);
             }
+
+            IsClosed = EndDateTime.UtcDateTime < DateTimeOffset.UtcNow;
 
             ImageUrl = activity.ImageUrl;
 
@@ -42,16 +48,20 @@ namespace AllReady.ViewModels
                  : new List<TaskViewModel>();
 
             RequiredSkills = activity.RequiredSkills?.Select(acsk => acsk.Skill).ToList();
+
+            HasPrivacyPolicy = !string.IsNullOrEmpty(activity.Campaign.ManagingOrganization.PrivacyPolicy);
         }
 
         public int Id { get; set; }
-        public int TenantId { get; set; }
-        public string TenantName { get; set; }
+        public int OrganizationId { get; set; }
+        public string OrganizationName { get; set; }
         public int CampaignId { get; set; }
         public string CampaignName { get; set; }
         public string Title { get; set; }
+        public ActivityTypes ActivityType { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
+        public string TimeZoneId { get; set; }
         public DateTimeOffset StartDateTime { get; set; }
         public DateTimeOffset EndDateTime { get; set; }
         public LocationViewModel Location { get; set; }
@@ -63,13 +73,15 @@ namespace AllReady.ViewModels
         public List<Skill> UserSkills { get; set; }
         public int NumberOfVolunteersRequired { get; set; }
         public ActivitySignupViewModel SignupModel { get; set; }
+        public bool IsClosed { get; set; }
+        public bool HasPrivacyPolicy { get; set; }
     }
 
     public static class ActivityViewModelExtension
     {
         public static LocationViewModel ToViewModel(this Location location)
         {
-            LocationViewModel value = new LocationViewModel()
+            var value = new LocationViewModel
             {
                 Address1 = location.Address1,
                 Address2 = location.Address2,
@@ -81,7 +93,7 @@ namespace AllReady.ViewModels
         }
         public static Location ToModel(this LocationViewModel location)
         {
-            Location value = new Location()
+            var value = new Location
             {
                 Address1 = location.Address1,
                 Address2 = location.Address2,
@@ -95,54 +107,6 @@ namespace AllReady.ViewModels
         public static IEnumerable<ActivityViewModel> ToViewModel(this IEnumerable<Activity> activities)
         {
             return activities.Select(activity => new ActivityViewModel(activity));
-        }
-
-        /// <summary>
-        /// Returns null when there is no matching campaign for the campaign Id.
-        /// </summary>
-        public static Activity ToModel(this ActivityViewModel activity, IAllReadyDataAccess dataAccess)
-        {
-            var campaign = dataAccess.GetCampaign(activity.CampaignId);
-
-            if (campaign == null)
-                return null;
-
-            Activity newActivity = new Activity()
-            {
-                Id = activity.Id,
-                Campaign = campaign,
-                EndDateTimeUtc = activity.EndDateTime.UtcDateTime,
-                StartDateTimeUtc = activity.StartDateTime.UtcDateTime,
-                Location = new Location()
-                {
-                    Address1 = activity.Location.Address1,
-                    Address2 = activity.Location.Address2,
-                    City = activity.Location.City,
-                    Country = "US",
-                    PostalCode = activity.Location.PostalCode,
-                    State = activity.Location.State
-                },
-                Name = activity.Title
-            };
-            var tasks = new List<AllReadyTask>();
-
-            foreach (TaskViewModel tvm in activity.Tasks)
-            {
-                tasks.Add(new AllReadyTask()
-                {
-                    Activity = newActivity,
-                    Name = tvm.Name,
-                    Id = tvm.Id,
-                    Description = tvm.Description
-                });
-            }
-            newActivity.Tasks = tasks;
-            return newActivity;
-        }
-
-        public static IEnumerable<Activity> ToModel(this IEnumerable<ActivityViewModel> activities, IAllReadyDataAccess dataAccess)
-        {
-            return activities.Select(activity => activity.ToModel(dataAccess));
         }
 
         public static ActivityViewModel WithUserInfo(this ActivityViewModel viewModel, Activity activity, ClaimsPrincipal user, IAllReadyDataAccess dataAccess)

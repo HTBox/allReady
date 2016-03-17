@@ -1,14 +1,11 @@
-﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Mvc;
-
-using AllReady.Security;
-using AllReady.Models;
-using AllReady.ViewModels;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using AllReady.Models;
+using AllReady.Security;
+using AllReady.ViewModels;
+using Microsoft.AspNet.Mvc;
 
 namespace AllReady.Controllers
 {
@@ -31,18 +28,18 @@ namespace AllReady.Controllers
                 return true;
             }
 
-            if (User.IsUserType(UserType.TenantAdmin))
+            if (User.IsUserType(UserType.OrgAdmin))
             {
-                //TODO: Modify to check that user is tenant admin for tenant of task
+                //TODO: Modify to check that user is organization admin for organization of task
                 return true;
             }
 
-            if (task.Activity != null && task.Activity.Organizer != null && task.Activity.Organizer.Id == userId)
+            if (task.Activity?.Organizer != null && task.Activity.Organizer.Id == userId)
             {
                 return true;
             }
 
-            if (task.Activity != null && task.Activity.Campaign != null && task.Activity.Campaign.Organizer != null && task.Activity.Campaign.Organizer.Id == userId)
+            if (task.Activity?.Campaign != null && task.Activity.Campaign.Organizer != null && task.Activity.Campaign.Organizer.Id == userId)
             {
                 return true;
             }
@@ -59,7 +56,7 @@ namespace AllReady.Controllers
             else
             {
                 var userId = User.GetUserId();                
-                if (task.AssignedVolunteers != null && task.AssignedVolunteers.FirstOrDefault(x => x.User.Id == userId) != null)
+                if (task.AssignedVolunteers?.FirstOrDefault(x => x.User.Id == userId) != null)
                 {
                     return true;
                 }
@@ -112,8 +109,8 @@ namespace AllReady.Controllers
             // Changing all the potential properties that the VM could have modified.
             task.Name = value.Name;
             task.Description = value.Description;
-            task.StartDateTimeUtc = value.StartDateTime.Value.UtcDateTime;
-            task.EndDateTimeUtc = value.EndDateTime.Value.UtcDateTime;
+            task.StartDateTime = value.StartDateTime.Value.UtcDateTime;
+            task.EndDateTime = value.EndDateTime.Value.UtcDateTime;
 
             await _allReadyDataAccess.UpdateTaskAsync(task);
         }

@@ -1,11 +1,9 @@
-﻿using AllReady.Areas.Admin.Models;
-using AllReady.Models;
-using AllReady.ViewModels;
-using MediatR;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using AllReady.Areas.Admin.Models;
+using AllReady.Models;
+using MediatR;
+using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
@@ -16,21 +14,28 @@ namespace AllReady.Areas.Admin.Features.Campaigns
         public CampaignListQueryHandler(AllReadyContext context)
         {
             _context = context;
-
         }
+
         public IEnumerable<CampaignSummaryModel> Handle(CampaignListQuery message)
         {
-            var campaigns = _context.Campaigns
-                //.Where(c => c.ManagingTenantId == message.TenantId)
-                .Select(c => new CampaignSummaryModel()
+            var campaignsQuery = _context.Campaigns
+                .AsNoTracking();
+            if (message.OrganizationId.HasValue)
+            {
+                campaignsQuery = campaignsQuery.Where(c => c.ManagingOrganizationId == message.OrganizationId);
+            }
+                
+            var campaigns = campaignsQuery.Select(c => new CampaignSummaryModel()
                 {
                     Id = c.Id,
                     Name = c.Name,
                     Description = c.Description,
-                    TenantId = c.ManagingTenantId,
-                    TenantName = c.ManagingTenant.Name,
-                    StartDate = c.StartDateTimeUtc,
-                    EndDate = c.EndDateTimeUtc
+                    OrganizationId = c.ManagingOrganizationId,
+                    OrganizationName = c.ManagingOrganization.Name,
+                    TimeZoneId = c.TimeZoneId,
+                    StartDate = c.StartDateTime,
+                    EndDate = c.EndDateTime,
+                    Locked = c.Locked
                 });
 
             return campaigns;

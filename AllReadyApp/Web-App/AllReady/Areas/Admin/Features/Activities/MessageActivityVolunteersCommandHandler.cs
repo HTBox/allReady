@@ -1,24 +1,25 @@
-﻿using AllReady.Features.Notifications;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Activities
 {
-    public class MessageActivityVolunteersCommandHandler : RequestHandler<MessageActivityVolunteersCommand>
+    public class MessageActivityVolunteersCommandHandler : AsyncRequestHandler<MessageActivityVolunteersCommand>
     {
         private AllReadyContext _context;
-        private IMediator _bus;
+        private IMediator _mediator;
 
-        public MessageActivityVolunteersCommandHandler(AllReadyContext context, IMediator bus)
+        public MessageActivityVolunteersCommandHandler(AllReadyContext context, IMediator mediator)
         {
             _context = context;
-            _bus = bus;
+            _mediator = mediator;
         }
 
-        protected override void HandleCore(MessageActivityVolunteersCommand message)
+        protected override async Task HandleCore(MessageActivityVolunteersCommand message)
         {
             var users =
                 _context.ActivitySignup.AsNoTracking()
@@ -49,7 +50,7 @@ namespace AllReady.Areas.Admin.Features.Activities
                 }
             };
 
-            _bus.Send(command);
+            await _mediator.SendAsync(command).ConfigureAwait(false);
         }
     }
 }

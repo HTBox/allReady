@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AllReady.Models
 {
@@ -18,13 +17,16 @@ namespace AllReady.Models
 
         public string Description { get; set; }
 
+        [Display(Name = "Activity Type")]
+        public ActivityTypes ActivityType { get; set; }    
+        
         public int NumberOfVolunteersRequired { get; set; }
 
         [Display(Name = "Start date")]
-        public DateTime StartDateTimeUtc { get; set; }
+        public DateTimeOffset StartDateTime { get; set; }
 
         [Display(Name = "End date")]
-        public DateTime EndDateTimeUtc { get; set; }
+        public DateTimeOffset EndDateTime { get; set; }
 
         public Location Location { get; set; }
 

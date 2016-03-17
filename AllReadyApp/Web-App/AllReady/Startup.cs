@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using AllReady.Models;
+using AllReady.Security;
 using AllReady.Services;
 using Autofac;
-using Autofac.Features.Variance;
 using Autofac.Extensions.DependencyInjection;
+using Autofac.Features.Variance;
 using MediatR;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
@@ -13,12 +14,10 @@ using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Localization;
 using Microsoft.Data.Entity;
-using Microsoft.Dnx.Runtime;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
-using AllReady.Security;
 
 namespace AllReady
 {
@@ -92,7 +91,7 @@ namespace AllReady
             // Add Authorization rules for the app
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("TenantAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "TenantAdmin", "SiteAdmin"));
+                options.AddPolicy("OrgAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "OrgAdmin", "SiteAdmin"));
                 options.AddPolicy("SiteAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "SiteAdmin"));
             });
 
@@ -112,7 +111,6 @@ namespace AllReady
             services.AddSingleton((x) => Configuration);
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
-            services.AddSingleton<IClosestLocations, SqlClosestLocations>();
             services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
             services.AddSingleton<IImageService, ImageService>();
             //services.AddSingleton<GeoService>();
@@ -221,9 +219,7 @@ namespace AllReady
             {
                 options.AccessDeniedPath = new PathString("/Home/AccessDenied");
             });
-
-
-
+            
             // Track data about exceptions from the application. Should be configured after all error handling middleware in the request pipeline.
             app.UseApplicationInsightsExceptionTelemetry();
 
@@ -294,6 +290,7 @@ namespace AllReady
             {
                 await sampleData.CreateAdminUser();
             }
+
         }
 
         public static void Main(string[] args) => WebApplication.Run<Startup>(args);

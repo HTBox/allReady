@@ -1,4 +1,6 @@
 ﻿@model IList<CampaignViewModel>
+@using AllReady.Security
+
 @{
     ViewData["Title"] = "All Registered Campaigns";
     @addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
@@ -9,18 +11,6 @@
 <environment names="Staging,Production">
     <link rel="stylesheet" href="~/css/campaignStyle.css" asp-file-version="true" />
 </environment>
-
-<div class="row search-banner">
-    <div class="col-md-12 text-center">
-        <input type="search"
-               class="campaign-search "
-               placeholder="Search for campaigns using your zip code"
-               data-bind="value: searchTerm, valueUpdate: 'afterkeydown', event: { keypress: handleEnter }" />
-        <a class="main-search-button" data-bind="click: searchCampaigns" title="Search for campaigns">
-            <img class="campaign-search-button" src="~/images/search-icon.png" alt="Search for campaigns" />
-        </a>
-    </div>
-</div>
 
 <div class="row">
     <div class="col-md-12 text-center">
@@ -53,6 +43,15 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        @if (User.IsUserType(UserType.OrgAdmin) || User.IsUserType(UserType.SiteAdmin))
+        {
+            <p><a asp-route-area="Admin" asp-route-controller="Campaign" asp-route-action="Create" class="btn btn-default">Create Campaign</a></p>
+        }
     </div>
 </div>
 

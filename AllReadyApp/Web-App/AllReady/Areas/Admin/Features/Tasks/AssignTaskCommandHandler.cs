@@ -1,25 +1,25 @@
-﻿using AllReady.Features.Notifications;
-using AllReady.Models;
-using MediatR;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Features.Notifications;
+using AllReady.Models;
+using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class AssignTaskCommandHandler : RequestHandler<AssignTaskCommand>
+    public class AssignTaskCommandHandler : AsyncRequestHandler<AssignTaskCommand>
     {
         private readonly AllReadyContext _context;
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
 
-        public AssignTaskCommandHandler(AllReadyContext context, IMediator bus)
+        public AssignTaskCommandHandler(AllReadyContext context, IMediator mediator)
         {
             _context = context;
-            _bus = bus;
+            _mediator = mediator;
         }
 
-        protected override void HandleCore(AssignTaskCommand message)
+        protected override async Task HandleCore(AssignTaskCommand message)
         {
             var task = _context.Tasks.SingleOrDefault(c => c.Id == message.TaskId);
             var newVolunteers = new List<TaskSignup>();
@@ -47,7 +47,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 var removedVolunteers = new List<TaskSignup>();
                 foreach (var vol in task.AssignedVolunteers)
                 {
-                    if (!message.UserIds.Any(uid => uid == vol.User.Id))
+                    if (message.UserIds.All(uid => uid != vol.User.Id))
                     {
                         removedVolunteers.Add(vol);
                     }
@@ -57,7 +57,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     task.AssignedVolunteers.Remove(vol);
                 }
             }
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             // send all notifications to the queue
             var smsRecipients = new List<string>();
@@ -80,8 +80,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 }
             };
 
-            _bus.Send(command);
-
+            await _mediator.SendAsync(command);
         }
     }
 }

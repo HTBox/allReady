@@ -1,9 +1,9 @@
-﻿using AllReady.Areas.Admin.Models;
-using Microsoft.Data.Entity;
+﻿using System;
+using System.Linq;
+using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
-using System.Linq;
-using System.Collections.Generic;
+using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
@@ -32,9 +32,14 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
             campaign.Name = message.Campaign.Name;
             campaign.Description = message.Campaign.Description;
-            campaign.StartDateTimeUtc = message.Campaign.StartDate;
-            campaign.EndDateTimeUtc = message.Campaign.EndDate;
-            campaign.ManagingTenantId = message.Campaign.TenantId;
+            campaign.FullDescription = message.Campaign.FullDescription;
+            campaign.TimeZoneId = message.Campaign.TimeZoneId;
+            TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(campaign.TimeZoneId);
+            var startDateTimeOffset = timeZoneInfo.GetUtcOffset(message.Campaign.StartDate);
+            campaign.StartDateTime = new DateTimeOffset(message.Campaign.StartDate.Year, message.Campaign.StartDate.Month, message.Campaign.StartDate.Day, 0, 0, 0, startDateTimeOffset);
+            var endDateTimeOffset = timeZoneInfo.GetUtcOffset(message.Campaign.EndDate);
+            campaign.EndDateTime = new DateTimeOffset(message.Campaign.EndDate.Year, message.Campaign.EndDate.Month, message.Campaign.EndDate.Day, 23, 59, 59, endDateTimeOffset);
+            campaign.ManagingOrganizationId = message.Campaign.OrganizationId;
             campaign.ImageUrl = message.Campaign.ImageUrl;
 
             campaign = campaign.UpdateCampaignContact(message.Campaign, _context);
