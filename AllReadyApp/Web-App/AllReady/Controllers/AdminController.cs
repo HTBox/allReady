@@ -66,10 +66,10 @@ namespace AllReady.Controllers
                 if (result.Succeeded)
                 {
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = Url.Action("ConfirmEmail", "Admin", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    var callbackUrl = Url.Action(new UrlActionContext { Action = "ConfirmEmail", Controller = "Admin", Values = new { userId = user.Id, code = code }, Protocol = Request.Scheme });
+                    //note: had to change Url.Action to take a UrlActionContext b/c "Url.Action" is really an extension method that eventually uses UrlActionContext, and extension methods are not mockable
+                    var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmEmail), Controller = "Admin", Values = new { userId = user.Id, code = code }, Protocol = Request.Scheme });
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your account", $"Please confirm your account by clicking this <a href=\"{callbackUrl}\">link</a>");
-                    return RedirectToAction(nameof(AdminController.DisplayEmail), "Admin");
+                    return RedirectToAction(nameof(DisplayEmail), "Admin");
                 }
 
                 AddErrors(result);
