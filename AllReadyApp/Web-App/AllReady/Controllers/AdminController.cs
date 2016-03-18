@@ -7,6 +7,7 @@ using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.AspNet.Mvc.Routing;
 using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Controllers
@@ -65,7 +66,8 @@ namespace AllReady.Controllers
                 if (result.Succeeded)
                 {
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Admin", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                    //var callbackUrl = Url.Action("ConfirmEmail", "Admin", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                    var callbackUrl = Url.Action(new UrlActionContext { Action = "ConfirmEmail", Controller = "Admin", Values = new { userId = user.Id, code = code }, Protocol = Request.Scheme });
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your account", $"Please confirm your account by clicking this <a href=\"{callbackUrl}\">link</a>");
                     return RedirectToAction(nameof(AdminController.DisplayEmail), "Admin");
                 }
@@ -94,11 +96,13 @@ namespace AllReady.Controllers
             {
                 return View("Error");
             }
+
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
                 return View("Error");
             }
+
             var result = await _userManager.ConfirmEmailAsync(user, code);
 
             // If the account confirmation was successful, then send the SiteAdmin an email to approve
@@ -106,10 +110,7 @@ namespace AllReady.Controllers
             if (result.Succeeded)
             {
                 var callbackUrl = Url.Action(nameof(SiteController.EditUser), "Site", new { area = "Admin", userId = user.Id }, protocol: HttpContext.Request.Scheme);
-                await _emailSender.SendEmailAsync(
-                    _settings.DefaultAdminUsername,
-                    "Approve organization user account",
-                    "Please approve this account by clicking this <a href=\"" + callbackUrl + "\">link</a>");
+                await _emailSender.SendEmailAsync(_settings.DefaultAdminUsername, "Approve organization user account", $"Please approve this account by clicking this <a href=\"{callbackUrl}\">link</a>");
             }
 
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
@@ -134,6 +135,7 @@ namespace AllReady.Controllers
             {
                 return View("Error");
             }
+
             var userFactors = await _userManager.GetValidTwoFactorProvidersAsync(user);
             var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
             return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
@@ -209,15 +211,14 @@ namespace AllReady.Controllers
             {
                 return RedirectToLocal(model.ReturnUrl);
             }
+
             if (result.IsLockedOut)
             {
                 return View("Lockout");
             }
-            else
-            {
-                ModelState.AddModelError("", "Invalid code.");
-                return View(model);
-            }
+
+            ModelState.AddModelError("", "Invalid code.");
+            return View(model);
         }
 
         #region Helpers

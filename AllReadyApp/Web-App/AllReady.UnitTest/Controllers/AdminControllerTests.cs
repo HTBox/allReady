@@ -14,6 +14,7 @@ using Microsoft.Extensions.OptionsModel;
 using Moq;
 using Shouldly;
 using Xunit;
+using Microsoft.AspNet.Mvc.Routing;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -117,28 +118,60 @@ namespace AllReady.UnitTest.Controllers
                 au.TimeZoneId == defaultTimeZone)));
         }
 
+        [Fact]
+        public async Task RegisterInvokesUrlActionWithCorrectParametersWhenUserCreationIsSuccessful()
+        {
+            const string requestScheme = "requestScheme";
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
+
+            var userManager = new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
+
+            var sut = new AdminController(userManager.Object, null, Mock.Of<IEmailSender>(), null, Mock.Of<IOptions<SampleDataSettings>>(), generalSettings.Object)
+                .SetFakeHttpRequestSchemeTo(requestScheme);
+            var urlHelper = sut.SetFakeIUrlHelper();
+
+            await sut.Register(new RegisterViewModel());
+
+            //note: I can't test the Values part here b/c I do not have control over the Id generation on ApplicationUser b/c it's new'ed up in the controller
+            urlHelper.Verify(mock => mock.Action(It.Is<UrlActionContext>(uac =>
+                uac.Action == "ConfirmEmail" &&
+                uac.Controller == "Admin" &&
+                uac.Protocol == requestScheme)),
+                Times.Once);
+        }
+
         //[Fact]
-        //public async Task RegisterInvokesUrlActionWithCorrectParametersWhenUserCreationIsSuccessful()
+        //public async Task RegisterInvokesSendEmailAsyncWithCorrectParametersWhenUserCreationIsSuccessful()
         //{
-        //    const string defaultTimeZone = "DefaultTimeZone";
-        //    var model = new RegisterViewModel { Email = "email", Password = "Password" };
+        //}
 
-        //    var generalSettings = new Mock<IOptions<GeneralSettings>>();
-        //    generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = defaultTimeZone });
+        //[Fact]
+        //public async Task RegisterReturnsRedirectsToActionWhenUserCreationIsSuccessful()
+        //{
+        //}
 
-        //    var userManager = new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
-        //    userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+        //[Fact]
+        //public async Task RegisterRedirectsToCorrecgtActionWhenUserCreationIsSuccessful()
+        //{
+        //}
 
-        //    var sut = new AdminController(userManager.Object, null, Mock.Of<IEmailSender>(), null, Mock.Of<IOptions<SampleDataSettings>>(), generalSettings.Object)
-        //        .SetFakeHttpRequestSchemeTo("requestScheme");
-        //    sut.SetFakeIUrlHelper();
+        //[Fact]
+        //public async Task RegisterAddsIdentityResultErrorsToModelStateErrorsWhenUserCreationIsNotSuccessful()
+        //{
+        //}
 
-        //    await sut.Register(model);
+        //[Fact]
+        //public async Task RegisterReturnsViewResultWhenUserCreationIsNotSuccessful()
+        //{
+        //}
 
-        //    userManager.Verify(x => x.GenerateEmailConfirmationTokenAsync(It.Is<ApplicationUser>(au =>
-        //        au.UserName == model.Email &&
-        //        au.Email == model.Email &&
-        //        au.TimeZoneId == defaultTimeZone)));
+        //[Fact]
+        //public async Task RegisterReturnsCorrectModelWhenUserCreationIsNotSuccessful()
+        //{
         //}
     }
 }
