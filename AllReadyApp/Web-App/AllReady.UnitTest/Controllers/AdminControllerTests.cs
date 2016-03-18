@@ -22,7 +22,6 @@ namespace AllReady.UnitTest.Controllers
         {
             var sut = new AdminController(null, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
             var result = sut.Register();
-
             Assert.IsType<ViewResult>(result);
         }
 
@@ -236,6 +235,14 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<ViewResult>(result);
             Assert.IsType<RegisterViewModel>(modelResult);
             Assert.Same(model, modelResult);
+        }
+
+        [Fact]
+        public void DisplayEmailReturnsViewResult()
+        {
+            var sut = new AdminController(null, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+            var result = sut.DisplayEmail();
+            Assert.IsType<ViewResult>(result);
         }
     }
 }
