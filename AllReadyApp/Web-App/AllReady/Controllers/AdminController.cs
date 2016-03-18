@@ -92,16 +92,12 @@ namespace AllReady.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
-            if (userId == null || code == null)
-            {
+            if (code == null)
                 return View("Error");
-            }
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
-            {
                 return View("Error");
-            }
 
             var result = await _userManager.ConfirmEmailAsync(user, code);
 
@@ -109,7 +105,7 @@ namespace AllReady.Controllers
             // this user as a Organization Admin
             if (result.Succeeded)
             {
-                var callbackUrl = Url.Action(nameof(SiteController.EditUser), "Site", new { area = "Admin", userId = user.Id }, protocol: HttpContext.Request.Scheme);
+                var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(SiteController.EditUser), Controller = "Site", Values = new { area = "Admin", userId = user.Id }, Protocol = HttpContext.Request.Scheme });
                 await _emailSender.SendEmailAsync(_settings.DefaultAdminUsername, "Approve organization user account", $"Please approve this account by clicking this <a href=\"{callbackUrl}\">link</a>");
             }
 
