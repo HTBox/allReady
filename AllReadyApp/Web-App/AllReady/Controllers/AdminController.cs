@@ -1,10 +1,8 @@
 ﻿using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Models;
 using AllReady.Services;
-using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
@@ -62,17 +60,19 @@ namespace AllReady.Controllers
                     Email = model.Email,
                     TimeZoneId = _generalSettings.DefaultTimeZone
                 };
+
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Action("ConfirmEmail", "Admin", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                        "Please confirm your account by clicking this <a href=\"" + callbackUrl + "\">link</a>");
+                    await _emailSender.SendEmailAsync(model.Email, "Confirm your account", $"Please confirm your account by clicking this <a href=\"{callbackUrl}\">link</a>");
                     return RedirectToAction(nameof(AdminController.DisplayEmail), "Admin");
                 }
+
                 AddErrors(result);
             }
+
             // If we got this far, something failed, redisplay form
             return View(model);
         }
@@ -230,21 +230,12 @@ namespace AllReady.Controllers
             }
         }
 
-        private async Task<ApplicationUser> GetCurrentUserAsync()
-        {
-            return await _userManager.FindByIdAsync(HttpContext.User.GetUserId());
-        }
-
         private IActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
-            {
                 return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
+
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         #endregion
