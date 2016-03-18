@@ -21,7 +21,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void RegisterReturnsViewResult()
         {
-            var sut = new AdminController(null, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+            var sut = CreateConstructableAdminController();
             var result = sut.Register();
             Assert.IsType<ViewResult>(result);
         }
@@ -29,7 +29,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void RegisterHasHttpGetAttribute()
         {
-            var sut = new AdminController(null, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+            var sut = CreateConstructableAdminController();
             var attribute = sut.GetAttributesOn(x => x.Register()).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -37,7 +37,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void RegisterHasAllowAnonymousAttribute()
         {
-            var sut = new AdminController(null, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+            var sut = CreateConstructableAdminController();
             var attribute = sut.GetAttributesOn(x => x.Register()).OfType<AllowAnonymousAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -45,7 +45,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task RegisterReturnsViewResultWhenModelStateIsNotValid()
         {
-            var sut = new AdminController(null, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+            var sut = CreateConstructableAdminController();
             sut.AddModelStateError();
 
             var result = await sut.Register(It.IsAny<RegisterViewModel>());
@@ -58,7 +58,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var model = new RegisterViewModel();
 
-            var sut = new AdminController(null, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+            var sut = CreateConstructableAdminController();
             sut.AddModelStateError();
 
             var result = await sut.Register(model) as ViewResult;
@@ -241,7 +241,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DisplayEmailReturnsViewResult()
         {
-            var sut = new AdminController(null, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+            var sut = CreateConstructableAdminController();
             var result = sut.DisplayEmail();
             Assert.IsType<ViewResult>(result);
         }
@@ -249,7 +249,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DisplayEmailHasHttpGetAttribute()
         {
-            var sut = new AdminController(null, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+            var sut = CreateConstructableAdminController();
             var attribute = sut.GetAttributesOn(x => x.DisplayEmail()).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -257,7 +257,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DisplayEmailHasAllowAnonymousAttribute()
         {
-            var sut = new AdminController(null, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+            var sut = CreateConstructableAdminController();
             var attribute = sut.GetAttributesOn(x => x.DisplayEmail()).OfType<AllowAnonymousAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -265,7 +265,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task ConfirmEmailReturnsErrorWhenCodeIsNull()
         {
-            var sut = new AdminController(null, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+            var sut = CreateConstructableAdminController();
             var result = await sut.ConfirmEmail(null, null) as ViewResult;
             Assert.Equal(result.ViewName, "Error");
         }
@@ -279,10 +279,16 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(result.ViewName, "Error");
         }
 
-        //[Fact]
-        //public async Task ConfirmEmailInvokesFindByIdAsyncWithCorrectUserId()
-        //{
-        //}
+        [Fact]
+        public async Task ConfirmEmailInvokesFindByIdAsyncWithCorrectUserId()
+        {
+            const string userId = "userId";
+            var userManager = CreateUserManagerMock();
+            var sut = new AdminController(userManager.Object, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+            await sut.ConfirmEmail(userId, "code");
+
+            userManager.Verify(x => x.FindByIdAsync(userId), Times.Once);
+        }
 
         [Fact]
         public async Task ConfirmEmailInvokesConfirmEmailAsyncWithCorrectUserAndCode()
@@ -328,15 +334,74 @@ namespace AllReady.UnitTest.Controllers
                 Times.Once);
         }
 
-        //[Fact]
-        //public async Task ConfirmEmailInvokesSendEmailAsyncWithCorrectParametersWhenUsersEmailIsConfirmedSuccessfully()
-        //{
-        //}
+        [Fact]
+        public async Task ConfirmEmailInvokesSendEmailAsyncWithCorrectParametersWhenUsersEmailIsConfirmedSuccessfully()
+        {
+            const string defaultAdminUserName = "requestScheme";
+            const string callbackUrl = "callbackUrl";
+
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).Returns(() => Task.FromResult(new ApplicationUser()));
+            userManager.Setup(x => x.ConfirmEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+
+            var settings = new Mock<IOptions<SampleDataSettings>>();
+            settings.Setup(x => x.Value).Returns(new SampleDataSettings { DefaultAdminUsername = defaultAdminUserName });
+
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(callbackUrl);
+
+            var emailSender = new Mock<IEmailSender>();
+
+            var sut = new AdminController(userManager.Object, null, emailSender.Object, null, settings.Object, Mock.Of<IOptions<GeneralSettings>>());
+            sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
+            sut.Url = urlHelper.Object;
+
+            await sut.ConfirmEmail(It.IsAny<string>(), "code");
+
+            emailSender.Verify(x => x.SendEmailAsync(defaultAdminUserName, "Approve organization user account", 
+                $"Please approve this account by clicking this <a href=\"{callbackUrl}\">link</a>"));
+        }
+
+        [Fact]
+        public async Task ConfirmEmailReturnsCorrectViewWhenUsersConfirmationIsSuccessful()
+        {
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).Returns(() => Task.FromResult(new ApplicationUser()));
+            userManager.Setup(x => x.ConfirmEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
+
+            var settings = new Mock<IOptions<SampleDataSettings>>();
+            settings.Setup(x => x.Value).Returns(new SampleDataSettings { DefaultAdminUsername = It.IsAny<string>() });
+
+            var sut = new AdminController(userManager.Object, null, Mock.Of<IEmailSender>(), null, settings.Object, Mock.Of<IOptions<GeneralSettings>>());
+            sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
+            sut.Url = urlHelper.Object;
+
+            var result = await sut.ConfirmEmail("userId", "code") as ViewResult;
+
+            Assert.Equal(result.ViewName, "ConfirmEmail");
+        }
+
+        [Fact]
+        public async Task ConfirmEmailReturnsCorrectViewWhenUsersConfirmationIsUnsuccessful()
+        {
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).Returns(() => Task.FromResult(new ApplicationUser()));
+            userManager.Setup(x => x.ConfirmEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Failed()));
+
+            var sut = new AdminController(userManager.Object, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+
+            var result = await sut.ConfirmEmail("userId", "code") as ViewResult;
+
+            Assert.Equal(result.ViewName, "Error");
+        }
 
         [Fact]
         public void ConfirmEmailHasHttpGetAttribute()
         {
-            var sut = new AdminController(null, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+            var sut = CreateConstructableAdminController();
             var attribute = sut.GetAttributesOn(x => x.ConfirmEmail(It.IsAny<string>(), It.IsAny<string>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -344,14 +409,44 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ConfirmEmailHasAllowAnonymousAttribute()
         {
-            var sut = new AdminController(null, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+            var sut = CreateConstructableAdminController();
             var attribute = sut.GetAttributesOn(x => x.ConfirmEmail(It.IsAny<string>(), It.IsAny<string>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void ForgotPasswordReturnsView()
+        {
+            var sut = CreateConstructableAdminController();
+            var result = sut.ForgotPassword();
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public void ForgotPasswordHasHttpGetAttribute()
+        {
+            var sut = CreateConstructableAdminController();
+            var attribute = sut.GetAttributesOn(x => x.ForgotPassword()).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void ForgotPasswordHasAllowAnonymousAttribute()
+        {
+            var sut = CreateConstructableAdminController();
+            var attribute = sut.GetAttributesOn(x => x.ForgotPassword()).OfType<AllowAnonymousAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
         private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock()
         {
             return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
+        }
+
+        private AdminController CreateConstructableAdminController()
+        {
+            //this simpliest controller to create where calling new will not throw and exception.
+            return new AdminController(null, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
         }
     }
 }

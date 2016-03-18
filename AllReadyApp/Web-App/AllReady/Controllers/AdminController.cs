@@ -128,9 +128,7 @@ namespace AllReady.Controllers
         {
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null)
-            {
                 return View("Error");
-            }
 
             var userFactors = await _userManager.GetValidTwoFactorProvidersAsync(user);
             var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
@@ -217,8 +215,6 @@ namespace AllReady.Controllers
             return View(model);
         }
 
-        #region Helpers
-
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)
@@ -234,7 +230,5 @@ namespace AllReady.Controllers
 
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
-
-        #endregion
     }
 }
