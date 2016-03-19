@@ -13,7 +13,7 @@ namespace AllReady.UnitTest.Features.Activity
             var message = new AcitivitiesByPostalCodeQuery { PostalCode = "PostalCode", Distance = 100 };
             var dataStore = new Mock<IAllReadyDataAccess>();
             var sut = new AcitivitiesByPostalCodeQueryHandler(dataStore.Object);
-            var results = sut.Handle(message);
+            sut.Handle(message);
 
             dataStore.Verify(x => x.ActivitiesByPostalCode(message.PostalCode, message.Distance), Times.Once);
         }
