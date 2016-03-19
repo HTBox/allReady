@@ -13,6 +13,7 @@ using Microsoft.Extensions.OptionsModel;
 using Moq;
 using Xunit;
 using Microsoft.AspNet.Mvc.Routing;
+using Microsoft.AspNet.Http;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -438,9 +439,34 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
+        [Fact]
+        public async Task SendCodeInvokesGetTwoFactorAuthenticationUserAsync()
+        {
+            var signInManager = CreateSignInManagerMock();
+            var sut = new AdminController(null, signInManager.Object, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+            await sut.SendCode(It.IsAny<string>(), It.IsAny<bool>());
+
+            signInManager.Verify(x => x.GetTwoFactorAuthenticationUserAsync(), Times.Once);
+        }
+
         private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock()
         {
             return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
+        }
+
+        private static Mock<SignInManager<ApplicationUser>> CreateSignInManagerMock()
+        {
+            //userManager, contextAccessor and claimsFactory are all required to construct
+            //public SignInManager(Microsoft.AspNet.Identity.UserManager<TUser> userManager, IHttpContextAccessor contextAccessor, IUserClaimsPrincipalFactory<TUser> claimsFactory, IOptions<IdentityOptions> optionsAccessor, ILogger<SignInManager<TUser>> logger)
+            var userManager = CreateUserManagerMock();
+            var contextAccessor = new Mock<IHttpContextAccessor>();
+            //contextAccessor.Setup(mock => mock.HttpContext).Returns(() => mockHttpContext.Object);
+            return new Mock<SignInManager<ApplicationUser>>(userManager.Object, contextAccessor.Object, Mock.Of<IUserClaimsPrincipalFactory<ApplicationUser>>(), null, null);
+            //var signInManagerMock = new Mock<SignInManager<ApplicationUser>>(
+            //    userManagerMock.Object,
+            //    contextAccessor.Object,
+            //    claimsFactory.Object,
+            //    null, null);
         }
 
         private AdminController CreateConstructableAdminController()
