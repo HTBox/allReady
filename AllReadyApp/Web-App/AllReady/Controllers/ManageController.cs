@@ -14,6 +14,7 @@ namespace AllReady.Controllers
     [Authorize]
     public class ManageController : Controller
     {
+        private const string EMAIL_CONFIRMATION_SUBJECT = "Confirm your allReady account";
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
@@ -117,8 +118,8 @@ namespace AllReady.Controllers
         {
             var user = await _userManager.FindByIdAsync(User.GetUserId());
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-            await _emailSender.SendEmailAsync(user.Email, "Confirm your allReady account",
+            var callbackUrl = Url.Action(nameof(ConfirmNewEmail), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+            await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT,
                 "Please confirm your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
 
             return RedirectToAction(nameof(EmailConfirmationSent));
@@ -327,7 +328,7 @@ namespace AllReady.Controllers
             {
                 if(!await _userManager.CheckPasswordAsync(user, model.Password))
                 {
-                    ModelState.AddModelError("Password", "The password supplied is not correct");
+                    ModelState.AddModelError(nameof(model.Password), "The password supplied is not correct");
                     return View(model);
                 }
 
@@ -335,7 +336,7 @@ namespace AllReady.Controllers
                 if(existingUser != null)
                 {
                     // The username/email is already registered
-                    ModelState.AddModelError("NewEmail", "The email supplied is already registered");
+                    ModelState.AddModelError(nameof(model.NewEmail), "The email supplied is already registered");
                     return View(model);
                 }
 
@@ -343,8 +344,8 @@ namespace AllReady.Controllers
                 await _userManager.UpdateAsync(user);
 
                 var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail);
-                var callbackUrl = Url.Action("ConfirmNewEmail", "Manage", new { token = token }, protocol: HttpContext.Request.Scheme);
-                await _emailSender.SendEmailAsync(user.Email, "Confirm your allReady account",
+                var callbackUrl = Url.Action(nameof(ConfirmNewEmail), "Manage", new { token = token }, protocol: HttpContext.Request.Scheme);
+                await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT,
                     "Please confirm your new email address for your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>. Note that once confirmed your original email address will cease to be valid as your username.");
 
                 return RedirectToAction(nameof(EmailConfirmationSent));                
@@ -393,8 +394,8 @@ namespace AllReady.Controllers
             }
 
             var token = await _userManager.GenerateChangeEmailTokenAsync(user, user.PendingNewEmail);
-            var callbackUrl = Url.Action("ConfirmNewEmail", "Manage", new { token = token }, protocol: HttpContext.Request.Scheme);
-            await _emailSender.SendEmailAsync(user.Email, "Confirm your allReady account",
+            var callbackUrl = Url.Action(nameof(ConfirmNewEmail), "Manage", new { token = token }, protocol: HttpContext.Request.Scheme);
+            await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT,
                 "Please confirm your new email address for your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>. Note that once confirmed your original email address will cease to be valid as your username.");
 
             return RedirectToAction(nameof(EmailConfirmationSent));
@@ -474,7 +475,7 @@ namespace AllReady.Controllers
         public IActionResult LinkLogin(string provider)
         {
             // Request a redirect to the external login provider to link a login for the current user
-            var redirectUrl = Url.Action("LinkLoginCallback", "Manage");
+            var redirectUrl = Url.Action(nameof(LinkLoginCallback), "Manage");
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, User.GetUserId());
             return new ChallengeResult(provider, properties);
         }
