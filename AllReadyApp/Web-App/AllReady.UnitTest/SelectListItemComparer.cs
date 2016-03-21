@@ -21,7 +21,7 @@ namespace AllReady.UnitTest
             if (ReferenceEquals(obj, null))
                 return 0;
 
-            var hashText = obj.Text == null ? 0 : obj.Text.GetHashCode();
+            var hashText = obj.Text?.GetHashCode() ?? 0;
             var hashValue = obj.Value.GetHashCode();
 
             return hashText ^ hashValue;

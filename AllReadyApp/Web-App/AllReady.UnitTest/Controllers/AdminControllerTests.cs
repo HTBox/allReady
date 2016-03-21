@@ -23,7 +23,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void RegisterReturnsViewResult()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             var result = sut.Register();
             Assert.IsType<ViewResult>(result);
         }
@@ -31,7 +31,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void RegisterHasHttpGetAttribute()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             var attribute = sut.GetAttributesOn(x => x.Register()).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -39,7 +39,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void RegisterHasAllowAnonymousAttribute()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             var attribute = sut.GetAttributesOn(x => x.Register()).OfType<AllowAnonymousAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -47,7 +47,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task RegisterReturnsViewResultWhenModelStateIsNotValid()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             sut.AddModelStateError();
 
             var result = await sut.Register(It.IsAny<RegisterViewModel>());
@@ -60,7 +60,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var model = new RegisterViewModel();
 
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             sut.AddModelStateError();
 
             var result = await sut.Register(model) as ViewResult;
@@ -243,7 +243,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DisplayEmailReturnsViewResult()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             var result = sut.DisplayEmail();
             Assert.IsType<ViewResult>(result);
         }
@@ -251,7 +251,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DisplayEmailHasHttpGetAttribute()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             var attribute = sut.GetAttributesOn(x => x.DisplayEmail()).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -259,7 +259,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DisplayEmailHasAllowAnonymousAttribute()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             var attribute = sut.GetAttributesOn(x => x.DisplayEmail()).OfType<AllowAnonymousAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -267,7 +267,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task ConfirmEmailReturnsErrorWhenCodeIsNull()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             var result = await sut.ConfirmEmail(null, null) as ViewResult;
             Assert.Equal(result.ViewName, "Error");
         }
@@ -394,7 +394,6 @@ namespace AllReady.UnitTest.Controllers
             userManager.Setup(x => x.ConfirmEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Failed()));
 
             var sut = new AdminController(userManager.Object, null, null, null, null, null);
-
             var result = await sut.ConfirmEmail("userId", "code") as ViewResult;
 
             Assert.Equal(result.ViewName, "Error");
@@ -403,7 +402,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ConfirmEmailHasHttpGetAttribute()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             var attribute = sut.GetAttributesOn(x => x.ConfirmEmail(It.IsAny<string>(), It.IsAny<string>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -411,7 +410,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ConfirmEmailHasAllowAnonymousAttribute()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             var attribute = sut.GetAttributesOn(x => x.ConfirmEmail(It.IsAny<string>(), It.IsAny<string>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -419,7 +418,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ForgotPasswordReturnsView()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             var result = sut.ForgotPassword();
             Assert.IsType<ViewResult>(result);
         }
@@ -427,7 +426,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ForgotPasswordHasHttpGetAttribute()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             var attribute = sut.GetAttributesOn(x => x.ForgotPassword()).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -435,7 +434,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ForgotPasswordHasAllowAnonymousAttribute()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             var attribute = sut.GetAttributesOn(x => x.ForgotPassword()).OfType<AllowAnonymousAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -506,7 +505,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void SendCodeGetHasHttpGetAttribute()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             var attribute = sut.GetAttributesOn(x => x.SendCode(It.IsAny<string>(), It.IsAny<bool>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -514,7 +513,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void SendCodeGetHasAllowAnonymousAttribute()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             var attribute = sut.GetAttributesOn(x => x.SendCode(It.IsAny<string>(), It.IsAny<bool>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -522,11 +521,10 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task SendCodePostWithInvalidModelStateReturnsView()
         {
-            var sut = CreateConstructableAdminController();
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
             sut.AddModelStateError();
             var result = await sut.SendCode(It.IsAny<SendCodeViewModel>());
             Assert.IsType<ViewResult>(result);
-            //TODO: does not send email or sms text and does not redirect
         }
 
         [Fact]
@@ -654,6 +652,200 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(result.RouteValues, routeValues);
         }
 
+        [Fact]
+        public void SendCodePostGetHasHttpPostAttribute()
+        {
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.SendCode(It.IsAny<SendCodeViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void SendCodePostHasAllowAnonymousAttribute()
+        {
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.SendCode(It.IsAny<SendCodeViewModel>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void SendCodePostHasValidateAntiForgeryTokenAttribute()
+        {
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.SendCode(It.IsAny<SendCodeViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public async Task VerifyCodeGetInvokesGetTwoFactorAuthenticationUserAsync()
+        {
+            var signInManager = CreateSignInManagerMock();
+            var sut = new AdminController(null, signInManager.Object, null, null, null, null);
+            await sut.VerifyCode(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>());
+
+            signInManager.Verify(x => x.GetTwoFactorAuthenticationUserAsync(), Times.Once);
+        }
+
+        [Fact]
+        public async Task VerifyCodeGetReturnsErrorViewWhenUserIsNull()
+        {
+            var signInManager = CreateSignInManagerMock();
+            var sut = new AdminController(null, signInManager.Object, null, null, null, null);
+            var result = await sut.VerifyCode(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>()) as ViewResult;
+
+            Assert.Equal(result.ViewName, "Error");
+        }
+
+        [Fact]
+        public async Task VerifyCodeGetReturnsCorrectViewModel()
+        {
+            const string provider = "provider";
+            const bool rememberMe = true;
+            const string returnUrl = "returnUrl";
+
+            var signInManager = CreateSignInManagerMock();
+            signInManager.Setup(x => x.GetTwoFactorAuthenticationUserAsync()).ReturnsAsync(new ApplicationUser());
+
+            var sut = new AdminController(null, signInManager.Object, null, null, null, null);
+
+            var result = await sut.VerifyCode(provider, rememberMe, returnUrl) as ViewResult;
+            var modelResult = result.ViewData.Model as VerifyCodeViewModel;
+
+            Assert.Equal(modelResult.Provider, provider);
+            Assert.Equal(modelResult.ReturnUrl, returnUrl);
+            Assert.Equal(modelResult.RememberMe, rememberMe);
+        }
+
+        [Fact]
+        public void VerifyCodeGetHasAllowAnonymousAttribute()
+        {
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.VerifyCode(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void VerifyCodeGetHasHttpGetAttribute()
+        {
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.VerifyCode(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public async Task VerifyCodePostReturnsReturnsCorrectViewAndCorrectModelWhenModelStateIsInvalid()
+        {
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
+            sut.AddModelStateError();
+            var result = await sut.VerifyCode(new VerifyCodeViewModel()) as ViewResult;
+            var modelResult = result.ViewData.Model as VerifyCodeViewModel;
+
+            Assert.IsType<ViewResult>(result);
+            Assert.IsType<VerifyCodeViewModel>(modelResult);
+        }
+
+        [Fact]
+        public async Task VerifyCodePostInvokesTwoFactorSignInAsyncWithCorrectParameters()
+        {
+            var model = new VerifyCodeViewModel
+            {
+                Provider = "provider",
+                Code = "code",
+                RememberBrowser = true,
+                RememberMe = true
+            };
+
+            var signInManager = CreateSignInManagerMock();
+            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(new SignInResult());
+
+            var sut = new AdminController(null, signInManager.Object, null,  null, null, null);
+            await sut.VerifyCode(model);
+
+            signInManager.Verify(x => x.TwoFactorSignInAsync(model.Provider, model.Code, model.RememberMe, model.RememberBrowser));
+        }
+
+        [Fact]
+        public async Task VerifyCodePostAddsErrorMessageToModelStateErrorWhenTwoFactorSignInAsyncIsNotSuccessful()
+        {
+            var signInManager = CreateSignInManagerMock();
+            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(new SignInResult());
+
+            var sut = new AdminController(null, signInManager.Object, null, null, null, null);
+            await sut.VerifyCode(new VerifyCodeViewModel());
+
+            var errorMessage = sut.ModelState.GetErrorMessages().Single();
+            Assert.Equal(errorMessage, "Invalid code.");
+        }
+
+        [Fact]
+        public async Task VerifyCodePostReturnsLockoutViewIfTwoFactorSignInAsyncFailsAndIsLockedOut()
+        {
+            var signInManager = CreateSignInManagerMock();
+            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(SignInResult.LockedOut);
+
+            var sut = new AdminController(null, signInManager.Object, null, null, null, null);
+            var result = await sut.VerifyCode(new VerifyCodeViewModel()) as ViewResult;
+
+            Assert.Equal(result.ViewName, "Lockout");
+        }
+
+        [Fact]
+        public async Task VerifyCodePostRedirectsToReturnUrlWhenTwoFactorSignInAsyncSucceedsAndReturnUrlIsLocalUrl()
+        {
+            var model = new VerifyCodeViewModel { ReturnUrl = "returnUrl" };
+
+            var signInManager = CreateSignInManagerMock();
+            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(SignInResult.Success);
+
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.IsLocalUrl(model.ReturnUrl)).Returns(true);
+
+            var sut = new AdminController(null, signInManager.Object, null, null, null, null) { Url = urlHelper.Object };
+            var result = await sut.VerifyCode(model) as RedirectResult;
+
+            Assert.Equal(result.Url, model.ReturnUrl);
+        }
+
+        [Fact]
+        public async Task VerifyCodePostRedirectsToHomeControllerIndexWhenTwoFactorSignInAsyncSucceedsAndReturnUrlIsNotLocalUrl()
+        {
+            var signInManager = CreateSignInManagerMock();
+            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(SignInResult.Success);
+
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns(false);
+
+            var sut = new AdminController(null, signInManager.Object, null, null, null, null) { Url = urlHelper.Object };
+            var result = await sut.VerifyCode(new VerifyCodeViewModel()) as RedirectToActionResult;
+
+            Assert.Equal(result.ActionName, nameof(HomeController.Index));
+            Assert.Equal(result.ControllerName, "Home");
+        }
+
+        [Fact]
+        public void VerifyCodePostHasAllowAnonymousAttribute()
+        {
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.VerifyCode(It.IsAny<VerifyCodeViewModel>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void VerifyCodePostHasHttpPostAttribute()
+        {
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.VerifyCode(It.IsAny<VerifyCodeViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void VerifyCodePostHasValidateAntiForgeryTokenAttribute()
+        {
+            var sut = CreateAdminControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.VerifyCode(It.IsAny<VerifyCodeViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
         private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock() => 
             new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
 
@@ -666,14 +858,6 @@ namespace AllReady.UnitTest.Controllers
                 contextAccessor.Object, Mock.Of<IUserClaimsPrincipalFactory<ApplicationUser>>(), null, null);
         }
 
-        private AdminController CreateConstructableAdminController() =>
-            new AdminController(null, null, null, null, null, null);
-
-        //TODO: pass in userManager and/or signInManager as null by default and to get rid of repeated AdminController constructor code?
-        //private AdminController CreateConstructableAdminController(Mock<UserManager<ApplicationUser>> userManagerMock, Mock<SignInManager<ApplicationUser>> signInManagerMock)
-        //{
-        //    //this simpliest controller to create where calling new will not throw and exception.
-        //    return new AdminController(null, null, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
-        //}
+        private static AdminController CreateAdminControllerWithNoInjectedDependencies() => new AdminController(null, null, null, null, null, null);
     }
 }

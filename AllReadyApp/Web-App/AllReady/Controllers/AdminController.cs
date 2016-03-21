@@ -194,7 +194,6 @@ namespace AllReady.Controllers
             var result = await _signInManager.TwoFactorSignInAsync(model.Provider, model.Code, model.RememberMe, model.RememberBrowser);
             if (result.Succeeded)
             {
-                //return RedirectToLocal(model.ReturnUrl); //MIKE: pulled this code out of a method that was only being called for from here
                 if (Url.IsLocalUrl(model.ReturnUrl))
                     return Redirect(model.ReturnUrl);
 
