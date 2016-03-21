@@ -142,24 +142,18 @@ namespace AllReady.Controllers
         public async Task<IActionResult> SendCode(SendCodeViewModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return View();
-            }
 
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null)
-            {
                 return View("Error");
-            }
 
             // Generate the token and send it
             var code = await _userManager.GenerateTwoFactorTokenAsync(user, model.SelectedProvider);
             if (string.IsNullOrWhiteSpace(code))
-            {
                 return View("Error");
-            }
 
-            var message = "Your security code is: " + code;
+            var message = $"Your security code is: {code}";
             if (model.SelectedProvider == "Email")
             {
                 await _emailSender.SendEmailAsync(await _userManager.GetEmailAsync(user), "Security Code", message);
@@ -169,7 +163,7 @@ namespace AllReady.Controllers
                 await _smsSender.SendSmsAsync(await _userManager.GetPhoneNumberAsync(user), message);
             }
 
-            return RedirectToAction(nameof(VerifyCode), new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
+            return RedirectToAction(nameof(VerifyCode), new { Provider = model.SelectedProvider, model.ReturnUrl, model.RememberMe });
         }
 
         // GET: /Admin/VerifyCode

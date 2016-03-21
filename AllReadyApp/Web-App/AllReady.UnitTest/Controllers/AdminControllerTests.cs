@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using AllReady.Controllers;
@@ -14,6 +16,8 @@ using Moq;
 using Xunit;
 using Microsoft.AspNet.Mvc.Routing;
 using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Mvc.Rendering;
+using Shouldly;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -449,24 +453,91 @@ namespace AllReady.UnitTest.Controllers
             signInManager.Verify(x => x.GetTwoFactorAuthenticationUserAsync(), Times.Once);
         }
 
+        [Fact]
+        public async Task SendCodeReturnsErrorViewWhenCannotFindUser()
+        {
+            var signInManager = CreateSignInManagerMock();
+            var sut = new AdminController(null, signInManager.Object, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+            var result = await sut.SendCode(null, It.IsAny<bool>()) as ViewResult;
+
+            Assert.Equal(result.ViewName, "Error");
+        }
+
+        [Fact]
+        public async Task SendCodeInvokesGetValidTwoFactorProvidersAsyncWithCorrectUser()
+        {
+            var applicationUser = new ApplicationUser();
+
+            var userManager = CreateUserManagerMock();
+            var signInManager = CreateSignInManagerMock(userManager);
+
+            signInManager.Setup(x => x.GetTwoFactorAuthenticationUserAsync()).Returns(() => Task.FromResult(applicationUser));
+            userManager.Setup(x => x.GetValidTwoFactorProvidersAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(new List<string>());
+
+            var sut = new AdminController(userManager.Object, signInManager.Object, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+
+            await sut.SendCode(null, It.IsAny<bool>());
+
+            userManager.Verify(x => x.GetValidTwoFactorProvidersAsync(applicationUser), Times.Once);
+        }
+
+        [Fact]
+        public async Task SendCodeReturnsSendCodeViewModelWithCorrectData()
+        {
+            const string returnUrl = "returnUrl";
+            const bool rememberMe = true;
+
+            var userFactors = new List<string> { "userFactor1", "userFactor2" };
+            var expectedProviders = userFactors.Select(factor => new SelectListItem { Text = factor, Value = factor }).ToList();
+
+            var userManager = CreateUserManagerMock();
+            var signInManager = CreateSignInManagerMock(userManager);
+
+            signInManager.Setup(x => x.GetTwoFactorAuthenticationUserAsync()).Returns(() => Task.FromResult(new ApplicationUser()));
+            userManager.Setup(x => x.GetValidTwoFactorProvidersAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(userFactors);
+
+            var sut = new AdminController(userManager.Object, signInManager.Object, null, null, Mock.Of<IOptions<SampleDataSettings>>(), Mock.Of<IOptions<GeneralSettings>>());
+
+            var result = await sut.SendCode(returnUrl, rememberMe) as ViewResult;
+            var modelResult = result.ViewData.Model as SendCodeViewModel;
+
+            Assert.Equal(modelResult.ReturnUrl, returnUrl);
+            Assert.Equal(modelResult.RememberMe, rememberMe);
+            Assert.Equal(expectedProviders, modelResult.Providers, new SelectListItemComparer());
+        }
+
+        [Fact]
+        public void SendCodeHasHttpGetAttribute()
+        {
+            var sut = CreateConstructableAdminController();
+            var attribute = sut.GetAttributesOn(x => x.SendCode(It.IsAny<string>(), It.IsAny<bool>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void SendCodeHasAllowAnonymousAttribute()
+        {
+            var sut = CreateConstructableAdminController();
+            var attribute = sut.GetAttributesOn(x => x.SendCode(It.IsAny<string>(), It.IsAny<bool>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        //[Fact]
+        //public void SendCodePostWithInValidModelStateReturnsView()
+        //{
+        //}
+
         private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock()
         {
             return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
         }
 
-        private static Mock<SignInManager<ApplicationUser>> CreateSignInManagerMock()
+        private static Mock<SignInManager<ApplicationUser>> CreateSignInManagerMock(IMock<UserManager<ApplicationUser>> userManagerMock = null)
         {
-            //userManager, contextAccessor and claimsFactory are all required to construct
-            //public SignInManager(Microsoft.AspNet.Identity.UserManager<TUser> userManager, IHttpContextAccessor contextAccessor, IUserClaimsPrincipalFactory<TUser> claimsFactory, IOptions<IdentityOptions> optionsAccessor, ILogger<SignInManager<TUser>> logger)
-            var userManager = CreateUserManagerMock();
             var contextAccessor = new Mock<IHttpContextAccessor>();
-            //contextAccessor.Setup(mock => mock.HttpContext).Returns(() => mockHttpContext.Object);
-            return new Mock<SignInManager<ApplicationUser>>(userManager.Object, contextAccessor.Object, Mock.Of<IUserClaimsPrincipalFactory<ApplicationUser>>(), null, null);
-            //var signInManagerMock = new Mock<SignInManager<ApplicationUser>>(
-            //    userManagerMock.Object,
-            //    contextAccessor.Object,
-            //    claimsFactory.Object,
-            //    null, null);
+            contextAccessor.Setup(mock => mock.HttpContext).Returns(Mock.Of<HttpContext>);
+            return new Mock<SignInManager<ApplicationUser>>(userManagerMock == null ? CreateUserManagerMock().Object : userManagerMock.Object, 
+                contextAccessor.Object, Mock.Of<IUserClaimsPrincipalFactory<ApplicationUser>>(), null, null);
         }
 
         private AdminController CreateConstructableAdminController()
