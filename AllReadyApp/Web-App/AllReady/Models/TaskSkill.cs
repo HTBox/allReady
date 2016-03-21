@@ -7,6 +7,5 @@
 
         public int SkillId { get; set; }
         public virtual Skill Skill { get; set; }
-
     }
 }

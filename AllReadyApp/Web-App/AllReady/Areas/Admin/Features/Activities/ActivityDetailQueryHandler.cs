@@ -1,14 +1,14 @@
-﻿using System.Linq;
-using AllReady.Areas.Admin.Models;
+﻿using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
+using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Activities
 {
     public class ActivityDetailQueryHandler : IRequestHandler<ActivityDetailQuery, ActivityDetailModel>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
 
         public ActivityDetailQueryHandler(AllReadyContext context)
         {
@@ -72,7 +72,7 @@ namespace AllReady.Areas.Admin.Features.Activities
                 .AsNoTracking()
                 .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(av => av.User)
-                .Include(a => a.RequiredSkills)
+                .Include(a => a.RequiredSkills).ThenInclude(s => s.Skill).ThenInclude(s => s.ParentSkill)
                 .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
                 .SingleOrDefault(a => a.Id == message.ActivityId);
         }

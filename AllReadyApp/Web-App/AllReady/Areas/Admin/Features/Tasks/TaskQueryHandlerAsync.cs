@@ -9,7 +9,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class TaskQueryHandlerAsync : IAsyncRequestHandler<TaskQueryAsync, TaskSummaryModel>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
 
         public TaskQueryHandlerAsync(AllReadyContext context)
         {
@@ -34,6 +34,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 StartDateTime = task.StartDateTime,
                 EndDateTime = task.EndDateTime,
                 NumberOfVolunteersRequired = task.NumberOfVolunteersRequired,
+                RequiredSkills = task.RequiredSkills,
                 AssignedVolunteers = task.AssignedVolunteers.Select(av => new VolunteerModel { UserId = av.User.Id, UserName = av.User.UserName, HasVolunteered = true }).ToList(),
                 AllVolunteers = task.Activity.UsersSignedUp.Select(v => new VolunteerModel { UserId = v.User.Id, UserName = v.User.UserName, HasVolunteered = false }).ToList()
             };
@@ -53,6 +54,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 .Include(t => t.Activity).ThenInclude(a => a.UsersSignedUp).ThenInclude(us => us.User)
                 .Include(t => t.Activity.Campaign)
                 .Include(t => t.AssignedVolunteers).ThenInclude(av => av.User)
+                .Include(s => s.RequiredSkills).ThenInclude(s => s.Skill).ThenInclude(s => s.ParentSkill).ThenInclude(s => s.ParentSkill)
                 .SingleOrDefaultAsync(t => t.Id == message.TaskId);
         }
     }
