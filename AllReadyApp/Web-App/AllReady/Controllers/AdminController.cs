@@ -18,8 +18,8 @@ namespace AllReady.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
-        private readonly SampleDataSettings _settings;
-        private readonly GeneralSettings _generalSettings;
+        private readonly IOptions<SampleDataSettings> _settings;
+        private readonly IOptions<GeneralSettings> _generalSettings;
 
         public AdminController(
             UserManager<ApplicationUser> userManager,
@@ -33,8 +33,8 @@ namespace AllReady.Controllers
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
-            _settings = options.Value;
-            _generalSettings = generalSettings.Value;
+            _settings = options;
+            _generalSettings = generalSettings;
         }
 
         //
@@ -59,15 +59,15 @@ namespace AllReady.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    TimeZoneId = _generalSettings.DefaultTimeZone
+                    TimeZoneId = _generalSettings.Value.DefaultTimeZone
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     //note: had to change Url.Action to take a UrlActionContext b/c "Url.Action" is really an extension method that eventually uses UrlActionContext, and extension methods are not mockable
-                    var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmEmail), Controller = "Admin", Values = new { userId = user.Id, code = code }, Protocol = Request.Scheme });
+                    var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmEmail), Controller = "Admin", Values = new { userId = user.Id, token = token }, Protocol = Request.Scheme });
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your account", $"Please confirm your account by clicking this <a href=\"{callbackUrl}\">link</a>");
                     return RedirectToAction(nameof(DisplayEmail), "Admin");
                 }
@@ -90,23 +90,23 @@ namespace AllReady.Controllers
         // GET: /Admin/ConfirmEmail
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
-            if (code == null)
+            if (token == null)
                 return View("Error");
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
                 return View("Error");
 
-            var result = await _userManager.ConfirmEmailAsync(user, code);
+            var result = await _userManager.ConfirmEmailAsync(user, token);
 
             // If the account confirmation was successful, then send the SiteAdmin an email to approve
             // this user as a Organization Admin
             if (result.Succeeded)
             {
                 var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(SiteController.EditUser), Controller = "Site", Values = new { area = "Admin", userId = user.Id }, Protocol = HttpContext.Request.Scheme });
-                await _emailSender.SendEmailAsync(_settings.DefaultAdminUsername, "Approve organization user account", $"Please approve this account by clicking this <a href=\"{callbackUrl}\">link</a>");
+                await _emailSender.SendEmailAsync(_settings.Value.DefaultAdminUsername, "Approve organization user account", $"Please approve this account by clicking this <a href=\"{callbackUrl}\">link</a>");
             }
 
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
@@ -149,11 +149,11 @@ namespace AllReady.Controllers
                 return View("Error");
 
             // Generate the token and send it
-            var code = await _userManager.GenerateTwoFactorTokenAsync(user, model.SelectedProvider);
-            if (string.IsNullOrWhiteSpace(code))
+            var token = await _userManager.GenerateTwoFactorTokenAsync(user, model.SelectedProvider);
+            if (string.IsNullOrWhiteSpace(token))
                 return View("Error");
 
-            var message = $"Your security code is: {code}";
+            var message = $"Your security code is: {token}";
             if (model.SelectedProvider == "Email")
             {
                 await _emailSender.SendEmailAsync(await _userManager.GetEmailAsync(user), "Security Code", message);
@@ -174,9 +174,8 @@ namespace AllReady.Controllers
             // Require that the user has already logged in via username/password or external login
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null)
-            {
                 return View("Error");
-            }
+
             return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
         }
 
@@ -187,9 +186,7 @@ namespace AllReady.Controllers
         public async Task<IActionResult> VerifyCode(VerifyCodeViewModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
             // The following code protects for brute force attacks against the two factor codes.
             // If a user enters incorrect codes for a specified amount of time then the user account
@@ -197,15 +194,18 @@ namespace AllReady.Controllers
             var result = await _signInManager.TwoFactorSignInAsync(model.Provider, model.Code, model.RememberMe, model.RememberBrowser);
             if (result.Succeeded)
             {
-                return RedirectToLocal(model.ReturnUrl);
-            }
+                //return RedirectToLocal(model.ReturnUrl); //MIKE: pulled this code out of a method that was only being called for from here
+                if (Url.IsLocalUrl(model.ReturnUrl))
+                    return Redirect(model.ReturnUrl);
 
-            if (result.IsLockedOut)
-            {
-                return View("Lockout");
+                return RedirectToAction(nameof(HomeController.Index), "Home");
             }
+            
+            if (result.IsLockedOut)
+                return View("Lockout");
 
             ModelState.AddModelError("", "Invalid code.");
+
             return View(model);
         }
 
@@ -215,14 +215,6 @@ namespace AllReady.Controllers
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
-        }
-
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-                return Redirect(returnUrl);
-
-            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
     }
 }
