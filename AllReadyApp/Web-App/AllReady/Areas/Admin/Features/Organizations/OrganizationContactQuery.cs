@@ -6,7 +6,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
 {
     public class OrganizationContactQuery : IRequest<ContactInformationModel>
     {
-        public int Id { get; set; }
+        public int OrganizationId { get; set; }
         public ContactTypes ContactType { get; set; } = ContactTypes.Primary;
     }
 }

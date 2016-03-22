@@ -26,7 +26,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Produces("application/json", Type = typeof(ContactInformationModel))]
         public ContactInformationModel GetContact(int id)
         {
-            var contact = _mediator.Send(new OrganizationContactQuery  { Id = id, ContactType = ContactTypes.Primary });
+            var contact = _mediator.Send(new OrganizationContactQuery  { OrganizationId = id, ContactType = ContactTypes.Primary });
             return contact;
         }
     }
