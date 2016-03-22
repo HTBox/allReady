@@ -14,7 +14,33 @@ namespace AllReady.Controllers
     [Authorize]
     public class ManageController : Controller
     {
+        //Email Constants
         private const string EMAIL_CONFIRMATION_SUBJECT = "Confirm your allReady account";
+        private const string NEW_EMAIL_CONFIRM = 
+            "Please confirm your new email address for your allReady account by clicking this link: <a href={0}>link</a>. Note that once confirmed your original email address will cease to be valid as your username.";
+        private const string RESEND_EMAIL_CONFIRM = "Please confirm your allReady account by clicking this link: <a href={0}>link</a>";
+        //Error Constants
+        private const string ACCOUNT_SECURITY_CODE = "Your allReady account security code is: ";
+        private const string FAILED_TO_VERIFY_PHONE_NUMBER = "Failed to verify phone number";
+        private const string PASSWORD_INCORRECT = "The password supplied is not correct";
+        private const string EMAIL_ALREADY_REGISTERED = "The email supplied is already registered";
+        //ViewData Constants
+        private const string SHOW_REMOVE_BUTTON = "ShowRemoveButton";
+        private const string STATUS_MESSAGE = "StatusMessage";
+        //Message Constants
+        private const string PASSWORD_CHANGED = "Your password has been changed.";
+        private const string PASSWORD_SET = "Your password has been set.";
+        private const string TWO_FACTOR_SET = "Your two-factor authentication provider has been set.";
+        private const string ERROR_OCCURRED = "An error has occurred.";
+        private const string PHONE_NUMBER_ADDED = "Your phone number was added.";
+        private const string PHONE_NUMBER_REMOVED = "Your phone number was removed.";
+        private const string EXTERNAL_LOGIN_REMOVED = "The external login was removed.";
+        private const string EXTERNAL_LOGIN_ADDED = "The external login was added.";
+        //Controller Names
+        private const string ACCOUNT_CONTROLLER = "Account";
+        private const string MANAGE_CONTROLLER = "Manage";
+        //View Names
+        private const string ERROR_VIEW = "Error";
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
@@ -42,13 +68,13 @@ namespace AllReady.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(ManageMessageId? message = null)
         {
-            ViewData["StatusMessage"] =
-                message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
-                : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
-                : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
-                : message == ManageMessageId.Error ? "An error has occurred."
-                : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
-                : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
+            ViewData[STATUS_MESSAGE] =
+                message == ManageMessageId.ChangePasswordSuccess ? PASSWORD_CHANGED
+                : message == ManageMessageId.SetPasswordSuccess ? PASSWORD_SET
+                : message == ManageMessageId.SetTwoFactorSuccess ? TWO_FACTOR_SET
+                : message == ManageMessageId.Error ? ERROR_OCCURRED
+                : message == ManageMessageId.AddPhoneSuccess ? PHONE_NUMBER_ADDED
+                : message == ManageMessageId.RemovePhoneSuccess ? PHONE_NUMBER_REMOVED
                 : "";
 
             var user = GetCurrentUser();
@@ -118,9 +144,8 @@ namespace AllReady.Controllers
         {
             var user = await _userManager.FindByIdAsync(User.GetUserId());
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = Url.Action(nameof(ConfirmNewEmail), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-            await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT,
-                "Please confirm your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+            var callbackUrl = Url.Action(nameof(ConfirmNewEmail), ACCOUNT_CONTROLLER, new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+            await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(RESEND_EMAIL_CONFIRM, callbackUrl));
 
             return RedirectToAction(nameof(EmailConfirmationSent));
         }
@@ -137,7 +162,7 @@ namespace AllReady.Controllers
         {
             var user = GetCurrentUser();
             var linkedAccounts = await _userManager.GetLoginsAsync(user);
-            ViewData["ShowRemoveButton"] = await _userManager.HasPasswordAsync(user) || linkedAccounts.Count > 1;
+            ViewData[SHOW_REMOVE_BUTTON] = await _userManager.HasPasswordAsync(user) || linkedAccounts.Count > 1;
             return View(linkedAccounts);
         }
 
@@ -178,7 +203,7 @@ namespace AllReady.Controllers
             // Generate the token and send it
             var user = GetCurrentUser();
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
-            await _smsSender.SendSmsAsync(model.PhoneNumber, "Your allReady account security code is: " + code);
+            await _smsSender.SendSmsAsync(model.PhoneNumber, ACCOUNT_SECURITY_CODE + code);
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = model.PhoneNumber });
         }
 
@@ -190,7 +215,7 @@ namespace AllReady.Controllers
             var user = GetCurrentUser();
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
 
-            await _smsSender.SendSmsAsync(phoneNumber, "Your allReady account security code is: " + code);
+            await _smsSender.SendSmsAsync(phoneNumber, ACCOUNT_SECURITY_CODE + code);
 
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = phoneNumber });
         }
@@ -206,7 +231,7 @@ namespace AllReady.Controllers
                 await _userManager.SetTwoFactorEnabledAsync(user, true);
                 await _signInManager.SignInAsync(user, isPersistent: false);
             }
-            return RedirectToAction(nameof(Index), "Manage");
+            return RedirectToAction(nameof(Index), MANAGE_CONTROLLER);
         }
 
         // POST: /Manage/DisableTwoFactorAuthentication
@@ -220,7 +245,7 @@ namespace AllReady.Controllers
                 await _userManager.SetTwoFactorEnabledAsync(user, false);
                 await _signInManager.SignInAsync(user, isPersistent: false);
             }
-            return RedirectToAction(nameof(Index), "Manage");
+            return RedirectToAction(nameof(Index), MANAGE_CONTROLLER);
         }
 
         // GET: /Account/VerifyPhoneNumber
@@ -229,7 +254,7 @@ namespace AllReady.Controllers
         {
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(GetCurrentUser(), phoneNumber);
             // Send an SMS to verify the phone number
-            return phoneNumber == null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
+            return phoneNumber == null ? View(ERROR_VIEW) : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
 
         // POST: /Account/VerifyPhoneNumber
@@ -253,7 +278,7 @@ namespace AllReady.Controllers
                 }
             }
             // If we got this far, something failed, redisplay the form
-            ModelState.AddModelError(string.Empty, "Failed to verify phone number");
+            ModelState.AddModelError(string.Empty, FAILED_TO_VERIFY_PHONE_NUMBER);
             return View(model);
         }
 
@@ -328,7 +353,7 @@ namespace AllReady.Controllers
             {
                 if(!await _userManager.CheckPasswordAsync(user, model.Password))
                 {
-                    ModelState.AddModelError(nameof(model.Password), "The password supplied is not correct");
+                    ModelState.AddModelError(nameof(model.Password), PASSWORD_INCORRECT);
                     return View(model);
                 }
 
@@ -336,7 +361,7 @@ namespace AllReady.Controllers
                 if(existingUser != null)
                 {
                     // The username/email is already registered
-                    ModelState.AddModelError(nameof(model.NewEmail), "The email supplied is already registered");
+                    ModelState.AddModelError(nameof(model.NewEmail), EMAIL_ALREADY_REGISTERED);
                     return View(model);
                 }
 
@@ -344,9 +369,8 @@ namespace AllReady.Controllers
                 await _userManager.UpdateAsync(user);
 
                 var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail);
-                var callbackUrl = Url.Action(nameof(ConfirmNewEmail), "Manage", new { token = token }, protocol: HttpContext.Request.Scheme);
-                await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT,
-                    "Please confirm your new email address for your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>. Note that once confirmed your original email address will cease to be valid as your username.");
+                var callbackUrl = Url.Action(nameof(ConfirmNewEmail), MANAGE_CONTROLLER, new { token = token }, protocol: HttpContext.Request.Scheme);
+                await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(NEW_EMAIL_CONFIRM, callbackUrl));
 
                 return RedirectToAction(nameof(EmailConfirmationSent));                
             }
@@ -360,13 +384,13 @@ namespace AllReady.Controllers
         {
             if (token == null)
             {
-                return View("Error");
+                return View(ERROR_VIEW);
             }
 
             var user = GetCurrentUser();
             if (user == null)
             {
-                return View("Error");
+                return View(ERROR_VIEW);
             }
 
             var result = await _userManager.ChangeEmailAsync(user, user.PendingNewEmail, token);
@@ -390,13 +414,12 @@ namespace AllReady.Controllers
 
             if(string.IsNullOrEmpty(user.PendingNewEmail))
             {
-                return View("Error");
+                return View(ERROR_VIEW);
             }
 
             var token = await _userManager.GenerateChangeEmailTokenAsync(user, user.PendingNewEmail);
-            var callbackUrl = Url.Action(nameof(ConfirmNewEmail), "Manage", new { token = token }, protocol: HttpContext.Request.Scheme);
-            await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT,
-                "Please confirm your new email address for your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>. Note that once confirmed your original email address will cease to be valid as your username.");
+            var callbackUrl = Url.Action(nameof(ConfirmNewEmail), MANAGE_CONTROLLER, new { token = token }, protocol: HttpContext.Request.Scheme);
+            await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(NEW_EMAIL_CONFIRM, callbackUrl));
 
             return RedirectToAction(nameof(EmailConfirmationSent));
         }
@@ -449,19 +472,19 @@ namespace AllReady.Controllers
         [HttpGet]
         public async Task<IActionResult> ManageLogins(ManageMessageId? message = null)
         {
-            ViewData["StatusMessage"] =
-                message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
-                : message == ManageMessageId.AddLoginSuccess ? "The external login was added."
-                : message == ManageMessageId.Error ? "An error has occurred."
+            ViewData[STATUS_MESSAGE] =
+                message == ManageMessageId.RemoveLoginSuccess ? EXTERNAL_LOGIN_REMOVED
+                : message == ManageMessageId.AddLoginSuccess ? EXTERNAL_LOGIN_ADDED
+                : message == ManageMessageId.Error ? ERROR_OCCURRED
                 : "";
             var user = GetCurrentUser();
             if (user == null)
             {
-                return View("Error");
+                return View(ERROR_VIEW);
             }
             var userLogins = await _userManager.GetLoginsAsync(user);
             var otherLogins = _signInManager.GetExternalAuthenticationSchemes().Where(auth => userLogins.All(ul => auth.AuthenticationScheme != ul.LoginProvider)).ToList();
-            ViewData["ShowRemoveButton"] = user.PasswordHash != null || userLogins.Count > 1;
+            ViewData[SHOW_REMOVE_BUTTON] = user.PasswordHash != null || userLogins.Count > 1;
             return View(new ManageLoginsViewModel
             {
                 CurrentLogins = userLogins,
@@ -475,7 +498,7 @@ namespace AllReady.Controllers
         public IActionResult LinkLogin(string provider)
         {
             // Request a redirect to the external login provider to link a login for the current user
-            var redirectUrl = Url.Action(nameof(LinkLoginCallback), "Manage");
+            var redirectUrl = Url.Action(nameof(LinkLoginCallback), MANAGE_CONTROLLER);
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, User.GetUserId());
             return new ChallengeResult(provider, properties);
         }
@@ -487,7 +510,7 @@ namespace AllReady.Controllers
             var user = GetCurrentUser();
             if (user == null)
             {
-                return View("Error");
+                return View(ERROR_VIEW);
             }
             var info = await _signInManager.GetExternalLoginInfoAsync(User.GetUserId());
             if (info == null)
