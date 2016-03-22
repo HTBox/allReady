@@ -40,7 +40,7 @@ namespace AllReady.Models
                 _dbContext.Users.Remove(toDelete);
                 return _dbContext.SaveChangesAsync();
             }
-            return null;
+            return Task.FromResult(0);
         }
 
         Task IAllReadyDataAccess.UpdateUser(ApplicationUser value)
