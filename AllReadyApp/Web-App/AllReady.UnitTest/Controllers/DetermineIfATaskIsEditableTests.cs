@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AllReady.UnitTest.Controllers
 {
-    public class ProvideTaskEditPermissionsTests
+    public class DetermineIfATaskIsEditableTests
     {
         [Fact]
         public void SiteAdminsCanEditAllReadyTasks()
