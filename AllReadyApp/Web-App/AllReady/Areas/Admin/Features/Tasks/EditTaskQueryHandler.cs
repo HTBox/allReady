@@ -21,22 +21,23 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 .Include(t => t.Activity).ThenInclude(a => a.Campaign)
                 .Include(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
                 .SingleOrDefault(t => t.Id == message.TaskId);
-            var viewModel = new TaskEditModel()
-                {
-                    Id = task.Id,
-                    ActivityId = task.Activity.Id,
-                    ActivityName = task.Activity.Name,
-                    CampaignId = task.Activity.CampaignId,
-                    CampaignName = task.Activity.Campaign.Name,
-                    OrganizationId = task.Activity.Campaign.ManagingOrganizationId,
-                    Name = task.Name,
-                    Description = task.Description,
-                    TimeZoneId = task.Activity.Campaign.TimeZoneId,
-                    StartDateTime = task.StartDateTime,
-                    EndDateTime = task.EndDateTime,
-                    NumberOfVolunteersRequired = task.NumberOfVolunteersRequired,
-                    RequiredSkills = task.RequiredSkills
-                };
+
+            var viewModel = new TaskEditModel
+            {
+                Id = task.Id,
+                ActivityId = task.Activity.Id,
+                ActivityName = task.Activity.Name,
+                CampaignId = task.Activity.CampaignId,
+                CampaignName = task.Activity.Campaign.Name,
+                OrganizationId = task.Activity.Campaign.ManagingOrganizationId,
+                Name = task.Name,
+                Description = task.Description,
+                TimeZoneId = task.Activity.Campaign.TimeZoneId,
+                StartDateTime = task.StartDateTime,
+                EndDateTime = task.EndDateTime,
+                NumberOfVolunteersRequired = task.NumberOfVolunteersRequired,
+                RequiredSkills = task.RequiredSkills
+            };
                     
             return viewModel;
         }
