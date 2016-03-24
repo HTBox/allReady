@@ -35,6 +35,13 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void CreateReturnsHttpUnauthorizedResultWhen()
         {
+            var activity = new Activity { Campaign = new Campaign { ManagingOrganizationId = 1 }};
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(activity);
+            var sut = new TaskController(dataAccess.Object, null);
+
+            sut.Create(It.IsAny<int>());
+
         }
     }
 }
