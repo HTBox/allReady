@@ -11,13 +11,14 @@ using Microsoft.AspNet.Http;
 using System.Security.Claims;
 using AllReady.UnitTest.Extensions;
 using AllReady.Areas.Admin.Models;
+using Microsoft.AspNet.Authorization;
 
 namespace AllReady.UnitTest.Controllers
 {
     public class TaskControllerTests
     {
         [Fact]
-        public void CreateInvokesGetActivityWithTheCorrectActivityId()
+        public void CreateGetInvokesGetActivityWithTheCorrectActivityId()
         {
             const int activityId = 1;
             var dataAccess = new Mock<IAllReadyDataAccess>();
@@ -28,7 +29,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void CreateReturnsHttpUnauthorizedResultWhenActivityIsNull()
+        public void CreateGetReturnsHttpUnauthorizedResultWhenActivityIsNull()
         {
             var sut = new TaskController(Mock.Of<IAllReadyDataAccess>(), null);
             var result = sut.Create(It.IsAny<int>());
@@ -37,7 +38,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void CreateReturnsHttpUnauthorizedResultWhenUserIsNotOrganizationAdminForTheirOrganization()
+        public void CreateGetReturnsHttpUnauthorizedResultWhenUserIsNotOrganizationAdminForTheirOrganization()
         {
             var dataAccess = new Mock<IAllReadyDataAccess>();
             dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = 1 } });
@@ -51,7 +52,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void CreateReturnsCorrectViewModel()
+        public void CreateGetReturnsCorrectViewModel()
         {
             const int organizationId = 1;
             const int campaignId = 1;
@@ -100,7 +101,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void CreateReturnsCorrectView()
+        public void CreateGetReturnsCorrectView()
         {
             const int organizationId = 1;
 
@@ -121,13 +122,36 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(result.ViewName, "Edit");
         }
 
-        private void PopulateClaimsFor(Controller controller, List<Claim> claims)
+        [Fact]
+        public void CreatePost()
+        {
+        }
+
+        private static void PopulateClaimsFor(Controller controller, IEnumerable<Claim> claims)
         {
             var httpContext = new Mock<HttpContext>();
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
             httpContext.Setup(x => x.User).Returns(claimsPrincipal);
 
             controller.ActionContext.HttpContext = httpContext.Object;
+        }
+
+        [Fact]
+        public void ControllerHasAreaAtttributeWithTheCorrectAreaName()
+        {
+            var sut = new TaskController(null, null);
+            var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.RouteValue, "Admin");
+        }
+
+        [Fact]
+        public void ControllerHasAuthorizeAtttributeWithTheCorrectPolicy()
+        {
+            var sut = new TaskController(null, null);
+            var attribute = sut.GetAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Policy, "OrgAdmin");
         }
     }
 }
