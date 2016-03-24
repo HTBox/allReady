@@ -123,17 +123,25 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void CreatePost()
+        public void CreateGetHasHttpGetAttribute()
         {
+            var sut = new TaskController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<TaskEditModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        private static void PopulateClaimsFor(Controller controller, IEnumerable<Claim> claims)
+        [Fact]
+        public void CreateGetHasRouteAttributeWithCorrectTemplate()
         {
-            var httpContext = new Mock<HttpContext>();
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
-            httpContext.Setup(x => x.User).Returns(claimsPrincipal);
+            var sut = new TaskController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<TaskEditModel>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "Admin/Task/Create/{activityId}");
+        }
 
-            controller.ActionContext.HttpContext = httpContext.Object;
+        [Fact]
+        public void CreatePost()
+        {
         }
 
         [Fact]
@@ -153,5 +161,14 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Policy, "OrgAdmin");
         }
+
+        private static void PopulateClaimsFor(Controller controller, IEnumerable<Claim> claims)
+        {
+            var httpContext = new Mock<HttpContext>();
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
+            httpContext.Setup(x => x.User).Returns(claimsPrincipal);
+
+            controller.ActionContext.HttpContext = httpContext.Object;
+        }        
     }
 }
