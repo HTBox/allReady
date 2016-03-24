@@ -77,17 +77,14 @@ namespace AllReady.UnitTest.Controllers
             var dataAccess = new Mock<IAllReadyDataAccess>();
             dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(activity);
 
-            var httpContext = new Mock<HttpContext>();
-            var claimsPrincipal = new ClaimsPrincipal();
-            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
+            var claims = new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
                 new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
-            }));
-            httpContext.Setup(x => x.User).Returns(claimsPrincipal);
+            };
 
             var sut = new TaskController(dataAccess.Object, null);
-            sut.ActionContext.HttpContext = httpContext.Object;
+            PopulateClaimsFor(sut, claims);
 
             var result = sut.Create(It.IsAny<int>()) as ViewResult;
             var modelResult = result.ViewData.Model as TaskEditModel;
@@ -110,21 +107,27 @@ namespace AllReady.UnitTest.Controllers
             var dataAccess = new Mock<IAllReadyDataAccess>();
             dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId }});
 
-            var httpContext = new Mock<HttpContext>();
-            var claimsPrincipal = new ClaimsPrincipal();
-            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
+            var claims = new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
                 new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
-            }));
-            httpContext.Setup(x => x.User).Returns(claimsPrincipal);
+            };
 
             var sut = new TaskController(dataAccess.Object, null);
-            sut.ActionContext.HttpContext = httpContext.Object;
+            PopulateClaimsFor(sut, claims);
 
             var result = sut.Create(It.IsAny<int>()) as ViewResult;
 
             Assert.Equal(result.ViewName, "Edit");
+        }
+
+        private void PopulateClaimsFor(Controller controller, List<Claim> claims)
+        {
+            var httpContext = new Mock<HttpContext>();
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
+            httpContext.Setup(x => x.User).Returns(claimsPrincipal);
+
+            controller.ActionContext.HttpContext = httpContext.Object;
         }
     }
 }
