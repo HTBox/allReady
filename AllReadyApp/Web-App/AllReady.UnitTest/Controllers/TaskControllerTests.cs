@@ -15,11 +15,12 @@ using Microsoft.AspNet.Authorization;
 using AllReady.Areas.Admin.Features.Tasks;
 using System.Threading.Tasks;
 using AllReady.Features.Activity;
+using AllReady.Extensions;
 
 namespace AllReady.UnitTest.Controllers
 {
     //TODO:
-    //- EditPost and CreatePost unit tests
+    //- CreatePost unit tests
     //- encapsulate orgAdmimClaims into private method
     //- move PopulateClaimsFor to ControllerTestHelper?
     //- break out WarnDateTimeOutOfRange to separate testable entity?
@@ -230,20 +231,124 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(attribute.Template, "Admin/Task/Edit/{id}");
         }
 
-        //TODO: come back to testing because of WarnDateTimeOutOfRange
-        //[Fact]
-        //public void EditPostAddsModelStateErrorWhenEndDateTimeIsLessThanStartDateTime()
-        //{
-        //    var sut = new TaskController(null);
-        //    sut.Edit(new TaskEditModel { EndDateTime = DateTimeOffset.MinValue, StartDateTime = DateTimeOffset.MaxValue });
-        //    var errorMessage = sut.ModelState.GetErrorMessages().First();
-        //    Assert.Equal(errorMessage, "Ending time cannot be earlier than the starting time");
-        //}
+        [Fact]
+        public async Task EditPostAddsCorrectModelStateErrorWhenEndDateTimeIsLessThanStartDateTime()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
-        //[Fact]
-        //public void EditPost()
-        //{
-        //}
+            var sut = new TaskController(mediator.Object);
+            await sut.Edit(new TaskEditModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1)});
+
+            var modelStateErrorCollection = sut.ModelState.GetErrorMessagesByKey(nameof(TaskEditModel.EndDateTime));
+            Assert.Equal(modelStateErrorCollection.Single().ErrorMessage, "Ending time cannot be earlier than the starting time");
+        }
+
+        [Fact]
+        public async Task EditPostReturnsCorrectViewAndViewModelWhenEndDateTimeIsLessThanStartDateTimeAndModelStateIsInvalid()
+        {
+            var model = new TaskEditModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1) };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
+
+            var sut = new TaskController(mediator.Object);
+            var result = await sut.Edit(model) as ViewResult;
+            var modelResult = result.ViewData.Model as TaskEditModel;
+
+            Assert.IsType<ViewResult>(result);
+            Assert.Equal(modelResult, model);
+        }
+
+        [Fact]
+        public async Task EditPostReturnsHttpUnauthorizedResultWhenModelStateIsValidAndUserIsNotAnOrganizationAdminUser()
+        {
+            var startDateTime = DateTimeOffset.Now.AddDays(-1);
+            var endDateTime = DateTimeOffset.Now.AddDays(1);
+            var model = new TaskEditModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = 1 };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity
+            {
+                Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" },
+                StartDateTime = startDateTime.AddDays(-1),
+                EndDateTime = endDateTime.AddDays(1)
+            });
+
+            var sut = new TaskController(mediator.Object);
+            sut.SetDefaultHttpContext();
+
+            var result = await sut.Edit(model);
+
+            Assert.IsType<HttpUnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public async Task EditPostSendsEditTaskCommandWhenModelStateIsValidAndUserIsOrganizationAdmin()
+        {
+            const int organizationId = 1;
+            var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId };
+            var startDateTime = DateTimeOffset.Now.AddDays(-1);
+            var endDateTime = DateTimeOffset.Now.AddDays(1);
+
+            var model = new TaskEditModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity
+            {
+                Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" }, StartDateTime = startDateTime.AddDays(-1), EndDateTime = endDateTime.AddDays(1)
+            });
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
+
+            var orgAdminClaims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
+                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
+            };
+
+            var sut = new TaskController(mediator.Object);
+            PopulateClaimsFor(sut, orgAdminClaims);
+
+            await sut.Edit(model);
+
+            mediator.Verify(x => x.SendAsync(It.Is<EditTaskCommand>(y => y.Task == model)));
+        }
+
+        [Fact]
+        public async Task EditPostRedirectsToCorrectAction()
+        {
+            const int organizationId = 1;
+            var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId };
+            var startDateTime = DateTimeOffset.Now.AddDays(-1);
+            var endDateTime = DateTimeOffset.Now.AddDays(1);
+            var model = new TaskEditModel { Id = 1, StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity
+            {
+                Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" },
+                StartDateTime = startDateTime.AddDays(-1),
+                EndDateTime = endDateTime.AddDays(1)
+            });
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
+
+            var orgAdminClaims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
+                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
+            };
+
+            var sut = new TaskController(mediator.Object);
+            PopulateClaimsFor(sut, orgAdminClaims);
+
+            var result = await sut.Edit(model) as RedirectToActionResult;
+
+            var routeValues = new Dictionary<string, object>{ ["id"] = model.Id };
+
+            Assert.Equal(result.ControllerName, "Task");
+            Assert.Equal(result.ActionName, nameof(TaskController.Details));
+            Assert.Equal(result.RouteValues, routeValues);
+        }
 
         [Fact]
         public async Task DeleteSendsTaskQueryWithCorrectTaskId()
@@ -412,7 +517,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task DeleteConfirmedRedirectsToAction()
+        public async Task DeleteConfirmedRedirectsToCorrectAction()
         {
             const int organizationId = 1;
             const int taskId = 1;

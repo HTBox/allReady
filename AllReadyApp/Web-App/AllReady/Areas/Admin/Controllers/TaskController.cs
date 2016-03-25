@@ -100,7 +100,7 @@ namespace AllReady.Areas.Admin.Controllers
 
                 await _mediator.SendAsync(new EditTaskCommand { Task = model });
 
-                return RedirectToAction("Details", "Task", new { id = model.Id });
+                return RedirectToAction(nameof(Details), "Task", new { id = model.Id });
             }
 
             return View(model);
@@ -219,6 +219,5 @@ namespace AllReady.Areas.Admin.Controllers
 
         //TODO: mediator query and handler need to be changed to async
         private Activity GetActivityBy(int activityId) => _mediator.Send(new ActivityByActivityIdQuery { ActivityId = activityId });
-            //_dataAccess.GetActivity(activityId);
     }
 }
