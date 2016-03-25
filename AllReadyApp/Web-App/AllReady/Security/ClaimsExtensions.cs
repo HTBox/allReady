@@ -35,7 +35,7 @@ namespace AllReady.Security
                 int organizationId;
                 if (int.TryParse(organizationIdClaim.Value, out organizationId))
                     result = organizationId;
-            }
+                }
 
             return result;
         }
@@ -44,13 +44,13 @@ namespace AllReady.Security
         {
             var timeZoneIdClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.TimeZoneId);
             return timeZoneIdClaim?.Value;
-        }
+            }
 
         public static bool IsUserProfileIncomplete(this ClaimsPrincipal user) =>
             user.HasClaim(c => c.Type == ClaimTypes.ProfileIncomplete);                        
 
         public static TimeZoneInfo GetTimeZoneInfo(this ClaimsPrincipal user)
-        {            
+        {
             var timeZoneId = user.GetTimeZoneId();
             return !string.IsNullOrEmpty(timeZoneId) ? TimeZoneInfo.FindSystemTimeZoneById(timeZoneId) : null;
         }
@@ -74,7 +74,7 @@ namespace AllReady.Security
                 int organizationId;
                 if (int.TryParse(organizationIdClaim.ClaimValue, out organizationId))
                     result = organizationId;
-            }
+                }
 
             return result;
         }

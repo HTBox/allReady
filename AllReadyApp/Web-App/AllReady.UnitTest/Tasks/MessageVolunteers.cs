@@ -8,6 +8,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace AllReady.UnitTest.Tasks
@@ -76,7 +77,7 @@ namespace AllReady.UnitTest.Tasks
         }
 
         [Fact]
-        public void SendMessageToAssignedVolunteers()
+        public async Task SendMessageToAssignedVolunteers()
         {
             const string expectedMessage = "This is my message for all you task peeps";
             const string expectedSubject = "This is my subject";
@@ -93,7 +94,7 @@ namespace AllReady.UnitTest.Tasks
             var mediator = new Mock<IMediator>();
             
             var handler = new MessageTaskVolunteersCommandHandler(Context, mediator.Object);
-            handler.Handle(command);
+            await handler.Handle(command);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
                    notifyCommand.ViewModel != null &&

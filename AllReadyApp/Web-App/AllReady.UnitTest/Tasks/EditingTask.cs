@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Models;
-using AllReady.Features.Notifications;
 using AllReady.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -14,9 +14,9 @@ namespace AllReady.UnitTest.Tasks
         private Organization _htb;
         private Campaign _firePrev;
         private Activity _queenAnne;
+
         protected override void LoadTestData()
         {
-
             var context = ServiceProvider.GetService<AllReadyContext>();
             _htb = new Organization()
             {
@@ -51,10 +51,10 @@ namespace AllReady.UnitTest.Tasks
         }
 
         [Fact]
-        public void ModelIsCreated()
+        public async Task ModelIsCreated()
         {
             var sut = new EditTaskCommandHandler(Context);
-            int actual = sut.Handle(new EditTaskCommand { Task = new TaskEditModel { ActivityId = _queenAnne.Id, TimeZoneId = "Eastern Standard Time"} });            
+            var actual = await sut.Handle(new EditTaskCommand { Task = new TaskEditModel { ActivityId = _queenAnne.Id, TimeZoneId = "Eastern Standard Time" } });
             Assert.Equal(1, actual);
         }
     }

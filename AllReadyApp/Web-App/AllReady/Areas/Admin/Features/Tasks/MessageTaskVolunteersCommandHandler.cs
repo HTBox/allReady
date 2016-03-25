@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
@@ -7,7 +8,7 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class MessageTaskVolunteersCommandHandler : RequestHandler<MessageTaskVolunteersCommand>
+    public class MessageTaskVolunteersCommandHandler : AsyncRequestHandler<MessageTaskVolunteersCommand>
     {
         private AllReadyContext _context;
         private IMediator _mediator;
@@ -18,13 +19,11 @@ namespace AllReady.Areas.Admin.Features.Tasks
             _mediator = mediator;
         }
 
-        protected override void HandleCore(MessageTaskVolunteersCommand message)
+        protected override async Task HandleCore(MessageTaskVolunteersCommand message)
         {
-            var users =
-                _context.TaskSignups.AsNoTracking()
+            var users = await _context.TaskSignups.AsNoTracking()
                 .Include(a => a.User)
-                .Where(a => a.Task.Id == message.Model.TaskId).ToList();
-
+                .Where(a => a.Task.Id == message.Model.TaskId).ToListAsync();
 
             // send all notifications to the queue
             var smsRecipients = new List<string>();
@@ -49,7 +48,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 }
             };
 
-            _mediator.SendAsync(command);
+            await _mediator.SendAsync(command);
         }
     }
 }

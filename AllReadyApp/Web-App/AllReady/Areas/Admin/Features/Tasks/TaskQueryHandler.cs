@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
@@ -6,7 +7,7 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class TaskQueryHandler : IRequestHandler<TaskQuery, TaskSummaryModel>
+    public class TaskQueryHandler : IAsyncRequestHandler<TaskQuery, TaskSummaryModel>
     {
         private AllReadyContext _context;
 
@@ -15,9 +16,9 @@ namespace AllReady.Areas.Admin.Features.Tasks
             _context = context;
         }
 
-        public TaskSummaryModel Handle(TaskQuery message)
+        public async Task<TaskSummaryModel> Handle(TaskQuery message)
         {
-            var task = GetTask(message);
+            var task = await GetTask(message);
 
             var taskModel = new TaskSummaryModel()
             {
@@ -45,14 +46,14 @@ namespace AllReady.Areas.Admin.Features.Tasks
             return taskModel;
         }
 
-        private AllReadyTask GetTask(TaskQuery message)
+        private async Task<AllReadyTask> GetTask(TaskQuery message)
         {
-            return _context.Tasks
+            return await _context.Tasks
                 .AsNoTracking()
                 .Include(t => t.Activity).ThenInclude(a => a.UsersSignedUp).ThenInclude(us => us.User)
                 .Include(t => t.Activity.Campaign)
                 .Include(t => t.AssignedVolunteers).ThenInclude(av => av.User)
-                .SingleOrDefault(t => t.Id == message.TaskId);
+                .SingleOrDefaultAsync(t => t.Id == message.TaskId);
         }
     }
 }

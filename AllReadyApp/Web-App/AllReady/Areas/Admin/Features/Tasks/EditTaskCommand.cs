@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class EditTaskCommand : IRequest<int>
+    public class EditTaskCommand : IAsyncRequest<int>
     {
         public TaskEditModel Task {get; set;}
     }

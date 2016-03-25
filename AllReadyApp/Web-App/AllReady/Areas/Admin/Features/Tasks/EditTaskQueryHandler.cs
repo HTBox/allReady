@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
@@ -6,7 +6,7 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class EditTaskQueryHandler : IRequestHandler<EditTaskQuery, TaskEditModel>
+    public class EditTaskQueryHandler : IAsyncRequestHandler<EditTaskQuery, TaskEditModel>
     {
         private AllReadyContext _context;
 
@@ -15,12 +15,12 @@ namespace AllReady.Areas.Admin.Features.Tasks
             _context = context;
         }
 
-        public TaskEditModel Handle(EditTaskQuery message)
+        public async Task<TaskEditModel> Handle(EditTaskQuery message)
         {
-            var task = _context.Tasks.AsNoTracking()
+            var task = await _context.Tasks.AsNoTracking()
                 .Include(t => t.Activity).ThenInclude(a => a.Campaign)
                 .Include(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
-                .SingleOrDefault(t => t.Id == message.TaskId);
+                .SingleOrDefaultAsync(t => t.Id == message.TaskId);
 
             var viewModel = new TaskEditModel
             {
