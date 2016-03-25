@@ -160,7 +160,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskController(null, mediator.Object);
             await sut.Edit(taskId);
 
-            mediator.Verify(x => x.SendAsync(It.Is<EditTaskQuery>(y => y.TaskId == taskId)));
+            mediator.Verify(x => x.SendAsync(It.Is<EditTaskQuery>(y => y.TaskId == taskId)), Times.Once);
         }
 
         [Fact]
@@ -251,7 +251,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskController(null, mediator.Object);
             await sut.Delete(taskId);
 
-            mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == taskId)));
+            mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == taskId)), Times.Once);
         }
 
         [Fact]
@@ -309,7 +309,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskController(null, mediator.Object);
             await sut.Details(taskId);
 
-            mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == taskId)));
+            mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == taskId)), Times.Once);
         }
 
         [Fact]
@@ -362,7 +362,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskController(null, mediator.Object);
             await sut.DeleteConfirmed(taskId);
 
-            mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == taskId)));
+            mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == taskId)), Times.Once);
         }
 
         [Fact]
@@ -406,7 +406,7 @@ namespace AllReady.UnitTest.Controllers
             PopulateClaimsFor(sut, orgAdminClaims);
             await sut.DeleteConfirmed(taskId);
 
-            mediator.Verify(x => x.Send(It.Is<DeleteTaskCommand>(y => y.TaskId == taskId)));
+            mediator.Verify(x => x.Send(It.Is<DeleteTaskCommand>(y => y.TaskId == taskId)), Times.Once);
         }
 
         [Fact]
@@ -436,18 +436,105 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(result.RouteValues, routeValues);
         }
 
-        //[Fact]
-        //public void AssignSendsTaskQueryWithCorrectTaskId()
-        //{
-        //    var mediator = new Mock<IMediator>();
-        //    var sut = new TaskController(null, mediator.Object);
-        //    sut
-        //}
+        [Fact]
+        public async Task AssignSendsTaskQueryWithCorrectTaskId()
+        {
+            const int taskId = 1;
+            var taskModelSummary = new TaskSummaryModel { ActivityId = 1 };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskModelSummary);
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(taskModelSummary.ActivityId)).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = 1 }});
+
+            var sut = new TaskController(dataAccess.Object, mediator.Object);
+            sut.SetDefaultHttpContext();
+            await sut.Assign(taskId, null);
+
+            mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == taskId)), Times.Once);
+        }
+
+        [Fact]
+        public async Task AssignReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
+        {
+            var taskModelSummary = new TaskSummaryModel { ActivityId = 1 };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskModelSummary);
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(taskModelSummary.ActivityId)).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = 1 } });
+
+            var sut = new TaskController(dataAccess.Object, mediator.Object);
+            sut.SetDefaultHttpContext();
+            var result = await sut.Assign(1, null);
+
+            Assert.IsType<HttpUnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public async Task AssignSendsAssignTaskCommand()
+        {
+            const int organizationId = 1;
+            const int taskId = 1;
+            var taskModelSummary = new TaskSummaryModel { ActivityId = 1 };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskModelSummary);
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(taskModelSummary.ActivityId)).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId }});
+
+            var orgAdminClaims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
+                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
+            };
+
+            var userIds = new List<string> { "1", "2" };
+
+            var sut = new TaskController(dataAccess.Object, mediator.Object);
+            PopulateClaimsFor(sut, orgAdminClaims);
+            await sut.Assign(taskId, userIds);
+
+            mediator.Verify(x => x.SendAsync(It.Is<AssignTaskCommand>(y => y.TaskId == taskId && y.UserIds == userIds)));
+        }
+
+        [Fact]
+        public async Task AssignRedirectsToRoute()
+        {
+            const int organizationId = 1;
+            const int taskId = 1;
+            var taskModelSummary = new TaskSummaryModel { ActivityId = 1 };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskModelSummary);
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetActivity(taskModelSummary.ActivityId)).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId } });
+
+            var orgAdminClaims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
+                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
+            };
+
+            var sut = new TaskController(dataAccess.Object, mediator.Object);
+            PopulateClaimsFor(sut, orgAdminClaims);
+            var result = await sut.Assign(taskId, null) as RedirectToRouteResult;
+
+            Assert.Equal(result.RouteValues["controller"], "Task");
+            Assert.Equal(result.RouteValues["Area"], "Admin");
+            Assert.Equal(result.RouteValues["action"], nameof(TaskController.Details));
+            Assert.Equal(result.RouteValues["id"], taskId);
+        }
 
         [Fact]
         public void ControllerHasAreaAtttributeWithTheCorrectAreaName()
         {
             var sut = new TaskController(null, null);
+            sut.SetDefaultHttpContext();
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.RouteValue, "Admin");

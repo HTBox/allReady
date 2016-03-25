@@ -153,13 +153,13 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Assign(int id, List<string> userIds)
         {
-            var task = await _mediator.SendAsync(new TaskQuery { TaskId = id });
-            if (!UserIsOrganizationAdminOfActivity(task.ActivityId))
-                return new HttpUnauthorizedResult();
+            var taskSummaryModel = await _mediator.SendAsync(new TaskQuery { TaskId = id });
+            if (!UserIsOrganizationAdminOfActivity(taskSummaryModel.ActivityId))
+                return HttpUnauthorized();
             
             await _mediator.SendAsync(new AssignTaskCommand { TaskId = id, UserIds = userIds });
 
-            return RedirectToRoute(new { controller = "Task", Area = "Admin", action = "Details", id });
+            return RedirectToRoute(new { controller = "Task", Area = "Admin", action = nameof(Details), id });
         }
 
         [HttpPost]
@@ -219,6 +219,7 @@ namespace AllReady.Areas.Admin.Controllers
         private bool UserIsOrganizationAdminOfActivity(Activity activity) => 
             User.IsOrganizationAdmin(activity.Campaign.ManagingOrganizationId);
 
+        //TODO: _dataAccess.GetActivity needs to be changed to async
         private bool UserIsOrganizationAdminOfActivity(int activityId) => 
             UserIsOrganizationAdminOfActivity(_dataAccess.GetActivity(activityId));
     }
