@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Models;
+using AllReady.Features.Activity;
 using AllReady.Models;
 using AllReady.Security;
 using MediatR;
@@ -15,12 +16,10 @@ namespace AllReady.Areas.Admin.Controllers
     [Authorize("OrgAdmin")]
     public class TaskController : Controller
     {
-        private readonly IAllReadyDataAccess _dataAccess;
         private readonly IMediator _mediator;
 
-        public TaskController(IAllReadyDataAccess dataAccess, IMediator mediator)
+        public TaskController(IMediator mediator)
         {
-            _dataAccess = dataAccess;
             _mediator = mediator;
         }
 
@@ -28,7 +27,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Task/Create/{activityId}")]
         public IActionResult Create(int activityId)
         {
-            var activity = _dataAccess.GetActivity(activityId);
+            var activity = GetActivityBy(activityId);
             if (activity == null || !User.IsOrganizationAdmin(activity.Campaign.ManagingOrganizationId))
                 return HttpUnauthorized();
             
@@ -154,7 +153,9 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Assign(int id, List<string> userIds)
         {
             var taskSummaryModel = await _mediator.SendAsync(new TaskQuery { TaskId = id });
-            if (!UserIsOrganizationAdminOfActivity(taskSummaryModel.ActivityId))
+
+            var activity = GetActivityBy(taskSummaryModel.ActivityId);
+            if (!User.IsOrganizationAdmin(activity.Campaign.ManagingOrganizationId))
                 return HttpUnauthorized();
             
             await _mediator.SendAsync(new AssignTaskCommand { TaskId = id, UserIds = userIds });
@@ -186,7 +187,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (model.StartDateTime.HasValue || model.EndDateTime.HasValue)
             {
-                var activity = _dataAccess.GetActivity(model.ActivityId);
+                var activity = GetActivityBy(model.ActivityId);
                 var timeZone = TimeZoneInfo.FindSystemTimeZoneById(activity.Campaign.TimeZoneId);
 
                 DateTimeOffset? convertedStartDateTime = null;
@@ -216,11 +217,8 @@ namespace AllReady.Areas.Admin.Controllers
             }
         }
 
-        private bool UserIsOrganizationAdminOfActivity(Activity activity) => 
-            User.IsOrganizationAdmin(activity.Campaign.ManagingOrganizationId);
-
-        //TODO: _dataAccess.GetActivity needs to be changed to async
-        private bool UserIsOrganizationAdminOfActivity(int activityId) => 
-            UserIsOrganizationAdminOfActivity(_dataAccess.GetActivity(activityId));
+        //TODO: mediator query and handler need to be changed to async
+        private Activity GetActivityBy(int activityId) => _mediator.Send(new ActivityByActivityIdQuery { ActivityId = activityId });
+            //_dataAccess.GetActivity(activityId);
     }
 }

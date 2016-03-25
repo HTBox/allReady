@@ -14,6 +14,7 @@ using MediatR;
 using Microsoft.AspNet.Authorization;
 using AllReady.Areas.Admin.Features.Tasks;
 using System.Threading.Tasks;
+using AllReady.Features.Activity;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -25,20 +26,20 @@ namespace AllReady.UnitTest.Controllers
     public class TaskControllerTests
     {
         [Fact]
-        public void CreateGetInvokesGetActivityWithTheCorrectActivityId()
+        public void CreateGetSendsActivityByActivityIdQueryWithTheCorrectActivityId()
         {
             const int activityId = 1;
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            var sut = new TaskController(dataAccess.Object, null);
+            var mediator = new Mock<IMediator>();
+            var sut = new TaskController(mediator.Object);
             sut.Create(activityId);
 
-            dataAccess.Verify(x => x.GetActivity(activityId), Times.Once);
+            mediator.Verify(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == activityId)), Times.Once);
         }
 
         [Fact]
         public void CreateGetReturnsHttpUnauthorizedResultWhenActivityIsNull()
         {
-            var sut = new TaskController(Mock.Of<IAllReadyDataAccess>(), null);
+            var sut = new TaskController(Mock.Of<IMediator>());
             var result = sut.Create(It.IsAny<int>());
 
             Assert.IsType<HttpUnauthorizedResult>(result);
@@ -47,10 +48,10 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void CreateGetReturnsHttpUnauthorizedResultWhenUserIsNotOrganizationAdminForTheirOrganization()
         {
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = 1 } });
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = 1 }});
 
-            var sut = new TaskController(dataAccess.Object, null);
+            var sut = new TaskController(mediator.Object);
             sut.SetDefaultHttpContext();
 
             var result = sut.Create(It.IsAny<int>());
@@ -82,8 +83,8 @@ namespace AllReady.UnitTest.Controllers
                 }
             };
 
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(activity);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(activity);
 
             var orgAdminClaims = new List<Claim>
             {
@@ -91,7 +92,7 @@ namespace AllReady.UnitTest.Controllers
                 new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
             };
 
-            var sut = new TaskController(dataAccess.Object, null);
+            var sut = new TaskController(mediator.Object);
             PopulateClaimsFor(sut, orgAdminClaims);
 
             var result = sut.Create(It.IsAny<int>()) as ViewResult;
@@ -112,8 +113,8 @@ namespace AllReady.UnitTest.Controllers
         {
             const int organizationId = 1;
 
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId }});
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId }});
 
             var orgAdminClaims = new List<Claim>
             {
@@ -121,7 +122,7 @@ namespace AllReady.UnitTest.Controllers
                 new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
             };
 
-            var sut = new TaskController(dataAccess.Object, null);
+            var sut = new TaskController(mediator.Object);
             PopulateClaimsFor(sut, orgAdminClaims);
 
             var result = sut.Create(It.IsAny<int>()) as ViewResult;
@@ -132,7 +133,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void CreateGetHasHttpGetAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<TaskEditModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -140,7 +141,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void CreateGetHasRouteAttributeWithCorrectTemplate()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<TaskEditModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "Admin/Task/Create/{activityId}");
@@ -158,7 +159,7 @@ namespace AllReady.UnitTest.Controllers
             const int taskId = 1;
             var mediator = new Mock<IMediator>();
 
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             await sut.Edit(taskId);
 
             mediator.Verify(x => x.SendAsync(It.Is<EditTaskQuery>(y => y.TaskId == taskId)), Times.Once);
@@ -167,7 +168,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task EditGetReturnsHttpNotFoundResultWhenTaskIsNull()
         {
-            var sut = new TaskController(null, Mock.Of<IMediator>());
+            var sut = new TaskController(Mock.Of<IMediator>());
             var result = await sut.Edit(It.IsAny<int>());
 
             Assert.IsType<HttpNotFoundResult>(result);
@@ -179,7 +180,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EditTaskQuery>())).ReturnsAsync(new TaskEditModel());
 
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             sut.SetDefaultHttpContext();
             var result = await sut.Edit(It.IsAny<int>());
 
@@ -201,7 +202,7 @@ namespace AllReady.UnitTest.Controllers
                 new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
             };
 
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             PopulateClaimsFor(sut, orgAdminClaims);
 
             var result = await sut.Edit(It.IsAny<int>()) as ViewResult;
@@ -215,7 +216,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void EditGetHasHttpGetAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -223,7 +224,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void EditGetHasRouteAttributeWithCorrectTemplate()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "Admin/Task/Edit/{id}");
@@ -233,7 +234,7 @@ namespace AllReady.UnitTest.Controllers
         //[Fact]
         //public void EditPostAddsModelStateErrorWhenEndDateTimeIsLessThanStartDateTime()
         //{
-        //    var sut = new TaskController(null, null);
+        //    var sut = new TaskController(null);
         //    sut.Edit(new TaskEditModel { EndDateTime = DateTimeOffset.MinValue, StartDateTime = DateTimeOffset.MaxValue });
         //    var errorMessage = sut.ModelState.GetErrorMessages().First();
         //    Assert.Equal(errorMessage, "Ending time cannot be earlier than the starting time");
@@ -249,7 +250,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const int taskId = 1;
             var mediator = new Mock<IMediator>();
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             await sut.Delete(taskId);
 
             mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == taskId)), Times.Once);
@@ -258,7 +259,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task DeleteReturnsHttpNotFoundResultWhenTaskIsNull()
         {
-            var sut = new TaskController(null, Mock.Of<IMediator>());
+            var sut = new TaskController(Mock.Of<IMediator>());
             var result = await sut.Delete(It.IsAny<int>());
             Assert.IsType<HttpNotFoundResult>(result);
         }
@@ -269,7 +270,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(new TaskSummaryModel());
 
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             sut.SetDefaultHttpContext();
             var result = await sut.Delete(It.IsAny<int>());
 
@@ -291,7 +292,7 @@ namespace AllReady.UnitTest.Controllers
                 new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
             };
 
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             PopulateClaimsFor(sut, orgAdminClaims);
 
             var result = await sut.Delete(It.IsAny<int>()) as ViewResult;
@@ -307,7 +308,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const int taskId = 1;
             var mediator = new Mock<IMediator>();
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             await sut.Details(taskId);
 
             mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == taskId)), Times.Once);
@@ -316,7 +317,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task DetailsReturnsHttpNotFoundResultWhenTaskIsNull()
         {
-            var sut = new TaskController(null, Mock.Of<IMediator>());
+            var sut = new TaskController(Mock.Of<IMediator>());
             var result = await sut.Details(It.IsAny<int>());
             Assert.IsType<HttpNotFoundResult>(result);
         }
@@ -329,7 +330,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
 
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             var result = await sut.Details(It.IsAny<int>()) as ViewResult;
             var modelResult = result.ViewData.Model as TaskSummaryModel;
 
@@ -341,7 +342,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DetailsHasHttpGetAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             var attribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -349,7 +350,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DetailsHasRouteAttributeWithCorrectTemplate()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             var attribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "Admin/Task/Details/{id}");
@@ -360,7 +361,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const int taskId = 1;
             var mediator = new Mock<IMediator>();
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             await sut.DeleteConfirmed(taskId);
 
             mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == taskId)), Times.Once);
@@ -369,7 +370,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task DeleteConfirmedReturnsHttpNotFoundResultWhenTaskSummaryModelIsNull()
         {
-            var sut = new TaskController(null, Mock.Of<IMediator>());
+            var sut = new TaskController(Mock.Of<IMediator>());
             var result = await sut.DeleteConfirmed(It.IsAny<int>());
             Assert.IsType<HttpNotFoundResult>(result);
         }
@@ -380,7 +381,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(new TaskSummaryModel());
 
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             sut.SetDefaultHttpContext();
 
             var result = await sut.DeleteConfirmed(It.IsAny<int>());
@@ -403,7 +404,7 @@ namespace AllReady.UnitTest.Controllers
                 new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
             };
 
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             PopulateClaimsFor(sut, orgAdminClaims);
             await sut.DeleteConfirmed(taskId);
 
@@ -426,7 +427,7 @@ namespace AllReady.UnitTest.Controllers
                 new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
             };
 
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             PopulateClaimsFor(sut, orgAdminClaims);
             var result = await sut.DeleteConfirmed(taskId) as RedirectToActionResult;
 
@@ -440,14 +441,14 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DeleteConfirmedHasHttpPostAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
   
         public void DeleteConfirmedHasActionNameAttributeWithCorrectActionName()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ActionNameAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Name, "Delete");
@@ -456,7 +457,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DeleteConfirmedHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -468,12 +469,10 @@ namespace AllReady.UnitTest.Controllers
             var taskModelSummary = new TaskSummaryModel { ActivityId = 1 };
 
             var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = 1 } });
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskModelSummary);
 
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.GetActivity(taskModelSummary.ActivityId)).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = 1 }});
-
-            var sut = new TaskController(dataAccess.Object, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             sut.SetDefaultHttpContext();
             await sut.Assign(taskId, null);
 
@@ -487,11 +486,9 @@ namespace AllReady.UnitTest.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskModelSummary);
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = 1 } });
 
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.GetActivity(taskModelSummary.ActivityId)).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = 1 } });
-
-            var sut = new TaskController(dataAccess.Object, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             sut.SetDefaultHttpContext();
             var result = await sut.Assign(1, null);
 
@@ -507,9 +504,7 @@ namespace AllReady.UnitTest.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskModelSummary);
-
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.GetActivity(taskModelSummary.ActivityId)).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId }});
+            mediator.Setup(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == taskModelSummary.ActivityId))).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId }});
 
             var orgAdminClaims = new List<Claim>
             {
@@ -519,7 +514,7 @@ namespace AllReady.UnitTest.Controllers
 
             var userIds = new List<string> { "1", "2" };
 
-            var sut = new TaskController(dataAccess.Object, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             PopulateClaimsFor(sut, orgAdminClaims);
             await sut.Assign(taskId, userIds);
 
@@ -535,9 +530,7 @@ namespace AllReady.UnitTest.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskModelSummary);
-
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.GetActivity(taskModelSummary.ActivityId)).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId } });
+            mediator.Setup(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == taskModelSummary.ActivityId))).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId } });
 
             var orgAdminClaims = new List<Claim>
             {
@@ -545,7 +538,7 @@ namespace AllReady.UnitTest.Controllers
                 new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
             };
 
-            var sut = new TaskController(dataAccess.Object, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             PopulateClaimsFor(sut, orgAdminClaims);
             var result = await sut.Assign(taskId, null) as RedirectToRouteResult;
 
@@ -558,7 +551,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void AssignHasHttpPostAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             var attribute = sut.GetAttributesOn(x => x.Assign(It.IsAny<int>(), It.IsAny<List<string>>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -566,7 +559,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void AssignHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             var attribute = sut.GetAttributesOn(x => x.Assign(It.IsAny<int>(), It.IsAny<List<string>>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -574,7 +567,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task MessageAllVolunteersReturnsBadRequestObjectResultWhenModelStateIsInvalid()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             sut.AddModelStateError();
             var result = await sut.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersModel>());
             Assert.IsType<BadRequestObjectResult>(result);
@@ -586,7 +579,7 @@ namespace AllReady.UnitTest.Controllers
             var model = new MessageTaskVolunteersModel { TaskId = 1 };
             var mediator = new Mock<IMediator>();
 
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             await sut.MessageAllVolunteers(model);
 
             mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == model.TaskId)), Times.Once);
@@ -597,7 +590,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var mediator = new Mock<IMediator>();
 
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersModel());
 
             Assert.IsType<HttpNotFoundResult>(result);
@@ -609,7 +602,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(new TaskSummaryModel());
 
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             sut.SetDefaultHttpContext();
             var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersModel());
 
@@ -631,7 +624,7 @@ namespace AllReady.UnitTest.Controllers
                 new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
             };
 
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             PopulateClaimsFor(sut, orgAdminClaims);
             await sut.MessageAllVolunteers(model);
 
@@ -652,7 +645,7 @@ namespace AllReady.UnitTest.Controllers
                 new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
             };
 
-            var sut = new TaskController(null, mediator.Object);
+            var sut = new TaskController(mediator.Object);
             PopulateClaimsFor(sut, orgAdminClaims);
             var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersModel());
 
@@ -662,7 +655,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void MessageAllVolunteersHasHttpPostAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             var attribute = sut.GetAttributesOn(x => x.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -670,7 +663,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void MessageAllVolunteersHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             var attribute = sut.GetAttributesOn(x => x.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -678,7 +671,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ControllerHasAreaAtttributeWithTheCorrectAreaName()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             sut.SetDefaultHttpContext();
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
@@ -688,7 +681,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ControllerHasAuthorizeAtttributeWithTheCorrectPolicy()
         {
-            var sut = new TaskController(null, null);
+            var sut = new TaskController(null);
             var attribute = sut.GetAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Policy, "OrgAdmin");
