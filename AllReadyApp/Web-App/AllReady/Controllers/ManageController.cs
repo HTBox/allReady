@@ -17,8 +17,8 @@ namespace AllReady.Controllers
         //Email Constants
         private const string EMAIL_CONFIRMATION_SUBJECT = "Confirm your allReady account";
         private const string NEW_EMAIL_CONFIRM = 
-            "Please confirm your new email address for your allReady account by clicking this link: <a href={0}>link</a>. Note that once confirmed your original email address will cease to be valid as your username.";
-        private const string RESEND_EMAIL_CONFIRM = "Please confirm your allReady account by clicking this link: <a href={0}>link</a>";
+            "Please confirm your new email address for your allReady account by clicking this link: <a href=\"{0}\">link</a>. Note that once confirmed your original email address will cease to be valid as your username.";
+        private const string RESEND_EMAIL_CONFIRM = "Please confirm your allReady account by clicking this link: <a href=\"{0}\">link</a>";
         //Error Constants
         private const string ACCOUNT_SECURITY_CODE = "Your allReady account security code is: ";
         private const string FAILED_TO_VERIFY_PHONE_NUMBER = "Failed to verify phone number";
