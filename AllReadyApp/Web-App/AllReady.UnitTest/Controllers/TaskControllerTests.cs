@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 namespace AllReady.UnitTest.Controllers
 {
     //TODO:
+    //- EditPost and CreatePost unit tests
     //- encapsulate orgAdmimClaims into private method
     //- move PopulateClaimsFor to ControllerTestHelper?
     //- break out WarnDateTimeOutOfRange to separate testable entity?
@@ -437,6 +438,30 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
+        public void DeleteConfirmedHasHttpPostAttribute()
+        {
+            var sut = new TaskController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+  
+        public void DeleteConfirmedHasActionNameAttributeWithCorrectActionName()
+        {
+            var sut = new TaskController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ActionNameAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Name, "Delete");
+        }
+
+        [Fact]
+        public void DeleteConfirmedHasValidateAntiForgeryTokenAttribute()
+        {
+            var sut = new TaskController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
         public async Task AssignSendsTaskQueryWithCorrectTaskId()
         {
             const int taskId = 1;
@@ -498,7 +523,7 @@ namespace AllReady.UnitTest.Controllers
             PopulateClaimsFor(sut, orgAdminClaims);
             await sut.Assign(taskId, userIds);
 
-            mediator.Verify(x => x.SendAsync(It.Is<AssignTaskCommand>(y => y.TaskId == taskId && y.UserIds == userIds)));
+            mediator.Verify(x => x.SendAsync(It.Is<AssignTaskCommand>(y => y.TaskId == taskId && y.UserIds == userIds)), Times.Once);
         }
 
         [Fact]
@@ -528,6 +553,126 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(result.RouteValues["Area"], "Admin");
             Assert.Equal(result.RouteValues["action"], nameof(TaskController.Details));
             Assert.Equal(result.RouteValues["id"], taskId);
+        }
+
+        [Fact]
+        public void AssignHasHttpPostAttribute()
+        {
+            var sut = new TaskController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.Assign(It.IsAny<int>(), It.IsAny<List<string>>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void AssignHasValidateAntiForgeryTokenAttribute()
+        {
+            var sut = new TaskController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.Assign(It.IsAny<int>(), It.IsAny<List<string>>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public async Task MessageAllVolunteersReturnsBadRequestObjectResultWhenModelStateIsInvalid()
+        {
+            var sut = new TaskController(null, null);
+            sut.AddModelStateError();
+            var result = await sut.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersModel>());
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task MessageAllVounteersSendsTaskQueryWithCorrectTaskId()
+        {
+            var model = new MessageTaskVolunteersModel { TaskId = 1 };
+            var mediator = new Mock<IMediator>();
+
+            var sut = new TaskController(null, mediator.Object);
+            await sut.MessageAllVolunteers(model);
+
+            mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == model.TaskId)), Times.Once);
+        }
+
+        [Fact]
+        public async Task MessageAllVolunteersReturnsHttpNotFoundResultWhenTaskIsNull()
+        {
+            var mediator = new Mock<IMediator>();
+
+            var sut = new TaskController(null, mediator.Object);
+            var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersModel());
+
+            Assert.IsType<HttpNotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task MessageAllVolunttersReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(new TaskSummaryModel());
+
+            var sut = new TaskController(null, mediator.Object);
+            sut.SetDefaultHttpContext();
+            var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersModel());
+
+            Assert.IsType<HttpUnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public async Task MessageAllVolunteersSendsMessageTaskVolunteersCommand()
+        {
+            const int organizationId = 1;
+            var model = new MessageTaskVolunteersModel();
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(new TaskSummaryModel { OrganizationId = organizationId });
+
+            var orgAdminClaims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
+                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
+            };
+
+            var sut = new TaskController(null, mediator.Object);
+            PopulateClaimsFor(sut, orgAdminClaims);
+            await sut.MessageAllVolunteers(model);
+
+            mediator.Verify(x => x.SendAsync(It.Is<MessageTaskVolunteersCommand>(y => y.Model ==  model)), Times.Once);
+        }
+
+        [Fact]
+        public async Task MessageAllVolunteersReturnsHttpOkResult()
+        {
+            const int organizationId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(new TaskSummaryModel { OrganizationId = organizationId });
+
+            var orgAdminClaims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
+                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
+            };
+
+            var sut = new TaskController(null, mediator.Object);
+            PopulateClaimsFor(sut, orgAdminClaims);
+            var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersModel());
+
+            Assert.IsType<HttpOkResult>(result);
+        }
+
+        [Fact]
+        public void MessageAllVolunteersHasHttpPostAttribute()
+        {
+            var sut = new TaskController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void MessageAllVolunteersHasValidateAntiForgeryTokenAttribute()
+        {
+            var sut = new TaskController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact]
