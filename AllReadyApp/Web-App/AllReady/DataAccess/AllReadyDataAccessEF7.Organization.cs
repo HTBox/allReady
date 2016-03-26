@@ -27,7 +27,7 @@ namespace AllReady.Models
                 _dbContext.Organizations.Remove(organization);
                 return _dbContext.SaveChangesAsync();
             }
-            return null;
+            return Task.FromResult(0);
         }
 
         Task IAllReadyDataAccess.UpdateOrganization(Organization value)
@@ -39,7 +39,7 @@ namespace AllReady.Models
                 _dbContext.Organizations.Update(organization);
                 return _dbContext.SaveChangesAsync();
             }
-            return null;
+            return Task.FromResult(0);
         }
 
         IEnumerable<Organization> IAllReadyDataAccess.Organizations

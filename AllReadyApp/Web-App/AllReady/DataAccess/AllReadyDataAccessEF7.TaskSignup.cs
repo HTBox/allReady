@@ -47,7 +47,7 @@ namespace AllReady.Models
                 _dbContext.TaskSignups.Remove(taskSignup);
                 return _dbContext.SaveChangesAsync();
             }
-            return null;
+            return Task.FromResult(0);
         }
 
         Task IAllReadyDataAccess.UpdateTaskSignupAsync(TaskSignup value)
