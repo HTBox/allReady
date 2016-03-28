@@ -60,28 +60,14 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 if (!User.IsOrganizationAdmin(model.OrganizationId))
                     return HttpUnauthorized();
-                
+
                 await _mediator.SendAsync(new EditTaskCommand { Task = model });
 
                 //mgmccarthy: I'm assuming this is ActivityController in the Admin area
-                return RedirectToAction(nameof(ActivityController.Details), "Activity", new { id = activityId });
+                return RedirectToAction(nameof(Details), "Activity", new { id = activityId });
             }
 
             return View("Edit", model);
-        }
-
-        [HttpGet]
-        [Route("Admin/Task/Edit/{id}")]
-        public async Task<IActionResult> Edit(int id)
-        {
-            var task = await _mediator.SendAsync(new EditTaskQuery { TaskId = id });
-            if (task == null)
-                return HttpNotFound();
-
-            if (!User.IsOrganizationAdmin(task.OrganizationId))
-                return HttpUnauthorized();
-
-            return View(task);
         }
 
         [HttpPost]
@@ -104,6 +90,20 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        [Route("Admin/Task/Edit/{id}")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var task = await _mediator.SendAsync(new EditTaskQuery { TaskId = id });
+            if (task == null)
+                return HttpNotFound();
+
+            if (!User.IsOrganizationAdmin(task.OrganizationId))
+                return HttpUnauthorized();
+
+            return View(task);
         }
 
         //mgmccarthy: does anyone know why there are no attributes here on this action method?
@@ -144,7 +144,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             _mediator.Send(new DeleteTaskCommand { TaskId = id });
 
-            //I'm assuming this is ActivityController in the Admin area
+            //mgmccarthy: I'm assuming this is ActivityController in the Admin area
             return RedirectToAction(nameof(ActivityController.Details), "Activity", new { id = taskSummaryModel.ActivityId });
         }
 
@@ -188,13 +188,13 @@ namespace AllReady.Areas.Admin.Controllers
             if (model.StartDateTime.HasValue || model.EndDateTime.HasValue)
             {
                 var activity = GetActivityBy(model.ActivityId);
-                var timeZone = TimeZoneInfo.FindSystemTimeZoneById(activity.Campaign.TimeZoneId);
+                var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(activity.Campaign.TimeZoneId);
 
                 DateTimeOffset? convertedStartDateTime = null;
                 if (model.StartDateTime.HasValue)
                 {
                     var startDateValue = model.StartDateTime.Value;
-                    var startDateTimeOffset = timeZone.GetUtcOffset(startDateValue);
+                    var startDateTimeOffset = timeZoneInfo.GetUtcOffset(startDateValue);
                     convertedStartDateTime = new DateTimeOffset(startDateValue.Year, startDateValue.Month, startDateValue.Day, startDateValue.Hour, startDateValue.Minute, 0, startDateTimeOffset);
                 }
 
@@ -202,7 +202,7 @@ namespace AllReady.Areas.Admin.Controllers
                 if (model.EndDateTime.HasValue)
                 {
                     var endDateValue = model.EndDateTime.Value;
-                    var endDateTimeOffset = timeZone.GetUtcOffset(endDateValue);
+                    var endDateTimeOffset = timeZoneInfo.GetUtcOffset(endDateValue);
                     convertedEndDateTime = new DateTimeOffset(endDateValue.Year, endDateValue.Month, endDateValue.Day, endDateValue.Hour, endDateValue.Minute, 0, endDateTimeOffset);
                 }
 
@@ -217,7 +217,8 @@ namespace AllReady.Areas.Admin.Controllers
             }
         }
 
-        //TODO: mediator query and handler need to be changed to async
-        private Activity GetActivityBy(int activityId) => _mediator.Send(new ActivityByActivityIdQuery { ActivityId = activityId });
+        //mgmccarthy: mediator query and handler need to be changed to async when Issue #622 is addressed
+        private Activity GetActivityBy(int activityId) => 
+            _mediator.Send(new ActivityByActivityIdQuery { ActivityId = activityId });
     }
 }

@@ -19,11 +19,6 @@ using AllReady.Extensions;
 
 namespace AllReady.UnitTest.Controllers
 {
-    //TODO:
-    //- CreatePost unit tests
-    //- encapsulate orgAdmimClaims into private method
-    //- move PopulateClaimsFor to ControllerTestHelper?
-    //- break out WarnDateTimeOutOfRange to separate testable entity?
     public class TaskControllerTests
     {
         [Fact]
@@ -87,14 +82,8 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(activity);
 
-            var orgAdminClaims = new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
-                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
-            };
-
             var sut = new TaskController(mediator.Object);
-            PopulateClaimsFor(sut, orgAdminClaims);
+            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             var result = sut.Create(It.IsAny<int>()) as ViewResult;
             var modelResult = result.ViewData.Model as TaskEditModel;
@@ -117,14 +106,8 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId }});
 
-            var orgAdminClaims = new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
-                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
-            };
-
             var sut = new TaskController(mediator.Object);
-            PopulateClaimsFor(sut, orgAdminClaims);
+            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             var result = sut.Create(It.IsAny<int>()) as ViewResult;
 
@@ -135,7 +118,7 @@ namespace AllReady.UnitTest.Controllers
         public void CreateGetHasHttpGetAttribute()
         {
             var sut = new TaskController(null);
-            var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<TaskEditModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -143,15 +126,138 @@ namespace AllReady.UnitTest.Controllers
         public void CreateGetHasRouteAttributeWithCorrectTemplate()
         {
             var sut = new TaskController(null);
-            var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<TaskEditModel>())).OfType<RouteAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "Admin/Task/Create/{activityId}");
         }
 
-        //TODO: come back to these b/c of WarnDateTimeOutOfRange
         [Fact]
-        public void CreatePost()
+        public async Task CreatePostAddsCorrectModelStateErrorWhenEndDateTimeIsLessThanStartDateTime()
         {
+            var mediator = new Mock<IMediator>();
+            //mgmccarthy: for a list of time zone's to feed to TimeZoneInfo.FindSystemTimeZoneById, check here:
+            //http://stackoverflow.com/questions/7908343/list-of-timezone-ids-for-use-with-findtimezonebyid-in-c
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
+
+            var sut = new TaskController(mediator.Object);
+            await sut.Create(It.IsAny<int>(), new TaskEditModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1) });
+
+            var modelStateErrorCollection = sut.ModelState.GetErrorMessagesByKey(nameof(TaskEditModel.EndDateTime));
+            Assert.Equal(modelStateErrorCollection.Single().ErrorMessage, "Ending time cannot be earlier than the starting time");
+        }
+
+        [Fact]
+        public async Task CreatePostReturnsCorrectViewAndViewModelWhenEndDateTimeIsLessThanStartDateTimeAndModelStateIsInvalid()
+        {
+            var model = new TaskEditModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1) };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
+
+            var sut = new TaskController(mediator.Object);
+            var result = await sut.Create(It.IsAny<int>(), model) as ViewResult;
+            var modelResult = result.ViewData.Model as TaskEditModel;
+
+            Assert.IsType<ViewResult>(result);
+            Assert.Equal(modelResult, model);
+        }
+
+        [Fact]
+        public async Task CreatePostReturnsHttpUnauthorizedResultWhenModelStateIsValidAndUserIsNotAnOrganizationAdminUser()
+        {
+            var startDateTime = DateTimeOffset.Now.AddDays(-1);
+            var endDateTime = DateTimeOffset.Now.AddDays(1);
+            var model = new TaskEditModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = 1 };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity
+            {
+                Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" },
+                StartDateTime = startDateTime.AddDays(-1),
+                EndDateTime = endDateTime.AddDays(1)
+            });
+
+            var sut = new TaskController(mediator.Object);
+            sut.SetDefaultHttpContext();
+
+            var result = await sut.Create(It.IsAny<int>(), model);
+
+            Assert.IsType<HttpUnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public async Task CreatePostSendsEditTaskCommandWhenModelStateIsValidAndUserIsOrganizationAdmin()
+        {
+            const int organizationId = 1;
+            var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId };
+            var startDateTime = DateTimeOffset.Now.AddDays(-1);
+            var endDateTime = DateTimeOffset.Now.AddDays(1);
+
+            var model = new TaskEditModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity
+            {
+                Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" },
+                StartDateTime = startDateTime.AddDays(-1),
+                EndDateTime = endDateTime.AddDays(1)
+            });
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
+
+            var sut = new TaskController(mediator.Object);
+            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+
+            await sut.Create(It.IsAny<int>(), model);
+
+            mediator.Verify(x => x.SendAsync(It.Is<EditTaskCommand>(y => y.Task == model)));
+        }
+
+        [Fact]
+        public async Task CreatePostRedirectsToCorrectAction()
+        {
+            const int organizationId = 1;
+            var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId };
+            var startDateTime = DateTimeOffset.Now.AddDays(-1);
+            var endDateTime = DateTimeOffset.Now.AddDays(1);
+            const int taskEditModelId = 1;
+            var model = new TaskEditModel { Id = taskEditModelId, StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity
+            {
+                Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" },
+                StartDateTime = startDateTime.AddDays(-1),
+                EndDateTime = endDateTime.AddDays(1)
+            });
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
+
+            var routeValues = new Dictionary<string, object> { ["id"] = model.Id };
+
+            var sut = new TaskController(mediator.Object);
+            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+
+            var result = await sut.Create(taskEditModelId, model) as RedirectToActionResult;
+
+            Assert.Equal(result.ActionName, nameof(TaskController.Details));
+            Assert.Equal(result.ControllerName, "Activity");
+            Assert.Equal(result.RouteValues, routeValues);
+        }
+
+        [Fact]
+        public void CreatePostHasHttpGetAttribute()
+        {
+            var sut = new TaskController(null);
+            var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<TaskEditModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void CreatePostHasRouteAttributeWithCorrectTemplate()
+        {
+            var sut = new TaskController(null);
+            var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<TaskEditModel>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "Admin/Task/Create/{activityId}");
         }
 
         [Fact]
@@ -197,14 +303,8 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EditTaskQuery>())).ReturnsAsync(taskEditModel);
 
-            var orgAdminClaims = new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
-                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
-            };
-
             var sut = new TaskController(mediator.Object);
-            PopulateClaimsFor(sut, orgAdminClaims);
+            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             var result = await sut.Edit(It.IsAny<int>()) as ViewResult;
             var modelResult = result.ViewData.Model as TaskEditModel;
@@ -300,14 +400,8 @@ namespace AllReady.UnitTest.Controllers
             });
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
 
-            var orgAdminClaims = new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
-                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
-            };
-
             var sut = new TaskController(mediator.Object);
-            PopulateClaimsFor(sut, orgAdminClaims);
+            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             await sut.Edit(model);
 
@@ -332,14 +426,8 @@ namespace AllReady.UnitTest.Controllers
             });
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
 
-            var orgAdminClaims = new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
-                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
-            };
-
             var sut = new TaskController(mediator.Object);
-            PopulateClaimsFor(sut, orgAdminClaims);
+            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             var result = await sut.Edit(model) as RedirectToActionResult;
 
@@ -348,6 +436,22 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(result.ControllerName, "Task");
             Assert.Equal(result.ActionName, nameof(TaskController.Details));
             Assert.Equal(result.RouteValues, routeValues);
+        }
+
+        [Fact]
+        public void EditPostHasHttpPostAttribute()
+        {
+            var sut = new TaskController(null);
+            var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<TaskEditModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void EditPostHasValidateAntiForgeryTokenAttribute()
+        {
+            var sut = new TaskController(null);
+            var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<TaskEditModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact]
@@ -391,14 +495,8 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
 
-            var orgAdminClaims = new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
-                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
-            };
-
             var sut = new TaskController(mediator.Object);
-            PopulateClaimsFor(sut, orgAdminClaims);
+            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             var result = await sut.Delete(It.IsAny<int>()) as ViewResult;
             var modelResult = result.ViewData.Model as TaskSummaryModel;
@@ -503,14 +601,8 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(new TaskSummaryModel { OrganizationId = 1 });
 
-            var orgAdminClaims = new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
-                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
-            };
-
             var sut = new TaskController(mediator.Object);
-            PopulateClaimsFor(sut, orgAdminClaims);
+            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             await sut.DeleteConfirmed(taskId);
 
             mediator.Verify(x => x.Send(It.Is<DeleteTaskCommand>(y => y.TaskId == taskId)), Times.Once);
@@ -526,14 +618,8 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
 
-            var orgAdminClaims = new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
-                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
-            };
-
             var sut = new TaskController(mediator.Object);
-            PopulateClaimsFor(sut, orgAdminClaims);
+            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             var result = await sut.DeleteConfirmed(taskId) as RedirectToActionResult;
 
             var routeValues = new Dictionary<string, object> { ["id"] = taskSummaryModel.ActivityId };
@@ -606,21 +692,14 @@ namespace AllReady.UnitTest.Controllers
             const int organizationId = 1;
             const int taskId = 1;
             var taskModelSummary = new TaskSummaryModel { ActivityId = 1 };
+            var userIds = new List<string> { "1", "2" };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskModelSummary);
             mediator.Setup(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == taskModelSummary.ActivityId))).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId }});
 
-            var orgAdminClaims = new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
-                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
-            };
-
-            var userIds = new List<string> { "1", "2" };
-
             var sut = new TaskController(mediator.Object);
-            PopulateClaimsFor(sut, orgAdminClaims);
+            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             await sut.Assign(taskId, userIds);
 
             mediator.Verify(x => x.SendAsync(It.Is<AssignTaskCommand>(y => y.TaskId == taskId && y.UserIds == userIds)), Times.Once);
@@ -637,14 +716,9 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskModelSummary);
             mediator.Setup(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == taskModelSummary.ActivityId))).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId } });
 
-            var orgAdminClaims = new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
-                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
-            };
-
             var sut = new TaskController(mediator.Object);
-            PopulateClaimsFor(sut, orgAdminClaims);
+            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+
             var result = await sut.Assign(taskId, null) as RedirectToRouteResult;
 
             Assert.Equal(result.RouteValues["controller"], "Task");
@@ -723,14 +797,8 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(new TaskSummaryModel { OrganizationId = organizationId });
 
-            var orgAdminClaims = new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
-                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
-            };
-
             var sut = new TaskController(mediator.Object);
-            PopulateClaimsFor(sut, orgAdminClaims);
+            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             await sut.MessageAllVolunteers(model);
 
             mediator.Verify(x => x.SendAsync(It.Is<MessageTaskVolunteersCommand>(y => y.Model ==  model)), Times.Once);
@@ -744,14 +812,8 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(new TaskSummaryModel { OrganizationId = organizationId });
 
-            var orgAdminClaims = new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
-                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
-            };
-
             var sut = new TaskController(mediator.Object);
-            PopulateClaimsFor(sut, orgAdminClaims);
+            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersModel());
 
             Assert.IsType<HttpOkResult>(result);
@@ -792,13 +854,19 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(attribute.Policy, "OrgAdmin");
         }
 
-        private static void PopulateClaimsFor(Controller controller, IEnumerable<Claim> claims)
+        private static void MakeUserOrganizationAdminUser(Controller controller, string organizationId)
         {
+            var orgAdminClaims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
+                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId)
+            };
+
             var httpContext = new Mock<HttpContext>();
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(orgAdminClaims));
             httpContext.Setup(x => x.User).Returns(claimsPrincipal);
 
             controller.ActionContext.HttpContext = httpContext.Object;
-        }        
+        }
     }
 }
