@@ -74,7 +74,7 @@ namespace AllReady.Features.Tasks
             {
                 var skillsToAdd = task.RequiredSkills
                     .Where(taskSkill => model.AddSkillIds.Contains(taskSkill.SkillId))
-                    .Select(taskSkill => new UserSkill() { SkillId = taskSkill.SkillId, UserId = user.Id });
+                    .Select(taskSkill => new UserSkill { SkillId = taskSkill.SkillId, UserId = user.Id });
 
                 user.AssociatedSkills.AddRange(skillsToAdd.Where(skillToAdd => user.AssociatedSkills.All(userSkill => userSkill.SkillId != skillToAdd.SkillId)));
 
@@ -84,7 +84,7 @@ namespace AllReady.Features.Tasks
             await _context.SaveChangesAsync();
 
             //Notify admins of a new volunteer
-            await _bus.PublishAsync(new VolunteerSignupNotification() { ActivityId = model.ActivityId, UserId = model.UserId, TaskId = task.Id });
+            await _bus.PublishAsync(new VolunteerSignupNotification { ActivityId = model.ActivityId, UserId = model.UserId, TaskId = task.Id });
 
             return new TaskSignupResult {Status = "success", Task = task};
         }
