@@ -85,4 +85,10 @@ namespace AllReady.Features.Tasks
             return new TaskSignupResult {Status = "success", Task = task};
         }
     }
+
+    public class TaskSignupResult
+    {
+        public string Status { get; set; }
+        public AllReadyTask Task { get; set; }
+    }
 }

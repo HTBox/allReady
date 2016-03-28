@@ -8,7 +8,7 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskUnenrollHandler : IAsyncRequestHandler<TaskUnenrollCommand, TaskSignupResult>
+    public class TaskUnenrollHandler : IAsyncRequestHandler<TaskUnenrollCommand, TaskUnenrollResult>
     {
         private readonly IMediator _bus;
         private readonly AllReadyContext _context;
@@ -19,7 +19,7 @@ namespace AllReady.Features.Tasks
             _context = context;
         }
 
-        public async Task<TaskSignupResult> Handle(TaskUnenrollCommand message)
+        public async Task<TaskUnenrollResult> Handle(TaskUnenrollCommand message)
         {
             var task = await _context.Tasks
                 .Include(t => t.AssignedVolunteers)
@@ -44,7 +44,7 @@ namespace AllReady.Features.Tasks
 
             await _bus.PublishAsync(new UserUnenrolls { ActivityId = activity.Id, UserId = message.UserId, TaskIds = new List<int> {task.Id} });
 
-            return new TaskSignupResult {Status = "success", Task = task};
+            return new TaskUnenrollResult { Status = "success", Task = task};
         }
     }
 }
