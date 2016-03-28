@@ -9,22 +9,21 @@ namespace AllReady.Security
     {
         public static bool IsUserType(this ClaimsPrincipal user, UserType type)
         {
-            string userTypeString = Enum.GetName(typeof(UserType), type);
+            var userTypeString = Enum.GetName(typeof(UserType), type);
             return user.HasClaim(ClaimTypes.UserType, userTypeString);
         }
 
         public static bool IsOrganizationAdmin(this ClaimsPrincipal user)
         {
-            int? userOrganizationId = user.GetOrganizationId();
+            var userOrganizationId = user.GetOrganizationId();
             return userOrganizationId.HasValue && user.IsOrganizationAdmin(userOrganizationId.Value);
         }
 
         public static bool IsOrganizationAdmin(this ClaimsPrincipal user, int organizationId)
         {
-            int? userOrganizationId = user.GetOrganizationId();
+            var userOrganizationId = user.GetOrganizationId();
             return user.IsUserType(UserType.SiteAdmin) ||
-                  (user.IsUserType(UserType.OrgAdmin) &&
-                   userOrganizationId.HasValue && userOrganizationId.Value == organizationId);
+                  (user.IsUserType(UserType.OrgAdmin) && userOrganizationId.HasValue && userOrganizationId.Value == organizationId);
         }
 
         public static int? GetOrganizationId(this ClaimsPrincipal user)
@@ -35,9 +34,7 @@ namespace AllReady.Security
             {
                 int organizationId;
                 if (int.TryParse(organizationIdClaim.Value, out organizationId))
-                {
                     result = organizationId;
-                }
             }
 
             return result;
@@ -45,40 +42,27 @@ namespace AllReady.Security
 
         public static string GetTimeZoneId(this ClaimsPrincipal user)
         {
-            string result = null;
             var timeZoneIdClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.TimeZoneId);
-            if (timeZoneIdClaim != null)
-            {
-                result = timeZoneIdClaim.Value;
-            }
-            return result;
+            return timeZoneIdClaim?.Value;
         }
 
-        public static bool IsUserProfileIncomplete(this ClaimsPrincipal user)
-        {
-            return user.HasClaim(c => c.Type == ClaimTypes.ProfileIncomplete);                        
-        }
-
+        public static bool IsUserProfileIncomplete(this ClaimsPrincipal user) =>
+            user.HasClaim(c => c.Type == ClaimTypes.ProfileIncomplete);                        
 
         public static TimeZoneInfo GetTimeZoneInfo(this ClaimsPrincipal user)
-        {
+        {            
             var timeZoneId = user.GetTimeZoneId();
-            if (!string.IsNullOrEmpty(timeZoneId))
-            {
-                return TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
-            }
-            return null;
+            return !string.IsNullOrEmpty(timeZoneId) ? TimeZoneInfo.FindSystemTimeZoneById(timeZoneId) : null;
         }
 
         public static string GetDisplayName(this ClaimsPrincipal user)
         {
             var username = user.GetUserName();
-            if (user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.DisplayName) != null)
-            {
+            var displayNameClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.DisplayName);
+            if (displayNameClaim != null)
                 username = user.Claims.Single(c => c.Type == ClaimTypes.DisplayName).Value;
-            }
-            return username;
 
+            return username;
         }
 
         public static int? GetOrganizationId(this ApplicationUser user)
@@ -89,14 +73,10 @@ namespace AllReady.Security
             {
                 int organizationId;
                 if (int.TryParse(organizationIdClaim.ClaimValue, out organizationId))
-                {
                     result = organizationId;
-                }
             }
 
             return result;
         }
-
-
     }
 }
