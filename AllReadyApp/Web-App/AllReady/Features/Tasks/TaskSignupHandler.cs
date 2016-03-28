@@ -24,17 +24,19 @@ namespace AllReady.Features.Tasks
         public async Task<TaskSignupResult> Handle(TaskSignupCommand message)
         {
             var model = message.TaskSignupModel;
-            var user = _context.Users
+
+            var user = await _context.Users
                 .Include(u => u.AssociatedSkills)
-                .SingleOrDefault(u => u.Id == model.UserId);
-            var activity = _context.Activities
+                .SingleOrDefaultAsync(u => u.Id == model.UserId);
+
+            var activity = await _context.Activities
                 .Include(a => a.RequiredSkills)
                 .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
                 .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(s => s.Skill)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers)
-                .SingleOrDefault(a => a.Id == model.ActivityId);
-            var task = activity.Tasks
-                .SingleOrDefault(t => t.Id == model.TaskId);
+                .SingleOrDefaultAsync(a => a.Id == model.ActivityId);
+
+            var task = activity.Tasks.SingleOrDefault(t => t.Id == model.TaskId);
 
             activity.UsersSignedUp = activity.UsersSignedUp ?? new List<ActivitySignup>();
 
@@ -73,22 +75,18 @@ namespace AllReady.Features.Tasks
                 var skillsToAdd = task.RequiredSkills
                     .Where(taskSkill => model.AddSkillIds.Contains(taskSkill.SkillId))
                     .Select(taskSkill => new UserSkill() { SkillId = taskSkill.SkillId, UserId = user.Id });
+
                 user.AssociatedSkills.AddRange(skillsToAdd.Where(skillToAdd => user.AssociatedSkills.All(userSkill => userSkill.SkillId != skillToAdd.SkillId)));
 
                 _context.Update(user);
             }
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             //Notify admins of a new volunteer
             await _bus.PublishAsync(new VolunteerSignupNotification() { ActivityId = model.ActivityId, UserId = model.UserId, TaskId = task.Id });
+
             return new TaskSignupResult {Status = "success", Task = task};
         }
-    }
-
-    public class TaskSignupResult
-    {
-        public string Status { get; set; }
-        public AllReadyTask Task { get; set; }
     }
 }
