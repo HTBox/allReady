@@ -1,11 +1,9 @@
-﻿using AllReady.Areas.Admin.Features.Campaigns;
+﻿using AllReady.Areas.Admin.Features.Shared;
 using AllReady.Areas.Admin.Models;
 using AllReady.Areas.Admin.Models.Validators;
 using MediatR;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 

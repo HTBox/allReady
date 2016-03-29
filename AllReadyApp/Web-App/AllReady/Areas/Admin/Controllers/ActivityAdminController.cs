@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Areas.Admin.Features.Campaigns;
+using AllReady.Areas.Admin.Features.Shared;
 using AllReady.Areas.Admin.Models;
 using AllReady.Extensions;
 using AllReady.Models;
@@ -179,6 +180,25 @@ namespace AllReady.Areas.Admin.Controllers
             if (activity.EndDateTime > campaign.EndDate)
             {
                 ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be later than the campaign end date " + campaign.EndDate.ToString("d"));
+            }
+
+            // Temporary code to avoid current database update error when the post code geo does not exist in the database.
+            if (!string.IsNullOrEmpty(activity.Location.PostalCode))
+            {
+                bool validPostcode = await _mediator.SendAsync(new CheckValidPostcodeQueryAsync
+                {
+                    Postcode = new PostalCodeGeo
+                    {
+                        City = activity.Location.City,
+                        State = activity.Location.State,
+                        PostalCode = activity.Location.PostalCode
+                    }
+                });
+
+                if (!validPostcode)
+                {
+                    ModelState.AddModelError(nameof(activity.Location), "The city, state and postal code combination is not valid");
+                }
             }
 
             if (ModelState.IsValid)
