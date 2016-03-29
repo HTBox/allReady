@@ -336,22 +336,22 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void VerifyPhoneNumberPostSendsRemoveUserProfileIncompleteClaimCommandWhenUserIsNotNullAndPhoneNumberChangeWasSuccessfullAndUserProfileIsComplete()
+        public void VerifyPhoneNumberPostSendsRemoveUserProfileIncompleteClaimCommandWhenUserIsNotNullAndPhoneNumberChangeWasSuccessfulAndUserProfileIsComplete()
         {
         }
 
         [Fact]
-        public void VerifyPhoneNumberPostInvokesRefreshSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPhoneNumberChangeWasSuccessfullAndUserProfileIsComplete()
+        public void VerifyPhoneNumberPostInvokesRefreshSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPhoneNumberChangeWasSuccessfulAndUserProfileIsComplete()
         {
         }
 
         [Fact]
-        public void VerifyPhoneNumberPostInvokesSignInAsyncWithCorrectPaarmetersWhenUserIsNotNullAndPhoneNumberChangeWasSuccessfull()
+        public void VerifyPhoneNumberPostInvokesSignInAsyncWithCorrectPaarmetersWhenUserIsNotNullAndPhoneNumberChangeWasSuccessful()
         {
         }
 
         [Fact]
-        public void VerifyPhoneNumberPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndPhoneNumberChangeWasSuccessfull()
+        public void VerifyPhoneNumberPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndPhoneNumberChangeWasSuccessful()
         {
         }
 
@@ -501,57 +501,182 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void ChangeEmailPostAddsCorrectErrorMessageToModelStateWhenChangePasswordIsUnsuccessfull()
+        public void ChangeEmailPostAddsCorrectErrorMessageToModelStateWhenChangePasswordIsUnsuccessful()
         {
         }
 
         [Fact]
-        public void ChangeEmailPostReturnsCorrectVieModelWhenChangePasswordIsUnsuccessfull()
+        public void ChangeEmailPostReturnsCorrectVieModelWhenChangePasswordIsUnsuccessful()
         {
         }
 
         [Fact]
-        public void ChangeEmailPostInvokesFindByEmailAsyncWithCorrectParametersWhenChangePasswordIsSuccessfull()
+        public void ChangeEmailPostInvokesFindByEmailAsyncWithCorrectParametersWhenChangePasswordIsSuccessful()
         {
         }
 
         [Fact]
-        public void ChangeEmailPostAddsCorrectErrorToModelStateWhenChangePasswordIsSuccessfullAndEmailCannotBeFound()
+        public void ChangeEmailPostAddsCorrectErrorToModelStateWhenChangePasswordIsSuccessfulAndEmailCannotBeFound()
         {
         }
 
         [Fact]
-        public void ChangeEmailPostReturnsCorrectViewModelWhenChangePasswordIsSuccessfullAndEmailCannotBeFound()
+        public void ChangeEmailPostReturnsCorrectViewModelWhenChangePasswordIsSuccessfulAndEmailCannotBeFound()
         {
         }
 
         [Fact]
-        public void ChangeEmailPostInvokesUpdateAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfullAndUsersEmailIsFound()
+        public void ChangeEmailPostInvokesUpdateAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
         }
 
         [Fact]
-        public void ChangeEmailPostInvokesGenerateChangeEmailTokenAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfullAndUsersEmailIsFound()
+        public void ChangeEmailPostInvokesGenerateChangeEmailTokenAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
         }
 
         [Fact]
-        public void ChangeEmailPostInvokesUrlActioncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfullAndUsersEmailIsFound()
+        public void ChangeEmailPostInvokesUrlActioncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
         }
 
         [Fact]
-        public void ChangeEmailPostInvokesSendEmailAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfullAndUsersEmailIsFound()
+        public void ChangeEmailPostInvokesSendEmailAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
         }
 
         [Fact]
-        public void ChangeEmailPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndChangePasswordIsSuccessfullAndUsersEmailIsFound()
+        public void ChangeEmailPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
         }
 
         [Fact]
         public void ChangeEmailPostRedirectsToTheCorrectActionWithTheCorrectRouteValuesWhenUserIsNull()
+        {
+        }
+
+        [Fact]
+        public void ChangeEmailPostHasHttpPostAttribute()
+        {
+        }
+
+        [Fact]
+        public void ChangeEmailPostHasValidateAntiForgeryTokenAttribute()
+        {
+        }
+
+        [Fact]
+        public void ConfirmNewEmailReturnsErrorViewWhenTokenIsNull()
+        {
+        }
+
+        [Fact]
+        public void ConfirmNewEmailInvokesGetUserWithCorrectUserId()
+        {
+        }
+
+        [Fact]
+        public void ConfirmNewEmailReturnsErrorViewWhenUserIsNull()
+        {
+        }
+
+        [Fact]
+        public void ConfirmNewEmailInvokesChangeEmailAsyncWithCorrectParametersWhenUserIsNotNull()
+        {
+        }
+
+        [Fact]
+        public void ConfirmNewEmailInvokesSetUserNameAsyncWithCorrectParametersWhenUserIsNotNullAndSettingUserNameIsSuccessful()
+        {
+        }
+
+        [Fact]
+        public void ConfirmNewEmailInvokesUpdateAsyncWithCorrectParametersWhenUserIsNotNullAndSettingUserNameIsSuccessful()
+        {
+        }
+
+        [Fact]
+        public void ConfirmNewEmailRedirectsToCorrectActionWithCorrectRouteValues()
+        {
+        }
+
+        [Fact]
+        public void ConfirmEmailHasHttpGetAttribute()
+        {
+        }
+
+        [Fact]
+        public void ResendChangeEmailConfirmationInvokesGetUserWithCorrectUserId()
+        {
+        }
+
+        [Fact]
+        public void ResendChangeEmailConfirmationReturnsErrorViewWhenUsersPendingNewEmailIsNullOrEmpty()
+        {
+        }
+
+        [Fact]
+        public void ResendChangesEmailConfirmationInvokesGenerateChangeEmailTokenAsyncWithCorrectParameters()
+        {
+        }
+
+        [Fact]
+        public void ResendChangesEmailConfirmationInvokesUrlActionWithCorrectParameters()
+        {
+        }
+
+        [Fact]
+        public void ResendChangesEmailConfirmationInvokesSendEmailAsyncWithCorrectParameters()
+        {
+        }
+
+        [Fact]
+        public void ResendChangesEmailConfirmationRedirectsToCorrectAction()
+        {
+        }
+
+        [Fact]
+        public void ResendChangesEmailConfirmationHasHttpPostAttribute()
+        {
+        }
+
+        [Fact]
+        public void ResendChangesEmailConfirmationHasVAlidateAntiForgeryTokenAttribute()
+        {
+        }
+
+        [Fact]
+        public void CancelChangeEmailInvokesGetUserWithCorrectUserId()
+        {
+        }
+
+        [Fact]
+        public void CancelChangeEmailInvokesUpdateAsyncWithCorrectParameters()
+        {
+        }
+
+        [Fact]
+        public void CancelChangeEmailRedirectsToCorrectAction()
+        {
+        }
+
+        [Fact]
+        public void CancelChangeEmailHasHttpPostAttribute()
+        {
+        }
+
+        [Fact]
+        public void CancelChangeEmailHasValidateAntiForgeryTokenAttribute()
+        {
+        }
+
+        [Fact]
+        public void SetPasswordReturnsAView()
+        {
+        }
+
+        [Fact]
+        public void SetPasswordHasHttpGetAttribute()
         {
         }
     }
