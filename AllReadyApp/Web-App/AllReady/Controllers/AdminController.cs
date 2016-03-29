@@ -93,12 +93,16 @@ namespace AllReady.Controllers
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
             if (token == null)
+            {
                 return View("Error");
-
+            }
+            
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
+            {
                 return View("Error");
-
+            }
+            
             var result = await _userManager.ConfirmEmailAsync(user, token);
 
             // If the account confirmation was successful, then send the SiteAdmin an email to approve
@@ -128,8 +132,10 @@ namespace AllReady.Controllers
         {
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null)
+            {
                 return View("Error");
-
+            }
+            
             var userFactors = await _userManager.GetValidTwoFactorProvidersAsync(user);
             var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
             return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
@@ -142,17 +148,23 @@ namespace AllReady.Controllers
         public async Task<IActionResult> SendCode(SendCodeViewModel model)
         {
             if (!ModelState.IsValid)
+            {
                 return View();
-
+            }
+            
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null)
+            {
                 return View("Error");
-
+            }
+            
             // Generate the token and send it
             var token = await _userManager.GenerateTwoFactorTokenAsync(user, model.SelectedProvider);
             if (string.IsNullOrWhiteSpace(token))
+            {
                 return View("Error");
-
+            }
+            
             var message = $"Your security code is: {token}";
             if (model.SelectedProvider == "Email")
             {
@@ -174,8 +186,10 @@ namespace AllReady.Controllers
             // Require that the user has already logged in via username/password or external login
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null)
+            {
                 return View("Error");
-
+            }
+            
             return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
         }
 
@@ -199,10 +213,12 @@ namespace AllReady.Controllers
 
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
-            
-            if (result.IsLockedOut)
-                return View("Lockout");
 
+            if (result.IsLockedOut)
+            {
+                return View("Lockout");
+            }
+            
             ModelState.AddModelError("", "Invalid code.");
 
             return View(model);

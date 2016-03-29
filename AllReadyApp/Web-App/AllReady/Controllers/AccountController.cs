@@ -53,6 +53,7 @@ namespace AllReady.Controllers
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+
             if (ModelState.IsValid)
             {
                 // Require admin users to have a confirmed email before they can log on.
@@ -77,19 +78,20 @@ namespace AllReady.Controllers
                 {
                     return RedirectToLocal(returnUrl, user);
                 }
+
                 if (result.RequiresTwoFactor)
                 {
                     return RedirectToAction(nameof(AdminController.SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 }
+
                 if (result.IsLockedOut)
                 {
                     return View("Lockout");
                 }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return View(model);
-                }
+
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+
+                return View(model);
             }
 
             // If we got this far, something failed, redisplay form
@@ -155,12 +157,16 @@ namespace AllReady.Controllers
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
             if (userId == null || token == null)
+            {
                 return View("Error");
-
+            }
+            
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
+            {
                 return View("Error");
-
+            }
+            
             var result = await _userManager.ConfirmEmailAsync(user, token);
 
             if (result.Succeeded && user.IsProfileComplete())
@@ -231,18 +237,22 @@ namespace AllReady.Controllers
             {
                 return View(model);
             }
+
             var user = await _userManager.FindByNameAsync(model.Email);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
                 return RedirectToAction(nameof(ResetPasswordConfirmation), "Account");
             }
+
             var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
             if (result.Succeeded)
             {
                 return RedirectToAction(nameof(ResetPasswordConfirmation), "Account");
             }
+
             AddErrors(result);
+
             return View();
         }
 
@@ -254,7 +264,6 @@ namespace AllReady.Controllers
         {
             return View();
         }
-
 
         //
         // POST: /Account/ExternalLogin
@@ -290,13 +299,12 @@ namespace AllReady.Controllers
                 var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = email });
                 return RedirectToLocal(returnUrl, user);
             }
-            else
-            {
-                // If the user does not have an account, then ask the user to create an account.
-                ViewData["ReturnUrl"] = returnUrl;
-                ViewData["LoginProvider"] = info.LoginProvider;
-                return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
-            }
+            
+            // If the user does not have an account, then ask the user to create an account.
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["LoginProvider"] = info.LoginProvider;
+
+            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
         }
 
         //
@@ -347,8 +355,6 @@ namespace AllReady.Controllers
             return View(model);
         }
 
-
-
         #region Helpers
 
         private void AddErrors(IdentityResult result)
@@ -357,11 +363,6 @@ namespace AllReady.Controllers
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
-        }
-
-        private async Task<ApplicationUser> GetCurrentUserAsync()
-        {
-            return await _userManager.FindByIdAsync(HttpContext.User.GetUserId());
         }
 
         private IActionResult RedirectToLocal(string returnUrl, ApplicationUser user)
@@ -375,14 +376,13 @@ namespace AllReady.Controllers
             {
                 return RedirectToAction(nameof(SiteController.Index), "Site", new { area = "Admin" });
             }
-            else if (user.IsUserType(UserType.OrgAdmin))
+
+            if (user.IsUserType(UserType.OrgAdmin))
             {
-                return base.RedirectToAction(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = "Admin" });
+                return RedirectToAction(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = "Admin" });
             }
-            else
-            {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
+
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         #endregion
