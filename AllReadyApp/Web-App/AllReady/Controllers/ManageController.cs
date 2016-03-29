@@ -559,19 +559,6 @@ namespace AllReady.Controllers
         {
             return _dataAccess.GetUser(User.GetUserId());
         }
-
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction(nameof(HomeController.Index), nameof(HomeController));
-            }
-        }
-
         #endregion
     }
 }
