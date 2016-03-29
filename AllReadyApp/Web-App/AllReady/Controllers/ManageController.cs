@@ -86,6 +86,8 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(IndexViewModel model)
         {
+            var shouldRefreshSignin = false;
+
             var user = GetCurrentUser();
 
             if (!ModelState.IsValid)
@@ -96,11 +98,10 @@ namespace AllReady.Controllers
                 viewModelWithInputs.AssociatedSkills = model.AssociatedSkills;
                 return View(viewModelWithInputs);
             }
-            var shouldRefreshSignin = false;
+
             if (!string.IsNullOrEmpty(model.Name))
             {
                 user.Name = model.Name;
-                
                 shouldRefreshSignin = true;                
             }
 
@@ -117,13 +118,16 @@ namespace AllReady.Controllers
             {
                 user.AssociatedSkills.AddRange(model.AssociatedSkills.Where(msk => !user.AssociatedSkills.Any(usk => usk.SkillId == msk.SkillId)));
             }
+
             user.AssociatedSkills?.ForEach(usk => usk.UserId = user.Id);
 
             await _dataAccess.UpdateUser(user);
+
             if (shouldRefreshSignin)
             {
                 await _signInManager.RefreshSignInAsync(user);
             }
+
             await UpdateUserProfileCompleteness(user);
 
             return RedirectToAction(nameof(Index));
@@ -172,7 +176,9 @@ namespace AllReady.Controllers
         public async Task<IActionResult> RemoveLogin(string loginProvider, string providerKey)
         {
             ManageMessageId? message = ManageMessageId.Error;
+
             var user = GetCurrentUser();
+
             if (user != null)
             {
                 var result = await _userManager.RemoveLoginAsync(user, loginProvider, providerKey);
@@ -182,6 +188,7 @@ namespace AllReady.Controllers
                     message = ManageMessageId.RemoveLoginSuccess;
                 }
             }
+
             return RedirectToAction(nameof(ManageLogins), new { Message = message });
         }
 
@@ -200,6 +207,7 @@ namespace AllReady.Controllers
             {
                 return View(model);
             }
+
             // Generate the token and send it
             var user = GetCurrentUser();
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
@@ -213,8 +221,8 @@ namespace AllReady.Controllers
         public async Task<IActionResult> ResendPhoneNumberConfirmation(string phoneNumber)
         {
             var user = GetCurrentUser();
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
 
+            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
             await _smsSender.SendSmsAsync(phoneNumber, ACCOUNT_SECURITY_CODE + code);
 
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = phoneNumber });
@@ -231,6 +239,7 @@ namespace AllReady.Controllers
                 await _userManager.SetTwoFactorEnabledAsync(user, true);
                 await _signInManager.SignInAsync(user, isPersistent: false);
             }
+
             return RedirectToAction(nameof(Index), MANAGE_CONTROLLER);
         }
 
@@ -245,6 +254,7 @@ namespace AllReady.Controllers
                 await _userManager.SetTwoFactorEnabledAsync(user, false);
                 await _signInManager.SignInAsync(user, isPersistent: false);
             }
+
             return RedirectToAction(nameof(Index), MANAGE_CONTROLLER);
         }
 
@@ -252,7 +262,9 @@ namespace AllReady.Controllers
         [HttpGet]
         public async Task<IActionResult> VerifyPhoneNumber(string phoneNumber)
         {
+            //TODO: code isn't used in this action method, this line should be deleted if it's not used
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(GetCurrentUser(), phoneNumber);
+            
             // Send an SMS to verify the phone number
             return phoneNumber == null ? View(ERROR_VIEW) : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
@@ -266,6 +278,7 @@ namespace AllReady.Controllers
             {
                 return View(model);
             }
+
             var user = GetCurrentUser();
             if (user != null)
             {
@@ -277,6 +290,7 @@ namespace AllReady.Controllers
                     return RedirectToAction(nameof(Index), new { Message = ManageMessageId.AddPhoneSuccess });
                 }
             }
+
             // If we got this far, something failed, redisplay the form
             ModelState.AddModelError(string.Empty, FAILED_TO_VERIFY_PHONE_NUMBER);
             return View(model);
@@ -297,6 +311,7 @@ namespace AllReady.Controllers
                     return RedirectToAction(nameof(Index), new { Message = ManageMessageId.RemovePhoneSuccess });
                 }
             }
+
             return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
         }
 
@@ -316,6 +331,7 @@ namespace AllReady.Controllers
             {
                 return View(model);
             }
+
             var user = GetCurrentUser();
             if (user != null)
             {
@@ -328,6 +344,7 @@ namespace AllReady.Controllers
                 AddErrors(result);
                 return View(model);
             }
+
             return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
         }
 
