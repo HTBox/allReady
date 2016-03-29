@@ -671,12 +671,167 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void SetPasswordReturnsAView()
+        public void SetPasswordGetReturnsAView()
         {
         }
 
         [Fact]
-        public void SetPasswordHasHttpGetAttribute()
+        public void SetPasswordGetHasHttpGetAttribute()
+        {
+        }
+
+        [Fact]
+        public void SetPasswordPostReturnsSameViewAndViewModelWhenModelStateIsInvalid()
+        {
+        }
+
+        [Fact]
+        public void SetPasswordPostInvokesGetUserWithCorrectUserId()
+        {
+        }
+
+        [Fact]
+        public void SetPasswordPostInvokesAddPasswordAsyncWithCorrectParametersWhenUserIsNotNull()
+        {
+        }
+
+        [Fact]
+        public void SetPasswordPostInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPasswordAddedSuccessfully()
+        {
+        }
+
+        [Fact]
+        public void SetPasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndPasswordAddedSuccessfully()
+        {
+        }
+
+        [Fact]
+        public void SetPasswordPostAddsCorrectErrorMessageToModelStateWhenUserIsNotNull()
+        {
+        }
+
+        [Fact]
+        public void SetPasswordPostReturnsCorrectViewModelWhenUserIsNotNull()
+        {
+        }
+
+        [Fact]
+        public void SetPasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNull()
+        {
+        }
+
+        [Fact]
+        public void SetPasswordPostHasHttpPostAttribute()
+        {
+        }
+
+        [Fact]
+        public void SetPasswordPostHasValidateAntiForgeryTokenAttribute()
+        {
+        }
+
+        [Fact]
+        public void ManageLoginsAddsCorrectMessageToViewDataWhenMessageIdIsRemoveLoginSuccess()
+        {
+        }
+
+        [Fact]
+        public void ManageLoginsAddsCorrectMessageToViewDataWhenMessageIdIsAddLoginSuccess()
+        {
+        }
+
+        [Fact]
+        public void ManageLoginsAddsCorrectMessageToViewDataWhenMessageIdIsError()
+        {
+        }
+
+        [Fact]
+        public void ManageLoginsInvokesGetUserWithCorrectUserId()
+        {
+        }
+
+        [Fact]
+        public void ManageLoginsReturnsErrorViewWhenUserIsNull()
+        {
+        }
+
+        [Fact]
+        public void ManageLoginsInvokesGetLoginsAsyncWithCorrectParametersWhenUserIsNotNull()
+        {
+        }
+
+        [Fact]
+        public void ManageLoginsInvokesGetExternalAuthenticationSchemesWhenUserIsNotNull()
+        {
+        }
+
+        [Fact]
+        public void ManageLoginsAddsCorrectValueToSHOW_REMOVE_BUTTONWhenUserIsNotNull()
+        {
+        }
+
+        [Fact]
+        public void ManageLoginsReturnsCorrectViewModelWhenUserIsNotNull()
+        {
+        }
+
+        [Fact]
+        public void ManageLoginsHasHttpGetAttribute()
+        {
+        }
+
+        [Fact]
+        public void LinkLoginInvokesUrlActionWithTheCorrectParameters()
+        {
+        }
+
+        [Fact]
+        public void LinkLoginInvokesConfigureExternalAuthenticationPropertiesWithCorrectParameters()
+        {
+        }
+
+        [Fact]
+        public void LinkLoginReturnsCorrectResult()
+        {
+        }
+
+        [Fact]
+        public void LinkLoginHasHttpPostAttribute()
+        {
+        }
+
+        [Fact]
+        public void LinkLoginHasValidateAntiForgeryTokenAttribute()
+        {
+        }
+
+        [Fact]
+        public void LinkLoginCallbackInvokesGetUserWithCorrectUserId()
+        {
+        }
+
+        [Fact]
+        public void LinkLoginCallbackReturnsErrorViewWhenUserIsNull()
+        {
+        }
+
+        [Fact]
+        public void LinkLoginCallbackInvokesGetExternalLoginInfoAsyncWithCorrectUserIdWhenUserIsNotNull()
+        {
+        }
+
+        [Fact]
+        public void LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndExternalLoginInfoIsNull()
+        {
+        }
+
+        [Fact]
+        public void LinkLoginCallbackInvokesAddLoginAsyncWithCorrectParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNull()
+        {
+        }
+
+        [Fact]
+        public void LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNull()
         {
         }
     }

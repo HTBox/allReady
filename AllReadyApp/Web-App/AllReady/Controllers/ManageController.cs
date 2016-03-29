@@ -491,14 +491,18 @@ namespace AllReady.Controllers
                 : message == ManageMessageId.AddLoginSuccess ? EXTERNAL_LOGIN_ADDED
                 : message == ManageMessageId.Error ? ERROR_OCCURRED
                 : "";
+
             var user = GetCurrentUser();
             if (user == null)
             {
                 return View(ERROR_VIEW);
             }
+
             var userLogins = await _userManager.GetLoginsAsync(user);
             var otherLogins = _signInManager.GetExternalAuthenticationSchemes().Where(auth => userLogins.All(ul => auth.AuthenticationScheme != ul.LoginProvider)).ToList();
+
             ViewData[SHOW_REMOVE_BUTTON] = user.PasswordHash != null || userLogins.Count > 1;
+
             return View(new ManageLoginsViewModel
             {
                 CurrentLogins = userLogins,
@@ -527,13 +531,16 @@ namespace AllReady.Controllers
             {
                 return View(ERROR_VIEW);
             }
+
             var info = await _signInManager.GetExternalLoginInfoAsync(User.GetUserId());
             if (info == null)
             {
                 return RedirectToAction(nameof(ManageLogins), new { Message = ManageMessageId.Error });
             }
+
             var result = await _userManager.AddLoginAsync(user, info);
             var message = result.Succeeded ? ManageMessageId.AddLoginSuccess : ManageMessageId.Error;
+
             return RedirectToAction(nameof(ManageLogins), new { Message = message });
         }
 
