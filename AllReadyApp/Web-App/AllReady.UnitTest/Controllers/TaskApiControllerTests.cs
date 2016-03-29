@@ -427,7 +427,7 @@ namespace AllReady.UnitTest.Controllers
             const int taskId = 1;
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).Returns(Task.FromResult(new TaskSignupResult()));
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).ReturnsAsync(new TaskUnenrollResult());
 
             var sut = new TaskApiController(null, mediator.Object, null);
             sut.SetFakeUser(userId);
@@ -443,7 +443,7 @@ namespace AllReady.UnitTest.Controllers
             const string status = "status";
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).Returns(Task.FromResult(new TaskSignupResult { Status = status }));
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).ReturnsAsync(new TaskUnenrollResult { Status = status });
 
             var sut = new TaskApiController(null, mediator.Object, null);
             sut.SetDefaultHttpContext();
@@ -460,7 +460,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task UnregisterTaskReturnsNullForTaskWhenResultTaskIsNull()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).Returns(Task.FromResult(new TaskSignupResult()));
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).ReturnsAsync(new TaskUnenrollResult());
 
             var sut = new TaskApiController(null, mediator.Object, null);
             sut.SetDefaultHttpContext();
@@ -476,7 +476,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task UnregisterTaskReturnsTaskViewModelWhenResultTaskIsNotNull()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).Returns(Task.FromResult(new TaskSignupResult { Task = new AllReadyTask() }));
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).ReturnsAsync(new TaskUnenrollResult { Task = new AllReadyTask() });
 
             var sut = new TaskApiController(null, mediator.Object, null);
             sut.SetDefaultHttpContext();

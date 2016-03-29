@@ -34,8 +34,7 @@ namespace AllReady.UnitTest.Extensions
 
         public static void SetFakeUserType(this Controller controller, UserType userType)
         {
-            if (controller.ActionContext.HttpContext == null)
-                controller.SetFakeHttpContext();
+            SetFakeHttpContextIfNotAlreadySet(controller);
 
             var claimsPrincipal = new ClaimsPrincipal();
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
@@ -49,8 +48,7 @@ namespace AllReady.UnitTest.Extensions
 
         public static void SetFakeUserAndUserType(this Controller controller, string userId, UserType userType)
         {
-            if (controller.ActionContext.HttpContext == null)
-                controller.SetFakeHttpContext();
+            SetFakeHttpContextIfNotAlreadySet(controller);
 
             var claimsPrincipal = new ClaimsPrincipal();
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
@@ -110,7 +108,7 @@ namespace AllReady.UnitTest.Extensions
         private static void SetFakeHttpContextIfNotAlreadySet(Controller controller)
         {
             if (controller.ActionContext.HttpContext == null)
-                controller.SetFakeHttpContext();
+                controller.ActionContext.HttpContext = SetFakeHttpContext();
         }
 
         private static void SetFakeHttpContext(this Controller controller)
