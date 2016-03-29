@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.Campaigns;
+﻿using AllReady.Areas.Admin.Features.Shared;
 using AllReady.Models;
 using MediatR;
 using System.Collections.Generic;

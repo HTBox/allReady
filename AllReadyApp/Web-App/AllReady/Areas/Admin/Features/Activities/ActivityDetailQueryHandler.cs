@@ -40,6 +40,7 @@ namespace AllReady.Areas.Admin.Features.Activities
                     NumberOfVolunteersRequired = activity.NumberOfVolunteersRequired,
                     IsLimitVolunteers = activity.IsLimitVolunteers,
                     IsAllowWaitList = activity.IsAllowWaitList,
+                    Location = LocationExtensions.ToEditModel(activity.Location),
                     RequiredSkills = activity.RequiredSkills,
                     ImageUrl = activity.ImageUrl,
                     Tasks = activity.Tasks.Select(t => new TaskSummaryModel()
@@ -73,6 +74,7 @@ namespace AllReady.Areas.Admin.Features.Activities
                 .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(av => av.User)
                 .Include(a => a.RequiredSkills).ThenInclude(s => s.Skill).ThenInclude(s => s.ParentSkill)
+                .Include(a => a.Location).ThenInclude(p => p.PostalCode)
                 .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
                 .SingleOrDefault(a => a.Id == message.ActivityId);
         }
