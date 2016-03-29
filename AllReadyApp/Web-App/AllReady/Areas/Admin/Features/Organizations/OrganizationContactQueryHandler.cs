@@ -24,11 +24,16 @@ namespace AllReady.Areas.Admin.Features.Organizations
                .SingleOrDefault(o => o.Id == message.OrganizationId);
 
             if (organization == null)
+            {
                 return contactInfo;
+            }
+
 
             if (organization.Location != null)
+            {
                 contactInfo.Location = organization.Location.ToModel();
-
+            }
+            
             var contact = organization.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact;
             if (contact != null)
             {
