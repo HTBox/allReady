@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
@@ -6,28 +7,27 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationContactQueryHandler : IRequestHandler<OrganizationContactQuery , ContactInformationModel>
+    public class OrganizationContactQueryHandlerAsync : IAsyncRequestHandler<OrganizationContactQueryAsync , ContactInformationModel>
     {
         private readonly AllReadyContext _context;
-        public OrganizationContactQueryHandler(AllReadyContext context)
+        public OrganizationContactQueryHandlerAsync(AllReadyContext context)
         {
             _context = context;
         }
 
-        public ContactInformationModel Handle(OrganizationContactQuery  message)
+        public async Task<ContactInformationModel> Handle(OrganizationContactQueryAsync  message)
         {
             var contactInfo = new ContactInformationModel();
 
-            var organization = _context.Organizations.AsNoTracking()
+            var organization = await _context.Organizations.AsNoTracking()
                 .Include(l => l.Location).ThenInclude(pc => pc.PostalCode)
                 .Include(oc => oc.OrganizationContacts).ThenInclude(c => c.Contact)
-               .SingleOrDefault(o => o.Id == message.OrganizationId);
+               .SingleOrDefaultAsync(o => o.Id == message.OrganizationId);
 
             if (organization == null)
             {
                 return contactInfo;
             }
-
 
             if (organization.Location != null)
             {

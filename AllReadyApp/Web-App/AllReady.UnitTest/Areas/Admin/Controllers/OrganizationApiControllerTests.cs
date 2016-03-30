@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
@@ -15,25 +16,25 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
     public class OrganizationApiControllerTests
     {
         [Fact]
-        public void GetContactSendsOrganizationContactQueryWithCorrectData()
+        public async Task GetContactSendsOrganizationContactQueryWithCorrectData()
         {
             const int organizationId = 1;
             var mediator = new Mock<IMediator>();
 
             var sut = new OrganizationApiController(mediator.Object);
-            sut.GetContact(organizationId);
+            await sut.GetContact(organizationId);
 
-            mediator.Verify(x => x.Send(It.Is<OrganizationContactQuery>(y => y.OrganizationId == organizationId && y.ContactType == ContactTypes.Primary)));
+            mediator.Verify(x => x.SendAsync(It.Is<OrganizationContactQueryAsync>(y => y.OrganizationId == organizationId && y.ContactType == ContactTypes.Primary)));
         }
 
         [Fact]
-        public void GetContactReturnsCorrectModel()
+        public async Task GetContactReturnsCorrectModel()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<OrganizationContactQuery>())).Returns(new ContactInformationModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationContactQueryAsync>())).ReturnsAsync(new ContactInformationModel());
 
             var sut = new OrganizationApiController(mediator.Object);
-            var result = sut.GetContact(It.IsAny<int>());
+            var result = await sut.GetContact(It.IsAny<int>());
 
             Assert.IsType<ContactInformationModel>(result);
         }

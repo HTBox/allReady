@@ -1,4 +1,5 @@
-﻿using AllReady.Areas.Admin.Features.Organizations;
+﻿using System.Threading.Tasks;
+using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
@@ -24,9 +25,9 @@ namespace AllReady.Areas.Admin.Controllers
         // GET api/values/5/Contact
         [HttpGet("{id}/Contact")]
         [Produces("application/json", Type = typeof(ContactInformationModel))]
-        public ContactInformationModel GetContact(int id)
+        public async Task<ContactInformationModel> GetContact(int id)
         {
-            var contact = _mediator.Send(new OrganizationContactQuery  { OrganizationId = id, ContactType = ContactTypes.Primary });
+            var contact = await _mediator.SendAsync(new OrganizationContactQueryAsync { OrganizationId = id, ContactType = ContactTypes.Primary });
             return contact;
         }
     }
