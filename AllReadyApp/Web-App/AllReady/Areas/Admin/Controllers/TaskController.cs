@@ -29,7 +29,9 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var activity = GetActivityBy(activityId);
             if (activity == null || !User.IsOrganizationAdmin(activity.Campaign.ManagingOrganizationId))
+            {
                 return HttpUnauthorized();
+            }
             
             var viewModel = new TaskEditModel
             {
@@ -52,15 +54,19 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Create(int activityId, TaskEditModel model)
         {
             if (model.EndDateTime < model.StartDateTime)
+            {
                 ModelState.AddModelError(nameof(model.EndDateTime), "Ending time cannot be earlier than the starting time");
-
+            }
+            
             WarnDateTimeOutOfRange(ref model);
 
             if (ModelState.IsValid)
             {
                 if (!User.IsOrganizationAdmin(model.OrganizationId))
+                {
                     return HttpUnauthorized();
-
+                }
+                
                 await _mediator.SendAsync(new EditTaskCommand { Task = model });
 
                 //mgmccarthy: I'm assuming this is ActivityController in the Admin area
@@ -75,15 +81,19 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(TaskEditModel model)
         {
             if (model.EndDateTime < model.StartDateTime)
+            {
                 ModelState.AddModelError(nameof(model.EndDateTime), "Ending time cannot be earlier than the starting time");
-
+            }
+            
             WarnDateTimeOutOfRange(ref model);
 
             if (ModelState.IsValid)
             {
                 if (!User.IsOrganizationAdmin(model.OrganizationId))
+                {
                     return HttpUnauthorized();
-
+                }
+                
                 await _mediator.SendAsync(new EditTaskCommand { Task = model });
 
                 return RedirectToAction(nameof(Details), "Task", new { id = model.Id });
@@ -98,11 +108,15 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var task = await _mediator.SendAsync(new EditTaskQuery { TaskId = id });
             if (task == null)
+            {
                 return HttpNotFound();
+            }
 
             if (!User.IsOrganizationAdmin(task.OrganizationId))
+            {
                 return HttpUnauthorized();
-
+            }
+            
             return View(task);
         }
 
@@ -111,11 +125,15 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var task = await _mediator.SendAsync(new TaskQuery { TaskId = id });
             if (task == null)
+            {
                 return HttpNotFound();
-            
-            if (!User.IsOrganizationAdmin(task.OrganizationId))
-                return HttpUnauthorized();
+            }
 
+            if (!User.IsOrganizationAdmin(task.OrganizationId))
+            {
+                return HttpUnauthorized();
+            }
+            
             return View(task);
         }
 
@@ -125,8 +143,10 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var task = await _mediator.SendAsync(new TaskQuery { TaskId = id });
             if (task == null)
+            {
                 return HttpNotFound();
-
+            }
+            
             return View(task);
         }
 
@@ -137,12 +157,16 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var taskSummaryModel = await _mediator.SendAsync(new TaskQuery { TaskId = id });
             if (taskSummaryModel == null)
+            {
                 return HttpNotFound();
+            }
 
             if (!User.IsOrganizationAdmin(taskSummaryModel.OrganizationId))
+            {
                 return HttpUnauthorized();
-
-            _mediator.Send(new DeleteTaskCommand { TaskId = id });
+            }
+            
+            await _mediator.SendAsync(new DeleteTaskCommand { TaskId = id });
 
             //mgmccarthy: I'm assuming this is ActivityController in the Admin area
             return RedirectToAction(nameof(ActivityController.Details), "Activity", new { id = taskSummaryModel.ActivityId });
@@ -156,7 +180,9 @@ namespace AllReady.Areas.Admin.Controllers
 
             var activity = GetActivityBy(taskSummaryModel.ActivityId);
             if (!User.IsOrganizationAdmin(activity.Campaign.ManagingOrganizationId))
+            {
                 return HttpUnauthorized();
+            }
             
             await _mediator.SendAsync(new AssignTaskCommand { TaskId = id, UserIds = userIds });
 
@@ -169,15 +195,21 @@ namespace AllReady.Areas.Admin.Controllers
         {
             //TODO: Query only for the organization Id rather than the whole activity detail
             if (!ModelState.IsValid)
+            {
                 return HttpBadRequest(ModelState);
-
+            }
+            
             var task = await _mediator.SendAsync(new TaskQuery { TaskId = model.TaskId });
             if (task == null)
+            {
                 return HttpNotFound();
+            }
 
             if (!User.IsOrganizationAdmin(task.OrganizationId))
+            {
                 return HttpUnauthorized();
-
+            }
+            
             await _mediator.SendAsync(new MessageTaskVolunteersCommand { Model = model });
 
             return Ok();
