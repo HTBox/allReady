@@ -163,7 +163,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             var validator = new ActivityDetailModelValidator(_mediator);
             var errors = await validator.Validate(activity, campaign);
-            errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
+            errors.ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)
             {

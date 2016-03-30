@@ -1,6 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.Shared;
-using AllReady.Models;
-using MediatR;
+﻿using MediatR;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

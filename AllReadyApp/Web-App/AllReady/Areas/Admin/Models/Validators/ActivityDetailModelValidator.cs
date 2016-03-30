@@ -14,28 +14,28 @@ namespace AllReady.Areas.Admin.Models.Validators
             _mediator = mediator;
         }
 
-        public async Task<Dictionary<string, string>> Validate(ActivityDetailModel model, CampaignSummaryModel parentCampaign)
+        public async Task<List<KeyValuePair<string, string>>> Validate(ActivityDetailModel model, CampaignSummaryModel parentCampaign)
         {
-            var result = new Dictionary<string, string>();
+            var result = new List<KeyValuePair<string, string>>();
 
             if (model.EndDateTime < model.StartDateTime)
             {
-                result.Add(nameof(model.EndDateTime), "End date cannot be earlier than the start date");
+                result.Add(new KeyValuePair<string, string>(nameof(model.EndDateTime), "End date cannot be earlier than the start date"));
             }
 
             if (model.StartDateTime < parentCampaign.StartDate)
             {
-                result.Add(nameof(model.StartDateTime), "Start date cannot be earlier than the campaign start date " + parentCampaign.StartDate.ToString("d"));
+                result.Add(new KeyValuePair<string, string>(nameof(model.StartDateTime), "Start date cannot be earlier than the campaign start date " + parentCampaign.StartDate.ToString("d")));
             }
 
             if (model.EndDateTime > parentCampaign.EndDate)
             {
-                result.Add(nameof(model.EndDateTime), "End date cannot be later than the campaign end date " + parentCampaign.EndDate.ToString("d"));
+                result.Add(new KeyValuePair<string, string>(nameof(model.EndDateTime), "End date cannot be later than the campaign end date " + parentCampaign.EndDate.ToString("d")));
             }
 
             var postalCodeValidation = new LocationEditModelValidator(_mediator);
             var postalCodeErrors = await postalCodeValidation.Validate(model.Location);
-            postalCodeErrors.ToList().ForEach(e => result.Add(e.Key, e.Value));
+            postalCodeErrors.ToList().ForEach(e => result.Add(new KeyValuePair<string, string>(e.Key, e.Value)));
             return result;
         }
     }
