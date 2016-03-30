@@ -9,7 +9,7 @@ using Xunit;
 
 namespace AllReady.UnitTest.Tasks
 {
-    public class EditingTask : InMemoryContextTest
+    public class EditTaskCommandHandlerAsyncTests : InMemoryContextTest
     {
         private Organization _htb;
         private Campaign _firePrev;
@@ -53,8 +53,8 @@ namespace AllReady.UnitTest.Tasks
         [Fact]
         public async Task ModelIsCreated()
         {
-            var sut = new EditTaskCommandHandler(Context);
-            var actual = await sut.Handle(new EditTaskCommand { Task = new TaskEditModel { ActivityId = _queenAnne.Id, TimeZoneId = "Eastern Standard Time" } });
+            var sut = new EditTaskCommandHandlerAsync(Context);
+            var actual = await sut.Handle(new EditTaskCommandAsync { Task = new TaskEditModel { ActivityId = _queenAnne.Id, TimeZoneId = "Eastern Standard Time" } });
             Assert.Equal(1, actual);
         }
     }

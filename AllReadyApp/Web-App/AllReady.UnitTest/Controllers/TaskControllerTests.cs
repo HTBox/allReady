@@ -186,7 +186,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task CreatePostSendsEditTaskCommandWhenModelStateIsValidAndUserIsOrganizationAdmin()
+        public async Task CreatePostSendsEditTaskCommandAsyncWhenModelStateIsValidAndUserIsOrganizationAdmin()
         {
             const int organizationId = 1;
             var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId };
@@ -202,14 +202,14 @@ namespace AllReady.UnitTest.Controllers
                 StartDateTime = startDateTime.AddDays(-1),
                 EndDateTime = endDateTime.AddDays(1)
             });
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
             var sut = new TaskController(mediator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             await sut.Create(It.IsAny<int>(), model);
 
-            mediator.Verify(x => x.SendAsync(It.Is<EditTaskCommand>(y => y.Task == model)));
+            mediator.Verify(x => x.SendAsync(It.Is<EditTaskCommandAsync>(y => y.Task == model)));
         }
 
         [Fact]
@@ -229,7 +229,7 @@ namespace AllReady.UnitTest.Controllers
                 StartDateTime = startDateTime.AddDays(-1),
                 EndDateTime = endDateTime.AddDays(1)
             });
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
             var routeValues = new Dictionary<string, object> { ["id"] = model.Id };
 
@@ -261,7 +261,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task EditGetSendsEditTaskQueryWithCorrectTaskId()
+        public async Task EditGetSendsEditTaskQueryAsyncWithCorrectTaskId()
         {
             const int taskId = 1;
             var mediator = new Mock<IMediator>();
@@ -269,7 +269,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskController(mediator.Object);
             await sut.Edit(taskId);
 
-            mediator.Verify(x => x.SendAsync(It.Is<EditTaskQuery>(y => y.TaskId == taskId)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<EditTaskQueryAsync>(y => y.TaskId == taskId)), Times.Once);
         }
 
         [Fact]
@@ -285,7 +285,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task EditGetReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<EditTaskQuery>())).ReturnsAsync(new TaskEditModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<EditTaskQueryAsync>())).ReturnsAsync(new TaskEditModel());
 
             var sut = new TaskController(mediator.Object);
             sut.SetDefaultHttpContext();
@@ -301,7 +301,7 @@ namespace AllReady.UnitTest.Controllers
             var taskEditModel = new TaskEditModel { OrganizationId = organizationId };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<EditTaskQuery>())).ReturnsAsync(taskEditModel);
+            mediator.Setup(x => x.SendAsync(It.IsAny<EditTaskQueryAsync>())).ReturnsAsync(taskEditModel);
 
             var sut = new TaskController(mediator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
@@ -384,7 +384,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task EditPostSendsEditTaskCommandWhenModelStateIsValidAndUserIsOrganizationAdmin()
+        public async Task EditPostSendsEditTaskCommandAsyncWhenModelStateIsValidAndUserIsOrganizationAdmin()
         {
             const int organizationId = 1;
             var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId };
@@ -398,14 +398,14 @@ namespace AllReady.UnitTest.Controllers
             {
                 Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" }, StartDateTime = startDateTime.AddDays(-1), EndDateTime = endDateTime.AddDays(1)
             });
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
             var sut = new TaskController(mediator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             await sut.Edit(model);
 
-            mediator.Verify(x => x.SendAsync(It.Is<EditTaskCommand>(y => y.Task == model)));
+            mediator.Verify(x => x.SendAsync(It.Is<EditTaskCommandAsync>(y => y.Task == model)));
         }
 
         [Fact]
@@ -424,7 +424,7 @@ namespace AllReady.UnitTest.Controllers
                 StartDateTime = startDateTime.AddDays(-1),
                 EndDateTime = endDateTime.AddDays(1)
             });
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
             var sut = new TaskController(mediator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
@@ -455,14 +455,14 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task DeleteSendsTaskQueryWithCorrectTaskId()
+        public async Task DeleteSendsTaskQueryAsyncWithCorrectTaskId()
         {
             const int taskId = 1;
             var mediator = new Mock<IMediator>();
             var sut = new TaskController(mediator.Object);
             await sut.Delete(taskId);
 
-            mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == taskId)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<TaskQueryAsync>(y => y.TaskId == taskId)), Times.Once);
         }
 
         [Fact]
@@ -477,7 +477,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task DeleteReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(new TaskSummaryModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryModel());
 
             var sut = new TaskController(mediator.Object);
             sut.SetDefaultHttpContext();
@@ -493,7 +493,7 @@ namespace AllReady.UnitTest.Controllers
             var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
             var sut = new TaskController(mediator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
@@ -507,14 +507,14 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task DetailsSendsTaskQueryWithCorrectTaskId()
+        public async Task DetailsSendsTaskQueryAsyncWithCorrectTaskId()
         {
             const int taskId = 1;
             var mediator = new Mock<IMediator>();
             var sut = new TaskController(mediator.Object);
             await sut.Details(taskId);
 
-            mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == taskId)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<TaskQueryAsync>(y => y.TaskId == taskId)), Times.Once);
         }
 
         [Fact]
@@ -531,7 +531,7 @@ namespace AllReady.UnitTest.Controllers
             var taskSummaryModel = new TaskSummaryModel();
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
             var sut = new TaskController(mediator.Object);
             var result = await sut.Details(It.IsAny<int>()) as ViewResult;
@@ -560,14 +560,14 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task DeleteConfirmedSendsTaskQueryWithCorrectTaskId()
+        public async Task DeleteConfirmedSendsTaskQueryAsyncWithCorrectTaskId()
         {
             const int taskId = 1;
             var mediator = new Mock<IMediator>();
             var sut = new TaskController(mediator.Object);
             await sut.DeleteConfirmed(taskId);
 
-            mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == taskId)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<TaskQueryAsync>(y => y.TaskId == taskId)), Times.Once);
         }
 
         [Fact]
@@ -582,7 +582,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task DeleteConfirmedReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(new TaskSummaryModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryModel());
 
             var sut = new TaskController(mediator.Object);
             sut.SetDefaultHttpContext();
@@ -593,19 +593,19 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task DeleteConfirmedSendsDeleteTaskCommandWithCorrectTaskId()
+        public async Task DeleteConfirmedSendsDeleteTaskCommandAsyncWithCorrectTaskId()
         {
             const int organizationId = 1;
             const int taskId = 1;
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(new TaskSummaryModel { OrganizationId = 1 });
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryModel { OrganizationId = 1 });
 
             var sut = new TaskController(mediator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             await sut.DeleteConfirmed(taskId);
 
-            mediator.Verify(x => x.SendAsync(It.Is<DeleteTaskCommand>(y => y.TaskId == taskId)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<DeleteTaskCommandAsync>(y => y.TaskId == taskId)), Times.Once);
         }
 
         [Fact]
@@ -616,7 +616,7 @@ namespace AllReady.UnitTest.Controllers
             var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId, ActivityId = 1 };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskSummaryModel);
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
             var sut = new TaskController(mediator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
@@ -654,20 +654,20 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task AssignSendsTaskQueryWithCorrectTaskId()
+        public async Task AssignSendsTaskQueryAsyncWithCorrectTaskId()
         {
             const int taskId = 1;
             var taskModelSummary = new TaskSummaryModel { ActivityId = 1 };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = 1 } });
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskModelSummary);
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskModelSummary);
 
             var sut = new TaskController(mediator.Object);
             sut.SetDefaultHttpContext();
             await sut.Assign(taskId, null);
 
-            mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == taskId)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<TaskQueryAsync>(y => y.TaskId == taskId)), Times.Once);
         }
 
         [Fact]
@@ -676,7 +676,7 @@ namespace AllReady.UnitTest.Controllers
             var taskModelSummary = new TaskSummaryModel { ActivityId = 1 };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskModelSummary);
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskModelSummary);
             mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = 1 } });
 
             var sut = new TaskController(mediator.Object);
@@ -687,7 +687,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task AssignSendsAssignTaskCommand()
+        public async Task AssignSendsAssignTaskCommandAsync()
         {
             const int organizationId = 1;
             const int taskId = 1;
@@ -695,14 +695,14 @@ namespace AllReady.UnitTest.Controllers
             var userIds = new List<string> { "1", "2" };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskModelSummary);
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskModelSummary);
             mediator.Setup(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == taskModelSummary.ActivityId))).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId }});
 
             var sut = new TaskController(mediator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             await sut.Assign(taskId, userIds);
 
-            mediator.Verify(x => x.SendAsync(It.Is<AssignTaskCommand>(y => y.TaskId == taskId && y.UserIds == userIds)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<AssignTaskCommandAsync>(y => y.TaskId == taskId && y.UserIds == userIds)), Times.Once);
         }
 
         [Fact]
@@ -713,7 +713,7 @@ namespace AllReady.UnitTest.Controllers
             var taskModelSummary = new TaskSummaryModel { ActivityId = 1 };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(taskModelSummary);
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskModelSummary);
             mediator.Setup(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == taskModelSummary.ActivityId))).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId } });
 
             var sut = new TaskController(mediator.Object);
@@ -753,7 +753,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task MessageAllVounteersSendsTaskQueryWithCorrectTaskId()
+        public async Task MessageAllVounteersSendsTaskQueryAsyncWithCorrectTaskId()
         {
             var model = new MessageTaskVolunteersModel { TaskId = 1 };
             var mediator = new Mock<IMediator>();
@@ -761,7 +761,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskController(mediator.Object);
             await sut.MessageAllVolunteers(model);
 
-            mediator.Verify(x => x.SendAsync(It.Is<TaskQuery>(y => y.TaskId == model.TaskId)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<TaskQueryAsync>(y => y.TaskId == model.TaskId)), Times.Once);
         }
 
         [Fact]
@@ -779,7 +779,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task MessageAllVolunttersReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(new TaskSummaryModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryModel());
 
             var sut = new TaskController(mediator.Object);
             sut.SetDefaultHttpContext();
@@ -789,19 +789,19 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task MessageAllVolunteersSendsMessageTaskVolunteersCommand()
+        public async Task MessageAllVolunteersSendsMessageTaskVolunteersCommandAsyncWithCorrectData()
         {
             const int organizationId = 1;
             var model = new MessageTaskVolunteersModel();
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(new TaskSummaryModel { OrganizationId = organizationId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryModel { OrganizationId = organizationId });
 
             var sut = new TaskController(mediator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             await sut.MessageAllVolunteers(model);
 
-            mediator.Verify(x => x.SendAsync(It.Is<MessageTaskVolunteersCommand>(y => y.Model ==  model)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<MessageTaskVolunteersCommandAsync>(y => y.Model ==  model)), Times.Once);
         }
 
         [Fact]
@@ -810,7 +810,7 @@ namespace AllReady.UnitTest.Controllers
             const int organizationId = 1;
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQuery>())).ReturnsAsync(new TaskSummaryModel { OrganizationId = organizationId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryModel { OrganizationId = organizationId });
 
             var sut = new TaskController(mediator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());

@@ -67,7 +67,7 @@ namespace AllReady.Areas.Admin.Controllers
                     return HttpUnauthorized();
                 }
                 
-                await _mediator.SendAsync(new EditTaskCommand { Task = model });
+                await _mediator.SendAsync(new EditTaskCommandAsync { Task = model });
 
                 //mgmccarthy: I'm assuming this is ActivityController in the Admin area
                 return RedirectToAction(nameof(Details), "Activity", new { id = activityId });
@@ -94,7 +94,7 @@ namespace AllReady.Areas.Admin.Controllers
                     return HttpUnauthorized();
                 }
                 
-                await _mediator.SendAsync(new EditTaskCommand { Task = model });
+                await _mediator.SendAsync(new EditTaskCommandAsync { Task = model });
 
                 return RedirectToAction(nameof(Details), "Task", new { id = model.Id });
             }
@@ -106,7 +106,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Task/Edit/{id}")]
         public async Task<IActionResult> Edit(int id)
         {
-            var task = await _mediator.SendAsync(new EditTaskQuery { TaskId = id });
+            var task = await _mediator.SendAsync(new EditTaskQueryAsync { TaskId = id });
             if (task == null)
             {
                 return HttpNotFound();
@@ -123,7 +123,7 @@ namespace AllReady.Areas.Admin.Controllers
         //mgmccarthy: does anyone know why there are no attributes here on this action method?
         public async Task<IActionResult> Delete(int id)
         {
-            var task = await _mediator.SendAsync(new TaskQuery { TaskId = id });
+            var task = await _mediator.SendAsync(new TaskQueryAsync { TaskId = id });
             if (task == null)
             {
                 return HttpNotFound();
@@ -141,7 +141,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Task/Details/{id}")]
         public async Task<IActionResult> Details(int id)
         {
-            var task = await _mediator.SendAsync(new TaskQuery { TaskId = id });
+            var task = await _mediator.SendAsync(new TaskQueryAsync { TaskId = id });
             if (task == null)
             {
                 return HttpNotFound();
@@ -155,7 +155,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var taskSummaryModel = await _mediator.SendAsync(new TaskQuery { TaskId = id });
+            var taskSummaryModel = await _mediator.SendAsync(new TaskQueryAsync { TaskId = id });
             if (taskSummaryModel == null)
             {
                 return HttpNotFound();
@@ -166,7 +166,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
             
-            await _mediator.SendAsync(new DeleteTaskCommand { TaskId = id });
+            await _mediator.SendAsync(new DeleteTaskCommandAsync { TaskId = id });
 
             //mgmccarthy: I'm assuming this is ActivityController in the Admin area
             return RedirectToAction(nameof(ActivityController.Details), "Activity", new { id = taskSummaryModel.ActivityId });
@@ -176,7 +176,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Assign(int id, List<string> userIds)
         {
-            var taskSummaryModel = await _mediator.SendAsync(new TaskQuery { TaskId = id });
+            var taskSummaryModel = await _mediator.SendAsync(new TaskQueryAsync { TaskId = id });
 
             var activity = GetActivityBy(taskSummaryModel.ActivityId);
             if (!User.IsOrganizationAdmin(activity.Campaign.ManagingOrganizationId))
@@ -184,7 +184,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
             
-            await _mediator.SendAsync(new AssignTaskCommand { TaskId = id, UserIds = userIds });
+            await _mediator.SendAsync(new AssignTaskCommandAsync { TaskId = id, UserIds = userIds });
 
             return RedirectToRoute(new { controller = "Task", Area = "Admin", action = nameof(Details), id });
         }
@@ -199,7 +199,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpBadRequest(ModelState);
             }
             
-            var task = await _mediator.SendAsync(new TaskQuery { TaskId = model.TaskId });
+            var task = await _mediator.SendAsync(new TaskQueryAsync { TaskId = model.TaskId });
             if (task == null)
             {
                 return HttpNotFound();
@@ -210,7 +210,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
             
-            await _mediator.SendAsync(new MessageTaskVolunteersCommand { Model = model });
+            await _mediator.SendAsync(new MessageTaskVolunteersCommandAsync { Model = model });
 
             return Ok();
         }
