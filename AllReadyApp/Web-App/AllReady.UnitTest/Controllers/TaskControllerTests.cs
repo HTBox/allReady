@@ -605,7 +605,7 @@ namespace AllReady.UnitTest.Controllers
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             await sut.DeleteConfirmed(taskId);
 
-            mediator.Verify(x => x.Send(It.Is<DeleteTaskCommand>(y => y.TaskId == taskId)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<DeleteTaskCommand>(y => y.TaskId == taskId)), Times.Once);
         }
 
         [Fact]
