@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.Routing;
 
 namespace AllReady.Controllers
 {
@@ -86,6 +87,8 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(IndexViewModel model)
         {
+            var shouldRefreshSignin = false;
+
             var user = GetCurrentUser();
 
             if (!ModelState.IsValid)
@@ -96,11 +99,10 @@ namespace AllReady.Controllers
                 viewModelWithInputs.AssociatedSkills = model.AssociatedSkills;
                 return View(viewModelWithInputs);
             }
-            var shouldRefreshSignin = false;
+
             if (!string.IsNullOrEmpty(model.Name))
             {
                 user.Name = model.Name;
-                
                 shouldRefreshSignin = true;                
             }
 
@@ -117,25 +119,19 @@ namespace AllReady.Controllers
             {
                 user.AssociatedSkills.AddRange(model.AssociatedSkills.Where(msk => !user.AssociatedSkills.Any(usk => usk.SkillId == msk.SkillId)));
             }
+
             user.AssociatedSkills?.ForEach(usk => usk.UserId = user.Id);
 
             await _dataAccess.UpdateUser(user);
+
             if (shouldRefreshSignin)
             {
                 await _signInManager.RefreshSignInAsync(user);
             }
+
             await UpdateUserProfileCompleteness(user);
 
-            return RedirectToAction(nameof(Index));
-        }
-
-        public async Task UpdateUserProfileCompleteness(ApplicationUser user)
-        {
-            if (user.IsProfileComplete())
-            {
-                await _mediator.SendAsync(new RemoveUserProfileIncompleteClaimCommand{ UserId = user.Id });
-                await _signInManager.RefreshSignInAsync(user);
-            }
+            return RedirectToAction(nameof(Microsoft.Data.Entity.Metadata.Internal.Index));
         }
 
         [HttpPost]
@@ -144,7 +140,9 @@ namespace AllReady.Controllers
         {
             var user = await _userManager.FindByIdAsync(User.GetUserId());
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = Url.Action(nameof(ConfirmNewEmail), ACCOUNT_CONTROLLER, new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+            //var callbackUrl = Url.Action(nameof(ConfirmNewEmail), ACCOUNT_CONTROLLER, new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = ACCOUNT_CONTROLLER, Values = new { userId = user.Id, code = code },
+                Protocol = HttpContext.Request.Scheme });
             await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(RESEND_EMAIL_CONFIRM, callbackUrl));
 
             return RedirectToAction(nameof(EmailConfirmationSent));
@@ -172,7 +170,9 @@ namespace AllReady.Controllers
         public async Task<IActionResult> RemoveLogin(string loginProvider, string providerKey)
         {
             ManageMessageId? message = ManageMessageId.Error;
+
             var user = GetCurrentUser();
+
             if (user != null)
             {
                 var result = await _userManager.RemoveLoginAsync(user, loginProvider, providerKey);
@@ -182,6 +182,7 @@ namespace AllReady.Controllers
                     message = ManageMessageId.RemoveLoginSuccess;
                 }
             }
+
             return RedirectToAction(nameof(ManageLogins), new { Message = message });
         }
 
@@ -200,6 +201,7 @@ namespace AllReady.Controllers
             {
                 return View(model);
             }
+
             // Generate the token and send it
             var user = GetCurrentUser();
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
@@ -213,8 +215,8 @@ namespace AllReady.Controllers
         public async Task<IActionResult> ResendPhoneNumberConfirmation(string phoneNumber)
         {
             var user = GetCurrentUser();
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
 
+            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
             await _smsSender.SendSmsAsync(phoneNumber, ACCOUNT_SECURITY_CODE + code);
 
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = phoneNumber });
@@ -231,7 +233,8 @@ namespace AllReady.Controllers
                 await _userManager.SetTwoFactorEnabledAsync(user, true);
                 await _signInManager.SignInAsync(user, isPersistent: false);
             }
-            return RedirectToAction(nameof(Index), MANAGE_CONTROLLER);
+
+            return RedirectToAction(nameof(Microsoft.Data.Entity.Metadata.Internal.Index));
         }
 
         // POST: /Manage/DisableTwoFactorAuthentication
@@ -245,14 +248,14 @@ namespace AllReady.Controllers
                 await _userManager.SetTwoFactorEnabledAsync(user, false);
                 await _signInManager.SignInAsync(user, isPersistent: false);
             }
-            return RedirectToAction(nameof(Index), MANAGE_CONTROLLER);
+
+            return RedirectToAction(nameof(Microsoft.Data.Entity.Metadata.Internal.Index));
         }
 
         // GET: /Account/VerifyPhoneNumber
         [HttpGet]
-        public async Task<IActionResult> VerifyPhoneNumber(string phoneNumber)
-        {
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(GetCurrentUser(), phoneNumber);
+        public IActionResult VerifyPhoneNumber(string phoneNumber)
+        {            
             // Send an SMS to verify the phone number
             return phoneNumber == null ? View(ERROR_VIEW) : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
@@ -266,6 +269,7 @@ namespace AllReady.Controllers
             {
                 return View(model);
             }
+
             var user = GetCurrentUser();
             if (user != null)
             {
@@ -274,9 +278,10 @@ namespace AllReady.Controllers
                 {
                     await UpdateUserProfileCompleteness(user);
                     await _signInManager.SignInAsync(user, isPersistent: false);                    
-                    return RedirectToAction(nameof(Index), new { Message = ManageMessageId.AddPhoneSuccess });
+                    return RedirectToAction(nameof(Microsoft.Data.Entity.Metadata.Internal.Index), new { Message = ManageMessageId.AddPhoneSuccess });
                 }
             }
+
             // If we got this far, something failed, redisplay the form
             ModelState.AddModelError(string.Empty, FAILED_TO_VERIFY_PHONE_NUMBER);
             return View(model);
@@ -294,10 +299,11 @@ namespace AllReady.Controllers
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     await UpdateUserProfileCompleteness(user);
-                    return RedirectToAction(nameof(Index), new { Message = ManageMessageId.RemovePhoneSuccess });
+                    return RedirectToAction(nameof(Microsoft.Data.Entity.Metadata.Internal.Index), new { Message = ManageMessageId.RemovePhoneSuccess });
                 }
             }
-            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
+
+            return RedirectToAction(nameof(Microsoft.Data.Entity.Metadata.Internal.Index), new { Message = ManageMessageId.Error });
         }
 
         // GET: /Manage/ChangePassword
@@ -316,6 +322,7 @@ namespace AllReady.Controllers
             {
                 return View(model);
             }
+
             var user = GetCurrentUser();
             if (user != null)
             {
@@ -323,12 +330,15 @@ namespace AllReady.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction(nameof(Index), new { Message = ManageMessageId.ChangePasswordSuccess });
+                    return RedirectToAction(nameof(Microsoft.Data.Entity.Metadata.Internal.Index), new { Message = ManageMessageId.ChangePasswordSuccess });
                 }
-                AddErrors(result);
+
+                AddErrorsToModelState(result);
+
                 return View(model);
             }
-            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
+
+            return RedirectToAction(nameof(Microsoft.Data.Entity.Metadata.Internal.Index), new { Message = ManageMessageId.Error });
         }
 
         // GET: /Manage/ChangeEmail
@@ -369,13 +379,15 @@ namespace AllReady.Controllers
                 await _userManager.UpdateAsync(user);
 
                 var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail);
-                var callbackUrl = Url.Action(nameof(ConfirmNewEmail), MANAGE_CONTROLLER, new { token = token }, protocol: HttpContext.Request.Scheme);
+                //var callbackUrl = Url.Action(nameof(ConfirmNewEmail), MANAGE_CONTROLLER, new { token = token }, protocol: HttpContext.Request.Scheme);
+                var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = MANAGE_CONTROLLER, Values = new { token = token },
+                    Protocol = HttpContext.Request.Scheme });
                 await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(NEW_EMAIL_CONFIRM, callbackUrl));
 
                 return RedirectToAction(nameof(EmailConfirmationSent));                
             }
 
-            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
+            return RedirectToAction(nameof(Microsoft.Data.Entity.Metadata.Internal.Index), new { Message = ManageMessageId.Error });
         }
 
         // GET: /Manage/ConfirmNewEmail
@@ -403,7 +415,7 @@ namespace AllReady.Controllers
                 await _userManager.UpdateAsync(user);
             }
 
-            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.ChangeEmailSuccess });
+            return RedirectToAction(nameof(Microsoft.Data.Entity.Metadata.Internal.Index), new { Message = ManageMessageId.ChangeEmailSuccess });
         }
 
         [HttpPost]
@@ -418,7 +430,9 @@ namespace AllReady.Controllers
             }
 
             var token = await _userManager.GenerateChangeEmailTokenAsync(user, user.PendingNewEmail);
-            var callbackUrl = Url.Action(nameof(ConfirmNewEmail), MANAGE_CONTROLLER, new { token = token }, protocol: HttpContext.Request.Scheme);
+            //var callbackUrl = Url.Action(nameof(ConfirmNewEmail), MANAGE_CONTROLLER, new { token = token }, protocol: HttpContext.Request.Scheme);
+            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = MANAGE_CONTROLLER, Values = new { token = token },
+                Protocol = HttpContext.Request.Scheme });
             await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(NEW_EMAIL_CONFIRM, callbackUrl));
 
             return RedirectToAction(nameof(EmailConfirmationSent));
@@ -433,7 +447,7 @@ namespace AllReady.Controllers
             user.PendingNewEmail = null;
             await _userManager.UpdateAsync(user);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Microsoft.Data.Entity.Metadata.Internal.Index));
         }
 
         // GET: /Manage/SetPassword
@@ -460,12 +474,12 @@ namespace AllReady.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction(nameof(Index), new { Message = ManageMessageId.SetPasswordSuccess });
+                    return RedirectToAction(nameof(Microsoft.Data.Entity.Metadata.Internal.Index), new { Message = ManageMessageId.SetPasswordSuccess });
                 }
-                AddErrors(result);
+                AddErrorsToModelState(result);
                 return View(model);
             }
-            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
+            return RedirectToAction(nameof(Microsoft.Data.Entity.Metadata.Internal.Index), new { Message = ManageMessageId.Error });
         }
 
         //GET: /Account/Manage
@@ -477,14 +491,18 @@ namespace AllReady.Controllers
                 : message == ManageMessageId.AddLoginSuccess ? EXTERNAL_LOGIN_ADDED
                 : message == ManageMessageId.Error ? ERROR_OCCURRED
                 : "";
+
             var user = GetCurrentUser();
             if (user == null)
             {
                 return View(ERROR_VIEW);
             }
+
             var userLogins = await _userManager.GetLoginsAsync(user);
             var otherLogins = _signInManager.GetExternalAuthenticationSchemes().Where(auth => userLogins.All(ul => auth.AuthenticationScheme != ul.LoginProvider)).ToList();
+
             ViewData[SHOW_REMOVE_BUTTON] = user.PasswordHash != null || userLogins.Count > 1;
+
             return View(new ManageLoginsViewModel
             {
                 CurrentLogins = userLogins,
@@ -498,7 +516,8 @@ namespace AllReady.Controllers
         public IActionResult LinkLogin(string provider)
         {
             // Request a redirect to the external login provider to link a login for the current user
-            var redirectUrl = Url.Action(nameof(LinkLoginCallback), MANAGE_CONTROLLER);
+            //var redirectUrl = Url.Action(nameof(LinkLoginCallback), MANAGE_CONTROLLER);
+            var redirectUrl = Url.Action(new UrlActionContext { Action = nameof(LinkLoginCallback), Controller = MANAGE_CONTROLLER });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, User.GetUserId());
             return new ChallengeResult(provider, properties);
         }
@@ -512,34 +531,36 @@ namespace AllReady.Controllers
             {
                 return View(ERROR_VIEW);
             }
+
             var info = await _signInManager.GetExternalLoginInfoAsync(User.GetUserId());
             if (info == null)
             {
                 return RedirectToAction(nameof(ManageLogins), new { Message = ManageMessageId.Error });
             }
+
             var result = await _userManager.AddLoginAsync(user, info);
             var message = result.Succeeded ? ManageMessageId.AddLoginSuccess : ManageMessageId.Error;
+
             return RedirectToAction(nameof(ManageLogins), new { Message = message });
         }
 
         #region Helpers
 
-        private void AddErrors(IdentityResult result)
+        private async Task UpdateUserProfileCompleteness(ApplicationUser user)
+        {
+            if (user.IsProfileComplete())
+            {
+                await _mediator.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id });
+                await _signInManager.RefreshSignInAsync(user);
+            }
+        }
+
+        private void AddErrorsToModelState(IdentityResult result)
         {
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
-        }
-
-        private async Task<bool> HasPhoneNumber()
-        {
-            var user = await _userManager.FindByIdAsync(User.GetUserId());
-            if (user != null)
-            {
-                return user.PhoneNumber != null;
-            }
-            return false;
         }
 
         public enum ManageMessageId
@@ -559,19 +580,6 @@ namespace AllReady.Controllers
         {
             return _dataAccess.GetUser(User.GetUserId());
         }
-
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction(nameof(HomeController.Index), nameof(HomeController));
-            }
-        }
-
         #endregion
     }
 }
