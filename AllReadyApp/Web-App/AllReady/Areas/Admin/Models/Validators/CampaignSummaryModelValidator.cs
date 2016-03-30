@@ -2,6 +2,7 @@
 using AllReady.Models;
 using MediatR;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Models.Validators
@@ -24,24 +25,9 @@ namespace AllReady.Areas.Admin.Models.Validators
                 result.Add(nameof(model.EndDate), "The end date must fall on or after the start date.");
             }
 
-            // Temporary code to avoid current database update error when the post code geo does not exist in the database.
-            if (!string.IsNullOrEmpty(model.Location?.PostalCode))
-            {
-                var validPostcode = await _mediator.SendAsync(new CheckValidPostcodeQueryAsync
-                {
-                    Postcode = new PostalCodeGeo
-                    {
-                        City = model.Location.City,
-                        State = model.Location.State,
-                        PostalCode = model.Location.PostalCode
-                    }
-                });
-
-                if (!validPostcode)
-                {
-                    result.Add(nameof(model.Location.PostalCode), "The city, state and postal code combination is not valid");
-                }
-            }
+            var postalCodeValidation = new LocationEditModelValidator(_mediator);
+            var postalCodeErrors = await postalCodeValidation.Validate(model.Location);
+            postalCodeErrors.ToList().ForEach(e => result.Add(e.Key, e.Value));
 
             return result;
         }
