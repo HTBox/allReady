@@ -14,6 +14,7 @@ using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
+using AllReady.Areas.Admin.Models.Validators;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -82,27 +83,16 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Activity/Create/{campaignId}")]
         public async Task<IActionResult> Create(int campaignId, ActivityDetailModel activity, IFormFile fileUpload)
         {
-            if (activity.EndDateTime < activity.StartDateTime)
+            CampaignSummaryModel campaign = _mediator.Send(new CampaignSummaryQuery { CampaignId = campaignId });
+            if (campaign == null ||
+                !User.IsOrganizationAdmin(campaign.OrganizationId))
             {
-                ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be earlier than the start date");
+                return HttpUnauthorized();
             }
 
-                CampaignSummaryModel campaign = _mediator.Send(new CampaignSummaryQuery { CampaignId = campaignId });
-                if (campaign == null ||
-                    !User.IsOrganizationAdmin(campaign.OrganizationId))
-                {
-                    return HttpUnauthorized();
-                }
-
-            if (activity.StartDateTime < campaign.StartDate)
-            {
-                ModelState.AddModelError(nameof(activity.StartDateTime), "Start date cannot be earlier than the campaign start date " + campaign.StartDate.ToString("d"));
-            }
-
-            if (activity.EndDateTime > campaign.EndDate)
-            {
-                ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be later than the campaign end date " + campaign.EndDate.ToString("d"));
-            }
+            var validator = new ActivityDetailModelValidator(_mediator);
+            var errors = await validator.Validate(activity, campaign);
+            errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)
             {
@@ -164,42 +154,12 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpUnauthorized();
             }
-
-            if (activity.EndDateTime < activity.StartDateTime)
-            {
-                ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be earlier than the start date");
-            }
-
+            
             CampaignSummaryModel campaign = _mediator.Send(new CampaignSummaryQuery { CampaignId = activity.CampaignId });
 
-            if (activity.StartDateTime < campaign.StartDate)
-            {
-                ModelState.AddModelError(nameof(activity.StartDateTime), "Start date cannot be earlier than the campaign start date " + campaign.StartDate.ToString("d"));
-            }
-
-            if (activity.EndDateTime > campaign.EndDate)
-            {
-                ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be later than the campaign end date " + campaign.EndDate.ToString("d"));
-            }
-
-            // Temporary code to avoid current database update error when the post code geo does not exist in the database.
-            if (!string.IsNullOrEmpty(activity.Location.PostalCode))
-            {
-                bool validPostcode = await _mediator.SendAsync(new CheckValidPostcodeQueryAsync
-                {
-                    Postcode = new PostalCodeGeo
-                    {
-                        City = activity.Location.City,
-                        State = activity.Location.State,
-                        PostalCode = activity.Location.PostalCode
-                    }
-                });
-
-                if (!validPostcode)
-                {
-                    ModelState.AddModelError(nameof(activity.Location), "The city, state and postal code combination is not valid");
-                }
-            }
+            var validator = new ActivityDetailModelValidator(_mediator);
+            var errors = await validator.Validate(activity, campaign);
+            errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)
             {
