@@ -17,17 +17,17 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void DeleteUserSendsUserQueryWithCorrectUserId()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void DeleteUserReturnsTheCorrectViewModel()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void DeleteUserHasHttpGetAttribute()
         {
         }
@@ -43,458 +43,458 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Verify(b => b.SendAsync(It.Is<DeleteUserCommand>(u => u.UserId == userId)));
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task ConfirmDeletUserRedirectsToCorrectAction()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ConfirmDeletUserHasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ConfirmDeletUserHasValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void EditUserGetInvokesGetUserWithCorrectUserId()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void EditUserGetReturnsCorrectViewModelWhenOrganizationIdIsNull()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void EditUserGetReturnsCorrectViewModelWhenOrganizationIdIsNotNull()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void EditUserPostReturnsSameViewAndViewModelWhenModelStateIsInvalid()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task EditUserPostInvokesGetUserWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task EditUserPostInvokesUpdateUserWithCorrectUserWhenUsersAssociatedSkillsAreNotNull()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task EditUserPostInvokesUpdateUserWithCorrectUserWhenUsersAssociatedSkillsAreNotNullAndThereIsAtLeastOneAssociatedSkillForTheUser()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task EditUserPostInvokesAddClaimAsyncWhenModelsIsOrganizationAdminIsTrue()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task EditUserPostInvokesUrlActionWithCorrectParametersWhenModelsIsOrganizationAdminIsTrueAndOrganizationAdminClaimWasAddedSuccessfully()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task EditUserPostInvokesSendEmailAsyncWithCorrectParametersWhenModelsIsOrganizationAdminIsTrueAndOrganizationAdminClaimWasAddedSuccessfully()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task EditUserPostReturnsRedirectResultWithCorrectUrlWhenModelsIsOrganizationAdminIsTrueAndOrganizationAdminClaimWasNotAddedSuccessfully()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task EditUserPostInvokesRemoveClaimAsyncWithCorrectParametersWhenUserIsAnOrganizationAdmin()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task EditUserPostReturnsRedirectResultWithCorrectUrlWhenUserIsAnOrganizationAdminAndRemovClaimAsyncDoesNotSucceed()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task EditUserPostRedirectsToCorrectAction()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void EditUserPostHasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void EditUserPostHasValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task ResetPasswordInvokesGetUserWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task ResetPasswordAddsCorrectErrorMessageToViewBagWhenUserIsNull()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task ResetPasswordInvokesGeneratePasswordResetTokenAsyncWithCorrectUserWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task ResetPasswordInvokesUrlActionWithCorrectParametersWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task ResetPasswordInvokesSendEmailAsyncWithCorrectParametersWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task ResetPasswordAddsCorrectSuccessMessagetoViewBagWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task ResetPasswordReturnsAView()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task ResetPasswordInvokesLogErrorWhenExceptionIsThrown()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task ResetPasswordAddsCorrectErrorMessagetoViewBagWhenExceptionIsThrown()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task ResetPasswordReturnsAViewWhenExcpetionIsThrown()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ResetPasswordHasHttpGetAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignSiteAdminInvokesGetUserWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignSiteAdminInvokesAddClaimAsyncWithCorrrectParameters()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignSiteAdminRedirectsToCorrectAction()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignSiteAdminInvokesLogErrorWhenExceptionIsThrown()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignSiteAdminAddsCorrectErrorMessageToViewBagWhenExceptionIsThrown()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignSiteAdminReturnsAViewWhenExceptionIsThrown()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void AssignSiteAdminHasHttpGetAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignOrganizationAdminGetInvokesGetUserWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignOrganizationAdminGetRedirectsToCorrectActionWhenUserIsAnOrganizationAdmin()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignOrganizationAdminGetRedirectsToCorrectActionWhenUserIsASiteAdmin()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignOrganizationAdminGetAddsCorrectSelectListItemToOrganizationsOnViewBag()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignOrganizationAdminGetReturnsCorrectViewModel()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void AssignOrganizationAdminGetHasHttpGetAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignOrganizationAdminPostInvokesGetUserWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignOrganizationAdminPostRedirectsToCorrectActionIsUserIsNull()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignOrganizationAdminPostAddsCorrectKeyAndErrorMessageToModelStateWhenOrganizationIdIsZero()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignOrganizationAdminPostInvokesOrganizationsWhenModelStateIsValid()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignOrganizationAdminPostInvokesAddClaimAsyncTwiceAddingTheCorrectClaimsWhenOrganizationIdOnModelMatchesAnyExistingOrganization()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignOrganizationAdminPostRedirectsToCorrectActionWhenOrganizationIdOnModelMatchesAnyExistingOrganization()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignOrganizationAdminPostAddsCorrectKeyAndErrorMessageToModelStateWhenOrganzationNotFound()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task AssignOrganizationAdminPostReturnsAView()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void AssignOrganizationAdminPostHasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void AssignOrganizationAdminPostHasValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task RevokeSiteAdminInvokesGetUserWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task RevokeSiteAdminInvokesRemoveClaimAsyncWithCorrectParameters()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task RevokeSiteAdminRedirectsToCorrectAction()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task RevokeSiteAdminInvokesLogErrorWithCorrectParametersWhenExceptionIsThrown()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task RevokeSiteAdminAddsCorrectErrorMessageToViewBagWhenExceptionIsThrown()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task RevokeSiteAdminReturnsAViewWhenExceptionIsThrown()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void RevokeSiteAdminHasHttpGetAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task RevokeOrganizationAdminInvokesGetUserWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task RevokeOrganizationAdminInvokesGetclaimsAsyncWithCorrectUser()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task RevokeOrganizationAdminInokesRemoveClaimAsyncTwiceWithCorrectParameters()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task RevokeOrganizationAdminRedirectsToCorrectAction()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task RevokeOrganizationAdminInvokesLogErrorWithCorrectParametersWhenExceptionIsThrown()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task RevokeOrganizationAdminAddsCorrectErrorMessageToViewBagWhenExceptionIsThrown()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task RevokeOrganizationAdminReturnsAViewWhenErrorIsThrown()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void RevokeOrganizationAdminHasHttpGetAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ControllerHasAreaAtttributeWithTheCorrectAreaName()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ControllerHasAuthorizeAtttributeWithTheCorrectPolicy()
         {
         }
