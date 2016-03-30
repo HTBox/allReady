@@ -8,836 +8,1081 @@ namespace AllReady.UnitTest.Controllers
 {
     public class ManageControllerTests
     {
-        [Fact]
-        public void IndexGetAddsCorrectMessageToViewDataWhenMessageEqualsChangePasswordSuccess()
+        //delete this line when all unit tests using it have been completed
+        private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task IndexGetAddsCorrectMessageToViewDataWhenMessageEqualsChangePasswordSuccess()
         {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void IndexGetAddsCorrectMessageToViewDataWhenMessageIdEqualsSetPasswordSuccess()
+        [Fact(Skip = "NotImplemented")]
+        public async Task IndexGetAddsCorrectMessageToViewDataWhenMessageIdEqualsSetPasswordSuccess()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void IndexGetAddsCorrectMessageToViewDataWhenMessageIdEqualsSetTwoFactorSuccess()
+        [Fact(Skip = "NotImplemented")]
+        public async Task IndexGetAddsCorrectMessageToViewDataWhenMessageIdEqualsSetTwoFactorSuccess()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void IndexGetAddsCorrectMessageToViewDataWhenMessageIdEqualsError()
+        [Fact(Skip = "NotImplemented")]
+        public async Task IndexGetAddsCorrectMessageToViewDataWhenMessageIdEqualsError()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void IndexGetAddsCorrectMessageToViewDataWhenMessageIdEqualsAddPhoneSuccess()
+        [Fact(Skip = "NotImplemented")]
+        public async Task IndexGetAddsCorrectMessageToViewDataWhenMessageIdEqualsAddPhoneSuccess()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void IndexGetAddsCorrectMessageToViewDataWhenMessageIdEqualsRemovePhoneSuccess()
+        [Fact(Skip = "NotImplemented")]
+        public async Task IndexGetAddsCorrectMessageToViewDataWhenMessageIdEqualsRemovePhoneSuccess()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void IndexGetInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task IndexGetInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void IndexGetReturnsCorrectView()
+        [Fact(Skip = "NotImplemented")]
+        public async Task IndexGetReturnsCorrectView()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void IndexGetHasHttpGetAttribute()
         {
         }
 
-        [Fact]
-        public void IndexGetReturnsCorrectViewModel()
+        [Fact(Skip = "NotImplemented")]
+        public async Task IndexGetReturnsCorrectViewModel()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void IndexPostInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task IndexPostInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void IndexPostReturnsCorrectViewWhenModelStateIsInvalid()
+        [Fact(Skip = "NotImplemented")]
+        public async Task IndexPostReturnsCorrectViewWhenModelStateIsInvalid()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void IndexPostReturnsCorrectViewModelWhenModelStateIsInvalid()
+        [Fact(Skip = "NotImplemented")]
+        public async Task IndexPostReturnsCorrectViewModelWhenModelStateIsInvalid()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void IndexPostInvokesRemoveClaimsAsyncWithCorrectParametersWhenUsersTimeZoneDoesNotEqualModelsTimeZone()
+        [Fact(Skip = "NotImplemented")]
+        public async Task IndexPostInvokesRemoveClaimsAsyncWithCorrectParametersWhenUsersTimeZoneDoesNotEqualModelsTimeZone()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void IndexPostInvokesAddClaimAsyncWithCorrectParametersWhenUsersTimeZoneDoesNotEqualModelsTimeZone()
+        [Fact(Skip = "NotImplemented")]
+        public async Task IndexPostInvokesAddClaimAsyncWithCorrectParametersWhenUsersTimeZoneDoesNotEqualModelsTimeZone()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
         //TODO: come back to finsih these stubs... there is a lot going on in Index Post
 
-        [Fact]
-        public void IndexPostHasHttpPostAttrbiute()
+        [Fact(Skip = "NotImplemented")]
+        public async Task IndexPostHasHttpPostAttrbiute()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void IndexPostHasValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
-        public void UpdateUserProfileCompletenessSendsRemoveUserProfileIncompleteClaimCommandWithCorrectUserIdWhenUsersProfileIsComplete()
+        [Fact(Skip = "NotImplemented")]
+        public async Task UpdateUserProfileCompletenessSendsRemoveUserProfileIncompleteClaimCommandWithCorrectUserIdWhenUsersProfileIsComplete()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void UpdateUserProfileCompletenessInvokesRefreshSignInAsyncWithCorrectUserWhenUsersProfileIsComplete()
+        [Fact(Skip = "NotImplemented")]
+        public async Task UpdateUserProfileCompletenessInvokesRefreshSignInAsyncWithCorrectUserWhenUsersProfileIsComplete()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ResendEmailConfirmationInvokesFindByIdAsyncWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendEmailConfirmationInvokesFindByIdAsyncWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ResendEmailConfirmationInvokesGenerateEmailConfirmationTokenAsyncWithCorrectUser()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendEmailConfirmationInvokesGenerateEmailConfirmationTokenAsyncWithCorrectUser()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ResendEmailConfirmationInvokesUrlActionWithCorrectParameters()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendEmailConfirmationInvokesUrlActionWithCorrectParameters()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ResendEmailConfirmationInvokesSendEmailAsyncWithCorrectParameters()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendEmailConfirmationInvokesSendEmailAsyncWithCorrectParameters()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ResendEmailConfirmationRedirectsToCorrectAction()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendEmailConfirmationRedirectsToCorrectAction()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ResendEmailConfirmationHasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ResendEmailConfirmationHasHttpValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void EmailConfirmationSentReturnsAView()
         {
         }
 
-        [Fact]
-        public void RemoveLoginInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task RemoveLoginInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void RemoveLoginInvokesRemoveLoginAsyncWithCorrectParametersWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task RemoveLoginInvokesRemoveLoginAsyncWithCorrectParametersWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void RemoveLoginInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndRemoveLoginSucceeds()
+        [Fact(Skip = "NotImplemented")]
+        public async Task RemoveLoginInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndRemoveLoginSucceeds()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void RemoveLoginRedirectsToCorrectActionWithCorrectRouteValues()
+        [Fact(Skip = "NotImplemented")]
+        public async Task RemoveLoginRedirectsToCorrectActionWithCorrectRouteValues()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void RemoveLoginHasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void RemoveLoginHasValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void AddPhoneNumberGetReturnsAView()
         {
         }
 
-        [Fact]
-        public void AddPhoneNumberPostReturnsTheSameViewAndModelWhenModelStateIsInvalid()
+        [Fact(Skip = "NotImplemented")]
+        public async Task AddPhoneNumberPostReturnsTheSameViewAndModelWhenModelStateIsInvalid()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void AddPhoneNumberPostInvokesGetUserWithCorrectUserIdWhenModelStateIsValid()
+        [Fact(Skip = "NotImplemented")]
+        public async Task AddPhoneNumberPostInvokesGetUserWithCorrectUserIdWhenModelStateIsValid()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void AddPhoneNumberPostInvokesGenerateChangePhoneNumberTokenAsyncWithCorrectParametersWhenModelStateIsValid()
+        [Fact(Skip = "NotImplemented")]
+        public async Task AddPhoneNumberPostInvokesGenerateChangePhoneNumberTokenAsyncWithCorrectParametersWhenModelStateIsValid()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void AddPhoneNumberPostInvokesSendSmsAsyncWithCorrectParametersWhenModelStateIsValid()
+        [Fact(Skip = "NotImplemented")]
+        public async Task AddPhoneNumberPostInvokesSendSmsAsyncWithCorrectParametersWhenModelStateIsValid()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void AddPhonNumberPostRedirectsToCorrectActionWithCorrectRouteValuesWhenModelStateIsValid()
+        [Fact(Skip = "NotImplemented")]
+        public async Task AddPhonNumberPostRedirectsToCorrectActionWithCorrectRouteValuesWhenModelStateIsValid()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void AddPhoneNumberHasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void AddPhoneNumberHasValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
-        public void ResendPhoneNumberConfirmationInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendPhoneNumberConfirmationInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ResendPhoneNumberConfirmationInvokesGenerateChangePhoneNumberTokenAsyncWithCorrectParameters()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendPhoneNumberConfirmationInvokesGenerateChangePhoneNumberTokenAsyncWithCorrectParameters()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ResendPhoneNumberInvokesSendSmsAsyncWithCorrectParameters()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendPhoneNumberInvokesSendSmsAsyncWithCorrectParameters()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ResendPhoneNumberRedirectsToCorrectActionWithCorrectRouteValues()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendPhoneNumberRedirectsToCorrectActionWithCorrectRouteValues()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ResendPhoneNumberHasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ResendPhoneNumberHasValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
-        public void EnableTwoFactorAuthenticationInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task EnableTwoFactorAuthenticationInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void EnableTwoFactorAuthenticationInvokesSetTwoFactorEnabledAsyncWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task EnableTwoFactorAuthenticationInvokesSetTwoFactorEnabledAsyncWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void EnableTwoFactorAuthenticationInvokesSignInAsyncWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task EnableTwoFactorAuthenticationInvokesSignInAsyncWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void EnableTwoFactorAuthenticationRedirectsToCorrectAction()
+        [Fact(Skip = "NotImplemented")]
+        public async Task EnableTwoFactorAuthenticationRedirectsToCorrectAction()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void EnbaleTwoFactorAuthenticationHasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void EnableTwoFactorAuthenticationHasValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
-        public void DisableTwoFactorAuthenticationInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task DisableTwoFactorAuthenticationInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void DisableTwoFactorAuthenticationInvokesSetTwoFactorEnabledAsyncWithCorrectParametersWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task DisableTwoFactorAuthenticationInvokesSetTwoFactorEnabledAsyncWithCorrectParametersWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void DisableTwoFactorAuthenticationInvokesSignInAsyncWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task DisableTwoFactorAuthenticationInvokesSignInAsyncWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void DisableTwoFactorAuthenticationRedirectsToCorrectAction()
+        [Fact(Skip = "NotImplemented")]
+        public async Task DisableTwoFactorAuthenticationRedirectsToCorrectAction()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void DisableTwoFactorAuthenticationHasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void DisableTwoFactorAuthenticationHasValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void VerifyPhoneNumberGetReturnsErrorViewWhenPhoneNumberIsNull()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void VerifyPhoneNumberGetReturnsReturnsTheCorrectViewandViewModelWhenPhoneNumberIsNotNull()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void VerifyPhoneNumberGetHasHttpGetAttribute()
         {
         }
 
-        [Fact]
-        public void VerifyPhoneNumberPostReturnsTheSameViewAndModelWhenModelStateIsInvalid()
+        [Fact(Skip = "NotImplemented")]
+        public async Task VerifyPhoneNumberPostReturnsTheSameViewAndModelWhenModelStateIsInvalid()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void VerifyPhoneNumberPostInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task VerifyPhoneNumberPostInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void VerifyPhoneNumberPostInvokesChangePhoneNumberAsyncWithCorrectParametersWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task VerifyPhoneNumberPostInvokesChangePhoneNumberAsyncWithCorrectParametersWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void VerifyPhoneNumberPostSendsRemoveUserProfileIncompleteClaimCommandWhenUserIsNotNullAndPhoneNumberChangeWasSuccessfulAndUserProfileIsComplete()
+        [Fact(Skip = "NotImplemented")]
+        public async Task VerifyPhoneNumberPostSendsRemoveUserProfileIncompleteClaimCommandWhenUserIsNotNullAndPhoneNumberChangeWasSuccessfulAndUserProfileIsComplete()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void VerifyPhoneNumberPostInvokesRefreshSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPhoneNumberChangeWasSuccessfulAndUserProfileIsComplete()
+        [Fact(Skip = "NotImplemented")]
+        public async Task VerifyPhoneNumberPostInvokesRefreshSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPhoneNumberChangeWasSuccessfulAndUserProfileIsComplete()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void VerifyPhoneNumberPostInvokesSignInAsyncWithCorrectPaarmetersWhenUserIsNotNullAndPhoneNumberChangeWasSuccessful()
+        [Fact(Skip = "NotImplemented")]
+        public async Task VerifyPhoneNumberPostInvokesSignInAsyncWithCorrectPaarmetersWhenUserIsNotNullAndPhoneNumberChangeWasSuccessful()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void VerifyPhoneNumberPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndPhoneNumberChangeWasSuccessful()
+        [Fact(Skip = "NotImplemented")]
+        public async Task VerifyPhoneNumberPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndPhoneNumberChangeWasSuccessful()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void VerifyPhoneNumberPostAddsCorrectErrorMessageToModelStateWhenUserIsNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task VerifyPhoneNumberPostAddsCorrectErrorMessageToModelStateWhenUserIsNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void VerifyPhoneNumberPostReturnsCorrectViewModelWhenUserIsNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task VerifyPhoneNumberPostReturnsCorrectViewModelWhenUserIsNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void VerifyPhoneNumberPostHasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void VerifyPhoneNumberPostHasValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
-        public void RemovePhoneNumberInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task RemovePhoneNumberInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void RemovePhoneNumberInvokesSetPhoneNumberAsyncWithCorrectParametersWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task RemovePhoneNumberInvokesSetPhoneNumberAsyncWithCorrectParametersWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void RemovePhoneNumberInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPhoneNumberWasSetSuccessfully()
+        [Fact(Skip = "NotImplemented")]
+        public async Task RemovePhoneNumberInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPhoneNumberWasSetSuccessfully()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void RemovePhoneNumberSendsRemoveUserProfileIncompleteClaimCommandWithCorrectDataWhenUserIsNotNullAndPhoneNumberWasSetSuccessfullyAndUsersProfileIsComplete()
+        [Fact(Skip = "NotImplemented")]
+        public async Task RemovePhoneNumberSendsRemoveUserProfileIncompleteClaimCommandWithCorrectDataWhenUserIsNotNullAndPhoneNumberWasSetSuccessfullyAndUsersProfileIsComplete()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void RemovePhoneNumberInvokesRefreshSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPhoneNumberWasSetSuccessfullyAndUsersProfileIsComplete()
+        [Fact(Skip = "NotImplemented")]
+        public async Task RemovePhoneNumberInvokesRefreshSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPhoneNumberWasSetSuccessfullyAndUsersProfileIsComplete()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void RemovePhoneNumberRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndPhoneNumberWasSetSuccessfully()
+        [Fact(Skip = "NotImplemented")]
+        public async Task RemovePhoneNumberRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndPhoneNumberWasSetSuccessfully()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void RemovePhoneNumberRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task RemovePhoneNumberRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void RemovePhoneNumberHasHttpGetAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ChangePasswordGetReturnsAView()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ChangePasswordGetHasHttpGetAttribute()
         {
         }
 
-        [Fact]
-        public void ChangePasswordPostReturnsSameViewAndModelWhenModelStateIsInvalid()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangePasswordPostReturnsSameViewAndModelWhenModelStateIsInvalid()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangePasswordPostInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangePasswordPostInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangePasswordPostInvokesChangePasswordAsyncWithCorrectParametersWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangePasswordPostInvokesChangePasswordAsyncWithCorrectParametersWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangePasswordPostInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPasswordWasChangedSuccessfully()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangePasswordPostInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPasswordWasChangedSuccessfully()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangePasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndPasswordWasChangedSuccessfully()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangePasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndPasswordWasChangedSuccessfully()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangePasswordPostAddsIdentityResultErrorsToModelStateErrorsWhenUserIsNotNullAndPasswordWasNotChangedSuccessfully()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangePasswordPostAddsIdentityResultErrorsToModelStateErrorsWhenUserIsNotNullAndPasswordWasNotChangedSuccessfully()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangePasswordPostReturnsCorrectViewModelWhenUserIsNotNullAndPasswordWasNotChangedSuccessfully()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangePasswordPostReturnsCorrectViewModelWhenUserIsNotNullAndPasswordWasNotChangedSuccessfully()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangePasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangePasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ChangePasswordHPostasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ChangePasswordPostHasValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ChangeEmailGetReturnsAView()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ChangeEmailGetHasHttpGetAttribute()
         {
         }
 
-        [Fact]
-        public void ChangeEmailPostReturnsSameViewAndViewModelWhenModelStateIsInvalid()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangeEmailPostReturnsSameViewAndViewModelWhenModelStateIsInvalid()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangeEmailPostInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangeEmailPostInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangeEmailPostInvokesCheckPasswordAsyncWithCorrectParametersWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangeEmailPostInvokesCheckPasswordAsyncWithCorrectParametersWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangeEmailPostAddsCorrectErrorMessageToModelStateWhenChangePasswordIsUnsuccessful()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangeEmailPostAddsCorrectErrorMessageToModelStateWhenChangePasswordIsUnsuccessful()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangeEmailPostReturnsCorrectVieModelWhenChangePasswordIsUnsuccessful()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangeEmailPostReturnsCorrectVieModelWhenChangePasswordIsUnsuccessful()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangeEmailPostInvokesFindByEmailAsyncWithCorrectParametersWhenChangePasswordIsSuccessful()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangeEmailPostInvokesFindByEmailAsyncWithCorrectParametersWhenChangePasswordIsSuccessful()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangeEmailPostAddsCorrectErrorToModelStateWhenChangePasswordIsSuccessfulAndEmailCannotBeFound()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangeEmailPostAddsCorrectErrorToModelStateWhenChangePasswordIsSuccessfulAndEmailCannotBeFound()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangeEmailPostReturnsCorrectViewModelWhenChangePasswordIsSuccessfulAndEmailCannotBeFound()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangeEmailPostReturnsCorrectViewModelWhenChangePasswordIsSuccessfulAndEmailCannotBeFound()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangeEmailPostInvokesUpdateAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangeEmailPostInvokesUpdateAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangeEmailPostInvokesGenerateChangeEmailTokenAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangeEmailPostInvokesGenerateChangeEmailTokenAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangeEmailPostInvokesUrlActioncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangeEmailPostInvokesUrlActioncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangeEmailPostInvokesSendEmailAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangeEmailPostInvokesSendEmailAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangeEmailPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangeEmailPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ChangeEmailPostRedirectsToTheCorrectActionWithTheCorrectRouteValuesWhenUserIsNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ChangeEmailPostRedirectsToTheCorrectActionWithTheCorrectRouteValuesWhenUserIsNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ChangeEmailPostHasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ChangeEmailPostHasValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
-        public void ConfirmNewEmailReturnsErrorViewWhenTokenIsNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ConfirmNewEmailReturnsErrorViewWhenTokenIsNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ConfirmNewEmailInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ConfirmNewEmailInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ConfirmNewEmailReturnsErrorViewWhenUserIsNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ConfirmNewEmailReturnsErrorViewWhenUserIsNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ConfirmNewEmailInvokesChangeEmailAsyncWithCorrectParametersWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ConfirmNewEmailInvokesChangeEmailAsyncWithCorrectParametersWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ConfirmNewEmailInvokesSetUserNameAsyncWithCorrectParametersWhenUserIsNotNullAndSettingUserNameIsSuccessful()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ConfirmNewEmailInvokesSetUserNameAsyncWithCorrectParametersWhenUserIsNotNullAndSettingUserNameIsSuccessful()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ConfirmNewEmailInvokesUpdateAsyncWithCorrectParametersWhenUserIsNotNullAndSettingUserNameIsSuccessful()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ConfirmNewEmailInvokesUpdateAsyncWithCorrectParametersWhenUserIsNotNullAndSettingUserNameIsSuccessful()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ConfirmNewEmailRedirectsToCorrectActionWithCorrectRouteValues()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ConfirmNewEmailRedirectsToCorrectActionWithCorrectRouteValues()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ConfirmEmailHasHttpGetAttribute()
         {
         }
 
-        [Fact]
-        public void ResendChangeEmailConfirmationInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendChangeEmailConfirmationInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ResendChangeEmailConfirmationReturnsErrorViewWhenUsersPendingNewEmailIsNullOrEmpty()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendChangeEmailConfirmationReturnsErrorViewWhenUsersPendingNewEmailIsNullOrEmpty()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ResendChangesEmailConfirmationInvokesGenerateChangeEmailTokenAsyncWithCorrectParameters()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendChangesEmailConfirmationInvokesGenerateChangeEmailTokenAsyncWithCorrectParameters()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ResendChangesEmailConfirmationInvokesUrlActionWithCorrectParameters()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendChangesEmailConfirmationInvokesUrlActionWithCorrectParameters()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ResendChangesEmailConfirmationInvokesSendEmailAsyncWithCorrectParameters()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendChangesEmailConfirmationInvokesSendEmailAsyncWithCorrectParameters()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ResendChangesEmailConfirmationRedirectsToCorrectAction()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendChangesEmailConfirmationRedirectsToCorrectAction()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ResendChangesEmailConfirmationHasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ResendChangesEmailConfirmationHasVAlidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
-        public void CancelChangeEmailInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task CancelChangeEmailInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void CancelChangeEmailInvokesUpdateAsyncWithCorrectParameters()
+        [Fact(Skip = "NotImplemented")]
+        public async Task CancelChangeEmailInvokesUpdateAsyncWithCorrectParameters()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void CancelChangeEmailRedirectsToCorrectAction()
+        [Fact(Skip = "NotImplemented")]
+        public async Task CancelChangeEmailRedirectsToCorrectAction()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void CancelChangeEmailHasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void CancelChangeEmailHasValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void SetPasswordGetReturnsAView()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void SetPasswordGetHasHttpGetAttribute()
         {
         }
 
-        [Fact]
-        public void SetPasswordPostReturnsSameViewAndViewModelWhenModelStateIsInvalid()
+        [Fact(Skip = "NotImplemented")]
+        public async Task SetPasswordPostReturnsSameViewAndViewModelWhenModelStateIsInvalid()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void SetPasswordPostInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task SetPasswordPostInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void SetPasswordPostInvokesAddPasswordAsyncWithCorrectParametersWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task SetPasswordPostInvokesAddPasswordAsyncWithCorrectParametersWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void SetPasswordPostInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPasswordAddedSuccessfully()
+        [Fact(Skip = "NotImplemented")]
+        public async Task SetPasswordPostInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPasswordAddedSuccessfully()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void SetPasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndPasswordAddedSuccessfully()
+        [Fact(Skip = "NotImplemented")]
+        public async Task SetPasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndPasswordAddedSuccessfully()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void SetPasswordPostAddsCorrectErrorMessageToModelStateWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task SetPasswordPostAddsCorrectErrorMessageToModelStateWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void SetPasswordPostReturnsCorrectViewModelWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task SetPasswordPostReturnsCorrectViewModelWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void SetPasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task SetPasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void SetPasswordPostHasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void SetPasswordPostHasValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
-        public void ManageLoginsAddsCorrectMessageToViewDataWhenMessageIdIsRemoveLoginSuccess()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ManageLoginsAddsCorrectMessageToViewDataWhenMessageIdIsRemoveLoginSuccess()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ManageLoginsAddsCorrectMessageToViewDataWhenMessageIdIsAddLoginSuccess()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ManageLoginsAddsCorrectMessageToViewDataWhenMessageIdIsAddLoginSuccess()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ManageLoginsAddsCorrectMessageToViewDataWhenMessageIdIsError()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ManageLoginsAddsCorrectMessageToViewDataWhenMessageIdIsError()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ManageLoginsInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ManageLoginsInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ManageLoginsReturnsErrorViewWhenUserIsNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ManageLoginsReturnsErrorViewWhenUserIsNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ManageLoginsInvokesGetLoginsAsyncWithCorrectParametersWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ManageLoginsInvokesGetLoginsAsyncWithCorrectParametersWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ManageLoginsInvokesGetExternalAuthenticationSchemesWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ManageLoginsInvokesGetExternalAuthenticationSchemesWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ManageLoginsAddsCorrectValueToSHOW_REMOVE_BUTTONWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ManageLoginsAddsCorrectValueToSHOW_REMOVE_BUTTONWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ManageLoginsReturnsCorrectViewModelWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ManageLoginsReturnsCorrectViewModelWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ManageLoginsHasHttpGetAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void LinkLoginInvokesUrlActionWithTheCorrectParameters()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void LinkLoginInvokesConfigureExternalAuthenticationPropertiesWithCorrectParameters()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void LinkLoginReturnsCorrectResult()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void LinkLoginHasHttpPostAttribute()
         {
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void LinkLoginHasValidateAntiForgeryTokenAttribute()
         {
         }
 
-        [Fact]
-        public void LinkLoginCallbackInvokesGetUserWithCorrectUserId()
+        [Fact(Skip = "NotImplemented")]
+        public async Task LinkLoginCallbackInvokesGetUserWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void LinkLoginCallbackReturnsErrorViewWhenUserIsNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task LinkLoginCallbackReturnsErrorViewWhenUserIsNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void LinkLoginCallbackInvokesGetExternalLoginInfoAsyncWithCorrectUserIdWhenUserIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task LinkLoginCallbackInvokesGetExternalLoginInfoAsyncWithCorrectUserIdWhenUserIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndExternalLoginInfoIsNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndExternalLoginInfoIsNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void LinkLoginCallbackInvokesAddLoginAsyncWithCorrectParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task LinkLoginCallbackInvokesAddLoginAsyncWithCorrectParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNull()
+        [Fact(Skip = "NotImplemented")]
+        public async Task LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNull()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
-        [Fact]
-        public void ControllerHasAuthorizeAtttribute()
+        [Fact(Skip = "NotImplemented")]
+        public async Task ControllerHasAuthorizeAtttribute()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
     }
 }
