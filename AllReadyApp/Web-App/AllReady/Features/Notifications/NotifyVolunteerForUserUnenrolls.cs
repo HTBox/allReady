@@ -20,20 +20,23 @@ namespace AllReady.Features.Notifications
 
         public async Task Handle(UserUnenrolls notification)
         {
-            var model = _mediator.Send(new ActivityDetailForNotificationQuery {ActivityId = notification.ActivityId, UserId = notification.UserId});
+            var model = await _mediator.SendAsync(new ActivityDetailForNotificationQueryAsync { ActivityId = notification.ActivityId, UserId = notification.UserId });
 
             var signup = model.UsersSignedUp?.FirstOrDefault(s => s.User.Id == notification.UserId);
             if (signup == null)
+            {
                 return;
-
+            }
+            
             var emailRecipient = !string.IsNullOrWhiteSpace(signup.PreferredEmail)
                 ? signup.PreferredEmail
                 : signup.User?.Email;
             if (string.IsNullOrWhiteSpace(emailRecipient))
+            {
                 return;
-
+            }
+            
             var activityLink = $"View activity: {_options.Value.SiteBaseUrl}Admin/Activity/Details/{model.ActivityId}";
-            var subject = "allReady Activity Un-enrollment Confirmation";
 
             var message = new StringBuilder();
             message.AppendLine("This is to confirm that you have elected to un-enroll from the following activity:");
@@ -50,9 +53,10 @@ namespace AllReady.Features.Notifications
                     EmailMessage = message.ToString(),
                     HtmlMessage = message.ToString(),
                     EmailRecipients = new List<string> { emailRecipient },
-                    Subject = subject
+                    Subject = "allReady Activity Un-enrollment Confirmation"
                 }
             };
+
             await _mediator.SendAsync(command).ConfigureAwait(false);
         }
     }
