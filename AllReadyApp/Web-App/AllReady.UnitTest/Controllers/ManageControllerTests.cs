@@ -834,5 +834,10 @@ namespace AllReady.UnitTest.Controllers
         public void LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNull()
         {
         }
+
+        [Fact]
+        public void ControllerHasAuthorizeAtttribute()
+        {
+        }
     }
 }
