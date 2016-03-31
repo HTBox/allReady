@@ -59,10 +59,10 @@ namespace AllReady.Features.Activity
                     _context.Update(user);
                 }
 
-                    await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-                    //Notify admins of a new volunteer
-                    await _mediator.PublishAsync(new VolunteerSignupNotification() { ActivityId = activitySignup.ActivityId, UserId = activitySignup.UserId, TaskId = null });
+                //Notify admins of a new volunteer
+                await _mediator.PublishAsync(new VolunteerSignupNotification() { ActivityId = activitySignup.ActivityId, UserId = activitySignup.UserId, TaskId = null });
             }
         }
     }
