@@ -27,14 +27,14 @@ namespace AllReady.Features.Tasks
 
             var user = await _context.Users
                 .Include(u => u.AssociatedSkills)
-                .SingleOrDefaultAsync(u => u.Id == model.UserId);
+                .SingleOrDefaultAsync(u => u.Id == model.UserId).ConfigureAwait(false);
 
             var activity = await _context.Activities
                 .Include(a => a.RequiredSkills)
                 .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
                 .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(s => s.Skill)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers)
-                .SingleOrDefaultAsync(a => a.Id == model.ActivityId);
+                .SingleOrDefaultAsync(a => a.Id == model.ActivityId).ConfigureAwait(false);
 
             var task = activity.Tasks.SingleOrDefault(t => t.Id == model.TaskId);
 
@@ -81,10 +81,11 @@ namespace AllReady.Features.Tasks
                 _context.Update(user);
             }
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync().ConfigureAwait(false);
 
             //Notify admins of a new volunteer
-            await _bus.PublishAsync(new VolunteerSignupNotification { ActivityId = model.ActivityId, UserId = model.UserId, TaskId = task.Id }).ConfigureAwait(false);
+            await _bus.PublishAsync(new VolunteerSignupNotification { ActivityId = model.ActivityId, UserId = model.UserId, TaskId = task.Id })
+                .ConfigureAwait(false);
 
             return new TaskSignupResult {Status = "success", Task = task};
         }

@@ -32,17 +32,17 @@ namespace AllReady.Features.Notifications
             // don't let problem with notification keep us from continuing
             try
             {
-                var volunteer = await _context.Users.SingleAsync(u => u.Id == notification.UserId);
+                var volunteer = await _context.Users.SingleAsync(u => u.Id == notification.UserId).ConfigureAwait(false);
 
                 var activity = await _context.Activities
                     .Include(a => a.RequiredSkills).ThenInclude(r => r.Skill)
-                    .SingleAsync(a => a.Id == notification.ActivityId);
+                    .SingleAsync(a => a.Id == notification.ActivityId).ConfigureAwait(false);
 
                 var activitySignup = activity.UsersSignedUp.FirstOrDefault(a => a.User.Id == notification.UserId);
 
                 var campaign = await _context.Campaigns
                     .Include(c => c.CampaignContacts).ThenInclude(cc => cc.Contact)
-                    .SingleOrDefaultAsync(c => c.Id == activity.CampaignId);
+                    .SingleOrDefaultAsync(c => c.Id == activity.CampaignId).ConfigureAwait(false);
 
                 var campaignContact = campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
                 var adminEmail = campaignContact?.Contact.Email;
@@ -60,7 +60,7 @@ namespace AllReady.Features.Notifications
 
                 if (!isActivitySignup)
                 {
-                    task = await _context.Tasks.SingleOrDefaultAsync(t => t.Id == notification.TaskId);
+                    task = await _context.Tasks.SingleOrDefaultAsync(t => t.Id == notification.TaskId).ConfigureAwait(false);
                     if (task == null)
                     {
                         return;
