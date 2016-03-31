@@ -255,7 +255,7 @@ namespace AllReady.Controllers
         // GET: /Account/VerifyPhoneNumber
         [HttpGet]
         public IActionResult VerifyPhoneNumber(string phoneNumber)
-        {            
+        {
             // Send an SMS to verify the phone number
             return phoneNumber == null ? View(ERROR_VIEW) : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }

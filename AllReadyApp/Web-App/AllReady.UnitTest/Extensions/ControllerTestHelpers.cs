@@ -82,6 +82,12 @@ namespace AllReady.UnitTest.Extensions
                 controller.SetFakeHttpContext();
         }
 
+        public static Mock<IUrlHelper> SetFakeIUrlHelper(this Controller controller)
+        {
+            controller.Url = new Mock<IUrlHelper>().Object;
+            return Mock.Get(controller.Url);
+        }
+
         private static HttpContext FakeHttpContext()
         {
             var mockHttpContext = new Mock<HttpContext>();
