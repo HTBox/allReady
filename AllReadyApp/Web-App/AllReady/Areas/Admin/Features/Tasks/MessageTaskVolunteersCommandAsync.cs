@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class MessageTaskVolunteersCommand : IRequest
+    public class MessageTaskVolunteersCommandAsync : IAsyncRequest
     {
         public MessageTaskVolunteersModel Model {get; set;}
     }

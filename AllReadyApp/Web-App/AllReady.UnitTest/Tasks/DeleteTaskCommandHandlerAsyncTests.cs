@@ -5,11 +5,11 @@ using Xunit;
 
 namespace AllReady.UnitTest.Tasks
 {
-    public class DeletingTask : InMemoryContextTest
+    public class DeleteTaskCommandHandlerAsyncTests : InMemoryContextTest
     {
-        const int TaskId = 1;
+        private const int TaskId = 1;
 
-        public DeletingTask()
+        public DeleteTaskCommandHandlerAsyncTests()
         {
             Context.Tasks.Add(new AllReadyTask {Id=1});
             Context.SaveChanges();
@@ -18,16 +18,16 @@ namespace AllReady.UnitTest.Tasks
         [Fact]
         public void TaskIsDeleted()
         {
-            var sut = new DeleteTaskCommandHandler(Context);
-            sut.Handle(new DeleteTaskCommand {TaskId = TaskId});
+            var sut = new DeleteTaskCommandHandlerAsync(Context);
+            sut.Handle(new DeleteTaskCommandAsync {TaskId = TaskId});
             Assert.False(Context.Tasks.Any(t=>t.Id == TaskId));
         }
 
         [Fact]
         public void NonExistantTaskDoesNotCauseException()
         {
-            var sut = new DeleteTaskCommandHandler(Context);
-            sut.Handle(new DeleteTaskCommand {TaskId = 666});
+            var sut = new DeleteTaskCommandHandlerAsync(Context);
+            sut.Handle(new DeleteTaskCommandAsync {TaskId = 666});
             Assert.False(Context.Tasks.Any(t=>t.Id == 666));
         }
     }
