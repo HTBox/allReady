@@ -22,7 +22,7 @@ namespace AllReady.Features.Organizations
                 .AsNoTracking()
                 .Where(t => t.Id == message.OrganizationId)
                 .Select(t => new OrganizationPrivacyPolicyViewModel { OrganizationName = t.Name, Content = t.PrivacyPolicy })
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync().ConfigureAwait(false);
         }
     }
 }
