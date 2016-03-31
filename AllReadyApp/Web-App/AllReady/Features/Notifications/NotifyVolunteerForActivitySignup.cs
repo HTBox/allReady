@@ -20,7 +20,8 @@ namespace AllReady.Features.Notifications
 
         public async Task Handle(VolunteerSignupNotification notification)
         {
-            var model = await _mediator.SendAsync(new ActivityDetailForNotificationQueryAsync {ActivityId = notification.ActivityId, UserId = notification.UserId}).ConfigureAwait(false);
+            var model = await _mediator.SendAsync(new ActivityDetailForNotificationQueryAsync {ActivityId = notification.ActivityId, UserId = notification.UserId})
+                .ConfigureAwait(false);
 
             var signup = model.UsersSignedUp?.FirstOrDefault(s => s.User.Id == notification.UserId);
             if (signup == null)

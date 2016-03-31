@@ -20,8 +20,8 @@ namespace AllReady.Features.Notifications
         {
             ActivityDetailForNotificationModel result = null;
 
-            var activity = await GetActivity(message);
-            var volunteer = await _context.Users.SingleAsync(u => u.Id == message.UserId);
+            var activity = await GetActivity(message).ConfigureAwait(false);
+            var volunteer = await _context.Users.SingleAsync(u => u.Id == message.UserId).ConfigureAwait(false);
             
             if (activity != null)
             {
@@ -68,7 +68,7 @@ namespace AllReady.Features.Notifications
                 .Include(a => a.Campaign.CampaignContacts).ThenInclude(c => c.Contact)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(av => av.User)
                 .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
-                .SingleOrDefaultAsync(a => a.Id == message.ActivityId);
+                .SingleOrDefaultAsync(a => a.Id == message.ActivityId).ConfigureAwait(false);
         }
     }
 }
