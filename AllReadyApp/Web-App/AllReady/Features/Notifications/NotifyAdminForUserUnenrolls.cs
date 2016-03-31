@@ -29,7 +29,7 @@ namespace AllReady.Features.Notifications
             // don't let problem with notification keep us from continuing
             try
             {
-                var notificationModel = await _mediator.SendAsync(new ActivityDetailForNotificationQueryAsync { ActivityId = notification.ActivityId, UserId = notification.UserId });
+                var notificationModel = await _mediator.SendAsync(new ActivityDetailForNotificationQueryAsync { ActivityId = notification.ActivityId, UserId = notification.UserId }).ConfigureAwait(false);
 
                 var campaignContact = notificationModel.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
                 var adminEmail = campaignContact?.Contact.Email;
