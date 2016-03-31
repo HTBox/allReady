@@ -84,7 +84,7 @@ namespace AllReady.Features.Tasks
             await _context.SaveChangesAsync();
 
             //Notify admins of a new volunteer
-            await _bus.PublishAsync(new VolunteerSignupNotification { ActivityId = model.ActivityId, UserId = model.UserId, TaskId = task.Id });
+            await _bus.PublishAsync(new VolunteerSignupNotification { ActivityId = model.ActivityId, UserId = model.UserId, TaskId = task.Id }).ConfigureAwait(false);
 
             return new TaskSignupResult {Status = "success", Task = task};
         }

@@ -15,14 +15,14 @@ namespace AllReady.Features.Notifications
     public class NotifyAdminForSignup : IAsyncNotificationHandler<VolunteerSignupNotification>
     {
         private readonly AllReadyContext _context;
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
         private readonly ILogger<NotifyAdminForUserUnenrolls> _logger;
 
-        public NotifyAdminForSignup(AllReadyContext context, IMediator bus, IOptions<GeneralSettings> options, ILogger<NotifyAdminForUserUnenrolls> logger)
+        public NotifyAdminForSignup(AllReadyContext context, IMediator mediator, IOptions<GeneralSettings> options, ILogger<NotifyAdminForUserUnenrolls> logger)
         {
             _context = context;
-            _bus = bus;
+            _mediator = mediator;
             _options = options;
             _logger = logger;
         }
@@ -123,7 +123,7 @@ namespace AllReady.Features.Notifications
                         }
                     };
 
-                    await _bus.SendAsync(command);
+                    await _mediator.SendAsync(command).ConfigureAwait(false);
                 }
             }
             catch (Exception e)
