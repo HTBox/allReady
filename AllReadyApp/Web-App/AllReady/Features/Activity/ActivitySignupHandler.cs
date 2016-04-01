@@ -23,13 +23,15 @@ namespace AllReady.Features.Activity
         protected override async Task HandleCore(ActivitySignupCommand message)
         {
             var activitySignup = message.ActivitySignup;
-            var user = _context.Users
+
+            var user = await _context.Users
                 .Include(u => u.AssociatedSkills)
-                .SingleOrDefault(u => u.Id == activitySignup.UserId);
-            var activity = _context.Activities
+                .SingleOrDefaultAsync(u => u.Id == activitySignup.UserId).ConfigureAwait(false);
+
+            var activity = await _context.Activities
                 .Include(a => a.RequiredSkills)
                 .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
-                .SingleOrDefault(a => a.Id == activitySignup.ActivityId);
+                .SingleOrDefaultAsync(a => a.Id == activitySignup.ActivityId).ConfigureAwait(false);
 
             activity.UsersSignedUp = activity.UsersSignedUp ?? new List<ActivitySignup>();
 
@@ -59,10 +61,11 @@ namespace AllReady.Features.Activity
                     _context.Update(user);
                 }
 
-                    await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync().ConfigureAwait(false);
 
-                    //Notify admins of a new volunteer
-                    await _mediator.PublishAsync(new VolunteerSignupNotification() { ActivityId = activitySignup.ActivityId, UserId = activitySignup.UserId, TaskId = null });
+                //Notify admins of a new volunteer
+                await _mediator.PublishAsync(new VolunteerSignupNotification() { ActivityId = activitySignup.ActivityId, UserId = activitySignup.UserId, TaskId = null })
+                    .ConfigureAwait(false);
             }
         }
     }
