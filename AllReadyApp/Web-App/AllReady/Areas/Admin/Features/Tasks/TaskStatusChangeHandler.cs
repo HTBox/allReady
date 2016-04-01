@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
@@ -7,7 +8,7 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class TaskStatusChangeHandler : IRequestHandler<TaskStatusChangeCommand, TaskChangeResult>
+    public class TaskStatusChangeHandler : IAsyncRequestHandler<TaskStatusChangeCommand, TaskChangeResult>
     {
         private AllReadyContext _context;
         private IMediator _mediator;
@@ -18,9 +19,9 @@ namespace AllReady.Areas.Admin.Features.Tasks
             _mediator = mediator;
         }
 
-        public TaskChangeResult Handle(TaskStatusChangeCommand message)
+        public async Task<TaskChangeResult> Handle(TaskStatusChangeCommand message)
         {
-            var task = GetTask(message);
+            var task = await GetTask(message).ConfigureAwait(false);
 
             if (task == null)
                 throw new InvalidOperationException($"Task {message.TaskId} does not exist");
@@ -30,7 +31,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 throw new InvalidOperationException($"Sign-up for user {message.UserId} does not exist");
 
             TaskStatus currentStatus;
-            if (!Enum.TryParse<TaskStatus>(taskSignup.Status, out currentStatus))
+            if (!Enum.TryParse(taskSignup.Status, out currentStatus))
                 currentStatus = TaskStatus.Assigned;
 
             switch (message.TaskStatus)
@@ -60,19 +61,22 @@ namespace AllReady.Areas.Admin.Features.Tasks
             taskSignup.Status = message.TaskStatus.ToString();
             taskSignup.StatusDateTimeUtc = DateTime.UtcNow;
             taskSignup.StatusDescription = message.TaskStatusDescription;
-            _context.SaveChanges();
+
+            await _context.SaveChangesAsync().ConfigureAwait(false);
 
             var notification = new TaskSignupStatusChanged { SignupId = taskSignup.Id };
-            _mediator.Publish(notification);
-            return new TaskChangeResult() {Status = "success", Task = task};
+            await _mediator.PublishAsync(notification).ConfigureAwait(false);
+            
+            return new TaskChangeResult { Status = "success", Task = task };
         }
 
-        private AllReadyTask GetTask(TaskStatusChangeCommand message)
+        private async Task<AllReadyTask> GetTask(TaskStatusChangeCommand message)
         {
-            return _context.Tasks
-                .Include(t => t.AssignedVolunteers).ThenInclude((TaskSignup ts) => ts.User)
+            return await _context.Tasks
+                .Include(t => t.AssignedVolunteers).ThenInclude(ts => ts.User)
                 .Include(t => t.RequiredSkills).ThenInclude(s => s.Skill)
-                .SingleOrDefault(c => c.Id == message.TaskId);
+                .SingleOrDefaultAsync(c => c.Id == message.TaskId)
+                .ConfigureAwait(false);
         }
     }
 
@@ -81,5 +85,4 @@ namespace AllReady.Areas.Admin.Features.Tasks
         public string Status { get; set; }
         public AllReadyTask Task { get; set; }
     }
-
 }

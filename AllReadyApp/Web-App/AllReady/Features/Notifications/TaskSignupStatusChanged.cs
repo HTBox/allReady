@@ -2,7 +2,7 @@
 
 namespace AllReady.Features.Notifications
 {
-    public class TaskSignupStatusChanged : INotification
+    public class TaskSignupStatusChanged : IAsyncNotification
     {
         public int SignupId { get; set; }
     }
