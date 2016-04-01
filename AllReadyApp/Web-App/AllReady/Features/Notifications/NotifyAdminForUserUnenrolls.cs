@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,7 +29,8 @@ namespace AllReady.Features.Notifications
             // don't let problem with notification keep us from continuing
             try
             {
-                var notificationModel = _mediator.Send(new ActivityDetailForNotificationQuery { ActivityId = notification.ActivityId, UserId = notification.UserId });
+                var notificationModel = await _mediator.SendAsync(new ActivityDetailForNotificationQueryAsync { ActivityId = notification.ActivityId, UserId = notification.UserId })
+                    .ConfigureAwait(false);
 
                 var campaignContact = notificationModel.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
                 var adminEmail = campaignContact?.Contact.Email;
@@ -54,7 +54,6 @@ namespace AllReady.Features.Notifications
                     remainingRequiredVolunteersPhrase = $"{taskModel.NumberOfVolunteersSignedUp}/{taskModel.NumberOfVolunteersRequired}";
                 }
             
-
                 var activityLink = $"View activity: {_options.Value.SiteBaseUrl}Admin/Activity/Details/{notificationModel.ActivityId}";
                 var subject = $"A volunteer has unenrolled from {(isActivityUnenroll ? "an activity" : "a task")}";
 
@@ -70,7 +69,6 @@ namespace AllReady.Features.Notifications
                 }
                 message.AppendLine($"   Remaining/Required Volunteers: {remainingRequiredVolunteersPhrase}");
                 message.AppendLine();
-
 
                 if (isActivityUnenroll)
                 {
@@ -97,7 +95,6 @@ namespace AllReady.Features.Notifications
                     }
                 }
 
-                
                 var command = new NotifyVolunteersCommand
                 {
                     ViewModel = new NotifyVolunteersViewModel
@@ -108,7 +105,8 @@ namespace AllReady.Features.Notifications
                         Subject = subject
                     }
                 };
-            await _mediator.SendAsync(command).ConfigureAwait(false);
+
+                await _mediator.SendAsync(command).ConfigureAwait(false);
             }
             catch (Exception e)
             {
