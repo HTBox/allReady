@@ -1,5 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.Tasks;
-using AllReady.Features.Notifications;
+﻿using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,16 +6,19 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using AllReady.Areas.Admin.Features.Tasks;
 using Xunit;
+using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.UnitTest.Tasks
 {
-    public class SignupStatusChange : InMemoryContextTest
+    public class TaskStatusChangeHandlerTests : InMemoryContextTest
     {
         protected override void LoadTestData()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var htb = new Organization()
+            var htb = new Organization
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
@@ -24,13 +26,13 @@ namespace AllReady.UnitTest.Tasks
                 Campaigns = new List<Campaign>()
             };
 
-            var firePrev = new Campaign()
+            var firePrev = new Campaign
             {
                 Name = "Neighborhood Fire Prevention Days",
                 ManagingOrganization = htb
             };
 
-            var queenAnne = new Activity()
+            var queenAnne = new Activity
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
@@ -58,7 +60,7 @@ namespace AllReady.UnitTest.Tasks
 
             context.ActivitySignup.AddRange(activitySignups);
 
-            var newTask = new AllReadyTask()
+            var newTask = new AllReadyTask
             {
                 Activity = queenAnne,
                 Description = "Description of a very important task",
@@ -68,7 +70,7 @@ namespace AllReady.UnitTest.Tasks
                 Organization = htb
             };
 
-            newTask.AssignedVolunteers.Add(new TaskSignup()
+            newTask.AssignedVolunteers.Add(new TaskSignup
             {
                 Task = newTask,
                 User = user1
@@ -80,7 +82,7 @@ namespace AllReady.UnitTest.Tasks
         }
 
         [Fact]
-        public void VolunteerAcceptsTask()
+        public async Task VolunteerAcceptsTask()
         {
             var mediator = new Mock<IMediator>();
 
@@ -88,15 +90,16 @@ namespace AllReady.UnitTest.Tasks
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommand
             {
-                TaskId = task.Id, UserId = user.Id, TaskStatus = TaskStatus.Accepted
+                TaskId = task.Id,
+                UserId = user.Id,
+                TaskStatus = TaskStatus.Accepted
             };
+
             var handler = new TaskStatusChangeHandler(Context, mediator.Object);
-            var result = handler.Handle(command);
+            await handler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
-            mediator.Verify(b => b.Publish(It.Is<TaskSignupStatusChanged>(notifyCommand =>
-                   notifyCommand.SignupId == taskSignup.Id
-            )), Times.Once());
+            mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
         }
     }
 }

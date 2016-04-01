@@ -86,12 +86,11 @@ namespace AllReady.Areas.Admin.Controllers
                 ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be earlier than the start date");
             }
 
-                CampaignSummaryModel campaign = _mediator.Send(new CampaignSummaryQuery { CampaignId = campaignId });
-                if (campaign == null ||
-                    !User.IsOrganizationAdmin(campaign.OrganizationId))
-                {
-                    return HttpUnauthorized();
-                }
+            var campaign = _mediator.Send(new CampaignSummaryQuery { CampaignId = campaignId });
+            if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
+            {
+                return HttpUnauthorized();
+            }
 
             if (activity.StartDateTime < campaign.StartDate)
             {
@@ -129,6 +128,7 @@ namespace AllReady.Areas.Admin.Controllers
 
                 return RedirectToAction("Details", "Activity", new { area = "Admin", id = id });
             }
+
             return View("Edit", activity);
         }
 

@@ -17,6 +17,7 @@ namespace AllReady.Features.Activity
         protected override async Task HandleCore(UpdateMyTasksCommandAsync command)
         {
             var currentUser = _dataAccess.GetUser(command.UserId);
+
             foreach (var taskSignup in command.TaskSignups)
             {
                 await _dataAccess.UpdateTaskSignupAsync(new TaskSignup
@@ -27,7 +28,7 @@ namespace AllReady.Features.Activity
                     Status = taskSignup.Status,
                     Task = new AllReadyTask { Id = taskSignup.TaskId },
                     User = currentUser
-                });
+                }).ConfigureAwait(false);
             }
         }
     }

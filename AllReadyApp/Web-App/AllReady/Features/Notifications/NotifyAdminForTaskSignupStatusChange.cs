@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyAdminForTaskSignupStatusChange : INotificationHandler<TaskSignupStatusChanged>
+    public class NotifyAdminForTaskSignupStatusChange : IAsyncNotificationHandler<TaskSignupStatusChanged>
     {
         private readonly AllReadyContext _context;
         private readonly IMediator _mediator;
@@ -20,15 +21,17 @@ namespace AllReady.Features.Notifications
             _options = options;
         }
 
-        public void Handle(TaskSignupStatusChanged notification)
+        public async Task Handle(TaskSignupStatusChanged notification)
         {
-            var taskSignup = _context.TaskSignups
+            var taskSignup = await _context.TaskSignups
                 .Include(ts => ts.Task)
                     .ThenInclude(t => t.Activity).ThenInclude(a => a.Organizer)
                 .Include(ts => ts.Task)
                     .ThenInclude(t => t.Activity).ThenInclude(a => a.Campaign).ThenInclude(c => c.CampaignContacts).ThenInclude(cc => cc.Contact)
                 .Include(ts => ts.User)
-                .Single(ts => ts.Id == notification.SignupId);
+                .SingleAsync(ts => ts.Id == notification.SignupId)
+                .ConfigureAwait(false);
+
             var volunteer = taskSignup.User;
             var task = taskSignup.Task;
             var activity = task.Activity;
@@ -60,7 +63,7 @@ namespace AllReady.Features.Notifications
                     }
                 };
 
-                _mediator.SendAsync(command);
+                await _mediator.SendAsync(command).ConfigureAwait(false);
             }
         }
     }
