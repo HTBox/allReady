@@ -594,6 +594,129 @@ namespace AllReady.UnitTest.Controllers
             await taskFromResultZero;
         }
 
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginCallbackReturnsExternalLoginConfirmationViewAndCorrecgtViewModelWhenWhenExternalLoginIsUnsuccessfulOrExternalLoginInfoIsNull()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public void ExternalLoginCallbackHasHttpGetAttribute()
+        {
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public void ExternalLoginCallbackHasAllowAnonymousAttribute()
+        {
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationRedirectsToCorrectActionIfUserIsSignedIn()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationInvokesGetExternalLoginInfoAsyncWhenModelStateIsValid()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationReturnsExternalLoginFailureViewUserIsNull()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationInvokesCreateAsyncWithCorrectUserWhenExternalLoginInfoIsSuccessfulAndModelStateIsValid()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationInvokesAddLoginAsyncWithCorrectParametersWhenUserIsCreatedSuccessfully()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationInvokesSignInAsyncWithCorrectParametersWhenExternalLoginIsAddedSuccessfully()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationRedirectsToCorrectUrlWhenUrlIsLocalUrl()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationRedirectsToCorrectActionAndControllerWithCorrectRouteValuesWhenUserIsSiteAdmin()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationRedirectsToCorrectActionAndContrllerWithCorrectRouteValuesWhenUserIsOrgAdmin()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationRedirectsToCorrectActionAndContrllerWhenUrlIsNotLocalUrlAndUserIsNeitherSiteAdminOrOrgAdmin()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationAddsIdentityResultErrorsToModelStateErrorWhenUserIsCreatedSuccessfully()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationPutsCorrectDataInViewDataWithCorrectKeyWhenModelStateIsInvalid()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationReturnsCorrectViewModelWhenModelStateIsInvalid()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public void ExternalLoginConfirmationHasHttpPostAttribute()
+        {
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public void ExternalLoginConfirmationHasAllowAnonymousAttribute()
+        {
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public void ExternalLoginConfirmationHasValidateAntiForgeryTokenAttribute()
+        {
+        }
+
         private static AccountController AccountController(SignInResult signInResult = default(SignInResult))
         {
             var store = new Mock<IUserStore<ApplicationUser>>();

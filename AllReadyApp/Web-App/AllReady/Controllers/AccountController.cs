@@ -81,7 +81,7 @@ namespace AllReady.Controllers
 
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToAction(nameof(AdminController.SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    return RedirectToAction(nameof(AdminController.SendCode), "Admin", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 }
 
                 if (result.IsLockedOut)
@@ -328,8 +328,8 @@ namespace AllReady.Controllers
             if (ModelState.IsValid)
             {
                 // Get the information about the user from the external login provider
-                var info = await _signInManager.GetExternalLoginInfoAsync();
-                if (info == null)
+                var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+                if (externalLoginInfo == null)
                 {
                     return View("ExternalLoginFailure");
                 }
@@ -346,7 +346,7 @@ namespace AllReady.Controllers
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
-                    result = await _userManager.AddLoginAsync(user, info);
+                    result = await _userManager.AddLoginAsync(user, externalLoginInfo);
                     if (result.Succeeded)
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
