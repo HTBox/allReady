@@ -194,7 +194,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => GetClaimsPrincipal(UserType.OrgAdmin.ToString(), organizationId));
+                .Returns(() => UnitTestHelper.GetClaimsPrincipal(UserType.OrgAdmin.ToString(), organizationId));
             var mockContext = new Mock<ActionContext>();
             mockContext.Object.HttpContext = mockHttpContext.Object;
             controller.ActionContext = mockContext.Object;
@@ -246,7 +246,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => GetClaimsPrincipal(UserType.OrgAdmin.ToString(), organizationId));
+                .Returns(() => UnitTestHelper.GetClaimsPrincipal(UserType.OrgAdmin.ToString(), organizationId));
             var mockContext = new Mock<ActionContext>();
             mockContext.Object.HttpContext = mockHttpContext.Object;
             controller.ActionContext = mockContext.Object;
@@ -295,7 +295,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => GetClaimsPrincipal(userType, organizationId));
+                .Returns(() => UnitTestHelper.GetClaimsPrincipal(userType, organizationId));
             var mockContext = new Mock<ActionContext>();
             mockContext.Object.HttpContext = mockHttpContext.Object;
             controller.ActionContext = mockContext.Object;
@@ -316,22 +316,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => GetClaimsPrincipal(userType, organizationId));
+                .Returns(() => UnitTestHelper.GetClaimsPrincipal(userType, organizationId));
             var mockContext = new Mock<ActionContext>();
             mockContext.Object.HttpContext = mockHttpContext.Object;
             controller.ActionContext = mockContext.Object;
             return controller;
-        }
-
-        private static ClaimsPrincipal GetClaimsPrincipal(string userType, int organizationId)
-        {
-            return new ClaimsPrincipal(
-                new ClaimsIdentity(
-                    new[]
-                    {
-                        new Claim(AllReady.Security.ClaimTypes.UserType, userType),
-                        new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString()),
-                    }));
         }
 
         private static IFormFile FormFile(string fileType)

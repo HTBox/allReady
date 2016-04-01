@@ -103,7 +103,9 @@ namespace AllReady.Areas.Admin.Controllers
                 ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be later than the campaign end date " + campaign.EndDate.ToString("d"));
             }
 
-            if (ModelState.IsValid)
+            //TryValidateModel is called explitcitly because of MVC 6 behavior that supresses model state validation during model binding when binding to an IFormFile.
+            //See #619.
+            if (ModelState.IsValid && TryValidateModel(activity))
             {
                 if (fileUpload != null)
                 {
