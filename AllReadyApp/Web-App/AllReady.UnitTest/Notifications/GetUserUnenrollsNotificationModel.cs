@@ -106,12 +106,12 @@ namespace AllReady.UnitTest.Notifications
         }
 
         [Fact]
-        public void ModelCanBeCreatedFomExistingActivity()
+        public async void ModelCanBeCreatedFomExistingActivity()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new ActivityDetailForNotificationQuery { ActivityId = 1, UserId = _user1.Id };
-            var handler = new ActivityDetailForNotificationQueryHandler(context);
-            var result = handler.Handle(query);
+            var query = new ActivityDetailForNotificationQueryAsync { ActivityId = 1, UserId = _user1.Id };
+            var handler = new ActivityDetailForNotificationQueryHandlerAsync(context);
+            var result = await handler.Handle(query);
             Assert.NotNull(result);
             Assert.True(_queenAnne.UsersSignedUp.Count == result.UsersSignedUp.Count, "Count of signed up users does not match");
             Assert.True(_queenAnne.Tasks.Count == result.Tasks.Count, "Count of tasks does not match");
@@ -120,12 +120,12 @@ namespace AllReady.UnitTest.Notifications
         }
 
         [Fact]
-        public void ActivityDoesNotExist()
+        public async void ActivityDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new ActivityDetailForNotificationQuery { ActivityId = 999, UserId = _user1.Id};
-            var handler = new ActivityDetailForNotificationQueryHandler(context);
-            var result = handler.Handle(query);
+            var query = new ActivityDetailForNotificationQueryAsync { ActivityId = 999, UserId = _user1.Id};
+            var handler = new ActivityDetailForNotificationQueryHandlerAsync(context);
+            var result = await handler.Handle(query);
             Assert.Null(result);
         }
 
