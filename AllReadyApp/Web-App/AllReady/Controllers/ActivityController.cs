@@ -25,7 +25,7 @@ namespace AllReady.Controllers
         [Authorize]
         public IActionResult GetMyActivities()
         {
-            var viewModel = _mediator.Send(new GetMyActivitiesCommand { UserId = User.GetUserId() });
+            var viewModel = _mediator.Send(new GetMyActivitiesQuery { UserId = User.GetUserId() });
             return View("MyActivities", viewModel);
         }
 
@@ -33,7 +33,7 @@ namespace AllReady.Controllers
         [Authorize]
         public IActionResult GetMyTasks(int id)
         {
-            var view = _mediator.Send(new GetMyTasksCommand { ActivityId = id, UserId = User.GetUserId() });
+            var view = _mediator.Send(new GetMyTasksQuery { ActivityId = id, UserId = User.GetUserId() });
             return Json(view);
         }
 
@@ -57,10 +57,12 @@ namespace AllReady.Controllers
         [AllowAnonymous]
         public IActionResult ShowActivity(int id)
         {
-            var viewModel = _mediator.Send(new ShowActivityCommand { ActivityId = id, User = User });
-            if (viewModel == null) { return HttpNotFound(); }
-            var test = User;
-            var signedIn = User.IsSignedIn();
+            var viewModel = _mediator.Send(new ShowActivityQuery { ActivityId = id, User = User });
+            if (viewModel == null)
+            {
+                return HttpNotFound();
+            }
+
             return viewModel.ActivityType == ActivityTypes.ActivityManaged
                 ? View("Activity", viewModel)
                 : View("ActivityWithTasks", viewModel);
@@ -79,7 +81,7 @@ namespace AllReady.Controllers
 
             if (ModelState.IsValid)
             {
-                await _mediator.SendAsync(new ActivitySignupCommand() { ActivitySignup = signupModel });
+                await _mediator.SendAsync(new ActivitySignupCommand { ActivitySignup = signupModel });
             }
             else
             {
