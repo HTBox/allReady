@@ -1,10 +1,13 @@
-﻿using System;
+﻿using AllReady.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace AllReady.Areas.Admin.Models
 {
+    
+
     public class TaskSummaryModel
     {
         public int Id { get; set; }
@@ -35,6 +38,8 @@ namespace AllReady.Areas.Admin.Models
         public List<VolunteerModel> AssignedVolunteers { get; set; } = new List<VolunteerModel>();
 
         public List<VolunteerModel> AllVolunteers { get; set; } = new List<VolunteerModel>();
+
+        public List<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();
 
         public int AcceptedVolunteerCount => AssignedVolunteers?.Count(v => v.HasVolunteered) ?? 0;
         public int NumberOfVolunteersSignedUp => AssignedVolunteers.Count;
