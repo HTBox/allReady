@@ -6,21 +6,23 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Features.Notifications
 {
-    public class ActivityDetailForNotificationQueryHandler : IRequestHandler<ActivityDetailForNotificationQuery, ActivityDetailForNotificationModel>
-    {
-        private AllReadyContext _context;
+    using System.Threading.Tasks;
 
-        public ActivityDetailForNotificationQueryHandler(AllReadyContext context)
+    public class ActivityDetailForNotificationQueryHandlerAsync : IAsyncRequestHandler<ActivityDetailForNotificationQueryAsync, ActivityDetailForNotificationModel>
+    {
+        private readonly AllReadyContext _context;
+
+        public ActivityDetailForNotificationQueryHandlerAsync(AllReadyContext context)
         {
-            _context = context;
+            this._context = context;
         }
 
-        public ActivityDetailForNotificationModel Handle(ActivityDetailForNotificationQuery message)
+        public async Task<ActivityDetailForNotificationModel> Handle(ActivityDetailForNotificationQueryAsync message)
         {
             ActivityDetailForNotificationModel result = null;
 
-            var activity = GetActivity(message);
-            var volunteer = _context.Users.Single(u => u.Id == message.UserId);
+            var activity = await this.GetActivity(message);
+            var volunteer = this._context.Users.Single(u => u.Id == message.UserId);
             
             if (activity != null)
             {
@@ -35,7 +37,7 @@ namespace AllReady.Features.Notifications
                     Description = activity.Description,
                     UsersSignedUp = activity.UsersSignedUp,
                     NumberOfVolunteersRequired = activity.NumberOfVolunteersRequired,
-                    Tasks = activity.Tasks.Select(t => new TaskSummaryModel()
+                    Tasks = activity.Tasks.Select(t => new TaskSummaryModel
                     {
                         Id = t.Id,
                         Name = t.Name,
@@ -58,15 +60,15 @@ namespace AllReady.Features.Notifications
             return result;
         }
 
-        private Models.Activity GetActivity(ActivityDetailForNotificationQuery message)
+        private async Task<Models.Activity> GetActivity(ActivityDetailForNotificationQueryAsync message)
         {
-            return _context.Activities
+            return await this._context.Activities
                 .AsNoTracking()
                 .Include(a => a.Campaign)
                 .Include(a => a.Campaign.CampaignContacts).ThenInclude(c => c.Contact)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(av => av.User)
                 .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
-                .SingleOrDefault(a => a.Id == message.ActivityId);
+                .SingleOrDefaultAsync(a => a.Id == message.ActivityId);
         }
     }
 }

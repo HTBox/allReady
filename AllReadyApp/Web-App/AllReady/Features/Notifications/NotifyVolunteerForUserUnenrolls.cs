@@ -20,7 +20,7 @@ namespace AllReady.Features.Notifications
 
         public async Task Handle(UserUnenrolls notification)
         {
-            var model = _mediator.Send(new ActivityDetailForNotificationQuery {ActivityId = notification.ActivityId, UserId = notification.UserId});
+            var model = await _mediator.SendAsync(new ActivityDetailForNotificationQueryAsync {ActivityId = notification.ActivityId, UserId = notification.UserId});
 
             var signup = model.UsersSignedUp?.FirstOrDefault(s => s.User.Id == notification.UserId);
             if (signup == null)
