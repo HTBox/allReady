@@ -70,9 +70,9 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Campaign/Edit/5
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var viewModel = _mediator.Send(new CampaignSummaryQuery { CampaignId = id }); //not covered
+            var viewModel = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = id }); //not covered
             if (viewModel == null)
             {
                 return HttpNotFound();
@@ -129,9 +129,9 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Campaign/Delete/5
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var viewModel = _mediator.Send(new CampaignSummaryQuery { CampaignId = id });
+            var viewModel = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = id });
             if (viewModel == null)
             {
                 return HttpNotFound();
@@ -148,29 +148,29 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Campaign/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var viewModel = _mediator.Send(new CampaignSummaryQuery { CampaignId = id });
+            var viewModel = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = id });
             if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return HttpUnauthorized();
             }
 
-            _mediator.Send(new DeleteCampaignCommand { CampaignId = id });
+            await _mediator.SendAsync(new DeleteCampaignCommand { CampaignId = id });
 
             return RedirectToAction(nameof(Index), new { area = "Admin" });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult LockUnlock(int id)
+        public async Task<IActionResult> LockUnlock(int id)
         {
             if (!User.IsUserType(UserType.SiteAdmin))
             {
                 return HttpUnauthorized();
             }
 
-            _mediator.Send(new LockUnlockCampaignCommand { CampaignId = id });
+            await _mediator.SendAsync(new LockUnlockCampaignCommand { CampaignId = id });
 
             return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
         }

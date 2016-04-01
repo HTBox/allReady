@@ -53,14 +53,13 @@ namespace AllReady.Areas.Admin.Controllers
 
         // GET: Activity/Create
         [Route("Admin/Activity/Create/{campaignId}")]
-        public IActionResult Create(int campaignId)
+        public async Task<IActionResult> Create(int campaignId)
         {
-            CampaignSummaryModel campaign = _mediator.Send(new CampaignSummaryQuery { CampaignId = campaignId });
+            var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
             if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
             {
                 return HttpUnauthorized();
             }
-
 
             var activity = new ActivityDetailModel
             {
@@ -72,6 +71,7 @@ namespace AllReady.Areas.Admin.Controllers
                 StartDateTime = DateTime.Today.Date,
                 EndDateTime = DateTime.Today.Date.AddMonths(1)
             };
+
             return View("Edit", activity);
         }
 
@@ -86,11 +86,11 @@ namespace AllReady.Areas.Admin.Controllers
                 ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be earlier than the start date");
             }
 
-            var campaign = _mediator.Send(new CampaignSummaryQuery { CampaignId = campaignId });
+            var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
             if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
-            {
-                return HttpUnauthorized();
-            }
+                {
+                    return HttpUnauthorized();
+                }
 
             if (activity.StartDateTime < campaign.StartDate)
             {
@@ -159,8 +159,9 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpBadRequest();
             }
+            
             //TODO: Use the query pattern here
-            int organizationId = _dataAccess.GetManagingOrganizationId(activity.Id);
+            var organizationId = _dataAccess.GetManagingOrganizationId(activity.Id);
             if (!User.IsOrganizationAdmin(organizationId))
             {
                 return HttpUnauthorized();
@@ -171,7 +172,7 @@ namespace AllReady.Areas.Admin.Controllers
                 ModelState.AddModelError(nameof(activity.EndDateTime), "End date cannot be earlier than the start date");
             }
 
-            CampaignSummaryModel campaign = _mediator.Send(new CampaignSummaryQuery { CampaignId = activity.CampaignId });
+            var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = activity.CampaignId });
 
             if (activity.StartDateTime < campaign.StartDate)
             {

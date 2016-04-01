@@ -2,23 +2,26 @@
 using AllReady.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace AllReady.UnitTest.Campaigns
 {
-    public class GetCampaignDetail : InMemoryContextTest
+    public class CampaignDetailQueryHandlerTests : InMemoryContextTest
     {
         protected override void LoadTestData()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            Organization htb = new Organization()
+
+            var htb = new Organization
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
                 WebUrl = "http://www.htbox.org",
                 Campaigns = new List<Campaign>(),                
             };
-            Campaign firePrev = new Campaign()
+
+            var firePrev = new Campaign
             {
                 Id = 1,
                 Name = "Neighborhood Fire Prevention Days",
@@ -30,22 +33,22 @@ namespace AllReady.UnitTest.Campaigns
         }
 
         [Fact]
-        public void CampaignExists()
+        public async Task CampaignExists()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
             var query = new CampaignDetailQuery { CampaignId = 1 };
             var handler = new CampaignDetailQueryHandler(context);
-            var result = handler.Handle(query);
+            var result = await handler.Handle(query);
             Assert.NotNull(result);
         }
 
         [Fact]
-        public void CampaignDoesNotExist()
+        public async Task CampaignDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
             var query = new CampaignDetailQuery { CampaignId = 0 };
             var handler = new CampaignDetailQueryHandler(context);
-            var result = handler.Handle(query);
+            var result = await handler.Handle(query);
             Assert.Null(result);
         }
     }
