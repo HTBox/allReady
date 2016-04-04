@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using AllReady.Models;
-using AllReady.Services;
 using AllReady.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -43,10 +41,11 @@ namespace AllReady.Controllers
         public ActivityViewModel Get(int id)
         {
             var activity = GetActivityBy(id);
-
             if (activity != null)
+            {
                 return new ActivityViewModel(activity);
-
+            }
+            
             HttpNotFound();
             return null;
         }
@@ -76,9 +75,11 @@ namespace AllReady.Controllers
         [HttpGet("{id}/qrcode")]
         public ActionResult GetQrCode(int id)
         {
-            var barcodeWriter = new ZXing.BarcodeWriter { Format = ZXing.BarcodeFormat.QR_CODE };
-            barcodeWriter.Options.Width = 200;
-            barcodeWriter.Options.Height = 200;
+            var barcodeWriter = new ZXing.BarcodeWriter
+            {
+                Format = ZXing.BarcodeFormat.QR_CODE,
+                Options = { Width = 200, Height = 200 }
+            };
 
             // The QR code should point users to /api/activity/{id}/checkin
             var path = Request.Path.ToString();
@@ -97,8 +98,10 @@ namespace AllReady.Controllers
         {
             var activity = GetActivityBy(id);
             if (activity == null)
+            {
                 return HttpNotFound();
-
+            }
+            
             return View("NoUserCheckin", activity);
         }
 
@@ -108,8 +111,10 @@ namespace AllReady.Controllers
         {
             var activity = GetActivityBy(id);
             if (activity == null)
+            {
                 return HttpNotFound();
-
+            }
+            
             var userSignup = activity.UsersSignedUp.FirstOrDefault(u => u.User.Id == User.GetUserId());
             if (userSignup != null && userSignup.CheckinDateTime == null)
             {
@@ -127,8 +132,10 @@ namespace AllReady.Controllers
         public async Task<object> RegisterActivity(ActivitySignupViewModel signupModel)
         {
             if (signupModel == null)
+            {
                 return HttpBadRequest();
-
+            }
+            
             if (!ModelState.IsValid)
             {
                 // this condition should never be hit because client side validation is being performed
@@ -137,7 +144,6 @@ namespace AllReady.Controllers
             }
 
             await _mediator.SendAsync(new ActivitySignupCommand { ActivitySignup = signupModel });
-
 
             return new {Status = "success"};
         }
@@ -148,19 +154,15 @@ namespace AllReady.Controllers
         {
             var activitySignup = _mediator.Send(new ActivitySignupByActivityIdAndUserIdQuery { ActivityId = id, UserId = User.GetUserId() });
             if (activitySignup == null)
+            {
                 return HttpNotFound();
+            }
 
-            //Notify admins & volunteer
-            await _mediator.PublishAsync(new UserUnenrolls { ActivityId = activitySignup.Activity.Id, UserId = activitySignup.User.Id });
-
-            await _mediator.SendAsync(new DeleteActivityAndTaskSignupsCommandAsync { ActivitySignupId = activitySignup.Id });
+            await _mediator.SendAsync(new UnregisterActivity { ActivitySignupId = activitySignup.Id, UserId = activitySignup.User.Id});
 
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
-        private Activity GetActivityBy(int activityId)
-        {
-            return _mediator.Send(new ActivityByActivityIdQuery { ActivityId = activityId });
-        }
+        private Activity GetActivityBy(int activityId) => _mediator.Send(new ActivityByActivityIdQuery { ActivityId = activityId });
     }
 }
