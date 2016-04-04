@@ -6,7 +6,6 @@ using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.ViewModels;
 using AllReady.Features.Activity;
-using AllReady.Features.Notifications;
 using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNet.Authorization;
@@ -420,7 +419,6 @@ namespace AllReady.UnitTest.Controllers
 
             mediator.Verify(x => x.Send(It.Is<ActivitySignupByActivityIdAndUserIdQuery>(y => y.ActivityId == activityId && y.UserId == userId)));
         }
-
 
         [Fact]
         public async Task UnregisterActivitySendsUnregisterActivityWithCorrectActivitySignupId()

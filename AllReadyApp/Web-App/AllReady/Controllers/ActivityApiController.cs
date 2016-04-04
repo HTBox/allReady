@@ -11,7 +11,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Extensions;
 using AllReady.Features.Activity;
-using AllReady.Features.Notifications;
 using MediatR;
 
 namespace AllReady.Controllers
