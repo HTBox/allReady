@@ -97,7 +97,7 @@ namespace AllReady.UnitTest.Tasks
             await handler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
-            mediator.Verify(b => b.Publish(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
+            mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
         }
     }
 }

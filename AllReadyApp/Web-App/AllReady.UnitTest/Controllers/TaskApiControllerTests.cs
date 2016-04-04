@@ -14,6 +14,7 @@ using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
 using Moq;
 using Xunit;
+using DeleteTaskCommandAsync = AllReady.Features.Tasks.DeleteTaskCommandAsync;
 using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.UnitTest.Controllers

@@ -95,7 +95,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 TaskStatus = TaskStatus.Accepted
             };
             var handler = new TaskStatusChangeHandlerAsync(Context, mediator.Object);
-            var result = handler.Handle(command);
+            await handler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());

@@ -10,6 +10,7 @@ using AllReady.Extensions;
 using AllReady.Features.Tasks;
 using MediatR;
 using Microsoft.AspNet.Authorization;
+using DeleteTaskCommandAsync = AllReady.Features.Tasks.DeleteTaskCommandAsync;
 
 namespace AllReady.Controllers
 {

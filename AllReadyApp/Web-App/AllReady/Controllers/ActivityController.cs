@@ -96,13 +96,6 @@ namespace AllReady.Controllers
         public async Task<IActionResult> ChangeStatus(int activityId, int taskId, string userId, TaskStatus status, string statusDesc)
         {
             if (userId == null)
-                return HttpBadRequest();
-        [HttpGet]
-        [Route("/Activity/ChangeStatus")]
-        [Authorize]
-        public async Task<IActionResult> ChangeStatus(int activityId, int taskId, string userId, TaskStatus status, string statusDesc)
-        {
-            if (userId == null)
             {
                 return HttpBadRequest();
             }

@@ -108,13 +108,7 @@ namespace AllReady.UnitTest.Extensions
         private static void SetFakeHttpContextIfNotAlreadySet(Controller controller)
         {
             if (controller.ActionContext.HttpContext == null)
-                controller.ActionContext.HttpContext = SetFakeHttpContext();
-        }
-
-        private static void SetFakeHttpContext(this Controller controller)
-        {
-            var httpContext = FakeHttpContext();
-            controller.ActionContext.HttpContext = httpContext;
+                controller.ActionContext.HttpContext = FakeHttpContext();
         }
 
         private static HttpContext FakeHttpContext()

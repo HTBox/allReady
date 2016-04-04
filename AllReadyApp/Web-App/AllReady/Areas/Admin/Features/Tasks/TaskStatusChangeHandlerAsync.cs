@@ -70,7 +70,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             return new TaskChangeResult { Status = "success", Task = task };
         }
 
-        private async Task<AllReadyTask> GetTask(TaskStatusChangeCommand message)
+        private async Task<AllReadyTask> GetTask(TaskStatusChangeCommandAsync message)
         {
             return await _context.Tasks
                 .Include(t => t.AssignedVolunteers).ThenInclude(ts => ts.User)
