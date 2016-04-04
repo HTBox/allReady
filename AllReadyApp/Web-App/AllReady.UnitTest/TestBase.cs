@@ -7,10 +7,8 @@ using Microsoft.AspNet.Http.Features.Authentication.Internal;
 using Microsoft.AspNet.Http.Internal;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Data.Entity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.IO;
 
 namespace AllReady.UnitTest
 {

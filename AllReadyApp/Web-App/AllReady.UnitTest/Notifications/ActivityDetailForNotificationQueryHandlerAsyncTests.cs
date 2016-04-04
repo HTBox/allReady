@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using AllReady.Models;
+using AllReady.UnitTest.Features.Campaigns;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 

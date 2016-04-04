@@ -120,7 +120,7 @@ namespace AllReady.Areas.Admin.Controllers
                     }
                 }
 
-                var id = _mediator.Send(new EditCampaignCommand { Campaign = campaign });
+                var id = _mediator.SendAsync(new EditCampaignCommand { Campaign = campaign });
 
                 return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
             }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
+using AllReady.UnitTest.Features.Campaigns;
 using Xunit;
 using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 

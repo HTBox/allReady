@@ -3,9 +3,10 @@ using AllReady.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AllReady.UnitTest.Features.Campaigns;
 using Xunit;
 
-namespace AllReady.UnitTest.Campaigns
+namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
 {
     public class CampaignDetailQueryHandlerTests : InMemoryContextTest
     {

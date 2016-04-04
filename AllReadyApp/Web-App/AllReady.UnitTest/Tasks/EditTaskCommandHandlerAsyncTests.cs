@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
+using AllReady.UnitTest.Features.Campaigns;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
