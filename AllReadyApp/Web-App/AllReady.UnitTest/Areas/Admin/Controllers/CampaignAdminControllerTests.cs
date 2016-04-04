@@ -6,6 +6,7 @@ using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using AllReady.Services;
+using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNet.Http;
 using Moq;
@@ -14,7 +15,7 @@ using Microsoft.AspNet.Mvc;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
-    public class CampaignControllerTests
+    public class CampaignAdminControllerTests
     {
         //delete this line when all unit tests using it have been completed
         private readonly Task taskFromResultZero = Task.FromResult(0);
@@ -160,17 +161,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockImageService = new Mock<IImageService>();
             mockImageService.Setup(mock => mock.UploadCampaignImageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<IFormFile>())).Returns(() => Task.FromResult("")).Verifiable();
 
-            var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => UnitTestHelper.GetClaimsPrincipal(UserType.OrgAdmin.ToString(), organizationId));
-            var mockContext = new Mock<ActionContext>();
-            mockContext.Object.HttpContext = mockHttpContext.Object;
-
-            var controller = new CampaignController(mockMediator.Object, mockImageService.Object) { ActionContext = mockContext.Object };
+            var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
+            });
 
             var file = FormFile("image/jpeg");
 
-            await controller.Edit(new CampaignSummaryModel { Name = "Foo", OrganizationId = organizationId, Id = campaignId}, file);
+            await sut.Edit(new CampaignSummaryModel { Name = "Foo", OrganizationId = organizationId, Id = campaignId}, file);
 
             mockImageService.Verify(mock => mock.UploadCampaignImageAsync(
                         It.Is<int>(i => i == organizationId), 
@@ -249,19 +249,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int campaignId = 100;
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>()))
-                .ReturnsAsync(new CampaignSummaryModel { OrganizationId = organizationId });
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel { OrganizationId = organizationId });
 
-            var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext.Setup(mock => mock.User).Returns(() => GetClaimsPrincipal(UserType.OrgAdmin.ToString(), organizationId));
+            var sut = new CampaignController(mockMediator.Object, null);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
+            });
 
-            var mockContext = new Mock<ActionContext>();
-            mockContext.Object.HttpContext = mockHttpContext.Object;
-
-            var controller = new CampaignController(mockMediator.Object, null);
-            controller.ActionContext = mockContext.Object;
-
-            await controller.DeleteConfirmed(campaignId);
+            await sut.DeleteConfirmed(campaignId);
 
             mockMediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == campaignId)), Times.Once);
         }
@@ -274,19 +271,17 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel { OrganizationId = organizationId });
-
-            var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => UnitTestHelper.GetClaimsPrincipal(UserType.OrgAdmin.ToString(), organizationId));
-            var mockContext = new Mock<ActionContext>();
-            mockContext.Object.HttpContext = mockHttpContext.Object;
             
-            var controller = new CampaignController(mockMediator.Object, null);
-            controller.ActionContext = mockContext.Object;
+            var sut = new CampaignController(mockMediator.Object, null);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
+            });
 
             var routeValues = new Dictionary<string, object> { ["area"] = "Admin" };
 
-            var result = await controller.DeleteConfirmed(campaignId) as RedirectToActionResult;
+            var result = await sut.DeleteConfirmed(campaignId) as RedirectToActionResult;
             Assert.Equal(result.ActionName, nameof(CampaignController.Index));
             Assert.Equal(result.RouteValues, routeValues);
         }
@@ -327,6 +322,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await taskFromResultZero;
         }
 
+        [Fact(Skip = "NotImplemented")]
+        public void LockUnlockHasHttpPostAttribute()
+        {
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public void LockUnlockdHasValidateAntiForgeryTokenAttribute()
+        {
+        }
+
         #region Helper Methods
         private static Mock<IMediator> MockMediatorCampaignDetailQuery(out CampaignController controller)
         {
@@ -358,13 +363,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockImageService = new Mock<IImageService>();
 
             var controller = new CampaignController(mockMediator.Object, mockImageService.Object);
-
-            var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => UnitTestHelper.GetClaimsPrincipal(userType, organizationId));
-            var mockContext = new Mock<ActionContext>();
-            mockContext.Object.HttpContext = mockHttpContext.Object;
-            controller.ActionContext = mockContext.Object;
+            controller.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, userType),
+                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
+            });
 
             return controller;
         }
@@ -378,13 +381,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockImageService = new Mock<IImageService>();
 
             var controller = new CampaignController(mockMediator.Object, mockImageService.Object);
-            
-            var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => UnitTestHelper.GetClaimsPrincipal(userType, organizationId));
-            var mockContext = new Mock<ActionContext>();
-            mockContext.Object.HttpContext = mockHttpContext.Object;
-            controller.ActionContext = mockContext.Object;
+            controller.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, userType),
+                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
+            });
 
             return controller;
         }

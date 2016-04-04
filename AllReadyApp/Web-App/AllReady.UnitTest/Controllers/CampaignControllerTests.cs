@@ -102,7 +102,7 @@ namespace AllReady.UnitTest.Controllers
             {
                 Url = mockUrlHelper.Object
             };
-            sut.SetFakeHttpContext().SetFakeHttpRequestSchemeTo(requestScheme);
+            sut.SetFakeHttpRequestSchemeTo(requestScheme);
 
             sut.Details(It.IsAny<int>());
 

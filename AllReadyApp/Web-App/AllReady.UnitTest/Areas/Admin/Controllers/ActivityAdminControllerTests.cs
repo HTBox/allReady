@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Campaigns;
@@ -6,8 +8,8 @@ using AllReady.Areas.Admin.Models;
 using AllReady.Extensions;
 using AllReady.Models;
 using AllReady.Services;
+using AllReady.UnitTest.Extensions;
 using MediatR;
-using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
 using Moq;
 using Xunit;
@@ -33,9 +35,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var campaignStartDate = new DateTimeOffset(new DateTime(1900, 1, 1));
             var campaignEndDate = campaignStartDate.AddDays(4);
             var sut = GetActivityController(campaignStartDate, campaignEndDate);
-            var activityModel = new ActivityDetailModel();
-            activityModel.EndDateTime = campaignStartDate.AddDays(1);
-            activityModel.StartDateTime = campaignStartDate.AddDays(2);
+            var activityModel = new ActivityDetailModel
+            {
+                EndDateTime = campaignStartDate.AddDays(1),
+                StartDateTime = campaignStartDate.AddDays(2)
+            };
 
             var result = (ViewResult)await sut.Create(1, activityModel, null);
 
@@ -51,9 +55,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var campaignStartDate = new DateTimeOffset(new DateTime(1900, 1, 1));
             var campaignEndDate = campaignStartDate.AddDays(4);
             var sut = GetActivityController(campaignStartDate, campaignEndDate);
-            var activityModel = new ActivityDetailModel();
-            activityModel.EndDateTime = campaignStartDate;
-            activityModel.StartDateTime = campaignStartDate.AddDays(-1);
+            var activityModel = new ActivityDetailModel
+            {
+                EndDateTime = campaignStartDate,
+                StartDateTime = campaignStartDate.AddDays(-1)
+            };
 
             var result = (ViewResult)await sut.Create(1, activityModel, null);
 
@@ -68,9 +74,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var campaignStartDate = new DateTimeOffset(new DateTime(1900, 1, 1));
             var campaignEndDate = campaignStartDate.AddDays(4);
             var sut = GetActivityController(campaignStartDate, campaignEndDate);
-            var activityModel = new ActivityDetailModel();
-            activityModel.EndDateTime = campaignEndDate.AddDays(1);
-            activityModel.StartDateTime = campaignStartDate;
+            var activityModel = new ActivityDetailModel
+            {
+                EndDateTime = campaignEndDate.AddDays(1),
+                StartDateTime = campaignStartDate
+            };
 
             var result = (ViewResult)await sut.Create(1, activityModel, null);
 
@@ -106,17 +114,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             var dataAccess = new Mock<IAllReadyDataAccess>();
             var imageService = new Mock<IImageService>();
-            var httpContextMock = new Mock<HttpContext>();
-            var actionContextMock = new Mock<ActionContext>();
 
-            httpContextMock.SetupGet(ctx => ctx.User)
-                .Returns(UnitTestHelper.GetClaimsPrincipal(UserType.SiteAdmin.ToString(), 1));
-            actionContextMock.Object.HttpContext = httpContextMock.Object;
-            mediator.Setup(x => x.Send(It.IsAny<CampaignSummaryQuery>()))
-                .Returns(new CampaignSummaryModel { StartDate = startDate, EndDate = endDate });
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel { StartDate = startDate, EndDate = endDate });
 
             var sut = new ActivityController(dataAccess.Object, imageService.Object, mediator.Object);
-            sut.ActionContext = actionContextMock.Object;
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
             return sut;
         }
     }
