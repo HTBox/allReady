@@ -4,7 +4,7 @@ using AllReady.Models;
 using AllReady.UnitTest.Features.Campaigns;
 using Xunit;
 
-namespace AllReady.UnitTest.Tasks
+namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
     public class DeleteTaskCommandHandlerAsyncTests : InMemoryContextTest
     {

@@ -1,4 +1,7 @@
-﻿using AllReady.Areas.Admin.Features.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Features.Notifications;
 using AllReady.Models;
@@ -11,7 +14,7 @@ using System.Threading.Tasks;
 using AllReady.UnitTest.Features.Campaigns;
 using Xunit;
 
-namespace AllReady.UnitTest.Tasks
+namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
     public class MessageTaskVolunteersCommandHandlerAsyncTests : InMemoryContextTest
     {
