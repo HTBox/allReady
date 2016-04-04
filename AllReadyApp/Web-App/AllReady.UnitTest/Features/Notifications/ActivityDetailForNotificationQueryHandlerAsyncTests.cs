@@ -7,14 +7,14 @@ using AllReady.UnitTest.Features.Campaigns;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace AllReady.UnitTest.Notifications
+namespace AllReady.UnitTest.Features.Notifications
 {
     public class ActivityDetailForNotificationQueryHandlerAsyncTests : InMemoryContextTest
     {
         private ApplicationUser _user1;
         private Organization _htb;
         private Campaign _firePrev;
-        private Activity _queenAnne;
+        private Models.Activity _queenAnne;
         private Contact _contact1;
         private AllReadyTask _task1;
 
@@ -62,7 +62,7 @@ namespace AllReady.UnitTest.Notifications
 
             _htb.Campaigns.Add(_firePrev);
 
-            _queenAnne = new Activity
+            _queenAnne = new Models.Activity
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
