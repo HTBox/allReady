@@ -5,8 +5,6 @@ using AllReady.Models;
 using AllReady.Security;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Xunit;
-using System.Threading.Tasks;
-using AllReady.UnitTest.Features.Campaigns;
 
 namespace AllReady.UnitTest.Features.Login
 {
