@@ -40,7 +40,7 @@ namespace AllReady.UnitTest.Extensions
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), userType))
+                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), userType))
             }));
 
             Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
