@@ -146,7 +146,7 @@ namespace AllReady.Areas.Admin.Controllers
                 var user = GetUser(userId);
                 if (user == null)
                 {
-                    ViewBag.ErrorMessage = $"User not found.";
+                    ViewBag.ErrorMessage = "User not found.";
                     return View();
                 }
 
