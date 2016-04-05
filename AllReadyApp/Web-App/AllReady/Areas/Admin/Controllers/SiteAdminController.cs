@@ -150,7 +150,6 @@ namespace AllReady.Areas.Admin.Controllers
                     return View();
                 }
 
-                // Send an email with this link
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 //mgmccarthy: there is no ResetPassword action methd on the AdminController. Not too sure what to do here.
                 var callbackUrl = Url.Action(new UrlActionContext { Action = "ResetPassword", Controller = "Admin", Values = new { userId = user.Id, code = code }, Protocol = HttpContext.Request.Scheme });

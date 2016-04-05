@@ -188,13 +188,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await TaskFromResultZero;
         }
 
-        //[Fact(Skip = "NotImplemented")]
-        //public async Task ResetPasswordInvokesSendEmailAsyncWithCorrectParametersWhenUserIsNotNull()
-        //{
-        //    //delete this line when starting work on this unit test
-        //    await TaskFromResultZero;
-        //}
-
         [Fact(Skip = "NotImplemented")]
         public async Task ResetPasswordSendsSendResetPasswordEmailWithCorrectDataWhenUserIsNotNull()
         {
