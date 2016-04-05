@@ -45,15 +45,15 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult DeleteUser(string userId)
+        public async Task<IActionResult> DeleteUser(string userId)
         {
-            var user = _mediator.Send(new UserQuery { UserId = userId });
-
+            var user = await _mediator.SendAsync(new UserQuery { UserId = userId });
             var viewModel = new DeleteUserModel
             {
                 UserId = userId,
                 UserName = user.UserName,
             };
+
             return View(viewModel);
         }
 
@@ -93,7 +93,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             //Skill associations
-            var user = _dataAccess.GetUser(viewModel.UserId);
+            var user = GetUser(viewModel.UserId);
             user.AssociatedSkills.RemoveAll(usk => viewModel.AssociatedSkills == null || !viewModel.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
 
             if (viewModel.AssociatedSkills != null)

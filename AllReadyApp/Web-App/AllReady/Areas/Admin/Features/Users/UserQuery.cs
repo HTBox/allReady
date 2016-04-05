@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Users
 {
-    public class UserQuery : IRequest<EditUserModel>
+    public class UserQuery : IAsyncRequest<EditUserModel>
     {
         public string UserId { get; set; }
     }

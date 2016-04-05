@@ -18,18 +18,24 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void DeleteUserSendsUserQueryWithCorrectUserId()
+        public async Task DeleteUserSendsUserQueryWithCorrectUserId()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void DeleteUserReturnsTheCorrectViewModel()
+        public async Task DeleteUserReturnsTheCorrectViewModel()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void DeleteUserHasHttpGetAttribute()
+        public async Task DeleteUserHasHttpGetAttribute()
         {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
         }
 
         [Fact]
