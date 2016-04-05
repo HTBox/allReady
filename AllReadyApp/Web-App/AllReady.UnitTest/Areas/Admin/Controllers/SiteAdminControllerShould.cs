@@ -36,7 +36,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task ConfirmDeletUserSendsDeleteUserCommandAsync()
         {
             var mediator = new Mock<IMediator>();
-            var controller = new SiteController(null, null, null, null, mediator.Object);
+            var controller = new SiteController(null, null, null, mediator.Object);
             const string userId = "foo_id";
 
             await controller.ConfirmDeleteUser(userId);
@@ -116,7 +116,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task EditUserPostInvokesSendEmailAsyncWithCorrectParametersWhenModelsIsOrganizationAdminIsTrueAndOrganizationAdminClaimWasAddedSuccessfully()
+        public async Task EditUserPostSendsSendAccountApprovalEmailWithCorrectDataWhenModelsIsOrganizationAdminIsTrueAndOrganizationAdminClaimWasAddedSuccessfully()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -188,8 +188,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await TaskFromResultZero;
         }
 
+        //[Fact(Skip = "NotImplemented")]
+        //public async Task ResetPasswordInvokesSendEmailAsyncWithCorrectParametersWhenUserIsNotNull()
+        //{
+        //    //delete this line when starting work on this unit test
+        //    await TaskFromResultZero;
+        //}
+
         [Fact(Skip = "NotImplemented")]
-        public async Task ResetPasswordInvokesSendEmailAsyncWithCorrectParametersWhenUserIsNotNull()
+        public async Task ResetPasswordSendsSendResetPasswordEmailWithCorrectDataWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;

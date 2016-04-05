@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.Features.Site;
 using AllReady.Areas.Admin.Features.Users;
 using AllReady.Areas.Admin.Models;
 using AllReady.Extensions;
 using AllReady.Models;
 using AllReady.Security;
-using AllReady.Services;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
@@ -23,15 +23,13 @@ namespace AllReady.Areas.Admin.Controllers
     public class SiteController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IEmailSender _emailSender;
         private readonly IAllReadyDataAccess _dataAccess;
         private ILogger<SiteController> _logger;
         private readonly IMediator _mediator;
 
-        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger, IMediator mediator)
+        public SiteController(UserManager<ApplicationUser> userManager, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger, IMediator mediator)
         {
             _userManager = userManager;
-            _emailSender = emailSender;
             _dataAccess = dataAccess;
             _logger = logger;
             _mediator = mediator;
@@ -119,7 +117,7 @@ namespace AllReady.Areas.Admin.Controllers
                 {
                     //mgmccarthy: there is no Login action method on the AdminController. The only login method I could find is on the AccountController. Not too sure what to do here
                     var callbackUrl = Url.Action(new UrlActionContext { Action = "Login", Controller = "Admin", Values = new { Email = user.Email }, Protocol = HttpContext.Request.Scheme });
-                    await _emailSender.SendEmailAsync(user.Email, "Account Approval", $"Your account has been approved by an administrator. Please <a href=\"{callbackUrl}\">Click here to Log in</a>");
+                    await _mediator.SendAsync(new SendAccountApprovalEmail { Email = user.Email, CallbackUrl = callbackUrl });
                 }
                 else
                 {
@@ -156,7 +154,7 @@ namespace AllReady.Areas.Admin.Controllers
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 //mgmccarthy: there is no ResetPassword action methd on the AdminController. Not too sure what to do here.
                 var callbackUrl = Url.Action(new UrlActionContext { Action = "ResetPassword", Controller = "Admin", Values = new { userId = user.Id, code = code }, Protocol = HttpContext.Request.Scheme });
-                await _emailSender.SendEmailAsync(user.Email, "Reset Password", $"Please reset your password by clicking here: <a href=\"{callbackUrl}\">link</a>");
+                await _mediator.SendAsync(new SendResetPasswordEmail { Email = user.Email, CallbackUrl = callbackUrl });
 
                 ViewBag.SuccessMessage = $"Sent password reset email for {user.UserName}.";
 
