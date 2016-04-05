@@ -37,7 +37,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            var viewModel = new SiteAdminModel()
+            var viewModel = new SiteAdminModel
             {
                 Users = _dataAccess.Users.OrderBy(u => u.UserName).ToList()
             };
@@ -49,7 +49,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var user = _mediator.Send(new UserQuery { UserId = userId });
 
-            var viewModel = new DeleteUserModel()
+            var viewModel = new DeleteUserModel
             {
                 UserId = userId,
                 UserName = user.UserName,
@@ -67,7 +67,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult EditUser(string userId)
         {
-            var user = _dataAccess.GetUser(userId);
+            var user = GetUser(userId);
             var organizationId = user.GetOrganizationId();
 
             var viewModel = new EditUserModel
@@ -143,7 +143,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             try
             {
-                var user = _dataAccess.GetUser(userId);
+                var user = GetUser(userId);
                 if (user == null)
                 {
                     ViewBag.ErrorMessage = $"User not found.";
@@ -174,7 +174,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             try
             {
-                var user = _dataAccess.GetUser(userId);
+                var user = GetUser(userId);
                 await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.SiteAdmin.ToName()));
                 return RedirectToAction(nameof(Index));
             }
@@ -189,7 +189,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult AssignOrganizationAdmin(string userId)
         {
-            var user = _dataAccess.GetUser(userId);
+            var user = GetUser(userId);
             if (user.IsUserType(UserType.OrgAdmin) || user.IsUserType(UserType.SiteAdmin))
             {
                 return RedirectToAction(nameof(Index));
@@ -243,7 +243,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             try
             {
-                var user = _dataAccess.GetUser(userId);
+                var user = GetUser(userId);
                 await _userManager.RemoveClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.SiteAdmin.ToName()));
                 return RedirectToAction(nameof(Index));
             }
@@ -260,7 +260,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             try
             {
-                var user = _dataAccess.GetUser(userId);
+                var user = GetUser(userId);
                 var claims = await _userManager.GetClaimsAsync(user);
                 await _userManager.RemoveClaimAsync(user, claims.First(c => c.Type == Security.ClaimTypes.UserType));
                 await _userManager.RemoveClaimAsync(user, claims.First(c => c.Type == Security.ClaimTypes.Organization));
@@ -272,6 +272,11 @@ namespace AllReady.Areas.Admin.Controllers
                 ViewBag.ErrorMessage = $"Failed to assign site admin for {userId}. Exception thrown.";
                 return View();
             }
+        }
+
+        private ApplicationUser GetUser(string userId)
+        {
+            return _dataAccess.GetUser(userId);
         }
     }
 }
