@@ -1,9 +1,7 @@
 ﻿using AllReady.Areas.Admin.Features.Shared;
 using AllReady.Models;
 using MediatR;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Models.Validators
@@ -24,7 +22,7 @@ namespace AllReady.Areas.Admin.Models.Validators
             // Temporary code to avoid current database update error when the post code geo does not exist in the database.
             if (!string.IsNullOrEmpty(model?.PostalCode))
             {
-                bool validPostcode = await _mediator.SendAsync(new CheckValidPostcodeQueryAsync
+                var validPostcode = await _mediator.SendAsync(new CheckValidPostcodeQueryAsync
                 {
                     Postcode = new PostalCodeGeo
                     {
@@ -39,6 +37,7 @@ namespace AllReady.Areas.Admin.Models.Validators
                     result.Add(nameof(model.PostalCode), "The city, state and postal code combination is not valid");
                 }
             }
+
             return result;
         }
     }

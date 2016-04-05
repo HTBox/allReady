@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Features.Campaigns;
+using AllReady.Areas.Admin.Features.Shared;
 using AllReady.Areas.Admin.Models;
 using AllReady.Areas.Admin.Models.Validators;
 using MediatR;
