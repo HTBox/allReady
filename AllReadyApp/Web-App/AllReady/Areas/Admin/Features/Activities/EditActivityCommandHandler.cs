@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
@@ -63,7 +64,12 @@ namespace AllReady.Areas.Admin.Features.Activities
             {
                 activity.RequiredSkills.AddRange(message.Activity.RequiredSkills.Where(mt => !activity.RequiredSkills.Any(ts => ts.SkillId == mt.SkillId)));
             }
-            
+            if (message.Activity.Location != null)
+            {
+                activity.Location = activity.Location.UpdateModel(message.Activity.Location);
+                _context.Update(activity.Location);
+            }
+
             _context.Update(activity);
             _context.SaveChanges();
             return activity.Id;

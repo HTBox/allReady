@@ -1,7 +1,7 @@
 ﻿using AllReady.Models;
 using MediatR;
 
-namespace AllReady.Areas.Admin.Features.Campaigns
+namespace AllReady.Areas.Admin.Features.Shared
 {
     public class CheckValidPostcodeQueryAsync : IAsyncRequest<bool>
     {
