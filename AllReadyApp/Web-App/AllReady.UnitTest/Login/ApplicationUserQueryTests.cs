@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using AllReady.Features.Login;
+using AllReady.UnitTest.Features.Campaigns;
 using Xunit;
 
 namespace AllReady.UnitTest.Login

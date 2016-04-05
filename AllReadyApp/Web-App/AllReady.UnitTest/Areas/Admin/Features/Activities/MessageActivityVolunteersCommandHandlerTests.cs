@@ -1,19 +1,19 @@
-﻿using AllReady.Areas.Admin.Features.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Areas.Admin.Models;
 using AllReady.Features.Notifications;
 using AllReady.Models;
+using AllReady.UnitTest.Features.Campaigns;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AllReady.UnitTest.Features.Campaigns;
 using Xunit;
 
-namespace AllReady.UnitTest.Tasks
+namespace AllReady.UnitTest.Areas.Admin.Features.Activities
 {
-    public class MessageTaskVolunteersCommandHandlerAsyncTests : InMemoryContextTest
+    public class MessageActivityVolunteersCommandHandlerTests : InMemoryContextTest
     {
         protected override void LoadTestData()
         {
@@ -54,57 +54,45 @@ namespace AllReady.UnitTest.Tasks
 
             htb.Campaigns.Add(firePrev);            
             context.Organizations.Add(htb);
-            
-            var task = new AllReadyTask()
-            {
-                Activity = queenAnne,
-                Description = "Description of a very important task",
-                Name = "Task # ",
-                EndDateTime = DateTime.Now.AddDays(1),
-                StartDateTime = DateTime.Now.AddDays(-3)
-            };
-            queenAnne.Tasks.Add(task);
             context.Activities.Add(queenAnne);
 
-            var taskSignups = new List<TaskSignup>
+            var activitySignups = new List<ActivitySignup>
             {
-                new TaskSignup { Task = task, User = user1 },
-                new TaskSignup { Task = task, User = user2 }
+                new ActivitySignup { Activity = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow },
+                new ActivitySignup { Activity = queenAnne, User = user2, SignupDateTime = DateTime.UtcNow }
             };
-            context.TaskSignups.AddRange(taskSignups);
 
+            context.ActivitySignup.AddRange(activitySignups);
             context.SaveChanges();
         }
 
         [Fact]
         public async Task SendMessageToAssignedVolunteers()
         {
-            const string expectedMessage = "This is my message for all you task peeps";
-            const string expectedSubject = "This is my subject";
-            var command = new MessageTaskVolunteersCommandAsync
+            var command = new MessageActivityVolunteersCommand
             {
-                Model = new MessageTaskVolunteersModel
+                Model = new MessageActivityVolunteersModel
                 {
-                    TaskId = 1,
-                    Message = expectedMessage,
-                    Subject = expectedSubject
+                    ActivityId = 1,
+                    Message = "This is my message",
+                    Subject = "This is my subject"
                 }
             };
 
             var mediator = new Mock<IMediator>();
             
-            var handler = new MessageTaskVolunteersCommandHandlerAsync(Context, mediator.Object);
+            var handler = new MessageActivityVolunteersCommandHandler(Context, mediator.Object);
             await handler.Handle(command);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
                    notifyCommand.ViewModel != null &&
-                   notifyCommand.ViewModel.EmailMessage == expectedMessage &&
-                   notifyCommand.ViewModel.Subject == expectedSubject &&
+                   notifyCommand.ViewModel.EmailMessage == "This is my message" &&
+                   notifyCommand.ViewModel.Subject == "This is my subject" &&
                    notifyCommand.ViewModel.EmailRecipients.Count == 2 &&
                    notifyCommand.ViewModel.EmailRecipients.Contains("blah@1.com") &&
                    notifyCommand.ViewModel.EmailRecipients.Contains("blah@2.com")
 
-            )), Times.Once());   
+            )), Times.Once());
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AllReady.Features.Organizations;
 using System.Threading.Tasks;
+using AllReady.UnitTest.Features.Campaigns;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Organizations

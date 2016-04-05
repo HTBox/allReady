@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
@@ -6,25 +7,26 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class CampaignDetailQueryHandler : IRequestHandler<CampaignDetailQuery, CampaignDetailModel>
+    public class CampaignDetailQueryHandler : IAsyncRequestHandler<CampaignDetailQuery, CampaignDetailModel>
     {
         private AllReadyContext _context;
 
         public CampaignDetailQueryHandler(AllReadyContext context)
         {
             _context = context;
-
         }
-        public CampaignDetailModel Handle(CampaignDetailQuery message)
+
+        public async Task<CampaignDetailModel> Handle(CampaignDetailQuery message)
         {
-            var campaign = _context.Campaigns
-                                  .AsNoTracking()
-                                  .Include(c => c.Activities)
-                                  .Include(m => m.ManagingOrganization)
-                                  .Include(ci => ci.CampaignImpact)
-                                  .Include(c => c.CampaignContacts).ThenInclude(c => c.Contact)
-                                  .Include(l => l.Location).ThenInclude(p => p.PostalCode)
-                                  .SingleOrDefault(c => c.Id == message.CampaignId);
+            var campaign = await _context.Campaigns
+                .AsNoTracking()
+                .Include(c => c.Activities)
+                .Include(m => m.ManagingOrganization)
+                .Include(ci => ci.CampaignImpact)
+                .Include(c => c.CampaignContacts).ThenInclude(c => c.Contact)
+                .Include(l => l.Location).ThenInclude(p => p.PostalCode)
+                .SingleOrDefaultAsync(c => c.Id == message.CampaignId)
+                .ConfigureAwait(false);
 
             CampaignDetailModel result = null;
 
@@ -62,17 +64,19 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                         IsAllowWaitList = a.IsAllowWaitList
                     })
                 };
+
                 if (!campaign.CampaignContacts.Any())// Include isn't including
                 {
-                    campaign.CampaignContacts = _context.CampaignContacts.Include(c => c.Contact).Where(cc => cc.CampaignId == campaign.Id).ToList();
+                    campaign.CampaignContacts = await _context.CampaignContacts.Include(c => c.Contact).Where(cc => cc.CampaignId == campaign.Id).ToListAsync().ConfigureAwait(false);
                 }
+
                 if (campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
                 {
                     result = (CampaignDetailModel)campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(result);
                 }
             }
+
             return result;
         }
-         
     }
 }

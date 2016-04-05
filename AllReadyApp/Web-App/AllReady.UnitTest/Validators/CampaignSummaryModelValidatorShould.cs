@@ -4,8 +4,6 @@ using AllReady.Areas.Admin.Models.Validators;
 using MediatR;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -51,8 +49,6 @@ namespace AllReady.UnitTest.Validators
             // assert
             mediator.Verify(m => m.SendAsync(It.IsAny<CheckValidPostcodeQueryAsync>()));
             Assert.True(errors.ContainsKey("PostalCode"));
-
         }
-
     }
 }

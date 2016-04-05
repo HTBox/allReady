@@ -1,6 +1,7 @@
 using System.Linq;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Models;
+using AllReady.UnitTest.Features.Campaigns;
 using Xunit;
 
 namespace AllReady.UnitTest.Tasks

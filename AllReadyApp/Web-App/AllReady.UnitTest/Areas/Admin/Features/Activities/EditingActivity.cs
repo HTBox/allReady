@@ -1,9 +1,10 @@
 using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
+using AllReady.UnitTest.Features.Campaigns;
 using Xunit;
 
-namespace AllReady.UnitTest.Activities
+namespace AllReady.UnitTest.Areas.Admin.Features.Activities
 {
     public class EditingActivity : InMemoryContextTest
     {
@@ -19,8 +20,7 @@ namespace AllReady.UnitTest.Activities
         public void ModelIsCreated()
         {
             var sut = new EditActivityCommandHandler(Context);
-            int actual =
-                sut.Handle(new EditActivityCommand {Activity = new ActivityDetailModel {CampaignId = 1, Id = 1, TimeZoneId = "Central Standard Time"}});
+            var actual = sut.Handle(new EditActivityCommand {Activity = new ActivityDetailModel {CampaignId = 1, Id = 1, TimeZoneId = "Central Standard Time"}});
             Assert.Equal(1, actual);
         }
     }

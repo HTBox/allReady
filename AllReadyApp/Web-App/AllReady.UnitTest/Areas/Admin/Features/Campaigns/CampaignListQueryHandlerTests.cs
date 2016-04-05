@@ -1,18 +1,20 @@
-﻿using AllReady.Areas.Admin.Features.Campaigns;
-using AllReady.Models;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using AllReady.Areas.Admin.Features.Campaigns;
+using AllReady.Models;
+using AllReady.UnitTest.Features.Campaigns;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace AllReady.UnitTest.Campaigns
+namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
 {
-    public class GetCampaignList : InMemoryContextTest
+    public class CampaignListQueryHandlerTests : InMemoryContextTest
     {
         protected override void LoadTestData()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            Organization htb = new Organization()
+
+            var htb = new Organization
             {
                 Id = 1,
                 Name = "Humanitarian Toolbox",
@@ -20,24 +22,28 @@ namespace AllReady.UnitTest.Campaigns
                 WebUrl = "http://www.htbox.org",
                 Campaigns = new List<Campaign>(),                
             };
-            Organization other = new Organization()
+
+            var other = new Organization
             {
                 Id = 2,
                 Name = "Other Org",
                 Campaigns = new List<Campaign>(),
             };
-            Campaign firePrev = new Campaign()
+
+            var firePrev = new Campaign
             {
                 Id = 1,
                 Name = "Neighborhood Fire Prevention Days",
                 ManagingOrganization = htb
             };
-            Campaign otherCampaign = new Campaign()
+
+            var otherCampaign = new Campaign
             {
                 Id = 2,
                 Name = "Some other campaign",
                 ManagingOrganization = other
             };
+
             htb.Campaigns.Add(firePrev);
             context.Organizations.Add(htb);
             other.Campaigns.Add(otherCampaign);

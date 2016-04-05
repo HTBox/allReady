@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
+using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class LockUnlockCampaignCommandHandler : RequestHandler<LockUnlockCampaignCommand>
+    public class LockUnlockCampaignCommandHandler : AsyncRequestHandler<LockUnlockCampaignCommand>
     {
         private AllReadyContext _context;
 
@@ -13,17 +14,16 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             _context = context;
 
         }
-        protected override void HandleCore(LockUnlockCampaignCommand message)
+        protected override async Task HandleCore(LockUnlockCampaignCommand message)
         {
-            var campaign = 
-                _context.Campaigns.SingleOrDefault(c => c.Id == message.CampaignId);
+            var campaign = await _context.Campaigns.SingleOrDefaultAsync(c => c.Id == message.CampaignId).ConfigureAwait(false);
 
             if (campaign != null)
             {
                 campaign.Locked = !campaign.Locked;
 
                 _context.Update(campaign);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
         }
     }
