@@ -1,15 +1,14 @@
-﻿using AllReady.Models;
-using System.Linq;
-using AllReady.Features.Login;
-using Xunit;
-using Microsoft.AspNet.Identity.EntityFramework;
-using AllReady.Security;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using AllReady.UnitTest.Features.Campaigns;
+using AllReady.Features.Login;
+using AllReady.Models;
+using AllReady.Security;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Xunit;
 
-namespace AllReady.UnitTest.Login
+namespace AllReady.UnitTest.Features.Login
 {
-    public class RemoveUserIncompleteProfileClaimCommandTests : InMemoryContextTest
+    public class RemoveUserProfileIncompleteClaimCommandHandlerTests : InMemoryContextTest
     {
         private ApplicationUser _user1;
         private ApplicationUser _user2;
@@ -23,16 +22,20 @@ namespace AllReady.UnitTest.Login
             _user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true, NormalizedUserName = username2.ToUpperInvariant() };
             Context.Users.Add(_user1);
             Context.Users.Add(_user2);
-            var claimForUser1 = new IdentityUserClaim<string>();
-            claimForUser1.UserId = _user1.Id;
-            claimForUser1.ClaimType = ClaimTypes.ProfileIncomplete;
-            claimForUser1.ClaimValue = "NewUser";
+            var claimForUser1 = new IdentityUserClaim<string>
+            {
+                UserId = _user1.Id,
+                ClaimType = ClaimTypes.ProfileIncomplete,
+                ClaimValue = "NewUser"
+            };
             Context.UserClaims.Add(claimForUser1);
 
-            var claimForUser2 = new IdentityUserClaim<string>();
-            claimForUser2.UserId = _user2.Id;
-            claimForUser2.ClaimType = "SomeOtherClaim";
-            claimForUser2.ClaimValue = "Blah";
+            var claimForUser2 = new IdentityUserClaim<string>
+            {
+                UserId = _user2.Id,
+                ClaimType = "SomeOtherClaim",
+                ClaimValue = "Blah"
+            };
             Context.UserClaims.Add(claimForUser2);
 
             Context.SaveChanges();
@@ -59,7 +62,6 @@ namespace AllReady.UnitTest.Login
 
             var matchingClaimForUser2 = Context.UserClaims.Where(u => u.UserId == _user2.Id && u.ClaimType == "SomeOtherClaim");
             Assert.Single(matchingClaimForUser2);
-
         }
     }
 }

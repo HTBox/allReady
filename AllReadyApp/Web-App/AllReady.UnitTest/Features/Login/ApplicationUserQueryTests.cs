@@ -1,14 +1,10 @@
-﻿using AllReady.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+﻿using System.Threading.Tasks;
 using AllReady.Features.Login;
+using AllReady.Models;
 using AllReady.UnitTest.Features.Campaigns;
 using Xunit;
 
-namespace AllReady.UnitTest.Login
+namespace AllReady.UnitTest.Features.Login
 {
     public class ApplicationUserQueryTests : InMemoryContextTest
     {
