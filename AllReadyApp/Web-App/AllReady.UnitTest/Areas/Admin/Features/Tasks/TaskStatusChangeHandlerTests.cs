@@ -1,18 +1,17 @@
-﻿using AllReady.Features.Notifications;
-using AllReady.Models;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
-using AllReady.UnitTest.Features.Campaigns;
+using AllReady.Features.Notifications;
+using AllReady.Models;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Xunit;
 using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
-namespace AllReady.UnitTest.Tasks
+namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
     public class TaskStatusChangeHandlerTests : InMemoryContextTest
     {

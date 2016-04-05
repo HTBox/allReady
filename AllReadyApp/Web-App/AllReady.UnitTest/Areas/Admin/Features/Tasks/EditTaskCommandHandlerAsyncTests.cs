@@ -8,7 +8,7 @@ using AllReady.UnitTest.Features.Campaigns;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace AllReady.UnitTest.Tasks
+namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
     public class EditTaskCommandHandlerAsyncTests : InMemoryContextTest
     {

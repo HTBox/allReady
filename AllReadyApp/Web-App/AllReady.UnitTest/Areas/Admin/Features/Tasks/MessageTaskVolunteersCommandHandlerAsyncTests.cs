@@ -1,24 +1,23 @@
-﻿using AllReady.Areas.Admin.Features.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AllReady.UnitTest.Features.Campaigns;
 using Xunit;
 
-namespace AllReady.UnitTest.Tasks
+namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
     public class MessageTaskVolunteersCommandHandlerAsyncTests : InMemoryContextTest
     {
         protected override void LoadTestData()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var htb = new Organization()
+            var htb = new Organization
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
@@ -26,13 +25,13 @@ namespace AllReady.UnitTest.Tasks
                 Campaigns = new List<Campaign>()
             };
 
-            var firePrev = new Campaign()
+            var firePrev = new Campaign
             {
                 Name = "Neighborhood Fire Prevention Days",
                 ManagingOrganization = htb
             };
 
-            var queenAnne = new Activity()
+            var queenAnne = new Activity
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
@@ -55,7 +54,7 @@ namespace AllReady.UnitTest.Tasks
             htb.Campaigns.Add(firePrev);            
             context.Organizations.Add(htb);
             
-            var task = new AllReadyTask()
+            var task = new AllReadyTask
             {
                 Activity = queenAnne,
                 Description = "Description of a very important task",
