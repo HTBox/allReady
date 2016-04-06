@@ -141,7 +141,9 @@ namespace AllReady.Controllers
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = ACCOUNT_CONTROLLER, Values = new { userId = user.Id, code = code },
                 Protocol = HttpContext.Request.Scheme });
+
             await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(RESEND_EMAIL_CONFIRM, callbackUrl));
+            //await _mediator.SendAsync(new SendConfirmAccountEmail { Email = user.Email, CallbackUrl = callBackUrl };
 
             return RedirectToAction(nameof(EmailConfirmationSent));
         }
@@ -201,9 +203,8 @@ namespace AllReady.Controllers
             }
 
             // Generate the token and send it
-            var user = GetCurrentUser();
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
-            await _smsSender.SendSmsAsync(model.PhoneNumber, ACCOUNT_SECURITY_CODE + code);
+            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(GetCurrentUser(), model.PhoneNumber);
+            await _mediator.SendAsync(new SendAccountSecurityCodeSms { PhoneNumber = model.PhoneNumber, Code = code });
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = model.PhoneNumber });
         }
 
@@ -212,11 +213,8 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResendPhoneNumberConfirmation(string phoneNumber)
         {
-            var user = GetCurrentUser();
-
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
-            await _smsSender.SendSmsAsync(phoneNumber, ACCOUNT_SECURITY_CODE + code);
-
+            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(GetCurrentUser(), phoneNumber);
+            await _mediator.SendAsync(new SendAccountSecurityCodeSms { PhoneNumber = phoneNumber, Code = code });
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = phoneNumber });
         }
 
@@ -379,7 +377,9 @@ namespace AllReady.Controllers
                 var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail);
                 var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = MANAGE_CONTROLLER, Values = new { token = token },
                     Protocol = HttpContext.Request.Scheme });
+
                 await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(NEW_EMAIL_CONFIRM, callbackUrl));
+                //await _mediator.SendAsync(new SendConfirmNewEmail { Email = user.Email, CallbackUrl = callbackUrl };
 
                 return RedirectToAction(nameof(EmailConfirmationSent));                
             }
@@ -429,7 +429,9 @@ namespace AllReady.Controllers
             var token = await _userManager.GenerateChangeEmailTokenAsync(user, user.PendingNewEmail);
             var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = MANAGE_CONTROLLER, Values = new { token = token },
                 Protocol = HttpContext.Request.Scheme });
+
             await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(NEW_EMAIL_CONFIRM, callbackUrl));
+            //await _mediator.SendAsync(new SendConfirmNewEmail { Email = user.Email, CallbackUrl = callbackUrl };
 
             return RedirectToAction(nameof(EmailConfirmationSent));
         }
