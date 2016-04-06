@@ -6,10 +6,10 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Manage
 {
-    public class UpdateUserShould
+    public class UpdateUserHandlerTests
     {
         [Fact]
-        public async Task InvokeUpdateUserWithTheCorrectUser()
+        public async Task UpdateUserHandlerInvokesUpdateUserWithTheCorrectUser()
         {
             var message = new UpdateUser { User = new ApplicationUser() };
             var dataAccess = new Mock<IAllReadyDataAccess>();

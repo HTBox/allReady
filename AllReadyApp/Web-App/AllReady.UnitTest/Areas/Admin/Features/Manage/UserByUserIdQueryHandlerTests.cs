@@ -5,10 +5,10 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Manage
 {
-    public class UserByUserIdQueryHandlerShould
+    public class UserByUserIdQueryHandlerTests
     {
         [Fact]
-        public void InvokeGetUserWithTheCorrectUserId()
+        public void UserByUserIdQueryHandlerInvokesGetUserWithTheCorrectUserId()
         {
             var message = new UserByUserIdQuery { UserId = "1" };
             var dataAccess = new Mock<IAllReadyDataAccess>();
