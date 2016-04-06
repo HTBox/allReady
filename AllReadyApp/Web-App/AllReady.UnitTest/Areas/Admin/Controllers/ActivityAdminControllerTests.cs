@@ -533,12 +533,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static ActivityController GetActivityController(DateTimeOffset startDate, DateTimeOffset endDate)
         {
             var mediator = new Mock<IMediator>();
-            //var dataAccess = new Mock<IAllReadyDataAccess>();
             var imageService = new Mock<IImageService>();
 
             mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel { StartDate = startDate, EndDate = endDate });
 
-            //var sut = new ActivityController(dataAccess.Object, imageService.Object, mediator.Object);
             var sut = new ActivityController(imageService.Object, mediator.Object);
             sut.SetClaims(new List<Claim>
             {
