@@ -4,11 +4,11 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Activities
 {
-    public class UpdateActivityHanadler : AsyncRequestHandler<UpdateActivity>
+    public class UpdateActivityHandler : AsyncRequestHandler<UpdateActivity>
     {
         private readonly IAllReadyDataAccess dataAccess;
 
-        public UpdateActivityHanadler(IAllReadyDataAccess dataAccess)
+        public UpdateActivityHandler(IAllReadyDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
         }
