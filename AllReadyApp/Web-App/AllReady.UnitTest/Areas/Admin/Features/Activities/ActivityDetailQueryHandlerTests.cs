@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Models;
-using AllReady.UnitTest.Features.Campaigns;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -14,8 +14,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
 
-            PostalCodeGeo seattlePostalCode = new PostalCodeGeo() { City = "Seattle", PostalCode = "98117", State = "WA" };
-            Location seattle = new Location()
+            var seattlePostalCode = new PostalCodeGeo { City = "Seattle", PostalCode = "98117", State = "WA" };
+            var seattle = new Location
             {
                 Id = 1,
                 Address1 = "123 Main Street",
@@ -29,7 +29,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
             };
          
 
-            Organization htb = new Organization()
+            var htb = new Organization
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
@@ -55,6 +55,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
                 Location = new Location { Id = 1 },
                 RequiredSkills = new List<ActivitySkill>()
             };
+
             context.PostalCodes.Add(seattlePostalCode);
             context.Locations.Add(seattle);
             context.Organizations.Add(htb);
@@ -63,32 +64,33 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
         }
 
         [Fact]
-        public void ActivityExists()
+        public async Task ActivityExists()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
             var query = new ActivityDetailQuery { ActivityId = 1 };
             var handler = new ActivityDetailQueryHandler(context);
-            var result = handler.Handle(query);
+            var result = await handler.Handle(query);
             Assert.NotNull(result);
         }
 
         [Fact]
-        public void ActivityDoesNotExist()
+        public async Task ActivityDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
             var query = new ActivityDetailQuery();
             var handler = new ActivityDetailQueryHandler(context);
-            var result = handler.Handle(query);
+            var result = await handler.Handle(query);
             Assert.Null(result);
         }
 
         [Fact]
-        public void ActivityIncludesAllLocationInformation()
+        public async Task ActivityIncludesAllLocationInformation()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new ActivityDetailQuery() { ActivityId = 1 };
+            var query = new ActivityDetailQuery { ActivityId = 1 };
             var handler = new ActivityDetailQueryHandler(context);
-            var result = handler.Handle(query);
+            var result = await handler.Handle(query);
+
             Assert.NotNull(result.Location);
             Assert.NotNull(result.Location?.Id);
             Assert.NotNull(result.Location?.Address1);
@@ -99,7 +101,5 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
             Assert.NotNull(result.Location?.PhoneNumber);
             Assert.NotNull(result.Location?.Country);
         }
-
-
     }
 }

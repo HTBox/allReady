@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Activities
 {
-    public class ActivityDetailQuery : IRequest<ActivityDetailModel>
+    public class ActivityDetailQuery : IAsyncRequest<ActivityDetailModel>
     {
         public int ActivityId { get; set; }
     }

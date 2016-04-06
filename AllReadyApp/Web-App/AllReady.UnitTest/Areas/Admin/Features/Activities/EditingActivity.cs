@@ -1,7 +1,7 @@
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
-using AllReady.UnitTest.Features.Campaigns;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Activities
@@ -17,10 +17,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
         }
 
         [Fact]
-        public void ModelIsCreated()
+        public async Task ModelIsCreated()
         {
             var sut = new EditActivityCommandHandler(Context);
-            var actual = sut.Handle(new EditActivityCommand {Activity = new ActivityDetailModel {CampaignId = 1, Id = 1, TimeZoneId = "Central Standard Time"}});
+            var actual = await sut.Handle(new EditActivityCommand {Activity = new ActivityDetailModel {CampaignId = 1, Id = 1, TimeZoneId = "Central Standard Time"}});
             Assert.Equal(1, actual);
         }
     }

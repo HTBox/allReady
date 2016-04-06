@@ -2,7 +2,7 @@
 
 namespace AllReady.Areas.Admin.Features.Activities
 {
-    public class DeleteActivityCommand : IRequest
+    public class DeleteActivityCommand : IAsyncRequest
     {
         public int ActivityId {get; set;}
     }

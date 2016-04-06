@@ -16,6 +16,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             _context = context;
 
         }
+
         public async Task<CampaignSummaryModel> Handle(CampaignSummaryQuery message)
         {
             CampaignSummaryModel result = null;
