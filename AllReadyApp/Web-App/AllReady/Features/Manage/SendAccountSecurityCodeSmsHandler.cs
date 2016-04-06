@@ -15,7 +15,8 @@ namespace AllReady.Features.Manage
 
         protected override async Task HandleCore(SendAccountSecurityCodeSms message)
         {
-            await smsSender.SendSmsAsync(message.PhoneNumber, $"Your allReady account security code is: {message.Code}");
+            await smsSender.SendSmsAsync(message.PhoneNumber, $"Your allReady account security code is: {message.Code}")
+                .ConfigureAwait(false);
         }
     }
 }
