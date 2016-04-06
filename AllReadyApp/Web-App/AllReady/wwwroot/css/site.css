@@ -121,8 +121,8 @@ ul.nav a:focus {
     text-decoration: underline;
 }
 
-ul.nav.nav-tabs > li > a:hover {
-    /* issue 551 */
+.nav-tabs > li > a:hover,
+.nav-tabs > li > a:focus {
     color: #000;
 }
 
