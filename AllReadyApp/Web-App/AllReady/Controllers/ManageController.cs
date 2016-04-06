@@ -43,6 +43,7 @@ namespace AllReady.Controllers
         private const string MANAGE_CONTROLLER = "Manage";
         //View Names
         private const string ERROR_VIEW = "Error";
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
@@ -138,7 +139,6 @@ namespace AllReady.Controllers
         {
             var user = await _userManager.FindByIdAsync(User.GetUserId());
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            //var callbackUrl = Url.Action(nameof(ConfirmNewEmail), ACCOUNT_CONTROLLER, new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
             var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = ACCOUNT_CONTROLLER, Values = new { userId = user.Id, code = code },
                 Protocol = HttpContext.Request.Scheme });
             await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(RESEND_EMAIL_CONFIRM, callbackUrl));
@@ -377,7 +377,6 @@ namespace AllReady.Controllers
                 await _userManager.UpdateAsync(user);
 
                 var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail);
-                //var callbackUrl = Url.Action(nameof(ConfirmNewEmail), MANAGE_CONTROLLER, new { token = token }, protocol: HttpContext.Request.Scheme);
                 var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = MANAGE_CONTROLLER, Values = new { token = token },
                     Protocol = HttpContext.Request.Scheme });
                 await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(NEW_EMAIL_CONFIRM, callbackUrl));
@@ -428,7 +427,6 @@ namespace AllReady.Controllers
             }
 
             var token = await _userManager.GenerateChangeEmailTokenAsync(user, user.PendingNewEmail);
-            //var callbackUrl = Url.Action(nameof(ConfirmNewEmail), MANAGE_CONTROLLER, new { token = token }, protocol: HttpContext.Request.Scheme);
             var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = MANAGE_CONTROLLER, Values = new { token = token },
                 Protocol = HttpContext.Request.Scheme });
             await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(NEW_EMAIL_CONFIRM, callbackUrl));
@@ -514,7 +512,6 @@ namespace AllReady.Controllers
         public IActionResult LinkLogin(string provider)
         {
             // Request a redirect to the external login provider to link a login for the current user
-            //var redirectUrl = Url.Action(nameof(LinkLoginCallback), MANAGE_CONTROLLER);
             var redirectUrl = Url.Action(new UrlActionContext { Action = nameof(LinkLoginCallback), Controller = MANAGE_CONTROLLER });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, User.GetUserId());
             return new ChallengeResult(provider, properties);

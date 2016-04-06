@@ -24,7 +24,7 @@ namespace AllReady.Areas.Admin.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IAllReadyDataAccess _dataAccess;
-        private ILogger<SiteController> _logger;
+        private readonly ILogger<SiteController> _logger;
         private readonly IMediator _mediator;
 
         public SiteController(UserManager<ApplicationUser> userManager, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger, IMediator mediator)
