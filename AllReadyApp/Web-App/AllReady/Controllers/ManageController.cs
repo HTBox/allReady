@@ -348,8 +348,7 @@ namespace AllReady.Controllers
                 var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = MANAGE_CONTROLLER, Values = new { token = token },
                     Protocol = HttpContext.Request.Scheme });
 
-                await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(NEW_EMAIL_CONFIRM, callbackUrl));
-                //await _mediator.SendAsync(new SendConfirmNewEmail { Email = user.Email, CallbackUrl = callbackUrl };
+                await SendNewEmailConfirmation(user.Email, callbackUrl);
 
                 return RedirectToAction(nameof(EmailConfirmationSent));                
             }
@@ -400,8 +399,7 @@ namespace AllReady.Controllers
             var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = MANAGE_CONTROLLER, Values = new { token = token },
                 Protocol = HttpContext.Request.Scheme });
 
-            await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(NEW_EMAIL_CONFIRM, callbackUrl));
-            //await _mediator.SendAsync(new SendConfirmNewEmail { Email = user.Email, CallbackUrl = callbackUrl };
+            await SendNewEmailConfirmation(user.Email, callbackUrl);
 
             return RedirectToAction(nameof(EmailConfirmationSent));
         }
@@ -511,7 +509,11 @@ namespace AllReady.Controllers
             return RedirectToAction(nameof(ManageLogins), new { Message = message });
         }
 
-        #region Helpers
+        private async Task SendNewEmailConfirmation(string userEmail, string callbackUrl)
+        {
+            await _emailSender.SendEmailAsync(userEmail, EMAIL_CONFIRMATION_SUBJECT, string.Format(NEW_EMAIL_CONFIRM, callbackUrl));
+            //await _mediator.SendAsync(new SendConfirmNewEmailAddressEmail { Email = user.Email, CallbackUrl = callbackUrl };
+        }
 
         private async Task GenerateChangePhoneNumberTokenAndSendItSms(ApplicationUser applicationUser, string phoneNumber)
         {
@@ -553,7 +555,6 @@ namespace AllReady.Controllers
         {
             return _mediator.Send(new UserByUserIdQuery { UserId = User.GetUserId() });
         }
-        #endregion
 
         //Email Constants
         private const string EMAIL_CONFIRMATION_SUBJECT = "Confirm your allReady account";
