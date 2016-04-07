@@ -175,8 +175,7 @@ namespace AllReady.Controllers
             }
 
             // Generate the token and send it
-            var token = await _userManager.GenerateChangePhoneNumberTokenAsync(GetCurrentUser(), model.PhoneNumber);
-            await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = model.PhoneNumber, Token = token });
+            await GenerateChangePhoneNumberTokenAndSendItSms(GetCurrentUser(), model.PhoneNumber);
             return RedirectToAction(nameof(VerifyPhoneNumber), new { model.PhoneNumber });
         }
 
@@ -185,8 +184,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResendPhoneNumberConfirmation(string phoneNumber)
         {
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(GetCurrentUser(), phoneNumber);
-            await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = phoneNumber, Token = code });
+            await GenerateChangePhoneNumberTokenAndSendItSms(GetCurrentUser(), phoneNumber);
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = phoneNumber });
         }
 
@@ -514,6 +512,12 @@ namespace AllReady.Controllers
         }
 
         #region Helpers
+
+        private async Task GenerateChangePhoneNumberTokenAndSendItSms(ApplicationUser applicationUser, string phoneNumber)
+        {
+            var token = await _userManager.GenerateChangePhoneNumberTokenAsync(applicationUser, phoneNumber);
+            await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = phoneNumber, Token = token });
+        }
 
         private async Task UpdateUserProfileCompleteness(ApplicationUser user)
         {
