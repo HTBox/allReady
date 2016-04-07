@@ -54,7 +54,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task IndexGetInvokesGetUserWithCorrectUserId()
+        public async Task IndexGetSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -80,7 +80,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task IndexPostInvokesGetUserWithCorrectUserId()
+        public async Task IndexPostSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -193,7 +193,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task RemoveLoginInvokesGetUserWithCorrectUserId()
+        public async Task RemoveLoginSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -243,7 +243,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task AddPhoneNumberPostInvokesGetUserWithCorrectUserIdWhenModelStateIsValid()
+        public async Task AddPhoneNumberPostSendsUserByUserIdQueryWithCorrectUserIdWhenModelStateIsValid()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -281,7 +281,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ResendPhoneNumberConfirmationInvokesGetUserWithCorrectUserId()
+        public async Task ResendPhoneNumberConfirmationSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -319,7 +319,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task EnableTwoFactorAuthenticationInvokesGetUserWithCorrectUserId()
+        public async Task EnableTwoFactorAuthenticationSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -357,7 +357,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DisableTwoFactorAuthenticationInvokesGetUserWithCorrectUserId()
+        public async Task DisableTwoFactorAuthenticationSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -417,7 +417,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task VerifyPhoneNumberPostInvokesGetUserWithCorrectUserId()
+        public async Task VerifyPhoneNumberPostSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -483,7 +483,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task RemovePhoneNumberInvokesGetUserWithCorrectUserId()
+        public async Task RemovePhoneNumberSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -554,7 +554,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ChangePasswordPostInvokesGetUserWithCorrectUserId()
+        public async Task ChangePasswordPostSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -630,7 +630,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ChangeEmailPostInvokesGetUserWithCorrectUserId()
+        public async Task ChangeEmailPostSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -738,7 +738,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ConfirmNewEmailInvokesGetUserWithCorrectUserId()
+        public async Task ConfirmNewEmailSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -785,7 +785,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ResendChangeEmailConfirmationInvokesGetUserWithCorrectUserId()
+        public async Task ResendChangeEmailConfirmationSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -837,7 +837,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task CancelChangeEmailInvokesGetUserWithCorrectUserId()
+        public async Task CancelChangeEmailSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -885,7 +885,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task SetPasswordPostInvokesGetUserWithCorrectUserId()
+        public async Task SetPasswordPostSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -965,7 +965,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ManageLoginsInvokesGetUserWithCorrectUserId()
+        public async Task ManageLoginsSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -1037,7 +1037,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task LinkLoginCallbackInvokesGetUserWithCorrectUserId()
+        public async Task LinkLoginCallbackSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;

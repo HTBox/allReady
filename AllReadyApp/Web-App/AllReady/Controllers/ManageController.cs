@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Features.Login;
+using AllReady.Features.Manage;
 using AllReady.Models;
 using AllReady.Services;
 using MediatR;
@@ -46,7 +47,6 @@ namespace AllReady.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
-        private readonly IAllReadyDataAccess _dataAccess;
         private readonly IMediator _mediator;
 
         public ManageController(
@@ -54,14 +54,12 @@ namespace AllReady.Controllers
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            IAllReadyDataAccess dataAccess,
             IMediator mediator)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
-            _dataAccess = dataAccess;
             _mediator = mediator;
         }
 
@@ -122,7 +120,7 @@ namespace AllReady.Controllers
 
             user.AssociatedSkills?.ForEach(usk => usk.UserId = user.Id);
 
-            await _dataAccess.UpdateUser(user);
+            await _mediator.SendAsync(new UpdateUser { User = user });
 
             if (shouldRefreshSignin)
             {
@@ -578,7 +576,7 @@ namespace AllReady.Controllers
 
         private ApplicationUser GetCurrentUser()
         {
-            return _dataAccess.GetUser(User.GetUserId());
+            return _mediator.Send(new UserByUserIdQuery { UserId = User.GetUserId() });
         }
         #endregion
     }

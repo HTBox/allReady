@@ -17,6 +17,7 @@ namespace AllReady.Models
                     .ToList();
             }
         }
+
         ApplicationUser IAllReadyDataAccess.GetUser(string userId)
         {
             return _dbContext.Users
