@@ -164,7 +164,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ResendEmailConfirmationInvokesSendEmailAsyncWithCorrectParameters()
+        public async Task ResendEmailConfirmationSendsSendConfirmAccountEmailAsyncWithCorrectData()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
