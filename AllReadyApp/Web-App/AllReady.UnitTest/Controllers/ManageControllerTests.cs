@@ -700,7 +700,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ChangeEmailPostInvokesSendEmailAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
+        public async Task ChangeEmailPostSendsSendNewEmailAddressConfirmationEmailAsyncWithCorrectDataWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -813,7 +813,8 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ResendChangesEmailConfirmationInvokesSendEmailAsyncWithCorrectParameters()
+        //public async Task ResendChangesEmailConfirmationInvokesSendEmailAsyncWithCorrectParameters()
+        public async Task ResendChangesEmailConfirmationSendsSendNewEmailAddressConfirmationEmailAsyncWithCorrectData()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;

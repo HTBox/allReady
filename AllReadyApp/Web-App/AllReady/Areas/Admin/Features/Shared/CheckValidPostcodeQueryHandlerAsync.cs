@@ -23,7 +23,7 @@ namespace AllReady.Areas.Admin.Features.Shared
                .Where(p => p.PostalCode == message.Postcode.PostalCode)
                .SingleOrDefaultAsync();
 
-            if(postcode == null) return false;
+            if (postcode == null) return false;
 
             return true;
         }

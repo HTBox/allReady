@@ -175,7 +175,7 @@ namespace AllReady.Controllers
             }
 
             // Generate the token and send it
-            await GenerateChangePhoneNumberTokenAndSendItSms(GetCurrentUser(), model.PhoneNumber);
+            await GenerateChangePhoneNumberTokenAndSendAccountSecurityTokenSms(GetCurrentUser(), model.PhoneNumber);
             return RedirectToAction(nameof(VerifyPhoneNumber), new { model.PhoneNumber });
         }
 
@@ -184,7 +184,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResendPhoneNumberConfirmation(string phoneNumber)
         {
-            await GenerateChangePhoneNumberTokenAndSendItSms(GetCurrentUser(), phoneNumber);
+            await GenerateChangePhoneNumberTokenAndSendAccountSecurityTokenSms(GetCurrentUser(), phoneNumber);
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = phoneNumber });
         }
 
@@ -344,11 +344,7 @@ namespace AllReady.Controllers
                 user.PendingNewEmail = model.NewEmail;
                 await _userManager.UpdateAsync(user);
 
-                var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail);
-                var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = MANAGE_CONTROLLER, Values = new { token = token },
-                    Protocol = HttpContext.Request.Scheme });
-
-                await SendNewEmailConfirmation(user.Email, callbackUrl);
+                await BuildCallbackUrlAndSendNewEmailAddressConfirmationEmail(user, model.NewEmail);
 
                 return RedirectToAction(nameof(EmailConfirmationSent));                
             }
@@ -395,12 +391,8 @@ namespace AllReady.Controllers
                 return View(ERROR_VIEW);
             }
 
-            var token = await _userManager.GenerateChangeEmailTokenAsync(user, user.PendingNewEmail);
-            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = MANAGE_CONTROLLER, Values = new { token = token },
-                Protocol = HttpContext.Request.Scheme });
-
-            await SendNewEmailConfirmation(user.Email, callbackUrl);
-
+            await BuildCallbackUrlAndSendNewEmailAddressConfirmationEmail(user, user.PendingNewEmail);
+            
             return RedirectToAction(nameof(EmailConfirmationSent));
         }
 
@@ -509,13 +501,16 @@ namespace AllReady.Controllers
             return RedirectToAction(nameof(ManageLogins), new { Message = message });
         }
 
-        private async Task SendNewEmailConfirmation(string userEmail, string callbackUrl)
+        private async Task BuildCallbackUrlAndSendNewEmailAddressConfirmationEmail(ApplicationUser applicationUser, string userEmail)
         {
-            await _emailSender.SendEmailAsync(userEmail, EMAIL_CONFIRMATION_SUBJECT, string.Format(NEW_EMAIL_CONFIRM, callbackUrl));
-            //await _mediator.SendAsync(new SendConfirmNewEmailAddressEmail { Email = user.Email, CallbackUrl = callbackUrl };
+            var token = await _userManager.GenerateChangeEmailTokenAsync(applicationUser, userEmail);
+            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = MANAGE_CONTROLLER, Values = new { token = token },
+                Protocol = HttpContext.Request.Scheme
+            });
+            await _mediator.SendAsync(new SendNewEmailAddressConfirmationEmail { Email = userEmail, CallbackUrl = callbackUrl });
         }
 
-        private async Task GenerateChangePhoneNumberTokenAndSendItSms(ApplicationUser applicationUser, string phoneNumber)
+        private async Task GenerateChangePhoneNumberTokenAndSendAccountSecurityTokenSms(ApplicationUser applicationUser, string phoneNumber)
         {
             var token = await _userManager.GenerateChangePhoneNumberTokenAsync(applicationUser, phoneNumber);
             await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = phoneNumber, Token = token });
@@ -558,8 +553,6 @@ namespace AllReady.Controllers
 
         //Email Constants
         private const string EMAIL_CONFIRMATION_SUBJECT = "Confirm your allReady account";
-        private const string NEW_EMAIL_CONFIRM =
-            "Please confirm your new email address for your allReady account by clicking this link: <a href=\"{0}\">link</a>. Note that once confirmed your original email address will cease to be valid as your username.";
         private const string RESEND_EMAIL_CONFIRM = "Please confirm your allReady account by clicking this link: <a href=\"{0}\">link</a>";
 
         //Error Constants
