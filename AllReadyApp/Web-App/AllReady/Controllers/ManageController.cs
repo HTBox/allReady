@@ -15,35 +15,7 @@ namespace AllReady.Controllers
 {
     [Authorize]
     public class ManageController : Controller
-    {
-        //Email Constants
-        private const string EMAIL_CONFIRMATION_SUBJECT = "Confirm your allReady account";
-        private const string NEW_EMAIL_CONFIRM = 
-            "Please confirm your new email address for your allReady account by clicking this link: <a href=\"{0}\">link</a>. Note that once confirmed your original email address will cease to be valid as your username.";
-        private const string RESEND_EMAIL_CONFIRM = "Please confirm your allReady account by clicking this link: <a href=\"{0}\">link</a>";
-        //Error Constants
-        private const string ACCOUNT_SECURITY_CODE = "Your allReady account security code is: ";
-        private const string FAILED_TO_VERIFY_PHONE_NUMBER = "Failed to verify phone number";
-        private const string PASSWORD_INCORRECT = "The password supplied is not correct";
-        private const string EMAIL_ALREADY_REGISTERED = "The email supplied is already registered";
-        //ViewData Constants
-        private const string SHOW_REMOVE_BUTTON = "ShowRemoveButton";
-        private const string STATUS_MESSAGE = "StatusMessage";
-        //Message Constants
-        private const string PASSWORD_CHANGED = "Your password has been changed.";
-        private const string PASSWORD_SET = "Your password has been set.";
-        private const string TWO_FACTOR_SET = "Your two-factor authentication provider has been set.";
-        private const string ERROR_OCCURRED = "An error has occurred.";
-        private const string PHONE_NUMBER_ADDED = "Your phone number was added.";
-        private const string PHONE_NUMBER_REMOVED = "Your phone number was removed.";
-        private const string EXTERNAL_LOGIN_REMOVED = "The external login was removed.";
-        private const string EXTERNAL_LOGIN_ADDED = "The external login was added.";
-        //Controller Names
-        private const string ACCOUNT_CONTROLLER = "Account";
-        private const string MANAGE_CONTROLLER = "Manage";
-        //View Names
-        private const string ERROR_VIEW = "Error";
-
+    { 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
@@ -203,9 +175,9 @@ namespace AllReady.Controllers
             }
 
             // Generate the token and send it
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(GetCurrentUser(), model.PhoneNumber);
-            await _mediator.SendAsync(new SendAccountSecurityCodeSms { PhoneNumber = model.PhoneNumber, Code = code });
-            return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = model.PhoneNumber });
+            var token = await _userManager.GenerateChangePhoneNumberTokenAsync(GetCurrentUser(), model.PhoneNumber);
+            await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = model.PhoneNumber, Token = token });
+            return RedirectToAction(nameof(VerifyPhoneNumber), new { model.PhoneNumber });
         }
 
         // POST: /Account/ResendPhoneNumberConfirmation
@@ -214,7 +186,7 @@ namespace AllReady.Controllers
         public async Task<IActionResult> ResendPhoneNumberConfirmation(string phoneNumber)
         {
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(GetCurrentUser(), phoneNumber);
-            await _mediator.SendAsync(new SendAccountSecurityCodeSms { PhoneNumber = phoneNumber, Code = code });
+            await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = phoneNumber, Token = code });
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = phoneNumber });
         }
 
@@ -578,5 +550,37 @@ namespace AllReady.Controllers
             return _mediator.Send(new UserByUserIdQuery { UserId = User.GetUserId() });
         }
         #endregion
+
+        //Email Constants
+        private const string EMAIL_CONFIRMATION_SUBJECT = "Confirm your allReady account";
+        private const string NEW_EMAIL_CONFIRM =
+            "Please confirm your new email address for your allReady account by clicking this link: <a href=\"{0}\">link</a>. Note that once confirmed your original email address will cease to be valid as your username.";
+        private const string RESEND_EMAIL_CONFIRM = "Please confirm your allReady account by clicking this link: <a href=\"{0}\">link</a>";
+
+        //Error Constants
+        private const string FAILED_TO_VERIFY_PHONE_NUMBER = "Failed to verify phone number";
+        private const string PASSWORD_INCORRECT = "The password supplied is not correct";
+        private const string EMAIL_ALREADY_REGISTERED = "The email supplied is already registered";
+
+        //ViewData Constants
+        private const string SHOW_REMOVE_BUTTON = "ShowRemoveButton";
+        private const string STATUS_MESSAGE = "StatusMessage";
+
+        //Message Constants
+        private const string PASSWORD_CHANGED = "Your password has been changed.";
+        private const string PASSWORD_SET = "Your password has been set.";
+        private const string TWO_FACTOR_SET = "Your two-factor authentication provider has been set.";
+        private const string ERROR_OCCURRED = "An error has occurred.";
+        private const string PHONE_NUMBER_ADDED = "Your phone number was added.";
+        private const string PHONE_NUMBER_REMOVED = "Your phone number was removed.";
+        private const string EXTERNAL_LOGIN_REMOVED = "The external login was removed.";
+        private const string EXTERNAL_LOGIN_ADDED = "The external login was added.";
+
+        //Controller Names
+        private const string ACCOUNT_CONTROLLER = "Account";
+        private const string MANAGE_CONTROLLER = "Manage";
+
+        //View Names
+        private const string ERROR_VIEW = "Error";
     }
 }

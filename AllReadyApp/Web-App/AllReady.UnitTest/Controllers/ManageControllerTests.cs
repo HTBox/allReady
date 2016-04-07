@@ -257,7 +257,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task AddPhoneNumberPostSendsSendAccountSecurityCodeSmsAsyncWithCorrectDataWhenModelStateIsValid()
+        public async Task AddPhoneNumberPostSendsSendAccountSecurityTokenSmsAsyncWithCorrectDataWhenModelStateIsValid()
         {
             //delete this liResendPhoneNumberConfirmationne when starting work on this unit test
             await TaskFromResultZero;
@@ -295,7 +295,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ResendPhoneNumberSendsSendAccountSecurityCodeSmsAsyncWithCorrectData()
+        public async Task ResendPhoneNumberSendsSendAccountSecurityTokenSmsAsyncWithCorrectData()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
