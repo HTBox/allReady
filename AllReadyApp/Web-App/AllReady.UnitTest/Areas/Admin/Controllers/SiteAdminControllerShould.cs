@@ -67,7 +67,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void EditUserGetInvokesGetUserWithCorrectUserId()
+        public void EditUserGetSendsUserByUserIdQueryWithCorrectUserId()
         {
         }
 
@@ -87,14 +87,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task EditUserPostInvokesGetUserWithCorrectUserId()
+        public async Task EditUserPostSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task EditUserPostInvokesUpdateUserWithCorrectUserWhenUsersAssociatedSkillsAreNotNull()
+        public async Task EditUserPostSendsUpdateUserWithCorrectUserWhenUsersAssociatedSkillsAreNotNull()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -167,7 +167,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ResetPasswordInvokesGetUserWithCorrectUserId()
+        public async Task ResetPasswordSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -242,7 +242,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task AssignSiteAdminInvokesGetUserWithCorrectUserId()
+        public async Task AssignSiteAdminSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -289,7 +289,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task AssignOrganizationAdminGetInvokesGetUserWithCorrectUserId()
+        public async Task AssignOrganizationAdminGetSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -304,6 +304,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
         [Fact(Skip = "NotImplemented")]
         public async Task AssignOrganizationAdminGetRedirectsToCorrectActionWhenUserIsASiteAdmin()
+        {
+            //delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task AssignOrganizationAdminGetSendsAllOrganizationsQuery()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -329,7 +336,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task AssignOrganizationAdminPostInvokesGetUserWithCorrectUserId()
+        public async Task AssignOrganizationAdminPostSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -350,7 +357,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task AssignOrganizationAdminPostInvokesOrganizationsWhenModelStateIsValid()
+        public async Task AssignOrganizationAdminPostSendsAllOrganizationsQueryWhenModelStateIsValid()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -395,7 +402,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task RevokeSiteAdminInvokesGetUserWithCorrectUserId()
+        public async Task RevokeSiteAdminSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -442,7 +449,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task RevokeOrganizationAdminInvokesGetUserWithCorrectUserId()
+        public async Task RevokeOrganizationAdminSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
             await TaskFromResultZero;
