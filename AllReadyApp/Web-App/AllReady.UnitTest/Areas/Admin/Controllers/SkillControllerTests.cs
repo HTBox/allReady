@@ -63,9 +63,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(result);
             Assert.Equal("Index", result.ViewName);
 
-            Assert.True((result as ViewResult).ViewData.ContainsKey("Title"));
+            Assert.True(result.ViewData.ContainsKey("Title"));
 
-            var title = (result as ViewResult).ViewData["Title"];
+            var title = result.ViewData["Title"];
             Assert.Equal("Skills - " + _orgName, title);
 
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<OrganizationNameQueryAsync>()), Times.Once);
@@ -85,11 +85,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.ActionContext = mockContext.Object;
 
             // Act
-            var result = await controller.Index() as IActionResult;
+            var result = await controller.Index();
 
             // Assert
             Assert.IsType<HttpUnauthorizedResult>(result);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>()), Times.Never);
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public void IndexHasHttpGetAttribute()
+        {
         }
 
         #endregion
@@ -161,6 +166,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             Assert.Null((result.ViewData.Model as SkillEditModel).OrganizationSelection);
             Assert.Equal(2, (result.ViewData.Model as SkillEditModel).ParentSelection.ToList().Count());
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public void CreateGetHasHttpGetAttribute()
+        {
         }
 
         [Fact]
@@ -258,6 +268,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             Assert.Null((result.ViewData.Model as SkillEditModel).OrganizationSelection);
             Assert.Equal(2, (result.ViewData.Model as SkillEditModel).ParentSelection.ToList().Count());
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public void CreatePostHasHttpPostAttribute()
+        {
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public void CreatePostHasValidateAntiForgeryTokenAttribute()
+        {
         }
 
         private static SkillEditModel CreateSkillModel()
@@ -380,6 +400,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQueryAsync>()), Times.Never);
         }
 
+        [Fact(Skip = "NotImplemented")]
+        public void EditGetHasHttpGetAttrbitue()
+        {
+        }
+
         [Fact]
         public async Task SkillEditPostForSiteAdminWithValidModelStateReturnsRedirectToAction()
         {
@@ -420,6 +445,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal("Index", result.ActionName);
 
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillEditCommandAsync>()), Times.Once);
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public void EditPostHasHttpPostAttrbitue()
+        {
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public void EditPostHasValidateAntiForgeryTokenttrbitue()
+        {
         }
 
         [Fact]
@@ -512,7 +547,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Arrange
             const int skillId = 1;
             SkillController controller;
-            var mockMediator = MockMediatorSkillDeleteQuery(out controller);
+            MockMediatorSkillDeleteQuery(out controller);
 
             var mockContext = MockActionContextWithUser(OrgAdminWithMissingOrgId());
             controller.ActionContext = mockContext.Object;
@@ -530,7 +565,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Arrange
             const int skillId = 1;
             SkillController controller;
-            var mockMediator = MockMediatorSkillDeleteQuery(out controller);
+            MockMediatorSkillDeleteQuery(out controller);
 
             var mockContext = MockActionContextWithUser(SiteAdmin());
             controller.ActionContext = mockContext.Object;
@@ -549,7 +584,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Arrange
             const int skillId = 1;
             SkillController controller;
-            var mockMediator = MockMediatorSkillDeleteQuery(out controller, new SkillDeleteModel { HierarchicalName = "A Name", OwningOrganizationId = _orgAdminOrgId });
+            MockMediatorSkillDeleteQuery(out controller, new SkillDeleteModel { HierarchicalName = "A Name", OwningOrganizationId = _orgAdminOrgId });
 
             var mockContext = MockActionContextWithUser(OrgAdmin());
             controller.ActionContext = mockContext.Object;
@@ -560,6 +595,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.Equal("Delete", result.ViewName);
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public void DeleteHasHttpGetAttribute()
+        {
         }
 
         [Fact]
@@ -604,7 +644,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Arrange
             const int skillId = 1;
             SkillController controller;
-            var mockMediator = MockMediatorSkillDeleteQuery(out controller);
+            MockMediatorSkillDeleteQuery(out controller);
 
             var mockContext = MockActionContextWithUser(OrgAdminWithMissingOrgId());
             controller.ActionContext = mockContext.Object;
@@ -616,6 +656,21 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<HttpUnauthorizedResult>(result);
         }
 
+        [Fact(Skip = "NotImplemented")]
+        public void DeleteConfirmedHasHttpPostAttribute()
+        {
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public void DeleteConfirmedHasActionNameAttributeWithCorrerctActionName()
+        {
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public void DeleteConfirmedHasValidateAntiForgeryTokenAttribute()
+        {
+        }
+
         #endregion
 
         #region Helper Methods
@@ -624,7 +679,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>()))
-                .Returns(() => Task.FromResult<IEnumerable<SkillSummaryModel>>(SummaryListItems()))
+                .Returns(() => Task.FromResult(SummaryListItems()))
                 .Verifiable();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationNameQueryAsync>()))
                 .Returns(() => Task.FromResult(_orgName))
@@ -636,10 +691,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static Mock<IMediator> MockMediatorSkillCreateQuery(out SkillController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>())).Returns(() => Task.FromResult<IEnumerable<SkillSummaryModel>>(SummaryListItems()))
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>())).Returns(() => Task.FromResult(SummaryListItems()))
                 .Verifiable();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQueryAsync>())).Returns(() => Task.FromResult<IEnumerable<SelectListItem>>(new List<SelectListItem> { new SelectListItem { Text = "Item 1", Value = "1" } }))
-                 .Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQueryAsync>()))
+                .Returns(() => Task.FromResult<IEnumerable<SelectListItem>>(new List<SelectListItem> { new SelectListItem { Text = "Item 1", Value = "1" } }))
+            .Verifiable();
             controller = new SkillController(mockMediator.Object);
             return mockMediator;
         }
@@ -650,10 +706,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillEditQueryAsync>())).Returns(() => Task.FromResult(model)).Verifiable();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>())).Returns(() => Task.FromResult<IEnumerable<SkillSummaryModel>>(SummaryListItems()))
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>())).Returns(() => Task.FromResult(SummaryListItems()))
                 .Verifiable();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQueryAsync>())).Returns(() => Task.FromResult<IEnumerable<SelectListItem>>(new List<SelectListItem> { new SelectListItem { Text = "Item 1", Value = "1" } }))
-                 .Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQueryAsync>()))
+                .Returns(() => Task.FromResult<IEnumerable<SelectListItem>>(new List<SelectListItem> { new SelectListItem { Text = "Item 1", Value = "1" } }))
+                .Verifiable();
             controller = new SkillController(mockMediator.Object);
             return mockMediator;
         }
@@ -684,9 +741,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             return mockMediator;
         }
 
-        private static List<SkillSummaryModel> SummaryListItems()
+        private static IEnumerable<SkillSummaryModel> SummaryListItems()
         {
-            return new List<SkillSummaryModel> {
+            return new List<SkillSummaryModel>
+            {
                 new SkillSummaryModel { Id = 1, HierarchicalName = "Name", OwningOrganizationName = "Org" },
                 new SkillSummaryModel { Id = 2, HierarchicalName = "Name 2", OwningOrganizationName = "Org" }
             };
@@ -695,8 +753,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static Mock<ActionContext> MockActionContextWithUser(ClaimsPrincipal principle)
         {
             var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext.Setup(mock => mock.User)
-                .Returns(() => principle);
+            mockHttpContext.Setup(mock => mock.User).Returns(() => principle);
             var mockContext = new Mock<ActionContext>();
 
             mockContext.Object.HttpContext = mockHttpContext.Object;
@@ -705,33 +762,27 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
         private static ClaimsPrincipal OrgAdminWithMissingOrgId()
         {
-            return new ClaimsPrincipal(
-                new ClaimsIdentity(
-                    new[]
-                    {
-                        new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString())
-                    }));
+            return new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString())
+            }));
         }
 
         private static ClaimsPrincipal OrgAdmin()
         {
-            return new ClaimsPrincipal(
-                new ClaimsIdentity(
-                    new[]
-                    {
-                        new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                        new Claim(AllReady.Security.ClaimTypes.Organization, _orgAdminOrgId.ToString())
-                    }));
+            return new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, _orgAdminOrgId.ToString())
+            }));
         }
 
         private static ClaimsPrincipal SiteAdmin()
         {
-            return new ClaimsPrincipal(
-                new ClaimsIdentity(
-                    new[]
-                    {
-                        new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
-                    }));
+            return new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
+            }));
         }
 
         #endregion

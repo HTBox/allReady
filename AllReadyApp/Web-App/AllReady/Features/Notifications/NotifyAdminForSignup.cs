@@ -15,14 +15,14 @@ namespace AllReady.Features.Notifications
     public class NotifyAdminForSignup : IAsyncNotificationHandler<VolunteerSignupNotification>
     {
         private readonly AllReadyContext _context;
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
         private readonly ILogger<NotifyAdminForUserUnenrolls> _logger;
 
-        public NotifyAdminForSignup(AllReadyContext context, IMediator bus, IOptions<GeneralSettings> options, ILogger<NotifyAdminForUserUnenrolls> logger)
+        public NotifyAdminForSignup(AllReadyContext context, IMediator mediator, IOptions<GeneralSettings> options, ILogger<NotifyAdminForUserUnenrolls> logger)
         {
             _context = context;
-            _bus = bus;
+            _mediator = mediator;
             _options = options;
             _logger = logger;
         }
@@ -32,17 +32,17 @@ namespace AllReady.Features.Notifications
             // don't let problem with notification keep us from continuing
             try
             {
-                var volunteer = _context.Users.Single(u => u.Id == notification.UserId);
+                var volunteer = await _context.Users.SingleAsync(u => u.Id == notification.UserId).ConfigureAwait(false);
 
-                var activity = _context.Activities
+                var activity = await _context.Activities
                     .Include(a => a.RequiredSkills).ThenInclude(r => r.Skill)
-                    .Single(a => a.Id == notification.ActivityId);
+                    .SingleAsync(a => a.Id == notification.ActivityId).ConfigureAwait(false);
 
                 var activitySignup = activity.UsersSignedUp.FirstOrDefault(a => a.User.Id == notification.UserId);
 
-                var campaign = _context.Campaigns
+                var campaign = await _context.Campaigns
                     .Include(c => c.CampaignContacts).ThenInclude(cc => cc.Contact)
-                    .Single(c => c.Id == activity.CampaignId);
+                    .SingleOrDefaultAsync(c => c.Id == activity.CampaignId).ConfigureAwait(false);
 
                 var campaignContact = campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
                 var adminEmail = campaignContact?.Contact.Email;
@@ -60,7 +60,7 @@ namespace AllReady.Features.Notifications
 
                 if (!isActivitySignup)
                 {
-                    task = _context.Tasks.SingleOrDefault(t => t.Id == notification.TaskId);
+                    task = await _context.Tasks.SingleOrDefaultAsync(t => t.Id == notification.TaskId).ConfigureAwait(false);
                     if (task == null)
                     {
                         return;
@@ -68,7 +68,6 @@ namespace AllReady.Features.Notifications
                     taskLink = $"View task: http://{_options.Value.SiteBaseUrl}/Admin/task/Details/{task.Id}";
                     taskSignup = task.AssignedVolunteers.FirstOrDefault(t => t.User.Id == volunteer.Id); 
                 }
-
 
                 //set defaults for activity signup
                 var volunteerEmail = !string.IsNullOrWhiteSpace(activitySignup?.PreferredEmail) ? activitySignup.PreferredEmail : volunteer.Email;
@@ -124,7 +123,7 @@ namespace AllReady.Features.Notifications
                         }
                     };
 
-                    await _bus.SendAsync(command);
+                    await _mediator.SendAsync(command).ConfigureAwait(false);
                 }
             }
             catch (Exception e)

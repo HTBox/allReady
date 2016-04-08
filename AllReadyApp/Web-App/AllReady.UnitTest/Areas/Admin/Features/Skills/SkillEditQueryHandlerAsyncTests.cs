@@ -1,5 +1,6 @@
 ﻿using AllReady.Areas.Admin.Features.Skills;
 using System.Threading.Tasks;
+using AllReady.UnitTest.Features.Campaigns;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Skills

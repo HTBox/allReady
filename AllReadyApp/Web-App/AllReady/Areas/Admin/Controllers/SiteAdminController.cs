@@ -13,6 +13,7 @@ using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.AspNet.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 
 namespace AllReady.Areas.Admin.Controllers
@@ -63,15 +64,15 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> ConfirmDeleteUser(string userId)
         {
             await _mediator.SendAsync(new DeleteUserCommand { UserId = userId });
-
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult EditUser(string userId)
         {
             var user = _dataAccess.GetUser(userId);
             var organizationId = user.GetOrganizationId();
-            var viewModel = new EditUserModel()
+
+            var viewModel = new EditUserModel
             {
                 UserId = userId,
                 UserName = user.UserName,
@@ -80,6 +81,7 @@ namespace AllReady.Areas.Admin.Controllers
                 IsSiteAdmin = user.IsUserType(UserType.SiteAdmin),
                 Organization = organizationId != null ? _dataAccess.GetOrganization(organizationId.Value) : null
             };
+
             return View(viewModel);
         }
 
@@ -95,14 +97,17 @@ namespace AllReady.Areas.Admin.Controllers
             //Skill associations
             var user = _dataAccess.GetUser(viewModel.UserId);
             user.AssociatedSkills.RemoveAll(usk => viewModel.AssociatedSkills == null || !viewModel.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
+
             if (viewModel.AssociatedSkills != null)
             {
                 user.AssociatedSkills.AddRange(viewModel.AssociatedSkills.Where(msk => !user.AssociatedSkills.Any(usk => usk.SkillId == msk.SkillId)));
             }
+
             if (user.AssociatedSkills != null && user.AssociatedSkills.Count > 0)
             {
                 user.AssociatedSkills.ForEach(usk => usk.UserId = user.Id);
             }
+
             await _dataAccess.UpdateUser(user);
 
             var organizationAdminClaim = new Claim(Security.ClaimTypes.UserType, "OrgAdmin");
@@ -112,8 +117,9 @@ namespace AllReady.Areas.Admin.Controllers
                 var result = await _userManager.AddClaimAsync(user, organizationAdminClaim);
                 if (result.Succeeded)
                 {
-                    var callbackUrl = Url.Action("Login", "Admin", new { Email = user.Email }, protocol: HttpContext.Request.Scheme);
-                    await _emailSender.SendEmailAsync(user.Email, "Account Approval", "Your account has been approved by an administrator. Please <a href=" + callbackUrl + ">Click here to Log in</a>");
+                    //mgmccarthy: there is no Login action method on the AdminController. The only login method I could find is on the AccountController. Not too sure what to do here
+                    var callbackUrl = Url.Action(new UrlActionContext { Action = "Login", Controller = "Admin", Values = new { Email = user.Email }, Protocol = HttpContext.Request.Scheme });
+                    await _emailSender.SendEmailAsync(user.Email, "Account Approval", $"Your account has been approved by an administrator. Please <a href=\"{callbackUrl}\">Click here to Log in</a>");
                 }
                 else
                 {
@@ -146,13 +152,14 @@ namespace AllReady.Areas.Admin.Controllers
                     return View();
                 }
 
-                // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                 // Send an email with this link
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = Url.Action("ResetPassword", "Admin", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                await _emailSender.SendEmailAsync(user.Email, "Reset Password",
-                   "Please reset your password by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
+                //mgmccarthy: there is no ResetPassword action methd on the AdminController. Not too sure what to do here.
+                var callbackUrl = Url.Action(new UrlActionContext { Action = "ResetPassword", Controller = "Admin", Values = new { userId = user.Id, code = code }, Protocol = HttpContext.Request.Scheme });
+                await _emailSender.SendEmailAsync(user.Email, "Reset Password", $"Please reset your password by clicking here: <a href=\"{callbackUrl}\">link</a>");
+
                 ViewBag.SuccessMessage = $"Sent password reset email for {user.UserName}.";
+
                 return View();
 
             }
@@ -192,15 +199,15 @@ namespace AllReady.Areas.Admin.Controllers
 
             var organizations = _dataAccess.Organizations
                 .OrderBy(t => t.Name)
-                .Select(t => new SelectListItem() { Text = t.Name, Value = t.Id.ToString() })
+                .Select(t => new SelectListItem { Text = t.Name, Value = t.Id.ToString() })
                 .ToList();
 
-            ViewBag.Organizations = new SelectListItem[] 
+            ViewBag.Organizations = new [] 
             {
-                new SelectListItem() { Selected = true, Text = "<Select One>", Value = "0" }
+                new SelectListItem { Selected = true, Text = "<Select One>", Value = "0" }
             }.Union(organizations);
 
-            return View(new AssignOrganizationAdminModel() { UserId = userId });
+            return View(new AssignOrganizationAdminModel { UserId = userId });
         }
 
         [HttpPost]
@@ -208,8 +215,11 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> AssignOrganizationAdmin(AssignOrganizationAdminModel model)
         {
             var user = _dataAccess.GetUser(model.UserId);
-            if (user == null) return RedirectToAction(nameof(Index));
-
+            if (user == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            
             if (model.OrganizationId == 0)
             {
                 ModelState.AddModelError(nameof(AssignOrganizationAdminModel.OrganizationId), "You must pick a valid organization.");
@@ -223,10 +233,8 @@ namespace AllReady.Areas.Admin.Controllers
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.Organization, model.OrganizationId.ToString()));
                     return RedirectToAction(nameof(Index));
                 }
-                else
-                {
-                    ModelState.AddModelError(nameof(AssignOrganizationAdminModel.OrganizationId), "Invalid Organization. Please contact support.");
-                }
+
+                ModelState.AddModelError(nameof(AssignOrganizationAdminModel.OrganizationId), "Invalid Organization. Please contact support.");
             }
 
             return View();

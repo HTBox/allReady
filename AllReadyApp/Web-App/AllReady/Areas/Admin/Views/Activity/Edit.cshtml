@@ -142,10 +142,10 @@
                     <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">@Html.DisplayNameFor(m => m.RequiredSkills) must be unique</span>
                 </div>
             </div>
-
+            @Html.EditorFor(m => m.Location)
         </div>
         <div class="col-lg-6 pull-right">
-            <div id="mapArea" style="width:400px;height:400px"></div>
+            <div id="bingMap" style="position: relative"></div>
         </div>
 
         <h2>Image</h2>

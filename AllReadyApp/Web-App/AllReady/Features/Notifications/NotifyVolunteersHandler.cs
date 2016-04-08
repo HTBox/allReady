@@ -14,7 +14,7 @@ namespace AllReady.Features.Notifications
             _storageService = storageService;
         }
 
-        protected override async System.Threading.Tasks.Task HandleCore(NotifyVolunteersCommand message)
+        protected override async Task HandleCore(NotifyVolunteersCommand message)
         {
             // TODO: both SMS and email sent to the same email service?
 
@@ -42,7 +42,6 @@ namespace AllReady.Features.Notifications
                 var email = JsonConvert.SerializeObject(queuedEmail);
                 await _storageService.SendMessageAsync(QueueStorageService.Queues.EmailQueue, email);
             }
-
         }
     }
 }

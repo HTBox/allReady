@@ -14,27 +14,15 @@ namespace AllReady.UnitTest.Extensions
             controller.ActionContext.HttpContext = new DefaultHttpContext();
         }
 
-        public static T SetFakeHttpContext<T>(this T controller) where T : Controller
+        public static void SetFakeHttpRequestSchemeTo(this Controller controller, string requestScheme)
         {
-            var httpContext = FakeHttpContext();
-            controller.ActionContext.HttpContext = httpContext;
-            return controller;
-        }
-
-        public static T SetFakeHttpRequestSchemeTo<T>(this T controller, string requestScheme) where T : Controller
-        {
-            if (controller.ActionContext.HttpContext == null)
-                controller.SetFakeHttpContext();
-
+            SetFakeHttpContextIfNotAlreadySet(controller);
             Mock.Get(controller.Request).SetupGet(httpRequest => httpRequest.Scheme).Returns(requestScheme);
-            return controller;
         }
 
-        //http://www.jerriepelser.com/blog/unit-testing-controllers-aspnet5
         public static T SetFakeUser<T>(this T controller, string userId) where T : Controller
         {
-            if (controller.ActionContext.HttpContext == null)
-                controller.SetFakeHttpContext();
+            SetFakeHttpContextIfNotAlreadySet(controller);
 
             var claimsPrincipal = new ClaimsPrincipal();
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) }));
@@ -54,6 +42,53 @@ namespace AllReady.UnitTest.Extensions
             controller.ViewData.ModelState.AddModelError("Error", "test");
         }
 
+        public static void SetClaims(this Controller controller, List<Claim> claims)
+        {
+            SetFakeHttpContextIfNotAlreadySet(controller);
+
+            var claimsIdentity = new ClaimsIdentity();
+            claims.ForEach(claim => claimsIdentity.AddClaim(claim));
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+            Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
+        }
+
+        public static Mock<HttpContext> GetMockHttpContext(this Controller controller)
+        {
+            SetFakeHttpContextIfNotAlreadySet(controller);
+            return Mock.Get(controller.HttpContext);
+        }
+
+        public static Mock<HttpRequest> GetMockHttpRequest(this Controller controller)
+        {
+            SetFakeHttpContextIfNotAlreadySet(controller);
+            return Mock.Get(controller.Request);
+        }
+
+        public static Mock<HttpResponse> GetMockHttpResponse(this Controller controller)
+        {
+            SetFakeHttpContextIfNotAlreadySet(controller);
+            return Mock.Get(controller.Response);
+        }
+
+        public static Mock<IUrlHelper> SetFakeIUrlHelper(this Controller controller)
+        {
+            controller.Url = new Mock<IUrlHelper>().Object;
+            return Mock.Get(controller.Url);
+        }
+
+        private static void SetFakeHttpContextIfNotAlreadySet(Controller controller)
+        {
+            if (controller.ActionContext.HttpContext == null)
+                controller.SetFakeHttpContext();
+        }
+
+        private static void SetFakeHttpContext(this Controller controller)
+        {
+            var httpContext = FakeHttpContext();
+            controller.ActionContext.HttpContext = httpContext;
+        }
+
         private static HttpContext FakeHttpContext()
         {
             var mockHttpContext = new Mock<HttpContext>();
@@ -62,6 +97,8 @@ namespace AllReady.UnitTest.Extensions
 
             mockHttpContext.SetupGet(httpContext => httpContext.Request).Returns(mockHttpRequest.Object);
             mockHttpContext.SetupGet(httpContext => httpContext.Response).Returns(mockHttpResponse.Object);
+
+            mockHttpRequest.Setup(httpRequest => httpRequest.Cookies[It.IsAny<string>()]).Returns(() => It.IsAny<string>());
 
             return mockHttpContext.Object;
         }

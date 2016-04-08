@@ -19,27 +19,47 @@
     {
         <div data-bind="if: @Model.ImageUrl" class="col-sm-1">
             <h2></h2>
-            <img src="@Model.ImageUrl" class="img-responsive" />
+            <img src="@Model.ImageUrl" class="img-responsive"/>
         </div>
     }
     <div class="col-md-10">
-        <h2>@Model.Name <a asp-controller="Activity" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-controller="Activity" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a></h2>
+        <h2>
+            @Model.Name <a asp-controller="Activity" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-controller="Activity" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+        </h2>
         <p>@Model.Description</p>
-        <p><time value="Model.StartDateTime"></time> - <time value="Model.EndDateTime"></time> 
-        <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em></p>
+        <p><time value="Model.StartDateTime"></time> - <time value="Model.EndDateTime"></time>
+            <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
+        </p>
         @if (!string.IsNullOrEmpty(userTimeZoneId) && Model.TimeZoneId != userTimeZoneId)
-        { 
+        {
             <p>
                 <time value="Model.StartDateTime" target-time-zone-id="@userTimeZoneId"></time> - <time value="Model.EndDateTime" target-time-zone-id="@userTimeZoneId"></time>
                 <em><time-zone-name time-zone-id="@userTimeZoneId"></time-zone-name></em>
             </p>
-        }               
+        }
     </div>
 </div>
+@if (Model.RequiredSkills.Any())
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Required Skills</h3>
+            <ul>
+                @foreach (var requiredSkill in Model.RequiredSkills)
+                {
+                    <li><strong>@requiredSkill.Skill.HierarchicalName</strong></li>
+                }
+            </ul>
+        </div>
+    </div>
+}
 <div class="row">
     <div class="col-md-12">
         <h3>Volunteers @if (Model.NumberOfVolunteersRequired > 0)
-        { <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span> } <button type="button" class="btn btn-primary" disabled="@(!Model.Volunteers.Any())" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button></h3>
+                       {
+                           <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span>
+                       } <button type="button" class="btn btn-primary" disabled="@(!Model.Volunteers.Any())" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button>
+        </h3>
         @if (Model.Volunteers == null || Model.Volunteers.Count == 0)
         {
             <text>No volunteers yet. </text>
@@ -111,3 +131,4 @@
         });
     </script>
 }
+

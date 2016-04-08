@@ -6,7 +6,6 @@ namespace AllReady.Areas.Admin.Models
 {
     public static class ContactExtensions
     {       
-
         public static IPrimaryContactModel ToEditModel(this Contact contact, IPrimaryContactModel contactModel)
         {
             if (contact != null)
@@ -16,6 +15,7 @@ namespace AllReady.Areas.Admin.Models
                 contactModel.PrimaryContactLastName = contact.LastName;
                 contactModel.PrimaryContactPhoneNumber = contact.PhoneNumber;
             }
+
             return contactModel;
         }
 
@@ -25,11 +25,13 @@ namespace AllReady.Areas.Admin.Models
             {
                 campaign.CampaignContacts = new List<CampaignContact>();
             }
+
             var primaryCampaignContact = campaign.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
             var contactId = primaryCampaignContact?.ContactId;
             Contact primaryContact;
 
             var contactInfo = string.Concat(contactModel.PrimaryContactEmail?.Trim() + contactModel.PrimaryContactFirstName?.Trim(), contactModel.PrimaryContactLastName?.Trim(), contactModel.PrimaryContactPhoneNumber?.Trim());
+
             if (contactId == null)
             {
                 primaryContact = new Contact();
@@ -38,13 +40,13 @@ namespace AllReady.Areas.Admin.Models
             {
                 primaryContact = _context.Contacts.Single(c => c.Id == contactId);
             }
+
             if (string.IsNullOrWhiteSpace(contactInfo) && primaryCampaignContact != null)
             {
                 //Delete
                 _context.CampaignContacts.Remove(primaryCampaignContact);
                 _context.Remove(primaryCampaignContact);//Not Needed?
                 _context.Remove(primaryCampaignContact.Contact);
-
             }
             else
             {
@@ -116,8 +118,8 @@ namespace AllReady.Areas.Admin.Models
                     _context.Update(primaryCampaignContact);
                 }
             }
+
             return organization;
         }
-
     }
 }
