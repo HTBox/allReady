@@ -6,6 +6,7 @@ using AllReady.Areas.Admin.Features.Site;
 using AllReady.Areas.Admin.Features.Users;
 using AllReady.Areas.Admin.Models;
 using AllReady.Extensions;
+using AllReady.Features.Manage;
 using AllReady.Models;
 using AllReady.Security;
 using MediatR;
@@ -23,14 +24,12 @@ namespace AllReady.Areas.Admin.Controllers
     public class SiteController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IAllReadyDataAccess _dataAccess;
         private readonly ILogger<SiteController> _logger;
         private readonly IMediator _mediator;
 
-        public SiteController(UserManager<ApplicationUser> userManager, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger, IMediator mediator)
+        public SiteController(UserManager<ApplicationUser> userManager, ILogger<SiteController> logger, IMediator mediator)
         {
             _userManager = userManager;
-            _dataAccess = dataAccess;
             _logger = logger;
             _mediator = mediator;
         }
@@ -39,7 +38,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var viewModel = new SiteAdminModel
             {
-                Users = _dataAccess.Users.OrderBy(u => u.UserName).ToList()
+                Users = _mediator.Send(new AllUsersQuery()).OrderBy(u => u.UserName).ToList()
             };
             return View(viewModel);
         }
@@ -49,6 +48,8 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var user = await _mediator.SendAsync(new UserQuery { UserId = userId });
             var viewModel = new DeleteUserModel
+            var user = GetUser(userId);
+            var viewModel = new DeleteUserModel()
             {
                 UserId = userId,
                 UserName = user.UserName,
@@ -77,7 +78,7 @@ namespace AllReady.Areas.Admin.Controllers
                 AssociatedSkills = user.AssociatedSkills,
                 IsOrganizationAdmin = user.IsUserType(UserType.OrgAdmin),
                 IsSiteAdmin = user.IsUserType(UserType.SiteAdmin),
-                Organization = organizationId != null ? _dataAccess.GetOrganization(organizationId.Value) : null
+                Organization = organizationId != null ? _mediator.Send(new OrganizationByIdQuery { OrganizationId = organizationId.Value }) : null
             };
 
             return View(viewModel);
@@ -106,7 +107,7 @@ namespace AllReady.Areas.Admin.Controllers
                 user.AssociatedSkills.ForEach(usk => usk.UserId = user.Id);
             }
 
-            await _dataAccess.UpdateUser(user);
+            await _mediator.SendAsync(new UpdateUser { User = user });
 
             var organizationAdminClaim = new Claim(Security.ClaimTypes.UserType, "OrgAdmin");
             if (viewModel.IsOrganizationAdmin)
@@ -186,7 +187,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult AssignOrganizationAdmin(string userId)
+        public async Task<IActionResult> AssignOrganizationAdmin(string userId)
         {
             var user = GetUser(userId);
             if (user.IsUserType(UserType.OrgAdmin) || user.IsUserType(UserType.SiteAdmin))
@@ -194,15 +195,13 @@ namespace AllReady.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var organizations = _dataAccess.Organizations
+            var organizations = _mediator.Send(new AllOrganizationsQuery())
                 .OrderBy(t => t.Name)
                 .Select(t => new SelectListItem { Text = t.Name, Value = t.Id.ToString() })
                 .ToList();
 
-            ViewBag.Organizations = new [] 
-            {
-                new SelectListItem { Selected = true, Text = "<Select One>", Value = "0" }
-            }.Union(organizations);
+            ViewBag.Organizations = new [] { new SelectListItem { Selected = true, Text = "<Select One>", Value = "0" }}
+                .Union(organizations);
 
             return View(new AssignOrganizationAdminModel { UserId = userId });
         }
@@ -211,7 +210,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignOrganizationAdmin(AssignOrganizationAdminModel model)
         {
-            var user = _dataAccess.GetUser(model.UserId);
+            var user = GetUser(model.UserId);
             if (user == null)
             {
                 return RedirectToAction(nameof(Index));
@@ -224,7 +223,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                if (_dataAccess.Organizations.Any(t => t.Id == model.OrganizationId))
+                if (_mediator.Send(new AllOrganizationsQuery()).Any(t => t.Id == model.OrganizationId))
                 {
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.OrgAdmin.ToName()));
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.Organization, model.OrganizationId.ToString()));
@@ -275,7 +274,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         private ApplicationUser GetUser(string userId)
         {
-            return _dataAccess.GetUser(userId);
+            return _mediator.Send(new UserByUserIdQuery { UserId = userId });
         }
     }
 }
