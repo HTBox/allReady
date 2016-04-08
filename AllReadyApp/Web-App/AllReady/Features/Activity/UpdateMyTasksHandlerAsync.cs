@@ -8,6 +8,7 @@ namespace AllReady.Features.Activity
     public class UpdateMyTasksHandlerAsync : AsyncRequestHandler<UpdateMyTasksCommandAsync>
     {
         private readonly IAllReadyDataAccess _dataAccess;
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
         public UpdateMyTasksHandlerAsync(IAllReadyDataAccess dataAccess)
         {
@@ -18,15 +19,15 @@ namespace AllReady.Features.Activity
         {
             var currentUser = _dataAccess.GetUser(command.UserId);
 
-            foreach (var taskSignup in command.TaskSignups)
+            foreach (var taskSignupViewModel in command.TaskSignups)
             {
                 await _dataAccess.UpdateTaskSignupAsync(new TaskSignup
                 {
-                    Id = taskSignup.Id,
-                    StatusDateTimeUtc = DateTime.UtcNow,
-                    StatusDescription = taskSignup.StatusDescription,
-                    Status = taskSignup.Status,
-                    Task = new AllReadyTask { Id = taskSignup.TaskId },
+                    Id = taskSignupViewModel.Id,
+                    StatusDateTimeUtc = DateTimeUtcNow(),
+                    StatusDescription = taskSignupViewModel.StatusDescription,
+                    Status = taskSignupViewModel.Status,
+                    Task = new AllReadyTask { Id = taskSignupViewModel.TaskId },
                     User = currentUser
                 }).ConfigureAwait(false);
             }
