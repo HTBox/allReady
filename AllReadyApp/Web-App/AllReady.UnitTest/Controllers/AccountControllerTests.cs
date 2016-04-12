@@ -93,14 +93,12 @@ namespace AllReady.UnitTest.Controllers
                     .Setup(x => x.Value)
                     .Returns(generalSettings);
 
-                registerViewModel = new RegisterViewModel();
-                registerViewModel.Password = Guid.NewGuid().ToString();
-                registerViewModel.Email = Guid.NewGuid().ToString();
-            }
+                registerViewModel = new RegisterViewModel
+                {
+                    Password = Guid.NewGuid().ToString(),
+                    Email = Guid.NewGuid().ToString()
+                };
 
-            [Fact]
-            public void It_should_redirect_to_home_page_after_a_success_user_creation()
-            {
                 userManagerMock.Setup(
                     x =>
                         x.CreateAsync(
@@ -108,7 +106,17 @@ namespace AllReady.UnitTest.Controllers
                                 y => y.Email == registerViewModel.Email && y.UserName == registerViewModel.Email && y.TimeZoneId == defaultTimeZone),
                             registerViewModel.Password))
                     .Returns(Task.FromResult(IdentityResult.Success));
+            }
 
+            [Fact]
+            public void New_test()
+            {
+                Subject.Register(registerViewModel).Wait();
+            }
+
+            [Fact]
+            public void It_should_redirect_to_home_page_after_a_success_user_creation()
+            {
                 var result = Subject.Register(registerViewModel);
 
                 result.Result.ShouldBeOfType(typeof(RedirectToActionResult));
