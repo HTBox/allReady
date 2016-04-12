@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.Services;
+using AutoMoq.Helpers;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
@@ -10,11 +11,56 @@ using Microsoft.Extensions.OptionsModel;
 using Moq;
 using Xunit;
 using MediatR;
+using Shouldly;
 
 namespace AllReady.UnitTest.Controllers
 {
     public class AccountControllerTests
     {
+
+        public class RegisterGetTests : AutoMoqTestFixture<AccountController>
+        {
+            [Fact]
+            public void Returns_a_view()
+            {
+
+                var store = Mocked<IUserStore<ApplicationUser>>();
+                var userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null, null, null, null, null, null, null,
+                    null, null);
+                var mockHttpContext = new Mock<HttpContext>();
+
+                var contextAccessor = Mocked<IHttpContextAccessor>();
+                contextAccessor.Setup(mock => mock.HttpContext).Returns(() => mockHttpContext.Object);
+
+                var claimsFactory = Mocked<IUserClaimsPrincipalFactory<ApplicationUser>>();
+
+                var signInManagerMock = new Mock<SignInManager<ApplicationUser>>(
+                    userManagerMock.Object,
+                    contextAccessor.Object,
+                    claimsFactory.Object,
+                    null, null);
+
+                var signInResult = default(SignInResult);
+
+                signInManagerMock.Setup(mock => mock
+                    .PasswordSignInAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<bool>(),
+                        It.IsAny<bool>()))
+                    .ReturnsAsync(signInResult == default(SignInResult) 
+                                ? SignInResult.Success 
+                                : signInResult
+                    );
+
+                Mocker.SetInstance(signInManagerMock.Object);
+                Mocker.SetInstance(userManagerMock.Object);
+
+                var result = Subject.Register();
+                result.ShouldBeOfType(typeof (ViewResult));
+            }
+        }
+
         //delete this line when all unit tests using it have been completed
         private readonly Task taskFromResultZero = Task.FromResult(0);
 
