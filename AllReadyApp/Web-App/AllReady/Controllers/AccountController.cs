@@ -124,8 +124,9 @@ namespace AllReady.Controllers
             //    };
 
             //    var result = await _userManager.CreateAsync(user, model.Password);
-            //    if (result.Succeeded)
-            //    {
+                var result = await _userManager.CreateAsync(null, model.Password);
+                if (result.Succeeded)
+                {
             //        // Send an email with this link
             //        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
@@ -138,13 +139,13 @@ namespace AllReady.Controllers
             //        await _signInManager.SignInAsync(user, isPersistent: false);
 
                       return RedirectToAction(nameof(HomeController.Index), "Home");
-            //    }
+                }
 
             //    AddErrorsToModelState(result);
             //}
 
             //// If we got this far, something failed, redisplay form
-            //return View(model);
+            return View(model);
         }
 
         //

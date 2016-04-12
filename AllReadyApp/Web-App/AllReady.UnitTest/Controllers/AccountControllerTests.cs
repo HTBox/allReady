@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Dynamic;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Models;
@@ -18,7 +20,7 @@ namespace AllReady.UnitTest.Controllers
 {
     public class AccountControllerTests
     {
-        public static void CommonSetup(AutoMoqer mocker)
+        public static dynamic CommonSetup(AutoMoqer mocker)
         {
             var store = mocker.GetMock<IUserStore<ApplicationUser>>();
             var userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null, null, null, null, null, null, null,
@@ -51,6 +53,10 @@ namespace AllReady.UnitTest.Controllers
 
             mocker.SetInstance(signInManagerMock.Object);
             mocker.SetInstance(userManagerMock.Object);
+
+            dynamic result = new ExpandoObject();
+            result.UserManagerMock = userManagerMock;
+            return result;
         }
 
         public class RegisterGetTests : AutoMoqTestFixture<AccountController>
@@ -71,16 +77,26 @@ namespace AllReady.UnitTest.Controllers
 
         public class RegisterPostTests : AutoMoqTestFixture<AccountController>
         {
+            private RegisterViewModel registerViewModel;
+            private Mock<UserManager<ApplicationUser>> userManagerMock;
+
             public RegisterPostTests()
             {
                 ResetSubject();
-                CommonSetup(Mocker);
+                var setup = CommonSetup(Mocker);
+
+                userManagerMock = setup.UserManagerMock;
+
+                registerViewModel = new RegisterViewModel();
+                registerViewModel.Password = Guid.NewGuid().ToString();
+                registerViewModel.Email = Guid.NewGuid().ToString();
             }
 
             [Fact]
             public void It_should_redirect_to_home_page_after_a_success_user_creation()
             {
-                var registerViewModel = new RegisterViewModel();
+                userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), registerViewModel.Password))
+                    .Returns(Task.FromResult(IdentityResult.Success));
 
                 var result = Subject.Register(registerViewModel);
 
@@ -89,6 +105,19 @@ namespace AllReady.UnitTest.Controllers
                 var redirect = result.Result as RedirectToActionResult;
                 redirect.ActionName.ShouldBe("Index");
                 redirect.ControllerName.ShouldBe("Home");
+            }
+
+            [Fact]
+            public void It_should_stay_on_the_registration_page_if_the_user_creation_fails()
+            {
+                userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), registerViewModel.Password))
+                    .Returns(Task.FromResult(IdentityResult.Failed(new IdentityError())));
+
+                var result = Subject.Register(registerViewModel);
+
+                result.Result.ShouldBeOfType(typeof(ViewResult));
+
+                (result.Result as ViewResult).ViewData.Model.ShouldBeSameAs(registerViewModel);
             }
         }
 
