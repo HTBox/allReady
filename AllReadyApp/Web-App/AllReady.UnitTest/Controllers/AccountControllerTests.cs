@@ -20,10 +20,8 @@ namespace AllReady.UnitTest.Controllers
 
         public class RegisterGetTests : AutoMoqTestFixture<AccountController>
         {
-            [Fact]
-            public void Returns_a_view()
+            public RegisterGetTests()
             {
-
                 var store = Mocked<IUserStore<ApplicationUser>>();
                 var userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null, null, null, null, null, null, null,
                     null, null);
@@ -55,7 +53,11 @@ namespace AllReady.UnitTest.Controllers
 
                 Mocker.SetInstance(signInManagerMock.Object);
                 Mocker.SetInstance(userManagerMock.Object);
+            }
 
+            [Fact]
+            public void Returns_a_view()
+            {
                 var result = Subject.Register();
                 result.ShouldBeOfType(typeof (ViewResult));
             }
