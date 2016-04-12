@@ -114,37 +114,37 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
-            {
-                var user = new ApplicationUser
-                {
-                    UserName = model.Email,
-                    Email = model.Email,
-                    TimeZoneId = _generalSettings.Value.DefaultTimeZone
-                };
+            //if (ModelState.IsValid)
+            //{
+            //    var user = new ApplicationUser
+            //    {
+            //        UserName = model.Email,
+            //        Email = model.Email,
+            //        TimeZoneId = _generalSettings.Value.DefaultTimeZone
+            //    };
 
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    // Send an email with this link
-                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            //    var result = await _userManager.CreateAsync(user, model.Password);
+            //    if (result.Succeeded)
+            //    {
+            //        // Send an email with this link
+            //        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                    var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmEmail), Controller = "Account", Values = new { userId = user.Id, token = token },
-                        Protocol = HttpContext.Request.Scheme });
+            //        var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmEmail), Controller = "Account", Values = new { userId = user.Id, token = token },
+            //            Protocol = HttpContext.Request.Scheme });
 
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account", 
-                        $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
-                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
-                    await _signInManager.SignInAsync(user, isPersistent: false);
+            //        await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account", 
+            //            $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
+            //        await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
+            //        await _signInManager.SignInAsync(user, isPersistent: false);
 
-                    return RedirectToAction(nameof(HomeController.Index), "Home");
-                }
+                      return RedirectToAction(nameof(HomeController.Index), "Home");
+            //    }
 
-                AddErrorsToModelState(result);
-            }
+            //    AddErrorsToModelState(result);
+            //}
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
+            //// If we got this far, something failed, redisplay form
+            //return View(model);
         }
 
         //

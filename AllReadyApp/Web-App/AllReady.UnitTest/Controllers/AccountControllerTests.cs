@@ -80,8 +80,15 @@ namespace AllReady.UnitTest.Controllers
             [Fact]
             public void Returns_a_view()
             {
-                var result = Subject.Register();
-                result.ShouldBeOfType(typeof (ViewResult));
+                var registerViewModel = new RegisterViewModel();
+
+                var result = Subject.Register(registerViewModel);
+
+                result.Result.ShouldBeOfType(typeof(RedirectToActionResult));
+
+                var redirect = result.Result as RedirectToActionResult;
+                redirect.ActionName.ShouldBe("Index");
+                redirect.ControllerName.ShouldBe("Home");
             }
         }
 
