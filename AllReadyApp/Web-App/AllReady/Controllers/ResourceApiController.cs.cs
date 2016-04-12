@@ -9,7 +9,7 @@ namespace AllReady.Controllers
 {
     [Route("api/resource")]
     [Produces("application/json")]
-    public class ResourceApiController :Controller
+    public class ResourceApiController : Controller
     {
         private readonly IMediator mediator;
 
