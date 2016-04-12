@@ -15,6 +15,7 @@ using Microsoft.Extensions.OptionsModel;
 using Moq;
 using Xunit;
 using MediatR;
+using Microsoft.AspNet.Mvc.ViewFeatures;
 using Shouldly;
 using ClaimTypes = AllReady.Security.ClaimTypes;
 
@@ -154,13 +155,29 @@ namespace AllReady.UnitTest.Controllers
             public void It_should_stay_on_the_registration_page_if_the_user_creation_fails()
             {
                 userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), registerViewModel.Password))
-                    .Returns(Task.FromResult(IdentityResult.Failed(new IdentityError())));
+                    .Returns(Task.FromResult(IdentityResult.Failed(new IdentityError() { Description = Guid.NewGuid().ToString()})));
 
                 var result = Subject.Register(registerViewModel);
 
                 result.Result.ShouldBeOfType(typeof(ViewResult));
 
                 (result.Result as ViewResult).ViewData.Model.ShouldBeSameAs(registerViewModel);
+            }
+
+            [Fact]
+            public void It_should_return_The_account_creation_error_if_the_user_creation_fails()
+            {
+                var description = Guid.NewGuid().ToString();
+                userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), registerViewModel.Password))
+                    .Returns(Task.FromResult(IdentityResult.Failed(new IdentityError() { Description = description})));
+
+                var result = Subject.Register(registerViewModel);
+
+                result.Result.ShouldBeOfType(typeof(ViewResult));
+
+                var viewData = (result.Result as ViewResult).ViewData;
+                viewData.ModelState[""].Errors.Count.ShouldBe(1);
+                viewData.ModelState[""].Errors[0].ErrorMessage.ShouldBe(description);
             }
 
             [Fact]

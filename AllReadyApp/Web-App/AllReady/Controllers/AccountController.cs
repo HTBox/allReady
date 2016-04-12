@@ -140,7 +140,7 @@ namespace AllReady.Controllers
                       return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
 
-            //    AddErrorsToModelState(result);
+                AddErrorsToModelState(result);
             }
 
             // If we got this far, something failed, redisplay form
