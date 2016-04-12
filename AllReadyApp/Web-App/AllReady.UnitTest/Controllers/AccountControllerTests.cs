@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.Services;
+using AutoMoq;
 using AutoMoq.Helpers;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Identity;
@@ -17,42 +18,63 @@ namespace AllReady.UnitTest.Controllers
 {
     public class AccountControllerTests
     {
+        public static void CommonSetup(AutoMoqer mocker)
+        {
+            var store = mocker.GetMock<IUserStore<ApplicationUser>>();
+            var userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null, null, null, null, null, null, null,
+                null, null);
+            var mockHttpContext = new Mock<HttpContext>();
+
+            var contextAccessor = mocker.GetMock<IHttpContextAccessor>();
+            contextAccessor.Setup(mock => mock.HttpContext).Returns(() => mockHttpContext.Object);
+
+            var claimsFactory = mocker.GetMock<IUserClaimsPrincipalFactory<ApplicationUser>>();
+
+            var signInManagerMock = new Mock<SignInManager<ApplicationUser>>(
+                userManagerMock.Object,
+                contextAccessor.Object,
+                claimsFactory.Object,
+                null, null);
+
+            var signInResult = default(SignInResult);
+
+            signInManagerMock.Setup(mock => mock
+                .PasswordSignInAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<bool>()))
+                .ReturnsAsync(signInResult == default(SignInResult) 
+                            ? SignInResult.Success 
+                            : signInResult
+                );
+
+            mocker.SetInstance(signInManagerMock.Object);
+            mocker.SetInstance(userManagerMock.Object);
+        }
 
         public class RegisterGetTests : AutoMoqTestFixture<AccountController>
         {
             public RegisterGetTests()
             {
-                var store = Mocked<IUserStore<ApplicationUser>>();
-                var userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null, null, null, null, null, null, null,
-                    null, null);
-                var mockHttpContext = new Mock<HttpContext>();
+                ResetSubject();
+                CommonSetup(Mocker);
+            }
 
-                var contextAccessor = Mocked<IHttpContextAccessor>();
-                contextAccessor.Setup(mock => mock.HttpContext).Returns(() => mockHttpContext.Object);
+            [Fact]
+            public void Returns_a_view()
+            {
+                var result = Subject.Register();
+                result.ShouldBeOfType(typeof (ViewResult));
+            }
+        }
 
-                var claimsFactory = Mocked<IUserClaimsPrincipalFactory<ApplicationUser>>();
-
-                var signInManagerMock = new Mock<SignInManager<ApplicationUser>>(
-                    userManagerMock.Object,
-                    contextAccessor.Object,
-                    claimsFactory.Object,
-                    null, null);
-
-                var signInResult = default(SignInResult);
-
-                signInManagerMock.Setup(mock => mock
-                    .PasswordSignInAsync(
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<bool>(),
-                        It.IsAny<bool>()))
-                    .ReturnsAsync(signInResult == default(SignInResult) 
-                                ? SignInResult.Success 
-                                : signInResult
-                    );
-
-                Mocker.SetInstance(signInManagerMock.Object);
-                Mocker.SetInstance(userManagerMock.Object);
+        public class RegisterPostTests : AutoMoqTestFixture<AccountController>
+        {
+            public RegisterPostTests()
+            {
+                ResetSubject();
+                CommonSetup(Mocker);
             }
 
             [Fact]
