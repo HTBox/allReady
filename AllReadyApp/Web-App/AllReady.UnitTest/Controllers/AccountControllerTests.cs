@@ -79,13 +79,19 @@ namespace AllReady.UnitTest.Controllers
         {
             private RegisterViewModel registerViewModel;
             private Mock<UserManager<ApplicationUser>> userManagerMock;
+            private string defaultTimeZone;
 
             public RegisterPostTests()
             {
                 ResetSubject();
                 var setup = CommonSetup(Mocker);
-
                 userManagerMock = setup.UserManagerMock;
+
+                defaultTimeZone = Guid.NewGuid().ToString();
+                var generalSettings = new GeneralSettings {DefaultTimeZone = defaultTimeZone};
+                Mocked<IOptions<GeneralSettings>>()
+                    .Setup(x => x.Value)
+                    .Returns(generalSettings);
 
                 registerViewModel = new RegisterViewModel();
                 registerViewModel.Password = Guid.NewGuid().ToString();
@@ -95,7 +101,12 @@ namespace AllReady.UnitTest.Controllers
             [Fact]
             public void It_should_redirect_to_home_page_after_a_success_user_creation()
             {
-                userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), registerViewModel.Password))
+                userManagerMock.Setup(
+                    x =>
+                        x.CreateAsync(
+                            It.Is<ApplicationUser>(
+                                y => y.Email == registerViewModel.Email && y.UserName == registerViewModel.Email && y.TimeZoneId == defaultTimeZone),
+                            registerViewModel.Password))
                     .Returns(Task.FromResult(IdentityResult.Success));
 
                 var result = Subject.Register(registerViewModel);

@@ -116,15 +116,14 @@ namespace AllReady.Controllers
         {
             //if (ModelState.IsValid)
             //{
-            //    var user = new ApplicationUser
-            //    {
-            //        UserName = model.Email,
-            //        Email = model.Email,
-            //        TimeZoneId = _generalSettings.Value.DefaultTimeZone
-            //    };
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    TimeZoneId = _generalSettings.Value.DefaultTimeZone
+                };
 
-            //    var result = await _userManager.CreateAsync(user, model.Password);
-                var result = await _userManager.CreateAsync(null, model.Password);
+                var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
             //        // Send an email with this link
