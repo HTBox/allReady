@@ -114,30 +114,38 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(model);
+
+            var user = BuildANewUser(model);
+            var creationResult = await AttemptToCreateTheUser(model, user);
+
+            if (!creationResult.Succeeded)
             {
-                var user = new ApplicationUser
-                {
-                    UserName = model.Email,
-                    Email = model.Email,
-                    TimeZoneId = _generalSettings.Value.DefaultTimeZone
-                };
-
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    //await SendAConfirmationEmail(model, user);
-                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-
-                      return RedirectToAction(nameof(HomeController.Index), "Home");
-                }
-
-                AddErrorsToModelState(result);
+                AddErrorsToModelState(creationResult);
+                return View(model);
             }
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
+            //await SendAConfirmationEmail(model, user);
+            await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        private Task<IdentityResult> AttemptToCreateTheUser(RegisterViewModel model, ApplicationUser user)
+        {
+            return _userManager.CreateAsync(user, model.Password);
+        }
+
+        private ApplicationUser BuildANewUser(RegisterViewModel model)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                TimeZoneId = _generalSettings.Value.DefaultTimeZone
+            };
+            return user;
         }
 
         private async Task SendAConfirmationEmail(RegisterViewModel model, ApplicationUser user)
