@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Dynamic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Models;
@@ -15,6 +16,7 @@ using Moq;
 using Xunit;
 using MediatR;
 using Shouldly;
+using ClaimTypes = AllReady.Security.ClaimTypes;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -118,6 +120,18 @@ namespace AllReady.UnitTest.Controllers
                 var redirect = result.Result as RedirectToActionResult;
                 redirect.ActionName.ShouldBe("Index");
                 redirect.ControllerName.ShouldBe("Home");
+            }
+
+            [Fact]
+            public void It_should_issue_a_profile_incomplete_claim_after_a_successful_user_creation()
+            {
+                Subject.Register(registerViewModel).Wait();
+
+                userManagerMock.Verify(x => x.AddClaimAsync(It.Is<ApplicationUser>(
+                    y =>
+                        y.Email == registerViewModel.Email && y.UserName == registerViewModel.Email &&
+                        y.TimeZoneId == defaultTimeZone),
+                    It.Is<Claim>(y => y.Type == ClaimTypes.ProfileIncomplete && y.Value == "NewUser")));
             }
 
             [Fact]
