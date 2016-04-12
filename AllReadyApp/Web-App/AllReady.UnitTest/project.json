@@ -7,17 +7,18 @@
         "warningsAsErrors": true
     },
 
-    "dependencies": {
-        "AllReady": "1.0.0-*",
-        "EntityFramework.InMemory": "7.0.0-rc1-final",
-        "Microsoft.AspNet.TestHost": "1.0.0-rc1-final",
-        "Moq": "4.2.1510.2205",
-        "xunit": "2.1.0",
-        "xunit.runner.dnx": "2.1.0-rc1-build204",
-        "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
-        "Microsoft.AspNet.Mvc.ViewFeatures": "6.0.0-rc1-final",
-        "Shouldly": "2.6.0"
-    },
+  "dependencies": {
+    "AllReady": "1.0.0-*",
+    "EntityFramework.InMemory": "7.0.0-rc1-final",
+    "Microsoft.AspNet.TestHost": "1.0.0-rc1-final",
+    "Moq": "4.2.1510.2205",
+    "xunit": "2.1.0",
+    "xunit.runner.dnx": "2.1.0-rc1-build204",
+    "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
+    "Microsoft.AspNet.Mvc.ViewFeatures": "6.0.0-rc1-final",
+    "Shouldly": "2.6.0",
+    "AutoMoq": "1.7.1"
+  },
 
     "commands": {
         "test": "xunit.runner.dnx"
