@@ -109,12 +109,6 @@ namespace AllReady.UnitTest.Controllers
             }
 
             [Fact]
-            public void New_test()
-            {
-                Subject.Register(registerViewModel).Wait();
-            }
-
-            [Fact]
             public void It_should_redirect_to_home_page_after_a_success_user_creation()
             {
                 var result = Subject.Register(registerViewModel);
@@ -137,6 +131,32 @@ namespace AllReady.UnitTest.Controllers
                 result.Result.ShouldBeOfType(typeof(ViewResult));
 
                 (result.Result as ViewResult).ViewData.Model.ShouldBeSameAs(registerViewModel);
+            }
+
+            [Fact]
+            public void It_should_stay_on_the_registration_page_if_the_input_is_bad()
+            {
+                var key = Guid.NewGuid().ToString();
+                var errorMessage = Guid.NewGuid().ToString();
+                Subject.ViewData.ModelState.AddModelError(key, errorMessage);
+
+                var result = Subject.Register(registerViewModel);
+
+                result.Result.ShouldBeOfType(typeof(ViewResult));
+                (result.Result as ViewResult).ViewData.Model.ShouldBeSameAs(registerViewModel);
+            }
+
+            [Fact]
+            public void It_should_not_attempt_to_create_a_new_user_when_the_input_is_bad()
+            {
+                var key = Guid.NewGuid().ToString();
+                var errorMessage = Guid.NewGuid().ToString();
+                Subject.ViewData.ModelState.AddModelError(key, errorMessage);
+
+                userManagerMock.Setup(x=>x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
+                    .Throws(new Exception("Should not have been called!"));
+
+                Subject.Register(registerViewModel).Wait();
             }
         }
 

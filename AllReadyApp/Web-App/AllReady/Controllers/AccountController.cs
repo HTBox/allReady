@@ -114,8 +114,8 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            //if (ModelState.IsValid)
-            //{
+            if (ModelState.IsValid)
+            {
                 var user = new ApplicationUser
                 {
                     UserName = model.Email,
@@ -141,9 +141,9 @@ namespace AllReady.Controllers
                 }
 
             //    AddErrorsToModelState(result);
-            //}
+            }
 
-            //// If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
