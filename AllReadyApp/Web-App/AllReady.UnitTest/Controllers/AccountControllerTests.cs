@@ -58,6 +58,7 @@ namespace AllReady.UnitTest.Controllers
 
             dynamic result = new ExpandoObject();
             result.UserManagerMock = userManagerMock;
+            result.SignInManagerMock = signInManagerMock;
             return result;
         }
 
@@ -82,12 +83,14 @@ namespace AllReady.UnitTest.Controllers
             private RegisterViewModel registerViewModel;
             private Mock<UserManager<ApplicationUser>> userManagerMock;
             private string defaultTimeZone;
+            private Mock<SignInManager<ApplicationUser>> signInManagerMock;
 
             public RegisterPostTests()
             {
                 ResetSubject();
                 var setup = CommonSetup(Mocker);
                 userManagerMock = setup.UserManagerMock;
+                signInManagerMock = setup.SignInManagerMock;
 
                 defaultTimeZone = Guid.NewGuid().ToString();
                 var generalSettings = new GeneralSettings {DefaultTimeZone = defaultTimeZone};
@@ -132,6 +135,19 @@ namespace AllReady.UnitTest.Controllers
                         y.Email == registerViewModel.Email && y.UserName == registerViewModel.Email &&
                         y.TimeZoneId == defaultTimeZone),
                     It.Is<Claim>(y => y.Type == ClaimTypes.ProfileIncomplete && y.Value == "NewUser")));
+            }
+
+            [Fact]
+            public void It_should_sign_in_the_new_user()
+            {
+                    //await _signInManager.SignInAsync(user, isPersistent: false);
+                Subject.Register(registerViewModel).Wait();
+                signInManagerMock.Verify(x => x.SignInAsync(
+                    It.Is<ApplicationUser>(
+                        y =>
+                            y.Email == registerViewModel.Email && y.UserName == registerViewModel.Email &&
+                            y.TimeZoneId == defaultTimeZone)
+                    , false, null));
             }
 
             [Fact]

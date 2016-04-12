@@ -135,7 +135,7 @@ namespace AllReady.Controllers
             //        await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account", 
             //            $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
-            //        await _signInManager.SignInAsync(user, isPersistent: false);
+                    await _signInManager.SignInAsync(user, isPersistent: false);
 
                       return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
