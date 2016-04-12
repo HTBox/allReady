@@ -78,7 +78,7 @@ namespace AllReady.UnitTest.Controllers
             }
 
             [Fact]
-            public void Returns_a_view()
+            public void It_should_redirect_to_home_page_after_a_success_user_creation()
             {
                 var registerViewModel = new RegisterViewModel();
 
