@@ -125,7 +125,7 @@ namespace AllReady.Controllers
                 return View(model);
             }
 
-            //await SendAConfirmationEmail(model, user);
+            await SendAConfirmationEmail(model, user);
             await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
             await _signInManager.SignInAsync(user, isPersistent: false);
 
@@ -152,6 +152,7 @@ namespace AllReady.Controllers
         {
             //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
+            var callbackUrl = "";
             //var callbackUrl = Url.Action(new UrlActionContext
             //{
             //    Action = nameof(ConfirmEmail),
@@ -160,8 +161,8 @@ namespace AllReady.Controllers
             //    Protocol = HttpContext.Request.Scheme
             //});
 
-            //await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account",
-            //    $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
+            await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account",
+                $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
         }
 
         //

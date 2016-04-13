@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.Services;
+using AllReady.UnitTest.Extensions;
 using AutoMoq;
 using AutoMoq.Helpers;
 using Microsoft.AspNet.Http;
@@ -141,7 +142,6 @@ namespace AllReady.UnitTest.Controllers
             [Fact]
             public void It_should_sign_in_the_new_user()
             {
-                    //await _signInManager.SignInAsync(user, isPersistent: false);
                 Subject.Register(registerViewModel).Wait();
                 signInManagerMock.Verify(x => x.SignInAsync(
                     It.Is<ApplicationUser>(
@@ -149,6 +149,15 @@ namespace AllReady.UnitTest.Controllers
                             y.Email == registerViewModel.Email && y.UserName == registerViewModel.Email &&
                             y.TimeZoneId == defaultTimeZone)
                     , false, null));
+            }
+
+            [Fact]
+            public void It_should_send_a_confirmation_email()
+            {
+                Subject.Register(registerViewModel).Wait();
+                Mocked<IEmailSender>()
+                    .Verify(x => x.SendEmailAsync(It.IsAny<string>(),
+                        It.IsAny<string>(), It.IsAny<string>()));
             }
 
             [Fact]
