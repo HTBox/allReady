@@ -163,10 +163,28 @@ namespace AllReady.UnitTest.Controllers
             [Fact]
             public void It_should_send_a_confirmation_email()
             {
+                //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                //var callbackUrl = Url.Action(new UrlActionContext
+                //{
+                //    Action = nameof(ConfirmEmail),
+                //    Controller = "Account",
+                //    Values = new { userId = user.Id, token = token },
+                //    Protocol = HttpContext.Request.Scheme
+                //});
+
+                var callbackUrl = Guid.NewGuid().ToString();
+                urlHelperMock.Setup(x => x.Action(It.Is<UrlActionContext>(
+                    y => y.Action == "ConfirmEmail" &&
+                         y.Controller == "Account" &&
+                         y.Protocol == requestScheme)))
+                         .Returns(callbackUrl);
+
                 Subject.Register(registerViewModel).Wait();
+
                 Mocked<IEmailSender>()
-                    .Verify(x => x.SendEmailAsync(It.IsAny<string>(),
-                        It.IsAny<string>(), It.IsAny<string>()));
+                    .Verify(x => x.SendEmailAsync(registerViewModel.Email,
+                        "Confirm your allReady account",
+                        $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>"));
             }
 
             [Fact]
