@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Controllers;
+using AllReady.Features.Activity;
 using AllReady.Models;
 using AllReady.Services;
 using AllReady.UnitTest.Extensions;
@@ -163,15 +164,6 @@ namespace AllReady.UnitTest.Controllers
             [Fact]
             public void It_should_send_a_confirmation_email()
             {
-                //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                //var callbackUrl = Url.Action(new UrlActionContext
-                //{
-                //    Action = nameof(ConfirmEmail),
-                //    Controller = "Account",
-                //    Values = new { userId = user.Id, token = token },
-                //    Protocol = HttpContext.Request.Scheme
-                //});
-
                 var callbackUrl = Guid.NewGuid().ToString();
                 urlHelperMock.Setup(x => x.Action(It.Is<UrlActionContext>(
                     y => y.Action == "ConfirmEmail" &&
@@ -185,6 +177,47 @@ namespace AllReady.UnitTest.Controllers
                     .Verify(x => x.SendEmailAsync(registerViewModel.Email,
                         "Confirm your allReady account",
                         $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>"));
+            }
+
+            [Fact]
+            public void It_should_use_the_right_data_to_create_the_callback_url()
+            {
+                var token = Guid.NewGuid().ToString();
+                userManagerMock.Setup(x => x.GenerateEmailConfirmationTokenAsync(
+                    It.Is<ApplicationUser>(
+                        y =>
+                            y.Email == registerViewModel.Email && y.UserName == registerViewModel.Email &&
+                            y.TimeZoneId == defaultTimeZone)))
+                    .Returns(Task.FromResult(token));
+
+                var userId = Guid.NewGuid().ToString();
+                userManagerMock.Setup(
+                    x =>
+                        x.CreateAsync(
+                            It.Is<ApplicationUser>(
+                                y => y.Email == registerViewModel.Email && y.UserName == registerViewModel.Email && y.TimeZoneId == defaultTimeZone),
+                            registerViewModel.Password))
+                            .Callback((ApplicationUser a, string password) =>
+                            {
+                                a.Id = userId;
+                            })
+                    .Returns(Task.FromResult(IdentityResult.Success));
+
+                urlHelperMock.Setup(x => x.Action(It.IsAny<UrlActionContext>()))
+                    .Callback((UrlActionContext c) =>
+                    {
+                        c.Values.GetType()
+                            .GetProperty("userId")
+                            .GetValue(c.Values, null)
+                            .ShouldBe(userId);
+
+                        c.Values.GetType()
+                            .GetProperty("token")
+                            .GetValue(c.Values, null)
+                            .ShouldBe(token);
+                    });
+
+                Subject.Register(registerViewModel).Wait();
             }
 
             [Fact]
