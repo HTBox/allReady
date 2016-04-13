@@ -150,16 +150,15 @@ namespace AllReady.Controllers
 
         private async Task SendAConfirmationEmail(RegisterViewModel model, ApplicationUser user)
         {
-            //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-            var callbackUrl = "";
-            //var callbackUrl = Url.Action(new UrlActionContext
-            //{
-            //    Action = nameof(ConfirmEmail),
-            //    Controller = "Account",
-            //    Values = new {userId = user.Id, token = token},
-            //    Protocol = HttpContext.Request.Scheme
-            //});
+            var callbackUrl = Url.Action(new UrlActionContext
+            {
+                Action = nameof(ConfirmEmail),
+                Controller = "Account",
+                Values = new { userId = user.Id, token = token },
+                Protocol = HttpContext.Request.Scheme
+            });
 
             await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account",
                 $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");

@@ -16,6 +16,7 @@ using Microsoft.Extensions.OptionsModel;
 using Moq;
 using Xunit;
 using MediatR;
+using Microsoft.AspNet.Mvc.Routing;
 using Microsoft.AspNet.Mvc.ViewFeatures;
 using Shouldly;
 using ClaimTypes = AllReady.Security.ClaimTypes;
@@ -86,6 +87,8 @@ namespace AllReady.UnitTest.Controllers
             private Mock<UserManager<ApplicationUser>> userManagerMock;
             private string defaultTimeZone;
             private Mock<SignInManager<ApplicationUser>> signInManagerMock;
+            private string requestScheme;
+            private Mock<UrlHelper> urlHelperMock;
 
             public RegisterPostTests()
             {
@@ -113,6 +116,12 @@ namespace AllReady.UnitTest.Controllers
                                 y => y.Email == registerViewModel.Email && y.UserName == registerViewModel.Email && y.TimeZoneId == defaultTimeZone),
                             registerViewModel.Password))
                     .Returns(Task.FromResult(IdentityResult.Success));
+
+                requestScheme = Guid.NewGuid().ToString();
+                Subject.SetFakeHttpRequestSchemeTo(requestScheme);
+
+                urlHelperMock = new Mock<UrlHelper>(null, null);
+                Subject.Url = urlHelperMock.Object;
             }
 
             [Fact]
