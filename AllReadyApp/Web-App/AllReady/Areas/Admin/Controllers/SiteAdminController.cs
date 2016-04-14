@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.Features.Site;
 using AllReady.Areas.Admin.Features.Users;
 using AllReady.Areas.Admin.Models;
 using AllReady.Extensions;
 using AllReady.Models;
 using AllReady.Security;
-using AllReady.Services;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
@@ -23,15 +23,13 @@ namespace AllReady.Areas.Admin.Controllers
     public class SiteController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IEmailSender _emailSender;
         private readonly IAllReadyDataAccess _dataAccess;
-        private ILogger<SiteController> _logger;
+        private readonly ILogger<SiteController> _logger;
         private readonly IMediator _mediator;
 
-        public SiteController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger, IMediator mediator)
+        public SiteController(UserManager<ApplicationUser> userManager, IAllReadyDataAccess dataAccess, ILogger<SiteController> logger, IMediator mediator)
         {
             _userManager = userManager;
-            _emailSender = emailSender;
             _dataAccess = dataAccess;
             _logger = logger;
             _mediator = mediator;
@@ -39,7 +37,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            var viewModel = new SiteAdminModel()
+            var viewModel = new SiteAdminModel
             {
                 Users = _dataAccess.Users.OrderBy(u => u.UserName).ToList()
             };
@@ -47,15 +45,15 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult DeleteUser(string userId)
+        public async Task<IActionResult> DeleteUser(string userId)
         {
-            var user = _mediator.Send(new UserQuery { UserId = userId });
-
-            var viewModel = new DeleteUserModel()
+            var user = await _mediator.SendAsync(new UserQuery { UserId = userId });
+            var viewModel = new DeleteUserModel
             {
                 UserId = userId,
                 UserName = user.UserName,
             };
+
             return View(viewModel);
         }
 
@@ -69,7 +67,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult EditUser(string userId)
         {
-            var user = _dataAccess.GetUser(userId);
+            var user = GetUser(userId);
             var organizationId = user.GetOrganizationId();
 
             var viewModel = new EditUserModel
@@ -95,7 +93,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             //Skill associations
-            var user = _dataAccess.GetUser(viewModel.UserId);
+            var user = GetUser(viewModel.UserId);
             user.AssociatedSkills.RemoveAll(usk => viewModel.AssociatedSkills == null || !viewModel.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
 
             if (viewModel.AssociatedSkills != null)
@@ -119,7 +117,7 @@ namespace AllReady.Areas.Admin.Controllers
                 {
                     //mgmccarthy: there is no Login action method on the AdminController. The only login method I could find is on the AccountController. Not too sure what to do here
                     var callbackUrl = Url.Action(new UrlActionContext { Action = "Login", Controller = "Admin", Values = new { Email = user.Email }, Protocol = HttpContext.Request.Scheme });
-                    await _emailSender.SendEmailAsync(user.Email, "Account Approval", $"Your account has been approved by an administrator. Please <a href=\"{callbackUrl}\">Click here to Log in</a>");
+                    await _mediator.SendAsync(new SendAccountApprovalEmail { Email = user.Email, CallbackUrl = callbackUrl });
                 }
                 else
                 {
@@ -145,18 +143,17 @@ namespace AllReady.Areas.Admin.Controllers
         {
             try
             {
-                var user = _dataAccess.GetUser(userId);
+                var user = GetUser(userId);
                 if (user == null)
                 {
-                    ViewBag.ErrorMessage = $"User not found.";
+                    ViewBag.ErrorMessage = "User not found.";
                     return View();
                 }
 
-                // Send an email with this link
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 //mgmccarthy: there is no ResetPassword action methd on the AdminController. Not too sure what to do here.
                 var callbackUrl = Url.Action(new UrlActionContext { Action = "ResetPassword", Controller = "Admin", Values = new { userId = user.Id, code = code }, Protocol = HttpContext.Request.Scheme });
-                await _emailSender.SendEmailAsync(user.Email, "Reset Password", $"Please reset your password by clicking here: <a href=\"{callbackUrl}\">link</a>");
+                await _mediator.SendAsync(new SendResetPasswordEmail { Email = user.Email, CallbackUrl = callbackUrl });
 
                 ViewBag.SuccessMessage = $"Sent password reset email for {user.UserName}.";
 
@@ -176,7 +173,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             try
             {
-                var user = _dataAccess.GetUser(userId);
+                var user = GetUser(userId);
                 await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.SiteAdmin.ToName()));
                 return RedirectToAction(nameof(Index));
             }
@@ -191,7 +188,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult AssignOrganizationAdmin(string userId)
         {
-            var user = _dataAccess.GetUser(userId);
+            var user = GetUser(userId);
             if (user.IsUserType(UserType.OrgAdmin) || user.IsUserType(UserType.SiteAdmin))
             {
                 return RedirectToAction(nameof(Index));
@@ -245,7 +242,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             try
             {
-                var user = _dataAccess.GetUser(userId);
+                var user = GetUser(userId);
                 await _userManager.RemoveClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.SiteAdmin.ToName()));
                 return RedirectToAction(nameof(Index));
             }
@@ -262,7 +259,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             try
             {
-                var user = _dataAccess.GetUser(userId);
+                var user = GetUser(userId);
                 var claims = await _userManager.GetClaimsAsync(user);
                 await _userManager.RemoveClaimAsync(user, claims.First(c => c.Type == Security.ClaimTypes.UserType));
                 await _userManager.RemoveClaimAsync(user, claims.First(c => c.Type == Security.ClaimTypes.Organization));
@@ -274,6 +271,11 @@ namespace AllReady.Areas.Admin.Controllers
                 ViewBag.ErrorMessage = $"Failed to assign site admin for {userId}. Exception thrown.";
                 return View();
             }
+        }
+
+        private ApplicationUser GetUser(string userId)
+        {
+            return _dataAccess.GetUser(userId);
         }
     }
 }
