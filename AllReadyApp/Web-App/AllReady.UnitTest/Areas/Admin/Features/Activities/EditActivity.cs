@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
@@ -12,7 +13,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
     public class EditActivity : TestBase
     {
         [Fact]
-        public void ActivityDoesNotExist()
+        public async Task ActivityDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
 
@@ -45,7 +46,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
 
             var query = new EditActivityCommand { Activity = vm };
             var handler = new EditActivityCommandHandler(context);
-            var result = handler.Handle(query);
+            var result = await handler.Handle(query);
             Assert.True(result > 0);
 
             var data = context.Activities.Count(_ => _.Id == result);
@@ -53,7 +54,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
         }
 
         [Fact]
-        public void ExistingActivity()
+        public async Task ExistingActivity()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
 
@@ -114,7 +115,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
             };
             var query = new EditActivityCommand { Activity = vm };
             var handler = new EditActivityCommandHandler(context);
-            var result = handler.Handle(query);
+            var result = await handler.Handle(query);
             Assert.Equal(100, result); // should get back the activity id
 
             var data = context.Activities.Single(_ => _.Id == result);
@@ -136,10 +137,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
         }
 
         [Fact]
-        public void ExistingActivityUpdateLocation()
+        public async Task ExistingActivityUpdateLocation()
         {
-            PostalCodeGeo seattlePostalCode = new PostalCodeGeo() { City = "Seattle", PostalCode = "98117", State = "WA" };
-            Location seattle = new Location()
+            var seattlePostalCode = new PostalCodeGeo { City = "Seattle", PostalCode = "98117", State = "WA" };
+
+            var seattle = new Location
             {
                 Id = 1,
                 Address1 = "123 Main Street",
@@ -153,7 +155,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
             };
 
             var context = ServiceProvider.GetService<AllReadyContext>();
-            Organization htb = new Organization()
+
+            var htb = new Organization
             {
                 Id = 123,
                 Name = "Humanitarian Toolbox",
@@ -161,7 +164,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
                 WebUrl = "http://www.htbox.org",
                 Campaigns = new List<Campaign>()
             };
-            Campaign firePrev = new Campaign()
+
+            var firePrev = new Campaign
             {
                 Id = 1,
                 Name = "Neighborhood Fire Prevention Days",
@@ -169,7 +173,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
                 TimeZoneId = "Central Standard Time"
             };
             htb.Campaigns.Add(firePrev);
-            Activity queenAnne = new Activity()
+
+            var queenAnne = new Activity
             {
                 Id = 100,
                 Name = "Queen Anne Fire Prevention Day",
@@ -185,11 +190,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
             context.Activities.Add(queenAnne);
             context.SaveChanges();
 
-            var NEW_LOCATION = LocationExtensions.ToEditModel(new Location()
+            var NEW_LOCATION = LocationExtensions.ToEditModel(new Location
             {
                 Address1 = "123 new address",
                 Address2 = "new suite",
-                PostalCode = new PostalCodeGeo() { City = "Bellevue", PostalCode = "98004", State = "WA" },
+                PostalCode = new PostalCodeGeo { City = "Bellevue", PostalCode = "98004", State = "WA" },
                 City = "Bellevue",
                 State = "WA",
                 Country = "USA",
@@ -218,7 +223,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
 
             var query = new EditActivityCommand { Activity = locationEdit };
             var handler = new EditActivityCommandHandler(context);
-            var result = handler.Handle(query);
+            var result = await handler.Handle(query);
             Assert.Equal(100, result); // should get back the activity id
 
             var data = context.Activities.Single(a => a.Id == result);

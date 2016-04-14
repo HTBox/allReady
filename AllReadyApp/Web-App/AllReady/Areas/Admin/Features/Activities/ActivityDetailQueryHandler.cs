@@ -3,10 +3,11 @@ using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Activities
 {
-    public class ActivityDetailQueryHandler : IRequestHandler<ActivityDetailQuery, ActivityDetailModel>
+    public class ActivityDetailQueryHandler : IAsyncRequestHandler<ActivityDetailQuery, ActivityDetailModel>
     {
         private readonly AllReadyContext _context;
 
@@ -15,11 +16,11 @@ namespace AllReady.Areas.Admin.Features.Activities
             _context = context;
         }
 
-        public ActivityDetailModel Handle(ActivityDetailQuery message)
+        public async Task<ActivityDetailModel> Handle(ActivityDetailQuery message)
         {
             ActivityDetailModel result = null;
 
-            var activity = GetActivity(message);
+            var activity = await GetActivity(message);
 
             if (activity != null)
             {
@@ -40,10 +41,10 @@ namespace AllReady.Areas.Admin.Features.Activities
                     NumberOfVolunteersRequired = activity.NumberOfVolunteersRequired,
                     IsLimitVolunteers = activity.IsLimitVolunteers,
                     IsAllowWaitList = activity.IsAllowWaitList,
-                    Location = LocationExtensions.ToEditModel(activity.Location),
+                    Location = activity.Location.ToEditModel(),
                     RequiredSkills = activity.RequiredSkills,
                     ImageUrl = activity.ImageUrl,
-                    Tasks = activity.Tasks.Select(t => new TaskSummaryModel()
+                    Tasks = activity.Tasks.Select(t => new TaskSummaryModel
                     {
                         Id = t.Id,
                         Name = t.Name,
@@ -67,16 +68,17 @@ namespace AllReady.Areas.Admin.Features.Activities
             return result;
         }
 
-        private Activity GetActivity(ActivityDetailQuery message)
+        private async Task<Activity> GetActivity(ActivityDetailQuery message)
         {
-            return _context.Activities
+            return await _context.Activities
                 .AsNoTracking()
                 .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(av => av.User)
                 .Include(a => a.RequiredSkills).ThenInclude(s => s.Skill).ThenInclude(s => s.ParentSkill)
                 .Include(a => a.Location).ThenInclude(p => p.PostalCode)
                 .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
-                .SingleOrDefault(a => a.Id == message.ActivityId);
+                .SingleOrDefaultAsync(a => a.Id == message.ActivityId)
+                .ConfigureAwait(false);
         }
     }
 }
