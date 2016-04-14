@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Features.Site;
 using AllReady.Areas.Admin.Features.Users;
 using AllReady.Areas.Admin.Models;
@@ -48,8 +49,6 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var user = await _mediator.SendAsync(new UserQuery { UserId = userId });
             var viewModel = new DeleteUserModel
-            var user = GetUser(userId);
-            var viewModel = new DeleteUserModel()
             {
                 UserId = userId,
                 UserName = user.UserName,
@@ -187,7 +186,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AssignOrganizationAdmin(string userId)
+        public IActionResult AssignOrganizationAdmin(string userId)
         {
             var user = GetUser(userId);
             if (user.IsUserType(UserType.OrgAdmin) || user.IsUserType(UserType.SiteAdmin))

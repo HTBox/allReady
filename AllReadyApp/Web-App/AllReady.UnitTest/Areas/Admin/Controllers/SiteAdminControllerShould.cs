@@ -42,7 +42,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task ConfirmDeletUserSendsDeleteUserCommandAsync()
         {
             var mediator = new Mock<IMediator>();
-            var controller = new SiteController(null, null, null, mediator.Object);
+            var controller = new SiteController(null, null, mediator.Object);
             const string userId = "foo_id";
 
             await controller.ConfirmDeleteUser(userId);
@@ -289,45 +289,33 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task AssignOrganizationAdminGetSendsUserByUserIdQueryWithCorrectUserId()
+        public void AssignOrganizationAdminGetSendsUserByUserIdQueryWithCorrectUserId()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task AssignOrganizationAdminGetRedirectsToCorrectActionWhenUserIsAnOrganizationAdmin()
+        public void AssignOrganizationAdminGetRedirectsToCorrectActionWhenUserIsAnOrganizationAdmin()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task AssignOrganizationAdminGetRedirectsToCorrectActionWhenUserIsASiteAdmin()
+        public void AssignOrganizationAdminGetRedirectsToCorrectActionWhenUserIsASiteAdmin()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task AssignOrganizationAdminGetSendsAllOrganizationsQuery()
+        public void AssignOrganizationAdminGetSendsAllOrganizationsQuery()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task AssignOrganizationAdminGetAddsCorrectSelectListItemToOrganizationsOnViewBag()
+        public void AssignOrganizationAdminGetAddsCorrectSelectListItemToOrganizationsOnViewBag()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task AssignOrganizationAdminGetReturnsCorrectViewModel()
+        public void AssignOrganizationAdminGetReturnsCorrectViewModel()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
