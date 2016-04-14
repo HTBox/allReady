@@ -89,6 +89,7 @@ namespace AllReady.Models
         Task DeleteTaskAsync(int taskId);
 
         Task UpdateTaskAsync(AllReadyTask value);
+
         IEnumerable<TaskSignup> GetTasksAssignedToUser(int activityId, string userId);
 
         #endregion

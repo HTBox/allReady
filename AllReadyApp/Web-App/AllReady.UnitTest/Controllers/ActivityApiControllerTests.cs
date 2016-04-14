@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Models;
@@ -264,8 +263,8 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(activity);
 
-            var sut = new ActivityApiController(mediator.Object) { DateTimeUtcNow = () => utcNow }
-                .SetFakeUser(userId);
+            var sut = new ActivityApiController(mediator.Object) { DateTimeUtcNow = () => utcNow };
+            sut.SetFakeUser(userId);
             await sut.PutCheckin(It.IsAny<int>());
 
             mediator.Verify(x => x.SendAsync(It.Is<AddActivitySignupCommandAsync>(y => y.ActivitySignup == activitySignup)));
@@ -284,8 +283,8 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(activity);
 
-            var sut = new ActivityApiController(mediator.Object)
-                .SetFakeUser(userId);
+            var sut = new ActivityApiController(mediator.Object);
+            sut.SetFakeUser(userId);
 
             var expected = $"{{ Activity = {{ Name = {activity.Name}, Description = {activity.Description} }} }}";
 
@@ -304,8 +303,8 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(activity);
 
-            var sut = new ActivityApiController(mediator.Object)
-                .SetFakeUser(userId);
+            var sut = new ActivityApiController(mediator.Object);
+            sut.SetFakeUser(userId);
 
             var expected = $"{{ NeedsSignup = True, Activity = {{ Name = {activity.Name}, Description = {activity.Description} }} }}";
 
@@ -346,7 +345,7 @@ namespace AllReady.UnitTest.Controllers
             const string modelStateErrorMessage = "modelStateErrorMessage";
 
             var sut = new ActivityApiController(null);
-            sut.AddModelStateError(modelStateErrorMessage);
+            sut.AddModelStateErrorWithErrorMessage(modelStateErrorMessage);
 
             var jsonResult = (JsonResult)await sut.RegisterActivity(new ActivitySignupViewModel());
             var result = jsonResult.GetValueForProperty<List<string>>("errors");
@@ -372,7 +371,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task RegisterActivityReturnsSuccess()
         {
             var sut = new ActivityApiController(Mock.Of<IMediator>());
-            var result = (object)await sut.RegisterActivity(new ActivitySignupViewModel());
+            var result = await sut.RegisterActivity(new ActivitySignupViewModel());
 
             Assert.True(result.ToString().Contains("success"));
         }
@@ -414,8 +413,8 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.Send(It.IsAny<ActivitySignupByActivityIdAndUserIdQuery>()))
                 .Returns(new ActivitySignup { Activity = new Activity(), User = new ApplicationUser() });
 
-            var controller = new ActivityApiController(mediator.Object)
-                .SetFakeUser(userId);
+            var controller = new ActivityApiController(mediator.Object);
+            controller.SetFakeUser(userId);
 
             await controller.UnregisterActivity(activityId);
 
@@ -494,4 +493,3 @@ namespace AllReady.UnitTest.Controllers
         }
     }
 }
-

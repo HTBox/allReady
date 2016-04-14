@@ -84,8 +84,8 @@ namespace AllReady.Controllers
                 await _mediator.SendAsync(new ActivitySignupCommand { ActivitySignup = signupModel });
             }
             
-            //TODO: handle invalid activity signup info (phone, email) in a useful way
-            //  would be best to handle it in KO on the client side (prevent clicking Volunteer)
+                //TODO: handle invalid activity signup info (phone, email) in a useful way
+                //  would be best to handle it in KO on the client side (prevent clicking Volunteer)
 
             return RedirectToAction(nameof(ShowActivity), new { id = signupModel.ActivityId });
         }
@@ -100,7 +100,7 @@ namespace AllReady.Controllers
                 return HttpBadRequest();
             }
 
-            await _mediator.SendAsync(new TaskStatusChangeCommand { TaskStatus = status, TaskId = taskId, UserId = userId, TaskStatusDescription = statusDesc });
+            await _mediator.SendAsync(new TaskStatusChangeCommandAsync { TaskStatus = status, TaskId = taskId, UserId = userId, TaskStatusDescription = statusDesc });
 
             return RedirectToAction(nameof(ShowActivity), new { id = activityId });
         }

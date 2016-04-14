@@ -1,24 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AllReady.Areas.Admin.Features.Tasks;
+﻿using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
-using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
-namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
+namespace AllReady.UnitTest.Tasks
 {
-    public class TaskStatusChangeHandlerTests : InMemoryContextTest
+    public class SignupStatusChangeTests : InMemoryContextTest
     {
         protected override void LoadTestData()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var htb = new Organization
+            var htb = new Organization()
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
@@ -26,13 +25,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 Campaigns = new List<Campaign>()
             };
 
-            var firePrev = new Campaign
+            var firePrev = new Campaign()
             {
                 Name = "Neighborhood Fire Prevention Days",
                 ManagingOrganization = htb
             };
 
-            var queenAnne = new Activity
+            var queenAnne = new Activity()
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
@@ -60,7 +59,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             context.ActivitySignup.AddRange(activitySignups);
 
-            var newTask = new AllReadyTask
+            var newTask = new AllReadyTask()
             {
                 Activity = queenAnne,
                 Description = "Description of a very important task",
@@ -70,7 +69,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 Organization = htb
             };
 
-            newTask.AssignedVolunteers.Add(new TaskSignup
+            newTask.AssignedVolunteers.Add(new TaskSignup()
             {
                 Task = newTask,
                 User = user1
@@ -92,7 +91,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             {
                 TaskId = task.Id,
                 UserId = user.Id,
-                TaskStatus = TaskStatus.Accepted
+                TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus.Accepted
             };
             var handler = new TaskStatusChangeHandlerAsync(Context, mediator.Object);
             await handler.Handle(command);

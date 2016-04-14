@@ -8,18 +8,18 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class TaskStatusChangeHandler : IAsyncRequestHandler<TaskStatusChangeCommand, TaskChangeResult>
+    public class TaskStatusChangeHandlerAsync : IAsyncRequestHandler<TaskStatusChangeCommandAsync, TaskChangeResult>
     {
         private AllReadyContext _context;
         private IMediator _mediator;
 
-        public TaskStatusChangeHandler(AllReadyContext context, IMediator mediator)
+        public TaskStatusChangeHandlerAsync(AllReadyContext context, IMediator mediator)
         {
             _context = context;
             _mediator = mediator;
         }
 
-        public async Task<TaskChangeResult> Handle(TaskStatusChangeCommand message)
+        public async Task<TaskChangeResult> Handle(TaskStatusChangeCommandAsync message)
         {
             var task = await GetTask(message).ConfigureAwait(false);
 
@@ -70,7 +70,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             return new TaskChangeResult { Status = "success", Task = task };
         }
 
-        private async Task<AllReadyTask> GetTask(TaskStatusChangeCommand message)
+        private async Task<AllReadyTask> GetTask(TaskStatusChangeCommandAsync message)
         {
             return await _context.Tasks
                 .Include(t => t.AssignedVolunteers).ThenInclude(ts => ts.User)

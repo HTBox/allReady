@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
+using AllReady.Models;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Internal;
 using Microsoft.AspNet.Mvc;
@@ -20,7 +22,7 @@ namespace AllReady.UnitTest.Extensions
             Mock.Get(controller.Request).SetupGet(httpRequest => httpRequest.Scheme).Returns(requestScheme);
         }
 
-        public static T SetFakeUser<T>(this T controller, string userId) where T : Controller
+        public static void SetFakeUser(this Controller controller, string userId)
         {
             SetFakeHttpContextIfNotAlreadySet(controller);
 
@@ -28,11 +30,37 @@ namespace AllReady.UnitTest.Extensions
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) }));
 
             Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
-
-            return controller;
         }
 
-        public static void AddModelStateError(this Controller controller, string errorMessage)
+        public static void SetFakeUserType(this Controller controller, UserType userType)
+        {
+            SetFakeHttpContextIfNotAlreadySet(controller);
+
+            var claimsPrincipal = new ClaimsPrincipal();
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, "1"),
+                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), userType))
+            }));
+
+            Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
+        }
+
+        public static void SetFakeUserAndUserType(this Controller controller, string userId, UserType userType)
+        {
+            SetFakeHttpContextIfNotAlreadySet(controller);
+
+            var claimsPrincipal = new ClaimsPrincipal();
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), userType))
+            }));
+
+            Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
+        }
+
+        public static void AddModelStateErrorWithErrorMessage(this Controller controller, string errorMessage)
         {
             controller.ViewData.ModelState.AddModelError("Error", errorMessage);
         }
@@ -80,13 +108,7 @@ namespace AllReady.UnitTest.Extensions
         private static void SetFakeHttpContextIfNotAlreadySet(Controller controller)
         {
             if (controller.ActionContext.HttpContext == null)
-                controller.SetFakeHttpContext();
-        }
-
-        private static void SetFakeHttpContext(this Controller controller)
-        {
-            var httpContext = FakeHttpContext();
-            controller.ActionContext.HttpContext = httpContext;
+                controller.ActionContext.HttpContext = FakeHttpContext();
         }
 
         private static HttpContext FakeHttpContext()
