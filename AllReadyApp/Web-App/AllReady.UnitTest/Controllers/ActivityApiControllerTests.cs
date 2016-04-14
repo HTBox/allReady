@@ -6,7 +6,6 @@ using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.ViewModels;
 using AllReady.Features.Activity;
-using AllReady.Features.Notifications;
 using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNet.Authorization;
@@ -19,7 +18,7 @@ namespace AllReady.UnitTest.Controllers
     public class ActivityApiControllerTests
     {
         [Fact]
-        public void SendsGetActivitiesWithUnlockedCampaignsQuery()
+        public void GetSendsActivitiesWithUnlockedCampaignsQuery()
         {
             var mediator = new Mock<IMediator>();
             var sut = new ActivityApiController(mediator.Object);
@@ -59,7 +58,7 @@ namespace AllReady.UnitTest.Controllers
 
             sut.Get(activityId);
 
-            mediator.Verify(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == activityId)));
+            mediator.Verify(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == activityId)), Times.Once);
         }
 
         [Fact]
@@ -116,7 +115,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new ActivityApiController(mediator.Object);
             sut.GetActivitiesByPostalCode(zip, miles);
 
-            mediator.Verify(x => x.Send(It.Is<AcitivitiesByPostalCodeQuery>(y => y.PostalCode == zip && y.Distance == miles)));
+            mediator.Verify(x => x.Send(It.Is<AcitivitiesByPostalCodeQuery>(y => y.PostalCode == zip && y.Distance == miles)), Times.Once);
         }
 
         [Fact]
@@ -153,7 +152,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new ActivityApiController(mediator.Object);
             sut.GetActivitiesByGeography(latitude, longitude, miles);
 
-            mediator.Verify(x => x.Send(It.Is<ActivitiesByGeographyQuery>(y => y.Latitude == latitude && y.Longitude == longitude && y.Miles == miles)));
+            mediator.Verify(x => x.Send(It.Is<ActivitiesByGeographyQuery>(y => y.Latitude == latitude && y.Longitude == longitude && y.Miles == miles)), Times.Once);
         }
 
         [Fact]
@@ -422,25 +421,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task UnregisterActivityPublishesUserUnenrollsWithCorrectData()
-        {
-            const int activityId = 1;
-            const string applicationUserId = "applicationUserId";
-
-            var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<ActivitySignupByActivityIdAndUserIdQuery>()))
-                .Returns(new ActivitySignup { Activity = new Activity { Id = activityId }, User = new ApplicationUser { Id = applicationUserId }});
-
-            var controller = new ActivityApiController(mediator.Object);
-            controller.SetDefaultHttpContext();
-                    
-            await controller.UnregisterActivity(activityId);
-
-            mediator.Verify(mock => mock.PublishAsync(It.Is<UserUnenrolls>(ue => ue.ActivityId == activityId && ue.UserId == applicationUserId)), Times.Once);
-        }
-
-        [Fact]
-        public async Task UnregisterActivitySendsDeleteActivityAndTaskSignupsCommandAsyncWithCorrectActivitySignupId()
+        public async Task UnregisterActivitySendsUnregisterActivityWithCorrectActivitySignupId()
         {
             const int activityId = 1;
             const int activitySignupId = 1;
@@ -454,7 +435,7 @@ namespace AllReady.UnitTest.Controllers
 
             await controller.UnregisterActivity(activityId);
 
-            mediator.Verify(x => x.SendAsync(It.Is<DeleteActivityAndTaskSignupsCommandAsync>(y => y.ActivitySignupId == activitySignupId)));
+            mediator.Verify(x => x.SendAsync(It.Is<UnregisterActivity>(y => y.ActivitySignupId == activitySignupId)));
         }
 
         [Fact]
