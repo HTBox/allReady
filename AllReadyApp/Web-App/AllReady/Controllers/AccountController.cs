@@ -129,10 +129,15 @@ namespace AllReady.Controllers
                     // Send an email with this link
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                    var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmEmail), Controller = "Account", Values = new { userId = user.Id, token = token },
-                        Protocol = HttpContext.Request.Scheme });
+                    var callbackUrl = Url.Action(new UrlActionContext
+                    {
+                        Action = nameof(ConfirmEmail),
+                        Controller = "Account",
+                        Values = new { userId = user.Id, token = token },
+                        Protocol = HttpContext.Request.Scheme
+                    });
 
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account", 
+                    await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account",
                         $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
                     await _signInManager.SignInAsync(user, isPersistent: false);

@@ -1,8 +1,15 @@
-﻿using System.Linq;
+﻿using System;
+using System.Dynamic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Controllers;
+using AllReady.Features.Activity;
 using AllReady.Models;
 using AllReady.Services;
+using AllReady.UnitTest.Extensions;
+using AutoMoq;
+using AutoMoq.Helpers;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
@@ -10,11 +17,265 @@ using Microsoft.Extensions.OptionsModel;
 using Moq;
 using Xunit;
 using MediatR;
+using Microsoft.AspNet.Mvc.Routing;
+using Microsoft.AspNet.Mvc.ViewFeatures;
+using Shouldly;
+using ClaimTypes = AllReady.Security.ClaimTypes;
 
 namespace AllReady.UnitTest.Controllers
 {
     public class AccountControllerTests
     {
+        public static dynamic CommonSetup(AutoMoqer mocker)
+        {
+            var store = mocker.GetMock<IUserStore<ApplicationUser>>();
+            var userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null, null, null, null, null, null, null,
+                null, null);
+            var mockHttpContext = new Mock<HttpContext>();
+
+            var contextAccessor = mocker.GetMock<IHttpContextAccessor>();
+            contextAccessor.Setup(mock => mock.HttpContext).Returns(() => mockHttpContext.Object);
+
+            var claimsFactory = mocker.GetMock<IUserClaimsPrincipalFactory<ApplicationUser>>();
+
+            var signInManagerMock = new Mock<SignInManager<ApplicationUser>>(
+                userManagerMock.Object,
+                contextAccessor.Object,
+                claimsFactory.Object,
+                null, null);
+
+            var signInResult = default(SignInResult);
+
+            signInManagerMock.Setup(mock => mock
+                .PasswordSignInAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<bool>()))
+                .ReturnsAsync(signInResult == default(SignInResult) 
+                            ? SignInResult.Success 
+                            : signInResult
+                );
+
+            mocker.SetInstance(signInManagerMock.Object);
+            mocker.SetInstance(userManagerMock.Object);
+
+            dynamic result = new ExpandoObject();
+            result.UserManagerMock = userManagerMock;
+            result.SignInManagerMock = signInManagerMock;
+            return result;
+        }
+
+        public class RegisterGetTests : AutoMoqTestFixture<AccountController>
+        {
+            public RegisterGetTests()
+            {
+                ResetSubject();
+                CommonSetup(Mocker);
+            }
+
+            [Fact]
+            public void Returns_a_view()
+            {
+                var result = Subject.Register();
+                result.ShouldBeOfType(typeof (ViewResult));
+            }
+        }
+
+        public class RegisterPostTests : AutoMoqTestFixture<AccountController>
+        {
+            private RegisterViewModel registerViewModel;
+            private Mock<UserManager<ApplicationUser>> userManagerMock;
+            private string defaultTimeZone;
+            private Mock<SignInManager<ApplicationUser>> signInManagerMock;
+            private string requestScheme;
+            private Mock<UrlHelper> urlHelperMock;
+
+            public RegisterPostTests()
+            {
+                ResetSubject();
+                var setup = CommonSetup(Mocker);
+                userManagerMock = setup.UserManagerMock;
+                signInManagerMock = setup.SignInManagerMock;
+
+                defaultTimeZone = Guid.NewGuid().ToString();
+                var generalSettings = new GeneralSettings {DefaultTimeZone = defaultTimeZone};
+                Mocked<IOptions<GeneralSettings>>()
+                    .Setup(x => x.Value)
+                    .Returns(generalSettings);
+
+                registerViewModel = new RegisterViewModel
+                {
+                    Password = Guid.NewGuid().ToString(),
+                    Email = Guid.NewGuid().ToString()
+                };
+
+                userManagerMock.Setup(
+                    x =>
+                        x.CreateAsync(
+                            It.Is<ApplicationUser>(
+                                y => y.Email == registerViewModel.Email && y.UserName == registerViewModel.Email && y.TimeZoneId == defaultTimeZone),
+                            registerViewModel.Password))
+                    .Returns(Task.FromResult(IdentityResult.Success));
+
+                requestScheme = Guid.NewGuid().ToString();
+                Subject.SetFakeHttpRequestSchemeTo(requestScheme);
+
+                urlHelperMock = new Mock<UrlHelper>(null, null);
+                Subject.Url = urlHelperMock.Object;
+            }
+
+            [Fact]
+            public void It_should_redirect_to_home_page_after_a_success_user_creation()
+            {
+                var result = Subject.Register(registerViewModel);
+
+                result.Result.ShouldBeOfType(typeof(RedirectToActionResult));
+
+                var redirect = result.Result as RedirectToActionResult;
+                redirect.ActionName.ShouldBe("Index");
+                redirect.ControllerName.ShouldBe("Home");
+            }
+
+            [Fact]
+            public void It_should_issue_a_profile_incomplete_claim_after_a_successful_user_creation()
+            {
+                Subject.Register(registerViewModel).Wait();
+
+                userManagerMock.Verify(x => x.AddClaimAsync(It.Is<ApplicationUser>(
+                    y =>
+                        y.Email == registerViewModel.Email && y.UserName == registerViewModel.Email &&
+                        y.TimeZoneId == defaultTimeZone),
+                    It.Is<Claim>(y => y.Type == ClaimTypes.ProfileIncomplete && y.Value == "NewUser")));
+            }
+
+            [Fact]
+            public void It_should_sign_in_the_new_user()
+            {
+                Subject.Register(registerViewModel).Wait();
+                signInManagerMock.Verify(x => x.SignInAsync(
+                    It.Is<ApplicationUser>(
+                        y =>
+                            y.Email == registerViewModel.Email && y.UserName == registerViewModel.Email &&
+                            y.TimeZoneId == defaultTimeZone)
+                    , false, null));
+            }
+
+            [Fact]
+            public void It_should_send_a_confirmation_email()
+            {
+                var callbackUrl = Guid.NewGuid().ToString();
+                urlHelperMock.Setup(x => x.Action(It.Is<UrlActionContext>(
+                    y => y.Action == "ConfirmEmail" &&
+                         y.Controller == "Account" &&
+                         y.Protocol == requestScheme)))
+                         .Returns(callbackUrl);
+
+                Subject.Register(registerViewModel).Wait();
+
+                Mocked<IEmailSender>()
+                    .Verify(x => x.SendEmailAsync(registerViewModel.Email,
+                        "Confirm your allReady account",
+                        $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>"));
+            }
+
+            [Fact]
+            public void It_should_use_the_right_data_to_create_the_callback_url()
+            {
+                var token = Guid.NewGuid().ToString();
+                userManagerMock.Setup(x => x.GenerateEmailConfirmationTokenAsync(
+                    It.Is<ApplicationUser>(
+                        y =>
+                            y.Email == registerViewModel.Email && y.UserName == registerViewModel.Email &&
+                            y.TimeZoneId == defaultTimeZone)))
+                    .Returns(Task.FromResult(token));
+
+                var userId = Guid.NewGuid().ToString();
+                userManagerMock.Setup(
+                    x =>
+                        x.CreateAsync(
+                            It.Is<ApplicationUser>(
+                                y => y.Email == registerViewModel.Email && y.UserName == registerViewModel.Email && y.TimeZoneId == defaultTimeZone),
+                            registerViewModel.Password))
+                            .Callback((ApplicationUser a, string password) =>
+                            {
+                                a.Id = userId;
+                            })
+                    .Returns(Task.FromResult(IdentityResult.Success));
+
+                urlHelperMock.Setup(x => x.Action(It.IsAny<UrlActionContext>()))
+                    .Callback((UrlActionContext c) =>
+                    {
+                        c.Values.GetType()
+                            .GetProperty("userId")
+                            .GetValue(c.Values, null)
+                            .ShouldBe(userId);
+
+                        c.Values.GetType()
+                            .GetProperty("token")
+                            .GetValue(c.Values, null)
+                            .ShouldBe(token);
+                    });
+
+                Subject.Register(registerViewModel).Wait();
+            }
+
+            [Fact]
+            public void It_should_stay_on_the_registration_page_if_the_user_creation_fails()
+            {
+                userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), registerViewModel.Password))
+                    .Returns(Task.FromResult(IdentityResult.Failed(new IdentityError() { Description = Guid.NewGuid().ToString()})));
+
+                var result = Subject.Register(registerViewModel);
+
+                result.Result.ShouldBeOfType(typeof(ViewResult));
+
+                (result.Result as ViewResult).ViewData.Model.ShouldBeSameAs(registerViewModel);
+            }
+
+            [Fact]
+            public void It_should_return_The_account_creation_error_if_the_user_creation_fails()
+            {
+                var description = Guid.NewGuid().ToString();
+                userManagerMock.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), registerViewModel.Password))
+                    .Returns(Task.FromResult(IdentityResult.Failed(new IdentityError() { Description = description})));
+
+                var result = Subject.Register(registerViewModel);
+
+                result.Result.ShouldBeOfType(typeof(ViewResult));
+
+                var viewData = (result.Result as ViewResult).ViewData;
+                viewData.ModelState[""].Errors.Count.ShouldBe(1);
+                viewData.ModelState[""].Errors[0].ErrorMessage.ShouldBe(description);
+            }
+
+            [Fact]
+            public void It_should_stay_on_the_registration_page_if_the_input_is_bad()
+            {
+                var key = Guid.NewGuid().ToString();
+                var errorMessage = Guid.NewGuid().ToString();
+                Subject.ViewData.ModelState.AddModelError(key, errorMessage);
+
+                var result = Subject.Register(registerViewModel);
+
+                result.Result.ShouldBeOfType(typeof(ViewResult));
+                (result.Result as ViewResult).ViewData.Model.ShouldBeSameAs(registerViewModel);
+            }
+
+            [Fact]
+            public void It_should_not_attempt_to_create_a_new_user_when_the_input_is_bad()
+            {
+                var key = Guid.NewGuid().ToString();
+                var errorMessage = Guid.NewGuid().ToString();
+                Subject.ViewData.ModelState.AddModelError(key, errorMessage);
+
+                userManagerMock.Setup(x=>x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
+                    .Throws(new Exception("Should not have been called!"));
+
+                Subject.Register(registerViewModel).Wait();
+            }
+        }
+
         //delete this line when all unit tests using it have been completed
         private readonly Task taskFromResultZero = Task.FromResult(0);
 
