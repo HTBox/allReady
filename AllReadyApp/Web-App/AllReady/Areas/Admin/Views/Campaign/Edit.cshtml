@@ -84,6 +84,20 @@
             </div>
         </div>
         <div class="form-group">
+            <label asp-for="ExternalUrl" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="ExternalUrl" class="form-control" />
+                <span asp-validation-for="ExternalUrl" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="ExternalUrlText" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="ExternalUrlText" class="form-control" />
+                <span asp-validation-for="ExternalUrlText" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
             <label asp-for="TimeZoneId" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <select asp-for="TimeZoneId" asp-items="SelectListService.GetTimeZones()" class="form-control"></select>

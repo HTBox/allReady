@@ -33,6 +33,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.Name = message.Campaign.Name;
             campaign.Description = message.Campaign.Description;
             campaign.FullDescription = message.Campaign.FullDescription;
+            campaign.ExternalUrl = message.Campaign.ExternalUrl;
+            campaign.ExternalUrlText = message.Campaign.ExternalUrlText;
 
             campaign.TimeZoneId = message.Campaign.TimeZoneId;
 

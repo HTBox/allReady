@@ -15,6 +15,13 @@ namespace AllReady.Models
         [Display(Name = "Full Description")]
         public string FullDescription { get; set; }
 
+        [Display(Name="External URL")]
+        [Url]
+        public string ExternalUrl { get; set; }
+
+        [Display(Name = "External URL Text")]
+        public string ExternalUrlText { get; set; }
+
         [Display(Name = "Managing Organization")]
         public int ManagingOrganizationId { get; set; }
         public Organization ManagingOrganization { get; set; }

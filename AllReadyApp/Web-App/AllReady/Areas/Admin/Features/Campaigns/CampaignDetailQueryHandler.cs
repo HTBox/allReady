@@ -37,6 +37,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Id = campaign.Id,
                     Name = campaign.Name,
                     Description = campaign.Description,
+                    ExternalUrl = campaign.ExternalUrl,
+                    ExternalUrlText = campaign.ExternalUrlText,
                     OrganizationId = campaign.ManagingOrganizationId,
                     OrganizationName = campaign.ManagingOrganization.Name,
                     ImageUrl = campaign.ImageUrl,

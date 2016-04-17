@@ -20,6 +20,14 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Full Description")]
         public string FullDescription { get; set; }
 
+        [Display(Name = "External URL")]
+        [Url]
+        public string ExternalUrl { get; set; }
+
+        [Display(Name = "External URL Text")]
+        public string ExternalUrlText { get; set; }
+
+
         [Display(Name = "Organization")]
         public int OrganizationId { get; set; }
 
