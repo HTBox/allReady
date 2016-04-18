@@ -21,6 +21,8 @@ namespace AllReady.ViewModels
             Name = campaign.Name;
             Description = campaign.Description;
             FullDescription = campaign.FullDescription;
+            ExternalUrl = campaign.ExternalUrl;
+            ExternalUrlText = campaign.ExternalUrlText;
             ManagingOrganizationName = campaign.ManagingOrganization?.Name ?? string.Empty;
             ManagingOrganizationId = campaign.ManagingOrganization?.Id ?? 0;
             TimeZoneId = campaign.TimeZoneId;
@@ -38,6 +40,10 @@ namespace AllReady.ViewModels
         public string Name { get; set; }
 
         public string Description { get; set; }
+
+        public string ExternalUrl { get; set; }
+        
+        public string ExternalUrlText { get; set; }
 
         public string FullDescription { get; set; }
 
