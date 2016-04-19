@@ -11,14 +11,7 @@ namespace AllReady.ViewModels
         {
             get
             {
-                if (FeaturedCampaign != null)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return FeaturedCampaign != null;               
             }
         }
     }
