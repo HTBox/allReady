@@ -89,3 +89,27 @@ input.main-search {
 .inline-form {
     display: inline-block;
 }
+
+.featured-campaign {
+    border: 1px solid #d58033;
+    padding: 6px;
+    margin: 10px;
+    background: #e4cdb8;
+}
+
+.featured-campaign h2 {
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+.featured-campaign h3 {
+    margin-top: 0;
+}
+
+.featured-campaign h4 {
+    margin-top: 5px;
+}
+
+.featured-campaign h4, p{
+    color: black;
+}
