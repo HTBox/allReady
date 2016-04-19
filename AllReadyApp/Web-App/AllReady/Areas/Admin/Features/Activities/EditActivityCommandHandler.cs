@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
@@ -7,7 +8,7 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Activities
 {
-    public class EditActivityCommandHandler : IRequestHandler<EditActivityCommand, int>
+    public class EditActivityCommandHandler : IAsyncRequestHandler<EditActivityCommand, int>
     {
         private AllReadyContext _context;
 
@@ -16,9 +17,9 @@ namespace AllReady.Areas.Admin.Features.Activities
             _context = context;
 
         }
-        public int Handle(EditActivityCommand message)
+        public async Task<int> Handle(EditActivityCommand message)
         {
-            var activity = GetActivity(message);
+            var activity = await GetActivity(message);
 
             if (activity == null)
             {
@@ -29,7 +30,7 @@ namespace AllReady.Areas.Admin.Features.Activities
             activity.Description = message.Activity.Description;
             activity.ActivityType = message.Activity.ActivityType;
 
-            TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(message.Activity.TimeZoneId);
+            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(message.Activity.TimeZoneId);
             var startDateTimeOffset = timeZone.GetUtcOffset(message.Activity.StartDateTime);
             activity.StartDateTime = new DateTimeOffset(message.Activity.StartDateTime.Year, message.Activity.StartDateTime.Month, message.Activity.StartDateTime.Day, message.Activity.StartDateTime.Hour, message.Activity.StartDateTime.Minute, 0, startDateTimeOffset);
 
@@ -60,10 +61,12 @@ namespace AllReady.Areas.Admin.Features.Activities
                     !message.Activity.RequiredSkills.Any(ts1 => ts1.SkillId == skill.SkillId)));
                 _context.ActivitySkills.RemoveRange(skillsToRemove);
             }
+
             if (message.Activity.RequiredSkills != null)
             {
                 activity.RequiredSkills.AddRange(message.Activity.RequiredSkills.Where(mt => !activity.RequiredSkills.Any(ts => ts.SkillId == mt.SkillId)));
             }
+
             if (message.Activity.Location != null)
             {
                 activity.Location = activity.Location.UpdateModel(message.Activity.Location);
@@ -71,15 +74,17 @@ namespace AllReady.Areas.Admin.Features.Activities
             }
 
             _context.Update(activity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+
             return activity.Id;
         }
 
-        private Activity GetActivity(EditActivityCommand message)
+        private async Task<Activity> GetActivity(EditActivityCommand message)
         {
-            return _context.Activities
-                    .Include(a => a.RequiredSkills)
-                    .SingleOrDefault(c => c.Id == message.Activity.Id);
+            return await _context.Activities
+                .Include(a => a.RequiredSkills)
+                .SingleOrDefaultAsync(c => c.Id == message.Activity.Id)
+                .ConfigureAwait(false);
         }
     }
 }

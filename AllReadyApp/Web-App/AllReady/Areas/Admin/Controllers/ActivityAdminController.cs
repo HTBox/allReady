@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Activities;
 using AllReady.Areas.Admin.Features.Campaigns;
-using AllReady.Areas.Admin.Features.Shared;
 using AllReady.Areas.Admin.Models;
 using AllReady.Extensions;
 using AllReady.Models;
@@ -15,6 +14,7 @@ using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
 using AllReady.Areas.Admin.Models.Validators;
+using AllReady.Features.Activity;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -22,13 +22,11 @@ namespace AllReady.Areas.Admin.Controllers
     [Authorize("OrgAdmin")]
     public class ActivityController : Controller
     {
-        private readonly IAllReadyDataAccess _dataAccess;
         private readonly IImageService _imageService;
         private readonly IMediator _mediator;
 
-        public ActivityController(IAllReadyDataAccess dataAccess, IImageService imageService, IMediator mediator)
+        public ActivityController(IImageService imageService, IMediator mediator)
         {
-            _dataAccess = dataAccess;
             _imageService = imageService;
             _mediator = mediator;
         }
@@ -36,10 +34,9 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Activity/Details/5
         [HttpGet]
         [Route("Admin/Activity/Details/{id}")]
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var activity = _mediator.Send(new ActivityDetailQuery { ActivityId = id });
-
+            var activity = await _mediator.SendAsync(new ActivityDetailQuery { ActivityId = id });
             if (activity == null)
             {
                 return HttpNotFound();
@@ -83,12 +80,11 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Activity/Create/{campaignId}")]
         public async Task<IActionResult> Create(int campaignId, ActivityDetailModel activity, IFormFile fileUpload)
         {
-            CampaignSummaryModel campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
-            if (campaign == null ||
-                !User.IsOrganizationAdmin(campaign.OrganizationId))
-                {
-                    return HttpUnauthorized();
-                }
+            var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
+            if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
+            {
+                return HttpUnauthorized();
+            }
 
             var validator = new ActivityDetailModelValidator(_mediator);
             var errors = await validator.Validate(activity, campaign);
@@ -108,27 +104,26 @@ namespace AllReady.Areas.Admin.Controllers
                 }
 
                 activity.OrganizationId = campaign.OrganizationId;
-                var id = _mediator.Send(new EditActivityCommand { Activity = activity });
+                var id = await _mediator.SendAsync(new EditActivityCommand { Activity = activity });
 
                 if (fileUpload != null)
                 {
                     // resave now that activity has the ImageUrl
                     activity.Id = id;
                     activity.ImageUrl = await _imageService.UploadActivityImageAsync(campaign.OrganizationId, id, fileUpload);
-                    _mediator.Send(new EditActivityCommand { Activity = activity });
+                    await _mediator.SendAsync(new EditActivityCommand { Activity = activity });
                 }
 
-                return RedirectToAction("Details", "Activity", new { area = "Admin", id = id });
+                return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
             }
 
             return View("Edit", activity);
         }
 
         // GET: Activity/Edit/5
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            ActivityDetailModel activity = _mediator.Send(new ActivityDetailQuery { ActivityId = id });
-
+            var activity = await _mediator.SendAsync(new ActivityDetailQuery { ActivityId = id });
             if (activity == null)
             {
                 return HttpNotFound();
@@ -152,14 +147,13 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpBadRequest();
             }
             
-            //TODO: Use the query pattern here
-            var organizationId = _dataAccess.GetManagingOrganizationId(activity.Id);
+            var organizationId = _mediator.Send(new ManagingOrganizationIdByActivityIdQuery { ActivityId = activity.Id });
             if (!User.IsOrganizationAdmin(organizationId))
             {
                 return HttpUnauthorized();
             }
 
-            CampaignSummaryModel campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = activity.CampaignId });
+            var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = activity.CampaignId });
 
             var validator = new ActivityDetailModelValidator(_mediator);
             var errors = await validator.Validate(activity, campaign);
@@ -180,17 +174,19 @@ namespace AllReady.Areas.Admin.Controllers
                     }
                 }
                 
-                var id = _mediator.Send(new EditActivityCommand { Activity = activity });
-                return RedirectToAction("Details", "Activity", new { area = "Admin", id = id });
+                var id = await _mediator.SendAsync(new EditActivityCommand { Activity = activity });
+
+                return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
             }
+
             return View(activity);
         }
 
         // GET: Activity/Delete/5
         [ActionName("Delete")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var activity = _mediator.Send(new ActivityDetailQuery { ActivityId = id });
+            var activity = await _mediator.SendAsync(new ActivityDetailQuery { ActivityId = id });
             if (activity == null)
             {
                 return HttpNotFound();
@@ -207,32 +203,34 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Activity/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(System.Int32 id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             //TODO: Should be using an ActivitySummaryQuery here
-            ActivityDetailModel activity = _mediator.Send(new ActivityDetailQuery { ActivityId = id });
+            var activity = await _mediator.SendAsync(new ActivityDetailQuery { ActivityId = id });
             if (activity == null)
             {
                 return HttpNotFound();
             }
+
             if (!User.IsOrganizationAdmin(activity.OrganizationId))
             {
                 return HttpUnauthorized();
             }
-            _mediator.Send(new DeleteActivityCommand { ActivityId = id });
-            return RedirectToAction("Details", "Campaign", new { area = "Admin", id = activity.CampaignId });
+
+            await _mediator.SendAsync(new DeleteActivityCommand { ActivityId = id });
+
+            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = "Admin", id = activity.CampaignId });
         }
 
         [HttpGet]
         public IActionResult Assign(int id)
         {
-            //TODO: Update this to use Query pattern
-            var activity = _dataAccess.GetActivity(id);
-
+            var activity = GetActivityBy(id);
             if (activity == null)
             {
                 return HttpNotFound();
             }
+
             if (!User.IsOrganizationAdmin(activity.Campaign.ManagingOrganizationId))
             {
                 return HttpUnauthorized();
@@ -249,13 +247,13 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MessageAllVolunteers(MessageActivityVolunteersModel model)
         {
-            //TODO: Query only for the organization Id rather than the whole activity detail
             if (!ModelState.IsValid)
             {
                 return HttpBadRequest(ModelState);
             }
-
-            var activity = _mediator.Send(new ActivityDetailQuery { ActivityId = model.ActivityId });
+            
+            //TODO: Query only for the organization Id rather than the whole activity detail
+            var activity = await _mediator.SendAsync(new ActivityDetailQuery { ActivityId = model.ActivityId });
             if (activity == null)
             {
                 return HttpNotFound();
@@ -267,6 +265,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             await _mediator.SendAsync(new MessageActivityVolunteersCommand { Model = model });
+
             return Ok();
         }
 
@@ -274,13 +273,18 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostActivityFile(int id, IFormFile file)
         {
-            //TODO: Use a command here
-            Activity a = _dataAccess.GetActivity(id);
+            var activity = GetActivityBy(id);
 
-            a.ImageUrl = await _imageService.UploadActivityImageAsync(a.Id, a.Campaign.ManagingOrganizationId, file);
-            await _dataAccess.UpdateActivity(a);
+            activity.ImageUrl = await _imageService.UploadActivityImageAsync(activity.Id, activity.Campaign.ManagingOrganizationId, file);
+            await _mediator.SendAsync(new UpdateActivity { Activity = activity });
 
-            return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = "Edit", id = id });
+            return RedirectToRoute(new { controller = "Activity", Area = "Admin", action = nameof(Edit), id = id });
+        }
+
+        private Activity GetActivityBy(int activityId)
+        {
+            //TODO: refactor message to async when IAllReadyDataAccess read ops are made async
+            return _mediator.Send(new ActivityByActivityIdQuery { ActivityId = activityId });
         }
     }
 }

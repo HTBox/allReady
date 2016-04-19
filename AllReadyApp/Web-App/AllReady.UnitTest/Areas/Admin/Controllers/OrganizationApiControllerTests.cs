@@ -76,7 +76,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void ControllerHasAreaAtttributeWithTheCorrectRouteValue()
+        public void ControllerHasAreaAtttributeWithTheCorrectAreaName()
         {
             var sut = new OrganizationApiController(null);
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();

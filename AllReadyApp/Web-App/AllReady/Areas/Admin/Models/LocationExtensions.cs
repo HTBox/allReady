@@ -6,7 +6,11 @@ namespace AllReady.Areas.Admin.Models
     {
         public static LocationDisplayModel ToModel(this Location location)
         {
-            if (location == null) { return new LocationDisplayModel(); }
+            if (location == null)
+            {
+                return new LocationDisplayModel();
+            }
+
             return new LocationDisplayModel
             {
                 Id = location.Id,
@@ -24,7 +28,11 @@ namespace AllReady.Areas.Admin.Models
         public static LocationEditModel ToEditModel(this Location location)
         {
             //TODO: Do I want to keep LocationEditModel and LocationDisplayModel ??
-            if (location == null) { return new LocationEditModel(); }
+            if (location == null)
+            {
+                return new LocationEditModel();
+            }
+
             return new LocationEditModel
             {
                 Id = location.Id,
@@ -38,7 +46,6 @@ namespace AllReady.Areas.Admin.Models
                 State = location.State
             };            
         }
-
 
         public static Location UpdateModel(this Location location, LocationEditModel locationEditModel)
         {

@@ -53,7 +53,8 @@ namespace AllReady.Models
                 _dbContext.Add(task);
                 return _dbContext.SaveChangesAsync();
             }
-            else throw new InvalidOperationException("Added task that already has Id");
+
+            throw new InvalidOperationException("Added task that already has Id");
         }
 
         Task IAllReadyDataAccess.DeleteTaskAsync(int taskId)

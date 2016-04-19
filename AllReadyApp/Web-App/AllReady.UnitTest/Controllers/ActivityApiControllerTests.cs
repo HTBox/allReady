@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.ViewModels;
 using AllReady.Features.Activity;
-using AllReady.Features.Notifications;
 using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNet.Authorization;
@@ -20,7 +18,7 @@ namespace AllReady.UnitTest.Controllers
     public class ActivityApiControllerTests
     {
         [Fact]
-        public void SendsGetActivitiesWithUnlockedCampaignsQuery()
+        public void GetSendsActivitiesWithUnlockedCampaignsQuery()
         {
             var mediator = new Mock<IMediator>();
             var sut = new ActivityApiController(mediator.Object);
@@ -60,7 +58,7 @@ namespace AllReady.UnitTest.Controllers
 
             sut.Get(activityId);
 
-            mediator.Verify(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == activityId)));
+            mediator.Verify(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == activityId)), Times.Once);
         }
 
         [Fact]
@@ -117,7 +115,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new ActivityApiController(mediator.Object);
             sut.GetActivitiesByPostalCode(zip, miles);
 
-            mediator.Verify(x => x.Send(It.Is<AcitivitiesByPostalCodeQuery>(y => y.PostalCode == zip && y.Distance == miles)));
+            mediator.Verify(x => x.Send(It.Is<AcitivitiesByPostalCodeQuery>(y => y.PostalCode == zip && y.Distance == miles)), Times.Once);
         }
 
         [Fact]
@@ -154,7 +152,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new ActivityApiController(mediator.Object);
             sut.GetActivitiesByGeography(latitude, longitude, miles);
 
-            mediator.Verify(x => x.Send(It.Is<ActivitiesByGeographyQuery>(y => y.Latitude == latitude && y.Longitude == longitude && y.Miles == miles)));
+            mediator.Verify(x => x.Send(It.Is<ActivitiesByGeographyQuery>(y => y.Latitude == latitude && y.Longitude == longitude && y.Miles == miles)), Times.Once);
         }
 
         [Fact]
@@ -264,8 +262,8 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(activity);
 
-            var sut = new ActivityApiController(mediator.Object) { DateTimeUtcNow = () => utcNow }
-                .SetFakeUser(userId);
+            var sut = new ActivityApiController(mediator.Object) { DateTimeUtcNow = () => utcNow };
+            sut.SetFakeUser(userId);
             await sut.PutCheckin(It.IsAny<int>());
 
             mediator.Verify(x => x.SendAsync(It.Is<AddActivitySignupCommandAsync>(y => y.ActivitySignup == activitySignup)));
@@ -284,8 +282,8 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(activity);
 
-            var sut = new ActivityApiController(mediator.Object)
-                .SetFakeUser(userId);
+            var sut = new ActivityApiController(mediator.Object);
+            sut.SetFakeUser(userId);
 
             var expected = $"{{ Activity = {{ Name = {activity.Name}, Description = {activity.Description} }} }}";
 
@@ -304,8 +302,8 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(activity);
 
-            var sut = new ActivityApiController(mediator.Object)
-                .SetFakeUser(userId);
+            var sut = new ActivityApiController(mediator.Object);
+            sut.SetFakeUser(userId);
 
             var expected = $"{{ NeedsSignup = True, Activity = {{ Name = {activity.Name}, Description = {activity.Description} }} }}";
 
@@ -346,7 +344,7 @@ namespace AllReady.UnitTest.Controllers
             const string modelStateErrorMessage = "modelStateErrorMessage";
 
             var sut = new ActivityApiController(null);
-            sut.AddModelStateError(modelStateErrorMessage);
+            sut.AddModelStateErrorWithErrorMessage(modelStateErrorMessage);
 
             var jsonResult = (JsonResult)await sut.RegisterActivity(new ActivitySignupViewModel());
             var result = jsonResult.GetValueForProperty<List<string>>("errors");
@@ -372,7 +370,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task RegisterActivityReturnsSuccess()
         {
             var sut = new ActivityApiController(Mock.Of<IMediator>());
-            var result = (object)await sut.RegisterActivity(new ActivitySignupViewModel());
+            var result = await sut.RegisterActivity(new ActivitySignupViewModel());
 
             Assert.True(result.ToString().Contains("success"));
         }
@@ -414,8 +412,8 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.Send(It.IsAny<ActivitySignupByActivityIdAndUserIdQuery>()))
                 .Returns(new ActivitySignup { Activity = new Activity(), User = new ApplicationUser() });
 
-            var controller = new ActivityApiController(mediator.Object)
-                .SetFakeUser(userId);
+            var controller = new ActivityApiController(mediator.Object);
+            controller.SetFakeUser(userId);
 
             await controller.UnregisterActivity(activityId);
 
@@ -423,25 +421,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task UnregisterActivityPublishesUserUnenrollsWithCorrectData()
-        {
-            const int activityId = 1;
-            const string applicationUserId = "applicationUserId";
-
-            var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<ActivitySignupByActivityIdAndUserIdQuery>()))
-                .Returns(new ActivitySignup { Activity = new Activity { Id = activityId }, User = new ApplicationUser { Id = applicationUserId }});
-
-            var controller = new ActivityApiController(mediator.Object);
-            controller.SetDefaultHttpContext();
-                    
-            await controller.UnregisterActivity(activityId);
-
-            mediator.Verify(mock => mock.PublishAsync(It.Is<UserUnenrolls>(ue => ue.ActivityId == activityId && ue.UserId == applicationUserId)), Times.Once);
-        }
-
-        [Fact]
-        public async Task UnregisterActivitySendsDeleteActivityAndTaskSignupsCommandAsyncWithCorrectActivitySignupId()
+        public async Task UnregisterActivitySendsUnregisterActivityWithCorrectActivitySignupId()
         {
             const int activityId = 1;
             const int activitySignupId = 1;
@@ -455,7 +435,7 @@ namespace AllReady.UnitTest.Controllers
 
             await controller.UnregisterActivity(activityId);
 
-            mediator.Verify(x => x.SendAsync(It.Is<DeleteActivityAndTaskSignupsCommandAsync>(y => y.ActivitySignupId == activitySignupId)));
+            mediator.Verify(x => x.SendAsync(It.Is<UnregisterActivity>(y => y.ActivitySignupId == activitySignupId)));
         }
 
         [Fact]
@@ -494,4 +474,3 @@ namespace AllReady.UnitTest.Controllers
         }
     }
 }
-

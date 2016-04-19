@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Activities
 {
-    public class EditActivityCommand : IRequest<int>
+    public class EditActivityCommand : IAsyncRequest<int>
     {
         public ActivityDetailModel Activity {get; set;}
     }

@@ -12,7 +12,7 @@ using Microsoft.AspNet.Mvc;
 
 namespace AllReady.UnitTest.Controllers
 {
-    public class ResourceApiControllerTests : TestBase
+    public class ResourceApiControllerTests
     {
         [Fact]
         public void GetResourcesByCategorySendsResourcesByCategoryQueryWithCorrectData()

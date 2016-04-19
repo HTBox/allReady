@@ -41,8 +41,10 @@ namespace AllReady.Models
             var activitySignup = _dbContext.ActivitySignup.SingleOrDefault(c => c.Id == activitySignupId);
 
             if (activitySignup == null)
+            {
                 return Task.FromResult(0);
-
+            }
+            
             _dbContext.ActivitySignup.Remove(activitySignup);
 
             _dbContext.TaskSignups.RemoveRange(_dbContext.TaskSignups

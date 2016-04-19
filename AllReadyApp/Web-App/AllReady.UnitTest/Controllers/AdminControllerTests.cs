@@ -138,7 +138,7 @@ namespace AllReady.UnitTest.Controllers
 
             await sut.Register(new RegisterViewModel());
 
-            //note: I can't test the Values part here b/c I do not have control over the Id generation on ApplicationUser b/c it's new'ed up in the controller
+            //note: I can't test the Values part here b/c I do not have control over the Id generation (which is a guid represented as as string) on ApplicationUser b/c it's new'ed up in the controller
             urlHelper.Verify(mock => mock.Action(It.Is<UrlActionContext>(uac =>
                 uac.Action == "ConfirmEmail" &&
                 uac.Controller == "Admin" &&
@@ -312,9 +312,10 @@ namespace AllReady.UnitTest.Controllers
         public async Task ConfirmEmailInvokesUrlActionWithCorrectParametersWhenUsersEmailIsConfirmedSuccessfully()
         {
             const string requestScheme = "requestScheme";
+            const string userId = "1";
 
             var userManager = CreateUserManagerMock();
-            userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).Returns(() => Task.FromResult(new ApplicationUser()));
+            userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).Returns(() => Task.FromResult(new ApplicationUser { Id = userId }));
             userManager.Setup(x => x.ConfirmEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
 
             var settings = new Mock<IOptions<SampleDataSettings>>();
@@ -328,11 +329,11 @@ namespace AllReady.UnitTest.Controllers
 
             await sut.ConfirmEmail(It.IsAny<string>(), "code");
 
-            //note: I can't test the Values part here b/c I do not have control over the Id generation on ApplicationUser b/c it's new'ed up in the controller
             urlHelper.Verify(x => x.Action(It.Is<UrlActionContext>(uac =>
                 uac.Action == "EditUser" &&
                 uac.Controller == "Site" &&
-                uac.Protocol == requestScheme)),
+                uac.Protocol == requestScheme &&
+                uac.Values.ToString() == $"{{ area = Admin, userId = {userId} }}")),
                 Times.Once);
         }
 

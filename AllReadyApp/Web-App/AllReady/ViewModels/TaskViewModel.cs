@@ -12,26 +12,21 @@ namespace AllReady.ViewModels
         {
         }
 
-        public TaskViewModel(AllReadyTask task, string userId=null)
+        public TaskViewModel(AllReadyTask task, string userId = null)
         {
             Id = task.Id;
             Name = task.Name;
             Description = task.Description;
 
-
             if (task.StartDateTime.HasValue)
             {
-                DateTime startDateWithUtcKind = DateTime.SpecifyKind(
-                    DateTime.Parse(task.StartDateTime.Value.ToString()),
-                    DateTimeKind.Utc);
+                var startDateWithUtcKind = DateTime.SpecifyKind(DateTime.Parse(task.StartDateTime.Value.ToString()), DateTimeKind.Utc);
                 StartDateTime = new DateTimeOffset(startDateWithUtcKind);
             }
 
             if (task.EndDateTime.HasValue)
             {
-                DateTime endDateWithUtcKind = DateTime.SpecifyKind(
-                    DateTime.Parse(task.EndDateTime.Value.ToString()),
-                    DateTimeKind.Utc);
+                var endDateWithUtcKind = DateTime.SpecifyKind(DateTime.Parse(task.EndDateTime.Value.ToString()), DateTimeKind.Utc);
                 EndDateTime = new DateTimeOffset(endDateWithUtcKind);
             }
 
@@ -60,19 +55,21 @@ namespace AllReady.ViewModels
                 {
                     IsUserSignedUpForTask = task.AssignedVolunteers.Any(au => au.User.Id == userId);
                 }
-                this.AssignedVolunteers = new List<TaskSignupViewModel>();
+
+                AssignedVolunteers = new List<TaskSignupViewModel>();
+
                 if (IsUserSignedUpForTask)
                 {                    
                     foreach (var t in task.AssignedVolunteers.Where(au => au.User.Id == userId))
                     {
-                        this.AssignedVolunteers.Add(new TaskSignupViewModel(t));
+                        AssignedVolunteers.Add(new TaskSignupViewModel(t));
                     }
                 }
             }
 
             if (task.RequiredSkills != null)
             {
-                this.RequiredSkills = task.RequiredSkills.Select(t => t.SkillId);
+                RequiredSkills = task.RequiredSkills.Select(t => t.SkillId);
                 RequiredSkillObjects = task.RequiredSkills?.Select(t => t.Skill).ToList();
             }
 
@@ -82,7 +79,6 @@ namespace AllReady.ViewModels
             IsAllowWaitList = task.IsAllowWaitList;
 
         }
-
 
         public int Id { get; set; }
         public bool IsNew { get; set; }
@@ -147,7 +143,6 @@ namespace AllReady.ViewModels
         {
             IsUserSignedUpForTask = isUserSignedupForTask;
         }
-
     }
 
     public static class TaskViewModelExtensions
@@ -169,7 +164,7 @@ namespace AllReady.ViewModels
             if (activity == null)
                 return null;
 
-            bool newTask = true;
+            var newTask = true;
             AllReadyTask dbtask;
 
             if (taskViewModel.Id == 0)
@@ -185,8 +180,8 @@ namespace AllReady.ViewModels
             dbtask.Id = taskViewModel.Id;
             dbtask.Description = taskViewModel.Description;
             dbtask.Activity = activity;
-            dbtask.EndDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.EndDateTime.Value.UtcDateTime : new Nullable<DateTime>();
-            dbtask.StartDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.StartDateTime.Value.UtcDateTime : new Nullable<DateTime>();
+            dbtask.EndDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.EndDateTime.Value.UtcDateTime : new DateTime?();
+            dbtask.StartDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.StartDateTime.Value.UtcDateTime : new DateTime?();
             dbtask.Name = taskViewModel.Name;
             dbtask.RequiredSkills = dbtask.RequiredSkills ?? new List<TaskSkill>();
             taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();
@@ -210,7 +205,6 @@ namespace AllReady.ViewModels
                 }
             }
             // end workaround
-
 
             if (taskViewModel.AssignedVolunteers != null && taskViewModel.AssignedVolunteers.Count > 0)
             {
@@ -241,13 +235,11 @@ namespace AllReady.ViewModels
             }
 
             return dbtask;
-
         }
 
         public static IEnumerable<AllReadyTask> ToModel(this IEnumerable<TaskViewModel> tasks, IAllReadyDataAccess dataContext)
         {
             return tasks.Select(task => task.ToModel(dataContext));
         }
-
     }
 }

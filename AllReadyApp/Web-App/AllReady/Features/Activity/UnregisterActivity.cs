@@ -2,8 +2,9 @@
 
 namespace AllReady.Features.Activity
 {
-    public class DeleteActivityAndTaskSignupsCommandAsync : IAsyncRequest
+    public class UnregisterActivity : IAsyncRequest
     {
         public int ActivitySignupId { get; set; }
+        public string UserId { get; set; }
     }
 }
