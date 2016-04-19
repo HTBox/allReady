@@ -163,7 +163,6 @@ namespace AllReady.ViewModels
 
         public static AllReadyTask ToModel(this TaskViewModel taskViewModel, IMediator mediator)
         {
-            //var activity = dataAccess.GetActivity(taskViewModel.ActivityId);
             var activity = mediator.Send(new ActivityByActivityIdQuery { ActivityId = taskViewModel.ActivityId });
             if (activity == null)
             {
@@ -178,7 +177,6 @@ namespace AllReady.ViewModels
             }
             else
             {
-                //dbtask = dataAccess.GetTask(taskViewModel.Id);
                 dbtask = mediator.Send(new TaskByTaskIdQuery { TaskId = taskViewModel.Id });
                 newTask = false;
             }
@@ -217,7 +215,6 @@ namespace AllReady.ViewModels
                 var taskUsersList = taskViewModel.AssignedVolunteers.Select(tvm => new TaskSignup
                 {
                     Task = dbtask,
-                    //User = dataAccess.GetUser(tvm.UserId)
                     User = mediator.Send(new UserByUserIdQuery { UserId = tvm.UserId })
                 }).ToList();
 
@@ -244,10 +241,8 @@ namespace AllReady.ViewModels
             return dbtask;
         }
 
-        //public static IEnumerable<AllReadyTask> ToModel(this IEnumerable<TaskViewModel> tasks, IAllReadyDataAccess dataContext)
         public static IEnumerable<AllReadyTask> ToModel(this IEnumerable<TaskViewModel> tasks, IMediator mediator)
         {
-            //return tasks.Select(task => task.ToModel(dataContext));
             return tasks.Select(task => task.ToModel(mediator));
         }
     }
