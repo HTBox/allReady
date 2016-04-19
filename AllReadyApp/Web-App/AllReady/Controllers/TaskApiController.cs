@@ -18,13 +18,11 @@ namespace AllReady.Controllers
     [Produces("application/json")]
     public class TaskApiController : Controller
     {
-        private readonly IAllReadyDataAccess _allReadyDataAccess;
         private readonly IMediator _mediator;
         private readonly IDetermineIfATaskIsEditable _determineIfATaskIsEditable;
 
-        public TaskApiController(IAllReadyDataAccess allReadyDataAccess, IMediator mediator, IDetermineIfATaskIsEditable determineIfATaskIsEditable)
+        public TaskApiController(IMediator mediator, IDetermineIfATaskIsEditable determineIfATaskIsEditable)
         {
-            _allReadyDataAccess = allReadyDataAccess;
             _mediator = mediator;
             _determineIfATaskIsEditable = determineIfATaskIsEditable;
         }
@@ -33,18 +31,23 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Post([FromBody]TaskViewModel task)
         {
-            var allReadyTask = task.ToModel(_allReadyDataAccess);
-
+            var allReadyTask = task.ToModel(_mediator);
             if (allReadyTask == null)
+            {
                 return HttpBadRequest("Should have found a matching activity Id");
-
+            }
+            
             var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask);
             if (!hasPermissions)
+            {
                 return HttpUnauthorized();
+            }
 
             if (IfTaskExists(task))
+            {
                 return HttpBadRequest();
-
+            }
+            
             await _mediator.SendAsync(new AddTaskCommandAsync { AllReadyTask = allReadyTask });
 
             //http://stackoverflow.com/questions/1860645/create-request-with-post-which-response-codes-200-or-201-and-content
@@ -132,9 +135,15 @@ namespace AllReady.Controllers
             return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, model.UserId) });
         }
 
-        private bool IfTaskExists(TaskViewModel task) => GetTaskBy(task.Id) != null;
+        private bool IfTaskExists(TaskViewModel task)
+        {
+            return GetTaskBy(task.Id) != null;
+        }
 
-        private AllReadyTask GetTaskBy(int taskId) => _mediator.Send(new TaskByTaskIdQuery { TaskId = taskId });
+        private AllReadyTask GetTaskBy(int taskId)
+        {
+            return _mediator.Send(new TaskByTaskIdQuery { TaskId = taskId });
+        }
     }
 
     public interface IDetermineIfATaskIsEditable
@@ -149,8 +158,10 @@ namespace AllReady.Controllers
             var userId = user.GetUserId();
 
             if (user.IsUserType(UserType.SiteAdmin))
+            {
                 return true;
-
+            }
+            
             if (user.IsUserType(UserType.OrgAdmin))
             {
                 //TODO: Modify to check that user is organization admin for organization of task
@@ -158,11 +169,15 @@ namespace AllReady.Controllers
             }
 
             if (task.Activity?.Organizer != null && task.Activity.Organizer.Id == userId)
+            {
                 return true;
+            }
 
             if (task.Activity?.Campaign?.Organizer != null && task.Activity.Campaign.Organizer.Id == userId)
+            {
                 return true;
-
+            }
+            
             return false;
         }
     }

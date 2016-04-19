@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using AllReady.Features.Activity;
+using AllReady.Features.Manage;
+using AllReady.Features.Tasks;
 using AllReady.Models;
+using MediatR;
 
 namespace AllReady.ViewModels
 {
@@ -157,23 +161,25 @@ namespace AllReady.ViewModels
             return tasks.Select(task => task.ToViewModel());
         }
 
-        public static AllReadyTask ToModel(this TaskViewModel taskViewModel, IAllReadyDataAccess dataAccess)
+        public static AllReadyTask ToModel(this TaskViewModel taskViewModel, IMediator mediator)
         {
-            var activity = dataAccess.GetActivity(taskViewModel.ActivityId);
-
+            //var activity = dataAccess.GetActivity(taskViewModel.ActivityId);
+            var activity = mediator.Send(new ActivityByActivityIdQuery { ActivityId = taskViewModel.ActivityId });
             if (activity == null)
+            {
                 return null;
-
+            }
+            
             var newTask = true;
             AllReadyTask dbtask;
-
             if (taskViewModel.Id == 0)
             {
                 dbtask = new AllReadyTask();
             }
             else
             {
-                dbtask = dataAccess.GetTask(taskViewModel.Id);
+                //dbtask = dataAccess.GetTask(taskViewModel.Id);
+                dbtask = mediator.Send(new TaskByTaskIdQuery { TaskId = taskViewModel.Id });
                 newTask = false;
             }
 
@@ -211,7 +217,8 @@ namespace AllReady.ViewModels
                 var taskUsersList = taskViewModel.AssignedVolunteers.Select(tvm => new TaskSignup
                 {
                     Task = dbtask,
-                    User = dataAccess.GetUser(tvm.UserId)
+                    //User = dataAccess.GetUser(tvm.UserId)
+                    User = mediator.Send(new UserByUserIdQuery { UserId = tvm.UserId })
                 }).ToList();
 
                 // We may be updating an existing task
@@ -222,7 +229,7 @@ namespace AllReady.ViewModels
                 else
                 {
                     // Can probably rewrite this more efficiently.
-                    foreach (TaskSignup taskUsers in taskUsersList)
+                    foreach (var taskUsers in taskUsersList)
                     {
                         if (!(from entry in dbtask.AssignedVolunteers
                               where entry.User.Id == taskUsers.User.Id
@@ -237,9 +244,11 @@ namespace AllReady.ViewModels
             return dbtask;
         }
 
-        public static IEnumerable<AllReadyTask> ToModel(this IEnumerable<TaskViewModel> tasks, IAllReadyDataAccess dataContext)
+        //public static IEnumerable<AllReadyTask> ToModel(this IEnumerable<TaskViewModel> tasks, IAllReadyDataAccess dataContext)
+        public static IEnumerable<AllReadyTask> ToModel(this IEnumerable<TaskViewModel> tasks, IMediator mediator)
         {
-            return tasks.Select(task => task.ToModel(dataContext));
+            //return tasks.Select(task => task.ToModel(dataContext));
+            return tasks.Select(task => task.ToModel(mediator));
         }
     }
 }
