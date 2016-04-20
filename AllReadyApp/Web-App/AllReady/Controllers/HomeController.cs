@@ -1,6 +1,8 @@
 ﻿using AllReady.Features.Campaigns;
+using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Mvc;
+using System.Threading.Tasks;
 
 namespace AllReady.Controllers
 {
@@ -13,10 +15,14 @@ namespace AllReady.Controllers
             this.mediator = mediator;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var results = mediator.Send(new CampaignQuery());
-            return View(results);
+            var model = new HomePageViewModel();
+
+            model.Campaigns = mediator.Send(new CampaignQuery());
+            model.FeaturedCampaign = await mediator.SendAsync(new FeaturedCampaignQueryAsync());
+
+            return View(model);
         }
 
         public IActionResult About()

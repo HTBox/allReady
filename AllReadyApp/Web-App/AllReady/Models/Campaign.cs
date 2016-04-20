@@ -56,5 +56,7 @@ namespace AllReady.Models
         public List<CampaignContact> CampaignContacts { get; set; }
 
         public bool Locked { get; set; }
+
+        public bool Featured { get; set; }
     }
 }

@@ -1,58 +1,93 @@
-﻿@model IList<CampaignViewModel>
+﻿@model HomePageViewModel
 @{
     ViewData["Title"] = "Home Page";
     Layout = "_LayoutMainPage";
     @addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
 }
 
+@if (Model.HasFeaturedCampaign)
+{
     <div class="row">
-        <div class="col-md-12">
-            <h2>Active/Upcoming Campaigns</h2>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="hide text-center" data-bind="css: { hide: campaigns().length }">
-            <div class="alert alert-warning" role="alert">
-                <strong>No matching campaigns.</strong>
-            </div>
-        </div>
-        <div class="col-md-12">
-            <div id="campaignGrid" class="table-responsive">
-                <table class="table" data-bind="css: { hide: !campaigns().length }">
-                    <tr>
-                        <th><span title="Name of the campaign">Title</span></th>
-                        <th><span title="Description of the campaign">Description</span></th>
-                        <th><span title="Date of the campaign">Dates</span></th>
-                        <th><span title="Locations of the campaign">Locations</span></th>
-                    </tr>
-                    <!-- ko foreach: campaigns -->
-                    <tr>
-                        <td>
-                            <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
-                        </td>
-                        <td>
-                            <span data-bind="text: Description"></span>
-                        </td>
-                        <td>
-                            <span data-bind="text: displayDate()"></span>
-                        </td>
-                        <td>
-                            <a data-bind="attr: { href: '/Campaign/Map/' + Id }">Map</a>
-                        </td>
-                    </tr>
-                    <!-- /ko -->
-                </table>
+        <div class="col-md-10 col-md-offset-1">
+            <div class="featured-campaign">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>Featured Campaign</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.FeaturedCampaign.Id">
+                        @if (!String.IsNullOrEmpty(Model.FeaturedCampaign.ImageUrl))
+                {
+                            <div class="col-md-3">
+                                <img src="@Model.FeaturedCampaign.ImageUrl" class="img-responsive" />
+                            </div>
+                                <div class="col-md-9">
+                                    <h3>@Model.FeaturedCampaign.Title</h3>
+                                    <h4>Managed by @Model.FeaturedCampaign.Organization.Name</h4>
+                                    <p>@Model.FeaturedCampaign.Description</p>
+                                </div>
+                        }
+                        else
+                        {
+                            <div class="col-md-12">
+                                <h3>@Model.FeaturedCampaign.Title</h3>
+                                <h4>Managed by @Model.FeaturedCampaign.Organization.Name</h4>
+                                <p>@Model.FeaturedCampaign.Description</p>
+                            </div>
+                        }
+                    </a>
+                </div>
             </div>
         </div>
     </div>
+}
 
-    @section scripts {
-        <script>
-            var modelCampaigns = @Json.Serialize(Model);
-        </script>
-        <script src="~/js/index.js"></script>
-    }
+<div class="row">
+    <div class="col-md-12">
+        <h2>Active/Upcoming Campaigns</h2>
+    </div>
+</div>
 
+<div class="row">
+    <div class="hide text-center" data-bind="css: { hide: campaigns().length }">
+        <div class="alert alert-warning" role="alert">
+            <strong>No matching campaigns.</strong>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div id="campaignGrid" class="table-responsive">
+            <table class="table" data-bind="css: { hide: !campaigns().length }">
+                <tr>
+                    <th><span title="Name of the campaign">Title</span></th>
+                    <th><span title="Description of the campaign">Description</span></th>
+                    <th><span title="Date of the campaign">Dates</span></th>
+                    <th><span title="Locations of the campaign">Locations</span></th>
+                </tr>
+                <!-- ko foreach: campaigns -->
+                <tr>
+                    <td>
+                        <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
+                    </td>
+                    <td>
+                        <span data-bind="text: Description"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: displayDate()"></span>
+                    </td>
+                    <td>
+                        <a data-bind="attr: { href: '/Campaign/Map/' + Id }">Map</a>
+                    </td>
+                </tr>
+                <!-- /ko -->
+            </table>
+        </div>
+    </div>
+</div>
 
-
+@section scripts {
+    <script>
+        var modelCampaigns = @Json.Serialize(Model.Campaigns);
+    </script>
+    <script src="~/js/index.js"></script>
+}
