@@ -16,7 +16,7 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
-    public class OrganizationControllerTests
+    public class OrganizationControllerTests : InMemoryContextTest
     {
         private readonly OrganizationEditModel _organizationEditModel;
 
@@ -134,6 +134,25 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<ViewResult>(result);
         }
 
+        [Fact]
+        public void CreatePostShouldInsertOrganization()
+        {
+            // Arrange
+            CreateSut();
+            OrganizationEditModel model = AgincourtAware;
+            IRequest<int> command = new OrganizationEditCommand() { Organization = model };
+            _mediator.Setup(x => x.Send(It.IsAny<OrganizationEditCommand>())).Returns(() => {
+                IRequestHandler<OrganizationEditCommand, int> handler = new OrganizationEditCommandHandler(Context);
+                return handler.Handle((OrganizationEditCommand)command);
+            });
+
+            // Act
+            _sut.Edit(model);
+
+            // Assert
+            Assert.Single(Context.Organizations.Where(t => t.Name == model.Name));
+
+        }
         #endregion
 
         #region EditTests
@@ -422,6 +441,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             return mockContext;
         }
 
+        #endregion
+        #region "Test Models"
+        public static LocationEditModel BogusAve { get { return new LocationEditModel() { Address1 = "25 Bogus Ave", City = "Agincourt", State = "Ontario", Country = "Canada", PostalCode = "M1T2T9" }; } }
+        public static OrganizationEditModel AgincourtAware { get { return new OrganizationEditModel() { Name = "Agincourt Awareness", Location = BogusAve, WebUrl = "http://www.AgincourtAwareness.ca", LogoUrl = "http://www.AgincourtAwareness.ca/assets/LogoLarge.png" }; } }
         #endregion
     }
 }
