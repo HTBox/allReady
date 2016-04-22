@@ -175,6 +175,8 @@ namespace AllReady.Migrations
 
                     b.Property<DateTimeOffset>("EndDateTime");
 
+                    b.Property<bool>("Featured");
+
                     b.Property<string>("FullDescription");
 
                     b.Property<string>("ImageUrl");

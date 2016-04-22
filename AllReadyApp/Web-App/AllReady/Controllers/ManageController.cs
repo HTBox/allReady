@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AllReady.Features.Login;
 using AllReady.Features.Manage;
 using AllReady.Models;
-using AllReady.Services;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
@@ -15,52 +14,18 @@ namespace AllReady.Controllers
 {
     [Authorize]
     public class ManageController : Controller
-    {
-        //Email Constants
-        private const string EMAIL_CONFIRMATION_SUBJECT = "Confirm your allReady account";
-        private const string NEW_EMAIL_CONFIRM = 
-            "Please confirm your new email address for your allReady account by clicking this link: <a href=\"{0}\">link</a>. Note that once confirmed your original email address will cease to be valid as your username.";
-        private const string RESEND_EMAIL_CONFIRM = "Please confirm your allReady account by clicking this link: <a href=\"{0}\">link</a>";
-        //Error Constants
-        private const string ACCOUNT_SECURITY_CODE = "Your allReady account security code is: ";
-        private const string FAILED_TO_VERIFY_PHONE_NUMBER = "Failed to verify phone number";
-        private const string PASSWORD_INCORRECT = "The password supplied is not correct";
-        private const string EMAIL_ALREADY_REGISTERED = "The email supplied is already registered";
-        //ViewData Constants
-        private const string SHOW_REMOVE_BUTTON = "ShowRemoveButton";
-        private const string STATUS_MESSAGE = "StatusMessage";
-        //Message Constants
-        private const string PASSWORD_CHANGED = "Your password has been changed.";
-        private const string PASSWORD_SET = "Your password has been set.";
-        private const string TWO_FACTOR_SET = "Your two-factor authentication provider has been set.";
-        private const string ERROR_OCCURRED = "An error has occurred.";
-        private const string PHONE_NUMBER_ADDED = "Your phone number was added.";
-        private const string PHONE_NUMBER_REMOVED = "Your phone number was removed.";
-        private const string EXTERNAL_LOGIN_REMOVED = "The external login was removed.";
-        private const string EXTERNAL_LOGIN_ADDED = "The external login was added.";
-        //Controller Names
-        private const string ACCOUNT_CONTROLLER = "Account";
-        private const string MANAGE_CONTROLLER = "Manage";
-        //View Names
-        private const string ERROR_VIEW = "Error";
-
+    { 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IEmailSender _emailSender;
-        private readonly ISmsSender _smsSender;
         private readonly IMediator _mediator;
 
         public ManageController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IEmailSender emailSender,
-            ISmsSender smsSender,
             IMediator mediator)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _emailSender = emailSender;
-            _smsSender = smsSender;
             _mediator = mediator;
         }
 
@@ -69,12 +34,12 @@ namespace AllReady.Controllers
         public async Task<IActionResult> Index(ManageMessageId? message = null)
         {
             ViewData[STATUS_MESSAGE] =
-                message == ManageMessageId.ChangePasswordSuccess ? PASSWORD_CHANGED
-                : message == ManageMessageId.SetPasswordSuccess ? PASSWORD_SET
-                : message == ManageMessageId.SetTwoFactorSuccess ? TWO_FACTOR_SET
+                message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
+                : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
+                : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
                 : message == ManageMessageId.Error ? ERROR_OCCURRED
-                : message == ManageMessageId.AddPhoneSuccess ? PHONE_NUMBER_ADDED
-                : message == ManageMessageId.RemovePhoneSuccess ? PHONE_NUMBER_REMOVED
+                : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
+                : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
 
             var user = GetCurrentUser();
@@ -139,9 +104,10 @@ namespace AllReady.Controllers
         {
             var user = await _userManager.FindByIdAsync(User.GetUserId());
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = ACCOUNT_CONTROLLER, Values = new { userId = user.Id, code = code },
+            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = "Account", Values = new { userId = user.Id, code = code },
                 Protocol = HttpContext.Request.Scheme });
-            await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(RESEND_EMAIL_CONFIRM, callbackUrl));
+
+            await _mediator.SendAsync(new SendConfirmAccountEmail { Email = user.Email, CallbackUrl = callbackUrl });
 
             return RedirectToAction(nameof(EmailConfirmationSent));
         }
@@ -201,10 +167,8 @@ namespace AllReady.Controllers
             }
 
             // Generate the token and send it
-            var user = GetCurrentUser();
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
-            await _smsSender.SendSmsAsync(model.PhoneNumber, ACCOUNT_SECURITY_CODE + code);
-            return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = model.PhoneNumber });
+            await GenerateChangePhoneNumberTokenAndSendAccountSecurityTokenSms(GetCurrentUser(), model.PhoneNumber);
+            return RedirectToAction(nameof(VerifyPhoneNumber), new { model.PhoneNumber });
         }
 
         // POST: /Account/ResendPhoneNumberConfirmation
@@ -212,11 +176,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResendPhoneNumberConfirmation(string phoneNumber)
         {
-            var user = GetCurrentUser();
-
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
-            await _smsSender.SendSmsAsync(phoneNumber, ACCOUNT_SECURITY_CODE + code);
-
+            await GenerateChangePhoneNumberTokenAndSendAccountSecurityTokenSms(GetCurrentUser(), phoneNumber);
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = phoneNumber });
         }
 
@@ -281,7 +241,7 @@ namespace AllReady.Controllers
             }
 
             // If we got this far, something failed, redisplay the form
-            ModelState.AddModelError(string.Empty, FAILED_TO_VERIFY_PHONE_NUMBER);
+            ModelState.AddModelError(string.Empty, "Failed to verify phone number");
             return View(model);
         }
 
@@ -361,7 +321,7 @@ namespace AllReady.Controllers
             {
                 if(!await _userManager.CheckPasswordAsync(user, model.Password))
                 {
-                    ModelState.AddModelError(nameof(model.Password), PASSWORD_INCORRECT);
+                    ModelState.AddModelError(nameof(model.Password), "The password supplied is not correct");
                     return View(model);
                 }
 
@@ -369,17 +329,14 @@ namespace AllReady.Controllers
                 if(existingUser != null)
                 {
                     // The username/email is already registered
-                    ModelState.AddModelError(nameof(model.NewEmail), EMAIL_ALREADY_REGISTERED);
+                    ModelState.AddModelError(nameof(model.NewEmail), "The email supplied is already registered");
                     return View(model);
                 }
 
                 user.PendingNewEmail = model.NewEmail;
                 await _userManager.UpdateAsync(user);
 
-                var token = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail);
-                var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = MANAGE_CONTROLLER, Values = new { token = token },
-                    Protocol = HttpContext.Request.Scheme });
-                await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(NEW_EMAIL_CONFIRM, callbackUrl));
+                await BuildCallbackUrlAndSendNewEmailAddressConfirmationEmail(user, model.NewEmail);
 
                 return RedirectToAction(nameof(EmailConfirmationSent));                
             }
@@ -426,11 +383,8 @@ namespace AllReady.Controllers
                 return View(ERROR_VIEW);
             }
 
-            var token = await _userManager.GenerateChangeEmailTokenAsync(user, user.PendingNewEmail);
-            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = MANAGE_CONTROLLER, Values = new { token = token },
-                Protocol = HttpContext.Request.Scheme });
-            await _emailSender.SendEmailAsync(user.Email, EMAIL_CONFIRMATION_SUBJECT, string.Format(NEW_EMAIL_CONFIRM, callbackUrl));
-
+            await BuildCallbackUrlAndSendNewEmailAddressConfirmationEmail(user, user.PendingNewEmail);
+            
             return RedirectToAction(nameof(EmailConfirmationSent));
         }
 
@@ -483,8 +437,8 @@ namespace AllReady.Controllers
         public async Task<IActionResult> ManageLogins(ManageMessageId? message = null)
         {
             ViewData[STATUS_MESSAGE] =
-                message == ManageMessageId.RemoveLoginSuccess ? EXTERNAL_LOGIN_REMOVED
-                : message == ManageMessageId.AddLoginSuccess ? EXTERNAL_LOGIN_ADDED
+                message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
+                : message == ManageMessageId.AddLoginSuccess ? "The external login was added."
                 : message == ManageMessageId.Error ? ERROR_OCCURRED
                 : "";
 
@@ -539,7 +493,20 @@ namespace AllReady.Controllers
             return RedirectToAction(nameof(ManageLogins), new { Message = message });
         }
 
-        #region Helpers
+        private async Task BuildCallbackUrlAndSendNewEmailAddressConfirmationEmail(ApplicationUser applicationUser, string userEmail)
+        {
+            var token = await _userManager.GenerateChangeEmailTokenAsync(applicationUser, userEmail);
+            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = MANAGE_CONTROLLER, Values = new { token = token },
+                Protocol = HttpContext.Request.Scheme
+            });
+            await _mediator.SendAsync(new SendNewEmailAddressConfirmationEmail { Email = userEmail, CallbackUrl = callbackUrl });
+        }
+
+        private async Task GenerateChangePhoneNumberTokenAndSendAccountSecurityTokenSms(ApplicationUser applicationUser, string phoneNumber)
+        {
+            var token = await _userManager.GenerateChangePhoneNumberTokenAsync(applicationUser, phoneNumber);
+            await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = phoneNumber, Token = token });
+        }
 
         private async Task UpdateUserProfileCompleteness(ApplicationUser user)
         {
@@ -575,6 +542,18 @@ namespace AllReady.Controllers
         {
             return _mediator.Send(new UserByUserIdQuery { UserId = User.GetUserId() });
         }
-        #endregion
+
+        //ViewData Constants
+        private const string SHOW_REMOVE_BUTTON = "ShowRemoveButton";
+        private const string STATUS_MESSAGE = "StatusMessage";
+
+        //Message Constants
+        private const string ERROR_OCCURRED = "An error has occurred.";
+
+        //Controller Names
+        private const string MANAGE_CONTROLLER = "Manage";
+
+        //View Names
+        private const string ERROR_VIEW = "Error";
     }
 }

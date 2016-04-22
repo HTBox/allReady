@@ -1,6 +1,5 @@
 ﻿namespace AllReady.Models
 {
-
     public class PostalCodeGeo
     {
         public string PostalCode { get; set; }

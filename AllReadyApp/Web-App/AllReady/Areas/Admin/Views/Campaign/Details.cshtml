@@ -97,11 +97,17 @@
 </div>
 <div class="row">
     <div id="col-main" class="col-md-8">
+        @if (!string.IsNullOrEmpty(Model.ExternalUrl))
+        {
+            <a href="@Model.ExternalUrl" target="_blank">@(string.IsNullOrWhiteSpace(Model.ExternalUrlText) ? Model.ExternalUrl : Model.ExternalUrlText) <i class="fa fa-external-link"></i></a>
+        }
+        <hr />
         @if (!String.IsNullOrEmpty(Model.ImageUrl))
             {
             <div class="row">
                 <img src="@Model.ImageUrl" class="img-responsive" />
             </div>
+            <hr />
         }
         @Html.Raw(Model.FullDescription)
     </div>
