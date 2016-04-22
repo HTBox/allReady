@@ -1,4 +1,4 @@
-﻿//TODO: Lots of duplication here with activityDetails. Would be great to merge these
+﻿//TODO: Lots of duplication here with eventDetails. Would be great to merge these
 var HTBox;
 (function (HTBox) {
     var TaskDetailAdmin = (function () {

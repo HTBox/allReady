@@ -1,7 +1,7 @@
 ﻿var HTBox;
 (function (HTBox) {
-    var ActivityDetailAdmin = (function () {
-        function ActivityDetailAdmin() {
+    var EventDetailAdmin = (function () {
+        function EventDetailAdmin() {
             $("#messageVolunteersModal").on("show.bs.modal", function (e) {
                 var modal = $(this);
                 $('#messageCharacterCount').html("");
@@ -66,7 +66,7 @@
                 $('#messageCharacterCount').html(messageLength + ' characters');
             });
         }
-        return ActivityDetailAdmin;
+        return EventDetailAdmin;
     })();
-    HTBox.ActivityDetailAdmin = ActivityDetailAdmin;
+    HTBox.EventDetailAdmin = EventDetailAdmin;
 })(HTBox || (HTBox = {}));

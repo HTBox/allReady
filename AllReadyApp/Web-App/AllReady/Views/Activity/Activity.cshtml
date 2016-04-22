@@ -96,7 +96,7 @@
                                 if (Model.IsAllowSignups)
                                 {
                                     <h2>
-                                        <button class="btn btn-default btn-volunteer" data-bind="visible: !enrolled(), click: signupForActivity" style="display: none">Volunteer<br/> for this event</button>
+                                        <button class="btn btn-default btn-volunteer" data-bind="visible: !enrolled(), click: signupForEvent" style="display: none">Volunteer<br/> for this event</button>
                                     </h2>
                                 }
                                 else
@@ -120,7 +120,7 @@
                                     @if (!Model.IsClosed)
                                     {
                                         <p>
-                                            <button class="unvolunteer text-center btn btn-default btn-sm" data-bind="click: function() {unenrollFromActivity(@Model.Id);}">Unenroll</button>
+                                            <button class="unvolunteer text-center btn btn-default btn-sm" data-bind="click: function() {unenrollFromEvent(@Model.Id);}">Unenroll</button>
                                         </p>
                                         <p>
                                             <span class="label label-danger" data-bind="visible: errorUnenrolling" style="display: none">There was a problem unenrolling; please try again.</span></p>
@@ -138,10 +138,10 @@
                     }
                 </div>
             </div>
-            <div class="row" data-bind="visible: activitySkillsWithIsUser().length" style="display: none">
+            <div class="row" data-bind="visible: eventSkillsWithIsUser().length" style="display: none">
                 <div class="col-sm-12">
                     <h3>Needed Skills</h3>
-                    <ul data-bind="foreach: activitySkillsWithIsUser">
+                    <ul data-bind="foreach: eventSkillsWithIsUser">
                         <li>
                             <span data-bind="text: HierarchicalName"></span>
                             <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>

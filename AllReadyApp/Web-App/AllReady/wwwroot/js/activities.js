@@ -4,21 +4,21 @@
 
 (function (ko, $) {
 
-    var getActivities = $.getJSON("/api/activity");
+    var getEvents = $.getJSON("/api/activity");
 
-    function ActivitiesViewModel() {
-        this.activities = ko.observableArray([]).filterBeforeDate("EndDateTime").textFilter(["Title","Description"]);
+    function EventsViewModel() {
+        this.Events = ko.observableArray([]).filterBeforeDate("EndDateTime").textFilter(["Title","Description"]);
         this.loading = ko.observable(true);
     }
 
-    var viewModel = new ActivitiesViewModel();
+    var viewModel = new EventsViewModel();
     ko.applyBindings(viewModel);
 
-    getActivities.done(function (activities) {
+    getEvents.done(function (Events) {
         viewModel.loading(false);
-        activities.sort(function (a1, a2) {
+        Events.sort(function (a1, a2) {
             return moment(a1.StartDateTime).toDate().valueOf() - moment(a2.StartDateTime).toDate().valueOf();
         });
-        viewModel.activities(activities);
+        viewModel.Events(Events);
     });
 })(ko, $);

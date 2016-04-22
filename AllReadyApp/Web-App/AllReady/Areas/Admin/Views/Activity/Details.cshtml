@@ -96,7 +96,7 @@
             </div>
             <form asp-controller="Activity" asp-action="MessageAllVolunteers" method="post">
                 <div class="modal-body">
-                    <input type="hidden" value="@Model.Id" name="activityId" id="message-activityId">
+                    <input type="hidden" value="@Model.Id" name="eventId" id="message-eventId">
                     <div class="form-group">
                         <label for="subject" class="control-label">Subject</label>
                         <input type="text" class="form-control wide" name="subject" id="messageVolunteersModal-subject">
@@ -126,8 +126,7 @@
     <script src="~/js/activityDetails.js"></script>
     <script type="text/javascript">
         $(function () {
-            var activityDetailAdmin = new HTBox.ActivityDetailAdmin();
-
+            var eventDetailAdmin = new HTBox.EventDetailAdmin();
         });
     </script>
 }
