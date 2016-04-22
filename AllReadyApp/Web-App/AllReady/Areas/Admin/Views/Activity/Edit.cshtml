@@ -10,13 +10,13 @@
     string cancelUrl;
     if (isEdit)
     {
-        ViewBag.Title = $"Edit Activity";
+        ViewBag.Title = $"Edit Event";
         actionTitle = "Save";
         cancelUrl = Url.Action("Details", "Activity", new { id = Model.Id, area = "Admin" });
     }
     else
     {
-        ViewBag.Title = "Create Activity";
+        ViewBag.Title = "Create Event";
         actionTitle = "Create";
         cancelUrl = Url.Action("Details", "Campaign", new { id = Model.CampaignId, area = "Admin" });
     }
@@ -34,7 +34,7 @@
             }
             else
             {
-                <li>Create New Activity</li>
+                <li>Create New Event</li>
             }
             
         </ol>
