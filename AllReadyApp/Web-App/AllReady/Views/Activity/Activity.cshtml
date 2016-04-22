@@ -84,7 +84,7 @@
                         }
                         else
                         {
-                            <h3>This activity is closed</h3>
+                            <h3>This event is closed</h3>
                         }
                     }
                     else
@@ -96,27 +96,27 @@
                                 if (Model.IsAllowSignups)
                                 {
                                     <h2>
-                                        <button class="btn btn-default btn-volunteer" data-bind="visible: !enrolled(), click: signupForActivity" style="display: none">Volunteer<br/> for this Activity</button>
+                                        <button class="btn btn-default btn-volunteer" data-bind="visible: !enrolled(), click: signupForActivity" style="display: none">Volunteer<br/> for this event</button>
                                     </h2>
                                 }
                                 else
                                 {
                                     <h2 data-bind="visible: !enrolled()">
-                                        This activity<br/> is currently full
+                                        This event<br/> is currently full
                                     </h2>
                                 }
                             }
                         }
                         else
                         {
-                            <h3 data-bind="visible: !enrolled()"> This activity is closed</h3>
+                            <h3 data-bind="visible: !enrolled()"> This event is closed</h3>
                         }
 
                         if (Model.ActivityType == ActivityTypes.ActivityManaged)
                         {
                             <div class="volunteered" data-bind="visible: enrolled()" style="display: none">
                                 <div class="text-center">
-                                    <h3>You have volunteered<br /> for this activity!</h3>
+                                    <h3>You have volunteered<br /> for this event!</h3>
                                     @if (!Model.IsClosed)
                                     {
                                         <p>
@@ -127,7 +127,7 @@
                                     }
                                     else
                                     {
-                                        <p>This activity is now closed.</p>
+                                        <p>This event is now closed.</p>
                                     }
                                 </div>
                                 <div class="text-center" id="enrollUnenrollSpinner" style="display: none">

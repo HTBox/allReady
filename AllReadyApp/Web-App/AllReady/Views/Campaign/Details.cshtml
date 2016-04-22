@@ -61,18 +61,18 @@
 <div class="row">
 
     <div class="col-md-6">
-        <h3>Activities for this Campaign</h3>
+        <h3>Events for this Campaign</h3>
     </div>
     <div class="col-md-6">
         <div class="pull-right">
             <div class="form-inline">
                 <div class="form-group">
-                    <input type="text" class="form-control input-sm" data-bind="textInput: activities.searchTerm" placeholder="Search activities" />
+                    <input type="text" class="form-control input-sm" data-bind="textInput: activities.searchTerm" placeholder="Search events" />
                 </div>
                 <div class="form-group">
                     <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: activities.showOld }, click: activities.showOld.toggle">
                         <i class="fa" data-bind="css: { 'fa-square-o': !activities.showOld(), 'fa-check-square-o': activities.showOld }"></i>
-                        Show Closed Activities
+                        Show Closed Events
                     </button>
                     <span data-bind="text: '(' + total + ')' "></span>
                 </div>
@@ -89,7 +89,7 @@
             <div class="form-group">
                 <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: activities.showOld }, click: activities.showOld.toggle">
                     <i class="fa" data-bind="css: { 'fa-square-o': !activities.showOld(), 'fa-check-square-o': activities.showOld }"></i>
-                    Show Closed Activities
+                    Show Closed Events
                 </button>
             </div>
         </div>
@@ -99,7 +99,7 @@
 <div class="row">
     <div class="hide text-center" data-bind="css: { hide: activities.filtered().length }">
         <div class="alert alert-warning" role="alert">
-            <strong>No matching activities.</strong>
+            <strong>No matching events.</strong>
         </div>
     </div>
     <div class="col-md-2">
@@ -112,10 +112,10 @@
         <div class="table-responsive">
             <table class="table" data-bind="css: { hide: !activities.filtered().length }">
                 <tr>
-                    <th><span title="Name of the activity">Title</span></th>
-                    <th><span title="Description of the activity">Description</span></th>
-                    <th><span title="Activity Location">Location</span></th>
-                    <th><span title="Date of the activity">Dates</span></th>
+                    <th><span title="Name of the event">Title</span></th>
+                    <th><span title="Description of the event">Description</span></th>
+                    <th><span title="Event Location">Location</span></th>
+                    <th><span title="Date of the event">Dates</span></th>
                 </tr>
                 <!-- ko foreach: activities.filtered -->
                 <tr>
