@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
-using AllReady.Features.Activity;
+using AllReady.Features.Event;
 using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
@@ -12,35 +12,35 @@ using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.Controllers
 {
-    public class ActivityController : Controller
+    public class EventController : Controller
     {
         private readonly IMediator _mediator;
 
-        public ActivityController(IMediator mediator)
+        public EventController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        [Route("~/MyActivities")]
+        [Route("~/MyEvents")]
         [Authorize]
-        public IActionResult GetMyActivities()
+        public IActionResult GetMyEvents()
         {
-            var viewModel = _mediator.Send(new GetMyActivitiesQuery { UserId = User.GetUserId() });
-            return View("MyActivities", viewModel);
+            var viewModel = _mediator.Send(new GetMyEventsQuery { UserId = User.GetUserId() });
+            return View("MyEvents", viewModel);
         }
 
-        [Route("~/MyActivities/{id}/tasks")]
+        [Route("~/MyEvents/{id}/tasks")]
         [Authorize]
         public IActionResult GetMyTasks(int id)
         {
-            var view = _mediator.Send(new GetMyTasksQuery { ActivityId = id, UserId = User.GetUserId() });
+            var view = _mediator.Send(new GetMyTasksQuery { EventId = id, UserId = User.GetUserId() });
             return Json(view);
         }
 
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        [Route("~/MyActivities/{id}/tasks")]
+        [Route("~/MyEvents/{id}/tasks")]
         public async Task<IActionResult> UpdateMyTasks(int id, [FromBody] List<TaskSignupViewModel> model)
         {
             await _mediator.SendAsync(new UpdateMyTasksCommandAsync { TaskSignups = model, UserId = User.GetUserId() });
@@ -50,29 +50,29 @@ namespace AllReady.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return View("Activities");
+            return View("Events");
         }
 
         [Route("[controller]/{id}/")]
         [AllowAnonymous]
-        public IActionResult ShowActivity(int id)
+        public IActionResult ShowEvent(int id)
         {
-            var viewModel = _mediator.Send(new ShowActivityQuery { ActivityId = id, User = User });
+            var viewModel = _mediator.Send(new ShowEventQuery { EventId = id, User = User });
             if (viewModel == null)
             {
                 return HttpNotFound();
             }
 
-            return viewModel.ActivityType == ActivityTypes.ActivityManaged
-                ? View("Activity", viewModel)
-                : View("ActivityWithTasks", viewModel);
+            return viewModel.EventType == EventTypes.EventManaged
+                ? View("Event", viewModel)
+                : View("EventWithTasks", viewModel);
         }
 
         [HttpPost]
-        [Route("/Activity/Signup")]
+        [Route("/Event/Signup")]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Signup(ActivitySignupViewModel signupModel)
+        public async Task<IActionResult> Signup(EventSignupViewModel signupModel)
         {
             if (signupModel == null)
             {
@@ -81,19 +81,19 @@ namespace AllReady.Controllers
 
             if (ModelState.IsValid)
             {
-                await _mediator.SendAsync(new ActivitySignupCommand { ActivitySignup = signupModel });
+                await _mediator.SendAsync(new EventSignupCommand { EventSignup = signupModel });
             }
             
-                //TODO: handle invalid activity signup info (phone, email) in a useful way
+                //TODO: handle invalid event signup info (phone, email) in a useful way
                 //  would be best to handle it in KO on the client side (prevent clicking Volunteer)
 
-            return RedirectToAction(nameof(ShowActivity), new { id = signupModel.ActivityId });
+            return RedirectToAction(nameof(ShowEvent), new { id = signupModel.EventId });
         }
 
         [HttpGet]
-        [Route("/Activity/ChangeStatus")]
+        [Route("/Event/ChangeStatus")]
         [Authorize]
-        public async Task<IActionResult> ChangeStatus(int activityId, int taskId, string userId, TaskStatus status, string statusDesc)
+        public async Task<IActionResult> ChangeStatus(int eventId, int taskId, string userId, TaskStatus status, string statusDesc)
         {
             if (userId == null)
             {
@@ -102,7 +102,7 @@ namespace AllReady.Controllers
 
             await _mediator.SendAsync(new TaskStatusChangeCommandAsync { TaskStatus = status, TaskId = taskId, UserId = userId, TaskStatusDescription = statusDesc });
 
-            return RedirectToAction(nameof(ShowActivity), new { id = activityId });
+            return RedirectToAction(nameof(ShowEvent), new { id = eventId });
         }
     }
 }

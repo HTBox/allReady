@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using AllReady.Features.Activity;
+using AllReady.Features.Event;
 using AllReady.Features.Manage;
 using AllReady.Features.Tasks;
 using AllReady.Models;
@@ -34,16 +34,16 @@ namespace AllReady.ViewModels
                 EndDateTime = new DateTimeOffset(endDateWithUtcKind);
             }
 
-            if (task.Activity != null)
+            if (task.Event != null)
             {
-                ActivityId = task.Activity.Id;
-                ActivityName = task.Activity.Name;
+                EventId = task.Event.Id;
+                eventName = task.Event.Name;
             }
 
-            if (task.Activity?.Campaign != null)
+            if (task.Event?.Campaign != null)
             {
-                CampaignId = task.Activity.Campaign.Id;
-                CampaignName = task.Activity.Campaign.Name;
+                CampaignId = task.Event.Campaign.Id;
+                CampaignName = task.Event.Campaign.Name;
             }
 
             if (task.Organization != null)
@@ -94,11 +94,11 @@ namespace AllReady.ViewModels
         public string Description { get; set; }
 
         [Required]
-        [Display(Name = "Activity")]
-        public int ActivityId { get; set; }
+        [Display(Name = "Event")]
+        public int EventId { get; set; }
 
-        [Display(Name = "Activity")]
-        public string ActivityName { get; set; }
+        [Display(Name = "Event")]
+        public string eventName { get; set; }
 
         public int CampaignId { get; set; }
 
@@ -163,8 +163,8 @@ namespace AllReady.ViewModels
 
         public static AllReadyTask ToModel(this TaskViewModel taskViewModel, IMediator mediator)
         {
-            var activity = mediator.Send(new ActivityByActivityIdQuery { ActivityId = taskViewModel.ActivityId });
-            if (activity == null)
+            var campaignEvent = mediator.Send(new EventByIdQuery { EventId = taskViewModel.EventId });
+            if (campaignEvent == null)
             {
                 return null;
             }
@@ -183,7 +183,7 @@ namespace AllReady.ViewModels
 
             dbtask.Id = taskViewModel.Id;
             dbtask.Description = taskViewModel.Description;
-            dbtask.Activity = activity;
+            dbtask.Event = campaignEvent;
             dbtask.EndDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.EndDateTime.Value.UtcDateTime : new DateTime?();
             dbtask.StartDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.StartDateTime.Value.UtcDateTime : new DateTime?();
             dbtask.Name = taskViewModel.Name;

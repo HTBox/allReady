@@ -10,39 +10,39 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Extensions;
-using AllReady.Features.Activity;
+using AllReady.Features.Event;
 using MediatR;
 
 namespace AllReady.Controllers
 {
-    [Route("api/activity")]
+    [Route("api/event")]
     [Produces("application/json")]
-    public class ActivityApiController : Controller
+    public class EventApiController : Controller
     {
         private readonly IMediator _mediator;
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        public ActivityApiController(IMediator mediator)
+        public EventApiController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
         // GET: api/values
         [HttpGet]
-        public IEnumerable<ActivityViewModel> Get()
+        public IEnumerable<EventViewModel> Get()
         {
-            return _mediator.Send(new ActivitiesWithUnlockedCampaignsQuery());
+            return _mediator.Send(new EventsWithUnlockedCampaignsQuery());
         }
 
         //orginial code
         [HttpGet("{id}")]
-        [Produces("application/json", Type = typeof(ActivityViewModel))]
-        public ActivityViewModel Get(int id)
+        [Produces("application/json", Type = typeof(EventViewModel))]
+        public EventViewModel Get(int id)
         {
-            var activity = GetActivityBy(id);
-            if (activity != null)
+            var campaignEvent = GetEventBy(id);
+            if (campaignEvent != null)
             {
-                return new ActivityViewModel(activity);
+                return new EventViewModel(campaignEvent);
             }
             
             HttpNotFound();
@@ -50,23 +50,23 @@ namespace AllReady.Controllers
         }
 
         [Route("search")]
-        public IEnumerable<ActivityViewModel> GetActivitiesByPostalCode(string zip, int miles)
+        public IEnumerable<EventViewModel> GetEventsByPostalCode(string zip, int miles)
         {
-            var model = new List<ActivityViewModel>();
+            var model = new List<EventViewModel>();
 
-            var activities = _mediator.Send(new AcitivitiesByPostalCodeQuery { PostalCode = zip, Distance = miles });
-            activities.ForEach(activity => model.Add(new ActivityViewModel(activity)));
+            var campaignEvents = _mediator.Send(new EventsByPostalCodeQuery { PostalCode = zip, Distance = miles });
+            campaignEvents.ForEach(campaignEvent => model.Add(new EventViewModel(campaignEvent)));
 
             return model;
         }
 
         [Route("searchbylocation")]
-        public IEnumerable<ActivityViewModel> GetActivitiesByGeography(double latitude, double longitude, int miles)
+        public IEnumerable<EventViewModel> GetEventsByGeography(double latitude, double longitude, int miles)
         {
-            var model = new List<ActivityViewModel>();
+            var model = new List<EventViewModel>();
 
-            var activities = _mediator.Send(new ActivitiesByGeographyQuery { Latitude = latitude, Longitude = longitude, Miles = miles});
-            activities.ForEach(activity => model.Add(new ActivityViewModel(activity)));
+            var campaignEvents = _mediator.Send(new EventsByGeographyQuery { Latitude = latitude, Longitude = longitude, Miles = miles});
+            campaignEvents.ForEach(campaignEvent => model.Add(new EventViewModel(campaignEvent)));
 
             return model;
         }
@@ -80,7 +80,7 @@ namespace AllReady.Controllers
                 Options = { Width = 200, Height = 200 }
             };
 
-            // The QR code should point users to /api/activity/{id}/checkin
+            // The QR code should point users to /api/event/{id}/checkin
             var path = Request.Path.ToString();
             var checkinPath = path.Substring(0, path.Length - "qrcode".Length) + "checkin";
 
@@ -95,40 +95,40 @@ namespace AllReady.Controllers
         [HttpGet("{id}/checkin")]
         public ActionResult GetCheckin(int id)
         {
-            var activity = GetActivityBy(id);
-            if (activity == null)
+            var campaignEvent = GetEventBy(id);
+            if (campaignEvent == null)
             {
                 return HttpNotFound();
             }
             
-            return View("NoUserCheckin", activity);
+            return View("NoUserCheckin", campaignEvent);
         }
 
         [HttpPut("{id}/checkin")]
         [Authorize] 
         public async Task<ActionResult> PutCheckin(int id)
         {
-            var activity = GetActivityBy(id);
-            if (activity == null)
+            var campaignEvent = GetEventBy(id);
+            if (campaignEvent == null)
             {
                 return HttpNotFound();
             }
             
-            var userSignup = activity.UsersSignedUp.FirstOrDefault(u => u.User.Id == User.GetUserId());
+            var userSignup = campaignEvent.UsersSignedUp.FirstOrDefault(u => u.User.Id == User.GetUserId());
             if (userSignup != null && userSignup.CheckinDateTime == null)
             {
                 userSignup.CheckinDateTime = DateTimeUtcNow.Invoke();
-                await _mediator.SendAsync(new AddActivitySignupCommandAsync { ActivitySignup = userSignup });
-                return Json(new { Activity = new { activity.Name, activity.Description }});
+                await _mediator.SendAsync(new AddEventSignupCommandAsync { EventSignup = userSignup });
+                return Json(new { Event = new { campaignEvent.Name, campaignEvent.Description }});
             }
 
-            return Json(new { NeedsSignup = true, Activity = new { activity.Name, activity.Description }});
+            return Json(new { NeedsSignup = true, Event = new { campaignEvent.Name, campaignEvent.Description }});
         }
 
         [ValidateAntiForgeryToken]
         [HttpPost("signup")]
         [Authorize]
-        public async Task<object> RegisterActivity(ActivitySignupViewModel signupModel)
+        public async Task<object> RegisterEvent(EventSignupViewModel signupModel)
         {
             if (signupModel == null)
             {
@@ -142,26 +142,26 @@ namespace AllReady.Controllers
                 return Json(new { errors = ModelState.GetErrorMessages() });
             }
 
-            await _mediator.SendAsync(new ActivitySignupCommand { ActivitySignup = signupModel });
+            await _mediator.SendAsync(new EventSignupCommand { EventSignup = signupModel });
 
             return new {Status = "success"};
         }
 
         [HttpDelete("{id}/signup")]
         [Authorize]
-        public async Task<IActionResult> UnregisterActivity(int id)
+        public async Task<IActionResult> UnregisterEvent(int id)
         {
-            var activitySignup = _mediator.Send(new ActivitySignupByActivityIdAndUserIdQuery { ActivityId = id, UserId = User.GetUserId() });
-            if (activitySignup == null)
+            var eventSignup = _mediator.Send(new EventSignupByEventIdAndUserIdQuery { EventId = id, UserId = User.GetUserId() });
+            if (eventSignup == null)
             {
                 return HttpNotFound();
             }
 
-            await _mediator.SendAsync(new UnregisterActivity { ActivitySignupId = activitySignup.Id, UserId = activitySignup.User.Id});
+            await _mediator.SendAsync(new UnregisterEvent { EventSignupId = eventSignup.Id, UserId = eventSignup.User.Id});
 
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
-        private Activity GetActivityBy(int activityId) => _mediator.Send(new ActivityByActivityIdQuery { ActivityId = activityId });
+        private Event GetEventBy(int eventId) => _mediator.Send(new EventByIdQuery { EventId = eventId });
     }
 }

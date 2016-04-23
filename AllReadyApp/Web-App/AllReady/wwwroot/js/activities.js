@@ -4,7 +4,7 @@
 
 (function (ko, $) {
 
-    var getEvents = $.getJSON("/api/activity");
+    var getEvents = $.getJSON("/api/event");
 
     function EventsViewModel() {
         this.Events = ko.observableArray([]).filterBeforeDate("EndDateTime").textFilter(["Title","Description"]);

@@ -1,11 +1,11 @@
 ﻿using AllReady.Models;
 using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class ActivitySignupByActivityIdAndUserIdQuery : IRequest<ActivitySignup>
+    public class EventSignupByEventIdAndUserIdQuery : IRequest<EventSignup>
     {
-        public int ActivityId { get; set; }
+        public int EventId { get; set; }
         public string UserId { get; set; }
     }
 }

@@ -62,7 +62,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
 
             var sut = new DeleteCampaignCommandHandler(Context);
             await sut.Handle(new DeleteCampaignCommand { CampaignId = campaignId });
-            Assert.False(Context.Activities.Any(t => t.Id == campaignId));
+            Assert.False(Context.Events.Any(t => t.Id == campaignId));
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
 
             var sut = new DeleteCampaignCommandHandler(Context);
             await sut.Handle(new DeleteCampaignCommand { CampaignId = 666 });
-            Assert.False(Context.Activities.Any(t => t.Id == campaignId));
+            Assert.False(Context.Events.Any(t => t.Id == campaignId));
         }
     }
 }

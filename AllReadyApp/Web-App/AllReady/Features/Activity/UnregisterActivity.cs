@@ -1,10 +1,10 @@
 ﻿using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class UnregisterActivity : IAsyncRequest
+    public class UnregisterEvent : IAsyncRequest
     {
-        public int ActivitySignupId { get; set; }
+        public int EventSignupId { get; set; }
         public string UserId { get; set; }
     }
 }

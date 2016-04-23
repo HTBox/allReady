@@ -34,15 +34,15 @@ namespace AllReady.Features.Notifications
             {
                 var volunteer = await _context.Users.SingleAsync(u => u.Id == notification.UserId).ConfigureAwait(false);
 
-                var activity = await _context.Activities
+                var campaignEvent = await _context.Events
                     .Include(a => a.RequiredSkills).ThenInclude(r => r.Skill)
-                    .SingleAsync(a => a.Id == notification.ActivityId).ConfigureAwait(false);
+                    .SingleAsync(a => a.Id == notification.EventId).ConfigureAwait(false);
 
-                var activitySignup = activity.UsersSignedUp.FirstOrDefault(a => a.User.Id == notification.UserId);
+                var eventSignup = campaignEvent.UsersSignedUp.FirstOrDefault(a => a.User.Id == notification.UserId);
 
                 var campaign = await _context.Campaigns
                     .Include(c => c.CampaignContacts).ThenInclude(cc => cc.Contact)
-                    .SingleOrDefaultAsync(c => c.Id == activity.CampaignId).ConfigureAwait(false);
+                    .SingleOrDefaultAsync(c => c.Id == campaignEvent.CampaignId).ConfigureAwait(false);
 
                 var campaignContact = campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
                 var adminEmail = campaignContact?.Contact.Email;
@@ -51,14 +51,14 @@ namespace AllReady.Features.Notifications
                     return;
                 }
 
-                var isActivitySignup = (activity.ActivityType == ActivityTypes.ActivityManaged);
-                var activityLink = $"View activity: http://{_options.Value.SiteBaseUrl}/Admin/Activity/Details/{activity.Id}";
+                var IsEventSignup = (campaignEvent.EventType == EventTypes.EventManaged);
+                var eventLink = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Event/Details/{campaignEvent.Id}";
 
                 AllReadyTask task = null;
                 string taskLink = null;
                 TaskSignup taskSignup = null;
 
-                if (!isActivitySignup)
+                if (!IsEventSignup)
                 {
                     task = await _context.Tasks.SingleOrDefaultAsync(t => t.Id == notification.TaskId).ConfigureAwait(false);
                     if (task == null)
@@ -69,14 +69,14 @@ namespace AllReady.Features.Notifications
                     taskSignup = task.AssignedVolunteers.FirstOrDefault(t => t.User.Id == volunteer.Id); 
                 }
 
-                //set defaults for activity signup
-                var volunteerEmail = !string.IsNullOrWhiteSpace(activitySignup?.PreferredEmail) ? activitySignup.PreferredEmail : volunteer.Email;
-                var volunteerPhoneNumber = !string.IsNullOrWhiteSpace(activitySignup?.PreferredPhoneNumber) ? activitySignup.PreferredPhoneNumber : volunteer.PhoneNumber;
-                var volunteerComments = activitySignup?.AdditionalInfo ?? string.Empty;
-                var remainingRequiredVolunteersPhrase = $"{activity.NumberOfUsersSignedUp}/{activity.NumberOfVolunteersRequired}";
-                var typeOfSignupPhrase = "an activity";
+                //set defaults for event signup
+                var volunteerEmail = !string.IsNullOrWhiteSpace(eventSignup?.PreferredEmail) ? eventSignup.PreferredEmail : volunteer.Email;
+                var volunteerPhoneNumber = !string.IsNullOrWhiteSpace(eventSignup?.PreferredPhoneNumber) ? eventSignup.PreferredPhoneNumber : volunteer.PhoneNumber;
+                var volunteerComments = eventSignup?.AdditionalInfo ?? string.Empty;
+                var remainingRequiredVolunteersPhrase = $"{campaignEvent.NumberOfUsersSignedUp}/{campaignEvent.NumberOfVolunteersRequired}";
+                var typeOfSignupPhrase = "an event";
 
-                if (activity.ActivityType != ActivityTypes.ActivityManaged)
+                if (campaignEvent.EventType != EventTypes.EventManaged)
                 {
                     //set for task signup
                     volunteerEmail = !string.IsNullOrWhiteSpace(taskSignup?.PreferredEmail) ? taskSignup.PreferredEmail : volunteerEmail;
@@ -92,8 +92,8 @@ namespace AllReady.Features.Notifications
                 message.AppendLine($"A volunteer has signed up for {typeOfSignupPhrase}:");
                 message.AppendLine();
                 message.AppendLine($"   Campaign: {campaign.Name}");
-                message.AppendLine($"   Activity: {activity.Name} ({activityLink})");
-                if (!isActivitySignup)
+                message.AppendLine($"   Event: {campaignEvent.Name} ({eventLink})");
+                if (!IsEventSignup)
                 {
                     message.AppendLine($"   Task: {task.Name} ({taskLink})");
                 }
@@ -104,7 +104,7 @@ namespace AllReady.Features.Notifications
                 message.AppendLine($"   Volunteer PhoneNumber: {volunteerPhoneNumber}");
                 message.AppendLine($"   Volunteer Comments: {volunteerComments}");
                 message.AppendLine();
-                message.AppendLine(isActivitySignup ? GetActivitySkillsInfo(activity, volunteer) : GetTaskSkillsInfo(task, volunteer));
+                message.AppendLine(IsEventSignup ? GetEventSkillsInfo(campaignEvent, volunteer) : GetTaskSkillsInfo(task, volunteer));
 
                 Debug.WriteLine(adminEmail);
                 Debug.WriteLine(subject);
@@ -132,12 +132,12 @@ namespace AllReady.Features.Notifications
             }
         }
 
-        private string GetActivitySkillsInfo(Models.Activity activity, ApplicationUser volunteer)
+        private string GetEventSkillsInfo(Models.Event campaignEvent, ApplicationUser volunteer)
         {
             var result = new StringBuilder();
-            if (activity.RequiredSkills.Count == 0) return result.ToString();
+            if (campaignEvent.RequiredSkills.Count == 0) return result.ToString();
             result.AppendLine("   Skills Required:");
-            foreach (var skill in activity.RequiredSkills)
+            foreach (var skill in campaignEvent.RequiredSkills)
             {
                 var userMatch = volunteer.AssociatedSkills.Any(vs => vs.SkillId == skill.SkillId);
                 result.AppendLine($"      {skill.Skill.Name} {(userMatch ? "(match)" : string.Empty)}");

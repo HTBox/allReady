@@ -2,20 +2,20 @@
 using AllReady.Models;
 using MediatR;
 
-namespace AllReady.Areas.Admin.Features.Activities
+namespace AllReady.Areas.Admin.Features.Events
 {
-    public class UpdateActivityHandler : AsyncRequestHandler<UpdateActivity>
+    public class UpdateEventHandler : AsyncRequestHandler<UpdateEvent>
     {
         private readonly IAllReadyDataAccess dataAccess;
 
-        public UpdateActivityHandler(IAllReadyDataAccess dataAccess)
+        public UpdateEventHandler(IAllReadyDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
         }
 
-        protected override async Task HandleCore(UpdateActivity message)
+        protected override async Task HandleCore(UpdateEvent message)
         {
-            await dataAccess.UpdateActivity(message.Activity).ConfigureAwait(false);
+            await dataAccess.UpdateEvent(message.Event).ConfigureAwait(false);
         }
     }
 }

@@ -24,7 +24,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             task.Name = message.Task.Name;
             task.Description = message.Task.Description;
-            task.Activity = _context.Activities.SingleOrDefault(a => a.Id == message.Task.ActivityId);
+            task.Event = _context.Events.SingleOrDefault(a => a.Id == message.Task.EventId);
             task.Organization = _context.Organizations.SingleOrDefault(t => t.Id == message.Task.OrganizationId);
 
             var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(message.Task.TimeZoneId);
@@ -51,8 +51,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
             }
 
             task.NumberOfVolunteersRequired = message.Task.NumberOfVolunteersRequired;
-            task.IsLimitVolunteers = task.Activity.IsLimitVolunteers;
-            task.IsAllowWaitList = task.Activity.IsAllowWaitList;
+            task.IsLimitVolunteers = task.Event.IsLimitVolunteers;
+            task.IsAllowWaitList = task.Event.IsAllowWaitList;
 
             if (task.Id > 0)
             {

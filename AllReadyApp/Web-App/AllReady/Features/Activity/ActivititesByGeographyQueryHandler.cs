@@ -3,20 +3,20 @@ using System.Linq;
 using AllReady.Models;
 using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class ActivititesByGeographyQueryHandler : IRequestHandler<ActivitiesByGeographyQuery, List<Models.Activity>>
+    public class EventsByGeographyQueryHandler : IRequestHandler<EventsByGeographyQuery, List<Models.Event>>
     {
         private readonly IAllReadyDataAccess dataAccess;
 
-        public ActivititesByGeographyQueryHandler(IAllReadyDataAccess dataAccess)
+        public EventsByGeographyQueryHandler(IAllReadyDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
         }
 
-        public List<Models.Activity> Handle(ActivitiesByGeographyQuery message)
+        public List<Models.Event> Handle(EventsByGeographyQuery message)
         {
-            return dataAccess.ActivitiesByGeography(message.Latitude, message.Longitude, message.Miles).ToList();
+            return dataAccess.EventsByGeography(message.Latitude, message.Longitude, message.Miles).ToList();
         }
     }
 }

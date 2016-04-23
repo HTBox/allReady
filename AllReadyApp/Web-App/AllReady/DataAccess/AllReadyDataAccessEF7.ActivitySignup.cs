@@ -7,56 +7,56 @@ namespace AllReady.Models
 {
     public partial class AllReadyDataAccessEF7 : IAllReadyDataAccess
     {
-        IEnumerable<ActivitySignup> IAllReadyDataAccess.ActivitySignups
+        IEnumerable<EventSignup> IAllReadyDataAccess.EventSignups
         {
             get
             {
-                return _dbContext.ActivitySignup
+                return _dbContext.EventSignup
                     .Include(z => z.User)
-                    .Include(x => x.Activity)
-                    .Include(x => x.Activity.UsersSignedUp)
+                    .Include(x => x.Event)
+                    .Include(x => x.Event.UsersSignedUp)
                     .ThenInclude(u => u.User)
                     .ToList();
             }
         }
 
-        ActivitySignup IAllReadyDataAccess.GetActivitySignup(int activityId, string userId)
+        EventSignup IAllReadyDataAccess.GetEventSignup(int eventId, string userId)
         {
-            return _dbContext.ActivitySignup
+            return _dbContext.EventSignup
                 .Include(z => z.User)
-                .Include(x => x.Activity)
-                .Include(x => x.Activity.UsersSignedUp)
-                .Where(x => x.Activity.Id == activityId)
+                .Include(x => x.Event)
+                .Include(x => x.Event.UsersSignedUp)
+                .Where(x => x.Event.Id == eventId)
                 .SingleOrDefault(x => x.User.Id == userId);
         }
 
-        Task IAllReadyDataAccess.AddActivitySignupAsync(ActivitySignup userSignup)
+        Task IAllReadyDataAccess.AddEventSignupAsync(EventSignup userSignup)
         {
-            _dbContext.ActivitySignup.Add(userSignup);
+            _dbContext.EventSignup.Add(userSignup);
             return _dbContext.SaveChangesAsync();
         }
 
-        Task IAllReadyDataAccess.DeleteActivityAndTaskSignupsAsync(int activitySignupId)
+        Task IAllReadyDataAccess.DeleteEventAndTaskSignupsAsync(int eventSignupId)
         {
-            var activitySignup = _dbContext.ActivitySignup.SingleOrDefault(c => c.Id == activitySignupId);
+            var eventSignup = _dbContext.EventSignup.SingleOrDefault(c => c.Id == eventSignupId);
 
-            if (activitySignup == null)
+            if (eventSignup == null)
             {
                 return Task.FromResult(0);
             }
             
-            _dbContext.ActivitySignup.Remove(activitySignup);
+            _dbContext.EventSignup.Remove(eventSignup);
 
             _dbContext.TaskSignups.RemoveRange(_dbContext.TaskSignups
-                .Where(e => e.Task.Activity.Id == activitySignup.Activity.Id)
-                .Where(e => e.User.Id == activitySignup.User.Id));
+                .Where(e => e.Task.Event.Id == eventSignup.Event.Id)
+                .Where(e => e.User.Id == eventSignup.User.Id));
                 
             return _dbContext.SaveChangesAsync();
         }
 
-        Task IAllReadyDataAccess.UpdateActivitySignupAsync(ActivitySignup value)
+        Task IAllReadyDataAccess.UpdateEventSignupAsync(EventSignup value)
         {
-            _dbContext.ActivitySignup.Update(value);
+            _dbContext.EventSignup.Update(value);
             return _dbContext.SaveChangesAsync();
         }
     }

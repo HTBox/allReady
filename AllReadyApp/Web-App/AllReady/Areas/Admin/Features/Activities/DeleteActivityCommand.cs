@@ -1,9 +1,9 @@
 ﻿using MediatR;
 
-namespace AllReady.Areas.Admin.Features.Activities
+namespace AllReady.Areas.Admin.Features.Events
 {
-    public class DeleteActivityCommand : IAsyncRequest
+    public class DeleteEventCommand : IAsyncRequest
     {
-        public int ActivityId {get; set;}
+        public int EventId {get; set;}
     }
 }

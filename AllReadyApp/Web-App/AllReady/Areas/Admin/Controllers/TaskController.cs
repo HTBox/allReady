@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Models;
-using AllReady.Features.Activity;
+using AllReady.Features.Event;
 using AllReady.Models;
 using AllReady.Security;
 using MediatR;
@@ -24,25 +24,25 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        [Route("Admin/Task/Create/{activityId}")]
-        public IActionResult Create(int activityId)
+        [Route("Admin/Task/Create/{eventId}")]
+        public IActionResult Create(int eventId)
         {
-            var activity = GetActivityBy(activityId);
-            if (activity == null || !User.IsOrganizationAdmin(activity.Campaign.ManagingOrganizationId))
+            var campaignEvent = GetEventBy(eventId);
+            if (campaignEvent == null || !User.IsOrganizationAdmin(campaignEvent.Campaign.ManagingOrganizationId))
             {
                 return HttpUnauthorized();
             }
             
             var viewModel = new TaskEditModel
             {
-                ActivityId = activity.Id,
-                ActivityName = activity.Name,
-                CampaignId = activity.CampaignId,
-                CampaignName = activity.Campaign.Name,
-                OrganizationId = activity.Campaign.ManagingOrganizationId,
-                TimeZoneId = activity.Campaign.TimeZoneId,
-                StartDateTime = activity.StartDateTime,
-                EndDateTime = activity.EndDateTime
+                EventId = campaignEvent.Id,
+                EventName = campaignEvent.Name,
+                CampaignId = campaignEvent.CampaignId,
+                CampaignName = campaignEvent.Campaign.Name,
+                OrganizationId = campaignEvent.Campaign.ManagingOrganizationId,
+                TimeZoneId = campaignEvent.Campaign.TimeZoneId,
+                StartDateTime = campaignEvent.StartDateTime,
+                EndDateTime = campaignEvent.EndDateTime
             };
 
             return View("Edit", viewModel);
@@ -50,8 +50,8 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("Admin/Task/Create/{activityId}")]
-        public async Task<IActionResult> Create(int activityId, TaskEditModel model)
+        [Route("Admin/Task/Create/{eventId}")]
+        public async Task<IActionResult> Create(int eventId, TaskEditModel model)
         {
             if (model.EndDateTime < model.StartDateTime)
             {
@@ -69,8 +69,8 @@ namespace AllReady.Areas.Admin.Controllers
                 
                 await _mediator.SendAsync(new EditTaskCommandAsync { Task = model });
 
-                //mgmccarthy: I'm assuming this is ActivityController in the Admin area
-                return RedirectToAction(nameof(Details), "Activity", new { id = activityId });
+                //mgmccarthy: I'm assuming this is EventController in the Admin area
+                return RedirectToAction(nameof(Details), "Event", new { id = eventId });
             }
 
             return View("Edit", model);
@@ -150,7 +150,6 @@ namespace AllReady.Areas.Admin.Controllers
             return View(task);
         }
 
-        // POST: Activity/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -168,8 +167,8 @@ namespace AllReady.Areas.Admin.Controllers
             
             await _mediator.SendAsync(new DeleteTaskCommandAsync { TaskId = id });
 
-            //mgmccarthy: I'm assuming this is ActivityController in the Admin area
-            return RedirectToAction(nameof(ActivityController.Details), "Activity", new { id = taskSummaryModel.ActivityId });
+            //mgmccarthy: I'm assuming this is EventController in the Admin area
+            return RedirectToAction(nameof(EventController.Details), "Event", new { id = taskSummaryModel.EventId });
         }
 
         [HttpPost]
@@ -178,8 +177,8 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var taskSummaryModel = await _mediator.SendAsync(new TaskQueryAsync { TaskId = id });
 
-            var activity = GetActivityBy(taskSummaryModel.ActivityId);
-            if (!User.IsOrganizationAdmin(activity.Campaign.ManagingOrganizationId))
+            var campaignEvent = GetEventBy(taskSummaryModel.EventId);
+            if (!User.IsOrganizationAdmin(campaignEvent.Campaign.ManagingOrganizationId))
             {
                 return HttpUnauthorized();
             }
@@ -193,7 +192,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MessageAllVolunteers(MessageTaskVolunteersModel model)
         {
-            //TODO: Query only for the organization Id rather than the whole activity detail
+            //TODO: Query only for the organization Id rather than the whole event detail
             if (!ModelState.IsValid)
             {
                 return HttpBadRequest(ModelState);
@@ -219,8 +218,8 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (model.StartDateTime.HasValue || model.EndDateTime.HasValue)
             {
-                var activity = GetActivityBy(model.ActivityId);
-                var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(activity.Campaign.TimeZoneId);
+                var campaignEvent = GetEventBy(model.EventId);
+                var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(campaignEvent.Campaign.TimeZoneId);
 
                 DateTimeOffset? convertedStartDateTime = null;
                 if (model.StartDateTime.HasValue)
@@ -238,11 +237,11 @@ namespace AllReady.Areas.Admin.Controllers
                     convertedEndDateTime = new DateTimeOffset(endDateValue.Year, endDateValue.Month, endDateValue.Day, endDateValue.Hour, endDateValue.Minute, 0, endDateTimeOffset);
                 }
 
-                if ((convertedStartDateTime < activity.StartDateTime || convertedEndDateTime > activity.EndDateTime) &&
+                if ((convertedStartDateTime < campaignEvent.StartDateTime || convertedEndDateTime > campaignEvent.EndDateTime) &&
                     (model.IgnoreTimeRangeWarning == false))
                 {
-                    ModelState.AddModelError("", "Although valid, task time is out of range for activity time from " +
-                        activity.StartDateTime.DateTime.ToString("g") + " to " + activity.EndDateTime.DateTime.ToString("g") + " " + activity.Campaign.TimeZoneId);
+                    ModelState.AddModelError("", "Although valid, task time is out of range for event time from " +
+                        campaignEvent.StartDateTime.DateTime.ToString("g") + " to " + campaignEvent.EndDateTime.DateTime.ToString("g") + " " + campaignEvent.Campaign.TimeZoneId);
                     ModelState.Remove("IgnoreTimeRangeWarning");
                     model.IgnoreTimeRangeWarning = true;
                 }
@@ -250,7 +249,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         //mgmccarthy: mediator query and handler need to be changed to async when Issue #622 is addressed
-        private Activity GetActivityBy(int activityId) => 
-            _mediator.Send(new ActivityByActivityIdQuery { ActivityId = activityId });
+        private Event GetEventBy(int eventId) => 
+            _mediator.Send(new EventByIdQuery { EventId = eventId });
     }
 }

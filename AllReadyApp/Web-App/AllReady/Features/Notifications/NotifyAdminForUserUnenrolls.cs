@@ -29,7 +29,7 @@ namespace AllReady.Features.Notifications
             // don't let problem with notification keep us from continuing
             try
             {
-                var notificationModel = await _mediator.SendAsync(new ActivityDetailForNotificationQueryAsync { ActivityId = notification.ActivityId, UserId = notification.UserId })
+                var notificationModel = await _mediator.SendAsync(new EventDetailForNotificationQueryAsync { EventId = notification.EventId, UserId = notification.UserId })
                     .ConfigureAwait(false);
 
                 var campaignContact = notificationModel.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
@@ -42,9 +42,9 @@ namespace AllReady.Features.Notifications
 
                 TaskSummaryModel taskModel = null;
                 string remainingRequiredVolunteersPhrase;
-                var isActivityUnenroll = (notificationModel.ActivityType == ActivityTypes.ActivityManaged);
+                var IsEventUnenroll = (notificationModel.EventType == EventTypes.EventManaged);
 
-                if (isActivityUnenroll)
+                if (IsEventUnenroll)
                 {
                     remainingRequiredVolunteersPhrase = $"{notificationModel.UsersSignedUp.Count}/{notificationModel.NumberOfVolunteersRequired}";
                 }
@@ -54,15 +54,15 @@ namespace AllReady.Features.Notifications
                     remainingRequiredVolunteersPhrase = $"{taskModel.NumberOfVolunteersSignedUp}/{taskModel.NumberOfVolunteersRequired}";
                 }
             
-                var activityLink = $"View activity: {_options.Value.SiteBaseUrl}Admin/Activity/Details/{notificationModel.ActivityId}";
-                var subject = $"A volunteer has unenrolled from {(isActivityUnenroll ? "an activity" : "a task")}";
+                var eventLink = $"View event: {_options.Value.SiteBaseUrl}Admin/Event/Details/{notificationModel.EventId}";
+                var subject = $"A volunteer has unenrolled from {(IsEventUnenroll ? "an event" : "a task")}";
 
                 var message = new StringBuilder();
-                message.AppendLine($"A volunteer has unenrolled from {(isActivityUnenroll ? "an activity" : "a task")}.");
+                message.AppendLine($"A volunteer has unenrolled from {(IsEventUnenroll ? "an event" : "a task")}.");
                 message.AppendLine($"   Volunteer: {notificationModel.Volunteer.Name} ({notificationModel.Volunteer.Email})");
                 message.AppendLine($"   Campaign: {notificationModel.CampaignName}");
-                message.AppendLine($"   Activity: {notificationModel.ActivityName} ({activityLink})");
-                if (!isActivityUnenroll)
+                message.AppendLine($"   Event: {notificationModel.EventName} ({eventLink})");
+                if (!IsEventUnenroll)
                 {
                     message.AppendLine($"   Task: {taskModel.Name} ({$"View task: {_options.Value.SiteBaseUrl}Admin/Task/Details/{taskModel.Id}"})");
                     message.AppendLine($"   Task Start Date: {taskModel.StartDateTime?.Date.ToShortDateString()}");
@@ -70,7 +70,7 @@ namespace AllReady.Features.Notifications
                 message.AppendLine($"   Remaining/Required Volunteers: {remainingRequiredVolunteersPhrase}");
                 message.AppendLine();
 
-                if (isActivityUnenroll)
+                if (IsEventUnenroll)
                 {
                     var assignedTasks = notificationModel.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.UserId == notificationModel.Volunteer.Id)).ToList();
                     if (assignedTasks.Count == 0)

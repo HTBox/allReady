@@ -2,28 +2,28 @@
 using AllReady.ViewModels;
 using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class ShowActivityQueryHandler : IRequestHandler<ShowActivityQuery, ActivityViewModel>
+    public class ShowEventQueryHandler : IRequestHandler<ShowEventQuery, EventViewModel>
     {
         private readonly IAllReadyDataAccess _dataAccess;
 
-        public ShowActivityQueryHandler(IAllReadyDataAccess dataAccess)
+        public ShowEventQueryHandler(IAllReadyDataAccess dataAccess)
         {
             _dataAccess = dataAccess;
         }
 
-        public ActivityViewModel Handle(ShowActivityQuery message)
+        public EventViewModel Handle(ShowEventQuery message)
         {
-            var activity = _dataAccess.GetActivity(message.ActivityId);
+            var campaignEvent = _dataAccess.GetEvent(message.EventId);
 
-            if (activity == null || activity.Campaign.Locked)
+            if (campaignEvent == null || campaignEvent.Campaign.Locked)
             {
                 return null;
             }
 
-            return new ActivityViewModel(activity)
-                .WithUserInfo(activity, message.User, _dataAccess);
+            return new EventViewModel(campaignEvent)
+                .WithUserInfo(campaignEvent, message.User, _dataAccess);
         }
     }
 }

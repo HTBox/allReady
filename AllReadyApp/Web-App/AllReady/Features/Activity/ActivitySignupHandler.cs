@@ -7,54 +7,54 @@ using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class ActivitySignupHandler : AsyncRequestHandler<ActivitySignupCommand>
+    public class EventSignupHandler : AsyncRequestHandler<EventSignupCommand>
     {
         private readonly IMediator _mediator;
         private readonly AllReadyContext _context;
 
-        public ActivitySignupHandler(IMediator mediator, AllReadyContext context)
+        public EventSignupHandler(IMediator mediator, AllReadyContext context)
         {
             _mediator = mediator;
             _context = context;
         }
 
-        protected override async Task HandleCore(ActivitySignupCommand message)
+        protected override async Task HandleCore(EventSignupCommand message)
         {
-            var activitySignup = message.ActivitySignup;
+            var eventSignup = message.EventSignup;
 
             var user = await _context.Users
                 .Include(u => u.AssociatedSkills)
-                .SingleOrDefaultAsync(u => u.Id == activitySignup.UserId).ConfigureAwait(false);
+                .SingleOrDefaultAsync(u => u.Id == eventSignup.UserId).ConfigureAwait(false);
 
-            var activity = await _context.Activities
+            var campaignEvent = await _context.Events
                 .Include(a => a.RequiredSkills)
                 .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
-                .SingleOrDefaultAsync(a => a.Id == activitySignup.ActivityId).ConfigureAwait(false);
+                .SingleOrDefaultAsync(a => a.Id == eventSignup.EventId).ConfigureAwait(false);
 
-            activity.UsersSignedUp = activity.UsersSignedUp ?? new List<ActivitySignup>();
+            campaignEvent.UsersSignedUp = campaignEvent.UsersSignedUp ?? new List<EventSignup>();
 
             // If the user is already signed up for some reason, stop don't signup again, please
-            if (!activity.UsersSignedUp.Any(acsu => acsu.User.Id == user.Id))
+            if (!campaignEvent.UsersSignedUp.Any(acsu => acsu.User.Id == user.Id))
             {
-                activity.UsersSignedUp.Add(new ActivitySignup
+                campaignEvent.UsersSignedUp.Add(new EventSignup
                 {
-                    Activity = activity,
+                    Event = campaignEvent,
                     User = user,
-                    PreferredEmail = activitySignup.PreferredEmail,
-                    PreferredPhoneNumber = activitySignup.PreferredPhoneNumber,
-                    AdditionalInfo = activitySignup.AdditionalInfo,
+                    PreferredEmail = eventSignup.PreferredEmail,
+                    PreferredPhoneNumber = eventSignup.PreferredPhoneNumber,
+                    AdditionalInfo = eventSignup.AdditionalInfo,
                     SignupDateTime = DateTime.UtcNow
                 });
 
-                _context.Update(activity);
+                _context.Update(campaignEvent);
 
                 //Add selected new skills (if any) to the current user
-                if (activitySignup.AddSkillIds.Count > 0)
+                if (eventSignup.AddSkillIds.Count > 0)
                 {
-                    var skillsToAdd = activity.RequiredSkills
-                        .Where(acsk => activitySignup.AddSkillIds.Contains(acsk.SkillId))
+                    var skillsToAdd = campaignEvent.RequiredSkills
+                        .Where(acsk => eventSignup.AddSkillIds.Contains(acsk.SkillId))
                         .Select(acsk => new UserSkill() { SkillId = acsk.SkillId, UserId = user.Id });
                     user.AssociatedSkills.AddRange(skillsToAdd.Where(toAdd => !user.AssociatedSkills.Any(existing => existing.SkillId == toAdd.SkillId)));
 
@@ -64,7 +64,7 @@ namespace AllReady.Features.Activity
                 await _context.SaveChangesAsync().ConfigureAwait(false);
 
                     //Notify admins of a new volunteer
-                await _mediator.PublishAsync(new VolunteerSignupNotification() { ActivityId = activitySignup.ActivityId, UserId = activitySignup.UserId, TaskId = null })
+                await _mediator.PublishAsync(new VolunteerSignupNotification() { EventId = eventSignup.EventId, UserId = eventSignup.UserId, TaskId = null })
                     .ConfigureAwait(false);
             }
         }

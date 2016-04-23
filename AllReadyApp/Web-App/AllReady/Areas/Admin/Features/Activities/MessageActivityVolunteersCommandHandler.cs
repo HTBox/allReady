@@ -6,25 +6,25 @@ using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
 
-namespace AllReady.Areas.Admin.Features.Activities
+namespace AllReady.Areas.Admin.Features.Events
 {
-    public class MessageActivityVolunteersCommandHandler : AsyncRequestHandler<MessageActivityVolunteersCommand>
+    public class MessageEventVolunteersCommandHandler : AsyncRequestHandler<MessageEventVolunteersCommand>
     {
         private AllReadyContext _context;
         private IMediator _mediator;
 
-        public MessageActivityVolunteersCommandHandler(AllReadyContext context, IMediator mediator)
+        public MessageEventVolunteersCommandHandler(AllReadyContext context, IMediator mediator)
         {
             _context = context;
             _mediator = mediator;
         }
 
-        protected override async Task HandleCore(MessageActivityVolunteersCommand message)
+        protected override async Task HandleCore(MessageEventVolunteersCommand message)
         {
             var users =
-                _context.ActivitySignup.AsNoTracking()
+                _context.EventSignup.AsNoTracking()
                 .Include(a => a.User)
-                .Where(a => a.Activity.Id == message.Model.ActivityId).ToList();
+                .Where(a => a.Event.Id == message.Model.EventId).ToList();
 
 
             // send all notifications to the queue

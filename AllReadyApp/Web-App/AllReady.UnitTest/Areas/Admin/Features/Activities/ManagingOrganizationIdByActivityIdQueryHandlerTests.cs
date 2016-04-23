@@ -1,21 +1,21 @@
-﻿using AllReady.Areas.Admin.Features.Activities;
+﻿using AllReady.Areas.Admin.Features.Events;
 using AllReady.Models;
 using Moq;
 using Xunit;
 
-namespace AllReady.UnitTest.Areas.Admin.Features.Activities
+namespace AllReady.UnitTest.Areas.Admin.Features.Events
 {
-    public class ManagingOrganizationIdByActivityIdQueryHandlerTests
+    public class ManagingOrganizationIdByEventIdQueryHandlerTests
     {
         [Fact]
-        public void ManagingOrganizationIdByActivityIdQueryHandlerInvokesGetManagingOrganizationIdWithCorrectActivityId()
+        public void ManagingOrganizationIdByEventIdQueryHandlerInvokesGetManagingOrganizationIdWithCorrectEventId()
         {
-            var message = new ManagingOrganizationIdByActivityIdQuery { ActivityId = 1 };
+            var message = new ManagingOrganizationIdByEventIdQuery { EventId = 1 };
             var dataAccess = new Mock<IAllReadyDataAccess>();
-            var sut = new ManagingOrganizationIdByActivityIdQueryHandler(dataAccess.Object);
+            var sut = new ManagingOrganizationIdByEventIdQueryHandler(dataAccess.Object);
             sut.Handle(message);
 
-            dataAccess.Verify(x => x.GetManagingOrganizationId(message.ActivityId), Times.Once);
+            dataAccess.Verify(x => x.GetManagingOrganizationId(message.EventId), Times.Once);
         }
     }
 }

@@ -7,8 +7,8 @@
         <ol class="breadcrumb">
             <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
             <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.ActivityId" asp-route-area="Admin">@Model.ActivityName</a></li>
-            <li><a asp-controller="Task" asp-action="Details" asp-route-activityId="@Model.ActivityId" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Name</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-route-area="Admin">@Model.EventName</a></li>
+            <li><a asp-controller="Task" asp-action="Details" asp-route-eventId="@Model.EventId" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Name</a></li>
             <li>Delete</li>
         </ol>
     </div>

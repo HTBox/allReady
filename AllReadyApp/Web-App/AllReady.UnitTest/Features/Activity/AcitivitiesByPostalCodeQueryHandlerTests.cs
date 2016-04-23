@@ -1,21 +1,21 @@
-﻿using AllReady.Features.Activity;
+﻿using AllReady.Features.Event;
 using AllReady.Models;
 using Moq;
 using Xunit;
 
-namespace AllReady.UnitTest.Features.Activity
+namespace AllReady.UnitTest.Features.Event
 {
-    public class AcitivitiesByPostalCodeQueryHandlerTests
+    public class EventsByPostalCodeQueryHandlerTests
     {
         [Fact]
-        public void HandleCallsActivitiesByPostalCodeWithCorrectPostalCodeAndDistance()
+        public void HandleCallsEventsByPostalCodeWithCorrectPostalCodeAndDistance()
         {
-            var message = new AcitivitiesByPostalCodeQuery { PostalCode = "PostalCode", Distance = 100 };
+            var message = new EventsByPostalCodeQuery { PostalCode = "PostalCode", Distance = 100 };
             var dataStore = new Mock<IAllReadyDataAccess>();
-            var sut = new AcitivitiesByPostalCodeQueryHandler(dataStore.Object);
+            var sut = new EventsByPostalCodeQueryHandler(dataStore.Object);
             sut.Handle(message);
 
-            dataStore.Verify(x => x.ActivitiesByPostalCode(message.PostalCode, message.Distance), Times.Once);
+            dataStore.Verify(x => x.EventsByPostalCode(message.PostalCode, message.Distance), Times.Once);
         }
     }
 }

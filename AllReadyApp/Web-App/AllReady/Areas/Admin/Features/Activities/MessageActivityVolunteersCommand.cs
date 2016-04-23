@@ -1,10 +1,10 @@
 ﻿using AllReady.Areas.Admin.Models;
 using MediatR;
 
-namespace AllReady.Areas.Admin.Features.Activities
+namespace AllReady.Areas.Admin.Features.Events
 {
-    public class MessageActivityVolunteersCommand : IAsyncRequest
+    public class MessageEventVolunteersCommand : IAsyncRequest
     {
-        public MessageActivityVolunteersModel Model {get; set;}
+        public MessageEventVolunteersModel Model {get; set;}
     }
 }

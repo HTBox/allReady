@@ -14,7 +14,7 @@ using MediatR;
 using Microsoft.AspNet.Authorization;
 using AllReady.Areas.Admin.Features.Tasks;
 using System.Threading.Tasks;
-using AllReady.Features.Activity;
+using AllReady.Features.Event;
 using AllReady.Extensions;
 
 namespace AllReady.UnitTest.Controllers
@@ -22,18 +22,18 @@ namespace AllReady.UnitTest.Controllers
     public class TaskControllerTests
     {
         [Fact]
-        public void CreateGetSendsActivityByActivityIdQueryWithTheCorrectActivityId()
+        public void CreateGetSendsEventByEventIdQueryWithTheCorrectEventId()
         {
-            const int activityId = 1;
+            const int eventId = 1;
             var mediator = new Mock<IMediator>();
             var sut = new TaskController(mediator.Object);
-            sut.Create(activityId);
+            sut.Create(eventId);
 
-            mediator.Verify(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == activityId)), Times.Once);
+            mediator.Verify(x => x.Send(It.Is<EventByIdQuery>(y => y.EventId == eventId)), Times.Once);
         }
 
         [Fact]
-        public void CreateGetReturnsHttpUnauthorizedResultWhenActivityIsNull()
+        public void CreateGetReturnsHttpUnauthorizedResultWhenEventIsNull()
         {
             var sut = new TaskController(Mock.Of<IMediator>());
             var result = sut.Create(It.IsAny<int>());
@@ -45,7 +45,7 @@ namespace AllReady.UnitTest.Controllers
         public void CreateGetReturnsHttpUnauthorizedResultWhenUserIsNotOrganizationAdminForTheirOrganization()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = 1 }});
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 }});
 
             var sut = new TaskController(mediator.Object);
             sut.SetDefaultHttpContext();
@@ -63,10 +63,10 @@ namespace AllReady.UnitTest.Controllers
             var campaignStartDateTime = DateTime.Now.AddDays(-1);
             var campaignEndDateTime = DateTime.Now.AddDays(1);
 
-            var activity = new Activity
+            var campaignEvent = new Event
             {
                 Id = 1,
-                Name = "ActivityName",
+                Name = "EventName",
                 CampaignId = campaignId,
                 Campaign = new Campaign
                 {
@@ -80,7 +80,7 @@ namespace AllReady.UnitTest.Controllers
             };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(activity);
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(campaignEvent);
 
             var sut = new TaskController(mediator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
@@ -88,14 +88,14 @@ namespace AllReady.UnitTest.Controllers
             var result = sut.Create(It.IsAny<int>()) as ViewResult;
             var modelResult = result.ViewData.Model as TaskEditModel;
 
-            Assert.Equal(modelResult.ActivityId, activity.Id);
-            Assert.Equal(modelResult.ActivityName, activity.Name);
-            Assert.Equal(modelResult.CampaignId, activity.CampaignId);
-            Assert.Equal(modelResult.CampaignName, activity.Campaign.Name);
-            Assert.Equal(modelResult.OrganizationId, activity.Campaign.ManagingOrganizationId);
-            Assert.Equal(modelResult.TimeZoneId, activity.Campaign.TimeZoneId);
-            Assert.Equal(modelResult.StartDateTime, activity.StartDateTime);
-            Assert.Equal(modelResult.EndDateTime, activity.EndDateTime);
+            Assert.Equal(modelResult.EventId, campaignEvent.Id);
+            Assert.Equal(modelResult.EventName, campaignEvent.Name);
+            Assert.Equal(modelResult.CampaignId, campaignEvent.CampaignId);
+            Assert.Equal(modelResult.CampaignName, campaignEvent.Campaign.Name);
+            Assert.Equal(modelResult.OrganizationId, campaignEvent.Campaign.ManagingOrganizationId);
+            Assert.Equal(modelResult.TimeZoneId, campaignEvent.Campaign.TimeZoneId);
+            Assert.Equal(modelResult.StartDateTime, campaignEvent.StartDateTime);
+            Assert.Equal(modelResult.EndDateTime, campaignEvent.EndDateTime);
         }
 
         [Fact]
@@ -104,7 +104,7 @@ namespace AllReady.UnitTest.Controllers
             const int organizationId = 1;
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId }});
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = organizationId }});
 
             var sut = new TaskController(mediator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
@@ -128,7 +128,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskController(null);
             var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "Admin/Task/Create/{activityId}");
+            Assert.Equal(attribute.Template, "Admin/Task/Create/{eventId}");
         }
 
         [Fact]
@@ -137,7 +137,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             //mgmccarthy: for a list of time zone's to feed to TimeZoneInfo.FindSystemTimeZoneById, check here:
             //http://stackoverflow.com/questions/7908343/list-of-timezone-ids-for-use-with-findtimezonebyid-in-c
-            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
             var sut = new TaskController(mediator.Object);
             await sut.Create(It.IsAny<int>(), new TaskEditModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1) });
@@ -152,7 +152,7 @@ namespace AllReady.UnitTest.Controllers
             var model = new TaskEditModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1) };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
             var sut = new TaskController(mediator.Object);
             var result = await sut.Create(It.IsAny<int>(), model) as ViewResult;
@@ -170,7 +170,7 @@ namespace AllReady.UnitTest.Controllers
             var model = new TaskEditModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = 1 };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
             {
                 Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" },
                 StartDateTime = startDateTime.AddDays(-1),
@@ -196,7 +196,7 @@ namespace AllReady.UnitTest.Controllers
             var model = new TaskEditModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
             {
                 Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" },
                 StartDateTime = startDateTime.AddDays(-1),
@@ -223,7 +223,7 @@ namespace AllReady.UnitTest.Controllers
             var model = new TaskEditModel { Id = taskEditModelId, StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
             {
                 Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" },
                 StartDateTime = startDateTime.AddDays(-1),
@@ -239,7 +239,7 @@ namespace AllReady.UnitTest.Controllers
             var result = await sut.Create(taskEditModelId, model) as RedirectToActionResult;
 
             Assert.Equal(result.ActionName, nameof(TaskController.Details));
-            Assert.Equal(result.ControllerName, "Activity");
+            Assert.Equal(result.ControllerName, "Event");
             Assert.Equal(result.RouteValues, routeValues);
         }
 
@@ -257,7 +257,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskController(null);
             var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<TaskEditModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "Admin/Task/Create/{activityId}");
+            Assert.Equal(attribute.Template, "Admin/Task/Create/{eventId}");
         }
 
         [Fact]
@@ -335,7 +335,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task EditPostAddsCorrectModelStateErrorWhenEndDateTimeIsLessThanStartDateTime()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
             var sut = new TaskController(mediator.Object);
             await sut.Edit(new TaskEditModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1)});
@@ -350,7 +350,7 @@ namespace AllReady.UnitTest.Controllers
             var model = new TaskEditModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1) };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
             var sut = new TaskController(mediator.Object);
             var result = await sut.Edit(model) as ViewResult;
@@ -368,7 +368,7 @@ namespace AllReady.UnitTest.Controllers
             var model = new TaskEditModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = 1 };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
             {
                 Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" },
                 StartDateTime = startDateTime.AddDays(-1),
@@ -394,7 +394,7 @@ namespace AllReady.UnitTest.Controllers
             var model = new TaskEditModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
             {
                 Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" }, StartDateTime = startDateTime.AddDays(-1), EndDateTime = endDateTime.AddDays(1)
             });
@@ -418,7 +418,7 @@ namespace AllReady.UnitTest.Controllers
             var model = new TaskEditModel { Id = 1, StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
             {
                 Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" },
                 StartDateTime = startDateTime.AddDays(-1),
@@ -613,7 +613,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const int organizationId = 1;
             const int taskId = 1;
-            var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId, ActivityId = 1 };
+            var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId, EventId = 1 };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
@@ -622,10 +622,10 @@ namespace AllReady.UnitTest.Controllers
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             var result = await sut.DeleteConfirmed(taskId) as RedirectToActionResult;
 
-            var routeValues = new Dictionary<string, object> { ["id"] = taskSummaryModel.ActivityId };
+            var routeValues = new Dictionary<string, object> { ["id"] = taskSummaryModel.EventId };
 
-            Assert.Equal(result.ActionName, nameof(ActivityController.Details));
-            Assert.Equal(result.ControllerName, "Activity");
+            Assert.Equal(result.ActionName, nameof(EventController.Details));
+            Assert.Equal(result.ControllerName, "Event");
             Assert.Equal(result.RouteValues, routeValues);
         }
 
@@ -657,10 +657,10 @@ namespace AllReady.UnitTest.Controllers
         public async Task AssignSendsTaskQueryAsyncWithCorrectTaskId()
         {
             const int taskId = 1;
-            var taskModelSummary = new TaskSummaryModel { ActivityId = 1 };
+            var taskModelSummary = new TaskSummaryModel { EventId = 1 };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = 1 } });
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } });
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskModelSummary);
 
             var sut = new TaskController(mediator.Object);
@@ -673,11 +673,11 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task AssignReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
-            var taskModelSummary = new TaskSummaryModel { ActivityId = 1 };
+            var taskModelSummary = new TaskSummaryModel { EventId = 1 };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskModelSummary);
-            mediator.Setup(x => x.Send(It.IsAny<ActivityByActivityIdQuery>())).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = 1 } });
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } });
 
             var sut = new TaskController(mediator.Object);
             sut.SetDefaultHttpContext();
@@ -691,12 +691,12 @@ namespace AllReady.UnitTest.Controllers
         {
             const int organizationId = 1;
             const int taskId = 1;
-            var taskModelSummary = new TaskSummaryModel { ActivityId = 1 };
+            var taskModelSummary = new TaskSummaryModel { EventId = 1 };
             var userIds = new List<string> { "1", "2" };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskModelSummary);
-            mediator.Setup(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == taskModelSummary.ActivityId))).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId }});
+            mediator.Setup(x => x.Send(It.Is<EventByIdQuery>(y => y.EventId == taskModelSummary.EventId))).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = organizationId }});
 
             var sut = new TaskController(mediator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
@@ -710,11 +710,11 @@ namespace AllReady.UnitTest.Controllers
         {
             const int organizationId = 1;
             const int taskId = 1;
-            var taskModelSummary = new TaskSummaryModel { ActivityId = 1 };
+            var taskModelSummary = new TaskSummaryModel { EventId = 1 };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskModelSummary);
-            mediator.Setup(x => x.Send(It.Is<ActivityByActivityIdQuery>(y => y.ActivityId == taskModelSummary.ActivityId))).Returns(new Activity { Campaign = new Campaign { ManagingOrganizationId = organizationId } });
+            mediator.Setup(x => x.Send(It.Is<EventByIdQuery>(y => y.EventId == taskModelSummary.EventId))).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = organizationId } });
 
             var sut = new TaskController(mediator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());

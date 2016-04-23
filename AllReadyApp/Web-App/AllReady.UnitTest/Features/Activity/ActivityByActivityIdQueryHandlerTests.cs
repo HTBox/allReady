@@ -1,33 +1,33 @@
-﻿using AllReady.Features.Activity;
+﻿using AllReady.Features.Event;
 using AllReady.Models;
 using Moq;
 using Xunit;
 
-namespace AllReady.UnitTest.Features.Activity
+namespace AllReady.UnitTest.Features.Event
 {
-    public class ActivityByActivityIdQueryHandlerTests
+    public class EventByEventIdQueryHandlerTests
     {
         [Fact]
-        public void CallsGetActivityWithTheCorrectActivityId()
+        public void CallsGetEventWithTheCorrectEventId()
         {
-            var message = new ActivityByActivityIdQuery { ActivityId = 1 };
+            var message = new EventByIdQuery { EventId = 1 };
             var dataAccess = new Mock<IAllReadyDataAccess>();
 
-            var sut = new ActivityByActivityIdQueryHandler(dataAccess.Object);
+            var sut = new EventByIdQueryHandler(dataAccess.Object);
             sut.Handle(message);
 
-            dataAccess.Verify(x => x.GetActivity(message.ActivityId), Times.Once());
+            dataAccess.Verify(x => x.GetEvent(message.EventId), Times.Once());
         }
 
         [Fact]
         public void ReturnsCorrectType()
         {
             var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.GetActivity(It.IsAny<int>())).Returns(new Models.Activity());
-            var sut = new ActivityByActivityIdQueryHandler(dataAccess.Object);
-            var result = sut.Handle(new ActivityByActivityIdQuery());
+            dataAccess.Setup(x => x.GetEvent(It.IsAny<int>())).Returns(new Models.Event());
+            var sut = new EventByIdQueryHandler(dataAccess.Object);
+            var result = sut.Handle(new EventByIdQuery());
 
-            Assert.IsType<Models.Activity>(result);
+            Assert.IsType<Models.Event>(result);
         }
     }
 }

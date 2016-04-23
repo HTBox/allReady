@@ -31,7 +31,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 ManagingOrganization = htb
             };
 
-            var queenAnne = new Activity
+            var queenAnne = new Event
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
@@ -40,7 +40,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
-                RequiredSkills = new List<ActivitySkill>(),
+                RequiredSkills = new List<EventSkill>(),
             };
 
             var username1 = $"blah@1.com";
@@ -56,14 +56,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             
             var task = new AllReadyTask
             {
-                Activity = queenAnne,
+                Event = queenAnne,
                 Description = "Description of a very important task",
                 Name = "Task # ",
                 EndDateTime = DateTime.Now.AddDays(1),
                 StartDateTime = DateTime.Now.AddDays(-3)
             };
             queenAnne.Tasks.Add(task);
-            context.Activities.Add(queenAnne);
+            context.Events.Add(queenAnne);
 
             var taskSignups = new List<TaskSignup>
             {

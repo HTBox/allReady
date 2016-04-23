@@ -2,9 +2,9 @@
 using AllReady.ViewModels;
 using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class ActivitiesWithUnlockedCampaignsQuery : IRequest<List<ActivityViewModel>>
+    public class EventsWithUnlockedCampaignsQuery : IRequest<List<EventViewModel>>
     {
     }
 }

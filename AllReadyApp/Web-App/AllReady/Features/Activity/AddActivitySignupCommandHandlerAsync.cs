@@ -2,20 +2,20 @@
 using AllReady.Models;
 using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class AddActivitySignupCommandHandlerAsync : AsyncRequestHandler<AddActivitySignupCommandAsync>
+    public class AddEventSignupCommandHandlerAsync : AsyncRequestHandler<AddEventSignupCommandAsync>
     {
         private readonly IAllReadyDataAccess dataAccess;
 
-        public AddActivitySignupCommandHandlerAsync(IAllReadyDataAccess dataAccess)
+        public AddEventSignupCommandHandlerAsync(IAllReadyDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
         }
 
-        protected override async Task HandleCore(AddActivitySignupCommandAsync message)
+        protected override async Task HandleCore(AddEventSignupCommandAsync message)
         {
-            await dataAccess.AddActivitySignupAsync(message.ActivitySignup);
+            await dataAccess.AddEventSignupAsync(message.EventSignup);
         }
     }
 }

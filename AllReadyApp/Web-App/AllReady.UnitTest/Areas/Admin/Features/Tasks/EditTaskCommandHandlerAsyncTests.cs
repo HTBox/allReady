@@ -14,7 +14,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
     {
         private Organization _htb;
         private Campaign _firePrev;
-        private Activity _queenAnne;
+        private Event _queenAnne;
 
         protected override void LoadTestData()
         {
@@ -35,7 +35,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             };
             
             _htb.Campaigns.Add(_firePrev);
-            _queenAnne = new Activity()
+            _queenAnne = new Event()
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
@@ -44,10 +44,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
-                RequiredSkills = new List<ActivitySkill>(),
+                RequiredSkills = new List<EventSkill>(),
                 Tasks = new List<AllReadyTask>()
             };
-            context.Activities.Add(_queenAnne);
+            context.Events.Add(_queenAnne);
             context.SaveChanges();
         }
 
@@ -55,7 +55,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         public async Task ModelIsCreated()
         {
             var sut = new EditTaskCommandHandlerAsync(Context);
-            var actual = await sut.Handle(new EditTaskCommandAsync { Task = new TaskEditModel { ActivityId = _queenAnne.Id, TimeZoneId = "Eastern Standard Time" } });
+            var actual = await sut.Handle(new EditTaskCommandAsync { Task = new TaskEditModel { EventId = _queenAnne.Id, TimeZoneId = "Eastern Standard Time" } });
             Assert.Equal(1, actual);
         }
     }

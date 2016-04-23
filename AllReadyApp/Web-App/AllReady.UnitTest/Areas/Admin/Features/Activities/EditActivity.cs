@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Features.Activities;
+using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace AllReady.UnitTest.Areas.Admin.Features.Activities
+namespace AllReady.UnitTest.Areas.Admin.Features.Events
 {
-    public class EditActivity : TestBase
+    public class EditEvent : TestBase
     {
         [Fact]
-        public async Task ActivityDoesNotExist()
+        public async Task EventDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
 
@@ -38,23 +38,23 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
             context.Organizations.Add(htb);
             context.SaveChanges();
 
-            var vm = new ActivityDetailModel
+            var vm = new EventDetailModel
             {
                 CampaignId = 1,
                 TimeZoneId = "Central Standard Time"
             };
 
-            var query = new EditActivityCommand { Activity = vm };
-            var handler = new EditActivityCommandHandler(context);
+            var query = new EditEventCommand { Event = vm };
+            var handler = new EditEventCommandHandler(context);
             var result = await handler.Handle(query);
             Assert.True(result > 0);
 
-            var data = context.Activities.Count(_ => _.Id == result);
+            var data = context.Events.Count(_ => _.Id == result);
             Assert.True(data == 1);
         }
 
         [Fact]
-        public async Task ExistingActivity()
+        public async Task ExistingEvent()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
 
@@ -76,7 +76,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
             };
             htb.Campaigns.Add(firePrev);
 
-            var queenAnne = new Activity
+            var queenAnne = new Event
             {
                 Id = 100,
                 Name = "Queen Anne Fire Prevention Day",
@@ -85,17 +85,17 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
-                RequiredSkills = new List<ActivitySkill>()
+                RequiredSkills = new List<EventSkill>()
             };
             context.Organizations.Add(htb);
-            context.Activities.Add(queenAnne);
+            context.Events.Add(queenAnne);
             context.SaveChanges();
 
             const string NEW_NAME = "Some new name value";
 
             var startDateTime = new DateTime(2015, 7, 12, 4, 15, 0);
             var endDateTime = new DateTime(2015, 12, 7, 15, 10, 0);
-            var vm = new ActivityDetailModel
+            var vm = new EventDetailModel
             {
                 CampaignId = queenAnne.CampaignId,
                 CampaignName = queenAnne.Campaign.Name,
@@ -113,12 +113,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
                 OrganizationName = queenAnne.Campaign.ManagingOrganization.Name,
                 Volunteers = null
             };
-            var query = new EditActivityCommand { Activity = vm };
-            var handler = new EditActivityCommandHandler(context);
+            var query = new EditEventCommand { Event = vm };
+            var handler = new EditEventCommandHandler(context);
             var result = await handler.Handle(query);
-            Assert.Equal(100, result); // should get back the activity id
+            Assert.Equal(100, result); // should get back the event id
 
-            var data = context.Activities.Single(_ => _.Id == result);
+            var data = context.Events.Single(_ => _.Id == result);
             Assert.Equal(NEW_NAME, data.Name);
 
             Assert.Equal(2015, data.StartDateTime.Year);
@@ -137,7 +137,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
         }
 
         [Fact]
-        public async Task ExistingActivityUpdateLocation()
+        public async Task ExistingEventUpdateLocation()
         {
             var seattlePostalCode = new PostalCodeGeo { City = "Seattle", PostalCode = "98117", State = "WA" };
 
@@ -174,7 +174,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
             };
             htb.Campaigns.Add(firePrev);
 
-            var queenAnne = new Activity
+            var queenAnne = new Event
             {
                 Id = 100,
                 Name = "Queen Anne Fire Prevention Day",
@@ -183,11 +183,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = seattle,
-                RequiredSkills = new List<ActivitySkill>()
+                RequiredSkills = new List<EventSkill>()
             };
             context.Locations.Add(seattle);
             context.Organizations.Add(htb);
-            context.Activities.Add(queenAnne);
+            context.Events.Add(queenAnne);
             context.SaveChanges();
 
             var NEW_LOCATION = LocationExtensions.ToEditModel(new Location
@@ -202,7 +202,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
                 PhoneNumber = "New number"
             });
 
-            var locationEdit = new ActivityDetailModel
+            var locationEdit = new EventDetailModel
             {
                 CampaignId = queenAnne.CampaignId,
                 CampaignName = queenAnne.Campaign.Name,
@@ -221,12 +221,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
                 Volunteers = null
             };
 
-            var query = new EditActivityCommand { Activity = locationEdit };
-            var handler = new EditActivityCommandHandler(context);
+            var query = new EditEventCommand { Event = locationEdit };
+            var handler = new EditEventCommandHandler(context);
             var result = await handler.Handle(query);
-            Assert.Equal(100, result); // should get back the activity id
+            Assert.Equal(100, result); // should get back the event id
 
-            var data = context.Activities.Single(a => a.Id == result);
+            var data = context.Events.Single(a => a.Id == result);
             Assert.Equal(data.Location.Address1, NEW_LOCATION.Address1);
             Assert.Equal(data.Location.Address2, NEW_LOCATION.Address2);
             Assert.Equal(data.Location.City, NEW_LOCATION.City);

@@ -10,7 +10,7 @@
         <ol class="breadcrumb">
             <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
             <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.ActivityId" asp-route-area="Admin">@Model.ActivityName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-route-area="Admin">@Model.EventName</a></li>
             <li>@Model.Name</li>
         </ol>
     </div>

@@ -1,20 +1,20 @@
 ﻿using AllReady.Models;
 using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class ActivitySignupByActivityIdAndUserIdQueryHandler : IRequestHandler<ActivitySignupByActivityIdAndUserIdQuery, ActivitySignup>
+    public class EventSignupByEventIdAndUserIdQueryHandler : IRequestHandler<EventSignupByEventIdAndUserIdQuery, EventSignup>
     {
         private readonly IAllReadyDataAccess dataAccess;
 
-        public ActivitySignupByActivityIdAndUserIdQueryHandler(IAllReadyDataAccess dataAccess)
+        public EventSignupByEventIdAndUserIdQueryHandler(IAllReadyDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
         }
 
-        public ActivitySignup Handle(ActivitySignupByActivityIdAndUserIdQuery message)
+        public EventSignup Handle(EventSignupByEventIdAndUserIdQuery message)
         {
-            return dataAccess.GetActivitySignup(message.ActivityId, message.UserId);
+            return dataAccess.GetEventSignup(message.EventId, message.UserId);
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using AllReady.Areas.Admin.Models;
 using MediatR;
 
-namespace AllReady.Areas.Admin.Features.Activities
+namespace AllReady.Areas.Admin.Features.Events
 {
-    public class ActivityDetailQuery : IAsyncRequest<ActivityDetailModel>
+    public class EventDetailQuery : IAsyncRequest<EventDetailModel>
     {
-        public int ActivityId { get; set; }
+        public int EventId { get; set; }
     }
 }

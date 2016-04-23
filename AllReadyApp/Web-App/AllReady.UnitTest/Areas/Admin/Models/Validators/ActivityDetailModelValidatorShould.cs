@@ -8,16 +8,16 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Models.Validators
 {
-    public class ActivityDetailModelValidatorShould
+    public class EventDetailModelValidatorShould
     {
         [Fact]
         public async Task ReportErrorsWhenEndDateIsInvalid()
         {
             // arrage
             var mediator = new Mock<IMediator>();
-            var validator = new ActivityDetailModelValidator(mediator.Object);
+            var validator = new EventDetailModelValidator(mediator.Object);
             var campaign = new CampaignSummaryModel();
-            var model = new ActivityDetailModel
+            var model = new EventDetailModel
             {
                 StartDateTime = new DateTimeOffset(new DateTime(2000, 1, 1)),
                 EndDateTime = new DateTimeOffset(new DateTime(1999, 1, 1))
@@ -35,14 +35,14 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             // arrage
             var mediator = new Mock<IMediator>();
-            var validator = new ActivityDetailModelValidator(mediator.Object);
+            var validator = new EventDetailModelValidator(mediator.Object);
             var campaign = new CampaignSummaryModel()
             {
                 StartDate = new DateTimeOffset(new DateTime(2000, 1, 1)),
                 EndDate = new DateTimeOffset(new DateTime(1999, 1, 1))
             };
 
-            var model = new ActivityDetailModel
+            var model = new EventDetailModel
             {
                 EndDateTime = new DateTimeOffset(new DateTime(2001, 1, 1))
             };
@@ -59,13 +59,13 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             // arrage
             var mediator = new Mock<IMediator>();
-            var validator = new ActivityDetailModelValidator(mediator.Object);
+            var validator = new EventDetailModelValidator(mediator.Object);
             var campaign = new CampaignSummaryModel()
             {
                 StartDate = new DateTimeOffset(new DateTime(2000, 1, 1)),
                 EndDate = new DateTimeOffset(new DateTime(2001, 1, 1))
             };
-            var model = new ActivityDetailModel
+            var model = new EventDetailModel
             {
                 StartDateTime = new DateTimeOffset(new DateTime(1999, 1, 1)),
             };
@@ -82,9 +82,9 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             // arrage
             var mediator = new Mock<IMediator>();
-            var validator = new ActivityDetailModelValidator(mediator.Object);
+            var validator = new EventDetailModelValidator(mediator.Object);
             var campaign = new CampaignSummaryModel();
-            var model = new ActivityDetailModel
+            var model = new EventDetailModel
             {
                 Location = new LocationEditModel()
                 {

@@ -5,7 +5,7 @@ using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models
 {
-    public class ActivitySummaryModel
+    public class EventSummaryModel
     {
         public int Id { get; set; }
 
@@ -13,9 +13,9 @@ namespace AllReady.Areas.Admin.Models
         public string Name { get; set; }
 
         [Required]
-        [Range(1, 99, ErrorMessage = "A valid 'Activity Type' is required")]
-        [Display(Name = "Activity Type")]
-        public ActivityTypes ActivityType { get; set; }
+        [Range(1, 99, ErrorMessage = "A valid 'event type' is required")]
+        [Display(Name = "Event Type")]
+        public EventTypes EventType { get; set; }
 
         public string Description { get; set; }
 
@@ -49,7 +49,7 @@ namespace AllReady.Areas.Admin.Models
         public bool IsLimitVolunteers { get; set; } = true;
 
         [Display(Name = "Allow Wait List")]
-        public List<ActivitySignup> UsersSignedUp { get; set; } = new List<ActivitySignup>();
+        public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
         public bool IsAllowWaitList { get; set; } = true;
         public int NumberOfUsersSignedUp => UsersSignedUp.Count;
         public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;

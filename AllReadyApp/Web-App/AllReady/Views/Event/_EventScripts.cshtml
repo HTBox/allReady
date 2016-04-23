@@ -1,6 +1,6 @@
 ﻿@using System.Security.Claims
 @using AllReady.Security
-@model ActivityViewModel
+@model EventViewModel
 
     <script type="text/javascript">
         $(document).ready(function() {
@@ -24,11 +24,11 @@
                              userTasks = Model.UserTasks,
                              eventSkills = Model.RequiredSkills,
                              userSkills = Model.UserSkills,
-                             isVolunteeredForEvent = Model.IsUserVolunteeredForActivity,
+                             isVolunteeredForEvent = Model.IsUserVolunteeredForEvent,
                              signupModelSeed = Model.SignupModel,
                              eventTitle = Model.Title,
                              isSignedIn = User.IsSignedIn(),
-                             loginUrl = "/Account/Login?ReturnUrl=/Activity/" + @Model.Id
+                             loginUrl = "/Account/Login?ReturnUrl=/Event/" + @Model.Id
                          });
 
 

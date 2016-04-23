@@ -6,84 +6,84 @@ using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
 
-namespace AllReady.Areas.Admin.Features.Activities
+namespace AllReady.Areas.Admin.Features.Events
 {
-    public class EditActivityCommandHandler : IAsyncRequestHandler<EditActivityCommand, int>
+    public class EditEventCommandHandler : IAsyncRequestHandler<EditEventCommand, int>
     {
         private AllReadyContext _context;
 
-        public EditActivityCommandHandler(AllReadyContext context)
+        public EditEventCommandHandler(AllReadyContext context)
         {
             _context = context;
 
         }
-        public async Task<int> Handle(EditActivityCommand message)
+        public async Task<int> Handle(EditEventCommand message)
         {
-            var activity = await GetActivity(message);
+            var campaignEvent = await GetEvent(message);
 
-            if (activity == null)
+            if (campaignEvent == null)
             {
-                activity = new Activity();
+                campaignEvent = new Event();
             }
 
-            activity.Name = message.Activity.Name;
-            activity.Description = message.Activity.Description;
-            activity.ActivityType = message.Activity.ActivityType;
+            campaignEvent.Name = message.Event.Name;
+            campaignEvent.Description = message.Event.Description;
+            campaignEvent.EventType = message.Event.EventType;
 
-            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(message.Activity.TimeZoneId);
-            var startDateTimeOffset = timeZone.GetUtcOffset(message.Activity.StartDateTime);
-            activity.StartDateTime = new DateTimeOffset(message.Activity.StartDateTime.Year, message.Activity.StartDateTime.Month, message.Activity.StartDateTime.Day, message.Activity.StartDateTime.Hour, message.Activity.StartDateTime.Minute, 0, startDateTimeOffset);
+            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(message.Event.TimeZoneId);
+            var startDateTimeOffset = timeZone.GetUtcOffset(message.Event.StartDateTime);
+            campaignEvent.StartDateTime = new DateTimeOffset(message.Event.StartDateTime.Year, message.Event.StartDateTime.Month, message.Event.StartDateTime.Day, message.Event.StartDateTime.Hour, message.Event.StartDateTime.Minute, 0, startDateTimeOffset);
 
-            var endDateTimeOffset = timeZone.GetUtcOffset(message.Activity.EndDateTime);
-            activity.EndDateTime = new DateTimeOffset(message.Activity.EndDateTime.Year, message.Activity.EndDateTime.Month, message.Activity.EndDateTime.Day, message.Activity.EndDateTime.Hour, message.Activity.EndDateTime.Minute, 0, endDateTimeOffset);
-            activity.CampaignId = message.Activity.CampaignId;
+            var endDateTimeOffset = timeZone.GetUtcOffset(message.Event.EndDateTime);
+            campaignEvent.EndDateTime = new DateTimeOffset(message.Event.EndDateTime.Year, message.Event.EndDateTime.Month, message.Event.EndDateTime.Day, message.Event.EndDateTime.Hour, message.Event.EndDateTime.Minute, 0, endDateTimeOffset);
+            campaignEvent.CampaignId = message.Event.CampaignId;
             
-            activity.ImageUrl = message.Activity.ImageUrl;
-            activity.NumberOfVolunteersRequired = message.Activity.NumberOfVolunteersRequired;
+            campaignEvent.ImageUrl = message.Event.ImageUrl;
+            campaignEvent.NumberOfVolunteersRequired = message.Event.NumberOfVolunteersRequired;
 
-            if (activity.IsLimitVolunteers != message.Activity.IsLimitVolunteers || activity.IsAllowWaitList != message.Activity.IsAllowWaitList)
+            if (campaignEvent.IsLimitVolunteers != message.Event.IsLimitVolunteers || campaignEvent.IsAllowWaitList != message.Event.IsAllowWaitList)
             {
-                activity.IsAllowWaitList = message.Activity.IsAllowWaitList;
-                activity.IsLimitVolunteers = message.Activity.IsLimitVolunteers;
+                campaignEvent.IsAllowWaitList = message.Event.IsAllowWaitList;
+                campaignEvent.IsLimitVolunteers = message.Event.IsLimitVolunteers;
                 
-                // cascade values to all tasks associated with this activity
-                foreach (var task in _context.Tasks.Where(task => task.Activity.Id == activity.Id))
+                // cascade values to all tasks associated with this event
+                foreach (var task in _context.Tasks.Where(task => task.Event.Id == campaignEvent.Id))
                 {
-                    task.IsLimitVolunteers = activity.IsLimitVolunteers;
-                    task.IsAllowWaitList = activity.IsAllowWaitList;
+                    task.IsLimitVolunteers = campaignEvent.IsLimitVolunteers;
+                    task.IsAllowWaitList = campaignEvent.IsAllowWaitList;
                     _context.Update(task);
                 }
             }
 
-            if (activity.Id > 0)
+            if (campaignEvent.Id > 0)
             {
-                var skillsToRemove = _context.ActivitySkills.Where(skill => skill.ActivityId == activity.Id && (message.Activity.RequiredSkills == null ||
-                    !message.Activity.RequiredSkills.Any(ts1 => ts1.SkillId == skill.SkillId)));
-                _context.ActivitySkills.RemoveRange(skillsToRemove);
+                var skillsToRemove = _context.EventSkills.Where(skill => skill.EventId == campaignEvent.Id && (message.Event.RequiredSkills == null ||
+                    !message.Event.RequiredSkills.Any(ts1 => ts1.SkillId == skill.SkillId)));
+                _context.EventSkills.RemoveRange(skillsToRemove);
             }
 
-            if (message.Activity.RequiredSkills != null)
+            if (message.Event.RequiredSkills != null)
             {
-                activity.RequiredSkills.AddRange(message.Activity.RequiredSkills.Where(mt => !activity.RequiredSkills.Any(ts => ts.SkillId == mt.SkillId)));
+                campaignEvent.RequiredSkills.AddRange(message.Event.RequiredSkills.Where(mt => !campaignEvent.RequiredSkills.Any(ts => ts.SkillId == mt.SkillId)));
             }
 
-            if (message.Activity.Location != null)
+            if (message.Event.Location != null)
             {
-                activity.Location = activity.Location.UpdateModel(message.Activity.Location);
-                _context.Update(activity.Location);
+                campaignEvent.Location = campaignEvent.Location.UpdateModel(message.Event.Location);
+                _context.Update(campaignEvent.Location);
             }
 
-            _context.Update(activity);
+            _context.Update(campaignEvent);
             await _context.SaveChangesAsync().ConfigureAwait(false);
 
-            return activity.Id;
+            return campaignEvent.Id;
         }
 
-        private async Task<Activity> GetActivity(EditActivityCommand message)
+        private async Task<Event> GetEvent(EditEventCommand message)
         {
-            return await _context.Activities
+            return await _context.Events
                 .Include(a => a.RequiredSkills)
-                .SingleOrDefaultAsync(c => c.Id == message.Activity.Id)
+                .SingleOrDefaultAsync(c => c.Id == message.Event.Id)
                 .ConfigureAwait(false);
         }
     }

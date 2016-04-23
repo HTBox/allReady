@@ -1,22 +1,22 @@
-﻿using AllReady.Features.Activity;
+﻿using AllReady.Features.Event;
 using AllReady.Models;
 using Moq;
 using Xunit;
 
-namespace AllReady.UnitTest.Features.Activity
+namespace AllReady.UnitTest.Features.Event
 {
-    public class ActivititesByGeographyQueryHandlerTests
+    public class EventsByGeographyQueryHandlerTests
     {
         [Fact]
-        public void HandleCallsActivitiesByGeographyWithTheCorrectLatitiudeLongitudeAndMiles()
+        public void HandleCallsEventsByGeographyWithTheCorrectLatitiudeLongitudeAndMiles()
         {
-            var message = new ActivitiesByGeographyQuery() { Latitude = 1, Longitude = 2, Miles = 3 };
+            var message = new EventsByGeographyQuery() { Latitude = 1, Longitude = 2, Miles = 3 };
             var dataAccess = new Mock<IAllReadyDataAccess>();
 
-            var sut = new ActivititesByGeographyQueryHandler(dataAccess.Object);
+            var sut = new EventsByGeographyQueryHandler(dataAccess.Object);
             sut.Handle(message);
 
-            dataAccess.Verify(x => x.ActivitiesByGeography(message.Latitude, message.Longitude, message.Miles));
+            dataAccess.Verify(x => x.EventsByGeography(message.Latitude, message.Longitude, message.Miles));
         }
     }
 }

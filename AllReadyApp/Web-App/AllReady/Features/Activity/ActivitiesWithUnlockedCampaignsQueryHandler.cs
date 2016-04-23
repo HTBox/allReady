@@ -4,21 +4,21 @@ using AllReady.ViewModels;
 using MediatR;
 using System.Linq;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class ActivitiesWithUnlockedCampaignsQueryHandler : IRequestHandler<ActivitiesWithUnlockedCampaignsQuery, List<ActivityViewModel>>
+    public class EventsWithUnlockedCampaignsQueryHandler : IRequestHandler<EventsWithUnlockedCampaignsQuery, List<EventViewModel>>
     {
         private readonly IAllReadyDataAccess dataAccess;
 
-        public ActivitiesWithUnlockedCampaignsQueryHandler(IAllReadyDataAccess dataAccess)
+        public EventsWithUnlockedCampaignsQueryHandler(IAllReadyDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
         }
 
-        public List<ActivityViewModel> Handle(ActivitiesWithUnlockedCampaignsQuery message)
+        public List<EventViewModel> Handle(EventsWithUnlockedCampaignsQuery message)
         {
-            return dataAccess.Activities.Where(c => !c.Campaign.Locked)
-                .Select(a => new ActivityViewModel(a))
+            return dataAccess.Events.Where(c => !c.Campaign.Locked)
+                .Select(a => new EventViewModel(a))
                 .ToList();
         }
     }

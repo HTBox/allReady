@@ -9,7 +9,7 @@ namespace AllReady.ViewModels
     {
         public CampaignViewModel()
         {
-            Activities = new List<ActivityViewModel>();
+            Events = new List<EventViewModel>();
         }
 
         public CampaignViewModel(Campaign campaign)
@@ -28,7 +28,7 @@ namespace AllReady.ViewModels
             TimeZoneId = campaign.TimeZoneId;
             StartDate = campaign.StartDateTime;
             EndDate = campaign.EndDateTime;
-            Activities = campaign.Activities != null ? campaign.Activities.ToViewModel() : Enumerable.Empty<ActivityViewModel>();
+            Events = campaign.Events != null ? campaign.Events.ToViewModel() : Enumerable.Empty<EventViewModel>();
             CampaignImpact = campaign.CampaignImpact;
             ImageUrl = campaign.ImageUrl;
             HasPrivacyPolicy = !string.IsNullOrEmpty(campaign.ManagingOrganization?.PrivacyPolicy);
@@ -80,7 +80,7 @@ namespace AllReady.ViewModels
 
         public DateTimeOffset EndDate { get; set; }
 
-        public IEnumerable<ActivityViewModel> Activities { get; set; }
+        public IEnumerable<EventViewModel> Events { get; set; }
 
         public bool HasPrivacyPolicy { get; set; }
     }

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Features.Activities;
+using AllReady.Areas.Admin.Features.Events;
 using AllReady.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace AllReady.UnitTest.Areas.Admin.Features.Activities
+namespace AllReady.UnitTest.Areas.Admin.Features.Events
 {
-    public class ActivityDetailQueryHandlerTests : InMemoryContextTest
+    public class EventDetailQueryHandlerTests : InMemoryContextTest
     {
         protected override void LoadTestData()
         {
@@ -44,7 +44,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
             };
             htb.Campaigns.Add(firePrev);
 
-            var queenAnne = new Activity
+            var queenAnne = new Event
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
@@ -53,42 +53,42 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
-                RequiredSkills = new List<ActivitySkill>()
+                RequiredSkills = new List<EventSkill>()
             };
 
             context.PostalCodes.Add(seattlePostalCode);
             context.Locations.Add(seattle);
             context.Organizations.Add(htb);
-            context.Activities.Add(queenAnne);
+            context.Events.Add(queenAnne);
             context.SaveChanges();
         }
 
         [Fact]
-        public async Task ActivityExists()
+        public async Task EventExists()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new ActivityDetailQuery { ActivityId = 1 };
-            var handler = new ActivityDetailQueryHandler(context);
+            var query = new EventDetailQuery { EventId = 1 };
+            var handler = new EventDetailQueryHandler(context);
             var result = await handler.Handle(query);
             Assert.NotNull(result);
         }
 
         [Fact]
-        public async Task ActivityDoesNotExist()
+        public async Task EventDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new ActivityDetailQuery();
-            var handler = new ActivityDetailQueryHandler(context);
+            var query = new EventDetailQuery();
+            var handler = new EventDetailQueryHandler(context);
             var result = await handler.Handle(query);
             Assert.Null(result);
         }
 
         [Fact]
-        public async Task ActivityIncludesAllLocationInformation()
+        public async Task EventIncludesAllLocationInformation()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new ActivityDetailQuery { ActivityId = 1 };
-            var handler = new ActivityDetailQueryHandler(context);
+            var query = new EventDetailQuery { EventId = 1 };
+            var handler = new EventDetailQueryHandler(context);
             var result = await handler.Handle(query);
 
             Assert.NotNull(result.Location);

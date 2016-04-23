@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class AcitivitiesByPostalCodeQuery : IRequest<List<Models.Activity>>
+    public class EventsByPostalCodeQuery : IRequest<List<Models.Event>>
     {
         public string PostalCode { get; set; }
         public int Distance { get; set; }

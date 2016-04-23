@@ -1,20 +1,20 @@
 ﻿using AllReady.Models;
 using MediatR;
 
-namespace AllReady.Areas.Admin.Features.Activities
+namespace AllReady.Areas.Admin.Features.Events
 {
-    public class ManagingOrganizationIdByActivityIdQueryHandler : IRequestHandler<ManagingOrganizationIdByActivityIdQuery, int>
+    public class ManagingOrganizationIdByEventIdQueryHandler : IRequestHandler<ManagingOrganizationIdByEventIdQuery, int>
     {
         private readonly IAllReadyDataAccess dataAccess;
 
-        public ManagingOrganizationIdByActivityIdQueryHandler(IAllReadyDataAccess dataAccess)
+        public ManagingOrganizationIdByEventIdQueryHandler(IAllReadyDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
         }
 
-        public int Handle(ManagingOrganizationIdByActivityIdQuery message)
+        public int Handle(ManagingOrganizationIdByEventIdQuery message)
         {
-            return dataAccess.GetManagingOrganizationId(message.ActivityId);
+            return dataAccess.GetManagingOrganizationId(message.EventId);
         }
     }
 }

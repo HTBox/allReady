@@ -90,7 +90,7 @@
             $("#enrollUnenrollSpinner").show();
             $.ajax({
                 type: "DELETE",
-                url: '/api/activity/' + eventId + '/signup',
+                url: '/api/event/' + eventId + '/signup',
                 contentType: "application/json"
             }).then(function(data) {
                 self.enrolled(false);
@@ -275,7 +275,7 @@
             dataToSend.__RequestVerificationToken = $('input[name=__RequestVerificationToken]').val();
             $.ajax({
                 type: "POST",
-                url: isTaskSignup ? '/api/task/signup' : '/api/activity/signup',
+                url: isTaskSignup ? '/api/task/signup' : '/api/event/signup',
                 data: dataToSend,
                 contentType: "application/x-www-form-urlencoded"
             }).done(function (result) {

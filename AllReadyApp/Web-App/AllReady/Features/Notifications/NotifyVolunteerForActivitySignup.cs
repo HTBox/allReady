@@ -7,12 +7,12 @@ using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyVolunteerForActivitySignup : IAsyncNotificationHandler<VolunteerSignupNotification>
+    public class NotifyVolunteerForEventSignup : IAsyncNotificationHandler<VolunteerSignupNotification>
     {
         private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
 
-        public NotifyVolunteerForActivitySignup(IMediator mediator, IOptions<GeneralSettings> options)
+        public NotifyVolunteerForEventSignup(IMediator mediator, IOptions<GeneralSettings> options)
         {
             _mediator = mediator;
             _options = options;
@@ -20,7 +20,7 @@ namespace AllReady.Features.Notifications
 
         public async Task Handle(VolunteerSignupNotification notification)
         {
-            var model = await _mediator.SendAsync(new ActivityDetailForNotificationQueryAsync {ActivityId = notification.ActivityId, UserId = notification.UserId})
+            var model = await _mediator.SendAsync(new EventDetailForNotificationQueryAsync {EventId = notification.EventId, UserId = notification.UserId})
                 .ConfigureAwait(false);
 
             var signup = model.UsersSignedUp?.FirstOrDefault(s => s.User.Id == notification.UserId);
@@ -38,14 +38,14 @@ namespace AllReady.Features.Notifications
                 return;
             }
 
-            var activityLink = $"View activity: {_options.Value.SiteBaseUrl}Admin/Activity/Details/{model.ActivityId}";
-            var subject = "allReady Activity Enrollment Confirmation";
+            var eventLink = $"View event: {_options.Value.SiteBaseUrl}Admin/Event/Details/{model.EventId}";
+            var subject = "allReady Event Enrollment Confirmation";
 
             var message = new StringBuilder();
-            message.AppendLine($"This is to confirm that you have volunteered to participate in the following activity:");
+            message.AppendLine($"This is to confirm that you have volunteered to participate in the following event:");
             message.AppendLine();
             message.AppendLine($"   Campaign: {model.CampaignName}");
-            message.AppendLine($"   Activity: {model.ActivityName} ({activityLink})");
+            message.AppendLine($"   Event: {model.EventName} ({eventLink})");
             message.AppendLine();
             message.AppendLine($"Thanks for volunteering. Your help is appreciated.");
 

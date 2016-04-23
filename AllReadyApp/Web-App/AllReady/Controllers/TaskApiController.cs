@@ -34,7 +34,7 @@ namespace AllReady.Controllers
             var allReadyTask = task.ToModel(_mediator);
             if (allReadyTask == null)
             {
-                return HttpBadRequest("Should have found a matching activity Id");
+                return HttpBadRequest("Should have found a matching event Id");
             }
             
             var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask);
@@ -100,7 +100,7 @@ namespace AllReady.Controllers
         [HttpPost("signup")]
         [Authorize]
         [Produces("application/json")]
-        public async Task<ActionResult> RegisterTask(ActivitySignupViewModel signupModel)
+        public async Task<ActionResult> RegisterTask(EventSignupViewModel signupModel)
         {
             if (signupModel == null)
                 return HttpBadRequest();
@@ -168,12 +168,12 @@ namespace AllReady.Controllers
                 return true;
             }
 
-            if (task.Activity?.Organizer != null && task.Activity.Organizer.Id == userId)
+            if (task.Event?.Organizer != null && task.Event.Organizer.Id == userId)
             {
                 return true;
             }
 
-            if (task.Activity?.Campaign?.Organizer != null && task.Activity.Campaign.Organizer.Id == userId)
+            if (task.Event?.Campaign?.Organizer != null && task.Event.Campaign.Organizer.Id == userId)
             {
                 return true;
             }

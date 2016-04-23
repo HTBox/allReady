@@ -20,7 +20,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
         {
             var campaign = await _context.Campaigns
                 .AsNoTracking()
-                .Include(c => c.Activities)
+                .Include(c => c.Events)
                 .Include(m => m.ManagingOrganization)
                 .Include(ci => ci.CampaignImpact)
                 .Include(c => c.CampaignContacts).ThenInclude(c => c.Contact)
@@ -48,7 +48,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     CampaignImpact = campaign.CampaignImpact,
                     Location = campaign.Location.ToModel(),
                     Locked = campaign.Locked,
-                    Activities = campaign.Activities.Select(a => new ActivitySummaryModel
+                    Events = campaign.Events.Select(a => new EventSummaryModel
                     {
                         Id = a.Id,
                         Name = a.Name,

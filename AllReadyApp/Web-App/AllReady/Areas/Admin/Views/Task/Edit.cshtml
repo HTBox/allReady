@@ -6,12 +6,12 @@
     if (Model.Id == 0)
     {
         ViewBag.Title = $"Create Task";
-        cancelUrl = Url.Action("Details", "Activity", new { id = Model.ActivityId, area = "Admin" });
+        cancelUrl = Url.Action("Details", "Event", new { id = Model.EventId, area = "Admin" });
     }
     else
     {
         ViewBag.Title = "Edit Task";
-        cancelUrl = Url.Action("Details", "Task", new { activityId = Model.ActivityId, id = Model.Id, area = "Admin" });
+        cancelUrl = Url.Action("Details", "Task", new { eventId = Model.EventId, id = Model.Id, area = "Admin" });
     }
 }
 <div class="row">
@@ -19,7 +19,7 @@
         <ol class="breadcrumb">
             <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
             <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.ActivityId" asp-route-area="Admin">@Model.ActivityName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-route-area="Admin">@Model.EventName</a></li>
             @if (Model.Id == 0)
             {
                 <li>Create New Task</li>
@@ -41,8 +41,8 @@
 
     <div class="form-horizontal">
         <div asp-validation-summary="ValidationSummary.ModelOnly" class="text-danger"></div>
-        <input type="hidden" asp-for="ActivityId" />
-        <input type="hidden" asp-for="ActivityName" />
+        <input type="hidden" asp-for="EventId" />
+        <input type="hidden" asp-for="EventName" />
         <input type="hidden" asp-for="CampaignId" />
         <input type="hidden" asp-for="TimeZoneId" />
         <input type="hidden" asp-for="CampaignName" />
@@ -55,9 +55,9 @@
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="ActivityName" class="control-label col-md-2"></label>
+            <label asp-for="EventName" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <p class="form-control-static">@Model.ActivityName</p>
+                <p class="form-control-static">@Model.EventName</p>
             </div>
         </div>
         <div class="form-group">

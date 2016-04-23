@@ -1,9 +1,9 @@
 ﻿using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class ActivityByActivityIdQuery : IRequest<Models.Activity>
+    public class EventByIdQuery : IRequest<Models.Event>
     {
-        public int ActivityId { get; set; }
+        public int EventId { get; set; }
     }
 }
