@@ -10,7 +10,7 @@ namespace AllReady.Models
         [Display(Name = "Task Managed")]
         TaskManaged = 2,
 
-        [Display(Name = "Deployment Managed")]
-        DeploymentManaged = 3
+        [Display(Name = "Itinerary Managed")]
+        ItineraryManaged = 3
     }
 }
