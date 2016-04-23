@@ -22,8 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{AE4E0DB3-05E
 		SQL\01-fnGetCoordinatesForPostalCode.sql = SQL\01-fnGetCoordinatesForPostalCode.sql
 		SQL\02-GetClosestLocations.sql = SQL\02-GetClosestLocations.sql
 		SQL\03-GetCoordinatesForPostalCode.sql = SQL\03-GetCoordinatesForPostalCode.sql
-		SQL\04-GetClosestActivities.sql = SQL\04-GetClosestActivities.sql
-		SQL\05-GetClosestActivitiesByPostalCode.sql = SQL\05-GetClosestActivitiesByPostalCode.sql
+		SQL\04-GetClosestEvents.sql = SQL\04-GetClosestEvents.sql
+		SQL\05-GetClosestEventsByPostalCode.sql = SQL\05-GetClosestEventsByPostalCode.sql
 	EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "AllReady.UnitTest", "Web-App\AllReady.UnitTest\AllReady.UnitTest.xproj", "{5A76269A-F855-40CA-A4B0-472F48DD49A5}"
