@@ -11,11 +11,11 @@
         <div class="pull-right">
             <div class="form-inline">
                 <div class="form-group">
-                    <input type="text" class="form-control input-sm" data-bind="textInput: activities.searchTerm" placeholder="Search events" />
+                    <input type="text" class="form-control input-sm" data-bind="textInput: events.searchTerm" placeholder="Search events" />
                 </div>
                 <div class="form-group">
-                    <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: activities.showOld }, click: activities.showOld.toggle">
-                        <i class="fa" data-bind="css: { 'fa-square-o': !activities.showOld(), 'fa-check-square-o': activities.showOld }"></i>
+                    <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: events.showOld }, click: events.showOld.toggle">
+                        <i class="fa" data-bind="css: { 'fa-square-o': !events.showOld(), 'fa-check-square-o': events.showOld }"></i>
                         Show Closed Events
                     </button>
                 </div>
@@ -29,19 +29,19 @@
             <strong>Loading...</strong>
             <i class="fa fa-circle-o-notch fa-spin"></i>
         </div>
-        <div class="hide text-center" data-bind="css: { hide: loading() || activities.filtered().length }">
+        <div class="hide text-center" data-bind="css: { hide: loading() || events.filtered().length }">
             <div class="alert alert-warning" role="alert">
                 <strong>No matching events.</strong>
             </div>
         </div>
-        <div class="hide" data-bind="css: { hide: loading() || !activities.filtered().length }">
+        <div class="hide" data-bind="css: { hide: loading() || !events.filtered().length }">
             <table class="table">
                 <tr>
                     <th><span title="Title of the event">Title</span></th>
                     <th><span title="Description of the event">Description</span></th>
                     <th><span title="Time period of the event">When</span></th>
                 </tr>
-                <!-- ko foreach: activities.filtered -->
+                <!-- ko foreach: events.filtered -->
                 <tr>
                     <td>
                         <a data-bind="attr: { href: '/Activity/' + Id }, text: Title"></a>

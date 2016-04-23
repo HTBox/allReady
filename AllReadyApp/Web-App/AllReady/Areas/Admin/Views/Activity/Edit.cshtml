@@ -185,7 +185,7 @@
     <script type="text/javascript">
         (function (ko, $, requiredSkills, availableSkills) {
 
-            function AdminActivityViewModel(requiredSkills, availableSkills) {
+            function AdminEventViewModel(requiredSkills, availableSkills) {
 
                 function RequiredSkillObservable(skillModel) {
                     var ret = ko.utils.extend({}, skillModel);
@@ -212,7 +212,7 @@
                 };
             }
 
-            ko.applyBindings(new AdminActivityViewModel(requiredSkills, availableSkills));
+            ko.applyBindings(new AdminEventViewModel(requiredSkills, availableSkills));
 
             $(document).ready(function(){
                 $('#IsLimitVolunteers').click(function() {

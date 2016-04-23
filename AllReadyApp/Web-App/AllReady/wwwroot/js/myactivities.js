@@ -8,7 +8,7 @@
         this.taskId = ko.observable(tid);
     }
 
-    var myActivitiesViewModel = {
+    var myEventsViewModel = {
         tasksLoaded: ko.observable(false),
         statusList: ko.observableArray(["Completed", "Cannot complete"]),
         notification: {
@@ -25,7 +25,7 @@
         tasks: ko.observableArray(),
         expand: function (actId, data, event) {
             var that = this;
-            var el = "#activity-details-"+actId;
+            var el = "#event-details-"+actId;
             $(el).toggle();
             var chevron = ($(el).is(":visible")) ? "fa fa-chevron-up" : "fa fa-chevron-down";
             $(event.currentTarget).children("span").removeClass().addClass(chevron);
@@ -38,10 +38,10 @@
             that.tasks([]);
             that.tasksLoaded(false);
         },
-        unvolunteer: function (activityId) {
+        unvolunteer: function (eventId) {
             var that = this;
             $.ajax({
-                url: "/api/activity/" + activityId + "/signup",
+                url: "/api/activity/" + eventId + "/signup",
                 type: "DELETE",
                 contentType: "application/json"
             }).done(function (response) {
@@ -50,9 +50,9 @@
                 that.handleResponse(response, "error", "An error has happened");
             });
         },
-        loadTasks: function (activityId, data, event) {
+        loadTasks: function (eventId, data, event) {
             var that = this;
-            $.get("/MyActivities/" + activityId + "/tasks")
+            $.get("/MyActivities/" + eventId + "/tasks")
             .done(function (response) {
                 if (response.length < 1) {
                     that.handleResponse(response, 'notification', 'No results');
@@ -105,5 +105,5 @@
         }
     }
 
-    ko.applyBindings(myActivitiesViewModel);
+    ko.applyBindings(myEventsViewModel);
 })(ko, $)

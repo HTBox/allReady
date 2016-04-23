@@ -11,15 +11,15 @@
         return obj;
     }
 
-    function ActivityViewModel(tasks, userTasks, activitySkills, userSkills, signupModel, isSignedIn, loginUrl) {
+    function EventViewModel(tasks, userTasks, eventSkills, userSkills, signupModel, isSignedIn, loginUrl) {
         var self = this;
         self.isSignedIn = isSignedIn;
         self.loginUrl = loginUrl;
 
         self.userSkills = userSkills;
-        self.activitySkillsWithIsUser = ko.observableArray(activitySkills.map(withIsUserSkill.bind(null, userSkills)));
+        self.eventSkillsWithIsUser = ko.observableArray(eventSkills.map(withIsUserSkill.bind(null, userSkills)));
         self.unassociatedSkills = ko.computed(function() {
-            return self.activitySkillsWithIsUser().filter(function(skill) {
+            return self.eventSkillsWithIsUser().filter(function(skill) {
                 return !skill.IsUserSkill();
             });
         });
@@ -64,38 +64,38 @@
             }
         }
 
-        self.enrolled = ko.observable(modelStuff.isVolunteeredForActivity);
+        self.enrolled = ko.observable(modelStuff.isVolunteeredForEvent);
         self.errorUnenrolling = ko.observable(false);
 
-        self.signupForActivity = function () {
+        self.signupForEvent = function () {
             hideAlert();
-            var vm = new SignupViewModel(signupModel, self.unassociatedSkills, modelStuff.activityTitle);
+            var vm = new SignupViewModel(signupModel, self.unassociatedSkills, modelStuff.eventTitle);
             vm.modal = HTBox.showModal({ viewModel: vm, modalId: "VolunteerModal" })
-                .onClose(activitySignupSuccess);
+                .onClose(eventSignupSuccess);
         };
 
-        function activitySignupSuccess(signUpViewModel) {
-            self.activitySkillsWithIsUser().forEach(function(skill) {
+        function eventSignupSuccess(signUpViewModel) {
+            self.eventSkillsWithIsUser().forEach(function(skill) {
                 if (signUpViewModel.AddSkillIds().indexOf(skill.Id) >= 0) {
                     skill.IsUserSkill(true)
                 }
             });
             self.enrolled(true);
-            showalert("<strong>Thanks for volunteering! Your request has been processed and one of the activity coordinators will be in contact with you soon.</strong>", "alert-success", 30);
+            showalert("<strong>Thanks for volunteering! Your request has been processed and one of the event coordinators will be in contact with you soon.</strong>", "alert-success", 30);
         }
 
-        self.unenrollFromActivity = function (activityId) {
+        self.unenrollFromEvent = function (eventId) {
             hideAlert();
             self.errorUnenrolling(false);
             $("#enrollUnenrollSpinner").show();
             $.ajax({
                 type: "DELETE",
-                url: '/api/activity/' + activityId + '/signup',
+                url: '/api/activity/' + eventId + '/signup',
                 contentType: "application/json"
             }).then(function(data) {
                 self.enrolled(false);
                 $("#enrollUnenrollSpinner").hide();
-                showalert("<strong>Thanks for your interest. Your request has been processed and you are no longer signed up for this activity. We hope to see you soon!</strong>", "alert-success", 30);
+                showalert("<strong>Thanks for your interest. Your request has been processed and you are no longer signed up for this event. We hope to see you soon!</strong>", "alert-success", 30);
 
             }).fail(function(fail) {
                 self.errorUnenrolling(true);
@@ -118,7 +118,7 @@
                 updateTaskSkillsWithNewUserSkills(self.tasks(), signUpViewModel.AddSkillIds());
                 updateTaskSkillsWithNewUserSkills(self.userTasks(), signUpViewModel.AddSkillIds());
             };
-            showalert("<strong>Thanks for volunteering! Your request has been processed and one of the activity coordinators will be in contact with you soon.</strong>", "alert-success", 30);
+            showalert("<strong>Thanks for volunteering! Your request has been processed and one of the event coordinators will be in contact with you soon.</strong>", "alert-success", 30);
         }
 
         function updateTaskSkillsWithNewUserSkills(tasks, newSkillIds) {
@@ -351,6 +351,6 @@
         self.StatusDescription = statusDescription;
     };
 
-    var activityViewModel = new ActivityViewModel(modelStuff.tasks, modelStuff.userTasks, modelStuff.activitySkills, modelStuff.userSkills, modelStuff.signupModelSeed, modelStuff.isSignedIn, modelStuff.loginUrl);
-    ko.applyBindings(activityViewModel, document.getElementById("MainView"));
+    var eventViewModel = new EventViewModel(modelStuff.tasks, modelStuff.userTasks, modelStuff.eventSkills, modelStuff.userSkills, modelStuff.signupModelSeed, modelStuff.isSignedIn, modelStuff.loginUrl);
+    ko.applyBindings(eventViewModel, document.getElementById("MainView"));
 })(ko, $, modelStuff);
