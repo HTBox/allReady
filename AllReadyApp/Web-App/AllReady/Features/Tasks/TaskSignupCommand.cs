@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskSignupCommand : IAsyncRequest<TaskSignupResult>
+    public class TaskSignupCommandAsync : IAsyncRequest<TaskSignupResult>
     {
         public EventSignupViewModel TaskSignupModel { get; set; }
     }

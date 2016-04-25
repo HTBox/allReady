@@ -322,58 +322,114 @@ namespace AllReady.UnitTest.Controllers
         {
             var model = new EventSignupViewModel();
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommand>(y => y.TaskSignupModel == model))).Returns(Task.FromResult(new TaskSignupResult()));
+            mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommandAsync>(y => y.TaskSignupModel == model))).Returns(Task.FromResult(new TaskSignupResult()));
 
             var sut = new TaskApiController(mediator.Object, null);
             await sut.RegisterTask(model);
 
-            mediator.Verify(x => x.SendAsync(It.Is<TaskSignupCommand>(command => command.TaskSignupModel.Equals(model))));
+            mediator.Verify(x => x.SendAsync(It.Is<TaskSignupCommandAsync>(command => command.TaskSignupModel.Equals(model))));
         }
 
         [Fact]
-        public async Task RegisterTaskReturnsCorrectValueForStatus()
+        public async Task Register_ReturnsCorrectJson_WhenApiResult_IsSuccess()
         {
-            const string taskSignUpResultStatus = "status";
+            const string taskSignUpResultStatus = TaskSignupResult.SUCCESS;
             var model = new EventSignupViewModel();
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommand>(y => y.TaskSignupModel == model))).Returns(Task.FromResult(new TaskSignupResult { Status = taskSignUpResultStatus }));
+            mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommandAsync>(y => y.TaskSignupModel == model)))
+                .Returns(Task.FromResult(new TaskSignupResult
+                {
+                    Status = taskSignUpResultStatus,
+                    Task = new AllReadyTask { Id = 1, Name = "Task" }
+                }));
 
             var sut = new TaskApiController(mediator.Object, null);
 
             var jsonResult = await sut.RegisterTask(model) as JsonResult;
-            var result = jsonResult.GetValueForProperty<string>("Status");
 
-            Assert.Equal(result, taskSignUpResultStatus);
+            var successStatus = jsonResult.GetValueForProperty<bool>("isSuccess");
+            var taskModel = jsonResult.GetValueForProperty<TaskViewModel>("task");
+
+            Assert.True(successStatus);
+            Assert.NotNull(taskModel);
         }
 
         [Fact]
-        public async Task RegisterTaskReturnsNullForTaskIfTaskIsNull()
+        public async Task Register_ReturnsCorrectJson_WhenEventNotFound()
         {
+            const string taskSignUpResultStatus = TaskSignupResult.FAILURE_EVENTNOTFOUND;
+
             var model = new EventSignupViewModel();
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommand>(y => y.TaskSignupModel == model))).Returns(Task.FromResult(new TaskSignupResult()));
+            mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommandAsync>(y => y.TaskSignupModel == model)))
+                .Returns(Task.FromResult(new TaskSignupResult
+                {
+                    Status = taskSignUpResultStatus                    
+                }));
 
             var sut = new TaskApiController(mediator.Object, null);
-            
-            var jsonResult = await sut.RegisterTask(model) as JsonResult;
-            var result = jsonResult.GetValueForProperty<string>("Task");
 
-            Assert.Null(result);
+            var jsonResult = await sut.RegisterTask(model) as JsonResult;
+
+            var successStatus = jsonResult.GetValueForProperty<bool>("isSuccess");
+            var errors = jsonResult.GetValueForProperty<string[]>("errors");
+
+            Assert.False(successStatus);
+            Assert.NotNull(errors);
+            Assert.Equal(1, errors.Count());
+            Assert.Equal(TaskApiController.FAILED_SIGNUP_EVENT_NOT_FOUND, errors[0]);
         }
 
         [Fact]
-        public async Task RegisterTaskReturnsTaskViewModelIfTaskIsNotNull()
+        public async Task Register_ReturnsCorrectJson_WhenTaskNotFound()
         {
-            var model = new EventSignupViewModel { UserId = "userId" };
+            const string taskSignUpResultStatus = TaskSignupResult.FAILURE_TASKNOTFOUND;
+
+            var model = new EventSignupViewModel();
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommand>(y => y.TaskSignupModel == model))).Returns(Task.FromResult(new TaskSignupResult { Task = new AllReadyTask() }));
+            mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommandAsync>(y => y.TaskSignupModel == model)))
+                .Returns(Task.FromResult(new TaskSignupResult
+                {
+                    Status = taskSignUpResultStatus
+                }));
 
             var sut = new TaskApiController(mediator.Object, null);
-            var jsonResult = await sut.RegisterTask(model) as JsonResult;
-            var result = jsonResult.GetValueForProperty<TaskViewModel>("Task");
 
-            Assert.IsType<JsonResult>(jsonResult);
-            Assert.IsType<TaskViewModel>(result);
+            var jsonResult = await sut.RegisterTask(model) as JsonResult;
+
+            var successStatus = jsonResult.GetValueForProperty<bool>("isSuccess");
+            var errors = jsonResult.GetValueForProperty<string[]>("errors");
+
+            Assert.False(successStatus);
+            Assert.NotNull(errors);
+            Assert.Equal(1, errors.Count());
+            Assert.Equal(TaskApiController.FAILED_SIGNUP_TASK_NOT_FOUND, errors[0]);
+        }
+
+        [Fact]
+        public async Task Register_ReturnsCorrectJson_WhenTaskIsClosed()
+        {
+            const string taskSignUpResultStatus = TaskSignupResult.FAILURE_CLOSEDTASK;
+
+            var model = new EventSignupViewModel();
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommandAsync>(y => y.TaskSignupModel == model)))
+                .Returns(Task.FromResult(new TaskSignupResult
+                {
+                    Status = taskSignUpResultStatus
+                }));
+
+            var sut = new TaskApiController(mediator.Object, null);
+
+            var jsonResult = await sut.RegisterTask(model) as JsonResult;
+
+            var successStatus = jsonResult.GetValueForProperty<bool>("isSuccess");
+            var errors = jsonResult.GetValueForProperty<string[]>("errors");
+
+            Assert.False(successStatus);
+            Assert.NotNull(errors);
+            Assert.Equal(1, errors.Count());
+            Assert.Equal(TaskApiController.FAILED_SIGNUP_TASK_CLOSED, errors[0]);
         }
 
         [Fact]

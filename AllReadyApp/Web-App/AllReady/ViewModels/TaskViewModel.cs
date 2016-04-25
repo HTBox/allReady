@@ -63,7 +63,7 @@ namespace AllReady.ViewModels
                 AssignedVolunteers = new List<TaskSignupViewModel>();
 
                 if (IsUserSignedUpForTask)
-                {                    
+                {
                     foreach (var t in task.AssignedVolunteers.Where(au => au.User.Id == userId))
                     {
                         AssignedVolunteers.Add(new TaskSignupViewModel(t));
@@ -81,7 +81,7 @@ namespace AllReady.ViewModels
             NumberOfUsersSignedUp = task.NumberOfUsersSignedUp;
             IsLimitVolunteers = task.IsLimitVolunteers;
             IsAllowWaitList = task.IsAllowWaitList;
-
+            IsClosed = task.IsClosed;
         }
 
         public int Id { get; set; }
@@ -122,6 +122,8 @@ namespace AllReady.ViewModels
 
         public List<TaskSignupViewModel> AssignedVolunteers { get; set; } = new List<TaskSignupViewModel>();
 
+        public bool IsClosed { get; private set; } = false;
+     
         public int AcceptedVolunteerCount => AssignedVolunteers?.Where(v => v.Status == "Accepted").Count() ?? 0;
         public bool IsLimitVolunteers { get; set; } = true;
         public bool IsAllowWaitList { get; set; } = true;
@@ -168,7 +170,7 @@ namespace AllReady.ViewModels
             {
                 return null;
             }
-            
+
             var newTask = true;
             AllReadyTask dbtask;
             if (taskViewModel.Id == 0)

@@ -25,5 +25,19 @@ namespace AllReady.Models
         public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
         [NotMapped]
         public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
+
+        [NotMapped]
+        public bool IsClosed
+        {
+            get
+            {
+                if (EndDateTime.HasValue)
+                {
+                    return EndDateTime.Value.UtcDateTime < DateTimeOffset.UtcNow;
+                }
+
+                return false;
+            }
+        }
     }
 }
