@@ -1,6 +1,6 @@
 ﻿@using System.Security.Claims
 @using AllReady.Security
-@model ActivityViewModel
+@model EventViewModel
 
 @{
     ViewBag.Title = $"{Model.Title}";
@@ -313,5 +313,5 @@
 @Html.Partial("_ConfirmModal", Model)
 
 @section scripts {
-    @Html.Partial("_ActivityScripts", Model)
+    @Html.Partial("_EventScripts", Model)
 }

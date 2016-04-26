@@ -3,25 +3,25 @@ using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class UnregisterActivityHandler : AsyncRequestHandler<UnregisterActivity>
+    public class UnregisterEventHandler : AsyncRequestHandler<UnregisterEvent>
     {
         private readonly IAllReadyDataAccess dataAccess;
         private readonly IMediator mediator;
 
-        public UnregisterActivityHandler(IAllReadyDataAccess dataAccess, IMediator mediator)
+        public UnregisterEventHandler(IAllReadyDataAccess dataAccess, IMediator mediator)
         {
             this.dataAccess = dataAccess;
             this.mediator = mediator;
         }
 
-        protected override async Task HandleCore(UnregisterActivity message)
+        protected override async Task HandleCore(UnregisterEvent message)
         {
-            await dataAccess.DeleteActivityAndTaskSignupsAsync(message.ActivitySignupId).ConfigureAwait(false);
+            await dataAccess.DeleteEventAndTaskSignupsAsync(message.EventSignupId).ConfigureAwait(false);
             
             //Notify admins & volunteer
-            await mediator.PublishAsync(new UserUnenrolls { ActivityId = message.ActivitySignupId, UserId = message.UserId }).ConfigureAwait(false);
+            await mediator.PublishAsync(new UserUnenrolls { EventId = message.EventSignupId, UserId = message.UserId }).ConfigureAwait(false);
         }
     }
 }

@@ -1,0 +1,133 @@
+@using System.Threading.Tasks
+@using AllReady.Security
+@model AllReady.Areas.Admin.Models.EventDetailModel
+@{ 
+    ViewBag.Title = Model.Name;
+    var userTimeZoneId = User.GetTimeZoneId();
+}
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
+            <li>@Model.Name</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    @if (!String.IsNullOrEmpty(Model.ImageUrl))
+    {
+        <div data-bind="if: @Model.ImageUrl" class="col-sm-1">
+            <h2></h2>
+            <img src="@Model.ImageUrl" class="img-responsive"/>
+        </div>
+    }
+    <div class="col-md-10">
+        <h2>
+            @Model.Name <a asp-controller="Event" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-controller="Event" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+        </h2>
+        <p>@Model.Description</p>
+        <p><time value="Model.StartDateTime"></time> - <time value="Model.EndDateTime"></time>
+            <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
+        </p>
+        @if (!string.IsNullOrEmpty(userTimeZoneId) && Model.TimeZoneId != userTimeZoneId)
+        {
+            <p>
+                <time value="Model.StartDateTime" target-time-zone-id="@userTimeZoneId"></time> - <time value="Model.EndDateTime" target-time-zone-id="@userTimeZoneId"></time>
+                <em><time-zone-name time-zone-id="@userTimeZoneId"></time-zone-name></em>
+            </p>
+        }
+    </div>
+</div>
+@if (Model.RequiredSkills.Any())
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Required Skills</h3>
+            <ul>
+                @foreach (var requiredSkill in Model.RequiredSkills)
+                {
+                    <li><strong>@requiredSkill.Skill.HierarchicalName</strong></li>
+                }
+            </ul>
+        </div>
+    </div>
+}
+<div class="row">
+    <div class="col-md-12">
+        <h3>Volunteers @if (Model.NumberOfVolunteersRequired > 0)
+                       {
+                           <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span>
+                       } <button type="button" class="btn btn-primary" disabled="@(!Model.Volunteers.Any())" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button>
+        </h3>
+        @if (Model.Volunteers == null || Model.Volunteers.Count == 0)
+        {
+            <text>No volunteers yet. </text>
+        }
+        else
+        {
+            <ul>
+                @foreach (var volunteer in Model.Volunteers)
+                {
+                    <li><strong>@volunteer</strong></li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <h3>Tasks</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <a asp-controller="Task" asp-action="Create" asp-route-eventId="@Model.Id" class="btn btn-default">Create Task</a>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="messageVolunteersModal" tabindex="-1" role="dialog" aria-labelledby="messageVolunteersLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="messageVolunteersLabel">Message All Volunteers</h4>
+            </div>
+            <form asp-controller="Event" asp-action="MessageAllVolunteers" method="post">
+                <div class="modal-body">
+                    <input type="hidden" value="@Model.Id" name="eventId" id="message-eventId">
+                    <div class="form-group">
+                        <label for="subject" class="control-label">Subject</label>
+                        <input type="text" class="form-control wide" name="subject" id="messageVolunteersModal-subject">
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="control-label">Message</label>
+                        <textarea rows="4" class="form-control wide" name="message" id="messageVolunteersModal-message"></textarea>
+                        <span id="messageCharacterCount" class="text-muted"></span>
+                    </div>
+                    <div class="alert alert-info" role="alert">Sending message...</div>
+                    <div class="alert alert-success" role="alert"><i class="fa fa-check"></i> Message sent</div>
+                    <div class="alert alert-danger" role="alert"></div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" id="sendMessageToVolunteers" class="btn btn-primary">Send Message</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("~/Areas/Admin/Views/Task/_List.cshtml", Model.Tasks)
+
+@section scripts {
+    <script src="~/js/activityDetails.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var eventDetailAdmin = new HTBox.EventDetailAdmin();
+        });
+    </script>
+}
+

@@ -2,11 +2,11 @@ using System.Security.Claims;
 using AllReady.ViewModels;
 using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class ShowActivityQuery : IRequest<ActivityViewModel>
+    public class ShowEventQuery : IRequest<EventViewModel>
     {
-        public int ActivityId { get; set; }
+        public int EventId { get; set; }
         public ClaimsPrincipal User { get; set; }
     }
 }

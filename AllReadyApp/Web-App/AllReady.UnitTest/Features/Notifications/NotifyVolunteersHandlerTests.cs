@@ -30,7 +30,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 ManagingOrganization = htb
             };
 
-            var queenAnne = new Models.Activity()
+            var queenAnne = new Models.Event()
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
@@ -39,7 +39,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
-                RequiredSkills = new List<ActivitySkill>(),
+                RequiredSkills = new List<EventSkill>(),
             };
 
             var username1 = $"blah@1.com";
@@ -52,13 +52,13 @@ namespace AllReady.UnitTest.Features.Notifications
 
             htb.Campaigns.Add(firePrev);
             context.Organizations.Add(htb);
-            context.Activities.Add(queenAnne);
+            context.Events.Add(queenAnne);
 
-            var activitySignups = new List<ActivitySignup>();
-            activitySignups.Add(new ActivitySignup { Activity = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow });
-            activitySignups.Add(new ActivitySignup { Activity = queenAnne, User = user2, SignupDateTime = DateTime.UtcNow });
+            var eventSignups = new List<EventSignup>();
+            eventSignups.Add(new EventSignup { Event = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow });
+            eventSignups.Add(new EventSignup { Event = queenAnne, User = user2, SignupDateTime = DateTime.UtcNow });
 
-            context.ActivitySignup.AddRange(activitySignups);
+            context.EventSignup.AddRange(eventSignups);
             context.SaveChanges();
         }
 

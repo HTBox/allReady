@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace AllReady.ViewModels
 {
-    public class MyActivitiesResultsScreenViewModel
+    public class MyEventsResultsScreenViewModel
     {
-        public MyActivitiesResultsScreenViewModel(string title, IList<ActivityViewModel> items)
+        public MyEventsResultsScreenViewModel(string title, IList<EventViewModel> items)
         {
             Title = title;
             Items = items;
@@ -13,6 +13,6 @@ namespace AllReady.ViewModels
 
         public string Title { get; set; }
 
-        public IList<ActivityViewModel> Items { get; set; }
+        public IList<EventViewModel> Items { get; set; }
     }
 }

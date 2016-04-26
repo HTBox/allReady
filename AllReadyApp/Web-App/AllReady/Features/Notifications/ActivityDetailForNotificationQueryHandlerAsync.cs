@@ -7,36 +7,36 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Features.Notifications
 {
-    public class ActivityDetailForNotificationQueryHandlerAsync : IAsyncRequestHandler<ActivityDetailForNotificationQueryAsync, ActivityDetailForNotificationModel>
+    public class EventDetailForNotificationQueryHandlerAsync : IAsyncRequestHandler<EventDetailForNotificationQueryAsync, EventDetailForNotificationModel>
     {
         private AllReadyContext _context;
 
-        public ActivityDetailForNotificationQueryHandlerAsync(AllReadyContext context)
+        public EventDetailForNotificationQueryHandlerAsync(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<ActivityDetailForNotificationModel> Handle(ActivityDetailForNotificationQueryAsync message)
+        public async Task<EventDetailForNotificationModel> Handle(EventDetailForNotificationQueryAsync message)
         {
-            ActivityDetailForNotificationModel result = null;
+            EventDetailForNotificationModel result = null;
 
-            var activity = await GetActivity(message).ConfigureAwait(false);
+            var campaignEvent = await GetEvent(message).ConfigureAwait(false);
             var volunteer = await _context.Users.SingleAsync(u => u.Id == message.UserId).ConfigureAwait(false);
             
-            if (activity != null)
+            if (campaignEvent != null)
             {
-                result = new ActivityDetailForNotificationModel
+                result = new EventDetailForNotificationModel
                 {
-                    ActivityId = activity.Id,
-                    ActivityType = activity.ActivityType,
-                    CampaignName = activity.Campaign.Name,
-                    CampaignContacts = activity.Campaign.CampaignContacts,
+                    EventId = campaignEvent.Id,
+                    EventType = campaignEvent.EventType,
+                    CampaignName = campaignEvent.Campaign.Name,
+                    CampaignContacts = campaignEvent.Campaign.CampaignContacts,
                     Volunteer = volunteer,
-                    ActivityName = activity.Name,
-                    Description = activity.Description,
-                    UsersSignedUp = activity.UsersSignedUp,
-                    NumberOfVolunteersRequired = activity.NumberOfVolunteersRequired,
-                    Tasks = activity.Tasks.Select(t => new TaskSummaryModel
+                    EventName = campaignEvent.Name,
+                    Description = campaignEvent.Description,
+                    UsersSignedUp = campaignEvent.UsersSignedUp,
+                    NumberOfVolunteersRequired = campaignEvent.NumberOfVolunteersRequired,
+                    Tasks = campaignEvent.Tasks.Select(t => new TaskSummaryModel
                     {
                         Id = t.Id,
                         Name = t.Name,
@@ -60,15 +60,15 @@ namespace AllReady.Features.Notifications
             return result;
         }
 
-        private async Task<Models.Activity> GetActivity(ActivityDetailForNotificationQueryAsync message)
+        private async Task<Models.Event> GetEvent(EventDetailForNotificationQueryAsync message)
         {
-            return await _context.Activities
+            return await _context.Events
                 .AsNoTracking()
                 .Include(a => a.Campaign)
                 .Include(a => a.Campaign.CampaignContacts).ThenInclude(c => c.Contact)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(av => av.User)
                 .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
-                .SingleOrDefaultAsync(a => a.Id == message.ActivityId).ConfigureAwait(false);
+                .SingleOrDefaultAsync(a => a.Id == message.EventId).ConfigureAwait(false);
         }
     }
 }

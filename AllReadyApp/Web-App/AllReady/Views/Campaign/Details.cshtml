@@ -120,7 +120,7 @@
                 <!-- ko foreach: events.filtered -->
                 <tr>
                     <td>
-                        <a data-bind="attr: { href: '/Activity/' + Id }, text: Name"></a>
+                        <a data-bind="attr: { href: '/Event/' + Id }, text: Name"></a>
                     </td>
                     <td>
                         <span data-bind="text: Description"></span>
@@ -163,7 +163,7 @@
 
 @section scripts {
     <script>
-        var modelEvents = @Json.Serialize(Model.Activities);
+        var modelEvents = @Json.Serialize(Model.Events);
     </script>
     <script type="text/javascript" src="~/js/campaign.js"></script>
 

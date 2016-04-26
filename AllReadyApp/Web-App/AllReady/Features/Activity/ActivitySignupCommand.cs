@@ -1,10 +1,10 @@
 ﻿using AllReady.ViewModels;
 using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class ActivitySignupCommand : IAsyncRequest
+    public class EventSignupCommand : IAsyncRequest
     {
-        public ActivitySignupViewModel ActivitySignup { get; set; }
+        public EventSignupViewModel EventSignup { get; set; }
     }
 }

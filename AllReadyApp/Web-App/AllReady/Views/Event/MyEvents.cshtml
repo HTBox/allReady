@@ -1,7 +1,7 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@model AllReady.ViewModels.MyActivitiesResultsScreenViewModel
+@model AllReady.ViewModels.MyEventsResultsScreenViewModel
 @{
     ViewData["Title"] = "My Events";
 }
@@ -16,14 +16,14 @@
     </div>
 </div><div class="row">
     <div class="col-md-12">
-        @foreach (var activity in Model.Items) { 
+        @foreach (var campaignEvent in Model.Items) { 
             <div class="collapsible-panel-wrapper">
-                <div class="collapsible-panel-header" data-bind="click: function (d, e) { expand(@activity.Id, d, e) }">@activity.Title <span class="fa fa-chevron-down"></span></div>
-                <div class="collapsible-panel-body" id="activity-details-@activity.Id">
-                    <p><em>@activity.Description</em></p>
+                <div class="collapsible-panel-header" data-bind="click: function (d, e) { expand(@campaignEvent.Id, d, e) }">@campaignEvent.Title <span class="fa fa-chevron-down"></span></div>
+                <div class="collapsible-panel-body" id="event-details-@campaignEvent.Id">
+                    <p><em>@campaignEvent.Description</em></p>
                     <p>
-                        <button class="btn btn-default btn-xs" data-bind="click: function (d,e) { loadTasks(@activity.Id) }">Load tasks</button> 
-                        <button class="btn btn-default btn-xs" data-bind="click: function(d,e) { unvolunteer(@activity.Id) }">Un-volunteer</button>
+                        <button class="btn btn-default btn-xs" data-bind="click: function (d,e) { loadTasks(@campaignEvent.Id) }">Load tasks</button> 
+                        <button class="btn btn-default btn-xs" data-bind="click: function(d,e) { unvolunteer(@campaignEvent.Id) }">Un-volunteer</button>
                     </p>
                         <div data-bind="foreach: tasks">
                             <p><strong data-bind="text: name"></strong>: 
@@ -34,7 +34,7 @@
                             </p>
                         </div>
                         <!-- ko if: tasksLoaded -->
-                        <button class="btn btn-default btn-xs" data-bind="click: function (d,e) { updateTasks(@activity.Id) }">Update</button>
+                        <button class="btn btn-default btn-xs" data-bind="click: function (d,e) { updateTasks(@campaignEvent.Id) }">Update</button>
                         <!-- /ko -->
                 </div>
             </div>

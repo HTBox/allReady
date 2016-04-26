@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace AllReady.Models
 {
-    public class Activity
+    public class Event
     {
         public int Id { get; set; }
 
@@ -19,8 +19,8 @@ namespace AllReady.Models
 
         public string Description { get; set; }
 
-        [Display(Name = "Activity Type")]
-        public ActivityTypes ActivityType { get; set; }    
+        [Display(Name = "Event Type")]
+        public EventTypes EventType { get; set; }    
         
         public int NumberOfVolunteersRequired { get; set; }
 
@@ -34,7 +34,7 @@ namespace AllReady.Models
 
         public List<AllReadyTask> Tasks { get; set; } = new List<AllReadyTask>();
 
-        public List<ActivitySignup> UsersSignedUp { get; set; } = new List<ActivitySignup>();
+        public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
 
         public ApplicationUser Organizer { get; set; }
 
@@ -42,7 +42,7 @@ namespace AllReady.Models
         public string ImageUrl { get; set; }
 
         [Display(Name = "Required skills")]
-        public List<ActivitySkill> RequiredSkills { get; set; } = new List<ActivitySkill>();
+        public List<EventSkill> RequiredSkills { get; set; } = new List<EventSkill>();
 
         public bool IsLimitVolunteers { get; set; } = true;
 

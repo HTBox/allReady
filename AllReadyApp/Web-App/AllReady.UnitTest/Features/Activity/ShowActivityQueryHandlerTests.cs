@@ -1,49 +1,49 @@
 ﻿using System.Security.Claims;
-using AllReady.Features.Activity;
+using AllReady.Features.Event;
 using AllReady.Models;
 using Moq;
 using Shouldly;
 using Xunit;
 
-namespace AllReady.UnitTest.Features.Activity
+namespace AllReady.UnitTest.Features.Event
 {
-    public class ShowActivityQueryHandlerTests
+    public class ShowEventQueryHandlerTests
     {
         [Fact]
-        public void WhenActivityNotFoundReturnsNull()
+        public void WhenEventNotFoundReturnsNull()
         {
-            var showActivityCommand = new ShowActivityQuery { ActivityId = 1 };
+            var showEventCommand = new ShowEventQuery { EventId = 1 };
             var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.GetActivity(showActivityCommand.ActivityId))
-                      .Returns<Models.Activity>(null);
-            var sut = new ShowActivityQueryHandler(dataAccess.Object);
-            var viewModel = sut.Handle(showActivityCommand);
+            dataAccess.Setup(x => x.GetEvent(showEventCommand.EventId))
+                      .Returns<Models.Event>(null);
+            var sut = new ShowEventQueryHandler(dataAccess.Object);
+            var viewModel = sut.Handle(showEventCommand);
             viewModel.ShouldBeNull();
         }
 
         [Fact]
-        public void WhenActivityCampaignIsLockedReturnsNull()
+        public void WhenEventCampaignIsLockedReturnsNull()
         {
-            var showActivityCommand = new ShowActivityQuery { ActivityId = 1 };
+            var showEventCommand = new ShowEventQuery { EventId = 1 };
             var mockDbAccess = new Mock<IAllReadyDataAccess>();
-            var expectedActivity = new Models.Activity { Campaign = new Campaign { Locked = true } };
-            mockDbAccess.Setup(x => x.GetActivity(showActivityCommand.ActivityId))
-                        .Returns(expectedActivity);
-            var sut = new ShowActivityQueryHandler(mockDbAccess.Object);
-            var viewModel = sut.Handle(showActivityCommand);
+            var expectedEvent = new Models.Event { Campaign = new Campaign { Locked = true } };
+            mockDbAccess.Setup(x => x.GetEvent(showEventCommand.EventId))
+                        .Returns(expectedEvent);
+            var sut = new ShowEventQueryHandler(mockDbAccess.Object);
+            var viewModel = sut.Handle(showEventCommand);
             viewModel.ShouldBeNull();
         }
 
         [Fact]
         public void HappyPath()
         {
-            var showActivityCommand = new ShowActivityQuery { ActivityId = 1, User = ClaimsPrincipal.Current };
+            var showEventCommand = new ShowEventQuery { EventId = 1, User = ClaimsPrincipal.Current };
             var mockDbAccess = new Mock<IAllReadyDataAccess>();
-            var expectedActivity = new Models.Activity { Campaign = new Campaign { Locked = false } };
-            mockDbAccess.Setup(x => x.GetActivity(showActivityCommand.ActivityId))
-                        .Returns(expectedActivity);
-            var sut = new ShowActivityQueryHandler(mockDbAccess.Object);
-            var viewModel = sut.Handle(showActivityCommand);
+            var expectedEvent = new Models.Event { Campaign = new Campaign { Locked = false } };
+            mockDbAccess.Setup(x => x.GetEvent(showEventCommand.EventId))
+                        .Returns(expectedEvent);
+            var sut = new ShowEventQueryHandler(mockDbAccess.Object);
+            var viewModel = sut.Handle(showEventCommand);
             viewModel.ShouldNotBeNull();
         }
     }

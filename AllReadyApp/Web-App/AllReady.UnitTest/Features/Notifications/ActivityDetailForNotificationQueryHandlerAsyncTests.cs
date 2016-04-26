@@ -9,12 +9,12 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Notifications
 {
-    public class ActivityDetailForNotificationQueryHandlerAsyncTests : InMemoryContextTest
+    public class EventDetailForNotificationQueryHandlerAsyncTests : InMemoryContextTest
     {
         private ApplicationUser _user1;
         private Organization _htb;
         private Campaign _firePrev;
-        private Models.Activity _queenAnne;
+        private Models.Event _queenAnne;
         private Contact _contact1;
         private AllReadyTask _task1;
 
@@ -62,7 +62,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             _htb.Campaigns.Add(_firePrev);
 
-            _queenAnne = new Models.Activity
+            _queenAnne = new Models.Event
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
@@ -71,11 +71,11 @@ namespace AllReady.UnitTest.Features.Notifications
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
-                RequiredSkills = new List<ActivitySkill>(),
+                RequiredSkills = new List<EventSkill>(),
                 Tasks = new List<AllReadyTask>(),
-                UsersSignedUp = new List<ActivitySignup>
+                UsersSignedUp = new List<EventSignup>
                 {
-                    new ActivitySignup
+                    new EventSignup
                     {
                         Id = 1,
                         PreferredEmail = "testuser@gmail.com",
@@ -88,7 +88,7 @@ namespace AllReady.UnitTest.Features.Notifications
             _task1 = new AllReadyTask
             {
                Id = 1,
-               Activity = _queenAnne,
+               Event = _queenAnne,
                Name = "Task 1",
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
@@ -111,16 +111,16 @@ namespace AllReady.UnitTest.Features.Notifications
             context.Users.Add(_user1);
             context.Contacts.Add(_contact1);
             context.Organizations.Add(_htb);
-            context.Activities.Add(_queenAnne);
+            context.Events.Add(_queenAnne);
             context.SaveChanges();
         }
 
         [Fact]
-        public async Task ModelCanBeCreatedFomExistingActivity()
+        public async Task ModelCanBeCreatedFomExistingEvent()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new ActivityDetailForNotificationQueryAsync { ActivityId = 1, UserId = _user1.Id };
-            var handler = new ActivityDetailForNotificationQueryHandlerAsync(context);
+            var query = new EventDetailForNotificationQueryAsync { EventId = 1, UserId = _user1.Id };
+            var handler = new EventDetailForNotificationQueryHandlerAsync(context);
 
             var result = await handler.Handle(query);
 
@@ -132,11 +132,11 @@ namespace AllReady.UnitTest.Features.Notifications
         }
 
         [Fact]
-        public async Task ActivityDoesNotExist()
+        public async Task EventDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new ActivityDetailForNotificationQueryAsync { ActivityId = 999, UserId = _user1.Id};
-            var handler = new ActivityDetailForNotificationQueryHandlerAsync(context);
+            var query = new EventDetailForNotificationQueryAsync { EventId = 999, UserId = _user1.Id};
+            var handler = new EventDetailForNotificationQueryHandlerAsync(context);
 
             var result = await handler.Handle(query);
 

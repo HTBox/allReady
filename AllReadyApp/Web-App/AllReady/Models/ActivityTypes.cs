@@ -2,10 +2,10 @@
 
 namespace AllReady.Models
 {
-    public enum ActivityTypes
+    public enum EventTypes
     {
-        [Display(Name = "Activity Managed")]
-        ActivityManaged = 1,
+        [Display(Name = "Event Managed")]
+        EventManaged = 1,
 
         [Display(Name = "Task Managed")]
         TaskManaged = 2,

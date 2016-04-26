@@ -6,53 +6,53 @@ using AllReady.Models;
 
 namespace AllReady.ViewModels
 {
-    public class ActivityViewModel
+    public class EventViewModel
     {
-        public ActivityViewModel()
+        public EventViewModel()
         {
         }
 
-        public ActivityViewModel(Activity activity)
+        public EventViewModel(Event campaignEvent)
         {
-            Id = activity.Id;
-            if (activity.Campaign != null)
+            Id = campaignEvent.Id;
+            if (campaignEvent.Campaign != null)
             {
-                CampaignId = activity.Campaign.Id;
-                CampaignName = activity.Campaign.Name;
-                TimeZoneId = activity.Campaign.TimeZoneId;
-                if (activity.Campaign.ManagingOrganization != null)
+                CampaignId = campaignEvent.Campaign.Id;
+                CampaignName = campaignEvent.Campaign.Name;
+                TimeZoneId = campaignEvent.Campaign.TimeZoneId;
+                if (campaignEvent.Campaign.ManagingOrganization != null)
                 {
-                    OrganizationId = activity.Campaign.ManagingOrganization.Id;
-                    OrganizationName = activity.Campaign.ManagingOrganization.Name;
-                    HasPrivacyPolicy = !string.IsNullOrEmpty(activity.Campaign.ManagingOrganization.PrivacyPolicy);
+                    OrganizationId = campaignEvent.Campaign.ManagingOrganization.Id;
+                    OrganizationName = campaignEvent.Campaign.ManagingOrganization.Name;
+                    HasPrivacyPolicy = !string.IsNullOrEmpty(campaignEvent.Campaign.ManagingOrganization.PrivacyPolicy);
                 }
             }
 
-            Title = activity.Name;
-            Description = activity.Description;
-            ActivityType = activity.ActivityType;
-            StartDateTime = activity.StartDateTime;
-            EndDateTime = activity.EndDateTime;
+            Title = campaignEvent.Name;
+            Description = campaignEvent.Description;
+            EventType = campaignEvent.EventType;
+            StartDateTime = campaignEvent.StartDateTime;
+            EndDateTime = campaignEvent.EndDateTime;
 
-            if (activity.Location != null)
+            if (campaignEvent.Location != null)
             {
-                Location = new LocationViewModel(activity.Location);
+                Location = new LocationViewModel(campaignEvent.Location);
             }
 
             IsClosed = EndDateTime.UtcDateTime < DateTimeOffset.UtcNow;
 
-            ImageUrl = activity.ImageUrl;
+            ImageUrl = campaignEvent.ImageUrl;
 
             //TODO Location
-            Tasks = activity.Tasks != null
-                 ? new List<TaskViewModel>(activity.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
+            Tasks = campaignEvent.Tasks != null
+                 ? new List<TaskViewModel>(campaignEvent.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
                  : new List<TaskViewModel>();
 
-            SignupModel = new ActivitySignupViewModel();
+            SignupModel = new EventSignupViewModel();
 
-            RequiredSkills = activity.RequiredSkills?.Select(acsk => acsk.Skill).ToList();
-            IsLimitVolunteers = activity.IsLimitVolunteers;
-            IsAllowWaitList = activity.IsAllowWaitList;
+            RequiredSkills = campaignEvent.RequiredSkills?.Select(acsk => acsk.Skill).ToList();
+            IsLimitVolunteers = campaignEvent.IsLimitVolunteers;
+            IsAllowWaitList = campaignEvent.IsAllowWaitList;
             
         }
 
@@ -62,7 +62,7 @@ namespace AllReady.ViewModels
         public int CampaignId { get; set; }
         public string CampaignName { get; set; }
         public string Title { get; set; }
-        public ActivityTypes ActivityType { get; set; }
+        public EventTypes EventType { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
         public string TimeZoneId { get; set; }
@@ -71,16 +71,16 @@ namespace AllReady.ViewModels
         public LocationViewModel Location { get; set; }
         public List<TaskViewModel> Tasks { get; set; } = new List<TaskViewModel>();
         public List<TaskViewModel> UserTasks { get; set; } = new List<TaskViewModel>();
-        public bool IsUserVolunteeredForActivity { get; set; }
+        public bool IsUserVolunteeredForEvent { get; set; }
         public List<ApplicationUser> Volunteers { get; set; }
         public string UserId { get; set; }
         public List<Skill> RequiredSkills { get; set; }
         public List<Skill> UserSkills { get; set; }
         public int NumberOfVolunteersRequired { get; set; }
-        public ActivitySignupViewModel SignupModel { get; set; }
+        public EventSignupViewModel SignupModel { get; set; }
         public bool IsClosed { get; set; }
         public bool HasPrivacyPolicy { get; set; }
-        public List<ActivitySignup> UsersSignedUp { get; set; } = new List<ActivitySignup>();
+        public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
         public bool IsLimitVolunteers { get; set; } = true;
         public bool IsAllowWaitList { get; set; } = true;
         public int NumberOfUsersSignedUp => UsersSignedUp.Count;
@@ -88,7 +88,7 @@ namespace AllReady.ViewModels
         public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
     }
 
-    public static class ActivityViewModelExtension
+    public static class EventViewModelExtension
     {
         public static LocationViewModel ToViewModel(this Location location)
         {
@@ -115,12 +115,12 @@ namespace AllReady.ViewModels
             };
             return value;
         }
-        public static IEnumerable<ActivityViewModel> ToViewModel(this IEnumerable<Activity> activities)
+        public static IEnumerable<EventViewModel> ToViewModel(this IEnumerable<Event> campaignEvents)
         {
-            return activities.Select(activity => new ActivityViewModel(activity));
+            return campaignEvents.Select(campaignEvent => new EventViewModel(campaignEvent));
         }
 
-        public static ActivityViewModel WithUserInfo(this ActivityViewModel viewModel, Activity activity, ClaimsPrincipal user, IAllReadyDataAccess dataAccess)
+        public static EventViewModel WithUserInfo(this EventViewModel viewModel, Event campaignEvent, ClaimsPrincipal user, IAllReadyDataAccess dataAccess)
         {
             if (user.IsSignedIn())
             {
@@ -128,14 +128,14 @@ namespace AllReady.ViewModels
                 var appUser = dataAccess.GetUser(userId);
                 viewModel.UserId = userId;
                 viewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => us.Skill).ToList();
-                viewModel.IsUserVolunteeredForActivity = dataAccess.GetActivitySignups(viewModel.Id, userId).Any();
-                var assignedTasks = activity.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
+                viewModel.IsUserVolunteeredForEvent = dataAccess.GetEventSignups(viewModel.Id, userId).Any();
+                var assignedTasks = campaignEvent.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
                 viewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
-                var unassignedTasks = activity.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != userId)).ToList();
+                var unassignedTasks = campaignEvent.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != userId)).ToList();
                 viewModel.Tasks = new List<TaskViewModel>(unassignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
-                viewModel.SignupModel = new ActivitySignupViewModel()
+                viewModel.SignupModel = new EventSignupViewModel()
                 {
-                    ActivityId = viewModel.Id,
+                    EventId = viewModel.Id,
                     UserId = userId,
                     Name = appUser.Name,
                     PreferredEmail = appUser.Email,

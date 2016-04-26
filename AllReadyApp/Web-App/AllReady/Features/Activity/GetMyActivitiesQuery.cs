@@ -1,9 +1,9 @@
 ﻿using AllReady.ViewModels;
 using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class GetMyActivitiesQuery : IRequest<MyActivitiesResultsScreenViewModel>
+    public class GetMyEventsQuery : IRequest<MyEventsResultsScreenViewModel>
     {
         public string UserId { get; set; }
     }

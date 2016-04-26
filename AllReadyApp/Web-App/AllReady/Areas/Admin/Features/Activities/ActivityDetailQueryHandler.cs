@@ -5,46 +5,46 @@ using Microsoft.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AllReady.Areas.Admin.Features.Activities
+namespace AllReady.Areas.Admin.Features.Events
 {
-    public class ActivityDetailQueryHandler : IAsyncRequestHandler<ActivityDetailQuery, ActivityDetailModel>
+    public class EventDetailQueryHandler : IAsyncRequestHandler<EventDetailQuery, EventDetailModel>
     {
         private readonly AllReadyContext _context;
 
-        public ActivityDetailQueryHandler(AllReadyContext context)
+        public EventDetailQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<ActivityDetailModel> Handle(ActivityDetailQuery message)
+        public async Task<EventDetailModel> Handle(EventDetailQuery message)
         {
-            ActivityDetailModel result = null;
+            EventDetailModel result = null;
 
-            var activity = await GetActivity(message);
+            var campaignEvent = await GetEvent(message);
 
-            if (activity != null)
+            if (campaignEvent != null)
             {
-                result = new ActivityDetailModel
+                result = new EventDetailModel
                 {
-                    Id = activity.Id,
-                    ActivityType = activity.ActivityType,
-                    CampaignName = activity.Campaign.Name,
-                    CampaignId = activity.Campaign.Id,
-                    OrganizationId = activity.Campaign.ManagingOrganizationId,
-                    OrganizationName = activity.Campaign.ManagingOrganization.Name,
-                    Name = activity.Name,
-                    Description = activity.Description,
-                    TimeZoneId = activity.Campaign.TimeZoneId,
-                    StartDateTime = activity.StartDateTime,
-                    EndDateTime = activity.EndDateTime,
-                    Volunteers = activity.UsersSignedUp.Select(u => u.User.UserName).ToList(),
-                    NumberOfVolunteersRequired = activity.NumberOfVolunteersRequired,
-                    IsLimitVolunteers = activity.IsLimitVolunteers,
-                    IsAllowWaitList = activity.IsAllowWaitList,
-                    Location = activity.Location.ToEditModel(),
-                    RequiredSkills = activity.RequiredSkills,
-                    ImageUrl = activity.ImageUrl,
-                    Tasks = activity.Tasks.Select(t => new TaskSummaryModel
+                    Id = campaignEvent.Id,
+                    EventType = campaignEvent.EventType,
+                    CampaignName = campaignEvent.Campaign.Name,
+                    CampaignId = campaignEvent.Campaign.Id,
+                    OrganizationId = campaignEvent.Campaign.ManagingOrganizationId,
+                    OrganizationName = campaignEvent.Campaign.ManagingOrganization.Name,
+                    Name = campaignEvent.Name,
+                    Description = campaignEvent.Description,
+                    TimeZoneId = campaignEvent.Campaign.TimeZoneId,
+                    StartDateTime = campaignEvent.StartDateTime,
+                    EndDateTime = campaignEvent.EndDateTime,
+                    Volunteers = campaignEvent.UsersSignedUp.Select(u => u.User.UserName).ToList(),
+                    NumberOfVolunteersRequired = campaignEvent.NumberOfVolunteersRequired,
+                    IsLimitVolunteers = campaignEvent.IsLimitVolunteers,
+                    IsAllowWaitList = campaignEvent.IsAllowWaitList,
+                    Location = campaignEvent.Location.ToEditModel(),
+                    RequiredSkills = campaignEvent.RequiredSkills,
+                    ImageUrl = campaignEvent.ImageUrl,
+                    Tasks = campaignEvent.Tasks.Select(t => new TaskSummaryModel
                     {
                         Id = t.Id,
                         Name = t.Name,
@@ -68,16 +68,16 @@ namespace AllReady.Areas.Admin.Features.Activities
             return result;
         }
 
-        private async Task<Activity> GetActivity(ActivityDetailQuery message)
+        private async Task<Event> GetEvent(EventDetailQuery message)
         {
-            return await _context.Activities
+            return await _context.Events
                 .AsNoTracking()
                 .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(av => av.User)
                 .Include(a => a.RequiredSkills).ThenInclude(s => s.Skill).ThenInclude(s => s.ParentSkill)
                 .Include(a => a.Location).ThenInclude(p => p.PostalCode)
                 .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
-                .SingleOrDefaultAsync(a => a.Id == message.ActivityId)
+                .SingleOrDefaultAsync(a => a.Id == message.EventId)
                 .ConfigureAwait(false);
         }
     }

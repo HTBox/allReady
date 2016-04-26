@@ -4,7 +4,7 @@ using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models
 {
-    public class ActivityDetailModel : ActivitySummaryModel
+    public class EventDetailModel : EventSummaryModel
     {
         [UIHint("Location")]
         public LocationEditModel Location { get; set; }
@@ -12,6 +12,6 @@ namespace AllReady.Areas.Admin.Models
         public IList<string> Volunteers { get; set; } = new List<string>();
 
         [Display(Name = "Required Skills")]
-        public IEnumerable<ActivitySkill> RequiredSkills { get; set; } = new List<ActivitySkill>();
+        public IEnumerable<EventSkill> RequiredSkills { get; set; } = new List<EventSkill>();
     }
 }

@@ -6,6 +6,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class TaskListQuery : IRequest<IEnumerable<TaskSummaryModel>>
     {
-        public int ActivityId { get; set; }
+        public int EventId { get; set; }
     }
 }

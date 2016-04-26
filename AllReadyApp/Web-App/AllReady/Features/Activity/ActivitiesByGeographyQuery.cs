@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class ActivitiesByGeographyQuery : IRequest<List<Models.Activity>>
+    public class EventsByGeographyQuery : IRequest<List<Models.Event>>
     {
         public double Latitude { get; set; }
         public double Longitude { get; set; }

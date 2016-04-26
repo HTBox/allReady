@@ -2,9 +2,9 @@
 
 namespace AllReady.Features.Notifications
 {
-    public class ActivityDetailForNotificationQueryAsync : IAsyncRequest<ActivityDetailForNotificationModel>
+    public class EventDetailForNotificationQueryAsync : IAsyncRequest<EventDetailForNotificationModel>
     {
-        public int ActivityId { get; set; }
+        public int EventId { get; set; }
         public string UserId { get; set; }
     }
 }

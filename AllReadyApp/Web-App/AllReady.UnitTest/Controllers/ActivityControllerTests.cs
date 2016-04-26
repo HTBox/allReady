@@ -3,28 +3,28 @@ using Xunit;
 
 namespace AllReady.UnitTest.Controllers
 {
-    public class ActivityControllerTests
+    public class EventControllerTests
     {
         //delete this line when all unit tests using it have been completed
         private readonly Task taskFromResultZero = Task.FromResult(0);
 
         [Fact(Skip = "NotImplemented")]
-        public void GetMyActivitiesSendsGetMyActivitiesQueryWithTheCorrectUserId()
+        public void GetMyEventsSendsGetMyEventsQueryWithTheCorrectUserId()
         {
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void GetMyActivitiesReturnsTheCorrectViewAndViewModel()
+        public void GetMyEventsReturnsTheCorrectViewAndViewModel()
         {
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void GetMyActivitiesHasRouteAttributeWithTheCorrectRoute()
+        public void GetMyEventsHasRouteAttributeWithTheCorrectRoute()
         {
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void GetMyActivitiesHasAuthorizeAttribute()
+        public void GetMyEventsHasAuthorizeAttribute()
         {
         }
 
@@ -93,33 +93,33 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void ShowActivitySendsShowActivityQueryWithCorrectData()
+        public void ShowEventSendsShowEventQueryWithCorrectData()
         {
             
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void ShowActivityReturnsHttpNotFoundResultWhenViewModelIsNull()
+        public void ShowEventReturnsHttpNotFoundResultWhenViewModelIsNull()
         {
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void ShowActivityReturnsActivityViewWithCorrrectViewModelWhenViewModelIsNotNullAndActivityTypeIsActivityManaged()
+        public void ShowEventReturnsEventViewWithCorrrectViewModelWhenViewModelIsNotNullAndEventTypeIsEventManaged()
         {
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void ShowActivityReturnsActivityWithTasksViewWithCorrrectViewModelWhenViewModelIsNotNullAndActivityTypeIsNotActivityManaged()
+        public void ShowEventReturnsEventWithTasksViewWithCorrrectViewModelWhenViewModelIsNotNullAndEventTypeIsNotEventManaged()
         {
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void ShowActivityHasRouteAttributeWithCorrectRoute()
+        public void ShowEventHasRouteAttributeWithCorrectRoute()
         {
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void ShowActivityHasAllowAnonymousAttribute()
+        public void ShowEventHasAllowAnonymousAttribute()
         {
         }
 
@@ -131,7 +131,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task SignupSendsAsyncActivitySignupCommandWithCorrrectDataWhenViewModelIsNotNull()
+        public async Task SignupSendsAsyncEventSignupCommandWithCorrrectDataWhenViewModelIsNotNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;

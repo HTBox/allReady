@@ -18,21 +18,21 @@ namespace AllReady.Areas.Admin.Features.Tasks
         public async Task<TaskEditModel> Handle(EditTaskQueryAsync message)
         {
             var task = await _context.Tasks.AsNoTracking()
-                .Include(t => t.Activity).ThenInclude(a => a.Campaign)
+                .Include(t => t.Event).ThenInclude(a => a.Campaign)
                 .Include(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
                 .SingleOrDefaultAsync(t => t.Id == message.TaskId);
 
             var viewModel = new TaskEditModel
             {
                 Id = task.Id,
-                ActivityId = task.Activity.Id,
-                ActivityName = task.Activity.Name,
-                CampaignId = task.Activity.CampaignId,
-                CampaignName = task.Activity.Campaign.Name,
-                OrganizationId = task.Activity.Campaign.ManagingOrganizationId,
+                EventId = task.Event.Id,
+                EventName = task.Event.Name,
+                CampaignId = task.Event.CampaignId,
+                CampaignName = task.Event.Campaign.Name,
+                OrganizationId = task.Event.Campaign.ManagingOrganizationId,
                 Name = task.Name,
                 Description = task.Description,
-                TimeZoneId = task.Activity.Campaign.TimeZoneId,
+                TimeZoneId = task.Event.Campaign.TimeZoneId,
                 StartDateTime = task.StartDateTime,
                 EndDateTime = task.EndDateTime,
                 NumberOfVolunteersRequired = task.NumberOfVolunteersRequired,

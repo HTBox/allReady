@@ -41,7 +41,7 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "End Date")]
         public DateTimeOffset EndDate { get; set; }
 
-		public IEnumerable<ActivitySummaryModel> Activities { get; set; }
+		public IEnumerable<EventSummaryModel> Events { get; set; }
         public CampaignImpact CampaignImpact { get; set; }
 
         [UIHint("Location")]

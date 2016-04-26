@@ -2,15 +2,15 @@
 
 namespace AllReady.ViewModels
 {
-    public class VolunteerActivitiesSearchResultsScreenViewModel
+    public class VolunteeEventsSearchResultsScreenViewModel
     {
-        public VolunteerActivitiesSearchResultsScreenViewModel()
+        public VolunteeEventsSearchResultsScreenViewModel()
         {
-            this.Activities = new List<ActivityViewModel>();
+            this.Events = new List<EventViewModel>();
         }
 
         public string Title { get; set; }
         public string GoButtonLabel { get; set; }
-        public List<ActivityViewModel> Activities { get; set; }
+        public List<EventViewModel> Events { get; set; }
     }
 }

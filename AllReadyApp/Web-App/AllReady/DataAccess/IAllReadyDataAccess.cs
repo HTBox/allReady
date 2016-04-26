@@ -6,15 +6,15 @@ namespace AllReady.Models
     public interface IAllReadyDataAccess
     {
 
-        #region Activity CRUD
-        IEnumerable<Activity> Activities { get; }
-        Activity GetActivity(int activityId);
-        int GetManagingOrganizationId(int activityId);
-        IEnumerable<ActivitySignup> GetActivitySignups(string userId);
-        IEnumerable<ActivitySignup> GetActivitySignups(int activityId, string userId);
-        Task UpdateActivity(Activity value);
-        IEnumerable<Activity> ActivitiesByPostalCode(string postalCode, int distance);
-        IEnumerable<Activity> ActivitiesByGeography(double latitude, double longitude, int distance);
+        #region Event CRUD
+        IEnumerable<Event> Events { get; }
+        Event GetEvent(int eventId);
+        int GetManagingOrganizationId(int eventId);
+        IEnumerable<EventSignup> GetEventSignups(string userId);
+        IEnumerable<EventSignup> GetEventSignups(int eventId, string userId);
+        Task UpdateEvent(Event value);
+        IEnumerable<Event> EventsByPostalCode(string postalCode, int distance);
+        IEnumerable<Event> EventsByGeography(double latitude, double longitude, int distance);
         IEnumerable<Resource> GetResourcesByCategory(string category);
 
         #endregion
@@ -51,17 +51,17 @@ namespace AllReady.Models
 
         #endregion
 
-        #region ActivitySignup CRUD
+        #region EventSignup CRUD
 
-        IEnumerable<ActivitySignup> ActivitySignups { get; }
+        IEnumerable<EventSignup> EventSignups { get; }
 
-        ActivitySignup GetActivitySignup(int activityId, string userId);
+        EventSignup GetEventSignup(int eventId, string userId);
 
-        Task AddActivitySignupAsync(ActivitySignup userSignup);
+        Task AddEventSignupAsync(EventSignup userSignup);
 
-        Task DeleteActivityAndTaskSignupsAsync(int activitySignupId);
+        Task DeleteEventAndTaskSignupsAsync(int eventSignupId);
 
-        Task UpdateActivitySignupAsync(ActivitySignup value);
+        Task UpdateEventSignupAsync(EventSignup value);
 
         #endregion
 
@@ -90,7 +90,7 @@ namespace AllReady.Models
 
         Task UpdateTaskAsync(AllReadyTask value);
 
-        IEnumerable<TaskSignup> GetTasksAssignedToUser(int activityId, string userId);
+        IEnumerable<TaskSignup> GetTasksAssignedToUser(int eventId, string userId);
 
         #endregion
 

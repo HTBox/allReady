@@ -1,9 +1,9 @@
 ﻿namespace AllReady.Models
 {
-    public class ActivitySkill
+    public class EventSkill
     {
-        public int ActivityId { get; set; }
-        public Activity Activity { get; set; }
+        public int EventId { get; set; }
+        public Event Event { get; set; }
 
         public int SkillId { get; set; }
         public Skill Skill { get; set; }

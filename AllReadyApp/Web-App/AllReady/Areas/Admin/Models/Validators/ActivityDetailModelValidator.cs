@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Models.Validators
 {
-    public class ActivityDetailModelValidator
+    public class EventDetailModelValidator
     {
         private IMediator _mediator;
 
-        public ActivityDetailModelValidator(IMediator mediator)
+        public EventDetailModelValidator(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        public async Task<List<KeyValuePair<string, string>>> Validate(ActivityDetailModel model, CampaignSummaryModel parentCampaign)
+        public async Task<List<KeyValuePair<string, string>>> Validate(EventDetailModel model, CampaignSummaryModel parentCampaign)
         {
             var result = new List<KeyValuePair<string, string>>();
 

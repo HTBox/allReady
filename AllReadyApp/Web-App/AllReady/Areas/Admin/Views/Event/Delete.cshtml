@@ -1,4 +1,4 @@
-@model AllReady.Areas.Admin.Models.ActivityDetailModel
+@model AllReady.Areas.Admin.Models.EventDetailModel
 
 @{  ViewData["Title"] = "Delete event " + Model.Name; }
 
@@ -7,7 +7,7 @@
         <ol class="breadcrumb">
             <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
             <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Name</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Name</a></li>
             <li>Delete</li>
         </ol>
     </div>
@@ -48,7 +48,7 @@
 
             <div class="form-actions no-color">
                 <button type="submit" class="btn btn-default">Delete</button>
-                <a class="btn btn-default" asp-controller="Activity" asp-action="Details" asp-route-area="Admin" asp-route-id="@Model.Id">Cancel</a>
+                <a class="btn btn-default" asp-controller="Event" asp-action="Details" asp-route-area="Admin" asp-route-id="@Model.Id">Cancel</a>
             </div>
         }
     </div>

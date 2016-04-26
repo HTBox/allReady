@@ -1,10 +1,10 @@
 ﻿using AllReady.Models;
 using MediatR;
 
-namespace AllReady.Areas.Admin.Features.Activities
+namespace AllReady.Areas.Admin.Features.Events
 {
-    public class UpdateActivity : IAsyncRequest
+    public class UpdateEvent : IAsyncRequest
     {
-        public Activity Activity { get; set; }
+        public Event Event { get; set; }
     }
 }

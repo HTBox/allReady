@@ -3,20 +3,20 @@ using System.Linq;
 using AllReady.Models;
 using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class AcitivitiesByPostalCodeQueryHandler : IRequestHandler<AcitivitiesByPostalCodeQuery, List<Models.Activity>>
+    public class EventsByPostalCodeQueryHandler : IRequestHandler<EventsByPostalCodeQuery, List<Models.Event>>
     {
         private readonly IAllReadyDataAccess dataAccess;
 
-        public AcitivitiesByPostalCodeQueryHandler(IAllReadyDataAccess dataAccess)
+        public EventsByPostalCodeQueryHandler(IAllReadyDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
         }
 
-        public List<Models.Activity> Handle(AcitivitiesByPostalCodeQuery message)
+        public List<Models.Event> Handle(EventsByPostalCodeQuery message)
         {
-            return dataAccess.ActivitiesByPostalCode(message.PostalCode, message.Distance).ToList();
+            return dataAccess.EventsByPostalCode(message.PostalCode, message.Distance).ToList();
         }
     }
 }

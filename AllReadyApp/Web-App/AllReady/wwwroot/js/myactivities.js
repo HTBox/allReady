@@ -41,7 +41,7 @@
         unvolunteer: function (eventId) {
             var that = this;
             $.ajax({
-                url: "/api/activity/" + eventId + "/signup",
+                url: "/api/event/" + eventId + "/signup",
                 type: "DELETE",
                 contentType: "application/json"
             }).done(function (response) {
@@ -52,7 +52,7 @@
         },
         loadTasks: function (eventId, data, event) {
             var that = this;
-            $.get("/MyActivities/" + eventId + "/tasks")
+            $.get("/MyEvents/" + eventId + "/tasks")
             .done(function (response) {
                 if (response.length < 1) {
                     that.handleResponse(response, 'notification', 'No results');
@@ -76,7 +76,7 @@
         },
         updateTasks: function (actId) {
             var that = this;
-            var url = "/MyActivities/" + actId + "/tasks";
+            var url = "/MyEvents/" + actId + "/tasks";
             var sendData = [];
             for (var i = 0; i < that.tasks().length; i++) {
                 var current = that.tasks()[i];

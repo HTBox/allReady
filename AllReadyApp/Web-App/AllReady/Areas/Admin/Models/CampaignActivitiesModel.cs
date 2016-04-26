@@ -3,10 +3,10 @@ using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models
 {
-    public class CampaignActivitiesModel
+    public class CampaignEventsModel
     {
         public int CampaignId { get; set; }
         public string CampaignName { get; set; }
-        public IEnumerable<Activity> Activities { get; set; }
+        public IEnumerable<Event> Events { get; set; }
     }
 }

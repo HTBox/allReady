@@ -1,9 +1,9 @@
 ﻿using MediatR;
 
-namespace AllReady.Areas.Admin.Features.Activities
+namespace AllReady.Areas.Admin.Features.Events
 {
-    public class ManagingOrganizationIdByActivityIdQuery : IRequest<int>
+    public class ManagingOrganizationIdByEventIdQuery : IRequest<int>
     {
-        public int ActivityId { get; set; }
+        public int EventId { get; set; }
     }
 }

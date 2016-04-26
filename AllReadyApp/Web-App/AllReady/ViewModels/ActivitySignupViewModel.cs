@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.ViewModels
 {
-    public class ActivitySignupViewModel
+    public class EventSignupViewModel
     {
-        public int ActivityId { get; set; }
+        public int EventId { get; set; }
         public int TaskId { get; set; }
         public string UserId { get; set; }
         public string Name { get; set; }

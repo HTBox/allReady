@@ -3,23 +3,23 @@ using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
-    public class GetMyActivitiesQueryHandler : IRequestHandler<GetMyActivitiesQuery, MyActivitiesResultsScreenViewModel>
+    public class GetMyEventsQueryHandler : IRequestHandler<GetMyEventsQuery, MyEventsResultsScreenViewModel>
     {
         private readonly IAllReadyDataAccess _allReadyDataAccess;
 
-        public GetMyActivitiesQueryHandler(IAllReadyDataAccess allReadyDataAccess)
+        public GetMyEventsQueryHandler(IAllReadyDataAccess allReadyDataAccess)
         {
             _allReadyDataAccess = allReadyDataAccess;
         }
 
 
-        public MyActivitiesResultsScreenViewModel Handle(GetMyActivitiesQuery message)
+        public MyEventsResultsScreenViewModel Handle(GetMyEventsQuery message)
         {
-            var myActivities = _allReadyDataAccess.GetActivitySignups(message.UserId).Where(a => !a.Activity.Campaign.Locked);
-            var signedUp = myActivities.Select(a => new ActivityViewModel(a.Activity)).ToList();
-            return new MyActivitiesResultsScreenViewModel("My Activities", signedUp);
+            var myEvents = _allReadyDataAccess.GetEventSignups(message.UserId).Where(a => !a.Event.Campaign.Locked);
+            var signedUp = myEvents.Select(a => new EventViewModel(a.Event)).ToList();
+            return new MyEventsResultsScreenViewModel("My Events", signedUp);
         }
     }
 }

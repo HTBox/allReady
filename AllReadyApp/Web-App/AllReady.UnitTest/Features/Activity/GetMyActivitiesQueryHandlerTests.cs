@@ -1,22 +1,22 @@
 using System.Linq;
-using AllReady.Features.Activity;
+using AllReady.Features.Event;
 using AllReady.Models;
 using Moq;
 using Shouldly;
 using Xunit;
 
-namespace AllReady.UnitTest.Features.Activity
+namespace AllReady.UnitTest.Features.Event
 {
-    public class GetMyActivitiesQueryHandlerTests
+    public class GetMyEventsQueryHandlerTests
     {
         [Fact]
-        public void ReturnsExpectedActivities()
+        public void ReturnsExpectedEvents()
         {
-            var activitySignups = new[]
+            var eventSignups = new[]
             {
-                new ActivitySignup
+                new EventSignup
                 {
-                    Activity = new Models.Activity
+                    Event = new Models.Event
                     {
                         Campaign = new Campaign
                         {
@@ -29,11 +29,11 @@ namespace AllReady.UnitTest.Features.Activity
                         }
                     }
                 },
-                new ActivitySignup
+                new EventSignup
                 {
-                    Activity = new Models.Activity
+                    Event = new Models.Event
                     {
-                        Name = "Expected Activity",
+                        Name = "Expected Event",
                         Campaign = new Campaign
                         {
                             ManagingOrganization = new Organization
@@ -49,15 +49,15 @@ namespace AllReady.UnitTest.Features.Activity
 
             var mockDbAccess = new Mock<IAllReadyDataAccess>();
 
-            var command = new GetMyActivitiesQuery {UserId = "B62AF756-809D-40B7-AA88-237E52889C45"};
-            mockDbAccess.Setup(db => db.GetActivitySignups(command.UserId)).Returns(activitySignups);
+            var command = new GetMyEventsQuery {UserId = "B62AF756-809D-40B7-AA88-237E52889C45"};
+            mockDbAccess.Setup(db => db.GetEventSignups(command.UserId)).Returns(eventSignups);
 
-            var sut = new GetMyActivitiesQueryHandler(mockDbAccess.Object);
+            var sut = new GetMyEventsQueryHandler(mockDbAccess.Object);
             var response = sut.Handle(command);
 
             response.ShouldSatisfyAllConditions(
                 () => response.Items.Count.ShouldBe(1),
-                () => response.Items.First().Title.ShouldBe("Expected Activity")
+                () => response.Items.First().Title.ShouldBe("Expected Event")
             );
         }
     }

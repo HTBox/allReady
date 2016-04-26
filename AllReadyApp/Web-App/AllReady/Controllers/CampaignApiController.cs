@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AllReady.Features.Activity;
+using AllReady.Features.Event;
 using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Mvc;
@@ -19,19 +19,19 @@ namespace AllReady.Controllers
         }
 
         [Route("search")]
-        public IEnumerable<ActivityViewModel> GetCampaignsByPostalCode(string zip, int miles)
+        public IEnumerable<EventViewModel> GetCampaignsByPostalCode(string zip, int miles)
         {
-            var model = new List<ActivityViewModel>();
+            var model = new List<EventViewModel>();
 
-            var campaigns = mediator.Send(new AcitivitiesByPostalCodeQuery { PostalCode = zip, Distance =  miles})
+            var campaigns = mediator.Send(new EventsByPostalCodeQuery { PostalCode = zip, Distance =  miles})
                 .Select(x => x.Campaign)
                 .Distinct();
 
-            var activities = campaigns
-                .SelectMany(x => x.Activities)
+            var campaignEvents = campaigns
+                .SelectMany(x => x.Events)
                 .ToList();
 
-           activities.ForEach(activity => model.Add(new ActivityViewModel(activity)));
+           campaignEvents.ForEach(campaignEvent => model.Add(new EventViewModel(campaignEvent)));
 
            return model;
         }

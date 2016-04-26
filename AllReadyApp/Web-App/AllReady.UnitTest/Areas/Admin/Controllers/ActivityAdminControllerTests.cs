@@ -18,20 +18,20 @@ using Microsoft.AspNet.Authorization;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
-    public class ActivityAdminControllerTests
+    public class EventAdminControllerTests
     {
         //delete this line when all unit tests using it have been completed
         private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DetailsSendsActivityDetailQueryAsyncWithCorrectActivityId()
+        public async Task DetailsSendsEventDetailQueryAsyncWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DetailsReturnsHttpNotFoundResultWhenActivityIsNull()
+        public async Task DetailsReturnsHttpNotFoundResultWhenEventIsNull()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -45,14 +45,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DetailsReturnsHttpUnauthorizedResultWhenActivityIsNotNullAndUserIsNotAnOrgAdmin()
+        public async Task DetailsReturnsHttpUnauthorizedResultWhenEventIsNotNullAndUserIsNotAnOrgAdmin()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DetailsReturnsCorrectViewModelWhenActivityIsNotNullAndUserIsOrgAdmin()
+        public async Task DetailsReturnsCorrectViewModelWhenEventIsNotNullAndUserIsOrgAdmin()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -61,7 +61,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void DetailsHasHttpGetAttribute()
         {
-            var sut = new ActivityController(null, null);
+            var sut = new EventController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -69,10 +69,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void DetailsHasRouteAttributeWithCorrectRoute()
         {
-            var sut = new ActivityController(null, null);
+            var sut = new EventController(null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Activity/Details/{id}");
+            Assert.Equal(routeAttribute.Template, "Admin/Event/Details/{id}");
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -111,27 +111,27 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task CreatePostReturnsEditView_When_ModelStateNotValid()
         {
-            var sut = GetActivityController();
+            var sut = GetEventController();
             sut.ModelState.AddModelError("test", "test");
-            var activityModel = new ActivityDetailModel();
-            var result = (ViewResult)await sut.Create(1, activityModel, null);
+            var eventModel = new EventDetailModel();
+            var result = (ViewResult)await sut.Create(1, eventModel, null);
 
             Assert.Equal("Edit", result.ViewName);
         }
 
         [Fact]
-        public async Task CreatePostReturnsEditView_When_ActivityEndDateBeforeStartDate()
+        public async Task CreatePostReturnsEditView_When_EventEndDateBeforeStartDate()
         {
             var campaignStartDate = new DateTimeOffset(new DateTime(1900, 1, 1));
             var campaignEndDate = campaignStartDate.AddDays(4);
-            var sut = GetActivityController(campaignStartDate, campaignEndDate);
-            var activityModel = new ActivityDetailModel
+            var sut = GetEventController(campaignStartDate, campaignEndDate);
+            var eventModel = new EventDetailModel
             {
                 EndDateTime = campaignStartDate.AddDays(1),
                 StartDateTime = campaignStartDate.AddDays(2)
             };
 
-            var result = (ViewResult)await sut.Create(1, activityModel, null);
+            var result = (ViewResult)await sut.Create(1, eventModel, null);
 
             Assert.Equal("Edit", result.ViewName);
             var errors = sut.ModelState.GetErrorMessages();
@@ -140,18 +140,18 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task CreatePostReturnsEditView_When_ActivityStartDateBeforeCampaignStartDate()
+        public async Task CreatePostReturnsEditView_When_EventStartDateBeforeCampaignStartDate()
         {
             var campaignStartDate = new DateTimeOffset(new DateTime(1900, 1, 1));
             var campaignEndDate = campaignStartDate.AddDays(4);
-            var sut = GetActivityController(campaignStartDate, campaignEndDate);
-            var activityModel = new ActivityDetailModel
+            var sut = GetEventController(campaignStartDate, campaignEndDate);
+            var eventModel = new EventDetailModel
             {
                 EndDateTime = campaignStartDate,
                 StartDateTime = campaignStartDate.AddDays(-1)
             };
 
-            var result = (ViewResult)await sut.Create(1, activityModel, null);
+            var result = (ViewResult)await sut.Create(1, eventModel, null);
 
             Assert.Equal("Edit", result.ViewName);
             var errors = sut.ModelState.GetErrorMessages();
@@ -159,18 +159,18 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal("Start date cannot be earlier than the campaign start date " + campaignStartDate.ToString("d"), errors[0]);
         }
         [Fact]
-        public async Task CreatePostReturnsEditView_When_ActivityEndDateAfterCampaignEndDate()
+        public async Task CreatePostReturnsEditView_When_EventEndDateAfterCampaignEndDate()
         {
             var campaignStartDate = new DateTimeOffset(new DateTime(1900, 1, 1));
             var campaignEndDate = campaignStartDate.AddDays(4);
-            var sut = GetActivityController(campaignStartDate, campaignEndDate);
-            var activityModel = new ActivityDetailModel
+            var sut = GetEventController(campaignStartDate, campaignEndDate);
+            var eventModel = new EventDetailModel
             {
                 EndDateTime = campaignEndDate.AddDays(1),
                 StartDateTime = campaignStartDate
             };
 
-            var result = (ViewResult)await sut.Create(1, activityModel, null);
+            var result = (ViewResult)await sut.Create(1, eventModel, null);
 
             Assert.Equal("Edit", result.ViewName);
             var errors = sut.ModelState.GetErrorMessages();
@@ -186,10 +186,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         //[Fact]
         //public async Task CreatePostReturnsEditView_When_ModelStateNotValid_And_ImageIsNotNull()
         //{
-        //    var sut = GetActivityController();
-        //    var activityModel = new ActivityDetailModel();
+        //    var sut = GetEventController();
+        //    var eventModel = new EventDetailModel();
         //    IFormFile file = new FormFile(null, 0, 0);
-        //    var result = (ViewResult)await sut.Create(1, activityModel, file);
+        //    var result = (ViewResult)await sut.Create(1, eventModel, file);
 
         //    Assert.Equal("Edit", result.ViewName);
         //}
@@ -210,12 +210,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void EditGetSendsActivityDetailQueryAsyncWithCorrectActivityId()
+        public void EditGetSendsEventDetailQueryAsyncWithCorrectEventId()
         {
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void EditGetReturnsHttpNotFoundResultWhenActivityIsNull()
+        public void EditGetReturnsHttpNotFoundResultWhenEventIsNull()
         {
         }
 
@@ -230,14 +230,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task EditPostReturnsBadRequestResultWhenActivityIsNull()
+        public async Task EditPostReturnsBadRequestResultWhenEventIsNull()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task EditPostSendsManagingOrganizationIdByActivityIdQueryWithCorrectActivityId()
+        public async Task EditPostSendsManagingOrganizationIdByEventIdQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -265,7 +265,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task EditPostInvokesUploadActivityImageAsyncWithTheCorrectParametersWhenModelStateIsValidAndFileUploadIsNotNullAndFileUploadIsAnAcceptableImageContentType()
+        public async Task EditPostInvokesUploadEventImageAsyncWithTheCorrectParametersWhenModelStateIsValidAndFileUploadIsNotNullAndFileUploadIsAnAcceptableImageContentType()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -286,7 +286,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task EditPostSendsEditActivityCommandAsyncWithCorrectActivityWhenModelStateIsValid()
+        public async Task EditPostSendsEditEventCommandAsyncWithCorrectEventWhenModelStateIsValid()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -317,14 +317,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DeleteSendsActivityDetailQueryAsyncWithCorrectActivityId()
+        public async Task DeleteSendsEventDetailQueryAsyncWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DeleteReturnsHttpNotFoundResultWhenActivityIsNull()
+        public async Task DeleteReturnsHttpNotFoundResultWhenEventIsNull()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -350,14 +350,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DeleteConfirmedSendsActivityDetailQueryAsyncWithCorrectActivityId()
+        public async Task DeleteConfirmedSendsEventDetailQueryAsyncWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DeleteConfirmedReturnsHttpNotFoundResultWhenActivityIsNull()
+        public async Task DeleteConfirmedReturnsHttpNotFoundResultWhenEventIsNull()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -371,7 +371,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DeleteConfirmedSendsDeleteActivityCommandAsyncWithCorrectActivityId()
+        public async Task DeleteConfirmedSendsDeleteEventCommandAsyncWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -400,12 +400,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void AssignSendsActivityByActivityIdQueryWithCorrectActivityId()
+        public void AssignSendsEventByEventIdQueryWithCorrectEventId()
         {
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void AssignReturnsHttpNotFoundResultWhenActivityIsNull()
+        public void AssignReturnsHttpNotFoundResultWhenEventIsNull()
         {
         }
 
@@ -432,14 +432,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task MessageAllVolunteersSendsActivityDetailQueryAsyncWithCorrectActivityId()
+        public async Task MessageAllVolunteersSendsEventDetailQueryAsyncWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task MessageAllVolunteersReturnsHttpNotFoundResultWhenActivityIsNull()
+        public async Task MessageAllVolunteersReturnsHttpNotFoundResultWhenEventIsNull()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -453,7 +453,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task MessageAllVolunteersSendsMessageActivityVolunteersCommandAsyncWithCorrectData()
+        public async Task MessageAllVolunteersSendsMessageEventVolunteersCommandAsyncWithCorrectData()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -477,40 +477,40 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task PostActivityFileSendsActivityByActivityIdQueryWithCorrectActivityId()
+        public async Task PostEventFileSendsEventByEventIdQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task PostActivityFileSendsUpdateActivityAsyncWithCorrectData()
+        public async Task PostEventFileSendsUpdateEventAsyncWithCorrectData()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task PostActivityFileRedirectsToCorrectRoute()
+        public async Task PostEventFileRedirectsToCorrectRoute()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void PostActivityFileHasHttpPostAttribute()
+        public void PostEventFileHasHttpPostAttribute()
         {
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void PostActivityFileHasValidateAntiForgeryTokenAttribute()
+        public void PostEventFileHasValidateAntiForgeryTokenAttribute()
         {
         }
 
         [Fact]
         public void ControllerHasAreaAtttributeWithTheCorrectAreaName()
         {
-            var sut = new ActivityController(null, null);
+            var sut = new EventController(null, null);
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.RouteValue, "Admin");
@@ -519,25 +519,25 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void ControllerHasAreaAuthorizeAttributeWithCorrectPolicy()
         {
-            var sut = new ActivityController(null, null);
+            var sut = new EventController(null, null);
             var attribute = sut.GetAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Policy, "OrgAdmin");
         }
 
-        private static ActivityController GetActivityController()
+        private static EventController GetEventController()
         {
-            return GetActivityController(new DateTimeOffset(), new DateTimeOffset());
+            return GetEventController(new DateTimeOffset(), new DateTimeOffset());
         }
 
-        private static ActivityController GetActivityController(DateTimeOffset startDate, DateTimeOffset endDate)
+        private static EventController GetEventController(DateTimeOffset startDate, DateTimeOffset endDate)
         {
             var mediator = new Mock<IMediator>();
             var imageService = new Mock<IImageService>();
 
             mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel { StartDate = startDate, EndDate = endDate });
 
-            var sut = new ActivityController(imageService.Object, mediator.Object);
+            var sut = new EventController(imageService.Object, mediator.Object);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),

@@ -25,31 +25,31 @@ namespace AllReady.Features.Notifications
         {
             var taskSignup = await _context.TaskSignups
                 .Include(ts => ts.Task)
-                    .ThenInclude(t => t.Activity).ThenInclude(a => a.Organizer)
+                    .ThenInclude(t => t.Event).ThenInclude(a => a.Organizer)
                 .Include(ts => ts.Task)
-                    .ThenInclude(t => t.Activity).ThenInclude(a => a.Campaign).ThenInclude(c => c.CampaignContacts).ThenInclude(cc => cc.Contact)
+                    .ThenInclude(t => t.Event).ThenInclude(a => a.Campaign).ThenInclude(c => c.CampaignContacts).ThenInclude(cc => cc.Contact)
                 .Include(ts => ts.User)
                 .SingleAsync(ts => ts.Id == notification.SignupId)
                 .ConfigureAwait(false);
 
             var volunteer = taskSignup.User;
             var task = taskSignup.Task;
-            var activity = task.Activity;
-            var campaign = activity.Campaign;
+            var campaignEvent = task.Event;
+            var campaign = campaignEvent.Campaign;
 
             var campaignContact = campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
             var adminEmail = campaignContact?.Contact.Email;
 
             if (!string.IsNullOrWhiteSpace(adminEmail))
             {
-                var link = $"View activity: http://{_options.Value.SiteBaseUrl}/Admin/Task/Details/{taskSignup.Task.Id}";
+                var link = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Task/Details/{taskSignup.Task.Id}";
                 var subject = $"Task status changed ({taskSignup.Status}) for volunteer {volunteer.Name ?? volunteer.Email}";
 
                 var message = $@"A volunteer's status has changed for a task.
                                     Volunteer: {volunteer.Name} ({volunteer.Email})
                                     New status: {taskSignup.Status}
                                     Task: {task.Name} {link}
-                                    Activity: {activity.Name}
+                                    Event: {campaignEvent.Name}
                                     Campaign: {campaign.Name}";
 
                 var command = new NotifyVolunteersCommand

@@ -1,26 +1,26 @@
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Features.Activities;
+using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using Xunit;
 
-namespace AllReady.UnitTest.Areas.Admin.Features.Activities
+namespace AllReady.UnitTest.Areas.Admin.Features.Events
 {
-    public class EditingActivity : InMemoryContextTest
+    public class EditingEvent : InMemoryContextTest
     {
-        public EditingActivity()
+        public EditingEvent()
         {
-            // Adding an activity requires a campaign for a organization ID and an activity to match that in the command
+            // Adding an event requires a campaign for a organization ID and an event to match that in the command
             Context.Campaigns.Add(new Campaign {Id = 1, TimeZoneId = "Central Standard Time" });
-            Context.Activities.Add(new Activity {Id = 1});
+            Context.Events.Add(new Event {Id = 1});
             Context.SaveChanges();
         }
 
         [Fact]
         public async Task ModelIsCreated()
         {
-            var sut = new EditActivityCommandHandler(Context);
-            var actual = await sut.Handle(new EditActivityCommand {Activity = new ActivityDetailModel {CampaignId = 1, Id = 1, TimeZoneId = "Central Standard Time"}});
+            var sut = new EditEventCommandHandler(Context);
+            var actual = await sut.Handle(new EditEventCommand {Event = new EventDetailModel {CampaignId = 1, Id = 1, TimeZoneId = "Central Standard Time"}});
             Assert.Equal(1, actual);
         }
     }

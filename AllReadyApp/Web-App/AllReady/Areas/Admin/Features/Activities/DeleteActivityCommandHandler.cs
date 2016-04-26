@@ -3,24 +3,24 @@ using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
 
-namespace AllReady.Areas.Admin.Features.Activities
+namespace AllReady.Areas.Admin.Features.Events
 {
-    public class DeleteActivityCommandHandler : AsyncRequestHandler<DeleteActivityCommand>
+    public class DeleteEventCommandHandler : AsyncRequestHandler<DeleteEventCommand>
     {
         private AllReadyContext _context;
 
-        public DeleteActivityCommandHandler(AllReadyContext context)
+        public DeleteEventCommandHandler(AllReadyContext context)
         {
             _context = context;
 
         }
 
-        protected override async Task HandleCore(DeleteActivityCommand message)
+        protected override async Task HandleCore(DeleteEventCommand message)
         {
-            var activity =  _context.Activities.SingleOrDefault(c => c.Id == message.ActivityId);
-            if (activity != null)
+            var campaignEvent =  _context.Events.SingleOrDefault(c => c.Id == message.EventId);
+            if (campaignEvent != null)
             {
-                _context.Activities.Remove(activity);
+                _context.Events.Remove(campaignEvent);
                 await _context.SaveChangesAsync().ConfigureAwait(false);
             }
         }

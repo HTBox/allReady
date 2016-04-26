@@ -23,7 +23,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
         protected override async Task HandleCore(AssignTaskCommandAsync message)
         {
             var task = GetTask(message);
-            var activity = task.Activity;
+            var campaignEvent = task.Event;
             var taskSignups = new List<TaskSignup>();
 
             if (task != null)
@@ -49,12 +49,12 @@ namespace AllReady.Areas.Admin.Features.Tasks
                         task.AssignedVolunteers.Add(taskSignup);
                         taskSignups.Add(taskSignup);
 
-                        // If the user has not already been signed up for the activity, sign them up
-                        if (activity.ActivityType != ActivityTypes.ActivityManaged && activity.UsersSignedUp.All(acsu => acsu.User.Id != userId))
+                        // If the user has not already been signed up for the event, sign them up
+                        if (campaignEvent.EventType != EventTypes.EventManaged && campaignEvent.UsersSignedUp.All(acsu => acsu.User.Id != userId))
                         {
-                            activity.UsersSignedUp.Add(new ActivitySignup
+                            campaignEvent.UsersSignedUp.Add(new EventSignup
                             {
-                                Activity = activity,
+                                Event = campaignEvent,
                                 User = user,
                                 PreferredEmail = user.Email,
                                 PreferredPhoneNumber = user.PhoneNumber,
@@ -69,14 +69,14 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 var taskSignupsToRemove = task.AssignedVolunteers.Where(taskSignup => message.UserIds.All(uid => uid != taskSignup.User.Id)).ToList();
                 taskSignupsToRemove.ForEach(taskSignup => task.AssignedVolunteers.Remove(taskSignup));
 
-                if (activity.ActivityType != ActivityTypes.ActivityManaged)
+                if (campaignEvent.EventType != EventTypes.EventManaged)
                 {
-                    // delete the  activity signups where the user is no longer signed up for any tasks
+                    // delete the event signups where the user is no longer signed up for any tasks
                     (from taskSignup in taskSignupsToRemove
-                        where !activity.IsUserInAnyTask(taskSignup.User.Id)
-                        select activity.UsersSignedUp.FirstOrDefault(u => u.User.Id == taskSignup.User.Id))
+                        where !campaignEvent.IsUserInAnyTask(taskSignup.User.Id)
+                        select campaignEvent.UsersSignedUp.FirstOrDefault(u => u.User.Id == taskSignup.User.Id))
                         .ToList()
-                        .ForEach(signup => activity.UsersSignedUp.Remove(signup));
+                        .ForEach(signup => campaignEvent.UsersSignedUp.Remove(signup));
                 }
             }
             await _context.SaveChangesAsync();
@@ -108,7 +108,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
         private AllReadyTask GetTask(AssignTaskCommandAsync message)
         {
             var task = _context.Tasks
-                .Include(t => t.Activity).ThenInclude(a => a.UsersSignedUp)
+                .Include(t => t.Event).ThenInclude(a => a.UsersSignedUp)
                 .SingleOrDefault(c => c.Id == message.TaskId);
             return task;
         }

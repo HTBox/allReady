@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Features.Activities;
+using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Models;
 using AllReady.Features.Notifications;
 using AllReady.Models;
@@ -11,9 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
-namespace AllReady.UnitTest.Areas.Admin.Features.Activities
+namespace AllReady.UnitTest.Areas.Admin.Features.Events
 {
-    public class MessageActivityVolunteersCommandHandlerTests : InMemoryContextTest
+    public class MessageEventVolunteersCommandHandlerTests : InMemoryContextTest
     {
         protected override void LoadTestData()
         {
@@ -32,7 +32,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
                 ManagingOrganization = htb
             };
 
-            var queenAnne = new Activity()
+            var queenAnne = new Event()
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
@@ -41,7 +41,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
-                RequiredSkills = new List<ActivitySkill>(),
+                RequiredSkills = new List<EventSkill>(),
             };
 
             var username1 = $"blah@1.com";
@@ -54,26 +54,26 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
 
             htb.Campaigns.Add(firePrev);            
             context.Organizations.Add(htb);
-            context.Activities.Add(queenAnne);
+            context.Events.Add(queenAnne);
 
-            var activitySignups = new List<ActivitySignup>
+            var eventSignups = new List<EventSignup>
             {
-                new ActivitySignup { Activity = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow },
-                new ActivitySignup { Activity = queenAnne, User = user2, SignupDateTime = DateTime.UtcNow }
+                new EventSignup { Event = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow },
+                new EventSignup { Event = queenAnne, User = user2, SignupDateTime = DateTime.UtcNow }
             };
 
-            context.ActivitySignup.AddRange(activitySignups);
+            context.EventSignup.AddRange(eventSignups);
             context.SaveChanges();
         }
 
         [Fact]
         public async Task SendMessageToAssignedVolunteers()
         {
-            var command = new MessageActivityVolunteersCommand
+            var command = new MessageEventVolunteersCommand
             {
-                Model = new MessageActivityVolunteersModel
+                Model = new MessageEventVolunteersModel
                 {
-                    ActivityId = 1,
+                    EventId = 1,
                     Message = "This is my message",
                     Subject = "This is my subject"
                 }
@@ -81,7 +81,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Activities
 
             var mediator = new Mock<IMediator>();
             
-            var handler = new MessageActivityVolunteersCommandHandler(Context, mediator.Object);
+            var handler = new MessageEventVolunteersCommandHandler(Context, mediator.Object);
             await handler.Handle(command);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
