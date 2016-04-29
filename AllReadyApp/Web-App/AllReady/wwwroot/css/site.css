@@ -273,7 +273,7 @@ Navigation
     margin-bottom: 30px;
 }
 
-.activity-list > a {
+.event-list > a {
     display: block;
 }
 
@@ -372,8 +372,8 @@ Navigation
     stroke-width: 3;
 }
 
-/* Activity Details Page */
-#ActivityDetail h3 {
+/* Event Details Page */
+#EventDetail h3 {
     margin-top: 10px;
 }
 
@@ -476,7 +476,7 @@ Navigation
     margin: 0 auto;
 }
 
-/* Activity Edit Page */
+/* Event Edit Page */
 #IsLimitVolunteers, #IsAllowWaitList {
     margin-left: -170px;
 }

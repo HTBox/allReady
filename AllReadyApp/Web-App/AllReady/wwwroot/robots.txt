@@ -1,4 +1,4 @@
-﻿#Initially just disallowing views that don't make sense, leaving others like Activity in.
+﻿#Initially just disallowing views that don't make sense, leaving others like Event in.
 User-Agent: *
 Disallow: /Admin
 Disallow: /Account
