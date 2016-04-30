@@ -10,6 +10,8 @@ using Microsoft.Extensions.OptionsModel;
 using Moq;
 using Xunit;
 using MediatR;
+using AllReady.UnitTest.Extensions;
+using Microsoft.AspNet.Authorization;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -31,14 +33,20 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(testUrl, result.ViewData["ReturnUrl"]);
         }
 
-        [Fact(Skip = "NotImplmented")]
+        [Fact]
         public void LoginGetHasHttpGetAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.Login(It.IsAny<string>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplmented")]
+        [Fact]
         public void LoginGetHasAllowAnonymousAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.Login(It.IsAny<string>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact]
@@ -107,34 +115,52 @@ namespace AllReady.UnitTest.Controllers
                 .Contains("Invalid login attempt."));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void LoginPostHasHttpPostAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.Login(It.IsAny<LoginViewModel>(), It.IsAny<string>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void LoginPostHasAllowAnonymousAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.Login(It.IsAny<LoginViewModel>(), It.IsAny<string>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void LoginPostHasValidateAntiForgeryTokenAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.Login(It.IsAny<LoginViewModel>(), It.IsAny<string>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void RegisterGetReturnsAView()
         {
+            var sut = AccountController();
+            var result = (ViewResult)sut.Register();
+            Assert.IsType<ViewResult>(result);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void RegisterGetHasHttpGetAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.Register()).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void RegisterGetHasAllowAnonymousAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.Register()).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -207,19 +233,28 @@ namespace AllReady.UnitTest.Controllers
             await taskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void RegisterPostHasHttpPostAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.Register(It.IsAny<RegisterViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void RegisterPostHasAllowAnonymousAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.Register(It.IsAny<RegisterViewModel>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void RegisterPostHasValidateAntiForgeryTokenAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.Register(It.IsAny<RegisterViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -299,29 +334,44 @@ namespace AllReady.UnitTest.Controllers
             await taskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ConfirmEmailHasHttpGetAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ConfirmEmail(It.IsAny<string>(), It.IsAny<string>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ConfirmEmailHasAllowAnonymousAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ConfirmEmail(It.IsAny<string>(), It.IsAny<string>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ForgotPasswordGetReturnsAView()
         {
+            var sut = AccountController();
+            var result = (ViewResult)sut.ForgotPassword();
+            Assert.IsType<ViewResult>(result);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ForgotPasswordGetHasHttpGetAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ForgotPassword()).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ForgotPasswordGetHasAllowAnonymousAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ForgotPassword()).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -387,39 +437,63 @@ namespace AllReady.UnitTest.Controllers
             await taskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ForgotPasswordPostHasHttpPostAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ForgotPassword(It.IsAny<ForgotPasswordViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ForgotPasswordPostHasAllowAnonymousAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ForgotPassword(It.IsAny<ForgotPasswordViewModel>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ForgotPasswordPostHasValidateAntiForgeryTokenAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ForgotPassword(It.IsAny<ForgotPasswordViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ResetPasswordGetReturnsErrorViewIfCodeIsNull()
         {
+            var sut = AccountController();
+            var result = (ViewResult)sut.ResetPassword();
+
+            Assert.Equal("Error", result.ViewName);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ResetPasswordGetReturnsAViewIfCodeIsNotNull()
         {
+            var sut = AccountController();
+            var code = "1234";
+            var result = (ViewResult)sut.ResetPassword(code);
+
+            Assert.IsType<ViewResult>(result);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ResetPasswordGetHasHttpGetAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ResetPassword(It.IsAny<string>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ResetPasswordGetHasAllowAnonymousAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ResetPassword(It.IsAny<string>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -471,34 +545,53 @@ namespace AllReady.UnitTest.Controllers
             await taskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ResetPasswordPostHasHttpPostAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ResetPassword(It.IsAny<ResetPasswordViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ResetPasswordPostHasAllowAnonymousAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ResetPassword(It.IsAny<ResetPasswordViewModel>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ResetPasswordPostHasValidateAntiForgeryTokenAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ResetPassword(It.IsAny<ResetPasswordViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ResetPasswordConfirmationReturnsAView()
         {
+            var sut = AccountController();
+            var result = (ViewResult)sut.ResetPasswordConfirmation();
+
+            Assert.IsType<ViewResult>(result);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ResetPasswordConfirmationHasHttpGetAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ResetPasswordConfirmation()).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ResetPasswordConfirmationHasAllowAnonymousAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ResetPasswordConfirmation()).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -516,19 +609,28 @@ namespace AllReady.UnitTest.Controllers
         {
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ExternalLoginHasPostGetAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ExternalLogin(It.IsAny<string>(), It.IsAny<string>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ExternalLoginHasAllowAnonymousAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ExternalLogin(It.IsAny<string>(), It.IsAny<string>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ExternalLoginHasValidateAntiForgeryTokenAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ExternalLogin(It.IsAny<string>(), It.IsAny<string>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -601,14 +703,20 @@ namespace AllReady.UnitTest.Controllers
             await taskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ExternalLoginCallbackHasHttpGetAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ExternalLoginCallback(It.IsAny<string>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ExternalLoginCallbackHasAllowAnonymousAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ExternalLoginCallback(It.IsAny<string>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -702,19 +810,28 @@ namespace AllReady.UnitTest.Controllers
             await taskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ExternalLoginConfirmationHasHttpPostAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ExternalLoginConfirmation(It.IsAny<ExternalLoginConfirmationViewModel>(), It.IsAny<string>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ExternalLoginConfirmationHasAllowAnonymousAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ExternalLoginConfirmation(It.IsAny<ExternalLoginConfirmationViewModel>(), It.IsAny<string>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ExternalLoginConfirmationHasValidateAntiForgeryTokenAttribute()
         {
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.ExternalLoginConfirmation(It.IsAny<ExternalLoginConfirmationViewModel>(), It.IsAny<string>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         private static AccountController AccountController(SignInResult signInResult = default(SignInResult))
@@ -762,5 +879,7 @@ namespace AllReady.UnitTest.Controllers
             controller.Url = urlHelperMock.Object;
             return controller;
         }
+
+        private static AccountController CreateAccountControllerWithNoInjectedDependencies() => new AccountController(null, null, null, null, null);
     }
 }
