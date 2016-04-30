@@ -10,18 +10,18 @@ using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskSignupHandler : IAsyncRequestHandler<TaskSignupCommand, TaskSignupResult>
+    public class TaskSignupHandlerAsync : IAsyncRequestHandler<TaskSignupCommandAsync, TaskSignupResult>
     {
         private readonly IMediator _bus;
         private readonly AllReadyContext _context;
 
-        public TaskSignupHandler(IMediator bus, AllReadyContext context)
+        public TaskSignupHandlerAsync(IMediator bus, AllReadyContext context)
         {
             _bus = bus;
             _context = context;
         }
 
-        public async Task<TaskSignupResult> Handle(TaskSignupCommand message)
+        public async Task<TaskSignupResult> Handle(TaskSignupCommandAsync message)
         {
             var model = message.TaskSignupModel;
 
@@ -36,7 +36,22 @@ namespace AllReady.Features.Tasks
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers)
                 .SingleOrDefaultAsync(a => a.Id == model.EventId).ConfigureAwait(false);
 
+            if (campaignEvent == null)
+            {
+                return new TaskSignupResult { Status = TaskSignupResult.FAILURE_EVENTNOTFOUND };
+            }
+
             var task = campaignEvent.Tasks.SingleOrDefault(t => t.Id == model.TaskId);
+
+            if (task == null)
+            {
+                return new TaskSignupResult { Status = TaskSignupResult.FAILURE_TASKNOTFOUND };
+            }
+
+            if (task.IsClosed)
+            {
+                return new TaskSignupResult { Status = TaskSignupResult.FAILURE_CLOSEDTASK };
+            }
 
             campaignEvent.UsersSignedUp = campaignEvent.UsersSignedUp ?? new List<EventSignup>();
 

@@ -280,14 +280,14 @@
                 contentType: "application/x-www-form-urlencoded"
             }).done(function (result) {
                 self.isSubmitting(false);
-                switch (result.Status) {
-                    case "success":
+                switch (result.isSuccess) {
+                    case true:
                         if (isTaskSignup) {
-                            self.UpdatedTask = result.Task;
+                            self.UpdatedTask = result.task;
                         }
                         self.modal.close(self);
                         break;
-                    case "error":
+                    case false:
                         self.validationErrors(result.errors);
                         break;
                     default:

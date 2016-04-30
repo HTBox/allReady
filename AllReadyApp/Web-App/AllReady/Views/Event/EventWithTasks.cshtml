@@ -238,8 +238,8 @@
                                             <span class="task-datetime" data-bind="html: DisplayDateTime"></span><br />
                                         </div>
                                         <div class="btn-group">
-                                            <button class="btn btn-default" data-bind="visible: IsAllowSignups && $root.isSignedIn, click: $root.signupForTask , attr: { href: '#signup' }">Volunteer</button>
-                                            <button class="btn btn-default" data-bind="visible: IsAllowSignups && !$root.isSignedIn, click: $root.confirmGoToLogin , attr: { href: '#signup' }">Volunteer</button>
+                                            <button class="btn btn-default" data-bind="visible: !IsClosed && IsAllowSignups && $root.isSignedIn, click: $root.signupForTask , attr: { href: '#signup' }">Volunteer</button>
+                                            <button class="btn btn-default" data-bind="visible: !IsClosed && IsAllowSignups && !$root.isSignedIn, click: $root.confirmGoToLogin , attr: { href: '#signup' }">Volunteer</button>
                                         </div>
                                     </div>
                                 </div>
