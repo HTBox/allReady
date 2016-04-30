@@ -15,6 +15,7 @@ As announced during our [recent Standup on March 19th](https://www.youtube.com/w
 
 We are targeting feature complete for May 16th with user testing & issue fixing following that until June 11th.
 
+
 You can find our prioritized requirements & issues at our [June 11th Go Live Milestone](https://github.com/HTBox/allReady/milestones/%22June%20Go%20Live%22%20Public%20Release%20Feature%20Complete) and more information at our [recent blog post](http://www.htbox.org/blog/allready-update-on-go-live-plans-thank-you).
 
 ##Project overview
