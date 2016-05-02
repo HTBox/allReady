@@ -5,9 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace AllReady.Areas.Admin.Models
-{
-    
-
+{  
     public class TaskSummaryModel
     {
         public int Id { get; set; }
@@ -18,6 +16,8 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Campaign")]
         public string CampaignName { get; set; }
         public int OrganizationId { get; set; }
+
+        [Required]
         public string Name { get; set; }
         public string Description { get; set; }
 
