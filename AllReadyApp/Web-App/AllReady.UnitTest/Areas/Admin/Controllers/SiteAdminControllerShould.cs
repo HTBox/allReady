@@ -1,7 +1,10 @@
 ﻿using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Users;
+using AllReady.UnitTest.Extensions;
 using MediatR;
+using Microsoft.AspNet.Mvc;
 using Moq;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -31,11 +34,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await TaskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task DeleteUserHasHttpGetAttribute()
+        [Fact]
+        public void DeleteUserHasHttpGetAttribute()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            var controller = new SiteController(null, null, mediator.Object);
+
+            var attribute = controller.GetAttributesOn(x => x.DeleteUser(It.IsAny<string>())).OfType<HttpGetAttribute>().SingleOrDefault();
+
+            Assert.NotNull(attribute);
         }
 
         [Fact]
