@@ -36,12 +36,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
         [Fact]
         public void DeleteUserHasHttpGetAttribute()
-        {
-            var mediator = new Mock<IMediator>();
-            var controller = new SiteController(null, null, mediator.Object);
-
+        {            
+            var controller = new SiteController(null, null, null);
             var attribute = controller.GetAttributesOn(x => x.DeleteUser(It.IsAny<string>())).OfType<HttpGetAttribute>().SingleOrDefault();
-
             Assert.NotNull(attribute);
         }
 
