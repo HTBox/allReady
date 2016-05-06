@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
+using AllReady.Features.Admin;
 using AllReady.Models;
-using AllReady.Services;
+using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
@@ -16,23 +17,20 @@ namespace AllReady.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IEmailSender _emailSender;
-        private readonly ISmsSender _smsSender;
+        private readonly IMediator _mediator;
         private readonly IOptions<SampleDataSettings> _settings;
         private readonly IOptions<GeneralSettings> _generalSettings;
 
         public AdminController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IEmailSender emailSender,
-            ISmsSender smsSender,
+            IMediator mediator,
             IOptions<SampleDataSettings> options,
             IOptions<GeneralSettings> generalSettings)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _emailSender = emailSender;
-            _smsSender = smsSender;
+            _mediator = mediator;
             _settings = options;
             _generalSettings = generalSettings;
         }
@@ -67,7 +65,7 @@ namespace AllReady.Controllers
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmEmail), Controller = "Admin", Values = new { userId = user.Id, token = token }, Protocol = Request.Scheme });
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your account", $"Please confirm your account by clicking this <a href=\"{callbackUrl}\">link</a>");
+                    await _mediator.SendAsync(new SendAccountConfirmationEmail { Email = model.Email, CallbackUrl = callbackUrl });
                     return RedirectToAction(nameof(DisplayEmail), "Admin");
                 }
 
@@ -109,7 +107,7 @@ namespace AllReady.Controllers
             if (result.Succeeded)
             {
                 var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(SiteController.EditUser), Controller = "Site", Values = new { area = "Admin", userId = user.Id }, Protocol = HttpContext.Request.Scheme });
-                await _emailSender.SendEmailAsync(_settings.Value.DefaultAdminUsername, "Approve organization user account", $"Please approve this account by clicking this <a href=\"{callbackUrl}\">link</a>");
+                await _mediator.SendAsync(new SendApproveOrganizationUserAccountEmail { DefaultAdminUsername = _settings.Value.DefaultAdminUsername, CallbackUrl = callbackUrl });
             }
 
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
@@ -164,14 +162,13 @@ namespace AllReady.Controllers
                 return View("Error");
             }
             
-            var message = $"Your security code is: {token}";
             if (model.SelectedProvider == "Email")
             {
-                await _emailSender.SendEmailAsync(await _userManager.GetEmailAsync(user), "Security Code", message);
+                await _mediator.SendAsync(new SendSecurityCodeEmail { Email = await _userManager.GetEmailAsync(user), Token = token });
             }
             else if (model.SelectedProvider == "Phone")
             {
-                await _smsSender.SendSmsAsync(await _userManager.GetPhoneNumberAsync(user), message);
+                await _mediator.SendAsync(new SendSecurityCodeSms { PhoneNumber = await _userManager.GetPhoneNumberAsync(user), Token = token });
             }
 
             return RedirectToAction(nameof(VerifyCode), new { Provider = model.SelectedProvider, model.ReturnUrl, model.RememberMe });
@@ -208,8 +205,10 @@ namespace AllReady.Controllers
             if (result.Succeeded)
             {
                 if (Url.IsLocalUrl(model.ReturnUrl))
+                {
                     return Redirect(model.ReturnUrl);
-
+                }
+                
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
 

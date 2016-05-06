@@ -11,7 +11,6 @@ namespace AllReady.UnitTest.Services
 {
     public class SelectListServiceTests
     {
-
         [Fact]
         public void GetOrganizationsTest()
         {
@@ -48,7 +47,6 @@ namespace AllReady.UnitTest.Services
             Assert.Equal(2, organizations.Count);
             Assert.Equal(organizationId1.ToString(), organizations.First().Value);
             Assert.Equal(OrganizationName1, organizations.First().Text);
-         
         }
 
         [Fact]

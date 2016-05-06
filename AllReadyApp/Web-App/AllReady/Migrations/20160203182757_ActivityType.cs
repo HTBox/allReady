@@ -30,7 +30,7 @@ namespace AllReady.Migrations
                 name: "ActivityType",
                 table: "Activity",
                 nullable: false,
-                defaultValue: Models.ActivityTypes.ActivityManaged);
+                defaultValue: Models.EventTypes.EventManaged);
             migrationBuilder.AddForeignKey(
                 name: "FK_Activity_Campaign_CampaignId",
                 table: "Activity",

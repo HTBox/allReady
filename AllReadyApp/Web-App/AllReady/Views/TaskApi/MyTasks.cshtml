@@ -7,13 +7,13 @@
 }
 <div class="row">
     <div class="col-md-12">
-        <h3>My Activities</h3>
+        <h3>My Events</h3>
     </div>
 </div>
 
 <table class="table table-condensed table-responsive table-bordered table-hover table-striped">
     <tr>
-        <th><span title="Name of the activity">Activity</span></th>
+        <th><span title="Name of the event">Event</span></th>
         <th><span title="Name of the task">Name</span></th>
         <th><span title="When the task starts">Start Time</span></th>
         <th><span title="When the task ends">End Time</span></th>
@@ -23,7 +23,7 @@
     @foreach (var task in Model.Items)
     {
         <tr>
-            <td><a asp-controller="Activity" asp-action="ShowActivity" asp-route-id="@task.ActivityId">@task.ActivityName</a></td>
+            <td><a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@task.EventId">@task.eventName</a></td>
             <td><a asp-controller="TaskApi" asp-action="ShowTask" asp-route-id="@task.Id">@task.Name</a></td>
             <td>@task.StartDateTime</td>
             <td>@task.EndDateTime</td>

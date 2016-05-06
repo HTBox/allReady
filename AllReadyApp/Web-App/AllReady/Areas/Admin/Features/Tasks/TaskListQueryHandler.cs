@@ -18,7 +18,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
         public IEnumerable<TaskSummaryModel> Handle(TaskListQuery message)
         {
             var tasks = _context.Tasks
-                .Where(t => t.Activity.Id == message.ActivityId)
+                .Where(t => t.Event.Id == message.EventId)
                 .Select(t => new TaskSummaryModel()
                 {
                     Id = t.Id,

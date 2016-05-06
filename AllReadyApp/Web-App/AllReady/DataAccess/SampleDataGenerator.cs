@@ -32,8 +32,8 @@ namespace AllReady.Models
                 _context.Organizations.Any() ||
                 _context.Tasks.Any() ||
                 _context.Campaigns.Any() ||
-                _context.Activities.Any() ||
-                _context.ActivitySkills.Any() ||
+                _context.Events.Any() ||
+                _context.EventSkills.Any() ||
                 _context.Skills.Any() ||
                 _context.Resources.Any())
             {
@@ -50,12 +50,12 @@ namespace AllReady.Models
             List<Location> locations = GetLocations();
             List<ApplicationUser> users = new List<ApplicationUser>();
             List<TaskSignup> taskSignups = new List<TaskSignup>();
-            List<Activity> activities = new List<Activity>();
-            List<ActivitySkill> activitySkills = new List<ActivitySkill>();
+            List<Event> events = new List<Event>();
+            List<EventSkill> eventSkills = new List<EventSkill>();
             List<Campaign> campaigns = new List<Campaign>();
             List<AllReadyTask> tasks = new List<AllReadyTask>();
             List<Resource> resources = new List<Resource>();
-            List<ActivitySignup> activitySignups = new List<ActivitySignup>();
+            List<EventSignup> eventSignups = new List<EventSignup>();
             List<Contact> contacts = GetContacts();
             var skills = new List<Skill>();
 
@@ -151,25 +151,25 @@ namespace AllReady.Models
             htb.Campaigns.Add(escapePlan);
             #endregion
 
-            #region Activity
-            Activity queenAnne = new Activity()
+            #region Event
+            Event queenAnne = new Event()
             {
                 Name = "Queen Anne Fire Prevention Day",
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = GetRandom<Location>(locations),
-                RequiredSkills = new List<ActivitySkill>()
+                RequiredSkills = new List<EventSkill>()
             };
             queenAnne.Tasks = GetSomeTasks(queenAnne, htb);
-            var ask = new ActivitySkill() { Skill = surgeon, Activity = queenAnne };
+            var ask = new EventSkill() { Skill = surgeon, Event = queenAnne };
             queenAnne.RequiredSkills.Add(ask);
-            activitySkills.Add(ask);
-            ask = new ActivitySkill() { Skill = cprCertified, Activity = queenAnne };
+            eventSkills.Add(ask);
+            ask = new EventSkill() { Skill = cprCertified, Event = queenAnne };
             queenAnne.RequiredSkills.Add(ask);
-            activitySkills.Add(ask);
+            eventSkills.Add(ask);
             tasks.AddRange(queenAnne.Tasks);
 
-            Activity ballard = new Activity()
+            Event ballard = new Event()
             {
                 Name = "Ballard Fire Prevention Day",
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
@@ -179,7 +179,7 @@ namespace AllReady.Models
             };
             ballard.Tasks = GetSomeTasks(ballard, htb);
             tasks.AddRange(ballard.Tasks);
-            Activity madrona = new Activity()
+            Event madrona = new Event()
             {
                 Name = "Madrona Fire Prevention Day",
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
@@ -189,7 +189,7 @@ namespace AllReady.Models
             };
             madrona.Tasks = GetSomeTasks(madrona, htb);
             tasks.AddRange(madrona.Tasks);
-            Activity southLoopSmoke = new Activity()
+            Event southLoopSmoke = new Event()
             {
                 Name = "Smoke Detector Installation and Testing-South Loop",
                 StartDateTime = new DateTime(2015, 7, 6, 10, 0, 0).ToUniversalTime(),
@@ -199,7 +199,7 @@ namespace AllReady.Models
             };
             southLoopSmoke.Tasks = GetSomeTasks(southLoopSmoke, htb);
             tasks.AddRange(southLoopSmoke.Tasks);
-            Activity northLoopSmoke = new Activity()
+            Event northLoopSmoke = new Event()
             {
                 Name = "Smoke Detector Installation and Testing-Near North Side",
                 StartDateTime = new DateTime(2015, 7, 6, 10, 0, 0).ToUniversalTime(),
@@ -209,7 +209,7 @@ namespace AllReady.Models
             };
             northLoopSmoke.Tasks = GetSomeTasks(northLoopSmoke, htb);
             tasks.AddRange(northLoopSmoke.Tasks);
-            Activity rentersInsurance = new Activity()
+            Event rentersInsurance = new Event()
             {
                 Name = "Renters Insurance Education Door to Door and a bag of chips",
                 Description = "description for the win",
@@ -220,7 +220,7 @@ namespace AllReady.Models
             };
             rentersInsurance.Tasks = GetSomeTasks(rentersInsurance, htb);
             tasks.AddRange(rentersInsurance.Tasks);
-            Activity rentersInsuranceEd = new Activity()
+            Event rentersInsuranceEd = new Event()
             {
                 Name = "Renters Insurance Education Door to Door (woop woop)",
                 Description = "another great description",
@@ -231,7 +231,7 @@ namespace AllReady.Models
             };
             rentersInsuranceEd.Tasks = GetSomeTasks(rentersInsuranceEd, htb);
             tasks.AddRange(rentersInsuranceEd.Tasks);
-            Activity safetyKitBuild = new Activity()
+            Event safetyKitBuild = new Event()
             {
                 Name = "Safety Kit Assembly Volunteer Day",
                 Description = "Full day of volunteers building kits",
@@ -243,7 +243,7 @@ namespace AllReady.Models
             safetyKitBuild.Tasks = GetSomeTasks(safetyKitBuild, htb);
             tasks.AddRange(safetyKitBuild.Tasks);
 
-            Activity safetyKitHandout = new Activity()
+            Event safetyKitHandout = new Event()
             {
                 Name = "Safety Kit Distribution Weekend",
                 Description = "Handing out kits at local fire stations",
@@ -254,7 +254,7 @@ namespace AllReady.Models
             };
             safetyKitHandout.Tasks = GetSomeTasks(safetyKitHandout, htb);
             tasks.AddRange(safetyKitHandout.Tasks);
-            Activity carSeatTest1 = new Activity()
+            Event carSeatTest1 = new Event()
             {
                 Name = "Car Seat Testing-Naperville",
                 Description = "Checking car seats at local fire stations after last day of school year",
@@ -265,7 +265,7 @@ namespace AllReady.Models
             };
             carSeatTest1.Tasks = GetSomeTasks(carSeatTest1, htb);
             tasks.AddRange(carSeatTest1.Tasks);
-            Activity carSeatTest2 = new Activity()
+            Event carSeatTest2 = new Event()
             {
                 Name = "Car Seat and Tire Pressure Checking Volunteer Day",
                 Description = "Checking those things all day at downtown train station parking",
@@ -276,7 +276,7 @@ namespace AllReady.Models
             };
             carSeatTest2.Tasks = GetSomeTasks(carSeatTest2, htb);
             tasks.AddRange(carSeatTest2.Tasks);
-            Activity homeFestival = new Activity()
+            Event homeFestival = new Event()
             {
                 Name = "Park District Home Safety Festival",
                 Description = "At downtown park district(adjacent to pool)",
@@ -287,7 +287,7 @@ namespace AllReady.Models
             };
             homeFestival.Tasks = GetSomeTasks(homeFestival, htb);
             tasks.AddRange(homeFestival.Tasks);
-            Activity homeEscape = new Activity()
+            Event homeEscape = new Event()
             {
                 Name = "Home Escape Plan Flyer Distribution",
                 Description = "Handing out flyers door to door in several areas of town after school/ work hours.Streets / blocks will vary but number of volunteers.",
@@ -299,28 +299,28 @@ namespace AllReady.Models
             homeEscape.Tasks = GetSomeTasks(homeEscape, htb);
             tasks.AddRange(homeEscape.Tasks);
             #endregion
-            #region Link campaign and activity
-            firePrev.Activities = new List<Activity>();
-            firePrev.Activities.Add(queenAnne);
-            firePrev.Activities.Add(ballard);
-            firePrev.Activities.Add(madrona);
-            smokeDet.Activities = new List<Activity>();
-            smokeDet.Activities.Add(southLoopSmoke);
-            smokeDet.Activities.Add(northLoopSmoke);
-            financial.Activities = new List<Activity>();
-            financial.Activities.Add(rentersInsurance);
-            financial.Activities.Add(rentersInsuranceEd);
-            safetyKit.Activities = new List<Activity>();
-            safetyKit.Activities.Add(safetyKitBuild);
-            safetyKit.Activities.Add(safetyKitHandout);
-            carSafe.Activities = new List<Activity>();
-            carSafe.Activities.Add(carSeatTest1);
-            carSafe.Activities.Add(carSeatTest2);
-            escapePlan.Activities = new List<Activity>();
-            escapePlan.Activities.Add(homeFestival);
-            escapePlan.Activities.Add(homeEscape);
+            #region Link campaign and event
+            firePrev.Events = new List<Event>();
+            firePrev.Events.Add(queenAnne);
+            firePrev.Events.Add(ballard);
+            firePrev.Events.Add(madrona);
+            smokeDet.Events = new List<Event>();
+            smokeDet.Events.Add(southLoopSmoke);
+            smokeDet.Events.Add(northLoopSmoke);
+            financial.Events = new List<Event>();
+            financial.Events.Add(rentersInsurance);
+            financial.Events.Add(rentersInsuranceEd);
+            safetyKit.Events = new List<Event>();
+            safetyKit.Events.Add(safetyKitBuild);
+            safetyKit.Events.Add(safetyKitHandout);
+            carSafe.Events = new List<Event>();
+            carSafe.Events.Add(carSeatTest1);
+            carSafe.Events.Add(carSeatTest2);
+            escapePlan.Events = new List<Event>();
+            escapePlan.Events.Add(homeFestival);
+            escapePlan.Events.Add(homeEscape);
             #endregion
-            #region Add Campaigns and Activities
+            #region Add Campaigns and Events
             organizations.Add(htb);
             campaigns.Add(firePrev);
             campaigns.Add(smokeDet);
@@ -329,12 +329,12 @@ namespace AllReady.Models
             campaigns.Add(safetyKit);
             campaigns.Add(carSafe);
 
-            activities.AddRange(firePrev.Activities);
-            activities.AddRange(smokeDet.Activities);
-            activities.AddRange(financial.Activities);
-            activities.AddRange(escapePlan.Activities);
-            activities.AddRange(safetyKit.Activities);
-            activities.AddRange(carSafe.Activities);
+            events.AddRange(firePrev.Events);
+            events.AddRange(smokeDet.Events);
+            events.AddRange(financial.Events);
+            events.AddRange(escapePlan.Events);
+            events.AddRange(safetyKit.Events);
+            events.AddRange(carSafe.Events);
             #endregion
 
             #region Insert Resource items into Resources
@@ -363,17 +363,17 @@ namespace AllReady.Models
             #region Insert into DB
             _context.Skills.AddRange(skills);
             _context.Contacts.AddRange(contacts);
-            _context.ActivitySkills.AddRange(activitySkills);
+            _context.EventSkills.AddRange(eventSkills);
             _context.Locations.AddRange(locations);
             _context.Organizations.AddRange(organizations);
             _context.Tasks.AddRange(tasks);
             _context.Campaigns.AddRange(campaigns);
-            _context.Activities.AddRange(activities);
+            _context.Events.AddRange(events);
             _context.Resources.AddRange(resources);
             //_context.SaveChanges();
             #endregion
 
-            #region Users for Activities
+            #region Users for Events
             var username1 = $"{_settings.DefaultUsername}1.com";
             var username2 = $"{_settings.DefaultUsername}2.com";
             var username3 = $"{_settings.DefaultUsername}3.com";
@@ -390,14 +390,14 @@ namespace AllReady.Models
             #endregion
 
             #region ActvitySignups
-            activitySignups.Add(new ActivitySignup { Activity = madrona, User = user1, SignupDateTime = DateTime.UtcNow });
-            activitySignups.Add(new ActivitySignup { Activity = madrona, User = user2, SignupDateTime = DateTime.UtcNow });
-            activitySignups.Add(new ActivitySignup { Activity = madrona, User = user3, SignupDateTime = DateTime.UtcNow });
+            eventSignups.Add(new EventSignup { Event = madrona, User = user1, SignupDateTime = DateTime.UtcNow });
+            eventSignups.Add(new EventSignup { Event = madrona, User = user2, SignupDateTime = DateTime.UtcNow });
+            eventSignups.Add(new EventSignup { Event = madrona, User = user3, SignupDateTime = DateTime.UtcNow });
             #endregion
 
             #region TaskSignups
             int i = 0;
-            foreach (var task in tasks.Where(t => t.Activity == madrona))
+            foreach (var task in tasks.Where(t => t.Event == madrona))
             {
                 for (var j = 0; j < i; j++)
                 {
@@ -414,7 +414,7 @@ namespace AllReady.Models
             #endregion
 
             #region Wrap Up DB  
-            _context.ActivitySignup.AddRange(activitySignups);
+            _context.EventSignup.AddRange(eventSignups);
             _context.SaveChanges();
             #endregion
 
@@ -435,7 +435,7 @@ namespace AllReady.Models
             return list[rand.Next(list.Count)];
         }
 
-        private static List<AllReadyTask> GetSomeTasks(Activity activity, Organization organization)
+        private static List<AllReadyTask> GetSomeTasks(Event campaignEvent, Organization organization)
         {
             List<AllReadyTask> value = new List<AllReadyTask>();
             for (int i = 0; i < 5; i++)
@@ -443,7 +443,7 @@ namespace AllReady.Models
                 //var tempId = _taskIdProvider.NextValue();
                 value.Add(new AllReadyTask()
                 {
-                    Activity = activity,
+                    Event = campaignEvent,
                     Description = "Description of a very important task # " + i,
                     Name = "Task # " + i,
                     EndDateTime = DateTime.Now.AddDays(i),

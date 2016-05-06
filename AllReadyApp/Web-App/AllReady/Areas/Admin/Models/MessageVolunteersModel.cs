@@ -2,9 +2,9 @@
 
 namespace AllReady.Areas.Admin.Models
 {
-    public class MessageActivityVolunteersModel
+    public class MessageEventVolunteersModel
     {
-        public int ActivityId { get; set; }
+        public int EventId { get; set; }
 
         [Required]
         public string Subject { get; set; }

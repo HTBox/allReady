@@ -14,9 +14,9 @@
 
 <div class="row">
     <div class="col-md-12 text-center">
-        <div class="activity-results" data-bind="if: loadingDone">
+        <div class="event-results" data-bind="if: loadingDone">
             <h3>Campaigns near <span data-bind="text: searchTerm"></span></h3>
-            <div class="activity-wrapper" data-bind="foreach: campaignsNearZip">
+            <div class="event-wrapper" data-bind="foreach: campaignsNearZip">
                 <p><a data-bind="attr: { href: '/Campaign/' + CampaignId }, text: Title"></a></p>
             </div>
             <a data-bind="attr: { href: '/Campaign'}">See more campaigns</a>

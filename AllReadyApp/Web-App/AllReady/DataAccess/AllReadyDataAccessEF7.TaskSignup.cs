@@ -14,8 +14,8 @@ namespace AllReady.Models
                 return _dbContext.TaskSignups
                           .Include(x => x.Task)
                           .Include(x => x.User)
-                          .Include(x => x.Task.Activity)
-                          .Include(x => x.Task.Activity.Campaign)
+                          .Include(x => x.Task.Event)
+                          .Include(x => x.Task.Event.Campaign)
                           .Include(x => x.Task.Organization)
                           .ToArray();
             }

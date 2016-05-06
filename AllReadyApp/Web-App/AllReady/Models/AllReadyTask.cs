@@ -10,7 +10,7 @@ namespace AllReady.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public virtual Organization Organization { get; set; }
-        public virtual Activity Activity { get; set; }
+        public virtual Event Event { get; set; }
         public int NumberOfVolunteersRequired { get; set; }
         public DateTimeOffset? StartDateTime { get; set; }
         public DateTimeOffset? EndDateTime { get; set; }
@@ -25,5 +25,19 @@ namespace AllReady.Models
         public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
         [NotMapped]
         public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
+
+        [NotMapped]
+        public bool IsClosed
+        {
+            get
+            {
+                if (EndDateTime.HasValue)
+                {
+                    return EndDateTime.Value.UtcDateTime < DateTimeOffset.UtcNow;
+                }
+
+                return false;
+            }
+        }
     }
 }

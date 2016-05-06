@@ -12,7 +12,7 @@ namespace AllReady.Models
             {
                 return _dbContext.Campaigns
                    .Include(x => x.ManagingOrganization)
-                   .Include(x => x.Activities)
+                   .Include(x => x.Events)
                    .Include(x => x.ParticipatingOrganizations)
                    .ToList();
             }
@@ -23,7 +23,7 @@ namespace AllReady.Models
             return _dbContext.Campaigns
                 .Include(x => x.ManagingOrganization)
                 .Include(x => x.CampaignImpact)
-                .Include(x => x.Activities)
+                .Include(x => x.Events)
                 .ThenInclude(a => a.Location)
                 .Include(x => x.Location)
                 .Include(x => x.ParticipatingOrganizations)

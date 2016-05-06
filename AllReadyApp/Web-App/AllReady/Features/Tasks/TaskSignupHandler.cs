@@ -10,18 +10,18 @@ using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskSignupHandler : IAsyncRequestHandler<TaskSignupCommand, TaskSignupResult>
+    public class TaskSignupHandlerAsync : IAsyncRequestHandler<TaskSignupCommandAsync, TaskSignupResult>
     {
         private readonly IMediator _bus;
         private readonly AllReadyContext _context;
 
-        public TaskSignupHandler(IMediator bus, AllReadyContext context)
+        public TaskSignupHandlerAsync(IMediator bus, AllReadyContext context)
         {
             _bus = bus;
             _context = context;
         }
 
-        public async Task<TaskSignupResult> Handle(TaskSignupCommand message)
+        public async Task<TaskSignupResult> Handle(TaskSignupCommandAsync message)
         {
             var model = message.TaskSignupModel;
 
@@ -29,23 +29,38 @@ namespace AllReady.Features.Tasks
                 .Include(u => u.AssociatedSkills)
                 .SingleOrDefaultAsync(u => u.Id == model.UserId).ConfigureAwait(false);
 
-            var activity = await _context.Activities
+            var campaignEvent = await _context.Events
                 .Include(a => a.RequiredSkills)
                 .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
                 .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(s => s.Skill)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers)
-                .SingleOrDefaultAsync(a => a.Id == model.ActivityId).ConfigureAwait(false);
+                .SingleOrDefaultAsync(a => a.Id == model.EventId).ConfigureAwait(false);
 
-            var task = activity.Tasks.SingleOrDefault(t => t.Id == model.TaskId);
-
-            activity.UsersSignedUp = activity.UsersSignedUp ?? new List<ActivitySignup>();
-
-            // If the user has not already been signed up for the activity, sign them up
-            if (!activity.UsersSignedUp.Any(activitySignup => activitySignup.User.Id == user.Id))
+            if (campaignEvent == null)
             {
-                activity.UsersSignedUp.Add(new ActivitySignup
+                return new TaskSignupResult { Status = TaskSignupResult.FAILURE_EVENTNOTFOUND };
+            }
+
+            var task = campaignEvent.Tasks.SingleOrDefault(t => t.Id == model.TaskId);
+
+            if (task == null)
+            {
+                return new TaskSignupResult { Status = TaskSignupResult.FAILURE_TASKNOTFOUND };
+            }
+
+            if (task.IsClosed)
+            {
+                return new TaskSignupResult { Status = TaskSignupResult.FAILURE_CLOSEDTASK };
+            }
+
+            campaignEvent.UsersSignedUp = campaignEvent.UsersSignedUp ?? new List<EventSignup>();
+
+            // If the user has not already been signed up for the event, sign them up
+            if (!campaignEvent.UsersSignedUp.Any(eventSignup => eventSignup.User.Id == user.Id))
+            {
+                campaignEvent.UsersSignedUp.Add(new EventSignup
                 {
-                    Activity = activity,
+                    Event = campaignEvent,
                     User = user,
                     PreferredEmail = model.PreferredEmail,
                     PreferredPhoneNumber = model.PreferredPhoneNumber,
@@ -84,7 +99,7 @@ namespace AllReady.Features.Tasks
             await _context.SaveChangesAsync().ConfigureAwait(false);
 
             //Notify admins of a new volunteer
-            await _bus.PublishAsync(new VolunteerSignupNotification { ActivityId = model.ActivityId, UserId = model.UserId, TaskId = task.Id })
+            await _bus.PublishAsync(new VolunteerSignupNotification { EventId = model.EventId, UserId = model.UserId, TaskId = task.Id })
                 .ConfigureAwait(false);
 
             return new TaskSignupResult {Status = "success", Task = task};

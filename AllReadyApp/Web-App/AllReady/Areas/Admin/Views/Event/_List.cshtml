@@ -1,0 +1,45 @@
+@model AllReady.Areas.Admin.Models.CampaignDetailModel
+
+<div class="row">
+    <div class="col-md-12">
+        <a asp-controller="Event" asp-action="Create" asp-route-area="Admin" asp-route-campaignId="@Model.Id"
+           class="btn btn-default">Create New</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="cold-md-12">
+        <table class="table">
+            <tr>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Start
+                </th>
+                <th>
+                    End
+                </th>
+            </tr>
+            @foreach (var item in Model.Events) {
+                <tr>
+                    <td>
+                        <a asp-controller="Event" asp-action="Details" asp-route-area="Admin" asp-route-id="@item.Id">@item.Name</a> 
+                        @if (!string.IsNullOrEmpty(item.Description))
+                        {
+                            <br />
+                            <span class="text-muted">@item.Description</span>
+                        }
+                    </td>
+                    <td>
+                        <time value="item.StartDateTime"></time>                        
+                    </td>
+                    <td>
+                        <time value="item.EndDateTime"></time>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+

@@ -22,7 +22,7 @@ namespace AllReady.Services
         /*
         Blob path conventions
         images/organizationId/imagename
-        images/organization/activityId/imagename
+        images/organization/eventId/imagename
         image/guid/imagename
         */
 
@@ -38,9 +38,9 @@ namespace AllReady.Services
             return await UploadImageAsync(blobPath, image);
         }
 
-        public async Task<string> UploadActivityImageAsync(int organizationId, int activityId, IFormFile image)
+        public async Task<string> UploadEventImageAsync(int organizationId, int eventId, IFormFile image)
         {
-            var blobPath = organizationId + @"/activities/" + activityId;
+            var blobPath = organizationId + @"/events/" + eventId;
             return await UploadImageAsync(blobPath, image);
         }
 

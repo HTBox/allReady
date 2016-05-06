@@ -1,0 +1,15 @@
+﻿@model EventViewModel
+
+<div class="col-sm-4">
+    <h3>Location</h3>
+    <div id="bingMap" style="position: relative"></div>
+    <h3>Address</h3>
+    <p>
+        @Model.Location?.Address1<br />
+        @if (!string.IsNullOrEmpty(Model.Location?.Address2))
+                {
+            @Model.Location.Address2
+                }
+        @Model.Location?.City @Model.Location?.State @Model.Location?.PostalCode?.PostalCode
+    </p>
+</div>

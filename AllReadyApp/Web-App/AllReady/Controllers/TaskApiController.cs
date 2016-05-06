@@ -21,6 +21,11 @@ namespace AllReady.Controllers
         private readonly IMediator _mediator;
         private readonly IDetermineIfATaskIsEditable _determineIfATaskIsEditable;
 
+        public const string FAILED_SIGNUP_TASK_CLOSED = "Signup failed - Task is closed";
+        public const string FAILED_SIGNUP_EVENT_NOT_FOUND = "Signup failed - The event could not be found";
+        public const string FAILED_SIGNUP_TASK_NOT_FOUND = "Signup failed - The task could not be found";
+        public const string FAILED_SIGNUP_UNKOWN_ERROR = "Unkown error";
+
         public TaskApiController(IMediator mediator, IDetermineIfATaskIsEditable determineIfATaskIsEditable)
         {
             _mediator = mediator;
@@ -34,9 +39,9 @@ namespace AllReady.Controllers
             var allReadyTask = task.ToModel(_mediator);
             if (allReadyTask == null)
             {
-                return HttpBadRequest("Should have found a matching activity Id");
+                return HttpBadRequest("Should have found a matching event Id");
             }
-            
+
             var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask);
             if (!hasPermissions)
             {
@@ -47,7 +52,7 @@ namespace AllReady.Controllers
             {
                 return HttpBadRequest();
             }
-            
+
             await _mediator.SendAsync(new AddTaskCommandAsync { AllReadyTask = allReadyTask });
 
             //http://stackoverflow.com/questions/1860645/create-request-with-post-which-response-codes-200-or-201-and-content
@@ -100,7 +105,7 @@ namespace AllReady.Controllers
         [HttpPost("signup")]
         [Authorize]
         [Produces("application/json")]
-        public async Task<ActionResult> RegisterTask(ActivitySignupViewModel signupModel)
+        public async Task<ActionResult> RegisterTask(EventSignupViewModel signupModel)
         {
             if (signupModel == null)
                 return HttpBadRequest();
@@ -112,8 +117,43 @@ namespace AllReady.Controllers
                 return Json(new { errors = ModelState.GetErrorMessages() });
             }
 
-            var result = await _mediator.SendAsync(new TaskSignupCommand { TaskSignupModel = signupModel });
-            return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, signupModel.UserId) });
+            var result = await _mediator.SendAsync(new TaskSignupCommandAsync { TaskSignupModel = signupModel });
+
+            switch (result.Status)
+            {
+                case TaskSignupResult.SUCCESS:
+                    return Json(new
+                    {
+                        isSuccess = true,
+                        task = result.Task == null ? null : new TaskViewModel(result.Task, signupModel.UserId)
+                    });
+
+                case TaskSignupResult.FAILURE_CLOSEDTASK:
+                    return Json(new {
+                        isSuccess = false,
+                        errors = new string[] { FAILED_SIGNUP_TASK_CLOSED },
+                    });
+
+                case TaskSignupResult.FAILURE_EVENTNOTFOUND:
+                    return Json(new
+                    {
+                        isSuccess = false,
+                        errors = new string[] { FAILED_SIGNUP_EVENT_NOT_FOUND },
+                    });
+
+                case TaskSignupResult.FAILURE_TASKNOTFOUND:
+                    return Json(new
+                    {
+                        isSuccess = false,
+                        errors = new string[] { FAILED_SIGNUP_TASK_NOT_FOUND },
+                    });
+
+                default:
+                    return Json(new {
+                        isSuccess = false,
+                        errors = new string[] { FAILED_SIGNUP_UNKOWN_ERROR },
+                    });
+            }
         }
 
         [HttpDelete("{id}/signup")]
@@ -161,23 +201,23 @@ namespace AllReady.Controllers
             {
                 return true;
             }
-            
+
             if (user.IsUserType(UserType.OrgAdmin))
             {
                 //TODO: Modify to check that user is organization admin for organization of task
                 return true;
             }
 
-            if (task.Activity?.Organizer != null && task.Activity.Organizer.Id == userId)
+            if (task.Event?.Organizer != null && task.Event.Organizer.Id == userId)
             {
                 return true;
             }
 
-            if (task.Activity?.Campaign?.Organizer != null && task.Activity.Campaign.Organizer.Id == userId)
+            if (task.Event?.Campaign?.Organizer != null && task.Event.Campaign.Organizer.Id == userId)
             {
                 return true;
             }
-            
+
             return false;
         }
     }

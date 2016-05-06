@@ -5,19 +5,19 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace AllReady.Areas.Admin.Models
-{
-    
-
+{  
     public class TaskSummaryModel
     {
         public int Id { get; set; }
-        public int ActivityId { get; set; }
-        [Display(Name = "Activity")]
-        public string ActivityName { get; set; }
+        public int EventId { get; set; }
+        [Display(Name = "Event")]
+        public string EventName { get; set; }
         public int CampaignId { get; set; }
         [Display(Name = "Campaign")]
         public string CampaignName { get; set; }
         public int OrganizationId { get; set; }
+
+        [Required]
         public string Name { get; set; }
         public string Description { get; set; }
 

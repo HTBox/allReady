@@ -4,7 +4,7 @@ using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
 
-namespace AllReady.Features.Activity
+namespace AllReady.Features.Event
 {
     public class GetMyTasksQueryHandler : IRequestHandler<GetMyTasksQuery, IEnumerable<TaskSignupViewModel>>
     {
@@ -17,7 +17,7 @@ namespace AllReady.Features.Activity
 
         public IEnumerable<TaskSignupViewModel> Handle(GetMyTasksQuery message)
         {
-            var tasks = _allReadyDataAccess.GetTasksAssignedToUser(message.ActivityId, message.UserId);
+            var tasks = _allReadyDataAccess.GetTasksAssignedToUser(message.EventId, message.UserId);
             return tasks.Select(t => new TaskSignupViewModel(t));
         }
     }

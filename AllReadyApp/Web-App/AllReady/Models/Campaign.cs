@@ -51,7 +51,7 @@ namespace AllReady.Models
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
         public DateTimeOffset EndDateTime { get; set; }
 
-        public List<Activity> Activities { get; set; }
+        public List<Event> Events { get; set; }
 
         public ApplicationUser Organizer { get; set; }
 

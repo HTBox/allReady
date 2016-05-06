@@ -31,7 +31,7 @@ namespace AllReady.UnitTest.Tasks
                 ManagingOrganization = htb
             };
 
-            var queenAnne = new Activity()
+            var queenAnne = new Event()
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
@@ -40,7 +40,7 @@ namespace AllReady.UnitTest.Tasks
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
-                RequiredSkills = new List<ActivitySkill>(),
+                RequiredSkills = new List<EventSkill>(),
             };
 
             var username1 = $"blah@1.com";
@@ -50,18 +50,18 @@ namespace AllReady.UnitTest.Tasks
 
             htb.Campaigns.Add(firePrev);
             context.Organizations.Add(htb);
-            context.Activities.Add(queenAnne);
+            context.Events.Add(queenAnne);
 
-            var activitySignups = new List<ActivitySignup>
+            var eventSignups = new List<EventSignup>
             {
-                new ActivitySignup { Activity = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow }
+                new EventSignup { Event = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow }
             };
 
-            context.ActivitySignup.AddRange(activitySignups);
+            context.EventSignup.AddRange(eventSignups);
 
             var newTask = new AllReadyTask()
             {
-                Activity = queenAnne,
+                Event = queenAnne,
                 Description = "Description of a very important task",
                 Name = "Task # 1",
                 EndDateTime = DateTime.Now.AddDays(5),
