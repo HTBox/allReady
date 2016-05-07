@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Authorization;
-using MediatR;
-using AllReady.Areas.Admin.Features.Organizations;
+﻿using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
+using AllReady.Models;
+using AllReady.ViewModels;
+using MediatR;
+using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Mvc;
+using System.Linq;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -11,11 +14,13 @@ namespace AllReady.Areas.Admin.Controllers
     public class OrganizationController : Controller
     {
         private readonly IMediator _bus;
-
-        public OrganizationController(IMediator bus)
+        private readonly IAllReadyDataAccess _dataAccess;
+        public OrganizationController(IMediator bus, IAllReadyDataAccess dataAccess)
         {
             _bus = bus;
+            _dataAccess = dataAccess;
         }
+
 
         // GET: Organization
         public IActionResult Index()
@@ -49,10 +54,15 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (organization == null)
                 return new BadRequestResult();
+
             if (ModelState.IsValid)
             {
-                _bus.Send(new OrganizationEditCommand { Organization = organization });
-                return RedirectToRoute("areaRoute", new {controller = "Organization", action = "Index"});
+                ValidateUniqueOrganizationName(organization);
+                if (ModelState.IsValid)
+                {
+                    _bus.Send(new OrganizationEditCommand { Organization = organization });
+                    return RedirectToRoute("areaRoute", new { controller = "Organization", action = "Index" });
+                }                
             }
 
             return View("Create", organization);
@@ -78,8 +88,14 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                int id = _bus.Send(new OrganizationEditCommand { Organization = organization });
-                return RedirectToAction("Details", new { id = id, area = "Admin" });
+                var originalOrganization = _dataAccess.GetOrganization(organization.Id);
+                if (originalOrganization.Name != organization.Name)
+                    ValidateUniqueOrganizationName(organization);
+                if (ModelState.IsValid)
+                {
+                    int id = _bus.Send(new OrganizationEditCommand { Organization = organization });
+                    return RedirectToAction("Details", new { id = id, area = "Admin" });
+                }                
             }
 
             return View("Edit", organization);
@@ -110,6 +126,16 @@ namespace AllReady.Areas.Admin.Controllers
         {
             _bus.Send(new OrganizationDeleteCommand { Id= id });
             return RedirectToAction("Index");
+        }
+
+        private void ValidateUniqueOrganizationName(OrganizationEditModel organization)
+        {            
+            var orgs = _dataAccess.Organziations.Select(t => new OrganizationViewModel(t)).ToList();
+            var existingOrgCount = orgs.Where(o => o.Name == organization.Name).ToList().Count;
+            if (existingOrgCount > 0)
+            {
+                ModelState.AddModelError(nameof(organization.Name), "Organization with same name already exists. Please use different name.");                
+            }
         }
     }
 }

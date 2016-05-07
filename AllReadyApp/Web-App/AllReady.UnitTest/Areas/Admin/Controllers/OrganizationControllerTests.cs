@@ -1,6 +1,7 @@
 ﻿using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
+using AllReady.Models;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
@@ -42,8 +43,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 PrimaryContactEmail = "test@test.com",
                 WebUrl = "http://www.example.com"
             };
+            
         }
-
+        
         #region ControllerAttributeTests
 
         [Fact]
@@ -191,6 +193,20 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             MethodShouldHaveHttpPostAttribute("Create", typeof(OrganizationEditModel));
         }
 
+        [Fact]
+        public void CreateNewOrganizationWithExistingOrganizationNameReturnsCreateView()
+        {
+            CreateSut();
+
+            var model = new OrganizationEditModel();
+            model.Name = "test";
+            model.Id = 0;
+            _bus.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
+
+            var result = (ViewResult)_sut.Create(model);
+            Assert.Equal("Create", result.ViewName);
+            Assert.Same(model, result.ViewData.Model);
+        }
         #endregion
 
         #region EditTests
@@ -254,7 +270,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             CreateSut();
 
             var model = new OrganizationEditModel();
-
+            model.Name = "test";
+            model.Id = 1;
+            
             _bus.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
 
             var result = (RedirectToActionResult)_sut.Edit(model);
@@ -264,6 +282,21 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(Id, result.RouteValues["id"]);
         }
 
+        [Fact]
+        public void EditOrganizationWithExistingOrganizationNameReturnsEditView()
+        {
+            CreateSut();
+
+            var model = new OrganizationEditModel();
+            model.Name = "test1";
+            model.Id = 1;
+
+            _bus.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
+
+            var result = (ViewResult)_sut.Edit(model);
+            Assert.Equal("Edit", result.ViewName);
+            Assert.Same(model, result.ViewData.Model);
+        }
         #endregion
 
         #region DeleteTests
@@ -352,9 +385,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
         private static void CreateSut()
         {
-            _bus = new Mock<IMediator>();
-
-            _sut = new OrganizationController(_bus.Object);
+            _bus = new Mock<IMediator>();          
+            var mockAllReadyDataAccess = new Mock<IAllReadyDataAccess>();
+            var organizations = new List<Organization>()
+            {
+                new Organization() { Id = 1, Name = "test" },
+                new Organization() { Id = 2, Name = "test1" }
+            };
+            mockAllReadyDataAccess.Setup(p => p.GetOrganization(It.IsAny<int>())).Returns(new Organization() { Id = 1, Name = "test" });
+            mockAllReadyDataAccess.Setup(p => p.Organziations).Returns(organizations);
+            _sut = new OrganizationController(_bus.Object, mockAllReadyDataAccess.Object);
         }
         
         private static void AddErrorToModelState()
