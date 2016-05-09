@@ -12,6 +12,8 @@ using Xunit;
 using MediatR;
 using AllReady.UnitTest.Extensions;
 using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Mvc.Routing;
+using System.Security.Claims;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -163,53 +165,209 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RegisterPostReturnsSameViewAndViewModelWhenModelStateIsInvalid()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var registerViewModel = new RegisterViewModel();
+
+            var sut = AccountController();
+            sut.ModelState.AddModelError("foo", "bar");
+
+            var result = await sut.Register(registerViewModel);
+            Assert.IsType<ViewResult>(result);
+
+            var resultViewModel = ((ViewResult)result).ViewData.Model;
+            Assert.IsType<RegisterViewModel>(resultViewModel);
+            Assert.Equal(resultViewModel, registerViewModel);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RegisterPostInvokesCreateAsyncWithTheCorrectParametersWhenModelStateIsValid()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string defaultTimeZone = "DefaultTimeZone";
+
+            var model = new RegisterViewModel { Email = "email", Password = "Password" };
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = defaultTimeZone });
+
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Failed()));
+
+            var sut = new AccountController(userManager.Object, null, null, generalSettings.Object, null);
+            await sut.Register(model);
+
+            userManager.Verify(x => x.CreateAsync(It.Is<ApplicationUser>(au =>
+                au.UserName == model.Email &&
+                au.Email == model.Email &&
+                au.TimeZoneId == defaultTimeZone),
+                model.Password), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RegisterPostInvokesGenerateEmailConfirmationTokenAsyncWithTheCorrectParametersWhenModelStateIsValidAndUserCreationIsSuccessful()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string defaultTimeZone = "DefaultTimeZone";
+
+            var model = new RegisterViewModel { Email = "email", Password = "Password" };
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = defaultTimeZone });
+
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+
+            var signInManager = CreateSignInManagerMock(userManager);
+            var emailSenderMock = new Mock<IEmailSender>();
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, null);
+            sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
+            sut.Url = Mock.Of<IUrlHelper>();
+
+            await sut.Register(model);
+
+            userManager.Verify(x => x.GenerateEmailConfirmationTokenAsync(It.Is<ApplicationUser>(au =>
+                au.UserName == model.Email &&
+                au.Email == model.Email &&
+                au.TimeZoneId == defaultTimeZone)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RegisterPostInvokesUrlActionWithTheCorrectParametersWhenModelStateIsValidAndUserCreationIsSuccessful()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string requestScheme = "requestScheme";
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
+
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
+
+            var signInManager = CreateSignInManagerMock(userManager);
+            var emailSenderMock = new Mock<IEmailSender>();
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, null);
+
+            sut.SetFakeHttpRequestSchemeTo(requestScheme);
+            var urlHelper = new Mock<IUrlHelper>();
+            sut.Url = urlHelper.Object;
+
+            await sut.Register(new RegisterViewModel());
+
+            urlHelper.Verify(mock => mock.Action(It.Is<UrlActionContext>(uac =>
+                uac.Action == "ConfirmEmail" &&
+                uac.Controller == "Account" &&
+                uac.Protocol == requestScheme)),
+                Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RegisterPostInvokesSendEmailAsyncWithTheCorrectParametersWhenModelStateIsValidAndUserCreationIsSuccessful()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string callbackUrl = "callbackUrl";
+
+            var model = new RegisterViewModel { Email = "email" };
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
+
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
+
+            var signInManager = CreateSignInManagerMock(userManager);
+
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(callbackUrl);
+
+            var emailSenderMock = new Mock<IEmailSender>();
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, null);
+
+            sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
+            sut.Url = urlHelper.Object;
+
+            await sut.Register(model);
+
+            emailSenderMock.Verify(x => x.SendEmailAsync(
+                It.Is<string>(y => y == model.Email), 
+                It.IsAny<string>(), 
+                It.Is<string>(y => y.Contains(callbackUrl))), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RegisterPostInvokesAddClaimAsyncWithTheCorrectParametersWhenModelStateIsValidAndUserCreationIsSuccessful()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string defaultTimeZone = "DefaultTimeZone";
+
+            var model = new RegisterViewModel { Email = "email" };
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = defaultTimeZone });
+
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
+
+            var signInManager = CreateSignInManagerMock(userManager);
+
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
+
+            var emailSenderMock = new Mock<IEmailSender>();
+            emailSenderMock.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(()=>Task.FromResult(It.IsAny<Task>()));
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, null);
+
+            sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
+            sut.Url = urlHelper.Object;
+
+            await sut.Register(model);
+
+            userManager.Verify(x => x.AddClaimAsync(It.Is<ApplicationUser>(au =>
+                au.UserName == model.Email &&
+                au.Email == model.Email &&
+                au.TimeZoneId == defaultTimeZone)
+                , It.IsAny<Claim>()), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RegisterPostInvokesSignInAsyncWithTheCorrectParametersWhenModelStateIsValidAndUserCreationIsSuccessful()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string defaultTimeZone = "DefaultTimeZone";
+
+            var model = new RegisterViewModel { Email = "email" };
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = defaultTimeZone });
+
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
+
+            var signInManager = CreateSignInManagerMock(userManager);
+
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
+
+            var emailSenderMock = new Mock<IEmailSender>();
+            emailSenderMock.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<Task>()));
+
+            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).Returns(() => Task.FromResult(IdentityResult.Success));
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, null);
+
+            sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
+            sut.Url = urlHelper.Object;
+
+            await sut.Register(model);
+
+            signInManager.Verify(x => x.SignInAsync(It.Is<ApplicationUser>(au =>
+                au.UserName == model.Email &&
+                au.Email == model.Email &&
+                au.TimeZoneId == defaultTimeZone)
+                , It.IsAny<bool>(), null), Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -836,19 +994,8 @@ namespace AllReady.UnitTest.Controllers
 
         private static AccountController AccountController(SignInResult signInResult = default(SignInResult))
         {
-            var store = new Mock<IUserStore<ApplicationUser>>();
-            var userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null, null, null, null, null, null, null,
-                null, null);
-            var mockHttpContext = new Mock<HttpContext>();
-
-            var contextAccessor = new Mock<IHttpContextAccessor>();
-            contextAccessor.Setup(mock => mock.HttpContext).Returns(() => mockHttpContext.Object);
-            var claimsFactory = new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>();
-            var signInManagerMock = new Mock<SignInManager<ApplicationUser>>(
-                userManagerMock.Object,
-                contextAccessor.Object,
-                claimsFactory.Object,
-                null, null);
+            var userManagerMock = CreateUserManagerMock();
+            var signInManagerMock = CreateSignInManagerMock(userManagerMock);
             signInManagerMock.Setup(mock => mock
                 .PasswordSignInAsync(
                     It.IsAny<string>(),
@@ -879,6 +1026,25 @@ namespace AllReady.UnitTest.Controllers
             controller.Url = urlHelperMock.Object;
             return controller;
         }
+
+        private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock() => 
+            new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
+
+        private static Mock<SignInManager<ApplicationUser>> CreateSignInManagerMock(Mock<UserManager<ApplicationUser>> userManager)
+        {
+            var httpContext = new Mock<HttpContext>();
+
+            var contextAccessor = new Mock<IHttpContextAccessor>();
+            contextAccessor.Setup(mock => mock.HttpContext).Returns(() => httpContext.Object);
+            var claimsFactory = new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>();
+            var signInManager = new Mock<SignInManager<ApplicationUser>>(
+            userManager.Object,
+            contextAccessor.Object,
+            claimsFactory.Object,
+            null, null);
+
+            return signInManager;
+    }
 
         private static AccountController CreateAccountControllerWithNoInjectedDependencies() => new AccountController(null, null, null, null, null);
     }
