@@ -82,14 +82,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task CreatePostInsertsCampaign()
         {
             Organization aginAware = AgincourtAware_entity;
-            Context.PostalCodes.Add(aginAware.Location.PostalCode);
             Context.Locations.Add(aginAware.Location);
             Context.Organizations.Add(aginAware);
             Context.SaveChanges();
-
-            // make sure the postal code is findable in the Context
-            var postalCode = Context.PostalCodes
-                .SingleOrDefault(t => t.PostalCode == m1T2T9_entity.PostalCode);
 
             CampaignSummaryModel model = MassiveTrafficLightOutage_model;
             model.OrganizationId = aginAware.Id;
@@ -491,21 +486,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         #endregion
 
         #region "TestEntities"
-        public static PostalCodeGeo m1T2T9_entity {
-            get {
-                return new PostalCodeGeo() {
-                    City = "Agincourt",
-                    State = "Ontario",
-                    PostalCode = "M1T 2T9"
-                };
-            }
-        }
         public static Location BogusAve_entity = new Location()  {
             Address1 = "25 Bogus Ave",
             City = "Agincourt",
             State = "Ontario",
             Country = "Canada",
-            PostalCode = m1T2T9_entity
+            PostalCode = "M1T 2T9"
+
         };
         Organization AgincourtAware_entity = new Organization() {
             Name = "Agincourt Awareness",

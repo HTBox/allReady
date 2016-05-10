@@ -87,7 +87,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             var validator = new EventDetailModelValidator(_mediator);
-            var errors = await validator.Validate(campaignEvent, campaign);
+            var errors = validator.Validate(campaignEvent, campaign);
             errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             //TryValidateModel is called explictly because of MVC 6 behavior that supresses model state validation during model binding when binding to an IFormFile.
@@ -156,7 +156,7 @@ namespace AllReady.Areas.Admin.Controllers
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignEvent.CampaignId });
 
             var validator = new EventDetailModelValidator(_mediator);
-            var errors = await validator.Validate(campaignEvent, campaign);
+            var errors = validator.Validate(campaignEvent, campaign);
             errors.ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)

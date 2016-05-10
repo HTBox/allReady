@@ -14,7 +14,7 @@ namespace AllReady.Areas.Admin.Models.Validators
             _mediator = mediator;
         }
 
-        public async Task<Dictionary<string, string>> Validate (CampaignSummaryModel model)
+        public Dictionary<string, string> Validate (CampaignSummaryModel model)
         {
             var result = new Dictionary<string, string>();
 
@@ -24,7 +24,7 @@ namespace AllReady.Areas.Admin.Models.Validators
             }
 
             var postalCodeValidation = new LocationEditModelValidator(_mediator);
-            var postalCodeErrors = await postalCodeValidation.Validate(model.Location);
+            var postalCodeErrors = postalCodeValidation.Validate(model.Location);
             postalCodeErrors.ToList().ForEach(e => result.Add(e.Key, e.Value));
 
             return result;

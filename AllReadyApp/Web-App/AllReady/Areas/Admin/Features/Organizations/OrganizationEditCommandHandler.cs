@@ -19,7 +19,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
         {
             var organization = _context
                     .Organizations
-                    .Include(l => l.Location).ThenInclude(p => p.PostalCode)
+                    .Include(l => l.Location)
                     .Include(tc => tc.OrganizationContacts)
                     .SingleOrDefault(t => t.Id == message.Organization.Id);
 
@@ -34,22 +34,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
 
             organization = organization.UpdateOrganizationContact(message.Organization, _context);
             organization.Location = organization.Location.UpdateModel(message.Organization.Location);
-
-            if (organization.Location != null)
-            {
-                if (!string.IsNullOrWhiteSpace(message.Organization.Location.PostalCode))
-                {
-                    PostalCodeGeo postalCode = _context.PostalCodes.SingleOrDefault(pc => pc.PostalCode.Equals(message.Organization.Location.PostalCode, System.StringComparison.InvariantCultureIgnoreCase));
-                    if (postalCode == null)
-                    {
-                        postalCode = new PostalCodeGeo { PostalCode = message.Organization.Location.PostalCode, City = message.Organization.Location.City, State = message.Organization.Location.State };
-                        _context.PostalCodes.Add(postalCode);
-                    }
-                    organization.Location.PostalCode = postalCode;
-                }
-
-                _context.Update(organization.Location);
-            }
+            organization.Location.PostalCode = message.Organization.Location.PostalCode;
 
             organization.PrivacyPolicy = message.Organization.PrivacyPolicy;
 

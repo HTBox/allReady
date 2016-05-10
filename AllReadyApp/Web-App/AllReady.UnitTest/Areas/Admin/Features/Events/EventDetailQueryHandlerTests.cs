@@ -14,7 +14,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
 
-            var seattlePostalCode = new PostalCodeGeo { City = "Seattle", PostalCode = "98117", State = "WA" };
+            var seattlePostalCode = "98117";
             var seattle = new Location
             {
                 Id = 1,
@@ -56,7 +56,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 RequiredSkills = new List<EventSkill>()
             };
 
-            context.PostalCodes.Add(seattlePostalCode);
             context.Locations.Add(seattle);
             context.Organizations.Add(htb);
             context.Events.Add(queenAnne);

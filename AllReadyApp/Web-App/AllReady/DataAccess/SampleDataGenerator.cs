@@ -461,7 +461,7 @@ namespace AllReady.Models
             ret.City = city;
             ret.State = state;
             ret.Country = "US";
-            ret.PostalCode = _context.PostalCodes.FirstOrDefault(p => p.PostalCode == postalCode);
+            ret.PostalCode = postalCode;
             ret.Name = "Humanitarian Toolbox location";
             ret.PhoneNumber = "1-425-555-1212";
             return ret;

@@ -19,7 +19,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
         public async Task<int> Handle(EditCampaignCommand message)
         {
             var campaign = await _context.Campaigns
-                .Include(l => l.Location).ThenInclude(p => p.PostalCode)
+                .Include(l => l.Location)
                 .Include(tc => tc.CampaignContacts)
                 .Include(i => i.CampaignImpact)
                 .SingleOrDefaultAsync(c => c.Id == message.Campaign.Id)

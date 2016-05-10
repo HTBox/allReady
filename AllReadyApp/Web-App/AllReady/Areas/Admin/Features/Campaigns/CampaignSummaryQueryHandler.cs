@@ -25,7 +25,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                 .AsNoTracking()
                 .Include(ci => ci.CampaignImpact)
                 .Include(mt => mt.ManagingOrganization)
-                .Include(l => l.Location).ThenInclude(p => p.PostalCode)
+                .Include(l => l.Location)
                 .Include(c => c.CampaignContacts).ThenInclude(tc => tc.Contact)
                 .SingleOrDefaultAsync(c => c.Id == message.CampaignId)
                 .ConfigureAwait(false);

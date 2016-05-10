@@ -18,7 +18,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
             var t = _context.Organizations
                  .AsNoTracking()
                 .Include(c => c.Campaigns)
-                .Include(l => l.Location).ThenInclude(p => p.PostalCode)
+                .Include(l => l.Location)
                 .Include(u => u.Users)
                 .Include(tc => tc.OrganizationContacts).ThenInclude(c => c.Contact)
                 .Where(ten => ten.Id == message.Id)

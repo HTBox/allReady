@@ -102,7 +102,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
             
             var validator = new CampaignSummaryModelValidator(_mediator);
-            var errors = await validator.Validate(campaign);
+            var errors = validator.Validate(campaign);
             errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)
