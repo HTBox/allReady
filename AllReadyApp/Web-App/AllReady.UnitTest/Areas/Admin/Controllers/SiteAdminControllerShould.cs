@@ -9,6 +9,7 @@ using Moq;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
@@ -78,14 +79,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task ConfirmDeletUserSendsDeleteUserCommandAsync()
+        public async Task ConfirmDeletUserInvokesFindByIdAsync()
         {
-            var mediator = new Mock<IMediator>();
-            var controller = new SiteController(null, null, mediator.Object);
-            const string userId = "foo_id";
+            const string userId = "userId";
+            var userManager = CreateUserManagerMock();
 
+            var controller = new SiteController(userManager.Object, null, null);
+            
             await controller.ConfirmDeleteUser(userId);
-            mediator.Verify(b => b.SendAsync(It.Is<DeleteUserCommand>(u => u.UserId == userId)));
+            userManager.Verify(x => x.FindByIdAsync(userId), Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -571,5 +573,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void ControllerHasAuthorizeAtttributeWithTheCorrectPolicy()
         {
         }
+
+        private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock()
+        {
+            return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
+        }    
     }
 }

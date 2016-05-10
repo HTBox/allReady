@@ -61,7 +61,9 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmDeleteUser(string userId)
         {
-            await _mediator.SendAsync(new DeleteUserCommand { UserId = userId });
+            var user = await _userManager.FindByIdAsync(userId);
+            await _userManager.DeleteAsync(user);
+
             return RedirectToAction(nameof(Index));
         }
 
