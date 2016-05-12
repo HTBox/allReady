@@ -75,7 +75,7 @@ namespace AllReady.Areas.Admin.Features.Events
                 .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(av => av.User)
                 .Include(a => a.RequiredSkills).ThenInclude(s => s.Skill).ThenInclude(s => s.ParentSkill)
-                .Include(a => a.Location).ThenInclude(p => p.PostalCode)
+                .Include(a => a.Location)
                 .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
                 .SingleOrDefaultAsync(a => a.Id == message.EventId)
                 .ConfigureAwait(false);

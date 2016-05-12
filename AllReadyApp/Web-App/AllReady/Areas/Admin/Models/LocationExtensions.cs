@@ -20,7 +20,7 @@ namespace AllReady.Areas.Admin.Models
                 Country = location.Country,
                 Name = location.Name,
                 PhoneNumber = location.PhoneNumber,
-                PostalCode = location.PostalCode?.PostalCode,
+                PostalCode = location.PostalCode,
                 State = location.State
             };
         }
@@ -42,7 +42,7 @@ namespace AllReady.Areas.Admin.Models
                 Country = location.Country,
                 Name = location.Name,
                 PhoneNumber = location.PhoneNumber,
-                PostalCode = location.PostalCode?.PostalCode,
+                PostalCode = location.PostalCode,
                 State = location.State
             };            
         }
@@ -68,10 +68,7 @@ namespace AllReady.Areas.Admin.Models
                     location.Country = locationEditModel.Country;
                     location.Name = locationEditModel.Name;
                     location.PhoneNumber = locationEditModel.PhoneNumber;
-                    if (!string.IsNullOrWhiteSpace(locationEditModel.PostalCode))
-                    {
-                        location.PostalCode = new PostalCodeGeo { PostalCode = locationEditModel.PostalCode, City = locationEditModel.City, State = locationEditModel.State };
-                    }
+                    location.PostalCode = locationEditModel.PostalCode;
                     location.State = locationEditModel.State;
                     return location;
                 }

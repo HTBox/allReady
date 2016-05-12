@@ -12,10 +12,12 @@ using Microsoft.AspNet.Http;
 using Moq;
 using Xunit;
 using Microsoft.AspNet.Mvc;
+using System.Linq;
+using System;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
-    public class CampaignAdminControllerTests
+    public class CampaignAdminControllerTests : InMemoryContextTest
     {
         //delete this line when all unit tests using it have been completed
         private readonly Task taskFromResultZero = Task.FromResult(0);
@@ -74,6 +76,23 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact(Skip = "NotImplemented")]
         public void CreateReturnsCorrectViewWithCorrectViewModel()
         {
+        }
+
+        [Fact]
+        public async Task CreatePostInsertsCampaign()
+        {
+            Organization aginAware = AgincourtAware_entity;
+            Context.Locations.Add(aginAware.Location);
+            Context.Organizations.Add(aginAware);
+            Context.SaveChanges();
+
+            CampaignSummaryModel model = MassiveTrafficLightOutage_model;
+            model.OrganizationId = aginAware.Id;
+
+            CampaignController controller = CampaignControllerWithSummaryModel(model, Context, UserType.OrgAdmin.ToString());
+            var file = FormFile("image/jpeg");
+            await controller.Edit(model, file);
+            Assert.Single(Context.Campaigns.Where(t => t.Name == model.Name));
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -390,6 +409,28 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             return controller;
         }
 
+        private static CampaignController CampaignControllerWithSummaryModel(CampaignSummaryModel model, AllReadyContext Context, string userType)
+        {
+            var mockMediator = new Mock<IMediator>();
+            IAsyncRequest<int> command = new EditCampaignCommand() { Campaign = model };
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EditCampaignCommand>()))
+                .Returns(() => {
+                    IAsyncRequestHandler<EditCampaignCommand, int> handler = new EditCampaignCommandHandler(Context);
+                    return handler.Handle((EditCampaignCommand)command);
+            });
+
+            var mockImageService = new Mock<IImageService>();
+
+            var controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            controller.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, userType),
+                new Claim(AllReady.Security.ClaimTypes.Organization, model.OrganizationId.ToString())
+            });
+
+            return controller;
+        }
+
         private static IFormFile FormFile(string fileType)
         {
             var mockFormFile = new Mock<IFormFile>();
@@ -397,5 +438,69 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             return mockFormFile.Object;
         }
         #endregion
+
+        #region "Test Models"
+        public static LocationEditModel BogusAve_model {
+            get {
+                return new LocationEditModel() {
+                    Address1 = "25 Bogus Ave",
+                    City = "Agincourt",
+                    State = "Ontario",
+                    Country = "Canada",
+                    PostalCode = "M1T2T9"
+                };
+            }
+        }
+        public static OrganizationEditModel AgincourtAware_model {
+            get {
+                return new OrganizationEditModel() {
+                    Name = "Agincourt Awareness",
+                    Location = BogusAve_model,
+                    WebUrl = "http://www.AgincourtAwareness.ca",
+                    LogoUrl = "http://www.AgincourtAwareness.ca/assets/LogoLarge.png" };
+            }
+        }
+        public static CampaignSummaryModel MassiveTrafficLightOutage_model {
+            get {
+                return new CampaignSummaryModel() {
+                    Description = "Preparations to be ready to deal with a wide-area traffic outage.",
+                    EndDate = DateTime.Today.AddMonths(1),
+                    ExternalUrl = "http://agincourtaware.trafficlightoutage.com",
+                    ExternalUrlText = "Agincourt Aware: Traffic Light Outage",
+                    FileUpload =  null,
+                    FullDescription = "<h1><strong>Massive Traffic Light Outage Plan</strong></h1>\r\n<p>The Massive Traffic Light Outage Plan (MTLOP) is the official plan to handle a major traffic light failure.</p>\r\n<p>In the event of a wide-area traffic light outage, an alternative method of controlling traffic flow will be necessary. The MTLOP calls for the recruitment and training of volunteers to be ready to direct traffic at designated intersections and to schedule and follow-up with volunteers in the event of an outage.</p>",
+                    Id = 0,
+                    ImageUrl =  null,
+                    Location = BogusAve_model,
+                    Locked = false,
+                    Name = "Massive Traffic Light Outage Plan",
+                    PrimaryContactEmail = "mlong@agincourtawareness.com",
+                    PrimaryContactFirstName = "Miles",
+                    PrimaryContactLastName = "Long",
+                    PrimaryContactPhoneNumber = "416-555-0119",
+                    StartDate = DateTime.Today,
+                    TimeZoneId = "Eastern Standard Time",
+                };
+            }
+        }
+        #endregion
+
+        #region "TestEntities"
+        public static Location BogusAve_entity = new Location()  {
+            Address1 = "25 Bogus Ave",
+            City = "Agincourt",
+            State = "Ontario",
+            Country = "Canada",
+            PostalCode = "M1T 2T9"
+
+        };
+        Organization AgincourtAware_entity = new Organization() {
+            Name = "Agincourt Awareness",
+            Location = CampaignAdminControllerTests.BogusAve_entity,
+            WebUrl = "http://www.AgincourtAwareness.ca",
+            LogoUrl = "http://www.AgincourtAwareness.ca/assets/LogoLarge.png"
+        };
+        #endregion
     }
+
 }

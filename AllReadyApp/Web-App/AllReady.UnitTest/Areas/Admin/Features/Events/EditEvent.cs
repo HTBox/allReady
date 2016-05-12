@@ -139,7 +139,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task ExistingEventUpdateLocation()
         {
-            var seattlePostalCode = new PostalCodeGeo { City = "Seattle", PostalCode = "98117", State = "WA" };
+            var seattlePostalCode = "98117";
 
             var seattle = new Location
             {
@@ -194,7 +194,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             {
                 Address1 = "123 new address",
                 Address2 = "new suite",
-                PostalCode = new PostalCodeGeo { City = "Bellevue", PostalCode = "98004", State = "WA" },
+                PostalCode = "98004",
                 City = "Bellevue",
                 State = "WA",
                 Country = "USA",
@@ -230,7 +230,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(data.Location.Address1, NEW_LOCATION.Address1);
             Assert.Equal(data.Location.Address2, NEW_LOCATION.Address2);
             Assert.Equal(data.Location.City, NEW_LOCATION.City);
-            Assert.Equal(data.Location.PostalCode?.PostalCode, NEW_LOCATION.PostalCode);
+            Assert.Equal(data.Location.PostalCode, NEW_LOCATION.PostalCode);
             Assert.Equal(data.Location.State, NEW_LOCATION.State);
             Assert.Equal(data.Location.Country, NEW_LOCATION.Country);
             Assert.Equal(data.Location.PhoneNumber, NEW_LOCATION.PhoneNumber);

@@ -104,7 +104,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Assert.Equal(address2, savedCampaign.Location.Address2);
             Assert.Equal(city, savedCampaign.Location.City);
             Assert.Equal(state, savedCampaign.Location.State);
-            Assert.Equal(postcode, savedCampaign.Location.PostalCode.PostalCode);
+            Assert.Equal(postcode, savedCampaign.Location.PostalCode);
             Assert.Equal(country, savedCampaign.Location.Country);
         }
 

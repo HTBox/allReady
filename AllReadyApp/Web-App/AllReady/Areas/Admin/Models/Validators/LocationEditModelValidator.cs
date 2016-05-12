@@ -15,28 +15,9 @@ namespace AllReady.Areas.Admin.Models.Validators
             _mediator = mediator;
         }
 
-        public async Task<Dictionary<string, string>> Validate(LocationEditModel model)
+        public Dictionary<string, string> Validate(LocationEditModel model)
         {
             var result = new Dictionary<string, string>();
-
-            // Temporary code to avoid current database update error when the post code geo does not exist in the database.
-            if (!string.IsNullOrEmpty(model?.PostalCode))
-            {
-                var validPostcode = await _mediator.SendAsync(new CheckValidPostcodeQueryAsync
-                {
-                    Postcode = new PostalCodeGeo
-                    {
-                        City = model.City,
-                        State = model.State,
-                        PostalCode = model.PostalCode
-                    }
-                });
-
-                if (!validPostcode)
-                {
-                    result.Add(nameof(model.PostalCode), "The city, state and postal code combination is not valid");
-                }
-            }
 
             return result;
         }

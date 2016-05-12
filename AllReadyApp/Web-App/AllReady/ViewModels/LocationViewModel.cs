@@ -23,7 +23,7 @@ namespace AllReady.ViewModels
         public string Address2 { get; set; }
         public string City { get; set; }
         public string State { get; set; }
-        public PostalCodeGeo PostalCode { get; set; }
+        public string PostalCode { get; set; }
         public string Country { get; set; }
 
         public string Summary {

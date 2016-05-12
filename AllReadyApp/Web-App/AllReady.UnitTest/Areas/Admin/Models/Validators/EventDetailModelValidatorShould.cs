@@ -11,7 +11,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
     public class EventDetailModelValidatorShould
     {
         [Fact]
-        public async Task ReportErrorsWhenEndDateIsInvalid()
+        public void ReportErrorsWhenEndDateIsInvalid()
         {
             // arrage
             var mediator = new Mock<IMediator>();
@@ -24,14 +24,14 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
             };
 
             // act
-            var errors = await validator.Validate(model, campaign);
+            var errors = validator.Validate(model, campaign);
 
             // assert
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
         }
 
         [Fact]
-        public async Task ReportErrorsWhenEndDateOutsideCampaignWindow()
+        public void ReportErrorsWhenEndDateOutsideCampaignWindow()
         {
             // arrage
             var mediator = new Mock<IMediator>();
@@ -48,14 +48,14 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
             };
 
             // act
-            var errors = await validator.Validate(model, campaign);
+            var errors = validator.Validate(model, campaign);
 
             // assert
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
         }
 
         [Fact]
-        public async Task ReportErrorsWhenStartDateOutsideCampaignWindow()
+        public void ReportErrorsWhenStartDateOutsideCampaignWindow()
         {
             // arrage
             var mediator = new Mock<IMediator>();
@@ -71,34 +71,11 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
             };
 
             // act
-            var errors = await validator.Validate(model, campaign);
+            var errors = validator.Validate(model, campaign);
 
             // assert
             Assert.True(errors.Exists(x => x.Key.Equals("StartDateTime")));
         }
 
-        [Fact]
-        public async Task ReportErrorsWhenPostalCodeInvalid()
-        {
-            // arrage
-            var mediator = new Mock<IMediator>();
-            var validator = new EventDetailModelValidator(mediator.Object);
-            var campaign = new CampaignSummaryModel();
-            var model = new EventDetailModel
-            {
-                Location = new LocationEditModel()
-                {
-                    PostalCode = "12345",
-                    State = "WA",
-                    City = "Seattle"
-                }
-            };
-
-            // act
-            var errors = await validator.Validate(model, campaign);
-
-            // assert
-            Assert.True(errors.Exists(x => x.Key.Equals("PostalCode")));
-        }
     }
 }

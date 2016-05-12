@@ -41,7 +41,6 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<AllReadyTask>());
             Map(modelBuilder.Entity<TaskSkill>());
             Map(modelBuilder.Entity<TaskSignup>());
-            Map(modelBuilder.Entity<Location>());
             Map(modelBuilder.Entity<PostalCodeGeo>());
             Map(modelBuilder.Entity<Skill>());
             Map(modelBuilder.Entity<UserSkill>());
@@ -90,11 +89,6 @@ namespace AllReady.Models
         private void Map(EntityTypeBuilder<PostalCodeGeo> builder)
         {
             builder.HasKey(k => k.PostalCode);
-        }
-
-        private void Map(EntityTypeBuilder<Location> builder)
-        {
-            builder.HasOne(l => l.PostalCode);
         }
 
         private void Map(EntityTypeBuilder<TaskSignup> builder)

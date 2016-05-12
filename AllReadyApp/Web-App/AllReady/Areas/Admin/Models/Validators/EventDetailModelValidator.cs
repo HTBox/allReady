@@ -14,7 +14,7 @@ namespace AllReady.Areas.Admin.Models.Validators
             _mediator = mediator;
         }
 
-        public async Task<List<KeyValuePair<string, string>>> Validate(EventDetailModel model, CampaignSummaryModel parentCampaign)
+        public List<KeyValuePair<string, string>> Validate(EventDetailModel model, CampaignSummaryModel parentCampaign)
         {
             var result = new List<KeyValuePair<string, string>>();
 
@@ -34,7 +34,7 @@ namespace AllReady.Areas.Admin.Models.Validators
             }
 
             var postalCodeValidation = new LocationEditModelValidator(_mediator);
-            var postalCodeErrors = await postalCodeValidation.Validate(model.Location);
+            var postalCodeErrors = postalCodeValidation.Validate(model.Location);
             postalCodeErrors.ToList().ForEach(e => result.Add(new KeyValuePair<string, string>(e.Key, e.Value)));
             return result;
         }
