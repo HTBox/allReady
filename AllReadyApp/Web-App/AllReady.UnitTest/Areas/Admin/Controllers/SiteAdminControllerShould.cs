@@ -1,10 +1,13 @@
 ﻿using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Users;
 using AllReady.Areas.Admin.Models;
+using AllReady.Features.Manage;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using MediatR;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +20,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
     {
         //delete this line when all unit tests using it have been completed
         private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
+
+        private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock() =>
+            new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
 
         [Fact]
         public void IndexReturnsCorrectViewModel()
@@ -88,11 +94,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Verify(b => b.SendAsync(It.Is<DeleteUserCommand>(u => u.UserId == userId)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ConfirmDeletUserRedirectsToCorrectAction()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            var controller = new SiteController(null, null, mediator.Object);
+
+            var result = await controller.ConfirmDeleteUser(It.IsAny<string>()) as RedirectToActionResult;
+
+            Assert.Equal(result.ActionName, nameof(SiteController.Index));
         }
 
         [Fact]
@@ -112,9 +122,19 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void EditUserGetSendsUserByUserIdQueryWithCorrectUserId()
         {
+            var mediator = new Mock<IMediator>();
+            var logger = new Mock<ILogger<SiteController>>();
+
+            string userId = It.IsAny<string>();
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)))
+                .Returns(new ApplicationUser());
+            var controller = new SiteController(null, logger.Object, mediator.Object);
+
+            controller.EditUser(userId);
+            mediator.Verify(m => m.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)), Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -202,12 +222,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await TaskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void EditUserPostHasHttpPostAttribute()
         {
+            var controller = new SiteController(null, null, null);
+            var attribute = controller.GetAttributesOn(x => x.EditUser(It.IsAny<EditUserModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void EditUserPostHasValidateAntiForgeryTokenAttribute()
         {
             var controller = new SiteController(null, null, null);
@@ -215,11 +238,18 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ResetPasswordSendsUserByUserIdQueryWithCorrectUserId()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            var logger = new Mock<ILogger<SiteController>>();
+
+            string userId = It.IsAny<string>();
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId))).Returns(new ApplicationUser());
+            var controller = new SiteController(null, logger.Object, mediator.Object);
+
+            await controller.ResetPassword(userId);
+            mediator.Verify(m => m.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)), Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -293,11 +323,18 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task AssignSiteAdminSendsUserByUserIdQueryWithCorrectUserId()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            var logger = new Mock<ILogger<SiteController>>();
+
+            string userId = It.IsAny<string>();
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId))).Returns(new ApplicationUser());
+            var controller = new SiteController(null, logger.Object, mediator.Object);
+
+            await controller.AssignSiteAdmin(userId);
+            mediator.Verify(m => m.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)), Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -450,16 +487,26 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void AssignOrganizationAdminPostHasValidateAntiForgeryTokenAttribute()
         {
+            var controller = new SiteController(null, null, null);
+            var attribute = controller.GetAttributesOn(x => x.AssignOrganizationAdmin(It.IsAny<AssignOrganizationAdminModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RevokeSiteAdminSendsUserByUserIdQueryWithCorrectUserId()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            var logger = new Mock<ILogger<SiteController>>();
+
+            string userId = It.IsAny<string>();
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId))).Returns(new ApplicationUser());
+            var controller = new SiteController(null, logger.Object, mediator.Object);
+
+            await controller.RevokeSiteAdmin(userId);
+            mediator.Verify(m => m.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)), Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -505,11 +552,18 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RevokeOrganizationAdminSendsUserByUserIdQueryWithCorrectUserId()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            var logger = new Mock<ILogger<SiteController>>();
+
+            string userId = It.IsAny<string>();
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId))).Returns(new ApplicationUser());
+            var controller = new SiteController(null, logger.Object, mediator.Object);
+
+            await controller.RevokeOrganizationAdmin(userId);
+            mediator.Verify(m => m.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)), Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
