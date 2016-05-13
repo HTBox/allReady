@@ -1,19 +1,9 @@
-﻿using MediatR;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace AllReady.Areas.Admin.Models.Validators
 {
-    public class EventDetailModelValidator
+    public class EventDetailModelValidator : IValidateEventDetailsModels
     {
-        private IMediator _mediator;
-
-        public EventDetailModelValidator(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
         public List<KeyValuePair<string, string>> Validate(EventDetailModel model, CampaignSummaryModel parentCampaign)
         {
             var result = new List<KeyValuePair<string, string>>();
@@ -33,10 +23,12 @@ namespace AllReady.Areas.Admin.Models.Validators
                 result.Add(new KeyValuePair<string, string>(nameof(model.EndDateTime), "End date cannot be later than the campaign end date " + parentCampaign.EndDate.ToString("d")));
             }
 
-            var postalCodeValidation = new LocationEditModelValidator(_mediator);
-            var postalCodeErrors = postalCodeValidation.Validate(model.Location);
-            postalCodeErrors.ToList().ForEach(e => result.Add(new KeyValuePair<string, string>(e.Key, e.Value)));
             return result;
         }
+    }
+
+    public interface IValidateEventDetailsModels
+    {
+        List<KeyValuePair<string, string>> Validate(EventDetailModel model, CampaignSummaryModel parentCampaign);
     }
 }
