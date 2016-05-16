@@ -14,6 +14,8 @@ using AllReady.UnitTest.Extensions;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc.Routing;
 using System.Security.Claims;
+using AllReady.Extensions;
+using AllReady.Features.Login;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -370,25 +372,76 @@ namespace AllReady.UnitTest.Controllers
                 , It.IsAny<bool>(), null), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RegisterPostRedirectsToCorrectActionAndControllerWhenModelStateIsValidAndUserCreationIsSuccessful()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
+
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
+
+            var signInManager = CreateSignInManagerMock(userManager);
+
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
+
+            var emailSenderMock = new Mock<IEmailSender>();
+            emailSenderMock.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<Task>()));
+
+            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            signInManager.Setup(x => x.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), null)).Returns(() => Task.FromResult(It.IsAny<Task>()));
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, null);
+
+            sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
+            sut.Url = urlHelper.Object;
+
+            var result = await sut.Register(new RegisterViewModel()) as RedirectToActionResult;
+
+            Assert.Equal(result.ActionName, nameof(HomeController.Index));
+            Assert.Equal(result.ControllerName, "Home");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RegisterPostAddsIdentityResultErrorsToModelStateErrorWhenUserCreationFails()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
+
+            var identityResult = IdentityResult.Failed(new IdentityError { Description = "IdentityErrorDescription" });
+
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(identityResult));
+
+            var sut = new AccountController(userManager.Object, null,null, generalSettings.Object, null);
+
+            await sut.Register(new RegisterViewModel());
+
+            var errorMessages = sut.ModelState.GetErrorMessages();
+            Assert.Equal(errorMessages.Single(), identityResult.Errors.Select(x => x.Description).Single());
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RegisterPostReturnsTheSameViewAndViewModelWhenUserCreationFails()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var model = new RegisterViewModel();
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
+
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Failed()));
+
+            var sut = new AccountController(userManager.Object, null, null, generalSettings.Object, null);
+
+            var result = await sut.Register(model) as ViewResult;
+            var modelResult = result.ViewData.Model as RegisterViewModel;
+
+            Assert.IsType<ViewResult>(result);
+            Assert.IsType<RegisterViewModel>(modelResult);
+            Assert.Same(model, modelResult);
         }
 
         [Fact]
@@ -415,74 +468,183 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task LogOffInvokesSignOutAsync()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var userManager = CreateUserManagerMock();
+            var signInManager = CreateSignInManagerMock(userManager);
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null,null, null);
+
+            await sut.LogOff();
+            signInManager.Verify(x => x.SignOutAsync(), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task LogOffRedirectToCorrectActionAndController()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var userManager = CreateUserManagerMock();
+            var signInManager = CreateSignInManagerMock(userManager);
+            signInManager.Setup(x => x.SignOutAsync()).Returns(() => Task.FromResult(It.IsAny<Task>()));
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, null);
+
+            var result = await sut.LogOff() as RedirectToActionResult;
+
+            Assert.Equal(result.ActionName, nameof(HomeController.Index));
+            Assert.Equal(result.ControllerName, "Home");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ConfirmEmailReturnsErrorViewWhenUserIdIsNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+
+            var result = await sut.ConfirmEmail(null,"sometoken") as ViewResult;
+
+            Assert.Equal("Error", result.ViewName);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ConfirmEmailReturnsErrorViewWhenTokenIsNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+
+            var result = await sut.ConfirmEmail("someuserid", null) as ViewResult;
+
+            Assert.Equal("Error", result.ViewName);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ConfirmEmailInvokesFindByIdAsyncWithCorrectUserIdWhenUserIdAndTokenAreNotNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var userId = "userId";
+            var token = "someToken";
+            var userManager = CreateUserManagerMock();
+
+            var sut = new AccountController(userManager.Object, null, null, null, null);
+
+            await sut.ConfirmEmail(userId, token);
+
+            userManager.Verify(x => x.FindByIdAsync(It.Is<string>(y => y == userId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ConfirmEmailReturnsErrorViewWhenUserIsNullAndUserIdAndTokenAreNotNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var userId = "userId";
+            var token = "someToken";
+            var userManager = CreateUserManagerMock();
+
+            userManager.Setup(x => x.FindByIdAsync(userId)).Returns(() => Task.FromResult((ApplicationUser)null));
+
+            var sut = new AccountController(userManager.Object, null, null, null, null);
+
+            var result = await sut.ConfirmEmail(userId,token) as ViewResult;
+
+            Assert.Equal("Error", result.ViewName);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ConfirmEmailInvokesConfirmEmailAsyncWithTheCorrectParametersWhenUserAndUserIdAndTokenAreNotNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var userId = "userId";
+            var token = "someToken";
+            var userManager = CreateUserManagerMock();
+
+            var user = new ApplicationUser();
+ 
+            userManager.Setup(x => x.FindByIdAsync(userId)).Returns(() => Task.FromResult(user));
+            userManager.Setup(x=>x.ConfirmEmailAsync(user,token)).Returns(()=> Task.FromResult(IdentityResult.Success));
+            var sut = new AccountController(userManager.Object, null, null, null, null);
+
+            await sut.ConfirmEmail(userId, token);
+
+            userManager.Verify(x=>x.ConfirmEmailAsync(It.Is<ApplicationUser>(y => y == user),It.Is<string>(y=> y == token)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ConfirmEmailInvokesSendAsyncWithTheCorrectParametersWhenUsersProfileIsCompleteAndUsersEmailIsConfirmedAndUserAndUserIdAndTokenAreNotNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var userId = "userId";
+            var token = "someToken";
+            var userManager = CreateUserManagerMock();
+
+            var user = new ApplicationUser()
+            {
+                Id=userId,
+                Name="test",
+                PhoneNumber="test",
+                PhoneNumberConfirmed=true,
+                Email="test@email.com",
+                EmailConfirmed=true
+            };
+
+            userManager.Setup(x => x.FindByIdAsync(userId)).Returns(() => Task.FromResult(user));
+            userManager.Setup(x => x.ConfirmEmailAsync(user, token)).Returns(() => Task.FromResult(IdentityResult.Success));
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id })).Returns(()=> Task.FromResult(It.IsAny<Unit>()));
+
+            var sut = new AccountController(userManager.Object, null, null, null, mediator.Object);
+            sut.SetFakeUser(userId);
+
+            await sut.ConfirmEmail(userId, token);
+
+            mediator.Verify(x => x.SendAsync(It.Is<RemoveUserProfileIncompleteClaimCommand>(y => y.UserId == userId)), Times.Once);
+
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ConfirmEmailInvokesRefreshSignInAsyncWithTheCorrectParametersWhenUserIsSignedInAndUsersProfileIsCompleteAndUsersEmailIsConfirmedAndUserAndUserIdAndTokenAreNotNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var userId = "userId";
+            var token = "someToken";
+            var userManager = CreateUserManagerMock();
+
+            var user = new ApplicationUser()
+            {
+                Id = userId,
+                Name = "test",
+                PhoneNumber = "test",
+                PhoneNumberConfirmed = true,
+                Email = "test@email.com",
+                EmailConfirmed = true
+            };
+
+            userManager.Setup(x => x.FindByIdAsync(userId)).Returns(() => Task.FromResult(user));
+            userManager.Setup(x => x.ConfirmEmailAsync(user, token)).Returns(() => Task.FromResult(IdentityResult.Success));
+
+            var signInManager = CreateSignInManagerMock(userManager);
+            signInManager.Setup(x => x.RefreshSignInAsync(user)).Returns(() => Task.FromResult(It.IsAny<Task>()));
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id })).Returns(() => Task.FromResult(It.IsAny<Unit>()));
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, mediator.Object);
+            sut.SetFakeUserWithCookieAuthenticationType(userId);
+
+            await sut.ConfirmEmail(userId, token);
+
+            signInManager.Verify(x => x.RefreshSignInAsync(It.Is<ApplicationUser>(y => y.Id == user.Id)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ConfirmEmailReturnsErrorViewWhenUsersEmailCannotBeConfirmed()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var userId = "userId";
+            var token = "someToken";
+            var userManager = CreateUserManagerMock();
+
+            var user = new ApplicationUser();
+
+            userManager.Setup(x => x.FindByIdAsync(userId)).Returns(() => Task.FromResult(user));
+            userManager.Setup(x => x.ConfirmEmailAsync(user, token)).Returns(() => Task.FromResult(IdentityResult.Failed()));
+            var sut = new AccountController(userManager.Object, null, null, null, null);
+
+            var result = await sut.ConfirmEmail(userId, token) as ViewResult;
+
+            Assert.Equal(result.ViewName, "Error");
         }
 
         [Fact(Skip = "NotImplemented")]
