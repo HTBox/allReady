@@ -12,7 +12,6 @@ using Moq;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
@@ -21,9 +20,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
     {
         //delete this line when all unit tests using it have been completed
         private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
-
-        private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock() =>
-            new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
 
         [Fact]
         public void IndexReturnsCorrectViewModel()
@@ -88,7 +84,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task ConfirmDeletUserInvokesFindByIdAsync()
         {
             const string userId = "userId";
-            var userManager = CreateUserManagerMock();
+            var userManager = CreateApplicationUserMock();
 
             var controller = new SiteController(userManager.Object, null, null);
             
@@ -99,8 +95,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task ConfirmDeletUserRedirectsToCorrectAction()
         {
-            var mediator = new Mock<IMediator>();
-            var controller = new SiteController(null, null, mediator.Object);
+            var applicationUser = CreateApplicationUserMock();
+
+            var controller = new SiteController(applicationUser.Object, null, null);
 
             var result = await controller.ConfirmDeleteUser(It.IsAny<string>()) as RedirectToActionResult;
 
@@ -628,7 +625,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
         }
 
-        private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock()
+        private static Mock<UserManager<ApplicationUser>> CreateApplicationUserMock()
         {
             return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
         }    
