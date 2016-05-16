@@ -1116,18 +1116,35 @@ namespace AllReady.UnitTest.Controllers
             await taskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginConfirmationPutsCorrectDataInViewDataWithCorrectKeyWhenModelStateIsInvalid()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var returnUrlKey = "ReturnUrl";
+            var returnUrlValue = "http:\\test.url.com";
+            ExternalLoginConfirmationViewModel model = new ExternalLoginConfirmationViewModel();
+            AccountController controller = AccountController();
+            controller.ViewData.ModelState.AddModelError("Error", "test");
+            controller.SetFakeUser("test");
+            var result = await controller.ExternalLoginConfirmation(model, returnUrlValue) as ViewResult;
+            var viewDataKey = result.ViewData.Keys.FirstOrDefault(k => k == returnUrlKey);
+            var viewDataValue = result.ViewData[returnUrlKey] as string;
+            Assert.Equal<string>(viewDataValue, returnUrlValue);
+            Assert.NotNull(viewDataKey);
+            
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginConfirmationReturnsCorrectViewModelWhenModelStateIsInvalid()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            ExternalLoginConfirmationViewModel model = new ExternalLoginConfirmationViewModel();
+            AccountController controller = AccountController();
+            controller.ViewData.ModelState.AddModelError("Error", "test");
+            controller.SetFakeUser("test");
+            var result = await controller.ExternalLoginConfirmation(model) as ViewResult;
+            var modelResult = result.ViewData.Model as ExternalLoginConfirmationViewModel;
+            Assert.IsType<ViewResult>(result);
+            Assert.IsType<ExternalLoginConfirmationViewModel>(modelResult);
+            Assert.Same(modelResult, model);
         }
 
         [Fact]
