@@ -1123,7 +1123,7 @@ namespace AllReady.UnitTest.Controllers
             var returnUrlValue = "http:\\test.url.com";
             ExternalLoginConfirmationViewModel model = new ExternalLoginConfirmationViewModel();
             AccountController controller = AccountController();
-            controller.ViewData.ModelState.AddModelError("Error", "test");
+            controller.AddModelStateError();
             controller.SetFakeUser("test");
             var result = await controller.ExternalLoginConfirmation(model, returnUrlValue) as ViewResult;
             var viewDataKey = result.ViewData.Keys.FirstOrDefault(k => k == returnUrlKey);
@@ -1138,7 +1138,7 @@ namespace AllReady.UnitTest.Controllers
         {
             ExternalLoginConfirmationViewModel model = new ExternalLoginConfirmationViewModel();
             AccountController controller = AccountController();
-            controller.ViewData.ModelState.AddModelError("Error", "test");
+            controller.AddModelStateError();
             controller.SetFakeUser("test");
             var result = await controller.ExternalLoginConfirmation(model) as ViewResult;
             var modelResult = result.ViewData.Model as ExternalLoginConfirmationViewModel;
