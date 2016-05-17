@@ -16,6 +16,7 @@ using Microsoft.AspNet.Mvc.Routing;
 using System.Security.Claims;
 using AllReady.Extensions;
 using AllReady.Features.Login;
+using System.Collections.Generic;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -1039,11 +1040,16 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginConfirmationRedirectsToCorrectActionIfUserIsSignedIn()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var sut = AccountController();
+            var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "test") }, IdentityCookieOptions.ApplicationCookieAuthenticationType);
+            sut.SetFakeUser("test");
+            sut.HttpContext.User.AddIdentity(identity);
+            var result = await sut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel()) as RedirectToActionResult;
+            Assert.Equal<string>(result.ControllerName, "Manage");
+            Assert.Equal<string>(result.ActionName, nameof(ManageController.Index));
         }
 
         [Fact(Skip = "NotImplemented")]
