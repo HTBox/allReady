@@ -1066,25 +1066,112 @@ namespace AllReady.UnitTest.Controllers
             await taskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginConfirmationInvokesCreateAsyncWithCorrectUserWhenExternalLoginInfoIsSuccessfulAndModelStateIsValid()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var email = "test@test.com";
+            var name = "Test";
+            var phoneNumber = "(111)111-11-11";
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(u => u.CreateAsync(It.IsAny<ApplicationUser>())).Returns(Task.FromResult<IdentityResult>(new IdentityResult()));
+            var signInManager = CreateSignInManagerMock(userManager);
+            signInManager
+                .Setup(s => s.GetExternalLoginInfoAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult<ExternalLoginInfo>(new ExternalLoginInfo(new ClaimsPrincipal(), "test", "test", "test")));
+            var viewModel = new ExternalLoginConfirmationViewModel()
+            {
+                Email = email,
+                Name = name,
+                PhoneNumber = phoneNumber
+            };
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, generalSettings.Object, null);
+            sut.SetFakeUser("test");
+            await sut.ExternalLoginConfirmation(viewModel);
+            userManager.Verify(u => u.CreateAsync(It.Is<ApplicationUser>(au => au.Email == email && au.Name == name && au.PhoneNumber == phoneNumber)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginConfirmationInvokesAddLoginAsyncWithCorrectParametersWhenUserIsCreatedSuccessfully()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var email = "test@test.com";
+            var name = "Test";
+            var phoneNumber = "(111)111-11-11";
+            var externalPrincipal = new ClaimsPrincipal();
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(u => u.CreateAsync(It.IsAny<ApplicationUser>())).Returns(Task.FromResult<IdentityResult>(IdentityResult.Success));
+            userManager.Setup(u => u.AddLoginAsync(It.IsAny<ApplicationUser>(), It.IsAny<ExternalLoginInfo>()))
+                .Returns(Task.FromResult<IdentityResult>(IdentityResult.Success));
+            var signInManager = CreateSignInManagerMock(userManager);
+            signInManager
+                .Setup(s => s.GetExternalLoginInfoAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult<ExternalLoginInfo>(new ExternalLoginInfo(externalPrincipal, "test", "testKey", "testDisplayName")));
+            var urlHelperMock = new Mock<IUrlHelper>();
+            urlHelperMock
+                .Setup(mock => mock.IsLocalUrl(It.IsAny<string>()))
+                .Returns(true);
+            var viewModel = new ExternalLoginConfirmationViewModel()
+            {
+                Email = email,
+                Name = name,
+                PhoneNumber = phoneNumber
+            };
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, generalSettings.Object, null);
+            sut.SetFakeUser("test");
+            sut.Url = urlHelperMock.Object;
+            await sut.ExternalLoginConfirmation(viewModel,"testUrl");
+            userManager.Verify(u => u.AddLoginAsync(It.Is<ApplicationUser>(au => au.Email == email 
+                                                                                    && au.Name == name 
+                                                                                    && au.PhoneNumber == phoneNumber),
+                                                     It.Is<ExternalLoginInfo>(ei => object.ReferenceEquals(ei.ExternalPrincipal, externalPrincipal)
+                                                                                    && ei.LoginProvider == "test"
+                                                                                    && ei.ProviderKey == "testKey"
+                                                                                    && ei.ProviderDisplayName == "testDisplayName")));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginConfirmationInvokesSignInAsyncWithCorrectParametersWhenExternalLoginIsAddedSuccessfully()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var email = "test@test.com";
+            var name = "Test";
+            var phoneNumber = "(111)111-11-11";
+            var externalPrincipal = new ClaimsPrincipal();
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(u => u.CreateAsync(It.IsAny<ApplicationUser>()))
+                .Returns(Task.FromResult<IdentityResult>(IdentityResult.Success));
+            userManager.Setup(u => u.AddLoginAsync(It.IsAny<ApplicationUser>(), It.IsAny<ExternalLoginInfo>()))
+                .Returns(Task.FromResult<IdentityResult>(IdentityResult.Success));
+            var signInManager = CreateSignInManagerMock(userManager);
+            signInManager
+                .Setup(s => s.GetExternalLoginInfoAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult<ExternalLoginInfo>(new ExternalLoginInfo(externalPrincipal, "test", "testKey", "testDisplayName")));
+            signInManager
+                .Setup(s => s.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(default(object)));
+            var urlHelperMock = new Mock<IUrlHelper>();
+            urlHelperMock
+                .Setup(mock => mock.IsLocalUrl(It.IsAny<string>()))
+                .Returns(true);
+            var viewModel = new ExternalLoginConfirmationViewModel()
+            {
+                Email = email,
+                Name = name,
+                PhoneNumber = phoneNumber
+            };
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, generalSettings.Object, null);
+            sut.SetFakeUser("test");
+            sut.Url = urlHelperMock.Object;
+            await sut.ExternalLoginConfirmation(viewModel, "testUrl");
+            signInManager.Verify(s => s.SignInAsync(It.Is<ApplicationUser>(au => au.Email == email 
+                                                                                 && au.Name == name
+                                                                                 && au.PhoneNumber == phoneNumber),
+                                                    It.Is<bool>(p => p == false),
+                                                    It.Is<string>(auth => auth == null)));
         }
 
         [Fact(Skip = "NotImplemented")]
