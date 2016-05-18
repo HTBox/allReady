@@ -6,6 +6,7 @@ using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Internal;
 using Microsoft.AspNet.Mvc;
 using Moq;
+using Microsoft.AspNet.Identity;
 
 namespace AllReady.UnitTest.Extensions
 {
@@ -29,6 +30,17 @@ namespace AllReady.UnitTest.Extensions
             var claimsPrincipal = new ClaimsPrincipal();
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) }));
 
+            Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
+        }
+
+        public static void SetFakeUserWithCookieAuthenticationType(this Controller controller, string userId)
+        {
+            SetFakeHttpContextIfNotAlreadySet(controller);
+
+            var identity = new ClaimsIdentity(new List<Claim> {
+                    new Claim(ClaimTypes.NameIdentifier, userId)},IdentityCookieOptions.ApplicationCookieAuthenticationType);
+            var claimsPrincipal = new ClaimsPrincipal(identity);
+           
             Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
         }
 
