@@ -1,20 +1,22 @@
 ﻿using AllReady.Models;
 using MediatR;
+using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
+
     public class OrganizationByIdQueryHandler : IRequestHandler<OrganizationByIdQuery, Organization>
     {
-        private readonly IAllReadyDataAccess dataAccess;
+        private readonly AllReadyContext _context;
 
-        public OrganizationByIdQueryHandler(IAllReadyDataAccess dataAccess)
+        public OrganizationByIdQueryHandler(AllReadyContext context)
         {
-            this.dataAccess = dataAccess;
+            this._context = context;
         }
 
         public Organization Handle(OrganizationByIdQuery message)
         {
-            return dataAccess.GetOrganization(message.OrganizationId);
+            return _context.Organizations.FirstOrDefault(o => o.Id == message.OrganizationId);
         }
     }
 }

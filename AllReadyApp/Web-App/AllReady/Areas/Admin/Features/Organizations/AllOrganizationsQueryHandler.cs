@@ -1,21 +1,23 @@
 ﻿using System.Collections.Generic;
 using AllReady.Models;
 using MediatR;
+using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
+
     public class AllOrganizationsQueryHandler : IRequestHandler<AllOrganizationsQuery, IEnumerable<Organization>>
     {
-        private readonly IAllReadyDataAccess dataAccess;
+        private readonly AllReadyContext _context;
 
-        public AllOrganizationsQueryHandler(IAllReadyDataAccess dataAccess)
+        public AllOrganizationsQueryHandler(AllReadyContext context)
         {
-            this.dataAccess = dataAccess;
+            this._context = context;
         }
 
         public IEnumerable<Organization> Handle(AllOrganizationsQuery message)
         {
-            return dataAccess.Organizations;
+            return _context.Organizations.ToList();
         }
     }
 }

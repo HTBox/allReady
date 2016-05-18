@@ -23,15 +23,6 @@ namespace AllReady.Models
 
         IEnumerable<Campaign> Campaigns { get; }
         Campaign GetCampaign(int campaignId);
-        #endregion
-
-        #region Organization CRUD
-
-        IEnumerable<Organization> Organizations { get; }
-        Organization GetOrganization(int organizationId);
-        Task AddOrganization(Organization value);
-        Task DeleteOrganization(int id);
-        Task UpdateOrganization(Organization value);
 
         #endregion
 
