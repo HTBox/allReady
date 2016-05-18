@@ -1,7 +1,9 @@
 {
   "name": "AllReady",
-    "version": "1.0.0",
-    "description": "AllReady",
+  "version": "1.0.0",
+  "description": "AllReady",
+  "license": "MIT",
+  "repository": "HTBox/allReady",
   "devDependencies": {
     "gulp": "3.8.11",
     "gulp-concat": "2.5.2",
