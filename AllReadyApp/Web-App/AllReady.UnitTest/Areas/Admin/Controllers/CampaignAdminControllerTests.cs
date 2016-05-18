@@ -493,6 +493,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     EndDate = DateTime.Today.AddMonths(1),
                     ExternalUrl = "http://agincourtaware.trafficlightoutage.com",
                     ExternalUrlText = "Agincourt Aware: Traffic Light Outage",
+                    Featured = false,
                     FileUpload =  null,
                     FullDescription = "<h1><strong>Massive Traffic Light Outage Plan</strong></h1>\r\n<p>The Massive Traffic Light Outage Plan (MTLOP) is the official plan to handle a major traffic light failure.</p>\r\n<p>In the event of a wide-area traffic light outage, an alternative method of controlling traffic flow will be necessary. The MTLOP calls for the recruitment and training of volunteers to be ready to direct traffic at designated intersections and to schedule and follow-up with volunteers in the event of an outage.</p>",
                     Id = 0,

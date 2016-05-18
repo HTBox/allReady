@@ -40,6 +40,10 @@
                     </td>
                     <td>
                         <a asp-controller="Campaign" asp-action="Details" asp-route-area="Admin" asp-route-id="@item.Id">@item.Name</a>
+                        @if (item.Featured)
+                        {
+                            <i class="fa fa-star star-highlight" aria-hidden="true"></i>
+                        }
                         @if (item.Locked)
                         {
                             <span title="This campaign is locked" class="fa fa-exclamation-triangle text-warning"></span>

@@ -486,3 +486,7 @@ Navigation
 .inline-form {
     display: inline-block;
 }
+
+.star-highlight {
+    color: #609E43;
+}

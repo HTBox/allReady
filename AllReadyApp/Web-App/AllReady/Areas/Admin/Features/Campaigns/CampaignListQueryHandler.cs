@@ -35,7 +35,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                 TimeZoneId = c.TimeZoneId,
                 StartDate = c.StartDateTime,
                 EndDate = c.EndDateTime,
-                Locked = c.Locked
+                Locked = c.Locked,
+                Featured = c.Featured
             });
 
             return campaigns;

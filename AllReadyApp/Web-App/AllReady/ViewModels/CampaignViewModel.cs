@@ -33,6 +33,7 @@ namespace AllReady.ViewModels
             ImageUrl = campaign.ImageUrl;
             HasPrivacyPolicy = !string.IsNullOrEmpty(campaign.ManagingOrganization?.PrivacyPolicy);
             Location = campaign.Location;
+            Featured = campaign.Featured;
         }
 
         public int Id { get; set; }
@@ -83,6 +84,7 @@ namespace AllReady.ViewModels
         public IEnumerable<EventViewModel> Events { get; set; }
 
         public bool HasPrivacyPolicy { get; set; }
+        public bool Featured { get; set; }
     }
 
     public static class CampaignViewModelExtensions
