@@ -111,10 +111,24 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task CreatePostReturnsEditView_When_ModelStateNotValid()
         {
-            var sut = GetEventController();
+            var imageService = new Mock<IImageService>();
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel());
+
+            var eventDetailModelValidator = new Mock<IValidateEventDetailModels>();
+            eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventDetailModel>(), It.IsAny<CampaignSummaryModel>()))
+                .Returns(new List<KeyValuePair<string, string>>());
+
+            var sut = new EventController(imageService.Object, mediator.Object, eventDetailModelValidator.Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
             sut.ModelState.AddModelError("test", "test");
-            var eventModel = new EventDetailModel();
-            var result = (ViewResult)await sut.Create(1, eventModel, null);
+            var result = (ViewResult)await sut.Create(It.IsAny<int>(), It.IsAny<EventDetailModel>(), null);
 
             Assert.Equal("Edit", result.ViewName);
         }
@@ -127,7 +141,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel());
 
-            var eventDetailModelValidator = new Mock<IValidateEventDetailsModels>();
+            var eventDetailModelValidator = new Mock<IValidateEventDetailModels>();
             eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventDetailModel>(), It.IsAny<CampaignSummaryModel>()))
                 .Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("ErrorKey", "ErrorMessage") });
 

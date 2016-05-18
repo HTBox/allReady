@@ -24,13 +24,13 @@ namespace AllReady.Areas.Admin.Controllers
     {
         private readonly IImageService _imageService;
         private readonly IMediator _mediator;
-        private readonly IValidateEventDetailsModels _eventDetailsModelValidator;
+        private readonly IValidateEventDetailModels _eventDetailModelValidator;
 
-        public EventController(IImageService imageService, IMediator mediator, IValidateEventDetailsModels eventDetailsModelValidator)
+        public EventController(IImageService imageService, IMediator mediator, IValidateEventDetailModels eventDetailModelValidator)
         {
             _imageService = imageService;
             _mediator = mediator;
-            _eventDetailsModelValidator = eventDetailsModelValidator;
+            _eventDetailModelValidator = eventDetailModelValidator;
         }
 
         // GET: Event/Details/5
@@ -88,7 +88,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
 
-            var errors = _eventDetailsModelValidator.Validate(campaignEvent, campaign);
+            var errors = _eventDetailModelValidator.Validate(campaignEvent, campaign);
             errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             //TryValidateModel is called explictly because of MVC 6 behavior that supresses model state validation during model binding when binding to an IFormFile.
@@ -156,7 +156,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignEvent.CampaignId });
 
-            var errors = _eventDetailsModelValidator.Validate(campaignEvent, campaign);
+            var errors = _eventDetailModelValidator.Validate(campaignEvent, campaign);
             errors.ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)

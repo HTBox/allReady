@@ -2,7 +2,7 @@
 
 namespace AllReady.Areas.Admin.Models.Validators
 {
-    public class EventDetailModelValidator : IValidateEventDetailsModels
+    public class EventDetailModelValidator : IValidateEventDetailModels
     {
         public List<KeyValuePair<string, string>> Validate(EventDetailModel model, CampaignSummaryModel parentCampaign)
         {
@@ -27,7 +27,7 @@ namespace AllReady.Areas.Admin.Models.Validators
         }
     }
 
-    public interface IValidateEventDetailsModels
+    public interface IValidateEventDetailModels
     {
         List<KeyValuePair<string, string>> Validate(EventDetailModel model, CampaignSummaryModel parentCampaign);
     }
