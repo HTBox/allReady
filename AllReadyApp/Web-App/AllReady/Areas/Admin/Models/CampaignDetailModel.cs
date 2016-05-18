@@ -62,5 +62,6 @@ namespace AllReady.Areas.Admin.Models
 
         public bool Locked { get; set; }
 
+        public bool Featured { get; set; }
     }
 }

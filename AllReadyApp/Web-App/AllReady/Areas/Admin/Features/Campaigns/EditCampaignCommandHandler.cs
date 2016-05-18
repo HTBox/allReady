@@ -52,6 +52,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.CampaignImpact = campaign.CampaignImpact.UpdateModel(message.Campaign.CampaignImpact);
             campaign.Location = campaign.Location.UpdateModel(message.Campaign.Location);
 
+            campaign.Featured = message.Campaign.Featured;
+
             if (campaign.CampaignImpact != null)
             {
                 _context.Update(campaign.CampaignImpact);
