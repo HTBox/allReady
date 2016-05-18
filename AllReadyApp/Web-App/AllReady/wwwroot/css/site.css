@@ -336,6 +336,8 @@ Navigation
     position: absolute;
     bottom: 0;
     right: 0;
+    margin-right: 1rem;
+    margin-bottom: .5rem;
     font-size: 9px;
 }
 
