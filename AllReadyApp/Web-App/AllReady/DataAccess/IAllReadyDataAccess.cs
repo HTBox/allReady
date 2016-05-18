@@ -94,11 +94,6 @@ namespace AllReady.Models
 
         #endregion
 
-        #region Skill CRUD
-        IEnumerable<Skill> Skills { get; }
-
-        #endregion
-
         #region Closest Locations
 
         IEnumerable<ClosestLocation> GetClosestLocations(LocationQuery query);
