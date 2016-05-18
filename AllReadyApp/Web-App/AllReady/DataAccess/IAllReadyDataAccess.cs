@@ -78,11 +78,5 @@ namespace AllReady.Models
 
         #endregion
 
-        #region Closest Locations
-
-        IEnumerable<ClosestLocation> GetClosestLocations(LocationQuery query);
-        IEnumerable<PostalCodeGeoCoordinate> GetPostalCodeCoordinates(string postalCode);
-
-        #endregion Closest Locations
     }
 }
