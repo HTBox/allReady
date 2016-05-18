@@ -647,12 +647,23 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(result.ViewName, "Error");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ConfirmEmailReturnsConfirmEmailViewWhenUsersEmailCanBeConfirmed()
-        {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
-        }
+		{
+			var userId = "userId";
+			var token = "someToken";
+			var userManager = CreateUserManagerMock();
+
+			var user = new ApplicationUser();
+
+			userManager.Setup(x => x.FindByIdAsync(userId)).Returns(() => Task.FromResult(user));
+			userManager.Setup(x => x.ConfirmEmailAsync(user, token)).Returns(() => Task.FromResult(IdentityResult.Success));
+			var sut = new AccountController(userManager.Object, null, null, null, null);
+
+			var result = await sut.ConfirmEmail(userId, token) as ViewResult;
+
+			Assert.Equal(result.ViewName, "ConfirmEmail");
+		}
 
         [Fact]
         public void ConfirmEmailHasHttpGetAttribute()
