@@ -70,22 +70,22 @@ footer {
 }
 
     .btn.btn-default, a.btn.btn-default {
-        background-color: hsl(28.6, 62.9%, 41.2%);
+        background-color: #d58033;
         color: #fff;
     }
 
         .btn.btn-default.active, a.btn.btn-default.active {
-            background-color: hsl(28.9, 80.4%, 50%);
+            background-color: #ab6627;
             color: #fff;
         }
 
             .btn.btn-default.active:hover, .btn.btn-default.active:focus {
-                background-color: hsl(28.9, 80.4%, 60%);
+                background-color: #ab6627;
             }
 
         .btn.btn-default:hover, .btn.btn-default:focus {
             color: #fff;
-            background-color: hsl(28.9, 80.4%, 68%);
+            background-color: #ab6627;
         }
 
 .btn-volunteer {
