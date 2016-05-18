@@ -24,7 +24,10 @@
     }
     <div class="col-md-10">
         <h2>
-            @Model.Name <a asp-controller="Event" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-controller="Event" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+            @Model.Name
+            <a asp-controller="Event" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
+            <a asp-controller="Event" asp-action="Duplicate" asp-route-id="@Model.Id" class="btn btn-default">Duplicate</a> 
+            <a asp-controller="Event" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>
         </h2>
         <p>@Model.Description</p>
         <p><time value="Model.StartDateTime"></time> - <time value="Model.EndDateTime"></time>
