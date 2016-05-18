@@ -23,8 +23,6 @@ namespace AllReady.Models
 
         IEnumerable<Campaign> Campaigns { get; }
         Campaign GetCampaign(int campaignId);
-        Task UpdateCampaign(Campaign value);
-
         #endregion
 
         #region Organization CRUD
@@ -43,10 +41,6 @@ namespace AllReady.Models
 
         ApplicationUser GetUser(string userId);
 
-        Task AddUser(ApplicationUser value);
-
-        Task DeleteUser(string userId);
-
         Task UpdateUser(ApplicationUser value);
 
         #endregion
@@ -61,26 +55,16 @@ namespace AllReady.Models
 
         Task DeleteEventAndTaskSignupsAsync(int eventSignupId);
 
-        Task UpdateEventSignupAsync(EventSignup value);
-
         #endregion
 
         #region TaskSignup CRUD
         IEnumerable<TaskSignup> TaskSignups { get; }
-
-        TaskSignup GetTaskSignup(int taskId, string userId);
-
-        Task AddTaskSignupAsync(TaskSignup taskSignup);
-
-        Task DeleteTaskSignupAsync(int taskSignupId);
 
         Task UpdateTaskSignupAsync(TaskSignup value);
         #endregion
 
         #region AllReadyTask CRUD
         IEnumerable<AllReadyTask> Tasks { get; }
-
-        AllReadyTask GetTask(int taskId, string userId);
 
         AllReadyTask GetTask(int taskId);
 

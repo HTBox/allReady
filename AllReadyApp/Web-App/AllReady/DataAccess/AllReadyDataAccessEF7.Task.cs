@@ -22,19 +22,6 @@ namespace AllReady.Models
             }
         }
 
-        AllReadyTask IAllReadyDataAccess.GetTask(int taskId, string userId)
-        {
-            var taskUser = _dbContext.TaskSignups.Where(tu => tu.User.Id == userId).SingleOrDefault();
-
-            return taskUser == null ? null :
-                _dbContext.Tasks
-                  .Include(x => x.Organization)
-                  .Include(x => x.Event)
-                  .Include(x => x.Event.Campaign)
-                  .Include(x => x.AssignedVolunteers)
-                  .Where(t => t.Id == taskId && t.AssignedVolunteers.Contains(taskUser)).SingleOrDefault();
-        }
-
         AllReadyTask IAllReadyDataAccess.GetTask(int taskId)
         {
             return _dbContext.Tasks

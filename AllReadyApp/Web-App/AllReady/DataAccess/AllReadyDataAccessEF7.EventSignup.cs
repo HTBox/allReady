@@ -44,20 +44,15 @@ namespace AllReady.Models
             {
                 return Task.FromResult(0);
             }
-            
+
             _dbContext.EventSignup.Remove(eventSignup);
 
             _dbContext.TaskSignups.RemoveRange(_dbContext.TaskSignups
                 .Where(e => e.Task.Event.Id == eventSignup.Event.Id)
                 .Where(e => e.User.Id == eventSignup.User.Id));
-                
+
             return _dbContext.SaveChangesAsync();
         }
 
-        Task IAllReadyDataAccess.UpdateEventSignupAsync(EventSignup value)
-        {
-            _dbContext.EventSignup.Update(value);
-            return _dbContext.SaveChangesAsync();
-        }
     }
 }

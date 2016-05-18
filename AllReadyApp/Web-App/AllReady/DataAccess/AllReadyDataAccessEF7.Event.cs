@@ -101,10 +101,5 @@ namespace AllReady.Models
             return _dbContext.Resources.Where(x => x.CategoryTag == category);
         }
 
-        Task IAllReadyDataAccess.UpdateCampaign(Campaign value)
-        {
-            _dbContext.Campaigns.Update(value);
-            return _dbContext.SaveChangesAsync();
-        }
     }
 }
