@@ -1131,18 +1131,33 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal<string>(result.ActionName, nameof(ManageController.Index));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginConfirmationInvokesGetExternalLoginInfoAsyncWhenModelStateIsValid()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var userManager = CreateUserManagerMock();
+            var signInManager = CreateSignInManagerMock(userManager);
+            signInManager.Setup(s => s.GetExternalLoginInfoAsync(It.Is<string>(xsrf => xsrf == null))).Returns(Task.FromResult(default(ExternalLoginInfo)));
+            var viewmodel = CreateExternalLoginConfirmationViewModel();
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, null);
+            sut.SetFakeUser("test");
+            await sut.ExternalLoginConfirmation(viewmodel);
+
+            signInManager.Verify(s => s.GetExternalLoginInfoAsync(It.Is<string>(xsrf => xsrf == null)), Times.Once());
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginConfirmationReturnsExternalLoginFailureViewUserIsNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var userManager = CreateUserManagerMock();
+            var signInManager = CreateSignInManagerMock(userManager);
+            signInManager.Setup(s => s.GetExternalLoginInfoAsync(It.Is<string>(xsrf => xsrf == null))).Returns(Task.FromResult(default(ExternalLoginInfo)));
+            var viewmodel = CreateExternalLoginConfirmationViewModel();
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, null);
+            sut.SetFakeUser("test");
+            var result = await sut.ExternalLoginConfirmation(viewmodel) as ViewResult;
+
+            Assert.Equal(result.ViewName, "ExternalLoginFailure");
+
         }
 
         [Fact]
