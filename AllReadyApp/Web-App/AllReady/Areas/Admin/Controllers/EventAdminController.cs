@@ -198,31 +198,30 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Duplicate(DuplicateEventModel viewModel)
+        public async Task<IActionResult> Duplicate(DuplicateEventModel model)
         {
-            if (viewModel == null)
+            if (model == null)
                 return HttpBadRequest();
 
-            var organizationId = _mediator.Send(new ManagingOrganizationIdByEventIdQuery { EventId = viewModel.Id });
+            var organizationId = _mediator.Send(new ManagingOrganizationIdByEventIdQuery { EventId = model.Id });
             if (!User.IsOrganizationAdmin(organizationId))
                 return HttpUnauthorized();
 
-            var existingEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = viewModel.Id });
+            var existingEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = model.Id });
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = existingEvent.CampaignId });
-            var newEvent = buildNewEventDetailsModel(existingEvent, viewModel);
+            var newEvent = buildNewEventDetailsModel(existingEvent, model);
 
             var errors = _eventDetailModelValidator.Validate(newEvent, campaign);
             errors.ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)
             {
-                var id = await _mediator.SendAsync(new EditEventCommand { Event = newEvent });
-                await _mediator.SendAsync(new DuplicateEventCommand { FromEventId = viewModel.Id, ToEventId = id });
+                var id = await _mediator.SendAsync(new DuplicateEventCommand { DuplicateEventModel = model });
 
                 return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
             }
 
-            return View(viewModel);
+            return View(model);
         }
 
         private EventDetailModel buildNewEventDetailsModel(EventDetailModel existingEvent, DuplicateEventModel newEventDetails)
