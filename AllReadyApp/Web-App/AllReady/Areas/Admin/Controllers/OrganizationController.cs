@@ -1,6 +1,7 @@
 ﻿using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
+using AllReady.Security;
 using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Authorization;
@@ -112,6 +113,6 @@ namespace AllReady.Areas.Admin.Controllers
         {
             _mediator.Send(new OrganizationDeleteCommand { Id= id });
             return RedirectToAction("Index");
-        }        
+        }               
     }
 }
