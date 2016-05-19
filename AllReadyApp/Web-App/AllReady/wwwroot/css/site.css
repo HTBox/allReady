@@ -72,6 +72,8 @@ footer {
     .btn.btn-default, a.btn.btn-default {
         background-color: hsl(28.6, 62.9%, 41.2%);
         color: #fff;
+        border-radius: 6px;
+        border-width: 0;
     }
 
         .btn.btn-default.active, a.btn.btn-default.active {
@@ -489,4 +491,14 @@ Navigation
 
 .star-highlight {
     color: #609E43;
+}
+
+.row-btn-margin {
+    margin-top: -0.2em;
+    margin-bottom: -0.2em;
+}
+
+.org-image {
+    max-width: 400px;
+    max-height: 100px;
 }
