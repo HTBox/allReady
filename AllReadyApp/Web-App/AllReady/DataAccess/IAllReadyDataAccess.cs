@@ -23,17 +23,6 @@ namespace AllReady.Models
 
         IEnumerable<Campaign> Campaigns { get; }
         Campaign GetCampaign(int campaignId);
-        Task UpdateCampaign(Campaign value);
-
-        #endregion
-
-        #region Organization CRUD
-
-        IEnumerable<Organization> Organizations { get; }
-        Organization GetOrganization(int organizationId);
-        Task AddOrganization(Organization value);
-        Task DeleteOrganization(int id);
-        Task UpdateOrganization(Organization value);
 
         #endregion
 
@@ -42,10 +31,6 @@ namespace AllReady.Models
         IEnumerable<ApplicationUser> Users { get; }
 
         ApplicationUser GetUser(string userId);
-
-        Task AddUser(ApplicationUser value);
-
-        Task DeleteUser(string userId);
 
         Task UpdateUser(ApplicationUser value);
 
@@ -61,26 +46,16 @@ namespace AllReady.Models
 
         Task DeleteEventAndTaskSignupsAsync(int eventSignupId);
 
-        Task UpdateEventSignupAsync(EventSignup value);
-
         #endregion
 
         #region TaskSignup CRUD
         IEnumerable<TaskSignup> TaskSignups { get; }
-
-        TaskSignup GetTaskSignup(int taskId, string userId);
-
-        Task AddTaskSignupAsync(TaskSignup taskSignup);
-
-        Task DeleteTaskSignupAsync(int taskSignupId);
 
         Task UpdateTaskSignupAsync(TaskSignup value);
         #endregion
 
         #region AllReadyTask CRUD
         IEnumerable<AllReadyTask> Tasks { get; }
-
-        AllReadyTask GetTask(int taskId, string userId);
 
         AllReadyTask GetTask(int taskId);
 
@@ -94,16 +69,5 @@ namespace AllReady.Models
 
         #endregion
 
-        #region Skill CRUD
-        IEnumerable<Skill> Skills { get; }
-
-        #endregion
-
-        #region Closest Locations
-
-        IEnumerable<ClosestLocation> GetClosestLocations(LocationQuery query);
-        IEnumerable<PostalCodeGeoCoordinate> GetPostalCodeCoordinates(string postalCode);
-
-        #endregion Closest Locations
     }
 }

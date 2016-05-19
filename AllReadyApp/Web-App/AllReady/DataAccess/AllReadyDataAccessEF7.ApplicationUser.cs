@@ -27,23 +27,6 @@ namespace AllReady.Models
                 .SingleOrDefault();
         }
 
-        Task IAllReadyDataAccess.AddUser(ApplicationUser value)
-        {
-            _dbContext.Users.Add(value);
-            return _dbContext.SaveChangesAsync();
-        }
-
-        Task IAllReadyDataAccess.DeleteUser(string userId)
-        {
-            var toDelete = _dbContext.Users.Where(u => u.Id == userId).SingleOrDefault();
-            if (toDelete != null)
-            {
-                _dbContext.Users.Remove(toDelete);
-                return _dbContext.SaveChangesAsync();
-            }
-            return Task.FromResult(0);
-        }
-
         Task IAllReadyDataAccess.UpdateUser(ApplicationUser value)
         {
             //First remove any skills that are no longer associated with this user
