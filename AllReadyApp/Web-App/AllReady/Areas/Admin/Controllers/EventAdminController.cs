@@ -198,7 +198,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Duplicate(EventDuplicateModel viewModel)
+        public async Task<IActionResult> Duplicate(DuplicateEventModel viewModel)
         {
             if (viewModel == null)
                 return HttpBadRequest();
@@ -225,7 +225,7 @@ namespace AllReady.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-        private EventDetailModel buildNewEventDetailsModel(EventDetailModel existingEvent, EventDuplicateModel newEventDetails)
+        private EventDetailModel buildNewEventDetailsModel(EventDetailModel existingEvent, DuplicateEventModel newEventDetails)
         {
             existingEvent.Id = 0;
             existingEvent.Name = newEventDetails.Name;
