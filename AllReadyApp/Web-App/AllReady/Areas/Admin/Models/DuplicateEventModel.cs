@@ -5,7 +5,7 @@ using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models
 {
-    public class EventDuplicateModel
+    public class DuplicateEventModel
     {
         public int Id { get; set; }
 

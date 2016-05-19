@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Events
 {
-    public class DupicateEventQueryHandler : IAsyncRequestHandler<DuplicateEventQuery, EventDuplicateModel>
+    public class DupicateEventQueryHandler : IAsyncRequestHandler<DuplicateEventQuery, DuplicateEventModel>
     {
         private readonly AllReadyContext _context;
 
@@ -16,15 +16,15 @@ namespace AllReady.Areas.Admin.Features.Events
             _context = context;
         }
 
-        public async Task<EventDuplicateModel> Handle(DuplicateEventQuery message)
+        public async Task<DuplicateEventModel> Handle(DuplicateEventQuery message)
         {
-            EventDuplicateModel result = null;
+            DuplicateEventModel result = null;
 
             var campaignEvent = await GetEvent(message);
 
             if (campaignEvent != null)
             {
-                result = new EventDuplicateModel
+                result = new DuplicateEventModel
                 {
                     Id = campaignEvent.Id,
                     CampaignName = campaignEvent.Campaign.Name,
