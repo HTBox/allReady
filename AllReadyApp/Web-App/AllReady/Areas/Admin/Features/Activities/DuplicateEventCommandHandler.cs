@@ -78,8 +78,8 @@ namespace AllReady.Areas.Admin.Features.Events
                 if (task.StartDateTime.HasValue)
                     newTask.StartDateTime = newEvent.StartDateTime - (eventToDuplicate.StartDateTime - task.StartDateTime.Value);
 
-                if (task.EndDateTime.HasValue)
-                    newTask.EndDateTime = newEvent.EndDateTime - (eventToDuplicate.EndDateTime - task.EndDateTime.Value);
+                if (task.EndDateTime.HasValue && task.StartDateTime.HasValue && newTask.StartDateTime.HasValue)
+                    newTask.EndDateTime = newTask.StartDateTime + (task.EndDateTime - task.StartDateTime);
 
                 _context.Tasks.Add(newTask);
             }
