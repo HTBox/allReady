@@ -1134,11 +1134,11 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task ExternalLoginConfirmationInvokesGetExternalLoginInfoAsyncWhenModelStateIsValid()
         {
-            var userManaer = CreateUserManagerMock();
-            var signInManager = CreateSignInManagerMock(userManaer);
+            var userManager = CreateUserManagerMock();
+            var signInManager = CreateSignInManagerMock(userManager);
             signInManager.Setup(s => s.GetExternalLoginInfoAsync(It.Is<string>(xsrf => xsrf == null))).Returns(Task.FromResult(default(ExternalLoginInfo)));
             var viewmodel = CreateExternalLoginConfirmationViewModel();
-            var sut = new AccountController(userManaer.Object, signInManager.Object, null, null, null);
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, null);
             sut.SetFakeUser("test");
             await sut.ExternalLoginConfirmation(viewmodel);
 
@@ -1148,11 +1148,11 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task ExternalLoginConfirmationReturnsExternalLoginFailureViewUserIsNull()
         {
-            var userManaer = CreateUserManagerMock();
-            var signInManager = CreateSignInManagerMock(userManaer);
+            var userManager = CreateUserManagerMock();
+            var signInManager = CreateSignInManagerMock(userManager);
             signInManager.Setup(s => s.GetExternalLoginInfoAsync(It.Is<string>(xsrf => xsrf == null))).Returns(Task.FromResult(default(ExternalLoginInfo)));
             var viewmodel = CreateExternalLoginConfirmationViewModel();
-            var sut = new AccountController(userManaer.Object, signInManager.Object, null, null, null);
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, null);
             sut.SetFakeUser("test");
             var result = await sut.ExternalLoginConfirmation(viewmodel) as ViewResult;
 
