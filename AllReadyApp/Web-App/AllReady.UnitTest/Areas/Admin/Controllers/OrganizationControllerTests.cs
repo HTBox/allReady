@@ -141,6 +141,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             CreateSut();
             OrganizationEditModel model = AgincourtAware;
             IRequest<int> command = new OrganizationEditCommand() { Organization = model };
+            _mediator.Setup(y => y.Send(It.IsAny<OrganizationNameUniqueQuery>())).Returns(() =>
+            {
+                return true;
+            });
             _mediator.Setup(x => x.Send(It.IsAny<OrganizationEditCommand>())).Returns(() => {
                 IRequestHandler<OrganizationEditCommand, int> handler = new OrganizationEditCommandHandler(Context);
                 return handler.Handle((OrganizationEditCommand)command);
@@ -189,7 +193,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockContext = MockActionContextWithUser(SiteAdmin());
             controller.ActionContext = mockContext.Object;
-
+            mockMediator.Setup(y => y.Send(It.IsAny<OrganizationNameUniqueQuery>())).Returns(() =>{return true;});
             controller.Edit(_organizationEditModel);
 
             mockMediator.Verify(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == _organizationEditModel)));
@@ -266,6 +270,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var model = new OrganizationEditModel();
 
+            mockMediator.Setup(y => y.Send(It.IsAny<OrganizationNameUniqueQuery>())).Returns(() => { return true; });
             mockMediator.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
 
             var result = (RedirectToActionResult)controller.Edit(model);

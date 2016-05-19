@@ -1,7 +1,6 @@
 ﻿using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
-using AllReady.Security;
 using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Authorization;
@@ -73,20 +72,15 @@ namespace AllReady.Areas.Admin.Controllers
             
             if (ModelState.IsValid)
             {
-                var originalOrganization = _dataAccess.GetOrganization(organization.Id);
-                if (originalOrganization != null)
-                {
-                    if (originalOrganization.Name != organization.Name)
-                        ValidateUniqueOrganizationName(organization);
-                }
-                else
-                {
-                    ValidateUniqueOrganizationName(organization);
-                }
-                if (ModelState.IsValid)
+                bool isNameUnique = _mediator.Send(new OrganizationNameUniqueQuery() { OrganizationName = organization.Name, OrganizationId = organization.Id });
+                if (isNameUnique)
                 {
                     int id = _mediator.Send(new OrganizationEditCommand { Organization = organization });
                     return RedirectToAction("Details", new { id = id, area = "Admin" });
+                }
+                else
+                {
+                    ModelState.AddModelError(nameof(organization.Name), "Organization with same name already exists. Please use different name.");
                 }
             }
 
@@ -118,16 +112,6 @@ namespace AllReady.Areas.Admin.Controllers
         {
             _mediator.Send(new OrganizationDeleteCommand { Id= id });
             return RedirectToAction("Index");
-        }
-
-        private void ValidateUniqueOrganizationName(OrganizationEditModel organization)
-        {
-            var orgs = _dataAccess.Organizations.Select(t => new OrganizationViewModel(t)).ToList();
-            var existingOrgCount = orgs.Where(o => o.Name == organization.Name).ToList().Count;
-            if (existingOrgCount > 0)
-            {
-                ModelState.AddModelError(nameof(organization.Name), "Organization with same name already exists. Please use different name.");
-            }
-        }
+        }        
     }
 }
