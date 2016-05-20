@@ -475,10 +475,9 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task LogOffInvokesSignOutAsync()
         {
-            var userManager = CreateUserManagerMock();
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = CreateSignInManagerMock(CreateUserManagerMock());
 
-            var sut = new AccountController(userManager.Object, signInManager.Object, null,null, null);
+            var sut = new AccountController(null, signInManager.Object, null,null, null);
 
             await sut.LogOff();
             signInManager.Verify(x => x.SignOutAsync(), Times.Once);
@@ -487,11 +486,10 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task LogOffRedirectToCorrectActionAndController()
         {
-            var userManager = CreateUserManagerMock();
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = CreateSignInManagerMock(CreateUserManagerMock());
             signInManager.Setup(x => x.SignOutAsync()).Returns(() => Task.FromResult(It.IsAny<Task>()));
 
-            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, null);
+            var sut = new AccountController(null, signInManager.Object, null, null, null);
 
             var result = await sut.LogOff() as RedirectToActionResult;
 
@@ -723,7 +721,7 @@ namespace AllReady.UnitTest.Controllers
 
 			var user = new ApplicationUser();
 
-			userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user)).Verifiable();
+			userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
 			var sut = new AccountController(userManager.Object, null, null, null, null);
 			
 			var result = await sut.ForgotPassword(vm) as ViewResult;
@@ -769,7 +767,7 @@ namespace AllReady.UnitTest.Controllers
 
 			var user = default(ApplicationUser);
 
-			userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user)).Verifiable();
+			userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
 			var sut = new AccountController(userManager.Object, null, null, null, null);
 
 			var result = await sut.ForgotPassword(vm) as ViewResult;
@@ -792,7 +790,7 @@ namespace AllReady.UnitTest.Controllers
 
 			var user = new ApplicationUser();
 
-			userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user)).Verifiable();
+			userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
 			userManager.Setup(x => x.IsEmailConfirmedAsync(user)).Returns(() => Task.FromResult(false));
 			var sut = new AccountController(userManager.Object, null, null, null, null);
 
@@ -802,39 +800,156 @@ namespace AllReady.UnitTest.Controllers
 
 		}
 
-		[Fact(Skip = "NotImplemented")]
+		[Fact]
 		public async Task ForgotPasswordPostInvokesGeneratePasswordResetTokenAsyncWithCorrectUserWhenModelStateIsValidAndUserIsNotNullAndUsersEmailHasBeenVerified()
 		{
-			//delete this line when starting work on this unit test
-			await taskFromResultZero;
-		}
+            var email = "user@domain.tld";
 
-		[Fact(Skip = "NotImplemented")]
+            var vm = new ForgotPasswordViewModel()
+            {
+                Email = email
+            };
+
+            var userManager = CreateUserManagerMock();
+
+            var user = new ApplicationUser();
+
+            userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
+            userManager.Setup(x => x.IsEmailConfirmedAsync(user)).Returns(() => Task.FromResult(true));
+            userManager.Setup(x => x.GeneratePasswordResetTokenAsync(user)).Returns(()=> Task.FromResult(It.IsAny<string>()));
+
+            var emailSender = new Mock<IEmailSender>();
+            emailSender.Setup(x => x.SendEmailAsync(email, It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<Task>()));
+
+            var sut = new AccountController(userManager.Object, null, emailSender.Object, null, null);
+
+            sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
+            sut.Url = Mock.Of<IUrlHelper>();
+
+            await sut.ForgotPassword(vm);
+
+            userManager.Verify(x => x.GeneratePasswordResetTokenAsync(user), Times.Once);
+        }
+
+		[Fact]
         public async Task ForgotPasswordPostInvokesUrlActionWithCorrectParametersWhenModelStateIsValidAndUserIsNotNullAndUsersEmailHasBeenVerified()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string requestScheme = "requestScheme";
+            var email = "user@domain.tld";
+
+            var vm = new ForgotPasswordViewModel()
+            {
+                Email = email
+            };
+
+            var userManager = CreateUserManagerMock();
+
+            var user = new ApplicationUser();
+
+            userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
+            userManager.Setup(x => x.IsEmailConfirmedAsync(user)).Returns(() => Task.FromResult(true));
+            userManager.Setup(x => x.GeneratePasswordResetTokenAsync(user)).Returns(() => Task.FromResult(It.IsAny<string>()));
+
+            var emailSender = new Mock<IEmailSender>();
+            emailSender.Setup(x => x.SendEmailAsync(email, It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<Task>()));
+
+            var sut = new AccountController(userManager.Object, null, emailSender.Object, null, null);
+
+            var urlHelper = new Mock<IUrlHelper>();
+
+            sut.SetFakeHttpRequestSchemeTo(requestScheme);
+            sut.Url = urlHelper.Object;
+
+            await sut.ForgotPassword(vm);
+
+            urlHelper.Verify(mock => mock.Action(It.Is<UrlActionContext>(uac => 
+                        uac.Action == "ResetPassword" 
+                        && uac.Controller == "Account" 
+                        && uac.Protocol == requestScheme)),Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ForgotPasswordPostInvokesSendEmailAsyncWithCorrectParametersWhenModelStateIsValidAndUserIsNotNullAndUsersEmailHasBeenVerified()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var email = "user@domain.tld";
+            const string callbackUrl = "callbackUrl";
+
+            var vm = new ForgotPasswordViewModel()
+            {
+                Email = email
+            };
+
+            var userManager = CreateUserManagerMock();
+
+            var user = new ApplicationUser();
+
+            userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
+            userManager.Setup(x => x.IsEmailConfirmedAsync(user)).Returns(() => Task.FromResult(true));
+            userManager.Setup(x => x.GeneratePasswordResetTokenAsync(user)).Returns(() => Task.FromResult(It.IsAny<string>()));
+
+            var emailSender = new Mock<IEmailSender>();
+            emailSender.Setup(x => x.SendEmailAsync(email, It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<Task>()));
+
+            var sut = new AccountController(userManager.Object, null, emailSender.Object, null, null);
+
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(callbackUrl);
+
+            sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
+            sut.Url = urlHelper.Object;
+
+            await sut.ForgotPassword(vm);
+
+            emailSender.Verify(x => x.SendEmailAsync(email, It.IsAny<string>(), It.Is<string>(y => y.Contains(callbackUrl))), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ForgotPasswordPostReturnsForgotPasswordConfirmationViewWhenModelStateIsValidAndUserIsNotNullAndUsersEmailHasBeenVerified()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var email = "user@domain.tld";
+
+            var vm = new ForgotPasswordViewModel()
+            {
+                Email = email
+            };
+
+            var userManager = CreateUserManagerMock();
+
+            var user = new ApplicationUser();
+
+            userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
+            userManager.Setup(x => x.IsEmailConfirmedAsync(user)).Returns(() => Task.FromResult(true));
+            userManager.Setup(x => x.GeneratePasswordResetTokenAsync(user)).Returns(() => Task.FromResult(It.IsAny<string>()));
+
+            var emailSender = new Mock<IEmailSender>();
+            emailSender.Setup(x => x.SendEmailAsync(email, It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<Task>()));
+
+            var sut = new AccountController(userManager.Object, null, emailSender.Object, null, null);
+
+            sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
+            sut.Url = Mock.Of<IUrlHelper>();
+
+            var result = await sut.ForgotPassword(vm) as ViewResult;
+
+            Assert.Equal(result.ViewName, "ForgotPasswordConfirmation");
+
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ForgotPasswordPostReturnsTheSameViewAndViewModelWhenModelStateIsInvalid()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+
+            var vm = new ForgotPasswordViewModel();
+
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            sut.AddModelStateError();
+
+            var result = await sut.ForgotPassword(vm) as ViewResult;
+            var modelResult = result.ViewData.Model as ForgotPasswordViewModel;
+
+            Assert.IsType<ViewResult>(result);
+            Assert.IsType<ForgotPasswordViewModel>(modelResult);
+            Assert.Same(modelResult, vm);
         }
 
         [Fact]
@@ -896,53 +1011,160 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ResetPasswordPostReturnsTheSameViewAndViewModelWhenModelStateIsInvalid()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var vm = new ResetPasswordViewModel();
+
+            var sut = CreateAccountControllerWithNoInjectedDependencies();
+            sut.AddModelStateError();
+
+            var result = await sut.ResetPassword(vm) as ViewResult;
+            var modelResult = result.ViewData.Model as ResetPasswordViewModel;
+
+            Assert.IsType<ViewResult>(result);
+            Assert.IsType<ResetPasswordViewModel>(modelResult);
+            Assert.Same(modelResult, vm);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ResetPasswordPostInvokesFindByNameAsyncWithTheCorrecEmailWhenModelStateIsValid()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var email = "user@domain.tld";
+
+            var vm = new ResetPasswordViewModel()
+            {
+                Email = email
+            };
+
+            var userManager = CreateUserManagerMock();
+
+            var user = new ApplicationUser();
+
+            userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
+            userManager.Setup(x => x.ResetPasswordAsync(user, It.IsAny<string>(), It.IsAny<string>())).Returns(()=> Task.FromResult(IdentityResult.Success));
+            var sut = new AccountController(userManager.Object, null, null, null, null);
+
+            await sut.ResetPassword(vm);
+
+            userManager.Verify(m => m.FindByNameAsync(email), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ResetPasswordPostRedirectsToCorrectActionWhenUserIsNullAndModelStateIsValid()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var email = "user@domain.tld";
+
+            var vm = new ResetPasswordViewModel()
+            {
+                Email = email
+            };
+
+            var userManager = CreateUserManagerMock();
+
+            userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult((ApplicationUser)null));
+            var sut = new AccountController(userManager.Object, null, null, null, null);
+
+            var result = await sut.ResetPassword(vm) as RedirectToActionResult;
+
+            Assert.Equal("ResetPasswordConfirmation", result.ActionName);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ResetPasswordPostInvokesResetPasswordAsyncWithCorrectParametersWhenUserIsNotNullAndModelStateIsValid()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var email = "user@domain.tld";
+
+            var vm = new ResetPasswordViewModel()
+            {
+                Email = email,
+                Password = "pass",
+                Code = "code"
+            };
+
+            var userManager = CreateUserManagerMock();
+
+            var user = new ApplicationUser();
+
+            userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
+            userManager.Setup(x => x.ResetPasswordAsync(user, It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            var sut = new AccountController(userManager.Object, null, null, null, null);
+
+            await sut.ResetPassword(vm);
+
+            userManager.Verify(m => m.ResetPasswordAsync(user,It.Is<string>(y=> y == vm.Code),It.Is<string>(y=> y == vm.Password)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ResetPasswordPostRedirectsToCorrectActionWhenUsersPasswordResetSucceededAndUserIsNotNullAndModelStateIsValid()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var email = "user@domain.tld";
+
+            var vm = new ResetPasswordViewModel()
+            {
+                Email = email
+            };
+
+            var userManager = CreateUserManagerMock();
+
+            var user = new ApplicationUser();
+
+            userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
+            userManager.Setup(x => x.ResetPasswordAsync(user, It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            var sut = new AccountController(userManager.Object, null, null, null, null);
+
+            var result = await sut.ResetPassword(vm) as RedirectToActionResult;
+
+            Assert.Equal("ResetPasswordConfirmation", result.ActionName);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ResetPasswordPostAddsIdentityResultErrorsToModelStateErrorsWhenUsersPasswordResetFailedAndUserIsNotNullAndModelStateIsValid()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var email = "user@domain.tld";
+
+            var vm = new ResetPasswordViewModel()
+            {
+                Email = email
+            };
+
+            var userManager = CreateUserManagerMock();
+            var identityResult = IdentityResult.Failed(new IdentityError { Description = "IdentityErrorDescription" });
+            var user = new ApplicationUser();
+
+            userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
+            userManager.Setup(x => x.ResetPasswordAsync(user, It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(identityResult));
+            var sut = new AccountController(userManager.Object, null, null, null, null);
+
+            var result = await sut.ResetPassword(vm) as ViewResult;
+
+            var errorMessages = sut.ModelState.GetErrorMessages();
+            Assert.Equal(identityResult.Errors.Select(x => x.Description).Single(), errorMessages.Single());
+
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ResetPasswordPostReturnsAViewWhenUsersPasswordResetFailedAndUserIsNotNullAndModelStateIsValid()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var email = "user@domain.tld";
+
+            var vm = new ResetPasswordViewModel()
+            {
+                Email = email
+            };
+
+            var userManager = CreateUserManagerMock();
+            var user = new ApplicationUser();
+
+            userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
+            userManager.Setup(x => x.ResetPasswordAsync(user, It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Failed()));
+            var sut = new AccountController(userManager.Object, null, null, null, null);
+
+            var result = await sut.ResetPassword(vm) as ViewResult;
+
+            Assert.IsType<ViewResult>(result);
+            Assert.Null(result.ViewData.Model);
+
         }
 
         [Fact]
