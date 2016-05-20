@@ -60,12 +60,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(true, sut.IsAllowWaitList);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public void CreateANewLocationEntity()
+        [Fact]
+        public async Task CreateANewLocationEntity()
         {
-            Event _EventToDuplicate = new Event();
-            Event _NewEvent = new Event();
-            Assert.False(_EventToDuplicate.Location.Id == _NewEvent.Location.Id);
+            var sut = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
+
+            Assert.Equal(2, sut.Location.Id);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -131,6 +131,18 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         {
             var campaign = new Campaign() { Id = 1 };
 
+            var location = new Location()
+            {
+                Address1 = "Address1",
+                Address2 = "Address2",
+                City = "City",
+                State = "State",
+                PostalCode = "PostalCode",
+                Name = "Name",
+                PhoneNumber = "PhoneNumber",
+                Country = "Country"
+            };
+
             var tasks = new List<AllReadyTask>()
                 {
                     new AllReadyTask(),
@@ -148,18 +160,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 NumberOfVolunteersRequired = 10,
                 StartDateTime = new DateTimeOffset(2016, 1, 1, 0, 0, 0, new TimeSpan()),
                 EndDateTime = new DateTimeOffset(2016, 1, 31, 0, 0, 0, new TimeSpan()),
-                Location = new Location()
-                {
-                    Id = 1,
-                    Address1 = "Address1",
-                    Address2 = "Address2",
-                    City = "City",
-                    State = "State",
-                    PostalCode = "PostalCode",
-                    Name = "Name",
-                    PhoneNumber = "PhoneNumber",
-                    Country = "Country"
-                },
+                Location = location,
                 Tasks = tasks,
                 UsersSignedUp = new List<EventSignup>()
                 {
@@ -179,6 +180,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 IsAllowWaitList = true
             };
             Context.Add(campaign);
+            Context.Add(location);
             Context.Add(@event);
             Context.AddRange(tasks);
             Context.SaveChanges();
