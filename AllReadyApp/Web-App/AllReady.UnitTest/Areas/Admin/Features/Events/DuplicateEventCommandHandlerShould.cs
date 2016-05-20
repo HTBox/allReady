@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal("Name", sut.Location.Name);
             Assert.Equal("PhoneNumber", sut.Location.PhoneNumber);
             Assert.Equal("Country", sut.Location.Country);
-            Assert.Equal(3, sut.Tasks.Count());
+            Assert.Equal(2, sut.Tasks.Count());
             Assert.Equal(0, sut.UsersSignedUp.Count());
             Assert.Equal("Organizer", sut.Organizer.Id);
             Assert.Equal("ImageUrl", sut.ImageUrl);
@@ -68,47 +68,50 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(2, sut.Location.Id);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public void CreateNewTaskEntities()
+        [Fact]
+        public async Task CreateNewTaskEntities()
         {
-            // Todo: Improve this:
-            // - Linqify
-            // - Collection Equivalence
-            // - Note: Equals and NotEquals assertions require expected values, 
-            //         however in this case, we don't know. Well we do under test,
-            //         but that would make the test brittle and dependant on the current test setup.
-            Event _EventToDuplicate = new Event();
-            Event _NewEvent = new Event();
-            for (int i = 0; i < _EventToDuplicate.Tasks.Count; i++)
+            var sut = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
+
+            Assert.Equal(2, sut.Tasks.Count());
+            Assert.Equal(3, sut.Tasks[0].Id);
+            Assert.Equal(4, sut.Tasks[1].Id);
+        }
+
+        [Fact]
+        public async Task MaintainOffsetBetweenTaskStartTimeAndEventStartTimeInNewTask()
+        {
+            var duplicateEventModel = new DuplicateEventModel()
             {
-                Assert.False(_EventToDuplicate.Tasks[i].Id == _NewEvent.Tasks[i].Id);
-            }
+                Id = EVENT_TO_DUPLICATE_ID,
+                Name = "Name",
+                Description = "Description",
+                StartDateTime = new DateTimeOffset(2016, 2, 1, 0, 0, 0, new TimeSpan()),
+                EndDateTime = new DateTimeOffset(2016, 2, 28, 0, 0, 0, new TimeSpan())
+            };
+
+            var sut = await DuplicateEvent(duplicateEventModel);
+
+            Assert.Equal(new DateTimeOffset(2016, 2, 1, 9, 0, 0, new TimeSpan()), sut.Tasks[0].StartDateTime);
+            Assert.Equal(new DateTimeOffset(2016, 2, 2, 10, 0, 0, new TimeSpan()), sut.Tasks[1].StartDateTime);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public void MaintainOffsetBetweenTaskStartTimeAndEventStartTimeInNewTask()
+        [Fact]
+        public async Task MaintainTaskDurationInNewTask()
         {
-            Event _EventToDuplicate = new Event();
-            Event _NewEvent = new Event();
-            var offsetsBetweenTaskStartTimeAndEventStartTimeForTaskToDuplicate =
-                _EventToDuplicate.Tasks.Select(t => t.StartDateTime - _EventToDuplicate.StartDateTime);
+            var duplicateEventModel = new DuplicateEventModel()
+            {
+                Id = EVENT_TO_DUPLICATE_ID,
+                Name = "Name",
+                Description = "Description",
+                StartDateTime = new DateTimeOffset(2016, 2, 1, 0, 0, 0, new TimeSpan()),
+                EndDateTime = new DateTimeOffset(2016, 2, 28, 0, 0, 0, new TimeSpan())
+            };
 
-            var offsetsBetweenTaskStartTimeAndEventStartTimeForNewTask =
-                _NewEvent.Tasks.Select(t => t.StartDateTime - _NewEvent.StartDateTime);
+            var sut = await DuplicateEvent(duplicateEventModel);
 
-            Assert.Equal(offsetsBetweenTaskStartTimeAndEventStartTimeForTaskToDuplicate,
-                offsetsBetweenTaskStartTimeAndEventStartTimeForNewTask);
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public void MaintainTaskDurationInNewTask()
-        {
-            Event _EventToDuplicate = new Event();
-            Event _NewEvent = new Event();
-            var eventToDuplicateTaskDurations = _EventToDuplicate.Tasks.Select(t => t.EndDateTime - t.StartDateTime);
-            var newEventTaskDurations = _NewEvent.Tasks.Select(t => t.EndDateTime - t.StartDateTime);
-
-            Assert.Equal(eventToDuplicateTaskDurations, newEventTaskDurations);
+            Assert.Equal(new TimeSpan(8, 0, 0), sut.Tasks[0].EndDateTime - sut.Tasks[0].StartDateTime);
+            Assert.Equal(new TimeSpan(6, 0, 0), sut.Tasks[1].EndDateTime - sut.Tasks[1].StartDateTime);
         }
 
         #region Helpers
@@ -145,9 +148,16 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
 
             var tasks = new List<AllReadyTask>()
                 {
-                    new AllReadyTask(),
-                    new AllReadyTask(),
                     new AllReadyTask()
+                    {
+                        StartDateTime = new DateTimeOffset(2016, 1, 1, 9, 0, 0, new TimeSpan()),
+                        EndDateTime = new DateTimeOffset(2016, 1, 1, 17, 0, 0, new TimeSpan())
+                    },
+                    new AllReadyTask()
+                    {
+                        StartDateTime = new DateTimeOffset(2016, 1, 2, 10, 0, 0, new TimeSpan()),
+                        EndDateTime = new DateTimeOffset(2016, 1, 2, 16, 0, 0, new TimeSpan())
+                    },
                 };
 
             var @event = new Event()
