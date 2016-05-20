@@ -104,10 +104,15 @@ namespace AllReady.Areas.Admin.Features.Events
         private async Task<Event> GetEvent(int eventId)
         {
             return await _context.Events
-                .AsNoTracking()
-                .Include(a => a.Tasks)
-                .SingleOrDefaultAsync(c => c.Id == eventId)
-                .ConfigureAwait(false);
+                // Todo: Uncomment .AsNoTracking()
+                // We expect the Event to duplicate to be treated as read only.
+                // But weirdly when doing so, the Event returned does not include the Location property.
+                // Todo: Update Event model to include LocationId
+                //.AsNoTracking()
+                .Include(e => e.Location)
+                .Include(e => e.Tasks)
+                .SingleOrDefaultAsync(e => e.Id == eventId);
+                //.ConfigureAwait(false); // Todo: Check what this is and if its needed.
         }
     }
 }
