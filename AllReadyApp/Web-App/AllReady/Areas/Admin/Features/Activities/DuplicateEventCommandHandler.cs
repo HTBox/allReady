@@ -33,6 +33,7 @@ namespace AllReady.Areas.Admin.Features.Events
             newEvent = cloneEvent(eventToDuplicate);
             updateEvent(newEvent, model);
             cloneEventTasks(newEvent, eventToDuplicate);
+            cloneEventLocation(newEvent, eventToDuplicate);
 
             return newEvent;
         }
@@ -48,7 +49,6 @@ namespace AllReady.Areas.Admin.Features.Events
                 NumberOfVolunteersRequired = eventToDuplicate.NumberOfVolunteersRequired,
                 StartDateTime = eventToDuplicate.StartDateTime,
                 EndDateTime = eventToDuplicate.EndDateTime,
-                Location = eventToDuplicate.Location,
                 Organizer = eventToDuplicate.Organizer,
                 ImageUrl = eventToDuplicate.ImageUrl,
                 IsLimitVolunteers = eventToDuplicate.IsLimitVolunteers,
@@ -101,18 +101,32 @@ namespace AllReady.Areas.Admin.Features.Events
             };
         }
 
+        private void cloneEventLocation(Event newEvent, Event eventToDuplicate)
+        {
+            var newLocation = new Location()
+            {
+                Address1 = eventToDuplicate.Location.Address1,
+                Address2 = eventToDuplicate.Location.Address2,
+                City = eventToDuplicate.Location.City,
+                State = eventToDuplicate.Location.State,
+                PostalCode = eventToDuplicate.Location.PostalCode,
+                Name = eventToDuplicate.Location.Name,
+                PhoneNumber = eventToDuplicate.Location.PhoneNumber,
+                Country = eventToDuplicate.Location.Country
+            };
+
+            newEvent.Location = newLocation;
+            _context.Locations.Add(newLocation);
+        }
+
         private async Task<Event> GetEvent(int eventId)
         {
             return await _context.Events
-                // Todo: Uncomment .AsNoTracking()
-                // We expect the Event to duplicate to be treated as read only.
-                // But weirdly when doing so, the Event returned does not include the Location property.
-                // Todo: Update Event model to include LocationId
-                //.AsNoTracking()
+                .AsNoTracking()
                 .Include(e => e.Location)
                 .Include(e => e.Tasks)
                 .SingleOrDefaultAsync(e => e.Id == eventId);
-                //.ConfigureAwait(false); // Todo: Check what this is and if its needed.
+            //.ConfigureAwait(false); // Todo: Check what this is and if its needed.
         }
     }
 }
