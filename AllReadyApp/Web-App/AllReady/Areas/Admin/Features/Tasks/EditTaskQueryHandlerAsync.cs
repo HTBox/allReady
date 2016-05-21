@@ -6,7 +6,7 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class EditTaskQueryHandlerAsync : IAsyncRequestHandler<EditTaskQueryAsync, TaskEditModel>
+    public class EditTaskQueryHandlerAsync : IAsyncRequestHandler<EditTaskQueryAsync, TaskSummaryModel>
     {
         private AllReadyContext _context;
 
@@ -15,14 +15,14 @@ namespace AllReady.Areas.Admin.Features.Tasks
             _context = context;
         }
 
-        public async Task<TaskEditModel> Handle(EditTaskQueryAsync message)
+        public async Task<TaskSummaryModel> Handle(EditTaskQueryAsync message)
         {
             var task = await _context.Tasks.AsNoTracking()
                 .Include(t => t.Event).ThenInclude(a => a.Campaign)
                 .Include(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
                 .SingleOrDefaultAsync(t => t.Id == message.TaskId);
 
-            var viewModel = new TaskEditModel
+            var viewModel = new TaskSummaryModel
             {
                 Id = task.Id,
                 EventId = task.Event.Id,
