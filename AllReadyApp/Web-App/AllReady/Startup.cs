@@ -116,6 +116,7 @@ namespace AllReady
             services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
             services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
             services.AddTransient<IValidateEventDetailModels, EventDetailModelValidator>();
+            services.AddTransient<ITaskSummaryModelValidator, TaskSummaryModelValidator>();
             services.AddSingleton<IImageService, ImageService>();
             //services.AddSingleton<GeoService>();
             services.AddTransient<SampleDataGenerator>();
