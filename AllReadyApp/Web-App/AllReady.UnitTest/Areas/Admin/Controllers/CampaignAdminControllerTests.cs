@@ -12,6 +12,7 @@ using Microsoft.AspNet.Http;
 using Moq;
 using Xunit;
 using Microsoft.AspNet.Mvc;
+using System.Linq;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -20,14 +21,61 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         //delete this line when all unit tests using it have been completed
         private readonly Task taskFromResultZero = Task.FromResult(0);
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void IndexSendsCampaignListQueryWithCorrectDataWhenUserIsOrgAdmin()
         {
+            int organizationId = 100;
+            var campaignSummaries = new List<CampaignSummaryModel>
+            {
+                new CampaignSummaryModel
+                {
+                    Id = 1,
+                    Name = "Summary Model 1",
+                    OrganizationId = organizationId
+                },
+                new CampaignSummaryModel
+                {
+                    Id = 2,
+                    Name = "Summary Model 2",
+                    OrganizationId = 1003
+                }
+
+            };
+            var sut = CampaignControllerWithCampaignListQuery(UserType.OrgAdmin.ToString(), organizationId, campaignSummaries);
+            var result = sut.Index();
+
+            var view = ValidateResult<ViewResult>(result);
+            var dataList = ValidateResult<List<CampaignSummaryModel>>(view.ViewData.Model);
+
+            Assert.Equal(dataList.Count, campaignSummaries.Count(cs => cs.OrganizationId == organizationId));
         }
             
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void IndexSendsCampaignListQueryWithCorrectDataWhenUserIsNotOrgAdmin()
         {
+            var organizationId = 100;
+            var campaignSummaries = new List<CampaignSummaryModel>
+            {
+                new CampaignSummaryModel
+                {
+                    Id = 1,
+                    Name = "Summary Model 1",
+                    OrganizationId = organizationId
+                },
+                new CampaignSummaryModel
+                {
+                    Id = 2,
+                    Name = "Summary Model 2",
+                    OrganizationId = 1003
+                }
+
+            };
+            var sut = CampaignControllerWithCampaignListQuery(UserType.BasicUser.ToString(), organizationId, campaignSummaries);
+            var result = sut.Index();
+
+            var view = ValidateResult<ViewResult>(result);
+            var dataList = ValidateResult<List<CampaignSummaryModel>>(view.ViewData.Model);
+            Assert.Equal(dataList.Count, campaignSummaries.Count());
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -390,12 +438,43 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             return controller;
         }
 
+        private static CampaignController CampaignControllerWithCampaignListQuery(string userType, int organizationId, List<CampaignSummaryModel> campaignSummaries)
+        {
+            var mockMediator = new Mock<IMediator>();
+           
+            mockMediator.Setup(mock => mock.Send(It.IsAny<CampaignListQuery>())).Returns((CampaignListQuery c) => {
+
+                    return c.OrganizationId.HasValue ? campaignSummaries.Where(cs => cs.OrganizationId == c.OrganizationId.Value).ToList() : campaignSummaries;
+                });
+
+            var mockImageService = new Mock<IImageService>();
+            
+            var controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            controller.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, userType),
+                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
+            });
+
+            return controller;
+        }
+
+
         private static IFormFile FormFile(string fileType)
         {
             var mockFormFile = new Mock<IFormFile>();
             mockFormFile.Setup(mock => mock.ContentType).Returns(fileType);
             return mockFormFile.Object;
         }
+
+        private T ValidateResult<T>(object result) where T : class
+        {
+            Assert.NotNull(result);
+            Assert.IsType<T>(result);
+
+            return result as T;
+        }
+
         #endregion
     }
 }
