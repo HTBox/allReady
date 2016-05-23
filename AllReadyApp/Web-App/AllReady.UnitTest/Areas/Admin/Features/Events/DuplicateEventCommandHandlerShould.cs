@@ -160,6 +160,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                     },
                 };
 
+            var organiser = new ApplicationUser() { Id = "Organizer" };
+
             var @event = new Event()
             {
                 CampaignId = 1,
@@ -178,7 +180,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                     new EventSignup() { Id = 2 },
                     new EventSignup() { Id = 3 }
                 },
-                Organizer = new ApplicationUser() { Id = "Organizer" },
+                Organizer = organiser,
                 ImageUrl = "ImageUrl",
                 RequiredSkills = new List<EventSkill>()
                 {
@@ -191,8 +193,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             };
             Context.Add(campaign);
             Context.Add(location);
-            Context.Add(@event);
             Context.AddRange(tasks);
+            Context.Add(organiser);
+            Context.Add(@event);
             Context.SaveChanges();
 
         }
