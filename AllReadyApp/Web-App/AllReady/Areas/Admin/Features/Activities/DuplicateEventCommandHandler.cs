@@ -125,6 +125,7 @@ namespace AllReady.Areas.Admin.Features.Events
                 .AsNoTracking()
                 .Include(e => e.Location)
                 .Include(e => e.Tasks)
+                .Include(e => e.Organizer)
                 .SingleOrDefaultAsync(e => e.Id == eventId);
             //.ConfigureAwait(false); // Todo: Check what this is and if its needed.
         }
