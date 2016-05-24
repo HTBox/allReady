@@ -51,6 +51,7 @@ namespace AllReady.Areas.Admin.Features.Events
                 EndDateTime = eventToDuplicate.EndDateTime,
                 Organizer = eventToDuplicate.Organizer,
                 ImageUrl = eventToDuplicate.ImageUrl,
+                RequiredSkills = eventToDuplicate.RequiredSkills.Select(es => new EventSkill() { SkillId = es.SkillId }).ToList(),
                 IsLimitVolunteers = eventToDuplicate.IsLimitVolunteers,
                 IsAllowWaitList = eventToDuplicate.IsAllowWaitList
             };
@@ -73,6 +74,7 @@ namespace AllReady.Areas.Admin.Features.Events
             {
                 var newTask = cloneTask(task);
                 newTask.Event = newEvent;
+                newTask.RequiredSkills = task.RequiredSkills.Select(ts => new TaskSkill { SkillId = ts.SkillId }).ToList();
 
                 // Todo: Check if this handles timezones correctly.
                 if (task.StartDateTime.HasValue)
@@ -124,8 +126,9 @@ namespace AllReady.Areas.Admin.Features.Events
             return await _context.Events
                 .AsNoTracking()
                 .Include(e => e.Location)
-                .Include(e => e.Tasks)
+                .Include(e => e.Tasks).ThenInclude(t => t.RequiredSkills)
                 .Include(e => e.Organizer)
+                .Include(e => e.RequiredSkills)
                 .SingleOrDefaultAsync(e => e.Id == eventId);
             //.ConfigureAwait(false); // Todo: Check what this is and if its needed.
         }
