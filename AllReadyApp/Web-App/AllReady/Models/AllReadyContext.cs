@@ -62,7 +62,7 @@ namespace AllReady.Models
 
         private void Map(EntityTypeBuilder<CampaignContact> builder)
         {
-            builder.HasKey(tc => new { tc.CampaignId, tc.ContactId, tc.ContactType });
+            builder.HasKey(tc => new { tc.CampaignId, tc.ContactId, tc.ContactType});
             builder.HasOne(tc => tc.Contact);
             builder.HasOne(tc => tc.Campaign);
         }
