@@ -19,6 +19,8 @@ namespace AllReady.Controllers
         {
             var model = new HomePageViewModel();
 
+            //todo: per #691 the model may need to be updated as we 
+            //      no longer require the list of campaigns
             model.Campaigns = mediator.Send(new CampaignQuery());
             model.FeaturedCampaign = await mediator.SendAsync(new FeaturedCampaignQueryAsync());
 
