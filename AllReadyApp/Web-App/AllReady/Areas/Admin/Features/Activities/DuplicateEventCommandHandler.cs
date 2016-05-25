@@ -11,7 +11,7 @@ namespace AllReady.Areas.Admin.Features.Events
 {
     public class DuplicateEventCommandHandler : IAsyncRequestHandler<DuplicateEventCommand, int>
     {
-        private AllReadyContext _context;
+        AllReadyContext _context;
 
         public DuplicateEventCommandHandler(AllReadyContext context)
         {
@@ -20,74 +20,65 @@ namespace AllReady.Areas.Admin.Features.Events
         }
         public async Task<int> Handle(DuplicateEventCommand message)
         {
-            var eventToDuplicate = await GetEvent(message.DuplicateEventModel.Id);
-            var newEvent = duplicateEvent(eventToDuplicate, message.DuplicateEventModel);
+            var @event = await GetEvent(message.DuplicateEventModel.Id);
+            var newEvent = CloneEvent(@event);
+            ApplyUpdates(newEvent, message.DuplicateEventModel);
             _context.Events.Add(newEvent);
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+            await _context.SaveChangesAsync();
             return newEvent.Id;
         }
 
-        private Event duplicateEvent(Event eventToDuplicate, DuplicateEventModel model)
+        Event CloneEvent(Event @event)
         {
-            Event newEvent;
-            newEvent = cloneEvent(eventToDuplicate);
-            updateEvent(newEvent, model);
-            cloneEventTasks(newEvent, eventToDuplicate);
-            cloneEventLocation(newEvent, eventToDuplicate);
-
+            var newEvent = new Event()
+            {
+                CampaignId = @event.CampaignId,
+                Name = @event.Name,
+                Description = @event.Description,
+                EventType = @event.EventType,
+                NumberOfVolunteersRequired = @event.NumberOfVolunteersRequired,
+                StartDateTime = @event.StartDateTime,
+                EndDateTime = @event.EndDateTime,
+                Location = CloneLocation(@event.Location),
+                Tasks = CloneTasks(@event.Tasks).ToList(),
+                Organizer = @event.Organizer,
+                ImageUrl = @event.ImageUrl,
+                RequiredSkills = CloneEventRequiredSkills(@event).ToList(),
+                IsLimitVolunteers = @event.IsLimitVolunteers,
+                IsAllowWaitList = @event.IsAllowWaitList
+            };
             return newEvent;
         }
 
-        private Event cloneEvent(Event eventToDuplicate)
+        Location CloneLocation(Location location)
         {
-            return new Event()
+            return new Location()
             {
-                CampaignId = eventToDuplicate.CampaignId,
-                Name = eventToDuplicate.Name,
-                Description = eventToDuplicate.Description,
-                EventType = eventToDuplicate.EventType,
-                NumberOfVolunteersRequired = eventToDuplicate.NumberOfVolunteersRequired,
-                StartDateTime = eventToDuplicate.StartDateTime,
-                EndDateTime = eventToDuplicate.EndDateTime,
-                Organizer = eventToDuplicate.Organizer,
-                ImageUrl = eventToDuplicate.ImageUrl,
-                RequiredSkills = eventToDuplicate.RequiredSkills.Select(es => new EventSkill() { SkillId = es.SkillId }).ToList(),
-                IsLimitVolunteers = eventToDuplicate.IsLimitVolunteers,
-                IsAllowWaitList = eventToDuplicate.IsAllowWaitList
+                Address1 = location.Address1,
+                Address2 = location.Address2,
+                City = location.City,
+                State = location.State,
+                PostalCode = location.PostalCode,
+                Name = location.Name,
+                PhoneNumber = location.PhoneNumber,
+                Country = location.Country
             };
         }
 
-        private void updateEvent(Event newEvent, DuplicateEventModel model)
+        IEnumerable<AllReadyTask> CloneTasks(IEnumerable<AllReadyTask> tasks)
         {
-            newEvent.Name = model.Name;
-            newEvent.Description = model.Description;
-            newEvent.StartDateTime = model.StartDateTime;
-            newEvent.EndDateTime = model.EndDateTime;
+            if (tasks == null || !tasks.Any())
+                return Enumerable.Empty<AllReadyTask>();
+
+            return tasks.Select(task => CloneTask(task));
         }
 
-        private void cloneEventTasks(Event newEvent, Event eventToDuplicate)
+        static IEnumerable<EventSkill> CloneEventRequiredSkills(Event @event)
         {
-            if (eventToDuplicate.Tasks == null || !eventToDuplicate.Tasks.Any())
-                return;
-
-            foreach (var task in eventToDuplicate.Tasks)
-            {
-                var newTask = cloneTask(task);
-                newTask.Event = newEvent;
-                newTask.RequiredSkills = task.RequiredSkills.Select(ts => new TaskSkill { SkillId = ts.SkillId }).ToList();
-
-                // Todo: Check if this handles timezones correctly.
-                if (task.StartDateTime.HasValue)
-                    newTask.StartDateTime = newEvent.StartDateTime - (eventToDuplicate.StartDateTime - task.StartDateTime.Value);
-
-                if (task.EndDateTime.HasValue && task.StartDateTime.HasValue && newTask.StartDateTime.HasValue)
-                    newTask.EndDateTime = newTask.StartDateTime + (task.EndDateTime - task.StartDateTime);
-
-                _context.Tasks.Add(newTask);
-            }
+            return @event.RequiredSkills.Select(eventSkill => new EventSkill() { SkillId = eventSkill.SkillId });
         }
 
-        private AllReadyTask cloneTask(AllReadyTask task)
+        AllReadyTask CloneTask(AllReadyTask task)
         {
             return new AllReadyTask()
             {
@@ -97,31 +88,47 @@ namespace AllReady.Areas.Admin.Features.Events
                 NumberOfVolunteersRequired = task.NumberOfVolunteersRequired,
                 StartDateTime = task.StartDateTime,
                 EndDateTime = task.EndDateTime,
-                RequiredSkills = task.RequiredSkills,
+                RequiredSkills = CloneTaskRequiredSkills(task).ToList(),
                 IsLimitVolunteers = task.IsLimitVolunteers,
                 IsAllowWaitList = task.IsAllowWaitList
             };
         }
 
-        private void cloneEventLocation(Event newEvent, Event eventToDuplicate)
+        static IEnumerable<TaskSkill> CloneTaskRequiredSkills(AllReadyTask task)
         {
-            var newLocation = new Location()
-            {
-                Address1 = eventToDuplicate.Location.Address1,
-                Address2 = eventToDuplicate.Location.Address2,
-                City = eventToDuplicate.Location.City,
-                State = eventToDuplicate.Location.State,
-                PostalCode = eventToDuplicate.Location.PostalCode,
-                Name = eventToDuplicate.Location.Name,
-                PhoneNumber = eventToDuplicate.Location.PhoneNumber,
-                Country = eventToDuplicate.Location.Country
-            };
-
-            newEvent.Location = newLocation;
-            _context.Locations.Add(newLocation);
+            return task.RequiredSkills.Select(taskSkill => new TaskSkill { SkillId = taskSkill.SkillId });
         }
 
-        private async Task<Event> GetEvent(int eventId)
+        void ApplyUpdates(Event @event, DuplicateEventModel updateModel)
+        {
+            UpdateTasks(@event, updateModel);
+            UpdateEvent(@event, updateModel);
+        }
+
+        void UpdateTasks(Event @event, DuplicateEventModel updateModel)
+        {
+            foreach (var task in @event.Tasks)
+            {
+                var existingStartDateTime = task.StartDateTime;
+                var existingEndDateTime = task.EndDateTime;
+
+                if (task.StartDateTime.HasValue)
+                    task.StartDateTime = updateModel.StartDateTime - (@event.StartDateTime - task.StartDateTime.Value);
+
+                if (task.EndDateTime.HasValue && task.StartDateTime.HasValue)
+                    task.EndDateTime = task.StartDateTime + (existingEndDateTime - existingStartDateTime);
+            }
+        }
+
+        void UpdateEvent(Event newEvent, DuplicateEventModel model)
+        {
+            newEvent.Name = model.Name;
+            newEvent.Description = model.Description;
+            newEvent.StartDateTime = model.StartDateTime;
+            newEvent.EndDateTime = model.EndDateTime;
+        }
+
+        async Task<Event> GetEvent(int eventId)
         {
             return await _context.Events
                 .AsNoTracking()
@@ -129,8 +136,7 @@ namespace AllReady.Areas.Admin.Features.Events
                 .Include(e => e.Tasks).ThenInclude(t => t.RequiredSkills)
                 .Include(e => e.Organizer)
                 .Include(e => e.RequiredSkills)
-                .SingleOrDefaultAsync(e => e.Id == eventId);
-            //.ConfigureAwait(false); // Todo: Check what this is and if its needed.
+                .SingleAsync(e => e.Id == eventId);
         }
     }
 }
