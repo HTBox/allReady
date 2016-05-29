@@ -23,6 +23,7 @@ namespace AllReady.Areas.Admin.Features.Events
             var @event = await GetEvent(message.DuplicateEventModel.Id);
             var newEvent = CloneEvent(@event);
             ApplyUpdates(newEvent, message.DuplicateEventModel);
+            _context.Add(newEvent.Location);
             _context.Events.Add(newEvent);
             await _context.SaveChangesAsync();
             return newEvent.Id;
