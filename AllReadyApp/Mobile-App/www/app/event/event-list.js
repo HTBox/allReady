@@ -1,27 +1,27 @@
 ﻿"use strict";
 
 angular
-    .module("activity-list", ["Backend"])
+    .module("event-list", ["Backend"])
     .config(function ($stateProvider, $urlRouterProvider) {
         $stateProvider
-        .state("activity-list", {
-            url: "/activities",
-            templateUrl: "app/activity/activity-list.tpl.html",
-            controller: "ActivityListController"
+        .state("event-list", {
+            url: "/events",
+            templateUrl: "app/event/event-list.tpl.html",
+            controller: "EventListController"
         });
     })
-    .controller("ActivityListController", ["$scope", "$location", "Backend", function ($scope, $location, Backend) {
-        Backend.getActivities().then(function (result) {
-            $scope.activityList = result;
+    .controller("EventListController", ["$scope", "$location", "Backend", function ($scope, $location, Backend) {
+        Backend.getEvents().then(function (result) {
+            $scope.eventList = result;
         });
 
         $scope.onSelect = function (n) {
-            $location.url("/activities/" + n.Id);
+            $location.url("/events/" + n.Id);
         };
 
         $scope.doRefresh = function () {
-            Backend.getActivities(true /* forceWebQuery */).then(function (result) {
-                $scope.activityList = result;
+            Backend.getEvents(true /* forceWebQuery */).then(function (result) {
+                $scope.eventList = result;
                 $scope.$broadcast("scroll.refreshComplete");
             });
         };
