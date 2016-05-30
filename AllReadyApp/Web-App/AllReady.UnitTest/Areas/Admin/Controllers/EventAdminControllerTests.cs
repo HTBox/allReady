@@ -30,11 +30,22 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await TaskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DetailsReturnsHttpNotFoundResultWhenEventIsNull()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var imageService = new Mock<IImageService>();
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel());
+
+            var eventDetailModelValidator = new Mock<IValidateEventDetailModels>();
+            eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventDetailModel>(), It.IsAny<CampaignSummaryModel>()))
+                .Returns(new List<KeyValuePair<string, string>>());
+
+            var sut = new EventController(imageService.Object, mediator.Object, eventDetailModelValidator.Object);
+            var result = await sut.Details(It.IsAny<int>());
+            
+            Assert.True(result is HttpNotFoundResult);
+
         }
 
         [Fact(Skip = "NotImplemented")]
