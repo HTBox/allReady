@@ -45,7 +45,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await sut.Details(It.IsAny<int>());
             
             Assert.True(result is HttpNotFoundResult);
-
         }
 
         [Fact(Skip = "NotImplemented")]
