@@ -291,7 +291,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("PhoneNumber");
 
-                    b.Property<string>("PostalCodePostalCode");
+                    b.Property<string>("PostalCode");
 
                     b.Property<string>("State");
 
@@ -605,13 +605,6 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.Skill")
                         .WithMany()
                         .HasForeignKey("SkillId");
-                });
-
-            modelBuilder.Entity("AllReady.Models.Location", b =>
-                {
-                    b.HasOne("AllReady.Models.PostalCodeGeo")
-                        .WithMany()
-                        .HasForeignKey("PostalCodePostalCode");
                 });
 
             modelBuilder.Entity("AllReady.Models.Organization", b =>

@@ -5,7 +5,7 @@
 
 <div class="row">
     <div id="col-main">
-        <div class="col-md-9"><h2>@Model.Name</h2></div>
+        <div class="col-md-9"><h2>@if (Model.Featured) {<i class="fa fa-star star-highlight" aria-hidden="true"></i>} @Model.Name</h2></div>
         <div class="col-md-3 share-buttons">
             <a href="mailto:?subject=Check out @Model.Name&body=Check it out at @ViewBag.AbsoluteUrl" title="Share by Email">
                 <img src="~/images/share-email.png">

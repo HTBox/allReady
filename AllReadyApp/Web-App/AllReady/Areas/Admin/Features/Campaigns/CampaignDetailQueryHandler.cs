@@ -48,6 +48,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     CampaignImpact = campaign.CampaignImpact,
                     Location = campaign.Location.ToModel(),
                     Locked = campaign.Locked,
+                    Featured = campaign.Featured,
                     Events = campaign.Events.Select(a => new EventSummaryModel
                     {
                         Id = a.Id,

@@ -100,10 +100,11 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpUnauthorized();
             }
-            
-            var validator = new CampaignSummaryModelValidator(_mediator);
-            var errors = validator.Validate(campaign);
-            errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
+
+            if (campaign.EndDate < campaign.StartDate)
+            {
+                ModelState.AddModelError(nameof(campaign.EndDate), "The end date must fall on or after the start date.");
+            }
 
             if (ModelState.IsValid)
             {

@@ -161,8 +161,14 @@ namespace AllReady.Controllers
         public async Task<JsonResult> UnregisterTask(int id)
         {
             var userId = User.GetUserId();
+
             var result = await _mediator.SendAsync(new TaskUnenrollCommand { TaskId = id, UserId = userId });
-            return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, userId) });
+
+            return Json(new
+            {
+                result.Status,
+                Task = result.Task == null ? null : new TaskViewModel(result.Task, userId)
+            });
         }
 
         [HttpPost]

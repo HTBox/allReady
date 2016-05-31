@@ -1,6 +1,7 @@
 @model IEnumerable<AllReady.Areas.Admin.Models.CampaignSummaryModel>
 @{ ViewData["Title"] = "Campaigns - Admin"; }
 
+@*
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
@@ -8,6 +9,7 @@
         </ol>
     </div>
 </div>
+*@
 <div class="row">
     <div class="col-md-12">
         <h2>@ViewData["Title"]</h2>
@@ -15,14 +17,9 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        <a asp-controller="Campaign" asp-action="Create" asp-route-area="Admin" class="btn btn-default">Create New</a>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <table class="table">
+        <table class="table table-responsive table-condensed">
             <tr>
-                <th></th>
+                <th>Actions</th>
                 <th>
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
@@ -36,10 +33,16 @@
             @foreach (var item in Model) {
                 <tr>
                     <td>
-                        <a asp-controller="Campaign" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-default" title="Edit"><i class="fa fa-edit"></i></a>
+                        <div class="btn-group btn-group-sm row-btn-margin">
+                            <a data-toggle="tooltip" data-placement="top" title="Edit" asp-controller="Campaign" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success"><span class="fa fa-edit"></span></a>
+                        </div>
                     </td>
                     <td>
                         <a asp-controller="Campaign" asp-action="Details" asp-route-area="Admin" asp-route-id="@item.Id">@item.Name</a>
+                        @if (item.Featured)
+                        {
+                            <i class="fa fa-star star-highlight" aria-hidden="true"></i>
+                        }
                         @if (item.Locked)
                         {
                             <span title="This campaign is locked" class="fa fa-exclamation-triangle text-warning"></span>
@@ -58,9 +61,24 @@
                             @:@Html.DisplayFor(modelItem => item.StartDate) - @Html.DisplayFor(modelItem => item.EndDate)                            
                         }
                     </td>
+                    @* TODO: Delete *@
                 </tr>
             }
         </table>
-
     </div>
 </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="btn-group btn-group-sm row-btn-margin">
+            <a data-toggle="tooltip" data-placement="top" title="Create New" asp-controller="Campaign" asp-action="Create" asp-route-area="Admin" class="btn btn-success"><span class="fa fa-plus"></span></a>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('[data-toggle="tooltip"]').tooltip({container:'body'});
+        });
+    </script>
+}

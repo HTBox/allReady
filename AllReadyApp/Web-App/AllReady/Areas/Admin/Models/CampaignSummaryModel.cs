@@ -71,5 +71,7 @@ namespace AllReady.Areas.Admin.Models
         public string PrimaryContactEmail { get; set; }
 
         public bool Locked { get; set; }
+
+        public bool Featured { get; set; }
     }
 }

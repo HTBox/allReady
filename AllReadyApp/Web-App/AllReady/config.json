@@ -34,8 +34,8 @@
   },
   "Authentication": {
     "Facebook": {
-      "AppId": "167952183568521",
-      "AppSecret": "a8053ceca7eefbaa4821ca531929f339"
+      "AppId": "[facebookappId]",
+      "AppSecret": "[facebookappsecret]"
     },
     "Twitter": {
       "ConsumerKey": "[twitterkey]",

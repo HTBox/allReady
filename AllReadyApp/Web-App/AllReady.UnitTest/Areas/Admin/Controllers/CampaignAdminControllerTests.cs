@@ -14,6 +14,7 @@ using Xunit;
 using Microsoft.AspNet.Mvc;
 using System.Linq;
 using System;
+using AllReady.Extensions;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -78,23 +79,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
         }
 
-        [Fact]
-        public async Task CreatePostInsertsCampaign()
-        {
-            Organization aginAware = AgincourtAware_entity;
-            Context.Locations.Add(aginAware.Location);
-            Context.Organizations.Add(aginAware);
-            Context.SaveChanges();
-
-            CampaignSummaryModel model = MassiveTrafficLightOutage_model;
-            model.OrganizationId = aginAware.Id;
-
-            CampaignController controller = CampaignControllerWithSummaryModel(model, Context, UserType.OrgAdmin.ToString());
-            var file = FormFile("image/jpeg");
-            await controller.Edit(model, file);
-            Assert.Single(Context.Campaigns.Where(t => t.Name == model.Name));
-        }
-
         [Fact(Skip = "NotImplemented")]
         public async Task EditGetSendsCampaignSummaryQueryWithCorrectCampaignId()
         {
@@ -130,6 +114,48 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), It.IsAny<int>());
             var result = await controller.Edit(null, null);
             Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        public async Task EditPostReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact]
+        public async Task EditPostAddsCorrectKeyAndErrorMessageToModelStateWhenCampaignEndDateIsLessThanCampainStartDate()
+        {
+            var campaignSummaryModel = new CampaignSummaryModel { OrganizationId = 1, StartDate = DateTime.Now.AddDays(1), EndDate = DateTime.Now.AddDays(-1)};
+
+            var sut = new CampaignController(null, null);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, campaignSummaryModel.OrganizationId.ToString())
+            });
+
+            await sut.Edit(campaignSummaryModel, null);
+            var modelStateErrorCollection = sut.ModelState.GetErrorMessagesByKey(nameof(CampaignSummaryModel.EndDate));
+
+            Assert.Equal(modelStateErrorCollection.Single().ErrorMessage, "The end date must fall on or after the start date.");
+        }
+
+        [Fact]
+        public async Task EditPostInsertsCampaign()
+        {
+            var aginAware = AgincourtAware_entity;
+            Context.Locations.Add(aginAware.Location);
+            Context.Organizations.Add(aginAware);
+            Context.SaveChanges();
+
+            var model = MassiveTrafficLightOutage_model;
+            model.OrganizationId = aginAware.Id;
+
+            var controller = CampaignControllerWithSummaryModel(model, Context, UserType.OrgAdmin.ToString());
+            var file = FormFile("image/jpeg");
+            await controller.Edit(model, file);
+            Assert.Single(Context.Campaigns.Where(t => t.Name == model.Name));
         }
 
         [Fact]
@@ -203,7 +229,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void EditPostHasHValidateAntiForgeryTokenttribute()
+        public void EditPostHasValidateAntiForgeryTokenttribute()
         {
         }
 
@@ -467,6 +493,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     EndDate = DateTime.Today.AddMonths(1),
                     ExternalUrl = "http://agincourtaware.trafficlightoutage.com",
                     ExternalUrlText = "Agincourt Aware: Traffic Light Outage",
+                    Featured = false,
                     FileUpload =  null,
                     FullDescription = "<h1><strong>Massive Traffic Light Outage Plan</strong></h1>\r\n<p>The Massive Traffic Light Outage Plan (MTLOP) is the official plan to handle a major traffic light failure.</p>\r\n<p>In the event of a wide-area traffic light outage, an alternative method of controlling traffic flow will be necessary. The MTLOP calls for the recruitment and training of volunteers to be ready to direct traffic at designated intersections and to schedule and follow-up with volunteers in the event of an outage.</p>",
                     Id = 0,

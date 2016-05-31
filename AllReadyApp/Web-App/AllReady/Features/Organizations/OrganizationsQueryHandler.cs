@@ -8,16 +8,16 @@ namespace AllReady.Features.Organizations
 {
     public class OrganizationsQueryHandler : IRequestHandler<OrganizationsQuery, List<OrganizationViewModel>>
     {
-        private readonly IAllReadyDataAccess _dataAccess;
+        private readonly AllReadyContext _context;
 
-        public OrganizationsQueryHandler(IAllReadyDataAccess dataAccess)
+        public OrganizationsQueryHandler(AllReadyContext context)
         {
-            _dataAccess = dataAccess;
+            _context = context;
         }
 
         public List<OrganizationViewModel> Handle(OrganizationsQuery message)
         {
-            return _dataAccess.Organizations.Select(t => new OrganizationViewModel(t)).ToList();
+            return _context.Organizations.ToList().Select(t => new OrganizationViewModel(t)).ToList();
         }
     }
 }
