@@ -9,12 +9,24 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
+using Shouldly;
 using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
     public class TaskStatusChangeHandlerTests : InMemoryContextTest
     {
+
+        Mock<IMediator> mediator;
+        TaskStatusChangeHandlerAsync handler;
+
+        public TaskStatusChangeHandlerTests()
+            : base()
+        {
+            mediator = new Mock<IMediator>();
+            handler = new TaskStatusChangeHandlerAsync(Context, mediator.Object);
+        }
+
         protected override void LoadTestData()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
@@ -82,10 +94,28 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         }
 
         [Fact]
+        public async Task VolunteerAssignedTask()
+        {
+            var task = Context.Tasks.First();
+            var user = Context.Users.First();
+            var command = new TaskStatusChangeCommandAsync
+            {
+                TaskId = task.Id,
+                UserId = user.Id,
+                TaskStatus = TaskStatus.Assigned
+            };
+            await handler.Handle(command);
+
+            var taskSignup = Context.TaskSignups.First();
+            // Verify that the handle method publishes a notification that the task status changed
+            mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
+            // Make sure the task signup has the expected status
+            taskSignup.Status.ShouldBe(TaskStatus.Assigned.ToString());
+        }
+
+        [Fact]
         public async Task VolunteerAcceptsTask()
         {
-            var mediator = new Mock<IMediator>();
-
             var task = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommandAsync
@@ -94,11 +124,83 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 UserId = user.Id,
                 TaskStatus = TaskStatus.Accepted
             };
-            var handler = new TaskStatusChangeHandlerAsync(Context, mediator.Object);
             await handler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
+            // Verify that the handle method publishes a notification that the task status changed
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
+            // Make sure the task signup has the expected status
+            taskSignup.Status.ShouldBe(TaskStatus.Accepted.ToString());
+        }
+
+        [Fact]
+        public async Task VolunteerRejectsTask()
+        {
+            var task = Context.Tasks.First();
+            var user = Context.Users.First();
+            var command = new TaskStatusChangeCommandAsync
+            {
+                TaskId = task.Id,
+                UserId = user.Id,
+                TaskStatus = TaskStatus.Rejected
+            };
+            await handler.Handle(command);
+
+            var taskSignup = Context.TaskSignups.First();
+            // Verify that the handle method publishes a notification that the task status changed.
+            mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifiyCommand => notifiyCommand.SignupId == taskSignup.Id)), Times.Once());
+            // Make sure the task signup has the expected status
+            taskSignup.Status.ShouldBe(TaskStatus.Rejected.ToString());
+        }
+
+        [Fact]
+        public async Task VolunteerCompletesTask()
+        {
+            // set the current task signup instance to Accepted
+            var taskSignup = Context.TaskSignups.First();
+            taskSignup.Status = TaskStatus.Accepted.ToString();
+            await Context.SaveChangesAsync();
+
+            var task = Context.Tasks.First();
+            var user = Context.Users.First();
+            var command = new TaskStatusChangeCommandAsync
+            {
+                TaskId = task.Id,
+                UserId = user.Id,
+                TaskStatus = TaskStatus.Completed
+            };
+            await handler.Handle(command);
+
+            taskSignup = Context.TaskSignups.First();
+            // Verify that the handle method publishes a notification that the task status changed
+            mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
+            // Make sure the task signup has the expected status
+            taskSignup.Status.ShouldBe(TaskStatus.Completed.ToString());
+        }
+
+        [Fact]
+        public async Task VolunteerCannotCompleteTask()
+        {
+            // set the current task signup instance to Accepted
+            var taskSignup = Context.TaskSignups.First();
+            taskSignup.Status = TaskStatus.Accepted.ToString();
+            await Context.SaveChangesAsync();
+
+            var task = Context.Tasks.First();
+            var user = Context.Users.First();
+            var command = new TaskStatusChangeCommandAsync
+            {
+                TaskId = task.Id,
+                UserId = user.Id,
+                TaskStatus = TaskStatus.CanNotComplete
+            };
+            await handler.Handle(command);
+
+            taskSignup = Context.TaskSignups.First();
+            // Verify that the handle method publishes a notification that the task status changed
+            mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
+            // Make sure the task signup has the expected status
+            taskSignup.Status.ShouldBe(TaskStatus.CanNotComplete.ToString());
         }
     }
 }
