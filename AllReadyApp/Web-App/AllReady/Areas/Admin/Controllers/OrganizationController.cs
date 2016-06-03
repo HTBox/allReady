@@ -2,9 +2,11 @@
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using AllReady.Security;
+using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
+using System.Linq;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -13,10 +15,12 @@ namespace AllReady.Areas.Admin.Controllers
     public class OrganizationController : Controller
     {
         private readonly IMediator _mediator;
+        private readonly IAllReadyDataAccess _dataAccess;
 
-        public OrganizationController(IMediator mediator)
+        public OrganizationController(IMediator mediator, IAllReadyDataAccess dataAccess)
         {
             _mediator = mediator;
+            _dataAccess = dataAccess;
         }
 
         // GET: Organization
@@ -69,8 +73,16 @@ namespace AllReady.Areas.Admin.Controllers
             
             if (ModelState.IsValid)
             {
-                int id = _mediator.Send(new OrganizationEditCommand { Organization = organization });
-                return RedirectToAction("Details", new { id = id, area = "Admin" });
+                bool isNameUnique = _mediator.Send(new OrganizationNameUniqueQuery() { OrganizationName = organization.Name, OrganizationId = organization.Id });
+                if (isNameUnique)
+                {
+                    int id = _mediator.Send(new OrganizationEditCommand { Organization = organization });
+                    return RedirectToAction("Details", new { id = id, area = "Admin" });
+                }
+                else
+                {
+                    ModelState.AddModelError(nameof(organization.Name), "Organization with same name already exists. Please use different name.");
+                }
             }
 
             return View("Edit", organization);
@@ -101,6 +113,6 @@ namespace AllReady.Areas.Admin.Controllers
         {
             _mediator.Send(new OrganizationDeleteCommand { Id= id });
             return RedirectToAction("Index");
-        }
+        }               
     }
 }
