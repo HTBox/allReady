@@ -141,6 +141,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             CreateSut();
             OrganizationEditModel model = AgincourtAware;
             IRequest<int> command = new OrganizationEditCommand() { Organization = model };
+            _mediator.Setup(y => y.Send(It.IsAny<OrganizationNameUniqueQuery>())).Returns(() =>
+            {
+                return true;
+            });
             _mediator.Setup(x => x.Send(It.IsAny<OrganizationEditCommand>())).Returns(() => {
                 IRequestHandler<OrganizationEditCommand, int> handler = new OrganizationEditCommandHandler(Context);
                 return handler.Handle((OrganizationEditCommand)command);
@@ -152,6 +156,18 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Assert
             Assert.Single(Context.Organizations.Where(t => t.Name == model.Name));
 
+        }
+
+        [Fact]
+        public void CreateNewOrganizationWithExistingOrganizationNameReturnsEditView()
+        {
+            CreateSut();
+            var model = new OrganizationEditModel();
+            model.Name = "test";
+            model.Id = 0;
+            _mediator.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
+            var result = (ViewResult)_sut.Create();
+            Assert.Equal("Edit", result.ViewName);            
         }
         #endregion
 
@@ -171,12 +187,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void EditOrganizationMediatorShouldBeCalledWithAppropriateDataWhenModelStateIsValid()
         {
             var mockMediator = new Mock<IMediator>();
+            var mockAllReadyDataAccess = new Mock<IAllReadyDataAccess>();
 
-            var controller = new OrganizationController(mockMediator.Object);
+            var controller = new OrganizationController(mockMediator.Object, mockAllReadyDataAccess.Object);
 
             var mockContext = MockActionContextWithUser(SiteAdmin());
             controller.ActionContext = mockContext.Object;
-
+            mockMediator.Setup(y => y.Send(It.IsAny<OrganizationNameUniqueQuery>())).Returns(() =>{return true;});
             controller.Edit(_organizationEditModel);
 
             mockMediator.Verify(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == _organizationEditModel)));
@@ -224,7 +241,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void EditPostShouldReturnTheEditViewWithTheModelPassedInIfTheModelStateIsInvalid()
         {
-            var controller = new OrganizationController(new Mock<IMediator>().Object);
+            var mockAllReadyDataAccess = new Mock<IAllReadyDataAccess>();
+            var controller = new OrganizationController(new Mock<IMediator>().Object, mockAllReadyDataAccess.Object);
 
             var mockContext = MockActionContextWithUser(SiteAdmin());
             controller.ActionContext = mockContext.Object;
@@ -243,14 +261,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void EditPostShouldRedirectToDetailsWithTheIdFromTheMediatorIfModelStateIsValid()
         {
             var mockMediator = new Mock<IMediator>();
+            var mockAllReadyDataAccess = new Mock<IAllReadyDataAccess>();
 
-            var controller = new OrganizationController(mockMediator.Object);
+            var controller = new OrganizationController(mockMediator.Object, mockAllReadyDataAccess.Object);
 
             var mockContext = MockActionContextWithUser(SiteAdmin());
             controller.ActionContext = mockContext.Object;
 
             var model = new OrganizationEditModel();
 
+            mockMediator.Setup(y => y.Send(It.IsAny<OrganizationNameUniqueQuery>())).Returns(() => { return true; });
             mockMediator.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
 
             var result = (RedirectToActionResult)controller.Edit(model);
@@ -349,8 +369,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static void CreateSut()
         {
             _mediator = new Mock<IMediator>();
-
-            _sut = new OrganizationController(_mediator.Object);
+            var mockAllReadyDataAccess = new Mock<IAllReadyDataAccess>();
+            var organizations = new List<Organization>()
+            {
+                new Organization() { Id = 1, Name = "test" },
+                new Organization() { Id = 2, Name = "test1" }
+            };
+            mockAllReadyDataAccess.Setup(p => p.GetOrganization(It.IsAny<int>())).Returns(new Organization() { Id = 1, Name = "test" });
+            mockAllReadyDataAccess.Setup(p => p.Organizations).Returns(organizations);
+            _sut = new OrganizationController(_mediator.Object, mockAllReadyDataAccess.Object);
         }
         
         #region PotentialHelperClass
