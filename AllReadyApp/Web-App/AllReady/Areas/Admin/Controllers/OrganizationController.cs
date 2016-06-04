@@ -15,12 +15,10 @@ namespace AllReady.Areas.Admin.Controllers
     public class OrganizationController : Controller
     {
         private readonly IMediator _mediator;
-        private readonly IAllReadyDataAccess _dataAccess;
 
-        public OrganizationController(IMediator mediator, IAllReadyDataAccess dataAccess)
+        public OrganizationController(IMediator mediator)
         {
             _mediator = mediator;
-            _dataAccess = dataAccess;
         }
 
         // GET: Organization
