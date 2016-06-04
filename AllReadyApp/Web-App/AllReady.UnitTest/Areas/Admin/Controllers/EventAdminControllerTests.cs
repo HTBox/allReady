@@ -32,19 +32,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
         [Fact]
         public async Task DetailsReturnsHttpNotFoundResultWhenEventIsNull()
-        {
-            var imageService = new Mock<IImageService>();
+        {            
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel());
-
-            var eventDetailModelValidator = new Mock<IValidateEventDetailModels>();
-            eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventDetailModel>(), It.IsAny<CampaignSummaryModel>()))
-                .Returns(new List<KeyValuePair<string, string>>());
-
-            var sut = new EventController(imageService.Object, mediator.Object, eventDetailModelValidator.Object);
+                       
+            var sut = new EventController(null, mediator.Object, null);
             var result = await sut.Details(It.IsAny<int>());
-            
-            Assert.True(result is HttpNotFoundResult);
+
+            Assert.IsType<HttpNotFoundResult>(result);
         }
 
         [Fact(Skip = "NotImplemented")]
