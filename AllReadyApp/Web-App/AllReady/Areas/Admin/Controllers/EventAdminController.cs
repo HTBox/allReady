@@ -182,6 +182,59 @@ namespace AllReady.Areas.Admin.Controllers
             return View(campaignEvent);
         }
 
+        // GET: Event/Duplicate/5
+        [HttpGet]
+        public async Task<IActionResult> Duplicate(int id)
+        {
+            var campaignEvent = await _mediator.SendAsync(new DuplicateEventQuery { EventId = id });
+            if (campaignEvent == null)
+                return HttpNotFound();
+
+            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+                return HttpUnauthorized();
+
+            return View(campaignEvent);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Duplicate(DuplicateEventModel model)
+        {
+            if (model == null)
+                return HttpBadRequest();
+
+            var organizationId = _mediator.Send(new ManagingOrganizationIdByEventIdQuery { EventId = model.Id });
+            if (!User.IsOrganizationAdmin(organizationId))
+                return HttpUnauthorized();
+
+            var existingEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = model.Id });
+            var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = existingEvent.CampaignId });
+            var newEvent = buildNewEventDetailsModel(existingEvent, model);
+
+            var errors = _eventDetailModelValidator.Validate(newEvent, campaign);
+            errors.ForEach(e => ModelState.AddModelError(e.Key, e.Value));
+
+            if (ModelState.IsValid)
+            {
+                var id = await _mediator.SendAsync(new DuplicateEventCommand { DuplicateEventModel = model });
+
+                return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
+            }
+
+            return View(model);
+        }
+
+        private EventDetailModel buildNewEventDetailsModel(EventDetailModel existingEvent, DuplicateEventModel newEventDetails)
+        {
+            existingEvent.Id = 0;
+            existingEvent.Name = newEventDetails.Name;
+            existingEvent.Description = newEventDetails.Description;
+            existingEvent.StartDateTime = newEventDetails.StartDateTime;
+            existingEvent.EndDateTime = newEventDetails.EndDateTime;
+
+            return existingEvent;
+        }
+
         // GET: Event/Delete/5
         [ActionName("Delete")]
         public async Task<IActionResult> Delete(int id)
