@@ -27,6 +27,7 @@ namespace AllReady.Models
         public DbSet<CampaignContact> CampaignContacts { get; set; }
         public DbSet<ClosestLocation> ClosestLocations { get; set; }
         public DbSet<PostalCodeGeoCoordinate> PostalCodeGeoCoordinates { get; set; }
+        public DbSet<Request> Requests {get; set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -53,6 +54,12 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<CampaignImpact>());
             Map(modelBuilder.Entity<ClosestLocation>());
             Map(modelBuilder.Entity<PostalCodeGeoCoordinate>());
+            Map(modelBuilder.Entity<Request>());
+        }
+
+        private void Map(EntityTypeBuilder<Request> builder)
+        {
+            // placeholder for mappings to future "itinerary"
         }
 
         private void Map(EntityTypeBuilder<CampaignImpact> builder)
