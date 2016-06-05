@@ -388,13 +388,14 @@ Navigation
 #CampaignInfo .panel-heading {
     width: 215px;
     float: left;
+    background-color: white;
 }
 
 #CampaignInfo .toggle-accordion-icon {
     width: 25px;
     float: left;
-    margin-top: 25px;
-    margin-left: -39px;   
+    margin-top: 7px;
+    margin-left: -39px;
 }
 
 .task-panel .panel-title {
@@ -408,14 +409,6 @@ Navigation
     float: left;
     font-size: 24px;
     color: hsl(28.6, 62.9%, 41.2%);
-}
-
-#CampaignInfo .toggle-accordion-icon {
-    margin-top: 7px;
-}
-
-#CampaignInfo .panel-heading {
-    background-color: white;
 }
 
 #CampaignInfo h3 {
@@ -481,9 +474,6 @@ Navigation
 }
 
 /* Event Edit Page */
-#IsLimitVolunteers, #IsAllowWaitList {
-    margin-left: -170px;
-}
 
 .inline-form {
     display: inline-block;
