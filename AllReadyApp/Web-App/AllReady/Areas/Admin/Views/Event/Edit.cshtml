@@ -36,7 +36,7 @@
             {
                 <li>Create New Event</li>
             }
-            
+
         </ol>
     </div>
 </div>
@@ -72,7 +72,7 @@
             <div class="form-group">
                 <label asp-for="EventType" class="control-label col-md-2"></label>
                 <div class="col-md-10">
-                    <select asp-for="EventType" asp-items="Html.GetEnumSelectList<EventTypes>()" class="form-control">
+                    <select asp-for="EventType" asp-items="Html.GetEnumSelectList<EventType>()" class="form-control">
                         <option value="0">-- Select --</option>
                     </select>
                     <span asp-validation-for="EventType" class="text-danger"></span>

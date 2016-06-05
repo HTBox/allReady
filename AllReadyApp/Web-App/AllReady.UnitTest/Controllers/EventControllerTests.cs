@@ -95,7 +95,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact(Skip = "NotImplemented")]
         public void ShowEventSendsShowEventQueryWithCorrectData()
         {
-            
+
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -104,12 +104,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void ShowEventReturnsEventViewWithCorrrectViewModelWhenViewModelIsNotNullAndEventTypeIsEventManaged()
-        {
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public void ShowEventReturnsEventWithTasksViewWithCorrrectViewModelWhenViewModelIsNotNullAndEventTypeIsNotEventManaged()
+        public void ShowEventReturnsEventWithTasksViewWithCorrrectViewModelWhenViewModelIsNotNull()
         {
         }
 

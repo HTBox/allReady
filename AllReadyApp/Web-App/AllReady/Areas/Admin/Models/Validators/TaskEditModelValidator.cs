@@ -66,7 +66,7 @@ namespace AllReady.Areas.Admin.Models.Validators
                 }
 
                 // Rule - Itinerary tasks must start and end on same calendar day
-                if (campaignEvent.EventType == EventTypes.ItineraryManaged && convertedStartDateTime.HasValue && convertedEndDateTime.HasValue)
+                if (campaignEvent.EventType == EventType.Itinerary && convertedStartDateTime.HasValue && convertedEndDateTime.HasValue)
                 {
                     if (convertedStartDateTime.Value.Date != convertedEndDateTime.Value.Date)
                     {
