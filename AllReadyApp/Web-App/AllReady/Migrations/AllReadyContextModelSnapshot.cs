@@ -348,6 +348,38 @@ namespace AllReady.Migrations
                     b.HasKey("Latitude", "Longitude");
                 });
 
+            modelBuilder.Entity("AllReady.Models.Request", b =>
+                {
+                    b.Property<Guid>("RequestId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Address");
+
+                    b.Property<string>("City");
+
+                    b.Property<string>("Email");
+
+                    b.Property<double>("Lattitude");
+
+                    b.Property<double>("Longitude");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("Phone");
+
+                    b.Property<string>("ProviderData");
+
+                    b.Property<string>("ProviderId");
+
+                    b.Property<string>("State");
+
+                    b.Property<int>("Status");
+
+                    b.Property<string>("Zip");
+
+                    b.HasKey("RequestId");
+                });
+
             modelBuilder.Entity("AllReady.Models.Resource", b =>
                 {
                     b.Property<int>("Id")
