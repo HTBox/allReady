@@ -23,8 +23,7 @@
                 {
                     <tr>
                         <td>
-                            @*<a asp-controller="" asp-action="" asp-route-area="Admin" asp-route-id="@itinerary.Id">@itinerary.Name</a>*@
-                            @itinerary.Name
+                            <a asp-controller="Itinerary" asp-action="Details" asp-route-area="Admin" asp-route-id="@itinerary.Id">@itinerary.Name</a>                           
                         </td>
                         <td>
                             <p>@itinerary.DisplayDate</p>
