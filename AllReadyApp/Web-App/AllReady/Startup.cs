@@ -47,6 +47,7 @@ namespace AllReady
             }
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
+            Configuration["version"] = appEnv.ApplicationVersion; // version in project.json
         }
 
         public IConfiguration Configuration { get; set; }
