@@ -283,6 +283,8 @@ namespace AllReady.Migrations
 
                     b.Property<int>("EventId");
 
+                    b.Property<string>("Name");
+
                     b.HasKey("Id");
                 });
 
