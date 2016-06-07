@@ -1,0 +1,44 @@
+﻿@model AllReady.Areas.Admin.Models.ItineraryModels.ItineraryDetailsModel
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Event" asp-action="Details" asp-route-area="Admin" asp-route-id="@Model.EventId">@Model.EventName</a></li>
+            <li>@Model.Name</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>
+            @Model.Name
+            @*<a asp-controller="Itinerary" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
+            <a asp-controller="Itinerary" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>*@
+        </h2>
+        <p>Scheduled for @Model.DisplayDate</p>       
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>
+          Team
+        </h3>
+        <p>TODO</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>
+            Requests
+        </h3>
+        <p>TODO</p>
+    </div>
+</div>
+
