@@ -22,12 +22,15 @@ namespace AllReady.Models
         public RequestStatus Status { get; set; }
 
         // no support yet for spatial types
-        public double Lattitude { get; set; }
+        public double Latitude { get; set; }
         public double Longitude { get; set; }
 
         // allow for unique identifiers and mapping information
         public string ProviderId { get; set; }      // for RedCross, "serial"
         public string ProviderData { get; set; }    // for Red Cross, "assigned_rc_region"
+
+        public int? EventId { get; set; }
+        public Event Event { get; set; }
 
         public ICollection<ItineraryRequest> Itineraries { get; set; }
     }
