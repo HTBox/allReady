@@ -100,7 +100,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
                 },
                 StartDateTime = eventStartDate,
                 EndDateTime = eventEndDate,
-                EventType = EventTypes.EventManaged
+                EventType = EventType.Rally
             });
 
             var validator = new TaskSummaryModelValidator(mockMediator.Object);
@@ -145,7 +145,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
                 },
                 StartDateTime = eventStartDate,
                 EndDateTime = eventEndDate,
-                EventType = EventTypes.ItineraryManaged
+                EventType = EventType.Itinerary
             });
 
             return new TaskSummaryModelValidator(mockMediator.Object);

@@ -20,7 +20,7 @@ namespace AllReady.Models
         public string Description { get; set; }
 
         [Display(Name = "Event Type")]
-        public EventTypes EventType { get; set; }    
+        public EventType EventType { get; set; }    
         
         public int NumberOfVolunteersRequired { get; set; }
 

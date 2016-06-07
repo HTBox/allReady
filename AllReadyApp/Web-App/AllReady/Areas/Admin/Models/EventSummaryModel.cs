@@ -15,7 +15,7 @@ namespace AllReady.Areas.Admin.Models
         [Required]
         [Range(1, 99, ErrorMessage = "A valid 'event type' is required")]
         [Display(Name = "Event Type")]
-        public EventTypes EventType { get; set; }
+        public EventType EventType { get; set; }
 
         public string Description { get; set; }
 
