@@ -61,5 +61,7 @@ namespace AllReady.Models
         {
             return Tasks.Any(task => task.AssignedVolunteers.Any(av => av.User.Id == userId));
         }
+
+        public ICollection<Itinerary> Itineraries { get; set; }
     }
 }
