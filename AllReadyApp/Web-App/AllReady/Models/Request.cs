@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.Models
 {
@@ -31,5 +29,6 @@ namespace AllReady.Models
         public string ProviderId { get; set; }      // for RedCross, "serial"
         public string ProviderData { get; set; }    // for Red Cross, "assigned_rc_region"
 
+        public ICollection<ItineraryRequest> Itineraries { get; set; }
     }
 }

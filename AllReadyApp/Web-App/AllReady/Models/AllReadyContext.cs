@@ -28,6 +28,8 @@ namespace AllReady.Models
         public DbSet<ClosestLocation> ClosestLocations { get; set; }
         public DbSet<PostalCodeGeoCoordinate> PostalCodeGeoCoordinates { get; set; }
         public DbSet<Request> Requests {get; set;}
+        public DbSet<Itinerary> Itineraries { get; set; }
+        public DbSet<ItineraryRequest> ItineraryRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,11 +57,14 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<ClosestLocation>());
             Map(modelBuilder.Entity<PostalCodeGeoCoordinate>());
             Map(modelBuilder.Entity<Request>());
+            Map(modelBuilder.Entity<Itinerary>());
+            Map(modelBuilder.Entity<ItineraryRequest>());
         }
 
         private void Map(EntityTypeBuilder<Request> builder)
         {
-            // placeholder for mappings to future "itinerary"
+            builder.HasKey(x => x.RequestId);
+            builder.HasMany(x => x.Itineraries).WithOne(x => x.Request).HasForeignKey(x => x.RequestId);
         }
 
         private void Map(EntityTypeBuilder<CampaignImpact> builder)
@@ -140,6 +145,7 @@ namespace AllReady.Models
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(a => a.RequiredSkills).WithOne(acsk => acsk.Event);
             builder.Property(p => p.Name).IsRequired();
+            builder.HasMany(x => x.Itineraries).WithOne(x => x.Event).HasForeignKey(x => x.EventId).IsRequired();
         }
 
         private void Map(EntityTypeBuilder<EventSkill> builder)
@@ -188,6 +194,18 @@ namespace AllReady.Models
         private void Map(EntityTypeBuilder<PostalCodeGeoCoordinate> builder)
         {
             builder.HasKey(us => new { us.Latitude, us.Longitude });
+        }
+
+        public void Map(EntityTypeBuilder<Itinerary> builder)
+        {
+            builder.HasKey(x => x.Id);
+            builder.HasMany(x => x.Requests).WithOne(x => x.Itinerary).HasForeignKey((x=> x.ItineraryId));
+            builder.HasMany(x => x.TeamMembers).WithOne(x => x.Itinerary).HasForeignKey(x => x.ItineraryId).IsRequired(false);
+        }
+
+        public void Map(EntityTypeBuilder<ItineraryRequest> builder)
+        {
+            builder.HasKey(x => new { x.ItineraryId, x.RequestId});
         }
     }
 }
