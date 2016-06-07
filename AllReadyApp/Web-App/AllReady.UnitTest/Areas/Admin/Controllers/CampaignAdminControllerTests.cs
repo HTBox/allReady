@@ -23,21 +23,40 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         //delete this line when all unit tests using it have been completed
         private readonly Task taskFromResultZero = Task.FromResult(0);
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact()]
         public void IndexSendsCampaignListQueryWithCorrectDataWhenUserIsOrgAdmin()
         {
+            Organization aginAware = AgincourtAwarenessExtended(Context);
+            Organization pwPrepares = ParkwoodsPreparesExtended(Context);
+            Context.SaveChanges();
+
+            // Org admin should only see own campaigns
+            CampaignController controller = CampaignControllerWithListQuery(Context, UserType.OrgAdmin.ToString(), aginAware.Id);
+            ViewResult view = (ViewResult)controller.Index();
+            IEnumerable<AllReady.Areas.Admin.Models.CampaignSummaryModel> viewModel = (IEnumerable<AllReady.Areas.Admin.Models.CampaignSummaryModel>)view.ViewData.Model;
+            Assert.Equal(viewModel.Where(t => t.OrganizationId == aginAware.Id).Count(), aginAware.Campaigns.Count());
         }
-            
-        [Fact(Skip = "NotImplemented")]
+
+
+        [Fact()]
         public void IndexSendsCampaignListQueryWithCorrectDataWhenUserIsNotOrgAdmin()
         {
+            Organization aginAware = AgincourtAwarenessExtended(Context);
+            Organization pwPrepares = ParkwoodsPreparesExtended(Context);
+            Context.SaveChanges();
+
+            // Site admin should see all campaigns
+            CampaignController controller = CampaignControllerWithListQuery(Context, UserType.SiteAdmin.ToString(), null);
+            ViewResult view = (ViewResult)controller.Index();      
+            IEnumerable<AllReady.Areas.Admin.Models.CampaignSummaryModel> viewModel = (IEnumerable<AllReady.Areas.Admin.Models.CampaignSummaryModel>)view.ViewData.Model;
+            Assert.Equal(viewModel.Count(), Context.Campaigns.Count());
         }
 
         [Fact(Skip = "NotImplemented")]
         public void IndexReturnsCorrectViewModel()
         {
         }
-            
+
         [Fact(Skip = "NotImplemented")]
         public async Task DetailsSendsCampaignDetailQueryWithCorrectCampaignId()
         {
@@ -144,8 +163,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task EditPostInsertsCampaign()
         {
-            var aginAware = AgincourtAware_entity;
-            Context.Locations.Add(aginAware.Location);
+            Location bogusAve = BogusAve_entity();
+            Context.Locations.Add(bogusAve);
+            Organization aginAware = AgincourtAware_entity();
+            aginAware.Location = bogusAve;
             Context.Organizations.Add(aginAware);
             Context.SaveChanges();
 
@@ -218,8 +239,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await sut.Edit(new CampaignSummaryModel { Name = "Foo", OrganizationId = organizationId, Id = campaignId}, file);
 
             mockImageService.Verify(mock => mock.UploadCampaignImageAsync(
-                        It.Is<int>(i => i == organizationId), 
-                        It.Is<int>(i => i == campaignId), 
+                        It.Is<int>(i => i == organizationId),
+                        It.Is<int>(i => i == campaignId),
                 It.Is<IFormFile>(i => i == file)), Times.Once);
         }
 
@@ -251,7 +272,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task DeleteReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
-            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), It.IsAny<int>());   
+            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), It.IsAny<int>());
             Assert.IsType<HttpUnauthorizedResult>(await controller.Delete(It.IsAny<int>()));
         }
 
@@ -316,7 +337,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel { OrganizationId = organizationId });
-            
+
             var sut = new CampaignController(mockMediator.Object, null);
             sut.SetClaims(new List<Claim>
             {
@@ -438,12 +459,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static CampaignController CampaignControllerWithSummaryModel(CampaignSummaryModel model, AllReadyContext Context, string userType)
         {
             var mockMediator = new Mock<IMediator>();
-            IAsyncRequest<int> command = new EditCampaignCommand() { Campaign = model };
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EditCampaignCommand>()))
-                .Returns(() => {
+                .Returns((EditCampaignCommand command) => {
                     IAsyncRequestHandler<EditCampaignCommand, int> handler = new EditCampaignCommandHandler(Context);
-                    return handler.Handle((EditCampaignCommand)command);
-            });
+                    return handler.Handle(command);
+                });
 
             var mockImageService = new Mock<IImageService>();
 
@@ -454,6 +474,26 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 new Claim(AllReady.Security.ClaimTypes.Organization, model.OrganizationId.ToString())
             });
 
+            return controller;
+        }
+        private static CampaignController CampaignControllerWithListQuery(AllReadyContext Context, string UserType, int? UserOrgId)
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.Send(It.IsAny<CampaignListQuery>()))
+                .Returns((CampaignListQuery q) => {
+                    IRequestHandler<CampaignListQuery, IEnumerable<CampaignSummaryModel>> handler = new CampaignListQueryHandler(Context);
+                    return handler.Handle(q);
+                });
+
+            var mockImageService = new Mock<IImageService>();
+            CampaignController controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType),
+            };
+            if (UserOrgId.HasValue)
+                claims.Add(new Claim(AllReady.Security.ClaimTypes.Organization, UserOrgId.ToString()));
+            controller.SetClaims(claims);
             return controller;
         }
 
@@ -494,10 +534,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     ExternalUrl = "http://agincourtaware.trafficlightoutage.com",
                     ExternalUrlText = "Agincourt Aware: Traffic Light Outage",
                     Featured = false,
-                    FileUpload =  null,
+                    FileUpload = null,
                     FullDescription = "<h1><strong>Massive Traffic Light Outage Plan</strong></h1>\r\n<p>The Massive Traffic Light Outage Plan (MTLOP) is the official plan to handle a major traffic light failure.</p>\r\n<p>In the event of a wide-area traffic light outage, an alternative method of controlling traffic flow will be necessary. The MTLOP calls for the recruitment and training of volunteers to be ready to direct traffic at designated intersections and to schedule and follow-up with volunteers in the event of an outage.</p>",
                     Id = 0,
-                    ImageUrl =  null,
+                    ImageUrl = null,
                     Location = BogusAve_model,
                     Locked = false,
                     Name = "Massive Traffic Light Outage Plan",
@@ -513,20 +553,161 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         #endregion
 
         #region "TestEntities"
-        public static Location BogusAve_entity = new Location()  {
-            Address1 = "25 Bogus Ave",
-            City = "Agincourt",
-            State = "Ontario",
-            Country = "Canada",
-            PostalCode = "M1T 2T9"
+        public static Campaign MassiveTrafficLightOutage_entity() {
+            DateTime start = DateTime.Today;
+            string TimeZoneId = "Eastern Standard Time";
+            TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
+            TimeSpan startDateTimeOffset = timeZoneInfo.GetUtcOffset(start);
+            DateTimeOffset StartDateTime = new DateTimeOffset(start.Year, start.Month, start.Day, 0, 0, 0, startDateTimeOffset);
+            DateTimeOffset EndDateTime = StartDateTime.AddMonths(1);
+            Campaign ret = new Campaign()
+            {
+                Description = "Preparations to be ready to deal with a wide-area traffic outage.",
+                EndDateTime = EndDateTime,
+                ExternalUrl = "http://www.agincourtaware.com/trafficlightoutage",
+                ExternalUrlText = "Agincourt Aware: Traffic Light Outage",
+                Featured = false,
+                FullDescription = "<h1><strong>Massive Traffic Light Outage Plan</strong></h1>\r\n<p>The Massive Traffic Light Outage Plan (MTLOP) is the official plan to handle a major traffic light failure.</p>\r\n<p>In the event of a wide-area traffic light outage, an alternative method of controlling traffic flow will be necessary. The MTLOP calls for the recruitment and training of volunteers to be ready to direct traffic at designated intersections and to schedule and follow-up with volunteers in the event of an outage.</p>",
+                Id = 0,
+                ImageUrl = null,
+                Locked = false,
+                Name = "Massive Traffic Light Outage Plan",
+                StartDateTime = StartDateTime,
+                TimeZoneId = TimeZoneId,
+            };
+            return ret;
+        }
+        public static Campaign FirePreventionDays_entity()
+        {
+            DateTime start = DateTime.Today;
+            string TimeZoneId = "Eastern Standard Time";
+            TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
+            TimeSpan startDateTimeOffset = timeZoneInfo.GetUtcOffset(start);
+            DateTimeOffset StartDateTime = new DateTimeOffset(start.Year, start.Month, start.Day, 0, 0, 0, startDateTimeOffset);
+            DateTimeOffset EndDateTime = StartDateTime.AddMonths(1);
+            Campaign ret = new Campaign()
+            {
+                Description = "Activity days to prevent and be able to respond to a fire.",
+                EndDateTime = EndDateTime,
+                ExternalUrl = "http://www.agincourtaware.com/firepreventiondays",
+                ExternalUrlText = "Agincourt Aware: Neighbourhood Fire Prevention Days",
+                Featured = false,
+                FullDescription = "<h1><strong>Neighbourhood Fire Prevention Days</strong></h1>\r\n<p>The focus of this year's Fire Prevention Days is getting the message out about smoke alarms. Smoke alarms save lives and need to be replaced every 10 years.</p>\r\n<p>Activities will center around educating the public and making it easy to install/replace fire alarms.</p>",
+                Id = 0,
+                ImageUrl = null,
+                Locked = false,
+                Name = "Neighbourhood Fire Prevention Days",
+                StartDateTime = StartDateTime,
+                TimeZoneId = TimeZoneId,
+            };
+            return ret;
+        }
+        public static Campaign SafetyKit_entity()
+        {
+            DateTime start = DateTime.Today;
+            string TimeZoneId = "Eastern Standard Time";
+            TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
+            TimeSpan startDateTimeOffset = timeZoneInfo.GetUtcOffset(start);
+            DateTimeOffset StartDateTime = new DateTimeOffset(start.Year, start.Month, start.Day, 0, 0, 0, startDateTimeOffset);
+            DateTimeOffset EndDateTime = StartDateTime.AddMonths(1);
+            Campaign ret = new Campaign()
+            {
+                Description = "A push to inform the public about the importance of preparing a safety kit and what to have in it.",
+                EndDateTime = EndDateTime,
+                ExternalUrl = "http://www.ParkwoodsPrepares.com/SafetyKit",
+                ExternalUrlText = "Simple Safety Kit Building - Brought to You by Parkwoods Prepares",
+                Featured = false,
+                FullDescription = "<p>A disaster supplies kit is simply a collection of basic items your household may need in the event of an emergency.</p><p> Try to assemble your kit well in advance of an emergency.You may have to evacuate at a moment’s notice and take essentials with you.You will probably not have time to search for the supplies you need or shop for them.</p><p> You may need to survive on your own after an emergency.This means having your own food, water and other supplies in sufficient quantity to last for at least 72 hours.Local officials and relief workers will be on the scene after a disaster but they cannot reach everyone immediately.You could get help in hours or it might take days.</p><p> Additionally, basic services such as electricity, gas, water, sewage treatment and telephones may be cut off for days or even a week, or longer.Your supplies kit should contain items to help you manage during these outages.</p>",
+                Id = 0,
+                ImageUrl = null,
+                Locked = false,
+                Name = "Simple Safety Kit Building",
+                StartDateTime = StartDateTime,
+                TimeZoneId = TimeZoneId,
+            };
+            return ret;
+        }
 
-        };
-        Organization AgincourtAware_entity = new Organization() {
-            Name = "Agincourt Awareness",
-            Location = CampaignAdminControllerTests.BogusAve_entity,
-            WebUrl = "http://www.AgincourtAwareness.ca",
-            LogoUrl = "http://www.AgincourtAwareness.ca/assets/LogoLarge.png"
-        };
+        public static Location BogusAve_entity()
+        {
+            return new Location()
+            {
+                Address1 = "25 Bogus Ave",
+                City = "Agincourt",
+                State = "Ontario",
+                Country = "Canada",
+                PostalCode = "M1T 2T9"
+            };
+        }
+        public static Location ShamStreet_entity()
+        {
+            return new Location()
+            {
+                Address1 = "173 Sham Street",
+                City = "",
+                State = "Ontario",
+                Country = "Canada",
+                PostalCode = "M6J 2W6"
+            };
+        }
+        public static Organization AgincourtAware_entity() {
+            return new Organization()
+            {
+                Name = "Agincourt Awareness",
+                WebUrl = "http://www.AgincourtAwareness.ca",
+                LogoUrl = "http://www.AgincourtAwareness.ca/assets/LogoLarge.png"
+            };
+        }
+        public static Organization ParkwoodsPrepares_entity() {
+            return new Organization()
+            {
+                Name = "Parkwoods Prepares",
+                WebUrl = "http://www.ParkwoodsPrepares.ca",
+                LogoUrl = "http://www.ParkwoodsPrepares.ca/images/PPLogo.png"
+            };
+        }
+        private static Organization ParkwoodsPreparesExtended(AllReadyContext InMemoryContext)
+        {
+            Organization pwPrep = ParkwoodsPrepares_entity();
+            Location newLoc = ShamStreet_entity();
+            InMemoryContext.Locations.Add(newLoc);
+            pwPrep.Location = newLoc;
+            InMemoryContext.Organizations.Add(pwPrep);
+
+            Campaign safetyKit = SafetyKit_entity();
+            newLoc = ShamStreet_entity(); // Same address as the organization but different instance
+            InMemoryContext.Locations.Add(newLoc);
+            safetyKit.Location = newLoc;
+            safetyKit.ManagingOrganization = pwPrep;
+            InMemoryContext.Campaigns.Add(safetyKit);
+
+            return pwPrep;
+        }
+
+        private static Organization AgincourtAwarenessExtended(AllReadyContext InMemoryContext)
+        {
+            Organization aginAware = AgincourtAware_entity();
+            Location newLoc = BogusAve_entity();
+            InMemoryContext.Locations.Add(newLoc);
+            aginAware.Location = newLoc;
+            InMemoryContext.Organizations.Add(aginAware);
+
+            Campaign lightOut = MassiveTrafficLightOutage_entity();
+            newLoc = BogusAve_entity(); // Same address as the organization but different instance
+            InMemoryContext.Locations.Add(newLoc);
+            lightOut.Location = newLoc;
+            lightOut.ManagingOrganization = aginAware;
+            InMemoryContext.Campaigns.Add(lightOut);
+
+            Campaign firePrevent = FirePreventionDays_entity();
+            newLoc = BogusAve_entity(); // Same address as the organization but different instance
+            InMemoryContext.Locations.Add(newLoc);
+            firePrevent.Location = newLoc;
+            firePrevent.ManagingOrganization = aginAware;
+            InMemoryContext.Campaigns.Add(firePrevent);
+
+            return aginAware;
+        }
         #endregion
     }
 
