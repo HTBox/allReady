@@ -85,7 +85,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 RequestId = Guid.NewGuid(),
                 Name = "Request1",
                 Status = RequestStatus.Assigned,
-                Lattitude = 50.768,
+                Latitude = 50.768,
                 Longitude = 0.2905
             };
 
@@ -94,7 +94,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 RequestId = Guid.NewGuid(),
                 Name = "Request2",
                 Status = RequestStatus.Assigned,
-                Lattitude = 50.768,
+                Latitude = 50.768,
                 Longitude = 0.2905
             };
 
@@ -103,7 +103,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 RequestId = Guid.NewGuid(),
                 Name = "Request3",
                 Status = RequestStatus.Assigned,
-                Lattitude = 50.768,
+                Latitude = 50.768,
                 Longitude = 0.2905
             };
 
