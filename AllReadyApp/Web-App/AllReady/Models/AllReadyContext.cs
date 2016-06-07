@@ -146,6 +146,7 @@ namespace AllReady.Models
             builder.HasMany(a => a.RequiredSkills).WithOne(acsk => acsk.Event);
             builder.Property(p => p.Name).IsRequired();
             builder.HasMany(x => x.Itineraries).WithOne(x => x.Event).HasForeignKey(x => x.EventId).IsRequired();
+            builder.HasMany(x => x.Requests).WithOne(x => x.Event).HasForeignKey(x => x.EventId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
         }
 
         private void Map(EntityTypeBuilder<EventSkill> builder)

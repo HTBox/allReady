@@ -382,7 +382,9 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Email");
 
-                    b.Property<double>("Lattitude");
+                    b.Property<int?>("EventId");
+
+                    b.Property<double>("Latitude");
 
                     b.Property<double>("Longitude");
 
@@ -698,6 +700,13 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.Organization")
                         .WithMany()
                         .HasForeignKey("OrganizationId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.Request", b =>
+                {
+                    b.HasOne("AllReady.Models.Event")
+                        .WithMany()
+                        .HasForeignKey("EventId");
                 });
 
             modelBuilder.Entity("AllReady.Models.Skill", b =>
