@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using AllReady.Areas.Admin.Models.ItineraryModels;
 using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models
@@ -13,5 +14,9 @@ namespace AllReady.Areas.Admin.Models
 
         [Display(Name = "Required Skills")]
         public IEnumerable<EventSkill> RequiredSkills { get; set; } = new List<EventSkill>();
+
+        public IEnumerable<ItineraryListModel> Itineraries { get; set; } = new List<ItineraryListModel>();
+
+        public bool DisplayItineraries => EventType == EventType.Itinerary;
     }
 }

@@ -1,7 +1,7 @@
 @using System.Threading.Tasks
 @using AllReady.Security
 @model AllReady.Areas.Admin.Models.EventDetailModel
-@{ 
+@{
     ViewBag.Title = Model.Name;
     var userTimeZoneId = User.GetTimeZoneId();
 }
@@ -19,18 +19,19 @@
     {
         <div data-bind="if: @Model.ImageUrl" class="col-sm-1">
             <h2></h2>
-            <img src="@Model.ImageUrl" class="img-responsive"/>
+            <img src="@Model.ImageUrl" class="img-responsive" />
         </div>
     }
     <div class="col-md-10">
         <h2>
             @Model.Name
             <a asp-controller="Event" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
-            <a asp-controller="Event" asp-action="Duplicate" asp-route-id="@Model.Id" class="btn btn-default">Duplicate</a> 
+            <a asp-controller="Event" asp-action="Duplicate" asp-route-id="@Model.Id" class="btn btn-default">Duplicate</a>
             <a asp-controller="Event" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>
         </h2>
         <p>@Model.Description</p>
-        <p><time value="Model.StartDateTime"></time> - <time value="Model.EndDateTime"></time>
+        <p>
+            <time value="Model.StartDateTime"></time> - <time value="Model.EndDateTime"></time>
             <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
         </p>
         @if (!string.IsNullOrEmpty(userTimeZoneId) && Model.TimeZoneId != userTimeZoneId)
@@ -58,10 +59,11 @@
 }
 <div class="row">
     <div class="col-md-12">
-        <h3>Volunteers @if (Model.NumberOfVolunteersRequired > 0)
-                       {
-                           <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span>
-                       } <button type="button" class="btn btn-primary" disabled="@(!Model.Volunteers.Any())" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button>
+        <h3>
+            Volunteers @if (Model.NumberOfVolunteersRequired > 0)
+            {
+                <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span>
+            } <button type="button" class="btn btn-primary" disabled="@(!Model.Volunteers.Any())" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button>
         </h3>
         @if (Model.Volunteers == null || Model.Volunteers.Count == 0)
         {
@@ -124,6 +126,24 @@
 </div>
 
 @Html.Partial("~/Areas/Admin/Views/Task/_List.cshtml", Model.Tasks)
+
+@if (Model.DisplayItineraries)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Itineraries</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            @*<a asp-controller="TODO" asp-action="TODO" asp-route-eventId="@Model.Id" class="btn btn-default">Create Itinerary</a>*@
+            <a href="#" class="btn btn-default">Create Itinerary (TODO)</a>
+        </div>
+    </div>
+
+    @Html.Partial("~/Areas/Admin/Views/Itinerary/_List.cshtml", Model.Itineraries)
+}
 
 @section scripts {
     <script src="~/js/eventDetails.js"></script>
