@@ -1,0 +1,49 @@
+﻿@model IEnumerable<AllReady.Areas.Admin.Models.ItineraryModels.ItineraryListModel>
+
+<div class="row">
+    <div class="col-md-12">
+        @if (Model.Any())
+        {
+            <table class="table">
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Date
+                    </th>
+                    <th>
+                        Team Size
+                    </th>
+                    <th>
+                        Assigned Requests
+                    </th>
+                </tr>
+                @foreach (var itinerary in Model)
+                {
+                    <tr>
+                        <td>
+                            @*<a asp-controller="" asp-action="" asp-route-area="Admin" asp-route-id="@itinerary.Id">@itinerary.Name</a>*@
+                            @itinerary.Name
+                        </td>
+                        <td>
+                            <p>@itinerary.DisplayDate</p>
+                        </td>
+                        <td>
+                            <p>@itinerary.TeamSize</p>
+                        </td>
+                        <td>
+                            <p>@itinerary.RequestCount</p>
+                        </td>
+                    </tr>
+                }
+            </table>
+
+        }
+        else
+        {
+            <br/>
+            <p>There are currently no itineraries to display</p>
+        }
+    </div>
+</div>
