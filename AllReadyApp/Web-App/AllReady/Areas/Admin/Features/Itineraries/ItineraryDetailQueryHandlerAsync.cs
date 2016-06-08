@@ -41,18 +41,5 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
             return itineraryDetails;
         }
-
-        // todo: sgordon: this could be more efficient, if we select only the fields we need from the query
-        private async Task<Itinerary> GetItinerary(ItineraryDetailQuery message)
-        {
-            return await _context.Itineraries
-                .AsNoTracking()    
-                .Include(x => x.Event)           
-                .Include(x => x.Event.Campaign.ManagingOrganization)
-                .Include(x => x.TeamMembers).ThenInclude(x => x.Task)
-                .Include(x => x.TeamMembers).ThenInclude(x => x.User)
-                .SingleOrDefaultAsync(a => a.Id == message.ItineraryId)
-                .ConfigureAwait(false);
-        }
     }
 }
