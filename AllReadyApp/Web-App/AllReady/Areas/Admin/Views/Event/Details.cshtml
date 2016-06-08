@@ -138,11 +138,44 @@
     <div class="row">
         <div class="col-md-12">
             @*<a asp-controller="TODO" asp-action="TODO" asp-route-eventId="@Model.Id" class="btn btn-default">Create Itinerary</a>*@
-            <a href="#" class="btn btn-default">Create Itinerary (TODO)</a>
+            @*<a href="#" class="btn btn-default">Create Itinerary (TODO)</a>*@
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#createItineraryModal">Create Itinerary</button>
         </div>
     </div>
 
     @Html.Partial("~/Areas/Admin/Views/Itinerary/_List.cshtml", Model.Itineraries)
+
+    <!-- Create Itinerary Modal -->
+    <div class="modal fade" id="createItineraryModal" tabindex="-1" role="dialog" aria-labelledby="createItineraryLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="createItineraryLabel">Create Itinerary</h4>
+                </div>
+                <input type="hidden" id="itineraryDetailUrl" value="@Model.ItinerariesDetailsUrl"/>
+
+                <form asp-controller="Itinerary" asp-action="Create" method="post" >
+                    <div class="modal-body">
+                        <input type="hidden" asp-for="NewItinerary.EventId" name="@nameof(Model.NewItinerary.EventId)" >
+                        <div class="form-group">
+                            <label for="@nameof(Model.NewItinerary.Name)" class="control-label">Name</label>
+                            <input type="text" class="form-control wide" id="createItineraryModal-name" name="@nameof(Model.NewItinerary.Name)" asp-for="NewItinerary.Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="@nameof(Model.NewItinerary.Date)" class="control-label">Scheduled Date</label>
+                            <input class="form-control" id="createItineraryModal-date" asp-for="NewItinerary.Date" name="@nameof(Model.NewItinerary.Date)" value="@Model.NewItinerary.Date.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="alert alert-danger" role="alert"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" id="createItinerary" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 }
 
 @section scripts {

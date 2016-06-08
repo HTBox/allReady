@@ -18,5 +18,9 @@ namespace AllReady.Areas.Admin.Models
         public IEnumerable<ItineraryListModel> Itineraries { get; set; } = new List<ItineraryListModel>();
 
         public bool DisplayItineraries => EventType == EventType.Itinerary;
+
+        public ItineraryEditModel NewItinerary { get; set; } = new ItineraryEditModel();
+
+        public string ItinerariesDetailsUrl { get; set; }
     }
 }

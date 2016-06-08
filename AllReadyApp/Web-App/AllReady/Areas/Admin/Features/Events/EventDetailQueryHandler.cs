@@ -1,4 +1,5 @@
-﻿using AllReady.Areas.Admin.Models;
+﻿using System;
+using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
@@ -72,6 +73,9 @@ namespace AllReady.Areas.Admin.Features.Events
                         RequestCount = i.Requests.Count
                     }).OrderBy(i => i.Date).ToList()
                 };
+
+                result.NewItinerary.EventId = result.Id;
+                result.NewItinerary.Date = result.StartDateTime.DateTime;
             }
 
             return result;
