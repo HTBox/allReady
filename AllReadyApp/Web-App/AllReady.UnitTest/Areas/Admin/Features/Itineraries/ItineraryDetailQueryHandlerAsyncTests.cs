@@ -1,6 +1,5 @@
 ﻿using AllReady.Areas.Admin.Features.Itineraries;
 using AllReady.Models;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,8 +11,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
     {
         protected override void LoadTestData()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
-
             var htb = new Organization
             {
                 Name = "Humanitarian Toolbox",
@@ -50,11 +47,58 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Date = new DateTime(2016, 07, 01)
             };
 
-            context.Events.Add(queenAnne);
-            context.Itineraries.Add(itinerary);
-            context.SaveChanges();
+            Context.Organizations.Add(htb);
+            Context.Campaigns.Add(firePrev);
+            Context.Events.Add(queenAnne);
+            Context.Itineraries.Add(itinerary);
+            Context.SaveChanges();
         }
 
-        // TODO - Create Tests to verify query behaves as expected and returns correct data
+        [Fact]
+        public async Task ItineraryExists_ReturnsItinerary()
+        {           
+            var query = new ItineraryDetailQuery { ItineraryId = 1 };
+            var handler = new ItineraryDetailQueryHandlerAsync(Context);
+            var result = await handler.Handle(query);
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task ItineraryDoesNotExist_ReturnsNull()
+        {        
+            var query = new ItineraryDetailQuery();
+            var handler = new ItineraryDetailQueryHandlerAsync(Context);
+            var result = await handler.Handle(query);
+            Assert.Null(result);
+        }
+        
+        [Fact]
+        public async Task ItineraryQueryLoadsItineraryDetails()
+        {
+            var query = new ItineraryDetailQuery { ItineraryId = 1 };
+            var handler = new ItineraryDetailQueryHandlerAsync(Context);
+            var result = await handler.Handle(query);
+            Assert.Equal(1, result.Id);
+            Assert.Equal("1st Itinerary", result.Name);
+            Assert.Equal(new DateTime(2016, 07, 01), result.Date);
+        }
+
+        [Fact]
+        public async Task ItineraryQueryLoadsEventDetails()
+        {
+            var query = new ItineraryDetailQuery { ItineraryId = 1 };
+            var handler = new ItineraryDetailQueryHandlerAsync(Context);
+            var result = await handler.Handle(query);
+            Assert.Equal("Queen Anne Fire Prevention Day", result.EventName);
+        }
+
+        [Fact]
+        public async Task ItineraryQueryLoadsOrganizationId()
+        {
+            var query = new ItineraryDetailQuery { ItineraryId = 1 };
+            var handler = new ItineraryDetailQueryHandlerAsync(Context);
+            var result = await handler.Handle(query);
+            Assert.Equal(1, result.OrganizationId);
+        }
     }
 }
