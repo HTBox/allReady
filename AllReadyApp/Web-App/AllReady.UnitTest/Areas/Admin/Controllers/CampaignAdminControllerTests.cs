@@ -23,8 +23,44 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         //delete this line when all unit tests using it have been completed
         private readonly Task taskFromResultZero = Task.FromResult(0);
 
-        [Fact()]
+        [Fact]
         public void IndexSendsCampaignListQueryWithCorrectDataWhenUserIsOrgAdmin()
+        {
+            int OrganizationId = 99;
+            var mockMediator = new Mock<IMediator>();
+            var mockImageService = new Mock<IImageService>();
+            CampaignController controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, OrganizationId.ToString())
+            };
+            controller.SetClaims(claims);
+
+            controller.Index();
+
+            mockMediator.Verify(mock => mock.Send(It.Is<CampaignListQuery>(q => q.OrganizationId == OrganizationId)));
+        }
+
+        [Fact]
+        public void IndexSendsCampaignListQueryWithCorrectDataWhenUserIsNotOrgAdmin()
+        {
+            var mockMediator = new Mock<IMediator>();
+            var mockImageService = new Mock<IImageService>();
+            CampaignController controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+            };
+            controller.SetClaims(claims);
+
+            controller.Index();
+
+            mockMediator.Verify(mock => mock.Send(It.Is<CampaignListQuery>(q => q.OrganizationId == null)));
+        }
+
+        [Fact]
+        public void IndexReturnsCorrectDataWhenUserIsOrgAdmin()
         {
             Organization aginAware = AgincourtAwarenessExtended(Context);
             Organization pwPrepares = ParkwoodsPreparesExtended(Context);
@@ -33,13 +69,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Org admin should only see own campaigns
             CampaignController controller = CampaignControllerWithListQuery(Context, UserType.OrgAdmin.ToString(), aginAware.Id);
             ViewResult view = (ViewResult)controller.Index();
-            IEnumerable<AllReady.Areas.Admin.Models.CampaignSummaryModel> viewModel = (IEnumerable<AllReady.Areas.Admin.Models.CampaignSummaryModel>)view.ViewData.Model;
-            Assert.Equal(viewModel.Where(t => t.OrganizationId == aginAware.Id).Count(), aginAware.Campaigns.Count());
+            IEnumerable<CampaignSummaryModel> viewModel = (IEnumerable<CampaignSummaryModel>)view.ViewData.Model;
+            Assert.Equal(viewModel.Count(t => t.OrganizationId == aginAware.Id), aginAware.Campaigns.Count());
         }
 
 
-        [Fact()]
-        public void IndexSendsCampaignListQueryWithCorrectDataWhenUserIsNotOrgAdmin()
+        [Fact]
+        public void IndexReturnsCorrectDataWhenUserIsNotOrgAdmin()
         {
             Organization aginAware = AgincourtAwarenessExtended(Context);
             Organization pwPrepares = ParkwoodsPreparesExtended(Context);
@@ -48,7 +84,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Site admin should see all campaigns
             CampaignController controller = CampaignControllerWithListQuery(Context, UserType.SiteAdmin.ToString(), null);
             ViewResult view = (ViewResult)controller.Index();      
-            IEnumerable<AllReady.Areas.Admin.Models.CampaignSummaryModel> viewModel = (IEnumerable<AllReady.Areas.Admin.Models.CampaignSummaryModel>)view.ViewData.Model;
+            IEnumerable<CampaignSummaryModel> viewModel = (IEnumerable<CampaignSummaryModel>)view.ViewData.Model;
             Assert.Equal(viewModel.Count(), Context.Campaigns.Count());
         }
 
