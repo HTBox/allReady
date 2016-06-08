@@ -47,10 +47,36 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Date = new DateTime(2016, 07, 01)
             };
 
+            var task = new AllReadyTask
+            {
+                Id = 1,
+                Event = queenAnne,
+                Name = "A Task",
+                StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
+                EndDateTime = new DateTime(2015, 7, 4, 18, 0, 0).ToUniversalTime()
+            };
+
+            var user = new ApplicationUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                Email = "text@example.com"
+            };
+
+            var taskSignup = new TaskSignup
+            {
+                Id = 1,
+                User = user,
+                Task = task,
+                Itinerary = itinerary
+            };
+            
             Context.Organizations.Add(htb);
             Context.Campaigns.Add(firePrev);
             Context.Events.Add(queenAnne);
             Context.Itineraries.Add(itinerary);
+            Context.Tasks.Add(task);
+            Context.Users.Add(user);
+            Context.TaskSignups.Add(taskSignup);
             Context.SaveChanges();
         }
 
@@ -99,6 +125,16 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var handler = new ItineraryDetailQueryHandlerAsync(Context);
             var result = await handler.Handle(query);
             Assert.Equal(1, result.OrganizationId);
+        }
+
+        [Fact]
+        public async Task ItineraryQueryLoadsTeamMembers()
+        {
+            var query = new ItineraryDetailQuery { ItineraryId = 1 };
+            var handler = new ItineraryDetailQueryHandlerAsync(Context);
+            var result = await handler.Handle(query);
+            Assert.Equal(1, result.TeamMembers.Count);
+            Assert.Equal("text@example.com", result.TeamMembers[0].VolunteerEmail);
         }
     }
 }
