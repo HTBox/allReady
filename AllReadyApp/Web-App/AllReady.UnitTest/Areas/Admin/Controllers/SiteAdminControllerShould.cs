@@ -136,9 +136,23 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Verify(m => m.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void EditUserGetReturnsCorrectViewModelWhenOrganizationIdIsNull()
         {
+            {
+                var mediator = new Mock<IMediator>();                
+
+                string userId = It.IsAny<string>();
+                mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)))
+                                .Returns(new ApplicationUser());
+                var controller = new SiteController(null, null, mediator.Object);
+
+                var result = controller.EditUser(userId);
+                var model = ((ViewResult)result).ViewData.Model as EditUserModel;
+
+                Assert.Equal(model.Organization, null);
+                Assert.IsType<EditUserModel>(model);
+            }
         }
 
         [Fact(Skip = "NotImplemented")]

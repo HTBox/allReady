@@ -99,6 +99,7 @@ call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\NotificationsProcessor\packa
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 4. Run Our Custom build steps:
+call :ExecuteCmd PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "(Get-Content AllReadyApp\Web-App\AllReady\version.json).replace('GITVERSION', (git rev-parse --short HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json"
 call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\AllReady.Models\AllReady.Models.csproj"
 IF !ERRORLEVEL! NEQ 0 goto error
 call %DNX_RUNTIME%\bin\dnu build "%DEPLOYMENT_SOURCE%\wrap\AllReady.Models\project.json"
@@ -114,7 +115,7 @@ call %DNX_RUNTIME%\bin\dnu publish "%DEPLOYMENT_SOURCE%\Web-App\AllReady\project
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 4.2 Xcopy the webjobs:
-:: Note this uses debug, and I can't find how to read the 
+:: Note this uses debug, and I can't find how to read the
 :: build config.
 
 mkdir "%DEPLOYMENT_TEMP%\wwwroot\app_data\jobs\continuous\notificationsprocessor\"

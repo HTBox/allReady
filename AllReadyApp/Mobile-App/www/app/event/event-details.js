@@ -1,22 +1,22 @@
 ﻿"use strict";
 
 angular
-    .module("activity-details", ["Backend"])
+    .module("event-details", ["Backend"])
     .config(function ($stateProvider, $urlRouterProvider) {
         $stateProvider
-        .state("activity-details", {
-            url: "/activities/:id",
-            templateUrl: "app/activity/activity-details.tpl.html",
-            controller: "ActivityDetailsController",
+        .state("event-details", {
+            url: "/events/:id",
+            templateUrl: "app/event/event-details.tpl.html",
+            controller: "EventDetailsController",
             resolve: {
-                activityDetails: function (Backend, $stateParams) {
-                    return Backend.getActivity($stateParams.id);
+                eventDetails: function (Backend, $stateParams) {
+                    return Backend.getEvent($stateParams.id);
                 }
             }
         });
     })
-    .controller("ActivityDetailsController", ["$scope", "$location", "activityDetails", function ($scope, $location, activityDetails) {
-        $scope.data = activityDetails;
+    .controller("EventDetailsController", ["$scope", "$location", "eventDetails", function ($scope, $location, eventDetails) {
+        $scope.data = eventDetails;
         $scope.doCheckin = function () {
             $location.url("/checkin");
         };

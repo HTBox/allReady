@@ -141,6 +141,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             CreateSut();
             OrganizationEditModel model = AgincourtAware;
             IRequest<int> command = new OrganizationEditCommand() { Organization = model };
+            _mediator.Setup(y => y.Send(It.IsAny<OrganizationNameUniqueQuery>())).Returns(() =>
+            {
+                return true;
+            });
             _mediator.Setup(x => x.Send(It.IsAny<OrganizationEditCommand>())).Returns(() => {
                 IRequestHandler<OrganizationEditCommand, int> handler = new OrganizationEditCommandHandler(Context);
                 return handler.Handle((OrganizationEditCommand)command);
@@ -152,6 +156,18 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Assert
             Assert.Single(Context.Organizations.Where(t => t.Name == model.Name));
 
+        }
+
+        [Fact]
+        public void CreateNewOrganizationWithExistingOrganizationNameReturnsEditView()
+        {
+            CreateSut();
+            var model = new OrganizationEditModel();
+            model.Name = "test";
+            model.Id = 0;
+            _mediator.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
+            var result = (ViewResult)_sut.Create();
+            Assert.Equal("Edit", result.ViewName);            
         }
         #endregion
 
@@ -171,12 +187,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void EditOrganizationMediatorShouldBeCalledWithAppropriateDataWhenModelStateIsValid()
         {
             var mockMediator = new Mock<IMediator>();
-
             var controller = new OrganizationController(mockMediator.Object);
 
             var mockContext = MockActionContextWithUser(SiteAdmin());
             controller.ActionContext = mockContext.Object;
-
+            mockMediator.Setup(y => y.Send(It.IsAny<OrganizationNameUniqueQuery>())).Returns(() =>{return true;});
             controller.Edit(_organizationEditModel);
 
             mockMediator.Verify(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == _organizationEditModel)));
@@ -251,6 +266,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var model = new OrganizationEditModel();
 
+            mockMediator.Setup(y => y.Send(It.IsAny<OrganizationNameUniqueQuery>())).Returns(() => { return true; });
             mockMediator.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
 
             var result = (RedirectToActionResult)controller.Edit(model);
@@ -349,7 +365,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static void CreateSut()
         {
             _mediator = new Mock<IMediator>();
-
             _sut = new OrganizationController(_mediator.Object);
         }
         

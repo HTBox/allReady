@@ -42,58 +42,22 @@ namespace AllReady.Features.Notifications
 
                 TaskSummaryModel taskModel = null;
                 string remainingRequiredVolunteersPhrase;
-                var IsEventUnenroll = (notificationModel.EventType == EventTypes.EventManaged);
 
-                if (IsEventUnenroll)
-                {
-                    remainingRequiredVolunteersPhrase = $"{notificationModel.UsersSignedUp.Count}/{notificationModel.NumberOfVolunteersRequired}";
-                }
-                else
-                {
                     taskModel = notificationModel.Tasks.FirstOrDefault(t => t.Id == notification.TaskIds[0]) ?? new TaskSummaryModel();
                     remainingRequiredVolunteersPhrase = $"{taskModel.NumberOfVolunteersSignedUp}/{taskModel.NumberOfVolunteersRequired}";
-                }
-            
+
                 var eventLink = $"View event: {_options.Value.SiteBaseUrl}Admin/Event/Details/{notificationModel.EventId}";
-                var subject = $"A volunteer has unenrolled from {(IsEventUnenroll ? "an event" : "a task")}";
+                var subject = $"A volunteer has unenrolled from a task";
 
                 var message = new StringBuilder();
-                message.AppendLine($"A volunteer has unenrolled from {(IsEventUnenroll ? "an event" : "a task")}.");
+                message.AppendLine($"A volunteer has unenrolled from a task.");
                 message.AppendLine($"   Volunteer: {notificationModel.Volunteer.Name} ({notificationModel.Volunteer.Email})");
                 message.AppendLine($"   Campaign: {notificationModel.CampaignName}");
                 message.AppendLine($"   Event: {notificationModel.EventName} ({eventLink})");
-                if (!IsEventUnenroll)
-                {
                     message.AppendLine($"   Task: {taskModel.Name} ({$"View task: {_options.Value.SiteBaseUrl}Admin/Task/Details/{taskModel.Id}"})");
                     message.AppendLine($"   Task Start Date: {taskModel.StartDateTime?.Date.ToShortDateString()}");
-                }
                 message.AppendLine($"   Remaining/Required Volunteers: {remainingRequiredVolunteersPhrase}");
                 message.AppendLine();
-
-                if (IsEventUnenroll)
-                {
-                    var assignedTasks = notificationModel.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.UserId == notificationModel.Volunteer.Id)).ToList();
-                    if (assignedTasks.Count == 0)
-                    {
-                        message.AppendLine("This volunteer had not been assigned to any tasks.");
-                    }
-                    else
-                    {
-                        message.AppendLine("This volunteer had been assigned to the following tasks:");
-                        message.AppendLine("   Name             Description               Start Date           TaskLink");
-                        foreach (var assignedTask in assignedTasks)
-                        {
-                            var taskLink = $"View task: {_options.Value.SiteBaseUrl}Admin/Task/Details/{assignedTask.Id}";
-                            message.AppendFormat("   {0}{1}{2:d}{3}",
-                                assignedTask.Name?.Substring(0, Math.Min(15, assignedTask.Name.Length)).PadRight(17, ' ') ??
-                                "None".PadRight(17, ' '),
-                                assignedTask.Description?.Substring(0, Math.Min(25, assignedTask.Description.Length)).PadRight(26, ' ') ??
-                                "None".PadRight(26, ' '),
-                                assignedTask.StartDateTime?.Date.ToShortDateString().PadRight(21, ' ') ?? "".PadRight(21, ' '),
-                                taskLink);
-                        }
-                    }
-                }
 
                 var command = new NotifyVolunteersCommand
                 {

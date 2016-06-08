@@ -1,9 +1,11 @@
-﻿using AllReady.Areas.Admin.Models;
+﻿using System;
+using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.Models.ItineraryModels;
 
 namespace AllReady.Areas.Admin.Features.Events
 {
@@ -62,7 +64,18 @@ namespace AllReady.Areas.Admin.Features.Events
                             AdditionalInfo = assignedVolunteer.AdditionalInfo
                         }).ToList()
                     }).OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList(),
+                    Itineraries = campaignEvent.Itineraries.Select(i => new ItineraryListModel
+                    {
+                        Id = i.Id,
+                        Name = i.Name,
+                        Date = i.Date,
+                        TeamSize = i.TeamMembers.Count,
+                        RequestCount = i.Requests.Count
+                    }).OrderBy(i => i.Date).ToList()
                 };
+
+                result.NewItinerary.EventId = result.Id;
+                result.NewItinerary.Date = result.StartDateTime.DateTime;
             }
 
             return result;
@@ -77,6 +90,8 @@ namespace AllReady.Areas.Admin.Features.Events
                 .Include(a => a.RequiredSkills).ThenInclude(s => s.Skill).ThenInclude(s => s.ParentSkill)
                 .Include(a => a.Location)
                 .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
+                .Include(a => a.Itineraries).ThenInclude(a => a.TeamMembers)
+                .Include(a => a.Itineraries).ThenInclude(a => a.Requests)
                 .SingleOrDefaultAsync(a => a.Id == message.EventId)
                 .ConfigureAwait(false);
         }

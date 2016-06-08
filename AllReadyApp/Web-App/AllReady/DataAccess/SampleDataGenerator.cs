@@ -115,8 +115,8 @@ namespace AllReady.Models
             {
                 Name = "Working Smoke Detectors Save Lives",
                 ManagingOrganization = htb,
-                StartDateTime = DateTime.Today.AddMonths(-1).ToUniversalTime(),
-                EndDateTime = DateTime.Today.AddMonths(1).ToUniversalTime(),
+                StartDateTime = DateTime.Today.AddMonths(-1),
+                EndDateTime = DateTime.Today.AddMonths(1),
                 CampaignImpact = smokeDetImpact,
                 TimeZoneId = "Central Standard Time"
             };
@@ -192,8 +192,8 @@ namespace AllReady.Models
             Event southLoopSmoke = new Event()
             {
                 Name = "Smoke Detector Installation and Testing-South Loop",
-                StartDateTime = new DateTime(2015, 7, 6, 10, 0, 0).ToUniversalTime(),
-                EndDateTime = new DateTime(2015, 12, 31, 17, 0, 0).ToUniversalTime(),
+                StartDateTime = DateTime.Today.AddMonths(-1),
+                EndDateTime = DateTime.Today.AddMonths(1),
                 Location = GetRandom<Location>(locations),
                 Campaign = smokeDet
             };
@@ -202,8 +202,8 @@ namespace AllReady.Models
             Event northLoopSmoke = new Event()
             {
                 Name = "Smoke Detector Installation and Testing-Near North Side",
-                StartDateTime = new DateTime(2015, 7, 6, 10, 0, 0).ToUniversalTime(),
-                EndDateTime = new DateTime(2015, 12, 31, 17, 0, 0).ToUniversalTime(),
+                StartDateTime = DateTime.Today.AddMonths(-1),
+                EndDateTime = DateTime.Today.AddMonths(1),
                 Location = GetRandom<Location>(locations),
                 Campaign = smokeDet
             };
@@ -446,8 +446,8 @@ namespace AllReady.Models
                     Event = campaignEvent,
                     Description = "Description of a very important task # " + i,
                     Name = "Task # " + i,
-                    EndDateTime = DateTime.Now.AddDays(i),
-                    StartDateTime = DateTime.Now.AddDays(i - 1),
+                    EndDateTime = DateTime.Today.AddHours(17).AddDays(i),
+                    StartDateTime = DateTime.Today.AddHours(9).AddDays(i - 1),
                     Organization = organization
                 });
             }

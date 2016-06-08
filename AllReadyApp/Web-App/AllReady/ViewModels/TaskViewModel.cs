@@ -74,7 +74,7 @@ namespace AllReady.ViewModels
             if (task.RequiredSkills != null)
             {
                 RequiredSkills = task.RequiredSkills.Select(t => t.SkillId);
-                RequiredSkillObjects = task.RequiredSkills?.Select(t => t.Skill).ToList();
+                RequiredSkillObjects = task.RequiredSkills?.Select(t => t.Skill).Select(s => new SkillViewModel(s)).ToList();
             }
 
             NumberOfVolunteersRequired = task.NumberOfVolunteersRequired;
@@ -111,7 +111,7 @@ namespace AllReady.ViewModels
 
         [Display(Name = "Required Skills")]
         public IEnumerable<int> RequiredSkills { get; set; } = new List<int>();
-        public List<Skill> RequiredSkillObjects { get; set; } = new List<Skill>();
+        public List<SkillViewModel> RequiredSkillObjects { get; set; } = new List<SkillViewModel>();
 
         [Display(Name = "Starting time")]
         public DateTimeOffset? StartDateTime { get; set; }
