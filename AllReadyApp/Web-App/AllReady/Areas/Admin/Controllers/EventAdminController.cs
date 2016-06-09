@@ -49,7 +49,16 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
 
+            campaignEvent.ItinerariesDetailsUrl = GenerateItineraryDetailsTemplateUrl();
+
             return View(campaignEvent);
+        }
+
+        private string GenerateItineraryDetailsTemplateUrl()
+        {
+            var url = Url.Action("Details", "Itinerary", new { Area = "Admin", id = 0 }).TrimEnd('0');
+
+            return string.Concat(url, "{id}");
         }
 
         // GET: Event/Create

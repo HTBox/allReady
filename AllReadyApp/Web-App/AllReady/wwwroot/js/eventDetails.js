@@ -13,6 +13,13 @@
                 $(".alert-success", modal).hide();
             });
 
+            $("#createItineraryModal").on("show.bs.modal", function (e) {
+                var modal = $(this);
+                $("#createItinerary").removeAttr('disabled');
+                $("#createItineraryModal-name").val("");
+                $(".alert-danger", modal).hide();
+            });
+
             $("#messageVolunteersModal form").submit(function(e){
                 e.preventDefault();
                 $("#sendMessageToVolunteers").attr('disabled', 'disabled');
@@ -51,6 +58,43 @@
                         errorSection.html(errorMessage);
                         errorSection.show();
                         $("#sendMessageToVolunteers").removeAttr('disabled');
+                    }
+                });
+
+                // prevent submitting again
+                return false;
+            });
+
+            $("#createItineraryModal form").submit(function (e) {
+                e.preventDefault();
+                $("#createItinerary").attr('disabled', 'disabled');
+                var form = $(this);
+                $(".alert-error", form).hide();
+                $.ajax({
+                    type: form.attr('method'),
+                    url: form.attr('action'),
+                    data: form.serialize(),
+                    success: function (data) {
+                        window.location = $("#itineraryDetailUrl").val().replace("{id}", data);
+                    },
+                    error: function (error) {
+                        var errorSection = $(".alert-danger", form);
+                        var errorMessage = "";
+                        if (error.responseText) {
+                            var errorInfo = JSON.parse(error.responseText);
+                            if (errorInfo.Name && errorInfo.Name.length > 0) {
+                                errorMessage = errorMessage + errorInfo.Name[0] + "<br/>";
+                            }
+                            if (errorInfo.Date && errorInfo.Date.length > 0) {
+                                errorMessage = errorMessage + errorInfo.Date[0] + "<br/>";
+                            }
+                        }
+                        if (errorMessage === "") {
+                            errorMessage = "An error occurred while attempting to create the Itinerary. Please try again.";
+                        }
+                        errorSection.html(errorMessage);
+                        errorSection.show();
+                        $("#createItinerary").removeAttr('disabled');
                     }
                 });
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
@@ -63,9 +63,7 @@ namespace AllReady.Controllers
                 return HttpNotFound();
             }
 
-            return viewModel.EventType == EventTypes.EventManaged
-                ? View("Event", viewModel)
-                : View("EventWithTasks", viewModel);
+            return View("EventWithTasks", viewModel);
         }
 
         [HttpPost]
@@ -83,7 +81,7 @@ namespace AllReady.Controllers
             {
                 await _mediator.SendAsync(new EventSignupCommand { EventSignup = signupModel });
             }
-            
+
                 //TODO: handle invalid event signup info (phone, email) in a useful way
                 //  would be best to handle it in KO on the client side (prevent clicking Volunteer)
 
