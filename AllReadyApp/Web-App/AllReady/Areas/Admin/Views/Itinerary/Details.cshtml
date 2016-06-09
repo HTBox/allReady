@@ -18,18 +18,52 @@
         <h2>
             @Model.Name
             @*<a asp-controller="Itinerary" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
-            <a asp-controller="Itinerary" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>*@
+                <a asp-controller="Itinerary" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>*@
         </h2>
-        <p>Scheduled for @Model.DisplayDate</p>       
+        <p>Scheduled for @Model.DisplayDate</p>
     </div>
 </div>
 
 <div class="row">
     <div class="col-md-12">
         <h3>
-          Team
+            Team
         </h3>
-        <p>TODO</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-5">
+        @if (Model.TeamMembers.Any())
+        {
+            <table class="table">
+                <tr>
+                    <th>
+                        Email
+                    </th>
+                    <th>
+                        Assigned Task
+                    </th>
+                </tr>
+                @foreach (var teamMember in Model.TeamMembers)
+                {
+                    <tr>
+                        <td>
+                            <p>@teamMember.VolunteerEmail</p>
+                        </td>
+                        <td>
+                            <p>@teamMember.TaskName</p>
+                        </td>
+                    </tr>
+                }
+            </table>
+
+        }
+        else
+        {
+            <br />
+            <p>There are currently no assigned team members for this itinerary</p>
+        }
     </div>
 </div>
 
