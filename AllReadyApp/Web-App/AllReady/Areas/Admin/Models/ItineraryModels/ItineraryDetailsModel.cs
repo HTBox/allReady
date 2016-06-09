@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.Areas.Admin.Models.ItineraryModels
 {
@@ -11,6 +14,10 @@ namespace AllReady.Areas.Admin.Models.ItineraryModels
         public int OrganizationId { get; set; }
         public int EventId { get; set; }
         public string EventName { get; set; }
+
+        public int SelectedTeamMember { get; set; }
+        public IEnumerable<SelectListItem> PotentialTeamMembers { get; set; } = new List<SelectListItem>();
+        public bool HasPotentialTeamMembers { get; set; }
 
         public List<TeamListModel> TeamMembers { get; set; } = new List<TeamListModel>();
 

@@ -1,5 +1,6 @@
 ﻿using AllReady.Areas.Admin.Models.ItineraryModels;
 using AllReady.Models;
+using AllReady.Services;
 using MediatR;
 using Microsoft.Data.Entity;
 using System.Linq;
@@ -10,10 +11,12 @@ namespace AllReady.Areas.Admin.Features.Itineraries
     public class ItineraryDetailQueryHandlerAsync : IAsyncRequestHandler<ItineraryDetailQuery, ItineraryDetailsModel>
     {
         private readonly AllReadyContext _context;
+        private readonly IMediator _mediator;
 
-        public ItineraryDetailQueryHandlerAsync(AllReadyContext context)
+        public ItineraryDetailQueryHandlerAsync(AllReadyContext context, IMediator mediator)
         {
             _context = context;
+            _mediator = mediator;
         }
 
         public async Task<ItineraryDetailsModel> Handle(ItineraryDetailQuery message)
@@ -37,7 +40,13 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                         TaskName = tm.Task.Name
                     }).ToList()
                 })
-                .SingleOrDefaultAsync().ConfigureAwait(false);                
+                .SingleOrDefaultAsync().ConfigureAwait(false);
+
+            if (itineraryDetails == null) return null;
+
+            itineraryDetails.PotentialTeamMembers = await _mediator.SendAsync(new PotentialItineraryTeamMembersQuery { EventId = itineraryDetails.EventId, Date = itineraryDetails.Date });
+            itineraryDetails.HasPotentialTeamMembers = itineraryDetails.PotentialTeamMembers.Count() > 0;
+            itineraryDetails.PotentialTeamMembers = itineraryDetails.PotentialTeamMembers.AddNullOptionToFront("<Please select your next team member>");
 
             return itineraryDetails;
         }
