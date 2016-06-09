@@ -94,5 +94,24 @@ namespace AllReady.Areas.Admin.Controllers
 
             return HttpBadRequest();
         }
+
+        [HttpPost]
+        [Route("Admin/Itinerary/AddTeamMember")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddTeamMember(int id, int selectedTeamMember)
+        {
+            // todo: sgordon: This is not a very elegant at the moment as a failure would redirect without any feedback to the user
+            // this flow should be reviews and enhanced in a future PR using knockout to send and handle the error messaging on the details page
+            // for the purpose of the upcoming red cross testing I chose to leave this since a failure here would be an edge case
+
+            if (id == 0 || selectedTeamMember == 0)
+            {
+                return RedirectToAction("Details", new { id = id });
+            }
+
+            var isSuccess = await _mediator.SendAsync(new AddTeamMemberCommand { ItineraryId = id, TaskSignupId = selectedTeamMember });
+
+            return RedirectToAction("Details", new { id = id });
+        }
     }
 }

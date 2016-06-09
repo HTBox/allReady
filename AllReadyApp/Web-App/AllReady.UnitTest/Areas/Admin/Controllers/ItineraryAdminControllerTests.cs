@@ -344,6 +344,68 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<BadRequestResult>(result);
         }
 
+        [Fact]
+        public void AddTeamMemberHasHttpPostAttribute()
+        {
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var attribute = sut.GetAttributesOn(x => x.AddTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void AddTeamMemberHasRouteAttributeWithCorrectRoute()
+        {
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var routeAttribute = sut.GetAttributesOn(x => x.AddTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
+            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/AddTeamMember");
+        }
+
+        [Fact]
+        public void AddTeamMemberHasValidateAntiForgeryAttribute()
+        {
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var routeAttribute = sut.GetAttributesOn(x => x.AddTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
+        }
+
+        [Fact]
+        public async Task AddTeamMemberCallsAddTeamMemberCommand()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            await sut.AddTeamMember(1, 1);
+
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task AddTeamMemberDoesNotCallAddTeamMemberCommand_WhenIdIsZero()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            await sut.AddTeamMember(0, 1);
+
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task AddTeamMemberDoesNotCallAddTeamMemberCommand_WhenSelectedTeamMemberIsZero()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            await sut.AddTeamMember(1, 0);
+
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>()), Times.Never);
+        }
+
+
         #region Helper Methods
 
         private static Mock<IMediator> MockMediatorItineraryDetailQuery(out ItineraryController controller)

@@ -18,7 +18,7 @@
         <h2>
             @Model.Name
             @*<a asp-controller="Itinerary" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
-                <a asp-controller="Itinerary" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>*@
+            <a asp-controller="Itinerary" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>*@
         </h2>
         <p>Scheduled for @Model.DisplayDate</p>
     </div>
@@ -31,6 +31,26 @@
         </h3>
     </div>
 </div>
+
+
+@if (Model.HasPotentialTeamMembers)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-controller="Itinerary" asp-action="AddTeamMember" method="post">
+                <input type="hidden" asp-for="Id" />
+                Add team member:
+                <select asp-for="SelectedTeamMember"
+                        asp-items="Model.PotentialTeamMembers" required></select>
+                <button type="submit" class="btn btn-default submit-form">Add</button>
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <p>There are no potential team members to add to this itinerary</p>
+}
 
 <div class="row">
     <div class="col-md-5">
