@@ -23,7 +23,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
         {
             var itineraryDetails = await _context.Itineraries
                 .AsNoTracking()
-                .Include(x => x.Event)
+                .Include(x => x.Event).ThenInclude(x => x.Campaign)
                 .Include(x => x.Event.Campaign.ManagingOrganization)
                 .Include(x => x.TeamMembers).ThenInclude(x => x.Task)
                 .Where(a => a.Id == message.ItineraryId)
@@ -33,6 +33,8 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     Date = i.Date,
                     EventId = i.EventId,
                     EventName = i.Event.Name,
+                    CampaignId = i.Event.Campaign.Id,
+                    CampaignName = i.Event.Campaign.Name,
                     OrganizationId = i.Event.Campaign.ManagingOrganizationId,
                     TeamMembers = i.TeamMembers.Select(tm => new TeamListModel
                     {
