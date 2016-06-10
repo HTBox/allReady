@@ -100,7 +100,52 @@ else
         <h3>
             Requests
         </h3>
-        <p>TODO</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        @if (Model.Requests.Any())
+        {
+            <table class="table">
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Address
+                    </th>
+                    <th>
+                        City
+                    </th>
+                </tr>
+                @foreach (var request in Model.Requests)
+                {
+                    <tr>
+                        <td>
+                            <p>@request.Name</p>
+                        </td>
+                        <td>
+                            <p>@request.Status</p>
+                        </td>
+                        <td>
+                            <p>@request.Address</p>
+                        </td>
+                        <td>
+                            <p>@request.City</p>
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+        else
+        {
+            <br />
+            <p>There are currently no assigned requests for this itinerary</p>
+        }
     </div>
 </div>
 

@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
+﻿using Microsoft.AspNet.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.Areas.Admin.Models.ItineraryModels
 {
@@ -22,6 +20,7 @@ namespace AllReady.Areas.Admin.Models.ItineraryModels
         public bool HasPotentialTeamMembers { get; set; }
 
         public List<TeamListModel> TeamMembers { get; set; } = new List<TeamListModel>();
+        public List<RequestListModel> Requests { get; set; } = new List<RequestListModel>();
 
         public string DisplayDate => Date.ToLongDateString();
     }

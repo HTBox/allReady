@@ -71,6 +71,20 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Task = task,
                 Itinerary = itinerary
             };
+
+            var request = new Request
+            {
+                RequestId = Guid.NewGuid(),
+                Name = "Request 1",
+                Address = "Street Name 1",
+                City = "Seattle"
+            };
+
+            var itineraryReq = new ItineraryRequest
+            {
+                Request = request,
+                Itinerary = itinerary
+            };
             
             Context.Organizations.Add(htb);
             Context.Campaigns.Add(firePrev);
@@ -78,6 +92,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Context.Itineraries.Add(itinerary);
             Context.Tasks.Add(task);
             Context.Users.Add(user);
+            Context.Requests.Add(request);
+            Context.ItineraryRequests.Add(itineraryReq);
             Context.TaskSignups.Add(taskSignup);
             Context.SaveChanges();
         }
@@ -146,6 +162,16 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var result = await handler.Handle(query);
             Assert.Equal(1, result.TeamMembers.Count);
             Assert.Equal("text@example.com", result.TeamMembers[0].VolunteerEmail);
+        }
+
+        [Fact]
+        public async Task ItineraryQueryLoadsRequests()
+        {
+            var query = new ItineraryDetailQuery { ItineraryId = 1 };
+            var handler = new ItineraryDetailQueryHandlerAsync(Context, Mock.Of<IMediator>());
+            var result = await handler.Handle(query);
+            Assert.Equal(1, result.Requests.Count);
+            Assert.Equal("Request 1", result.Requests[0].Name);
         }
     }
 }
