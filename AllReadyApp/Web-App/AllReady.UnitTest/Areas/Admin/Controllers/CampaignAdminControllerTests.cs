@@ -15,29 +15,91 @@ using Microsoft.AspNet.Mvc;
 using System.Linq;
 using System;
 using AllReady.Extensions;
+using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
-    public class CampaignAdminControllerTests : InMemoryContextTest
+    public class CampaignAdminControllerTests
     {
         //delete this line when all unit tests using it have been completed
         private readonly Task taskFromResultZero = Task.FromResult(0);
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void IndexSendsCampaignListQueryWithCorrectDataWhenUserIsOrgAdmin()
         {
+            int OrganizationId = 99;
+            var mockMediator = new Mock<IMediator>();
+            var mockImageService = new Mock<IImageService>();
+            CampaignController controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, OrganizationId.ToString())
+            };
+            controller.SetClaims(claims);
+
+            controller.Index();
+
+            mockMediator.Verify(mock => mock.Send(It.Is<CampaignListQuery>(q => q.OrganizationId == OrganizationId)));
         }
-            
-        [Fact(Skip = "NotImplemented")]
+
+        [Fact]
         public void IndexSendsCampaignListQueryWithCorrectDataWhenUserIsNotOrgAdmin()
         {
+            var mockMediator = new Mock<IMediator>();
+            var mockImageService = new Mock<IImageService>();
+            CampaignController controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+            };
+            controller.SetClaims(claims);
+
+            controller.Index();
+
+            mockMediator.Verify(mock => mock.Send(It.Is<CampaignListQuery>(q => q.OrganizationId == null)));
         }
+
+        [Fact]
+        public void IndexReturnsCorrectDataWhenUserIsOrgAdmin()
+        {
+            int OrganizationId = 99;
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.Send(It.IsAny<CampaignListQuery>()))
+                .Returns((CampaignListQuery q) => {
+                    List<CampaignSummaryModel> ret = new List<CampaignSummaryModel>();
+                    ret.Add(new CampaignSummaryModel { OrganizationId = OrganizationId });
+                    return ret;
+                }
+            );
+            var mockImageService = new Mock<IImageService>();
+            CampaignController controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, OrganizationId.ToString())
+            };
+            controller.SetClaims(claims);
+
+            ViewResult view = (ViewResult)controller.Index();
+
+            // verify the fetch was called
+            mockMediator.Verify(mock => mock.Send(It.Is<CampaignListQuery>(c => c.OrganizationId == OrganizationId)));
+
+            // Org admin should only see own campaigns
+            IEnumerable<CampaignSummaryModel> viewModel = (IEnumerable<CampaignSummaryModel>)view.ViewData.Model;
+            Assert.NotNull(viewModel);
+            Assert.Equal(viewModel.Count(), 1);
+            Assert.Equal(viewModel.First().OrganizationId, OrganizationId);
+            
+        }
+
 
         [Fact(Skip = "NotImplemented")]
         public void IndexReturnsCorrectViewModel()
         {
         }
-            
+
         [Fact(Skip = "NotImplemented")]
         public async Task DetailsSendsCampaignDetailQueryWithCorrectCampaignId()
         {
@@ -144,18 +206,40 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task EditPostInsertsCampaign()
         {
-            var aginAware = AgincourtAware_entity;
-            Context.Locations.Add(aginAware.Location);
-            Context.Organizations.Add(aginAware);
-            Context.SaveChanges();
+            int OrganizationId = 99;
+            int NewCampaignId = 100;
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EditCampaignCommand>()))
+                .Returns((EditCampaignCommand q) => Task.FromResult<int>(NewCampaignId) );
+
+            var mockImageService = new Mock<IImageService>();
+            CampaignController controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, OrganizationId.ToString())
+            };
+            controller.SetClaims(claims);
 
             var model = MassiveTrafficLightOutage_model;
-            model.OrganizationId = aginAware.Id;
+            model.OrganizationId = OrganizationId;
 
-            var controller = CampaignControllerWithSummaryModel(model, Context, UserType.OrgAdmin.ToString());
+            // verify the model is valid
+            var validationContext = new ValidationContext(model, null, null);
+            var validationResults = new List<ValidationResult>();
+            Validator.TryValidateObject(model, validationContext, validationResults);
+            Assert.Equal(0, validationResults.Count());
+
             var file = FormFile("image/jpeg");
-            await controller.Edit(model, file);
-            Assert.Single(Context.Campaigns.Where(t => t.Name == model.Name));
+            RedirectToActionResult view = (RedirectToActionResult) await controller.Edit(model, file);
+
+            // verify the edit(add) is called
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<EditCampaignCommand>(c => c.Campaign.OrganizationId == OrganizationId)));
+
+            // verify that the next route
+            Assert.Equal(view.RouteValues["area"], "Admin");
+            Assert.Equal(view.RouteValues["id"], NewCampaignId);
+
         }
 
         [Fact]
@@ -218,8 +302,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await sut.Edit(new CampaignSummaryModel { Name = "Foo", OrganizationId = organizationId, Id = campaignId}, file);
 
             mockImageService.Verify(mock => mock.UploadCampaignImageAsync(
-                        It.Is<int>(i => i == organizationId), 
-                        It.Is<int>(i => i == campaignId), 
+                        It.Is<int>(i => i == organizationId),
+                        It.Is<int>(i => i == campaignId),
                 It.Is<IFormFile>(i => i == file)), Times.Once);
         }
 
@@ -251,7 +335,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task DeleteReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
-            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), It.IsAny<int>());   
+            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), It.IsAny<int>());
             Assert.IsType<HttpUnauthorizedResult>(await controller.Delete(It.IsAny<int>()));
         }
 
@@ -316,7 +400,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel { OrganizationId = organizationId });
-            
+
             var sut = new CampaignController(mockMediator.Object, null);
             sut.SetClaims(new List<Claim>
             {
@@ -435,28 +519,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             return controller;
         }
 
-        private static CampaignController CampaignControllerWithSummaryModel(CampaignSummaryModel model, AllReadyContext Context, string userType)
-        {
-            var mockMediator = new Mock<IMediator>();
-            IAsyncRequest<int> command = new EditCampaignCommand() { Campaign = model };
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EditCampaignCommand>()))
-                .Returns(() => {
-                    IAsyncRequestHandler<EditCampaignCommand, int> handler = new EditCampaignCommandHandler(Context);
-                    return handler.Handle((EditCampaignCommand)command);
-            });
-
-            var mockImageService = new Mock<IImageService>();
-
-            var controller = new CampaignController(mockMediator.Object, mockImageService.Object);
-            controller.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, userType),
-                new Claim(AllReady.Security.ClaimTypes.Organization, model.OrganizationId.ToString())
-            });
-
-            return controller;
-        }
-
         private static IFormFile FormFile(string fileType)
         {
             var mockFormFile = new Mock<IFormFile>();
@@ -494,10 +556,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     ExternalUrl = "http://agincourtaware.trafficlightoutage.com",
                     ExternalUrlText = "Agincourt Aware: Traffic Light Outage",
                     Featured = false,
-                    FileUpload =  null,
+                    FileUpload = null,
                     FullDescription = "<h1><strong>Massive Traffic Light Outage Plan</strong></h1>\r\n<p>The Massive Traffic Light Outage Plan (MTLOP) is the official plan to handle a major traffic light failure.</p>\r\n<p>In the event of a wide-area traffic light outage, an alternative method of controlling traffic flow will be necessary. The MTLOP calls for the recruitment and training of volunteers to be ready to direct traffic at designated intersections and to schedule and follow-up with volunteers in the event of an outage.</p>",
                     Id = 0,
-                    ImageUrl =  null,
+                    ImageUrl = null,
                     Location = BogusAve_model,
                     Locked = false,
                     Name = "Massive Traffic Light Outage Plan",
@@ -512,22 +574,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
         #endregion
 
-        #region "TestEntities"
-        public static Location BogusAve_entity = new Location()  {
-            Address1 = "25 Bogus Ave",
-            City = "Agincourt",
-            State = "Ontario",
-            Country = "Canada",
-            PostalCode = "M1T 2T9"
-
-        };
-        Organization AgincourtAware_entity = new Organization() {
-            Name = "Agincourt Awareness",
-            Location = CampaignAdminControllerTests.BogusAve_entity,
-            WebUrl = "http://www.AgincourtAwareness.ca",
-            LogoUrl = "http://www.AgincourtAwareness.ca/assets/LogoLarge.png"
-        };
-        #endregion
     }
 
 }
