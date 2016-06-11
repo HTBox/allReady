@@ -14,6 +14,8 @@ namespace AllReady.Areas.Admin.Models.ItineraryModels
         public int OrganizationId { get; set; }
         public int EventId { get; set; }
         public string EventName { get; set; }
+        public int CampaignId { get; set; }
+        public string CampaignName { get; set; }
 
         public int SelectedTeamMember { get; set; }
         public IEnumerable<SelectListItem> PotentialTeamMembers { get; set; } = new List<SelectListItem>();

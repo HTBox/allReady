@@ -130,6 +130,15 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         }
 
         [Fact]
+        public async Task ItineraryQueryLoadsCampaignName()
+        {
+            var query = new ItineraryDetailQuery { ItineraryId = 1 };
+            var handler = new ItineraryDetailQueryHandlerAsync(Context, Mock.Of<IMediator>());
+            var result = await handler.Handle(query);
+            Assert.Equal("Neighborhood Fire Prevention Days", result.CampaignName);
+        }
+
+        [Fact]
         public async Task ItineraryQueryLoadsTeamMembers()
         {
             var query = new ItineraryDetailQuery { ItineraryId = 1 };
