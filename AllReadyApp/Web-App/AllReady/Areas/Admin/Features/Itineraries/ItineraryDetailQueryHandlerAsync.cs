@@ -39,7 +39,8 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     TeamMembers = i.TeamMembers.Select(tm => new TeamListModel
                     {
                         VolunteerEmail = tm.User.Email,
-                        TaskName = tm.Task.Name
+                        TaskName = tm.Task.Name,
+                        FullName = string.Concat(tm.User.Name)
                     }).ToList()
                 })
                 .SingleOrDefaultAsync().ConfigureAwait(false);

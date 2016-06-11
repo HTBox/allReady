@@ -55,11 +55,14 @@ else
 }
 
 <div class="row">
-    <div class="col-md-5">
+    <div class="col-md-8">
         @if (Model.TeamMembers.Any())
         {
             <table class="table">
                 <tr>
+                    <th>
+                        Name
+                    </th>
                     <th>
                         Email
                     </th>
@@ -70,6 +73,9 @@ else
                 @foreach (var teamMember in Model.TeamMembers)
                 {
                     <tr>
+                        <td>
+                            <p>@teamMember.DisplayName</p>
+                        </td>
                         <td>
                             <p>@teamMember.VolunteerEmail</p>
                         </td>
