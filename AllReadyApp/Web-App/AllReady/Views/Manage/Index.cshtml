@@ -85,10 +85,20 @@
         <hr />
         <div class="form-horizontal">
             <div class="form-group">
-                <label asp-for="Name" class="control-label col-md-2"></label>
+                @*<label asp-for="Name" class="control-label col-md-2"></label>
                 <div class="col-md-10">
-                    <input type="text" asp-for="Name" class="form-control" />
+                    <input type="text" asp-for="Name" class="form-control"/>
                     <span asp-validation-for="Name" class="text-danger"></span>
+                </div>*@
+                <label asp-for="Forename" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    <input type="text" asp-for="Forename" class="form-control"/>
+                    <span asp-validation-for="Forename" class="text-danger"></span>
+                </div>
+                <label asp-for="Surname" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    <input type="text" asp-for="Surname" class="form-control" />
+                    <span asp-validation-for="Surname" class="text-danger"></span>
                 </div>
             </div>
 

@@ -89,7 +89,8 @@ namespace AllReady.Features.Notifications
                     message.AppendLine($"   Task: {task.Name} ({taskLink})");
                 message.AppendLine($"   Remaining/Required Volunteers: {remainingRequiredVolunteersPhrase}");
                 message.AppendLine();
-                message.AppendLine($"   Volunteer Name: {volunteer.Name}");
+                //message.AppendLine($"   Volunteer Name: {volunteer.Name}");
+                message.AppendLine($"   Volunteer Name: {volunteer.Forename} {volunteer.Surname}");
                 message.AppendLine($"   Volunteer Email: {volunteerEmail}");
                 message.AppendLine($"   Volunteer PhoneNumber: {volunteerPhoneNumber}");
                 message.AppendLine($"   Volunteer Comments: {volunteerComments}");

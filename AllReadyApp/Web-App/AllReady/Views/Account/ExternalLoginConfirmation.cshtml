@@ -23,11 +23,25 @@
             <span asp-validation-for="Email" class="text-danger"></span>
         </div>
     </div>
-    <div class="form-group">
+    @*<div class="form-group">
         <label asp-for="Name" class="col-md-2 control-label"></label>
         <div class="col-md-10">
-            <input asp-for="Name" class="form-control" />
+            <input asp-for="Name" class="form-control"/>
             <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>*@
+    <div class="form-group">
+        <label asp-for="Forename" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Forename" class="form-control"/>
+            <span asp-validation-for="Forename" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Surname" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Surname" class="form-control" />
+            <span asp-validation-for="Surname" class="text-danger"></span>
         </div>
     </div>
     <div class="form-group">

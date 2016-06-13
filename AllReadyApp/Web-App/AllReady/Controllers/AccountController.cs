@@ -339,7 +339,9 @@ namespace AllReady.Controllers
                     UserName = model.Email,
                     Email = model.Email,
                     TimeZoneId = _generalSettings.Value.DefaultTimeZone,
-                    Name = model.Name,
+                    //Name = model.Name,
+                    Forename = model.Forename,
+                    Surname = model.Surname,
                     PhoneNumber = model.PhoneNumber
                 };
 

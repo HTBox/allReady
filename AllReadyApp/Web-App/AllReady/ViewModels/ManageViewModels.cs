@@ -16,8 +16,14 @@ namespace AllReady.Models
             AssociatedSkills = new List<UserSkill>();
         }
 
+        //[Required]
+        //public string Name { get; set; }
+
         [Required]
-        public string Name { get; set; }
+        public string Forename { get; set; }
+
+        [Required]
+        public string Surname { get; set; }
 
         [Display(Name = "Email Address")]
         public string EmailAddress { get; set; }
@@ -67,7 +73,9 @@ namespace AllReady.Models
                 BrowserRemembered = await signInManager.IsTwoFactorClientRememberedAsync(user),
                 AssociatedSkills = user.AssociatedSkills,
                 TimeZoneId = user.TimeZoneId,
-                Name = user.Name,
+                //Name = user.Name,
+                Forename = user.Forename,
+                Surname = user.Surname,
                 ProposedNewEmailAddress = user.PendingNewEmail,
                 IsProfileComplete = user.IsProfileComplete(),
                 ProfileCompletenessWarnings = profileCompletenessWarnings.Select(p => p.ErrorMessage)
