@@ -96,41 +96,57 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerAssignedTask()
         {
+            var dateTime = DateTime.UtcNow;
             var task = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommandAsync
             {
                 TaskId = task.Id,
                 UserId = user.Id,
-                TaskStatus = TaskStatus.Assigned
+                TaskStatus = TaskStatus.Assigned,
+                TaskStatusDescription = $"Assign {task.Name} to {user.UserName}"
             };
             await handler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
             // Verify that the handle method publishes a notification that the task status changed
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
-            // Make sure the task signup has the expected status
-            taskSignup.Status.ShouldBe(TaskStatus.Assigned.ToString());
+            // Make sure the task signup properties are the expected values
+            // based on the command.
+            taskSignup.Status.ShouldBe(command.TaskStatus.ToString());
+            taskSignup.Task.Id.ShouldBe(command.TaskId);
+            taskSignup.User.Id.ShouldBe(command.UserId);
+            taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
+            // the datetimes should be within 1 second of each other
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
         }
 
         [Fact]
         public async Task VolunteerAcceptsTask()
         {
+            var dateTime = DateTime.UtcNow;
             var task = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommandAsync
             {
                 TaskId = task.Id,
                 UserId = user.Id,
-                TaskStatus = TaskStatus.Accepted
+                TaskStatus = TaskStatus.Accepted,
+                TaskStatusDescription = $"{user.UserName} has accepted the task {task.Name}"
             };
             await handler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
             // Verify that the handle method publishes a notification that the task status changed
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
-            // Make sure the task signup has the expected status
-            taskSignup.Status.ShouldBe(TaskStatus.Accepted.ToString());
+            // Make sure the task signup properties are the expected values
+            // based on the command.
+            taskSignup.Status.ShouldBe(command.TaskStatus.ToString());
+            taskSignup.Task.Id.ShouldBe(command.TaskId);
+            taskSignup.User.Id.ShouldBe(command.UserId);
+            taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
+            // the datetimes should be within 1 second of each other
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
         }
 
         [Fact]
