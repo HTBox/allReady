@@ -122,7 +122,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         }
 
         [Fact]
-        public async Task VolunteerAcceptsTask()
+        public async Task VolunteerAcceptsTaskFromAssignedStatus()
         {
             var dateTime = DateTime.UtcNow;
             var task = Context.Tasks.First();
@@ -146,6 +146,35 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             taskSignup.User.Id.ShouldBe(command.UserId);
             taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
             // the datetimes should be within 1 second of each other
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
+        }
+
+        [Fact]
+        public async Task VolunteerAcceptsTaskFromCanNotCompleteStatus()
+        {
+            var taskSignup = Context.TaskSignups.First();
+            taskSignup.Status = TaskStatus.CanNotComplete.ToString();
+            await Context.SaveChangesAsync();
+
+            var dateTime = DateTime.UtcNow;
+            var task = Context.Tasks.First();
+            var user = Context.Users.First();
+            var command = new TaskStatusChangeCommandAsync
+            {
+                TaskId = task.Id,
+                UserId = user.Id,
+                TaskStatus = TaskStatus.Accepted,
+                TaskStatusDescription = $"{user.UserName} accepted task {task.Name}"
+            };
+
+            await handler.Handle(command);
+
+            taskSignup = Context.TaskSignups.First();
+            mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
+            taskSignup.Status.ShouldBe(command.TaskStatus.ToString());
+            taskSignup.Task.Id.ShouldBe(command.TaskId);
+            taskSignup.User.Id.ShouldBe(command.UserId);
+            taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
             taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
         }
 
@@ -220,7 +249,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             {
                 TaskId = task.Id,
                 UserId = user.Id,
-                TaskStatus = TaskStatus.CanNotComplete
+                TaskStatus = TaskStatus.CanNotComplete,
+                TaskStatusDescription = $"{user.UserName} cannot complete {task.Name}"
             };
             await handler.Handle(command);
 
