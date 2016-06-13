@@ -94,10 +94,8 @@ angular
     .factory("Backend", ["$http", "$q", "CacheManager", function ($http, $q, CacheManager) {
         var svc = {};
         var protocol = "https://";
-        var domainUrl = "allready-d.azurewebsites.net"; // NOTE: Update when the site is deployed for real
+        var domainUrl = "allready-d.azurewebsites.net"; // TODO: Update when the site is deployed for real
         var baseUrl = protocol + domainUrl + "/";
-
-
 
         svc.getEvents = function (forceWebQuery) {
             forceWebQuery = typeof forceWebQuery !== "undefined" ? forceWebQuery : false;
@@ -110,17 +108,11 @@ angular
                 }
             }
 
-            // TODO Use the real API URL
             return $http.get(baseUrl + "api/event")
                 .then(function (result) {
-                    // <TEMP> For testing purposes
-                    // Limit results to 10
-                    result.data.length = 10;
-                    // Add a default location if needed
                     result.data.forEach(function (event) {
-                        event.location = event.location || "Seattle Red Cross";
+                        event.location = event.location || "Not Set";
                     });
-                    // </TEMP>
 
                     CacheManager.saveEventList(result.data);
                     return result.data;
@@ -190,4 +182,3 @@ angular
 
         return svc;
     }]);
-

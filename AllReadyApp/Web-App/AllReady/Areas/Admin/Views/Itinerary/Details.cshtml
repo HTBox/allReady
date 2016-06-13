@@ -7,6 +7,8 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
             <li><a asp-controller="Event" asp-action="Details" asp-route-area="Admin" asp-route-id="@Model.EventId">@Model.EventName</a></li>
             <li>@Model.Name</li>
         </ol>
@@ -20,16 +22,76 @@
             @*<a asp-controller="Itinerary" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
             <a asp-controller="Itinerary" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>*@
         </h2>
-        <p>Scheduled for @Model.DisplayDate</p>       
+        <p>Scheduled for @Model.DisplayDate</p>
     </div>
 </div>
 
 <div class="row">
     <div class="col-md-12">
         <h3>
-          Team
+            Team
         </h3>
-        <p>TODO</p>
+    </div>
+</div>
+
+
+@if (Model.HasPotentialTeamMembers)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-controller="Itinerary" asp-action="AddTeamMember" method="post">
+                <input type="hidden" asp-for="Id" />
+                Add team member:
+                <select asp-for="SelectedTeamMember"
+                        asp-items="Model.PotentialTeamMembers" required></select>
+                <button type="submit" class="btn btn-default submit-form">Add</button>
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <p>There are no potential team members to add to this itinerary</p>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        @if (Model.TeamMembers.Any())
+        {
+            <table class="table">
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Email
+                    </th>
+                    <th>
+                        Assigned Task
+                    </th>
+                </tr>
+                @foreach (var teamMember in Model.TeamMembers)
+                {
+                    <tr>
+                        <td>
+                            <p>@teamMember.DisplayName</p>
+                        </td>
+                        <td>
+                            <p>@teamMember.VolunteerEmail</p>
+                        </td>
+                        <td>
+                            <p>@teamMember.TaskName</p>
+                        </td>
+                    </tr>
+                }
+            </table>
+
+        }
+        else
+        {
+            <br />
+            <p>There are currently no assigned team members for this itinerary</p>
+        }
     </div>
 </div>
 
@@ -38,7 +100,52 @@
         <h3>
             Requests
         </h3>
-        <p>TODO</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        @if (Model.Requests.Any())
+        {
+            <table class="table">
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Address
+                    </th>
+                    <th>
+                        City
+                    </th>
+                </tr>
+                @foreach (var request in Model.Requests)
+                {
+                    <tr>
+                        <td>
+                            <p>@request.Name</p>
+                        </td>
+                        <td>
+                            <p>@request.Status</p>
+                        </td>
+                        <td>
+                            <p>@request.Address</p>
+                        </td>
+                        <td>
+                            <p>@request.City</p>
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+        else
+        {
+            <br />
+            <p>There are currently no assigned requests for this itinerary</p>
+        }
     </div>
 </div>
 
