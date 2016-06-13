@@ -152,26 +152,32 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerRejectsTask()
         {
+            var dateTime = DateTime.UtcNow;
             var task = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommandAsync
             {
                 TaskId = task.Id,
                 UserId = user.Id,
-                TaskStatus = TaskStatus.Rejected
+                TaskStatus = TaskStatus.Rejected,
+                TaskStatusDescription = $"{user.UserName} rejected task {task.Name}"
             };
             await handler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
             // Verify that the handle method publishes a notification that the task status changed.
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifiyCommand => notifiyCommand.SignupId == taskSignup.Id)), Times.Once());
-            // Make sure the task signup has the expected status
-            taskSignup.Status.ShouldBe(TaskStatus.Rejected.ToString());
+            taskSignup.Status.ShouldBe(command.TaskStatus.ToString());
+            taskSignup.Task.Id.ShouldBe(command.TaskId);
+            taskSignup.User.Id.ShouldBe(command.UserId);
+            taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
         }
 
         [Fact]
         public async Task VolunteerCompletesTask()
         {
+            var dateTime = DateTime.UtcNow;
             // set the current task signup instance to Accepted
             var taskSignup = Context.TaskSignups.First();
             taskSignup.Status = TaskStatus.Accepted.ToString();
@@ -183,7 +189,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             {
                 TaskId = task.Id,
                 UserId = user.Id,
-                TaskStatus = TaskStatus.Completed
+                TaskStatus = TaskStatus.Completed,
+                TaskStatusDescription = $"{user.UserName} completed {task.Name}"
             };
             await handler.Handle(command);
 
@@ -191,12 +198,17 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             // Verify that the handle method publishes a notification that the task status changed
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
             // Make sure the task signup has the expected status
-            taskSignup.Status.ShouldBe(TaskStatus.Completed.ToString());
+            taskSignup.Status.ShouldBe(command.TaskStatus.ToString());
+            taskSignup.Task.Id.ShouldBe(command.TaskId);
+            taskSignup.User.Id.ShouldBe(command.UserId);
+            taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
         }
 
         [Fact]
         public async Task VolunteerCannotCompleteTask()
         {
+            var dateTime = DateTime.UtcNow;
             // set the current task signup instance to Accepted
             var taskSignup = Context.TaskSignups.First();
             taskSignup.Status = TaskStatus.Accepted.ToString();
@@ -215,8 +227,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             taskSignup = Context.TaskSignups.First();
             // Verify that the handle method publishes a notification that the task status changed
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
-            // Make sure the task signup has the expected status
-            taskSignup.Status.ShouldBe(TaskStatus.CanNotComplete.ToString());
+            taskSignup.Status.ShouldBe(command.TaskStatus.ToString());
+            taskSignup.User.Id.ShouldBe(command.UserId);
+            taskSignup.Task.Id.ShouldBe(command.TaskId);
+            taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
         }
     }
 }
