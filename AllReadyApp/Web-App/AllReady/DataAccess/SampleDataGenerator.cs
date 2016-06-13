@@ -378,13 +378,27 @@ namespace AllReady.Models
             var username2 = $"{_settings.DefaultUsername}2.com";
             var username3 = $"{_settings.DefaultUsername}3.com";
 
-            var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
+            var user1FirstName = $"{_settings.DefaultUsername}1.com";
+            var user1LastName = $"{_settings.DefaultUsername}1.com";
+            var user2FirstName = $"{_settings.DefaultUsername}2.com";
+            var user2LastName = $"{_settings.DefaultUsername}2.com";
+            var user3FirstName = $"{_settings.DefaultUsername}3.com";
+            var user3LastName = $"{_settings.DefaultUsername}3.com";
+
+            var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone,
+                PhoneNumber = "111-111-1111", PhoneNumberConfirmed = true, FirstName = user1FirstName, LastName = user1LastName };
             _userManager.CreateAsync(user1, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user1);
-            var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
+
+            var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone,
+                PhoneNumber = "222-222-2222", PhoneNumberConfirmed = true, FirstName = user2FirstName, LastName = user2LastName
+            };
             _userManager.CreateAsync(user2, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user2);
-            var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
+
+            var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone,
+                PhoneNumber = "333-333-3333", PhoneNumberConfirmed = true, FirstName = user3FirstName, LastName = user3LastName
+            };
             _userManager.CreateAsync(user3, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user3);
             #endregion
@@ -519,20 +533,31 @@ namespace AllReady.Models
             var user = await _userManager.FindByNameAsync(_settings.DefaultAdminUsername);
             if (user == null)
             {
-                user = new ApplicationUser { UserName = _settings.DefaultAdminUsername, Email = _settings.DefaultAdminUsername, TimeZoneId = _generalSettings.DefaultTimeZone };
-                user.EmailConfirmed = true;
+                user = new ApplicationUser
+                {
+                    UserName = _settings.DefaultAdminUsername, Email = _settings.DefaultAdminUsername, TimeZoneId = _generalSettings.DefaultTimeZone, EmailConfirmed = true,
+                    FirstName = _settings.DefaultAdminUsername, LastName = _settings.DefaultAdminUsername, PhoneNumber = "444-444-4444", PhoneNumberConfirmed = true
+                };
                 _userManager.CreateAsync(user, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
                 _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, "SiteAdmin")).GetAwaiter().GetResult();
 
-                var user2 = new ApplicationUser { UserName = _settings.DefaultOrganizationUsername, Email = _settings.DefaultOrganizationUsername, TimeZoneId = _generalSettings.DefaultTimeZone };
+                var user2 = new ApplicationUser
+                {
+                    UserName = _settings.DefaultOrganizationUsername, Email = _settings.DefaultOrganizationUsername, TimeZoneId = _generalSettings.DefaultTimeZone, EmailConfirmed = true,
+                    FirstName = _settings.DefaultOrganizationUsername, LastName = _settings.DefaultOrganizationUsername, PhoneNumber = "555-555-5555", PhoneNumberConfirmed = true
+
+                };
                 // For the sake of being able to exercise Organization-specific stuff, we need to associate a organization.
-                user2.EmailConfirmed = true;
                 await _userManager.CreateAsync(user2, _settings.DefaultAdminPassword);
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.UserType, "OrgAdmin"));
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.Organization, _context.Organizations.First().Id.ToString()));
 
-                var user3 = new ApplicationUser { UserName = _settings.DefaultUsername, Email = _settings.DefaultUsername, TimeZoneId = _generalSettings.DefaultTimeZone };
-                user3.EmailConfirmed = true;
+                var user3 = new ApplicationUser
+                {
+                    UserName = _settings.DefaultUsername, Email = _settings.DefaultUsername, TimeZoneId = _generalSettings.DefaultTimeZone,
+                    FirstName = _settings.DefaultUsername, LastName = _settings.DefaultUsername, PhoneNumber = "666-666-6666", PhoneNumberConfirmed = true,
+                    EmailConfirmed = true
+                };
                 await _userManager.CreateAsync(user3, _settings.DefaultAdminPassword);
             }
         }

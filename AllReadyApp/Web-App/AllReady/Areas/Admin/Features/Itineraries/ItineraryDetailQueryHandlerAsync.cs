@@ -41,8 +41,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     {
                         VolunteerEmail = tm.User.Email,
                         TaskName = tm.Task.Name,
-                        //FullName = string.Concat(tm.User.Name)
-                        FullName = string.Format(tm.User.Forename, tm.User.Surname, "{0} {1}")
+                        FullName = tm.User.Name
                     }).ToList(),
                     Requests = i.Requests.Select(r => new RequestListModel
                     {

@@ -137,8 +137,7 @@ namespace AllReady.ViewModels
                 {
                     EventId = viewModel.Id,
                     UserId = userId,
-                    //Name = appUser.Name,
-                    Name = $"{appUser.Forename} {appUser.Surname}",
+                    Name = appUser.Name,
                     PreferredEmail = appUser.Email,
                     PreferredPhoneNumber = appUser.PhoneNumber
                 };

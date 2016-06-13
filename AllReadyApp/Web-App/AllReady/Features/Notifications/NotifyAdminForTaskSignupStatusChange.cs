@@ -44,14 +44,10 @@ namespace AllReady.Features.Notifications
             {
                 var link = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Task/Details/{taskSignup.Task.Id}";
 
-                //TODO: not too sure what name (nor forename and surname) is not a requied field on volunteer?
-                //var subject = $"Task status changed ({taskSignup.Status}) for volunteer {volunteer.Name ?? volunteer.Email}";
+                var subject = volunteer.FirstName != null && volunteer.LastName != null ? $"{volunteer.FirstName} {volunteer.LastName}" : volunteer.Email;
 
-                var subject = volunteer.Forename != null && volunteer.Surname != null ? $"{volunteer.Forename} {volunteer.Surname}" : volunteer.Email;
-
-                //Volunteer: { volunteer.Name} ({ volunteer.Email})                                  
                 var message = $@"A volunteer's status has changed for a task.
-                    Volunteer: {volunteer.Forename} {volunteer.Surname} ({volunteer.Email})
+                    Volunteer: {volunteer.FirstName} {volunteer.LastName} ({volunteer.Email})
                     New status: {taskSignup.Status}
                     Task: {task.Name} {link}
                     Event: {campaignEvent.Name}

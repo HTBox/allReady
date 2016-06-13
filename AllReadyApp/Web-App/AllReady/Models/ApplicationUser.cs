@@ -12,14 +12,15 @@ namespace AllReady.Models
         [Display(Name = "Associated skills")]
         public List<UserSkill> AssociatedSkills { get; set; } = new List<UserSkill>();
 
-        //TODO: come back and make this a not mapped field so reads do not have to concatentate when needing full name
-        //[NotMapped]
-        //public string Name { get; set; }
+        //TODO: should FirstName and LastName be required fields? The Name field these two fields are replacing was nor required
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
 
-        //TODO: should we allow the creation of an ApplicationUser w/out a first and last name?
-        public string Forename { get; set; }
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
 
-        public string Surname { get; set; }
+        [NotMapped]
+        public string Name => $"{FirstName} {LastName}";
 
         [Display(Name = "Time Zone")]
         [Required]
@@ -41,14 +42,14 @@ namespace AllReady.Models
             //    validationResults.Add(new ValidationResult("Enter your name", new string[] { nameof(Name) }));
             //}
 
-            if (string.IsNullOrWhiteSpace(Forename))
+            if (string.IsNullOrWhiteSpace(FirstName))
             {
-                validationResults.Add(new ValidationResult("Enter your first name", new[] { nameof(Forename) }));
+                validationResults.Add(new ValidationResult("Enter your first name", new[] { nameof(FirstName) }));
             }
 
-            if (string.IsNullOrWhiteSpace(Surname))
+            if (string.IsNullOrWhiteSpace(LastName))
             {
-                validationResults.Add(new ValidationResult("Enter your first name", new[] { nameof(Surname) }));
+                validationResults.Add(new ValidationResult("Enter your last name", new[] { nameof(LastName) }));
             }
 
             if (string.IsNullOrWhiteSpace(PhoneNumber))

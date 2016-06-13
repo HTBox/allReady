@@ -46,6 +46,7 @@ namespace AllReady.Areas.Admin.Models
 
         [UIHint("Location")]
         public LocationDisplayModel Location { get; set; }
+
         [Display(Name = "First Name")]
         public string PrimaryContactFirstName { get; set; }
 

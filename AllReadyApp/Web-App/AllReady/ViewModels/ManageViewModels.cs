@@ -16,14 +16,13 @@ namespace AllReady.Models
             AssociatedSkills = new List<UserSkill>();
         }
 
-        //[Required]
-        //public string Name { get; set; }
+        [Required]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
 
         [Required]
-        public string Forename { get; set; }
-
-        [Required]
-        public string Surname { get; set; }
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
 
         [Display(Name = "Email Address")]
         public string EmailAddress { get; set; }
@@ -74,8 +73,8 @@ namespace AllReady.Models
                 AssociatedSkills = user.AssociatedSkills,
                 TimeZoneId = user.TimeZoneId,
                 //Name = user.Name,
-                Forename = user.Forename,
-                Surname = user.Surname,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 ProposedNewEmailAddress = user.PendingNewEmail,
                 IsProfileComplete = user.IsProfileComplete(),
                 ProfileCompletenessWarnings = profileCompletenessWarnings.Select(p => p.ErrorMessage)

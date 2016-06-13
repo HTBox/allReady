@@ -58,29 +58,22 @@ namespace AllReady.Controllers
             if (!ModelState.IsValid)
             {
                 var viewModelWithInputs = await user.ToViewModel(_userManager, _signInManager);
-                //viewModelWithInputs.Name = model.Name;
-                viewModelWithInputs.Forename= model.Surname;
-                viewModelWithInputs.Surname = model.Surname;
+                viewModelWithInputs.FirstName= model.LastName;
+                viewModelWithInputs.LastName = model.LastName;
                 viewModelWithInputs.TimeZoneId = model.TimeZoneId;
                 viewModelWithInputs.AssociatedSkills = model.AssociatedSkills;
                 return View(viewModelWithInputs);
             }
 
-            //if (!string.IsNullOrEmpty(model.Name))
-            //{
-            //    user.Name = model.Name;
-            //    shouldRefreshSignin = true;                
-            //}
-
-            if (!string.IsNullOrEmpty(model.Forename))
+            if (!string.IsNullOrEmpty(model.FirstName))
             {
-                user.Forename= model.Forename;
+                user.FirstName= model.FirstName;
                 shouldRefreshSignin = true;
             }
 
-            if (!string.IsNullOrEmpty(model.Surname))
+            if (!string.IsNullOrEmpty(model.LastName))
             {
-                user.Surname= model.Surname;
+                user.LastName= model.LastName;
                 shouldRefreshSignin = true;
             }
 

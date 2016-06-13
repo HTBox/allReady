@@ -51,8 +51,7 @@ namespace AllReady.Features.Notifications
 
                 var message = new StringBuilder();
                 message.AppendLine($"A volunteer has unenrolled from a task.");
-                //message.AppendLine($"   Volunteer: {notificationModel.Volunteer.Name} ({notificationModel.Volunteer.Email})");
-                message.AppendLine($"   Volunteer: {notificationModel.Volunteer.Forename} {notificationModel.Volunteer.Surname} ({notificationModel.Volunteer.Email})");
+                message.AppendLine($"   Volunteer: {notificationModel.Volunteer.Name} ({notificationModel.Volunteer.Email})");
                 message.AppendLine($"   Campaign: {notificationModel.CampaignName}");
                 message.AppendLine($"   Event: {notificationModel.EventName} ({eventLink})");
                     message.AppendLine($"   Task: {taskModel.Name} ({$"View task: {_options.Value.SiteBaseUrl}Admin/Task/Details/{taskModel.Id}"})");
