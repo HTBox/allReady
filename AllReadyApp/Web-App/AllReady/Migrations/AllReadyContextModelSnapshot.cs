@@ -274,6 +274,29 @@ namespace AllReady.Migrations
                     b.HasKey("EventId", "SkillId");
                 });
 
+            modelBuilder.Entity("AllReady.Models.Itinerary", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<int>("EventId");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.ItineraryRequest", b =>
+                {
+                    b.Property<int>("ItineraryId");
+
+                    b.Property<Guid>("RequestId");
+
+                    b.HasKey("ItineraryId", "RequestId");
+                });
+
             modelBuilder.Entity("AllReady.Models.Location", b =>
                 {
                     b.Property<int>("Id")
@@ -348,6 +371,40 @@ namespace AllReady.Migrations
                     b.HasKey("Latitude", "Longitude");
                 });
 
+            modelBuilder.Entity("AllReady.Models.Request", b =>
+                {
+                    b.Property<Guid>("RequestId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Address");
+
+                    b.Property<string>("City");
+
+                    b.Property<string>("Email");
+
+                    b.Property<int?>("EventId");
+
+                    b.Property<double>("Latitude");
+
+                    b.Property<double>("Longitude");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("Phone");
+
+                    b.Property<string>("ProviderData");
+
+                    b.Property<string>("ProviderId");
+
+                    b.Property<string>("State");
+
+                    b.Property<int>("Status");
+
+                    b.Property<string>("Zip");
+
+                    b.HasKey("RequestId");
+                });
+
             modelBuilder.Entity("AllReady.Models.Resource", b =>
                 {
                     b.Property<int>("Id")
@@ -393,6 +450,8 @@ namespace AllReady.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("AdditionalInfo");
+
+                    b.Property<int?>("ItineraryId");
 
                     b.Property<string>("PreferredEmail");
 
@@ -607,6 +666,24 @@ namespace AllReady.Migrations
                         .HasForeignKey("SkillId");
                 });
 
+            modelBuilder.Entity("AllReady.Models.Itinerary", b =>
+                {
+                    b.HasOne("AllReady.Models.Event")
+                        .WithMany()
+                        .HasForeignKey("EventId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.ItineraryRequest", b =>
+                {
+                    b.HasOne("AllReady.Models.Itinerary")
+                        .WithMany()
+                        .HasForeignKey("ItineraryId");
+
+                    b.HasOne("AllReady.Models.Request")
+                        .WithMany()
+                        .HasForeignKey("RequestId");
+                });
+
             modelBuilder.Entity("AllReady.Models.Organization", b =>
                 {
                     b.HasOne("AllReady.Models.Location")
@@ -625,6 +702,13 @@ namespace AllReady.Migrations
                         .HasForeignKey("OrganizationId");
                 });
 
+            modelBuilder.Entity("AllReady.Models.Request", b =>
+                {
+                    b.HasOne("AllReady.Models.Event")
+                        .WithMany()
+                        .HasForeignKey("EventId");
+                });
+
             modelBuilder.Entity("AllReady.Models.Skill", b =>
                 {
                     b.HasOne("AllReady.Models.Organization")
@@ -638,6 +722,10 @@ namespace AllReady.Migrations
 
             modelBuilder.Entity("AllReady.Models.TaskSignup", b =>
                 {
+                    b.HasOne("AllReady.Models.Itinerary")
+                        .WithMany()
+                        .HasForeignKey("ItineraryId");
+
                     b.HasOne("AllReady.Models.AllReadyTask")
                         .WithMany()
                         .HasForeignKey("TaskId");

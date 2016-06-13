@@ -47,6 +47,7 @@ namespace AllReady
             }
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
+            Configuration["version"] = appEnv.ApplicationVersion; // version in project.json
         }
 
         public IConfiguration Configuration { get; set; }
@@ -115,7 +116,9 @@ namespace AllReady
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
             services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
-            services.AddTransient<IValidateEventDetailModels, EventDetailModelValidator>();
+            services.AddTransient<IValidateEventDetailModels, EventEditModelValidator>();
+            services.AddTransient<ITaskSummaryModelValidator, TaskSummaryModelValidator>();
+            services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
             services.AddSingleton<IImageService, ImageService>();
             //services.AddSingleton<GeoService>();
             services.AddTransient<SampleDataGenerator>();

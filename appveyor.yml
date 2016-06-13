@@ -31,7 +31,7 @@ before_build:
  - cmd: npm install gulp bower -g
 
 build_script:
- - ps: (Get-Content AllReadyApp\Web-App\AllReady\version.json).replace("GITVERSION", (git rev-parse HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json
+ - ps: (Get-Content AllReadyApp\Web-App\AllReady\version.json).replace("GITVERSION", (git rev-parse --short HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json
  - cmd: msbuild AllReadyApp\AllReady.Models\AllReady.Models.csproj
  - cmd: dnu build AllReadyApp/wrap/AllReady.Models/project.json
  - cmd: dnu publish AllReadyApp\Web-App\AllReady\project.json --out c:\Published

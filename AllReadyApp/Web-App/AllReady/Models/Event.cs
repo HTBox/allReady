@@ -20,7 +20,7 @@ namespace AllReady.Models
         public string Description { get; set; }
 
         [Display(Name = "Event Type")]
-        public EventTypes EventType { get; set; }    
+        public EventType EventType { get; set; }    
         
         public int NumberOfVolunteersRequired { get; set; }
 
@@ -61,5 +61,8 @@ namespace AllReady.Models
         {
             return Tasks.Any(task => task.AssignedVolunteers.Any(av => av.User.Id == userId));
         }
+
+        public ICollection<Request> Requests { get; set; }
+        public ICollection<Itinerary> Itineraries { get; set; }
     }
 }

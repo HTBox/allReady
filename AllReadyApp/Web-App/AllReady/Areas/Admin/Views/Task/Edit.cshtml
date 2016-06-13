@@ -1,4 +1,4 @@
-﻿@model TaskEditModel
+﻿@model TaskSummaryModel
 @inject AllReady.Services.ISelectListService SelectListService
 
 @{
@@ -47,7 +47,6 @@
         <input type="hidden" asp-for="TimeZoneId" />
         <input type="hidden" asp-for="CampaignName" />
         <input type="hidden" asp-for="OrganizationId" />
-        <input type="hidden" asp-for="IgnoreTimeRangeWarning" />
         <div class="form-group">
             <label asp-for="CampaignName" class="control-label col-md-2"></label>
             <div class="col-md-10">

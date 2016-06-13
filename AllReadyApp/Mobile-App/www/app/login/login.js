@@ -11,7 +11,7 @@ angular
     }).controller("LoginController", ["$scope", "$location", "Backend", function($scope, $location, Backend) {
         document.addEventListener("deviceready", function() {
             Backend.doLogin().then(function() {
-                $location.url("/activities");
+                $location.url("/events");
             }, function() {
                 // TODO Show login error
             });
