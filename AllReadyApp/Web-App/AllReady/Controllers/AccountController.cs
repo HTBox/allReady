@@ -179,7 +179,9 @@ namespace AllReady.Controllers
             {
                 await _mediator.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id });
                 if (User.IsSignedIn())
+                {
                     await _signInManager.RefreshSignInAsync(user);
+                }
             }
 
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
@@ -339,7 +341,8 @@ namespace AllReady.Controllers
                     UserName = model.Email,
                     Email = model.Email,
                     TimeZoneId = _generalSettings.Value.DefaultTimeZone,
-                    Name = model.Name,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
                     PhoneNumber = model.PhoneNumber
                 };
 

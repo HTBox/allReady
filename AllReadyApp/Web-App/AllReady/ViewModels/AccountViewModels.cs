@@ -10,7 +10,11 @@ namespace AllReady.Models
         [EmailAddress]
         public string Email { get; set; }
 
-        public string Name { get; set; }
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
 
         [Display(Name="Phone number")]
         public string PhoneNumber { get; set; }

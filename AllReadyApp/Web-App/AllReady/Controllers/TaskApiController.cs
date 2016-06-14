@@ -108,8 +108,10 @@ namespace AllReady.Controllers
         public async Task<ActionResult> RegisterTask(EventSignupViewModel signupModel)
         {
             if (signupModel == null)
+            {
                 return HttpBadRequest();
-
+            }
+            
             if (!ModelState.IsValid)
             {
                 // this condition should never be hit because client side validation is being performed

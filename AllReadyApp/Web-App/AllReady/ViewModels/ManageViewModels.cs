@@ -17,7 +17,12 @@ namespace AllReady.Models
         }
 
         [Required]
-        public string Name { get; set; }
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
 
         [Display(Name = "Email Address")]
         public string EmailAddress { get; set; }
@@ -67,7 +72,8 @@ namespace AllReady.Models
                 BrowserRemembered = await signInManager.IsTwoFactorClientRememberedAsync(user),
                 AssociatedSkills = user.AssociatedSkills,
                 TimeZoneId = user.TimeZoneId,
-                Name = user.Name,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 ProposedNewEmailAddress = user.PendingNewEmail,
                 IsProfileComplete = user.IsProfileComplete(),
                 ProfileCompletenessWarnings = profileCompletenessWarnings.Select(p => p.ErrorMessage)
