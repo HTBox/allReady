@@ -1,5 +1,4 @@
 ﻿using AllReady.Features.Campaigns;
-using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Mvc;
 using System.Threading.Tasks;

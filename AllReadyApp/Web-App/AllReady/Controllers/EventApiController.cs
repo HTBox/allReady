@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
 using AllReady.Models;
-using AllReady.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +10,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Extensions;
 using AllReady.Features.Event;
+using AllReady.ViewModels.Event;
 using AllReady.ViewModels.Shared;
 using MediatR;
 

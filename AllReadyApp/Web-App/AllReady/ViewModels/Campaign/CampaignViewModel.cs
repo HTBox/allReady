@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AllReady.Models;
-using AllReady.ViewModels.Shared;
+using AllReady.ViewModels.Event;
 
 namespace AllReady.ViewModels.Campaign
 {

@@ -3,8 +3,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Features.Event;
-using AllReady.Models;
-using AllReady.ViewModels;
 using AllReady.ViewModels.Event;
 using AllReady.ViewModels.Shared;
 using MediatR;

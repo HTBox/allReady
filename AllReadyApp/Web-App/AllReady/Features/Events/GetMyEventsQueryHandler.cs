@@ -1,7 +1,7 @@
 using System.Linq;
 using AllReady.Models;
 using AllReady.ViewModels;
-using AllReady.ViewModels.Shared;
+using AllReady.ViewModels.Event;
 using MediatR;
 
 namespace AllReady.Features.Event

@@ -2,7 +2,6 @@
 using Microsoft.AspNet.Mvc;
 using AllReady.Security;
 using AllReady.Models;
-using AllReady.ViewModels;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
