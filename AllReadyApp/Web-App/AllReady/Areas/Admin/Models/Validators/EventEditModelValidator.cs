@@ -2,9 +2,9 @@
 
 namespace AllReady.Areas.Admin.Models.Validators
 {
-    public class EventDetailModelValidator : IValidateEventDetailModels
+    public class EventEditModelValidator : IValidateEventDetailModels
     {
-        public List<KeyValuePair<string, string>> Validate(EventDetailModel model, CampaignSummaryModel parentCampaign)
+        public List<KeyValuePair<string, string>> Validate(EventEditModel model, CampaignSummaryModel parentCampaign)
         {
             var result = new List<KeyValuePair<string, string>>();
 
@@ -29,6 +29,6 @@ namespace AllReady.Areas.Admin.Models.Validators
 
     public interface IValidateEventDetailModels
     {
-        List<KeyValuePair<string, string>> Validate(EventDetailModel model, CampaignSummaryModel parentCampaign);
+        List<KeyValuePair<string, string>> Validate(EventEditModel model, CampaignSummaryModel parentCampaign);
     }
 }

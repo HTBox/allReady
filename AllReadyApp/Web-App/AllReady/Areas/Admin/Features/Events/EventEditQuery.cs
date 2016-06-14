@@ -3,8 +3,8 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Events
 {
-    public class EditEventCommand : IAsyncRequest<int>
+    public class EventEditQuery : IAsyncRequest<EventEditModel>
     {
-        public EventEditModel Event {get; set;}
+        public int EventId { get; set; }
     }
 }
