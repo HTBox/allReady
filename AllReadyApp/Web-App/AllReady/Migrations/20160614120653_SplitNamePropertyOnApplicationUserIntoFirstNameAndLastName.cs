@@ -4,7 +4,7 @@ using Microsoft.Data.Entity.Migrations;
 
 namespace AllReady.Migrations
 {
-    public partial class ChangeUserNametoForeNameAndSurNameOnApplicationUser : Migration
+    public partial class SplitNamePropertyOnApplicationUserIntoFirstNameAndLastName : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -34,11 +34,11 @@ namespace AllReady.Migrations
             migrationBuilder.DropForeignKey(name: "FK_IdentityUserRole<string>_ApplicationUser_UserId", table: "AspNetUserRoles");
             migrationBuilder.DropColumn(name: "Name", table: "AspNetUsers");
             migrationBuilder.AddColumn<string>(
-                name: "Forename",
+                name: "FirstName",
                 table: "AspNetUsers",
                 nullable: true);
             migrationBuilder.AddColumn<string>(
-                name: "Surname",
+                name: "LastName",
                 table: "AspNetUsers",
                 nullable: true);
             migrationBuilder.AddForeignKey(
@@ -237,8 +237,8 @@ namespace AllReady.Migrations
             migrationBuilder.DropForeignKey(name: "FK_IdentityUserLogin<string>_ApplicationUser_UserId", table: "AspNetUserLogins");
             migrationBuilder.DropForeignKey(name: "FK_IdentityUserRole<string>_IdentityRole_RoleId", table: "AspNetUserRoles");
             migrationBuilder.DropForeignKey(name: "FK_IdentityUserRole<string>_ApplicationUser_UserId", table: "AspNetUserRoles");
-            migrationBuilder.DropColumn(name: "Forename", table: "AspNetUsers");
-            migrationBuilder.DropColumn(name: "Surname", table: "AspNetUsers");
+            migrationBuilder.DropColumn(name: "FirstName", table: "AspNetUsers");
+            migrationBuilder.DropColumn(name: "LastName", table: "AspNetUsers");
             migrationBuilder.AddColumn<string>(
                 name: "Name",
                 table: "AspNetUsers",

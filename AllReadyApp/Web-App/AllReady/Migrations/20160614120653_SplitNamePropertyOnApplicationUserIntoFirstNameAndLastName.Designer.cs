@@ -8,8 +8,8 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    [Migration("20160613190607_ChangeUserNametoForeNameAndSurNameOnApplicationUser")]
-    partial class ChangeUserNametoForeNameAndSurNameOnApplicationUser
+    [Migration("20160614120653_SplitNamePropertyOnApplicationUserIntoFirstNameAndLastName")]
+    partial class SplitNamePropertyOnApplicationUserIntoFirstNameAndLastName
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -58,7 +58,9 @@ namespace AllReady.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
-                    b.Property<string>("Forename");
+                    b.Property<string>("FirstName");
+
+                    b.Property<string>("LastName");
 
                     b.Property<bool>("LockoutEnabled");
 
@@ -81,8 +83,6 @@ namespace AllReady.Migrations
                     b.Property<bool>("PhoneNumberConfirmed");
 
                     b.Property<string>("SecurityStamp");
-
-                    b.Property<string>("Surname");
 
                     b.Property<string>("TimeZoneId")
                         .IsRequired();
