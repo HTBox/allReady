@@ -72,7 +72,6 @@ namespace AllReady.Models
                 BrowserRemembered = await signInManager.IsTwoFactorClientRememberedAsync(user),
                 AssociatedSkills = user.AssociatedSkills,
                 TimeZoneId = user.TimeZoneId,
-                //Name = user.Name,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 ProposedNewEmailAddress = user.PendingNewEmail,

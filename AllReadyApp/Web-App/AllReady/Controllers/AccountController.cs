@@ -179,7 +179,9 @@ namespace AllReady.Controllers
             {
                 await _mediator.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id });
                 if (User.IsSignedIn())
+                {
                     await _signInManager.RefreshSignInAsync(user);
+                }
             }
 
             return View(result.Succeeded ? "ConfirmEmail" : "Error");

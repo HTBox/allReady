@@ -28,7 +28,8 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 .Include(x => x.TeamMembers).ThenInclude(x => x.Task)
                 .Include(x => x.Requests).ThenInclude(x => x.Request)
                 .Where(a => a.Id == message.ItineraryId)
-                .Select(i => new ItineraryDetailsModel {
+                .Select(i => new ItineraryDetailsModel
+                {
                     Id = i.Id,
                     Name = i.Name,
                     Date = i.Date,

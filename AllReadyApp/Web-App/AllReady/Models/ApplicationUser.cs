@@ -37,11 +37,6 @@ namespace AllReady.Models
                 validationResults.Add(new ValidationResult("Verify your email address", new[] { nameof(Email) }));
             }
 
-            //if (string.IsNullOrWhiteSpace(Name))
-            //{
-            //    validationResults.Add(new ValidationResult("Enter your name", new string[] { nameof(Name) }));
-            //}
-
             if (string.IsNullOrWhiteSpace(FirstName))
             {
                 validationResults.Add(new ValidationResult("Enter your first name", new[] { nameof(FirstName) }));

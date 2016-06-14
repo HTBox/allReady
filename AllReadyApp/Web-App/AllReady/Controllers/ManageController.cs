@@ -58,7 +58,7 @@ namespace AllReady.Controllers
             if (!ModelState.IsValid)
             {
                 var viewModelWithInputs = await user.ToViewModel(_userManager, _signInManager);
-                viewModelWithInputs.FirstName= model.LastName;
+                viewModelWithInputs.FirstName= model.FirstName;
                 viewModelWithInputs.LastName = model.LastName;
                 viewModelWithInputs.TimeZoneId = model.TimeZoneId;
                 viewModelWithInputs.AssociatedSkills = model.AssociatedSkills;
