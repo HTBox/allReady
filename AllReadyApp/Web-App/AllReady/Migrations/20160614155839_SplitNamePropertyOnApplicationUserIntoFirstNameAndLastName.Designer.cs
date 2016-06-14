@@ -8,7 +8,7 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    [Migration("20160614120653_SplitNamePropertyOnApplicationUserIntoFirstNameAndLastName")]
+    [Migration("20160614155839_SplitNamePropertyOnApplicationUserIntoFirstNameAndLastName")]
     partial class SplitNamePropertyOnApplicationUserIntoFirstNameAndLastName
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

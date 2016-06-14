@@ -385,20 +385,15 @@ namespace AllReady.Models
             var user3FirstName = $"{_settings.DefaultUsername}3.com";
             var user3LastName = $"{_settings.DefaultUsername}3.com";
 
-            var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone,
-                FirstName = user1FirstName, LastName = user1LastName };
+            var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
             _userManager.CreateAsync(user1, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user1);
 
-            var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone,
-                FirstName = user2FirstName, LastName = user2LastName
-            };
+            var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
             _userManager.CreateAsync(user2, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user2);
 
-            var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone,
-                FirstName = user3FirstName, LastName = user3LastName
-            };
+            var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
             _userManager.CreateAsync(user3, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user3);
             #endregion
@@ -535,17 +530,14 @@ namespace AllReady.Models
             {
                 user = new ApplicationUser
                 {
-                    UserName = _settings.DefaultAdminUsername, Email = _settings.DefaultAdminUsername, TimeZoneId = _generalSettings.DefaultTimeZone, EmailConfirmed = true,
-                    FirstName = _settings.DefaultAdminUsername, LastName = _settings.DefaultAdminUsername
+                    UserName = _settings.DefaultAdminUsername, Email = _settings.DefaultAdminUsername, TimeZoneId = _generalSettings.DefaultTimeZone, EmailConfirmed = true
                 };
                 _userManager.CreateAsync(user, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
                 _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, "SiteAdmin")).GetAwaiter().GetResult();
 
                 var user2 = new ApplicationUser
                 {
-                    UserName = _settings.DefaultOrganizationUsername, Email = _settings.DefaultOrganizationUsername, TimeZoneId = _generalSettings.DefaultTimeZone, EmailConfirmed = true,
-                    FirstName = _settings.DefaultOrganizationUsername, LastName = _settings.DefaultOrganizationUsername
-
+                    UserName = _settings.DefaultOrganizationUsername, Email = _settings.DefaultOrganizationUsername, TimeZoneId = _generalSettings.DefaultTimeZone, EmailConfirmed = true
                 };
                 // For the sake of being able to exercise Organization-specific stuff, we need to associate a organization.
                 await _userManager.CreateAsync(user2, _settings.DefaultAdminPassword);
@@ -554,8 +546,7 @@ namespace AllReady.Models
 
                 var user3 = new ApplicationUser
                 {
-                    UserName = _settings.DefaultUsername, Email = _settings.DefaultUsername, TimeZoneId = _generalSettings.DefaultTimeZone,
-                    FirstName = _settings.DefaultUsername, LastName = _settings.DefaultUsername, EmailConfirmed = true
+                    UserName = _settings.DefaultUsername, Email = _settings.DefaultUsername, TimeZoneId = _generalSettings.DefaultTimeZone, EmailConfirmed = true
                 };
                 await _userManager.CreateAsync(user3, _settings.DefaultAdminPassword);
             }

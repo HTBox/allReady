@@ -12,11 +12,8 @@ namespace AllReady.Models
         [Display(Name = "Associated skills")]
         public List<UserSkill> AssociatedSkills { get; set; } = new List<UserSkill>();
 
-        //TODO: should FirstName and LastName be required fields? The Name field these two fields are replacing was nor required
-        [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
-        [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
         [NotMapped]
