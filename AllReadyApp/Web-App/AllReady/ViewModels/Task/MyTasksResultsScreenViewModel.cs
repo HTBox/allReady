@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AllReady.ViewModels.Task;
 
-namespace AllReady.ViewModels
+namespace AllReady.ViewModels.Task
 {
     public class MyTasksResultsScreenViewModel
     {
