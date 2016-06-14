@@ -727,7 +727,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
             var sut = new AccountController(userManager.Object, null, null, null, null);
 
-            var result = await sut.ForgotPassword(vm) as ViewResult;
+            await sut.ForgotPassword(vm);
 
             userManager.Verify(m => m.FindByNameAsync(email), Times.Once);
 
@@ -750,7 +750,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user)).Verifiable();
             var sut = new AccountController(userManager.Object, null, null, null, null);
 
-            var result = await sut.ForgotPassword(vm) as ViewResult;
+            await sut.ForgotPassword(vm);
 
             userManager.Verify(m => m.IsEmailConfirmedAsync(user), Times.Once);
 
