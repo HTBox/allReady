@@ -2,6 +2,7 @@
 using System.Linq;
 using AllReady.Features.Event;
 using AllReady.ViewModels;
+using AllReady.ViewModels.Shared;
 using MediatR;
 using Microsoft.AspNet.Mvc;
 

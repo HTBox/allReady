@@ -1,7 +1,7 @@
 ﻿using System;
 using AllReady.Models;
 
-namespace AllReady.ViewModels
+namespace AllReady.ViewModels.Event
 {
     public class TaskSignupViewModel
     {

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using AllReady.Models;
 
-namespace AllReady.ViewModels
+namespace AllReady.ViewModels.Resource
 {
     public class ResourceViewModel
     {
@@ -10,7 +9,7 @@ namespace AllReady.ViewModels
         {
         }
 
-        public ResourceViewModel(Resource resource)
+        public ResourceViewModel(Models.Resource resource)
         {
             Id = resource.Id;
             Name = resource.Name;

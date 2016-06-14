@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using AllReady.ViewModels.Campaign;
 
-namespace AllReady.ViewModels
+namespace AllReady.ViewModels.Home
 {
     public class HomePageViewModel
     {

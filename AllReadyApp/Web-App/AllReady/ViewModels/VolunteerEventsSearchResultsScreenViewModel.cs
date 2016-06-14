@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using AllReady.ViewModels.Shared;
 
 namespace AllReady.ViewModels
 {

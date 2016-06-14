@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace AllReady.ViewModels
+namespace AllReady.ViewModels.Shared
 {
     public class EventSignupViewModel
     {

@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using AllReady.ViewModels;
+using AllReady.ViewModels.Shared;
 using MediatR;
 
 namespace AllReady.Features.Event

@@ -19,6 +19,7 @@ using AllReady.Features.Login;
 using System.Collections.Generic;
 using AllReady.Areas.Admin.Controllers;
 using System;
+using AllReady.ViewModels.Account;
 using AllReady.Migrations;
 using Microsoft.AspNet.Identity.EntityFramework;
 
@@ -556,7 +557,7 @@ namespace AllReady.UnitTest.Controllers
             var userManager = CreateUserManagerMock();
 
             var user = new ApplicationUser();
-
+ 
             userManager.Setup(x => x.FindByIdAsync(userId)).Returns(() => Task.FromResult(user));
             userManager.Setup(x => x.ConfirmEmailAsync(user, token)).Returns(() => Task.FromResult(IdentityResult.Success));
             var sut = new AccountController(userManager.Object, null, null, null, null);
@@ -654,21 +655,21 @@ namespace AllReady.UnitTest.Controllers
 
         [Fact]
         public async Task ConfirmEmailReturnsConfirmEmailViewWhenUsersEmailCanBeConfirmed()
-        {
-            var userId = "userId";
-            var token = "someToken";
-            var userManager = CreateUserManagerMock();
+		{
+			var userId = "userId";
+			var token = "someToken";
+			var userManager = CreateUserManagerMock();
 
-            var user = new ApplicationUser();
+			var user = new ApplicationUser();
 
-            userManager.Setup(x => x.FindByIdAsync(userId)).Returns(() => Task.FromResult(user));
-            userManager.Setup(x => x.ConfirmEmailAsync(user, token)).Returns(() => Task.FromResult(IdentityResult.Success));
-            var sut = new AccountController(userManager.Object, null, null, null, null);
+			userManager.Setup(x => x.FindByIdAsync(userId)).Returns(() => Task.FromResult(user));
+			userManager.Setup(x => x.ConfirmEmailAsync(user, token)).Returns(() => Task.FromResult(IdentityResult.Success));
+			var sut = new AccountController(userManager.Object, null, null, null, null);
 
-            var result = await sut.ConfirmEmail(userId, token) as ViewResult;
+			var result = await sut.ConfirmEmail(userId, token) as ViewResult;
 
-            Assert.Equal(result.ViewName, "ConfirmEmail");
-        }
+			Assert.Equal(result.ViewName, "ConfirmEmail");
+		}
 
         [Fact]
         public void ConfirmEmailHasHttpGetAttribute()
@@ -712,100 +713,100 @@ namespace AllReady.UnitTest.Controllers
 
         [Fact]
         public async Task ForgotPasswordPostInvokesFindByNameAsyncWithTheCorrectEmailwhenModelStateIsValid()
-        {
-            var email = "user@domain.tld";
+		{
+			var email = "user@domain.tld";
 
-            var vm = new ForgotPasswordViewModel()
-            {
-                Email = email
-            };
+			var vm = new ForgotPasswordViewModel()
+			{
+				Email = email
+			};
 
-            var userManager = CreateUserManagerMock();
+			var userManager = CreateUserManagerMock();
 
-            var user = new ApplicationUser();
+			var user = new ApplicationUser();
 
-            userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
-            var sut = new AccountController(userManager.Object, null, null, null, null);
-
+			userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
+			var sut = new AccountController(userManager.Object, null, null, null, null);
+			
             await sut.ForgotPassword(vm);
 
-            userManager.Verify(m => m.FindByNameAsync(email), Times.Once);
-
-        }
+			userManager.Verify(m => m.FindByNameAsync(email), Times.Once);
+			
+		}
 
         [Fact]
         public async Task ForgotPasswordPostInvokesIsEmailConfirmedAsyncWithThecorrectUserWhenModelStateIsValid()
-        {
-            var email = "user@domain.tld";
+		{
+			var email = "user@domain.tld";
 
-            var vm = new ForgotPasswordViewModel()
-            {
-                Email = email
-            };
+			var vm = new ForgotPasswordViewModel()
+			{
+				Email = email
+			};
 
-            var userManager = CreateUserManagerMock();
+			var userManager = CreateUserManagerMock();
 
-            var user = new ApplicationUser();
+			var user = new ApplicationUser();
 
-            userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user)).Verifiable();
-            var sut = new AccountController(userManager.Object, null, null, null, null);
+			userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user)).Verifiable();
+			var sut = new AccountController(userManager.Object, null, null, null, null);
 
             await sut.ForgotPassword(vm);
 
-            userManager.Verify(m => m.IsEmailConfirmedAsync(user), Times.Once);
+			userManager.Verify(m => m.IsEmailConfirmedAsync(user), Times.Once);
 
-        }
+		}
 
-        [Fact]
+		[Fact]
         public async Task ForgotPasswordPostReturnsForgotPasswordConfirmationViewWhenModelStateIsValidAndUserIsNull()
-        {
-            var email = "user@domain.tld";
+		{
+			var email = "user@domain.tld";
+			
+			var vm = new ForgotPasswordViewModel()
+			{
+				Email = email
+			};
 
-            var vm = new ForgotPasswordViewModel()
-            {
-                Email = email
-            };
+			var userManager = CreateUserManagerMock();
 
-            var userManager = CreateUserManagerMock();
+			var user = default(ApplicationUser);
 
-            var user = default(ApplicationUser);
+			userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
+			var sut = new AccountController(userManager.Object, null, null, null, null);
 
-            userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
-            var sut = new AccountController(userManager.Object, null, null, null, null);
+			var result = await sut.ForgotPassword(vm) as ViewResult;
 
-            var result = await sut.ForgotPassword(vm) as ViewResult;
+			Assert.Equal(result.ViewName, "ForgotPasswordConfirmation");
 
-            Assert.Equal(result.ViewName, "ForgotPasswordConfirmation");
+		}
 
-        }
-
-        [Fact]
+		[Fact]
         public async Task ForgotPasswordPostReturnsForgotPasswordConfirmationViewWhenModelStateIsValidAndUsersEmailIsUnverified()
-        {
-            var email = "user@domain.tld";
+		{
+			var email = "user@domain.tld";
 
-            var vm = new ForgotPasswordViewModel()
-            {
-                Email = email
-            };
+			var vm = new ForgotPasswordViewModel()
+			{
+				Email = email
+			};
 
-            var userManager = CreateUserManagerMock();
+			var userManager = CreateUserManagerMock();
 
-            var user = new ApplicationUser();
+			var user = new ApplicationUser();
 
-            userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
-            userManager.Setup(x => x.IsEmailConfirmedAsync(user)).Returns(() => Task.FromResult(false));
-            var sut = new AccountController(userManager.Object, null, null, null, null);
+			userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
+			userManager.Setup(x => x.IsEmailConfirmedAsync(user)).Returns(() => Task.FromResult(false));
+			var sut = new AccountController(userManager.Object, null, null, null, null);
 
-            var result = await sut.ForgotPassword(vm) as ViewResult;
+			var result = await sut.ForgotPassword(vm) as ViewResult;
 
-            Assert.Equal(result.ViewName, "ForgotPasswordConfirmation");
+			Assert.Equal(result.ViewName, "ForgotPasswordConfirmation");
 
-        }
+		}
 
-        [Fact]
-        public async Task ForgotPasswordPostInvokesGeneratePasswordResetTokenAsyncWithCorrectUserWhenModelStateIsValidAndUserIsNotNullAndUsersEmailHasBeenVerified()
-        {
+		[Fact]
+		public async Task ForgotPasswordPostInvokesGeneratePasswordResetTokenAsyncWithCorrectUserWhenModelStateIsValidAndUserIsNotNullAndUsersEmailHasBeenVerified()
+		{
             var email = "user@domain.tld";
 
             var vm = new ForgotPasswordViewModel()
@@ -834,7 +835,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Verify(x => x.GeneratePasswordResetTokenAsync(user), Times.Once);
         }
 
-        [Fact]
+		[Fact]
         public async Task ForgotPasswordPostInvokesUrlActionWithCorrectParametersWhenModelStateIsValidAndUserIsNotNullAndUsersEmailHasBeenVerified()
         {
             const string requestScheme = "requestScheme";
@@ -865,9 +866,9 @@ namespace AllReady.UnitTest.Controllers
 
             await sut.ForgotPassword(vm);
 
-            urlHelper.Verify(mock => mock.Action(It.Is<UrlActionContext>(uac =>
-                        uac.Action == "ResetPassword"
-                        && uac.Controller == "Account"
+            urlHelper.Verify(mock => mock.Action(It.Is<UrlActionContext>(uac => 
+                        uac.Action == "ResetPassword" 
+                        && uac.Controller == "Account" 
                         && uac.Protocol == requestScheme)), Times.Once);
         }
 
@@ -1420,10 +1421,10 @@ namespace AllReady.UnitTest.Controllers
             userManager.Verify(u => u.AddLoginAsync(It.Is<ApplicationUser>(au => au.Email == viewModel.Email
                     && au.FirstName == viewModel.FirstName
                     && au.LastName == viewModel.LastName
-                    && au.PhoneNumber == viewModel.PhoneNumber),
-                It.Is<ExternalLoginInfo>(ei => ei.LoginProvider == "test"
-                    && ei.ProviderKey == "testKey"
-                    && ei.ProviderDisplayName == "testDisplayName")));
+                                                                                    && au.PhoneNumber == viewModel.PhoneNumber),
+                                                     It.Is<ExternalLoginInfo>(ei => ei.LoginProvider == "test"
+                                                                                    && ei.ProviderKey == "testKey"
+                                                                                    && ei.ProviderDisplayName == "testDisplayName")));
         }
 
         [Fact]
@@ -1447,9 +1448,9 @@ namespace AllReady.UnitTest.Controllers
             signInManager.Verify(s => s.SignInAsync(It.Is<ApplicationUser>(au => au.Email == viewModel.Email
                 && au.FirstName == viewModel.FirstName
                 && au.LastName == viewModel.LastName
-                && au.PhoneNumber == viewModel.PhoneNumber),
-            It.Is<bool>(p => p == false),
-            It.Is<string>(auth => auth == null)));
+                                                                                 && au.PhoneNumber == viewModel.PhoneNumber),
+                                                    It.Is<bool>(p => p == false),
+                                                    It.Is<string>(auth => auth == null)));
         }
 
         [Fact]
@@ -1704,7 +1705,7 @@ namespace AllReady.UnitTest.Controllers
             return userManagerMock;
         }
 
-        private static void SetupSignInManagerWithTestExternalLoginValue(Mock<SignInManager<ApplicationUser>> signInManager,
+        private static void SetupSignInManagerWithTestExternalLoginValue(Mock<SignInManager<ApplicationUser>> signInManager, 
             string loginProvider = "test", string providerKey = "test", string displayName = "test")
         {
             signInManager

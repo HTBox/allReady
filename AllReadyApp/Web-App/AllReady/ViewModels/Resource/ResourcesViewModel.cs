@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AllReady.ViewModels
+namespace AllReady.ViewModels.Resource
 {
     public class ResourcesViewModel
     {

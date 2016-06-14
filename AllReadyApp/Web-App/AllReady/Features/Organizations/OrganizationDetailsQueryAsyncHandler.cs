@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AllReady.Models;
 using AllReady.ViewModels;
+using AllReady.ViewModels.Organization;
 using MediatR;
 using Microsoft.Data.Entity;
 

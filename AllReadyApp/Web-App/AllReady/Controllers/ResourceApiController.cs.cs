@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AllReady.Features.Resource;
-using AllReady.ViewModels;
+using AllReady.ViewModels.Resource;
 using MediatR;
 using Microsoft.AspNet.Mvc;
 

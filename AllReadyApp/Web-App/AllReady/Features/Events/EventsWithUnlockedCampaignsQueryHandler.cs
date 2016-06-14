@@ -3,6 +3,7 @@ using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
 using System.Linq;
+using AllReady.ViewModels.Shared;
 
 namespace AllReady.Features.Event
 {

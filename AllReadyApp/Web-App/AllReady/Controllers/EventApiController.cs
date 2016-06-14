@@ -11,6 +11,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Extensions;
 using AllReady.Features.Event;
+using AllReady.ViewModels.Shared;
 using MediatR;
 
 namespace AllReady.Controllers

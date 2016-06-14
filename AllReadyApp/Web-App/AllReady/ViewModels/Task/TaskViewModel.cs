@@ -6,9 +6,10 @@ using AllReady.Features.Event;
 using AllReady.Features.Manage;
 using AllReady.Features.Tasks;
 using AllReady.Models;
+using AllReady.ViewModels.Event;
 using MediatR;
 
-namespace AllReady.ViewModels
+namespace AllReady.ViewModels.Task
 {
     public class TaskViewModel
     {

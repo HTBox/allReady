@@ -1,4 +1,5 @@
 ﻿using AllReady.ViewModels;
+using AllReady.ViewModels.Shared;
 using MediatR;
 
 namespace AllReady.Features.Tasks

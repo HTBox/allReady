@@ -15,6 +15,7 @@ using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
 using AllReady.Areas.Admin.Models.Validators;
 using AllReady.Features.Event;
+using AllReady.ViewModels.Shared;
 
 namespace AllReady.Areas.Admin.Controllers
 {

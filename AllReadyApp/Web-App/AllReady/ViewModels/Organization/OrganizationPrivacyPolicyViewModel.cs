@@ -1,4 +1,4 @@
-﻿namespace AllReady.ViewModels
+﻿namespace AllReady.ViewModels.Organization
 {
     public class OrganizationPrivacyPolicyViewModel
     {

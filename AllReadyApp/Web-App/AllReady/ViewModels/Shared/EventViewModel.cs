@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using AllReady.Models;
+using AllReady.ViewModels.Task;
 
-namespace AllReady.ViewModels
+namespace AllReady.ViewModels.Shared
 {
     public class EventViewModel
     {
