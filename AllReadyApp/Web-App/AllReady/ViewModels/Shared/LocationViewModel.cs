@@ -1,6 +1,6 @@
 ﻿using AllReady.Models;
 
-namespace AllReady.ViewModels
+namespace AllReady.ViewModels.Shared
 {
     public class LocationViewModel
     {

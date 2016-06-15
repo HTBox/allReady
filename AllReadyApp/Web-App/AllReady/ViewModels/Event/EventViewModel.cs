@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using AllReady.Models;
+using AllReady.ViewModels.Shared;
+using AllReady.ViewModels.Task;
 
-namespace AllReady.ViewModels
+namespace AllReady.ViewModels.Event
 {
     public class EventViewModel
     {
@@ -12,7 +14,7 @@ namespace AllReady.ViewModels
         {
         }
 
-        public EventViewModel(Event campaignEvent)
+        public EventViewModel(Models.Event campaignEvent)
         {
             Id = campaignEvent.Id;
             if (campaignEvent.Campaign != null)
@@ -115,12 +117,12 @@ namespace AllReady.ViewModels
             };
             return value;
         }
-        public static IEnumerable<EventViewModel> ToViewModel(this IEnumerable<Event> campaignEvents)
+        public static IEnumerable<EventViewModel> ToViewModel(this IEnumerable<Models.Event> campaignEvents)
         {
             return campaignEvents.Select(campaignEvent => new EventViewModel(campaignEvent));
         }
 
-        public static EventViewModel WithUserInfo(this EventViewModel viewModel, Event campaignEvent, ClaimsPrincipal user, IAllReadyDataAccess dataAccess)
+        public static EventViewModel WithUserInfo(this EventViewModel viewModel, Models.Event campaignEvent, ClaimsPrincipal user, IAllReadyDataAccess dataAccess)
         {
             if (user.IsSignedIn())
             {

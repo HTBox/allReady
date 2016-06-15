@@ -5,6 +5,7 @@ using AllReady.Features.Login;
 using AllReady.Models;
 using AllReady.Security;
 using AllReady.Services;
+using AllReady.ViewModels.Account;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;

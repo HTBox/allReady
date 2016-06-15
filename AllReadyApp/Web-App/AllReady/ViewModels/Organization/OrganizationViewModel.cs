@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AllReady.Models;
+using AllReady.ViewModels.Campaign;
 
-namespace AllReady.ViewModels
+namespace AllReady.ViewModels.Organization
 {
     public class OrganizationViewModel
     {
@@ -11,7 +11,7 @@ namespace AllReady.ViewModels
             Campaigns = new List<CampaignViewModel>();
         }
 
-        public OrganizationViewModel(Organization organization)
+        public OrganizationViewModel(Models.Organization organization)
         {
             Id = organization.Id;
             Name = organization.Name;

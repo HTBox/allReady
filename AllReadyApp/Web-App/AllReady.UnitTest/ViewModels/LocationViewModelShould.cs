@@ -1,8 +1,4 @@
-﻿using AllReady.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AllReady.ViewModels.Shared;
 using Xunit;
 
 namespace AllReady.UnitTest.ViewModels
@@ -20,7 +16,6 @@ namespace AllReady.UnitTest.ViewModels
 
             // assert
             Assert.Equal("HappyTown, Utopia", model.Summary);
-
         }
 
         [Fact]
@@ -31,7 +26,6 @@ namespace AllReady.UnitTest.ViewModels
 
             // assert
             Assert.Equal("HappyTown", model.Summary);
-
         }
 
         [Fact]
@@ -42,7 +36,6 @@ namespace AllReady.UnitTest.ViewModels
 
             // assert
             Assert.Equal("Utopia", model.Summary);
-
         }
     }
 }

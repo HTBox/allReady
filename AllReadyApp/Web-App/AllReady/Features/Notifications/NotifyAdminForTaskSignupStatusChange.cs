@@ -47,7 +47,7 @@ namespace AllReady.Features.Notifications
                 var subject = volunteer.FirstName != null && volunteer.LastName != null ? $"{volunteer.FirstName} {volunteer.LastName}" : volunteer.Email;
 
                 var message = $@"A volunteer's status has changed for a task.
-                    Volunteer: {volunteer.FirstName} {volunteer.LastName} ({volunteer.Email})
+                    Volunteer: {volunteer.Name} ({volunteer.Email})
                     New status: {taskSignup.Status}
                     Task: {task.Name} {link}
                     Event: {campaignEvent.Name}

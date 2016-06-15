@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
-namespace AllReady.ViewModels
+namespace AllReady.ViewModels.Event
 {
     public class MyEventsResultsScreenViewModel
     {

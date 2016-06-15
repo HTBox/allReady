@@ -2,12 +2,13 @@
 using Microsoft.AspNet.Mvc;
 using AllReady.Security;
 using AllReady.Models;
-using AllReady.ViewModels;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Extensions;
 using AllReady.Features.Tasks;
+using AllReady.ViewModels.Shared;
+using AllReady.ViewModels.Task;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using DeleteTaskCommandAsync = AllReady.Features.Tasks.DeleteTaskCommandAsync;

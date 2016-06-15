@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using AllReady.Models;
+using AllReady.ViewModels.Event;
 
-namespace AllReady.ViewModels
+namespace AllReady.ViewModels.Campaign
 {
     public class CampaignViewModel
     {
@@ -12,7 +13,7 @@ namespace AllReady.ViewModels
             Events = new List<EventViewModel>();
         }
 
-        public CampaignViewModel(Campaign campaign)
+        public CampaignViewModel(Models.Campaign campaign)
         {
             if (campaign == null)
                 return;
@@ -89,12 +90,12 @@ namespace AllReady.ViewModels
 
     public static class CampaignViewModelExtensions
     {
-        public static CampaignViewModel ToViewModel(this Campaign campaign)
+        public static CampaignViewModel ToViewModel(this Models.Campaign campaign)
         {
             return new CampaignViewModel(campaign);
         }
 
-        public static IEnumerable<CampaignViewModel> ToViewModel(this IEnumerable<Campaign> campaigns)
+        public static IEnumerable<CampaignViewModel> ToViewModel(this IEnumerable<Models.Campaign> campaigns)
         {
             return campaigns.Select(campaign => campaign.ToViewModel());
         }       

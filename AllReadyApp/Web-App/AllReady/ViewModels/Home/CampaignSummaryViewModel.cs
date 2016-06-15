@@ -1,7 +1,4 @@
-﻿using AllReady.Models;
-using System;
-
-namespace AllReady.ViewModels
+﻿namespace AllReady.ViewModels.Home
 {
     public class CampaignSummaryViewModel
     {
@@ -9,6 +6,6 @@ namespace AllReady.ViewModels
         public string Title { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
-        public Organization Organization { get; set; }   
+        public Models.Organization Organization { get; set; }
     }
 }

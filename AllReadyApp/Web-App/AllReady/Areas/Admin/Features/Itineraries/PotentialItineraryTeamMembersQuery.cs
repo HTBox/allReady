@@ -1,5 +1,4 @@
-﻿using AllReady.Areas.Admin.Models.ItineraryModels;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNet.Mvc.Rendering;
 using System;
 using System.Collections.Generic;

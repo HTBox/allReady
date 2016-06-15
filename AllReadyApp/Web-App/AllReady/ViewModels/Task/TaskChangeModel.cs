@@ -1,6 +1,6 @@
 ﻿using AllReady.Areas.Admin.Features.Tasks;
 
-namespace AllReady.ViewModels
+namespace AllReady.ViewModels.Task
 {
     public class TaskChangeModel
     {
