@@ -8,7 +8,8 @@ namespace AllReady.ViewModels.Account
         [EmailAddress]
         public string Email { get; set; }
 
-        public string Name { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
 
         [Display(Name="Phone number")]
         public string PhoneNumber { get; set; }
