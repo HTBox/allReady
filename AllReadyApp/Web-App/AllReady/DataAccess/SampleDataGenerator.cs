@@ -378,13 +378,6 @@ namespace AllReady.Models
             var username2 = $"{_settings.DefaultUsername}2.com";
             var username3 = $"{_settings.DefaultUsername}3.com";
 
-            var user1FirstName = $"{_settings.DefaultUsername}1.com";
-            var user1LastName = $"{_settings.DefaultUsername}1.com";
-            var user2FirstName = $"{_settings.DefaultUsername}2.com";
-            var user2LastName = $"{_settings.DefaultUsername}2.com";
-            var user3FirstName = $"{_settings.DefaultUsername}3.com";
-            var user3LastName = $"{_settings.DefaultUsername}3.com";
-
             var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
             _userManager.CreateAsync(user1, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user1);
