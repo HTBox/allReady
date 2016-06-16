@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using AllReady.Models;
+using AllReady.UnitTest.Features.Campaigns;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -24,8 +25,7 @@ namespace AllReady.UnitTest.Features.Notifications
             _user1 = new ApplicationUser
             {
                 UserName = "johndoe@example.com",
-                FirstName = "John",
-                LastName = "Doe",
+                Name = "John Doe",
                 Email = "johndoe@example.com"
             };
 
@@ -87,9 +87,9 @@ namespace AllReady.UnitTest.Features.Notifications
 
             _task1 = new AllReadyTask
             {
-                Id = 1,
-                Event = _queenAnne,
-                Name = "Task 1",
+               Id = 1,
+               Event = _queenAnne,
+               Name = "Task 1",
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Organization = _htb
@@ -135,7 +135,7 @@ namespace AllReady.UnitTest.Features.Notifications
         public async Task EventDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new EventDetailForNotificationQueryAsync { EventId = 999, UserId = _user1.Id };
+            var query = new EventDetailForNotificationQueryAsync { EventId = 999, UserId = _user1.Id};
             var handler = new EventDetailForNotificationQueryHandlerAsync(context);
 
             var result = await handler.Handle(query);

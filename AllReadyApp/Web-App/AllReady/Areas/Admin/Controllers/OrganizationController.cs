@@ -1,8 +1,12 @@
 ﻿using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
+using AllReady.Models;
+using AllReady.Security;
+using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
+using System.Linq;
 
 namespace AllReady.Areas.Admin.Controllers
 {

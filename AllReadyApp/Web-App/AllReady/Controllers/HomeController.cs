@@ -1,8 +1,8 @@
 ﻿using AllReady.Features.Campaigns;
+using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Mvc;
 using System.Threading.Tasks;
-using AllReady.ViewModels.Home;
 
 namespace AllReady.Controllers
 {

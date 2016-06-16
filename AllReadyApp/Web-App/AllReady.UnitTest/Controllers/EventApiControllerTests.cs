@@ -7,8 +7,6 @@ using AllReady.Models;
 using AllReady.ViewModels;
 using AllReady.Features.Event;
 using AllReady.UnitTest.Extensions;
-using AllReady.ViewModels.Event;
-using AllReady.ViewModels.Shared;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Moq;

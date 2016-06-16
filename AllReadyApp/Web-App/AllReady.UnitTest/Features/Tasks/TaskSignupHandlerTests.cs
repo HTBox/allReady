@@ -6,7 +6,6 @@ using Moq;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.ViewModels.Shared;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Tasks

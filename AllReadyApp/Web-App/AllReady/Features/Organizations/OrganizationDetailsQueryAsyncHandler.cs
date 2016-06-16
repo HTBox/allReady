@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AllReady.Models;
-using AllReady.ViewModels.Organization;
+using AllReady.ViewModels;
 using MediatR;
 using Microsoft.Data.Entity;
 

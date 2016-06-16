@@ -16,10 +16,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
     public class TaskStatusChangeHandlerTests : InMemoryContextTest
     {
-        private readonly Mock<IMediator> mediator;
-        private readonly TaskStatusChangeHandlerAsync handler;
+
+        Mock<IMediator> mediator;
+        TaskStatusChangeHandlerAsync handler;
 
         public TaskStatusChangeHandlerTests()
+            : base()
         {
             mediator = new Mock<IMediator>();
             handler = new TaskStatusChangeHandlerAsync(Context, mediator.Object);
@@ -91,30 +93,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             context.SaveChanges();
         }
 
-        protected async Task InitStatus(TaskStatus status)
-        {
-            var taskSignup = Context.TaskSignups.First();
-            taskSignup.Status = status.ToString();
-            await Context.SaveChangesAsync();
-        }
-
-        protected TaskStatusChangeCommandAsync CreateCommand(TaskStatus status, string description = "")
-        {
-            var user = Context.Users.First();
-            var task = Context.Tasks.First();
-
-            return new TaskStatusChangeCommandAsync
-            {
-                UserId = user.Id,
-                TaskId = task.Id,
-                TaskStatus = status,
-                TaskStatusDescription = description ?? string.Empty
-            };
-        }
-
         [Fact]
         public async Task VolunteerAssignedTask()
         {
+            var dateTime = DateTime.UtcNow;
             var task = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommandAsync
@@ -127,16 +109,22 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             await handler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
+            // Verify that the handle method publishes a notification that the task status changed
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
+            // Make sure the task signup properties are the expected values
+            // based on the command.
             taskSignup.Status.ShouldBe(command.TaskStatus.ToString());
             taskSignup.Task.Id.ShouldBe(command.TaskId);
             taskSignup.User.Id.ShouldBe(command.UserId);
             taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
+            // the datetimes should be within 1 second of each other
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
         }
 
         [Fact]
         public async Task VolunteerAcceptsTaskFromAssignedStatus()
         {
+            var dateTime = DateTime.UtcNow;
             var task = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommandAsync
@@ -149,11 +137,16 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             await handler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
+            // Verify that the handle method publishes a notification that the task status changed
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
+            // Make sure the task signup properties are the expected values
+            // based on the command.
             taskSignup.Status.ShouldBe(command.TaskStatus.ToString());
             taskSignup.Task.Id.ShouldBe(command.TaskId);
             taskSignup.User.Id.ShouldBe(command.UserId);
             taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
+            // the datetimes should be within 1 second of each other
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
         }
 
         [Fact]
@@ -163,6 +156,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             taskSignup.Status = TaskStatus.CanNotComplete.ToString();
             await Context.SaveChangesAsync();
 
+            var dateTime = DateTime.UtcNow;
             var task = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommandAsync
@@ -181,6 +175,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             taskSignup.Task.Id.ShouldBe(command.TaskId);
             taskSignup.User.Id.ShouldBe(command.UserId);
             taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
         }
 
         [Fact]
@@ -190,6 +185,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             taskSignup.Status = TaskStatus.Completed.ToString();
             await Context.SaveChangesAsync();
 
+            var dateTime = DateTime.UtcNow;
             var task = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommandAsync
@@ -208,27 +204,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             taskSignup.User.Id.ShouldBe(command.UserId);
             taskSignup.Task.Id.ShouldBe(command.TaskId);
             taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
-        }
-
-        [Fact]
-        public async Task VolunteerAcceptsTaskFromAcceptedStatusShouldThrow()
-        {
-            await InitStatus(TaskStatus.Accepted);
-            var command = CreateCommand(TaskStatus.Accepted, "User accepted task");
-            Should.Throw<Exception>(() => handler.Handle(command));
-        }
-
-        [Fact]
-        public async Task VolunteerAcceptsTaskFromRejectedStatusShouldThrow()
-        {
-            await InitStatus(TaskStatus.Rejected);
-            var command = CreateCommand(TaskStatus.Accepted, "User accepted task");
-            Should.Throw<Exception>(() => handler.Handle(command));
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
         }
 
         [Fact]
         public async Task VolunteerRejectsTask()
         {
+            var dateTime = DateTime.UtcNow;
             var task = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommandAsync
@@ -241,48 +223,20 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             await handler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
+            // Verify that the handle method publishes a notification that the task status changed.
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifiyCommand => notifiyCommand.SignupId == taskSignup.Id)), Times.Once());
             taskSignup.Status.ShouldBe(command.TaskStatus.ToString());
             taskSignup.Task.Id.ShouldBe(command.TaskId);
             taskSignup.User.Id.ShouldBe(command.UserId);
             taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
-        }
-
-        [Fact]
-        public async Task VolunteerRejectsTaskFromAcceptedStatusShouldThrow()
-        {
-            await InitStatus(TaskStatus.Accepted);
-            var command = CreateCommand(TaskStatus.Rejected, "User rejects task");
-            Should.Throw<Exception>(() => handler.Handle(command));
-        }
-
-        [Fact]
-        public async Task VolunteerRejectsTaskFromRejectedStatusShouldThrow()
-        {
-            await InitStatus(TaskStatus.Rejected);
-            var command = CreateCommand(TaskStatus.Rejected, "User rejects task");
-            Should.Throw<Exception>(() => handler.Handle(command));
-        }
-
-        [Fact]
-        public async Task VolunteerRejectsTaskFromCompletedStatusShouldThrow()
-        {
-            await InitStatus(TaskStatus.Completed);
-            var command = CreateCommand(TaskStatus.Rejected, "User rejected task");
-            Should.Throw<Exception>(() => handler.Handle(command));
-        }
-
-        [Fact]
-        public async Task VolunteerRejectsTaskFromCanNotCompleteStatusShouldThrow()
-        {
-            await InitStatus(TaskStatus.CanNotComplete);
-            var command = CreateCommand(TaskStatus.CanNotComplete, "User rejected task");
-            Should.Throw<Exception>(() => handler.Handle(command));
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
         }
 
         [Fact]
         public async Task VolunteerCompletesTaskFromAcceptedStatus()
         {
+            var dateTime = DateTime.UtcNow;
+            // set the current task signup instance to Accepted
             var taskSignup = Context.TaskSignups.First();
             taskSignup.Status = TaskStatus.Accepted.ToString();
             await Context.SaveChangesAsync();
@@ -299,11 +253,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             await handler.Handle(command);
 
             taskSignup = Context.TaskSignups.First();
+            // Verify that the handle method publishes a notification that the task status changed
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
+            // Make sure the task signup has the expected status
             taskSignup.Status.ShouldBe(command.TaskStatus.ToString());
             taskSignup.Task.Id.ShouldBe(command.TaskId);
             taskSignup.User.Id.ShouldBe(command.UserId);
             taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
         }
 
         [Fact]
@@ -332,32 +289,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         }
 
         [Fact]
-        public async Task VolunteerCompletesTaskFromRejectedStatusShouldThrow()
-        {
-            await InitStatus(TaskStatus.Rejected);
-            var command = CreateCommand(TaskStatus.Completed, "User completed task");
-            Should.Throw<Exception>(() => handler.Handle(command));
-        }
-
-        [Fact]
-        public async Task VolunteerCompletesTaskFromCompletedStatusShouldThrow()
-        {
-            await InitStatus(TaskStatus.Completed);
-            var command = CreateCommand(TaskStatus.Completed, "User completed task");
-            Should.Throw<Exception>(() => handler.Handle(command));
-        }
-
-        [Fact]
-        public async Task VolunteerCompletesTaskFromCanNotCompleteStatusShouldThrow()
-        {
-            await InitStatus(TaskStatus.CanNotComplete);
-            var command = CreateCommand(TaskStatus.Completed, "User completed task");
-            Should.Throw<Exception>(() => handler.Handle(command));
-        }
-
-        [Fact]
         public async Task VolunteerCannotCompleteTaskFromAcceptedStatus()
         {
+            var dateTime = DateTime.UtcNow;
+            // set the current task signup instance to Accepted
             var taskSignup = Context.TaskSignups.First();
             taskSignup.Status = TaskStatus.Accepted.ToString();
             await Context.SaveChangesAsync();
@@ -374,11 +309,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             await handler.Handle(command);
 
             taskSignup = Context.TaskSignups.First();
+            // Verify that the handle method publishes a notification that the task status changed
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
             taskSignup.Status.ShouldBe(command.TaskStatus.ToString());
             taskSignup.User.Id.ShouldBe(command.UserId);
             taskSignup.Task.Id.ShouldBe(command.TaskId);
             taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
         }
 
         [Fact]
@@ -404,46 +341,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             taskSignup.Task.Id.ShouldBe(command.TaskId);
             taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
             taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
-        }
-
-        [Fact]
-        public async Task VolunteerCannotCompleteTaskFromRejectedStatusShouldThrow()
-        {
-            await InitStatus(TaskStatus.Rejected);
-            var command = CreateCommand(TaskStatus.CanNotComplete, "User cannot complete task");
-            Should.Throw<Exception>(() => handler.Handle(command));
-        }
-
-        [Fact]
-        public async Task VolunteerCannotCompleteTaskFromCompletedStatusShouldThrow()
-        {
-            await InitStatus(TaskStatus.Completed);
-            var command = CreateCommand(TaskStatus.CanNotComplete, "User cannot complete task");
-            Should.Throw<Exception>(() => handler.Handle(command));
-        }
-
-        [Fact]
-        public async Task VolunteerCannotCompleteTaskFromCanNotCompleteStatusShouldThrow()
-        {
-            await InitStatus(TaskStatus.CanNotComplete);
-            var command = CreateCommand(TaskStatus.CanNotComplete, "User cannot complete task");
-            Should.Throw<Exception>(() => handler.Handle(command));
-        }
-
-        [Fact]
-        public void ShouldThrowIfTaskDoesNotExist()
-        {
-            var command = CreateCommand(TaskStatus.Accepted, "User accepted task");
-            command.TaskId = 90124;
-            Should.Throw<Exception>(() => handler.Handle(command));
-        }
-
-        [Fact]
-        public void ShouldThrowIfTaskSignupDoesNotExist()
-        {
-            var command = CreateCommand(TaskStatus.Completed, "User completed task");
-            command.UserId = Guid.NewGuid().ToString();
-            Should.Throw<Exception>(() => handler.Handle(command));
         }
     }
 }

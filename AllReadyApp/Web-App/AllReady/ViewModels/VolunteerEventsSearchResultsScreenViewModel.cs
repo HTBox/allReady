@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using AllReady.ViewModels.Event;
 
 namespace AllReady.ViewModels
 {

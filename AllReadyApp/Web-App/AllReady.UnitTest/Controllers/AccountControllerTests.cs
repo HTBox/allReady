@@ -19,8 +19,6 @@ using AllReady.Features.Login;
 using System.Collections.Generic;
 using AllReady.Areas.Admin.Controllers;
 using System;
-using AllReady.ViewModels.Account;
-using AllReady.Migrations;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace AllReady.UnitTest.Controllers
@@ -35,7 +33,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var sut = AccountController();
 
-            var result = (ViewResult)sut.Login();
+            var result = (ViewResult) sut.Login();
             Assert.Null(result.ViewData["ReturnUrl"]);
 
             const string testUrl = "return url";
@@ -85,7 +83,7 @@ namespace AllReady.UnitTest.Controllers
             var result = await sut.Login(loginViewModel, testUrl);
             Assert.IsType<ViewResult>(result);
 
-            var resultViewModel = ((ViewResult)result).ViewData.Model;
+            var resultViewModel = ((ViewResult) result).ViewData.Model;
             Assert.IsType<LoginViewModel>(resultViewModel);
             Assert.Equal(resultViewModel, loginViewModel);
         }
@@ -94,7 +92,7 @@ namespace AllReady.UnitTest.Controllers
         public void LoginPostRedirectRemoteUrlTests()
         {
             const string testRemoteUrl = "http://foo.com/t";
-            var loginViewModel = new LoginViewModel { Email = "", Password = "", RememberMe = false };
+            var loginViewModel = new LoginViewModel {Email = "", Password = "", RememberMe = false};
 
             var sut = AccountController();
             var result = sut.Login(loginViewModel, testRemoteUrl).GetAwaiter().GetResult();
@@ -324,7 +322,7 @@ namespace AllReady.UnitTest.Controllers
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
             var emailSenderMock = new Mock<IEmailSender>();
-            emailSenderMock.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<Task>()));
+            emailSenderMock.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(()=>Task.FromResult(It.IsAny<Task>()));
 
             var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, null);
 
@@ -421,7 +419,7 @@ namespace AllReady.UnitTest.Controllers
             var userManager = CreateUserManagerMock();
             userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(identityResult));
 
-            var sut = new AccountController(userManager.Object, null, null, generalSettings.Object, null);
+            var sut = new AccountController(userManager.Object, null,null, generalSettings.Object, null);
 
             await sut.Register(new RegisterViewModel());
 
@@ -479,7 +477,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var signInManager = CreateSignInManagerMock(CreateUserManagerMock());
 
-            var sut = new AccountController(null, signInManager.Object, null, null, null);
+            var sut = new AccountController(null, signInManager.Object, null,null, null);
 
             await sut.LogOff();
             signInManager.Verify(x => x.SignOutAsync(), Times.Once);
@@ -504,7 +502,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var sut = CreateAccountControllerWithNoInjectedDependencies();
 
-            var result = await sut.ConfirmEmail(null, "sometoken") as ViewResult;
+            var result = await sut.ConfirmEmail(null,"sometoken") as ViewResult;
 
             Assert.Equal("Error", result.ViewName);
         }
@@ -544,7 +542,7 @@ namespace AllReady.UnitTest.Controllers
 
             var sut = new AccountController(userManager.Object, null, null, null, null);
 
-            var result = await sut.ConfirmEmail(userId, token) as ViewResult;
+            var result = await sut.ConfirmEmail(userId,token) as ViewResult;
 
             Assert.Equal("Error", result.ViewName);
         }
@@ -559,12 +557,12 @@ namespace AllReady.UnitTest.Controllers
             var user = new ApplicationUser();
  
             userManager.Setup(x => x.FindByIdAsync(userId)).Returns(() => Task.FromResult(user));
-            userManager.Setup(x => x.ConfirmEmailAsync(user, token)).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x=>x.ConfirmEmailAsync(user,token)).Returns(()=> Task.FromResult(IdentityResult.Success));
             var sut = new AccountController(userManager.Object, null, null, null, null);
 
             await sut.ConfirmEmail(userId, token);
 
-            userManager.Verify(x => x.ConfirmEmailAsync(It.Is<ApplicationUser>(y => y == user), It.Is<string>(y => y == token)), Times.Once);
+            userManager.Verify(x=>x.ConfirmEmailAsync(It.Is<ApplicationUser>(y => y == user),It.Is<string>(y=> y == token)), Times.Once);
         }
 
         [Fact]
@@ -574,22 +572,21 @@ namespace AllReady.UnitTest.Controllers
             var token = "someToken";
             var userManager = CreateUserManagerMock();
 
-            var user = new ApplicationUser
+            var user = new ApplicationUser()
             {
-                Id = userId,
-                FirstName = "first name",
-                LastName = "last name",
-                PhoneNumber = "test",
-                PhoneNumberConfirmed = true,
-                Email = "test@email.com",
-                EmailConfirmed = true
+                Id=userId,
+                Name="test",
+                PhoneNumber="test",
+                PhoneNumberConfirmed=true,
+                Email="test@email.com",
+                EmailConfirmed=true
             };
 
             userManager.Setup(x => x.FindByIdAsync(userId)).Returns(() => Task.FromResult(user));
             userManager.Setup(x => x.ConfirmEmailAsync(user, token)).Returns(() => Task.FromResult(IdentityResult.Success));
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id })).Returns(() => Task.FromResult(It.IsAny<Unit>()));
+            mediator.Setup(x => x.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id })).Returns(()=> Task.FromResult(It.IsAny<Unit>()));
 
             var sut = new AccountController(userManager.Object, null, null, null, mediator.Object);
             sut.SetFakeUser(userId);
@@ -607,12 +604,11 @@ namespace AllReady.UnitTest.Controllers
             var token = "someToken";
             var userManager = CreateUserManagerMock();
 
-            var user = new ApplicationUser
+            var user = new ApplicationUser()
             {
                 Id = userId,
-                FirstName = "first name",
-                LastName = "last name",
-                PhoneNumber = "111-111-1111",
+                Name = "test",
+                PhoneNumber = "test",
                 PhoneNumberConfirmed = true,
                 Email = "test@email.com",
                 EmailConfirmed = true
@@ -728,7 +724,7 @@ namespace AllReady.UnitTest.Controllers
 			userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
 			var sut = new AccountController(userManager.Object, null, null, null, null);
 			
-            await sut.ForgotPassword(vm);
+			var result = await sut.ForgotPassword(vm) as ViewResult;
 
 			userManager.Verify(m => m.FindByNameAsync(email), Times.Once);
 			
@@ -751,7 +747,7 @@ namespace AllReady.UnitTest.Controllers
 			userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user)).Verifiable();
 			var sut = new AccountController(userManager.Object, null, null, null, null);
 
-            await sut.ForgotPassword(vm);
+			var result = await sut.ForgotPassword(vm) as ViewResult;
 
 			userManager.Verify(m => m.IsEmailConfirmedAsync(user), Times.Once);
 
@@ -820,7 +816,7 @@ namespace AllReady.UnitTest.Controllers
 
             userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
             userManager.Setup(x => x.IsEmailConfirmedAsync(user)).Returns(() => Task.FromResult(true));
-            userManager.Setup(x => x.GeneratePasswordResetTokenAsync(user)).Returns(() => Task.FromResult(It.IsAny<string>()));
+            userManager.Setup(x => x.GeneratePasswordResetTokenAsync(user)).Returns(()=> Task.FromResult(It.IsAny<string>()));
 
             var emailSender = new Mock<IEmailSender>();
             emailSender.Setup(x => x.SendEmailAsync(email, It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<Task>()));
@@ -869,7 +865,7 @@ namespace AllReady.UnitTest.Controllers
             urlHelper.Verify(mock => mock.Action(It.Is<UrlActionContext>(uac => 
                         uac.Action == "ResetPassword" 
                         && uac.Controller == "Account" 
-                        && uac.Protocol == requestScheme)), Times.Once);
+                        && uac.Protocol == requestScheme)),Times.Once);
         }
 
         [Fact]
@@ -1046,7 +1042,7 @@ namespace AllReady.UnitTest.Controllers
             var user = new ApplicationUser();
 
             userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
-            userManager.Setup(x => x.ResetPasswordAsync(user, It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.ResetPasswordAsync(user, It.IsAny<string>(), It.IsAny<string>())).Returns(()=> Task.FromResult(IdentityResult.Success));
             var sut = new AccountController(userManager.Object, null, null, null, null);
 
             await sut.ResetPassword(vm);
@@ -1096,7 +1092,7 @@ namespace AllReady.UnitTest.Controllers
 
             await sut.ResetPassword(vm);
 
-            userManager.Verify(m => m.ResetPasswordAsync(user, It.Is<string>(y => y == vm.Code), It.Is<string>(y => y == vm.Password)), Times.Once);
+            userManager.Verify(m => m.ResetPasswordAsync(user,It.Is<string>(y=> y == vm.Code),It.Is<string>(y=> y == vm.Password)), Times.Once);
         }
 
         [Fact]
@@ -1395,18 +1391,16 @@ namespace AllReady.UnitTest.Controllers
             SetupSignInManagerWithTestExternalLoginValue(signInManager);
             var viewModel = CreateExternalLoginConfirmationViewModel();
             var generalSettings = CreateGeneralSettingsMockObject();
-
             var sut = new AccountController(userManager.Object, signInManager.Object, null, generalSettings.Object, null);
             sut.SetFakeUser("test");
-
             await sut.ExternalLoginConfirmation(viewModel);
-
-            userManager.Verify(u => u.CreateAsync(It.Is<ApplicationUser>(au => au.Email == viewModel.Email && au.FirstName == viewModel.FirstName && au.LastName == viewModel.LastName && au.PhoneNumber == viewModel.PhoneNumber)));
+            userManager.Verify(u => u.CreateAsync(It.Is<ApplicationUser>(au => au.Email == viewModel.Email && au.Name == viewModel.Name && au.PhoneNumber == viewModel.PhoneNumber)));
         }
 
         [Fact]
         public async Task ExternalLoginConfirmationInvokesAddLoginAsyncWithCorrectParametersWhenUserIsCreatedSuccessfully()
         {
+            var externalPrincipal = new ClaimsPrincipal();
             var userManager = CreateUserManagerMockWithSucessIdentityResult();
             var signInManager = CreateSignInManagerMock(userManager);
             SetupSignInManagerWithTestExternalLoginValue(signInManager, "test", "testKey", "testDisplayName");
@@ -1419,8 +1413,7 @@ namespace AllReady.UnitTest.Controllers
             sut.Url = urlHelperMock.Object;
             await sut.ExternalLoginConfirmation(viewModel, "testUrl");
             userManager.Verify(u => u.AddLoginAsync(It.Is<ApplicationUser>(au => au.Email == viewModel.Email
-                    && au.FirstName == viewModel.FirstName
-                    && au.LastName == viewModel.LastName
+                                                                                    && au.Name == viewModel.Name
                                                                                     && au.PhoneNumber == viewModel.PhoneNumber),
                                                      It.Is<ExternalLoginInfo>(ei => ei.LoginProvider == "test"
                                                                                     && ei.ProviderKey == "testKey"
@@ -1430,24 +1423,21 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task ExternalLoginConfirmationInvokesSignInAsyncWithCorrectParametersWhenExternalLoginIsAddedSuccessfully()
         {
+            var externalPrincipal = new ClaimsPrincipal();
             var userManager = CreateUserManagerMockWithSucessIdentityResult();
             var signInManager = CreateSignInManagerMock(userManager);
-            SetupSignInManagerWithTestExternalLoginValue(signInManager, "test", "testKey", "testDisplayName");
+            SetupSignInManagerWithTestExternalLoginValue(signInManager, "test", "testKey","testDisplayName");
             SetupSignInManagerWithDefaultSignInAsync(signInManager);
             var urlHelperMock = CreateUrlHelperMockObject();
             SetupUrlHelperMockToReturnTrueForLocalUrl(urlHelperMock);
             var viewModel = CreateExternalLoginConfirmationViewModel();
             var generalSettings = CreateGeneralSettingsMockObject();
-
             var sut = new AccountController(userManager.Object, signInManager.Object, null, generalSettings.Object, null);
             sut.SetFakeUser("test");
             sut.Url = urlHelperMock.Object;
-
             await sut.ExternalLoginConfirmation(viewModel, "testUrl");
-
             signInManager.Verify(s => s.SignInAsync(It.Is<ApplicationUser>(au => au.Email == viewModel.Email
-                && au.FirstName == viewModel.FirstName
-                && au.LastName == viewModel.LastName
+                                                                                 && au.Name == viewModel.Name
                                                                                  && au.PhoneNumber == viewModel.PhoneNumber),
                                                     It.Is<bool>(p => p == false),
                                                     It.Is<string>(auth => auth == null)));
@@ -1458,17 +1448,15 @@ namespace AllReady.UnitTest.Controllers
         {
             var userManager = CreateUserManagerMockWithSucessIdentityResult();
             var signInManager = CreateSignInManagerMock(userManager);
-            SetupSignInManagerWithTestExternalLoginValue(signInManager, "test", "testKey", "testDisplayName");
+            SetupSignInManagerWithTestExternalLoginValue(signInManager, "test", "testKey","testDisplayName");
             SetupSignInManagerWithDefaultSignInAsync(signInManager);
             var urlHelperMock = CreateUrlHelperMockObject();
             SetupUrlHelperMockToReturnResultBaseOnLineBegining(urlHelperMock);
             var viewModel = CreateExternalLoginConfirmationViewModel();
             var generalSettings = CreateGeneralSettingsMockObject();
-
             var sut = new AccountController(userManager.Object, signInManager.Object, null, generalSettings.Object, null);
             sut.SetFakeUser("test");
             sut.Url = urlHelperMock.Object;
-
             var result = await sut.ExternalLoginConfirmation(viewModel, "localUrl") as RedirectResult;
 
             Assert.Equal(result.Url, "localUrl");
@@ -1484,8 +1472,7 @@ namespace AllReady.UnitTest.Controllers
                 .Setup(s => s.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), It.IsAny<string>()))
                 .Callback<ApplicationUser, bool, string>((appUser, persist, auth) =>
                 {
-                    appUser.Claims.Add(new IdentityUserClaim<string>()
-                    {
+                    appUser.Claims.Add(new IdentityUserClaim<string>() {
                         ClaimType = AllReady.Security.ClaimTypes.UserType,
                         ClaimValue = Enum.GetName(typeof(UserType), UserType.SiteAdmin)
                     });
@@ -1720,13 +1707,12 @@ namespace AllReady.UnitTest.Controllers
                     .Returns(Task.FromResult(default(object)));
         }
 
-        private static ExternalLoginConfirmationViewModel CreateExternalLoginConfirmationViewModel(string email = "test@test.com", string firstName = "FirstName", string lastName = "LastName", string phoneNumber = "(111)111-11-11")
+        private static ExternalLoginConfirmationViewModel CreateExternalLoginConfirmationViewModel(string email = "test@test.com", string name = "Test", string phoneNumber = "(111)111-11-11")
         {
             var result = new ExternalLoginConfirmationViewModel()
             {
                 Email = email,
-                FirstName = firstName,
-                LastName = lastName,
+                Name = name,
                 PhoneNumber = phoneNumber
             };
 
@@ -1763,5 +1749,7 @@ namespace AllReady.UnitTest.Controllers
                 .Setup(mock => mock.IsLocalUrl(It.Is<string>(x => !x.StartsWith(urlBegining))))
                 .Returns(true);
         }
+
+
     }
 }

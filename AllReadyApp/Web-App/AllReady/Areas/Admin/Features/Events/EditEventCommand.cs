@@ -5,6 +5,6 @@ namespace AllReady.Areas.Admin.Features.Events
 {
     public class EditEventCommand : IAsyncRequest<int>
     {
-        public EventEditModel Event {get; set;}
+        public EventDetailModel Event {get; set;}
     }
 }

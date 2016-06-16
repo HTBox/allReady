@@ -5,7 +5,6 @@ using AllReady.Features.Login;
 using AllReady.Models;
 using AllReady.Security;
 using AllReady.Services;
-using AllReady.ViewModels.Account;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
@@ -180,9 +179,7 @@ namespace AllReady.Controllers
             {
                 await _mediator.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id });
                 if (User.IsSignedIn())
-                {
                     await _signInManager.RefreshSignInAsync(user);
-                }
             }
 
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
@@ -342,8 +339,7 @@ namespace AllReady.Controllers
                     UserName = model.Email,
                     Email = model.Email,
                     TimeZoneId = _generalSettings.Value.DefaultTimeZone,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
+                    Name = model.Name,
                     PhoneNumber = model.PhoneNumber
                 };
 
