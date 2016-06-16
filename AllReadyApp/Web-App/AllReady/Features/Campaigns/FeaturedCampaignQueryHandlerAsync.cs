@@ -1,8 +1,8 @@
 ﻿using AllReady.Models;
+using AllReady.ViewModels;
 using MediatR;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.ViewModels.Home;
 using Microsoft.Data.Entity;
 
 namespace AllReady.Features.Campaigns

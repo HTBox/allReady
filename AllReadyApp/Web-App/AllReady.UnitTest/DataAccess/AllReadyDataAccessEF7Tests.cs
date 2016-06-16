@@ -137,8 +137,7 @@ namespace AllReady.UnitTest.DataAccess
                 var users = Enumerable.Range(1, 10).Select(n => new ApplicationUser
                 {
                     Id = n.ToString(),
-                    FirstName = string.Format(UserNameFormat, n),
-                    LastName = string.Format(UserNameFormat, n)
+                    Name = string.Format(UserNameFormat, n)
                 })
                 .ToArray();
 
@@ -199,6 +198,8 @@ namespace AllReady.UnitTest.DataAccess
                 return campaignEvents;
             }
         }
+
         #endregion
+
     }
 }

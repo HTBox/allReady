@@ -16,6 +16,7 @@ using AllReady.Areas.Admin.Features.Itineraries;
 using AllReady.Areas.Admin.Models;
 using AllReady.Areas.Admin.Models.ItineraryModels;
 using AllReady.Areas.Admin.Models.Validators;
+using AllReady.Areas.Admin.Features.Organizations;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -96,7 +97,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = GetItineraryControllerWithDetailsQuery(UserType.SiteAdmin.ToString(), 0);
             Assert.IsType<ViewResult>(await sut.Details(It.IsAny<int>()));
         }
-        
+
         [Fact]
         public void CreateHasHttpPostAttribute()
         {
@@ -212,7 +213,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = GetItineraryControllerWithEventSummaryQuery(UserType.SiteAdmin.ToString(), 0);
 
-            sut.ModelState.AddModelError("key","Error");
+            sut.ModelState.AddModelError("key", "Error");
 
             var result = await sut.Create(model);
 
@@ -374,8 +375,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
+            });
+
             await sut.AddTeamMember(1, 1);
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>()), Times.Once);
@@ -386,8 +393,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
+            });
+
             await sut.AddTeamMember(0, 1);
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>()), Times.Never);
@@ -398,11 +411,79 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
+            });
+
             await sut.AddTeamMember(1, 0);
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task AddTeamMemberCallsOrganizationIdQuery()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
+            });
+
+            await sut.AddTeamMember(1, 0);
+
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<OrganizationIdQuery>()), Times.Once);
+        }
+
+        // todo: sgordon: There should be some tests to validate that org admins for a different org than returned by the OrganizationIdQuery are
+        // are unauthorized
+
+        [Fact]
+        public void SelectRequestsHasHttpGetAttribute()
+        {
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var attribute = sut.GetAttributesOn(x => x.SelectRequests(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void SelectRequestsHasRouteAttributeWithCorrectRoute()
+        {
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var routeAttribute = sut.GetAttributesOn(x => x.SelectRequests(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
+            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{id}/[Action]");
+        }
+
+        [Fact]
+        public void AddequestsHasHttpPostAttribute()
+        {
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var attribute = sut.GetAttributesOn(x => x.AddRequests(It.IsAny<int>(), It.IsAny<string[]>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);        
+        }
+
+        [Fact]
+        public void AddRequestsHasRouteAttributeWithCorrectRoute()
+        {
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var routeAttribute = sut.GetAttributesOn(x => x.AddRequests(It.IsAny<int>(), It.IsAny<string[]>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
+            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{id}/[Action]");
+        }
+
+        public void AddRequestHasValidateAntiForgeryAttribute()
+        {
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var routeAttribute = sut.GetAttributesOn(x => x.AddRequests(It.IsAny<int>(), It.IsAny<string[]>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
         }
 
 
@@ -424,7 +505,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditModel>(), It.IsAny<EventSummaryModel>())).Returns(new List<KeyValuePair<string, string>>()).Verifiable();
 
-           return mockValidator;
+            return mockValidator;
         }
 
         private static ItineraryController GetItineraryControllerWithDetailsQuery(string userType, int organizationId)

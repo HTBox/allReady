@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using AllReady.Models;
+using AllReady.ViewModels;
 using MediatR;
 using System.Linq;
-using AllReady.ViewModels.Event;
 
 namespace AllReady.Features.Event
 {

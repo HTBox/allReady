@@ -5,7 +5,6 @@ using AllReady.Features.Event;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels;
-using AllReady.ViewModels.Event;
 using MediatR;
 using Microsoft.AspNet.Mvc;
 using Moq;

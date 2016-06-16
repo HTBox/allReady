@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using AllReady.ViewModels.Campaign;
+using AllReady.ViewModels;
 using MediatR;
 
 namespace AllReady.Features.Campaigns

@@ -1,4 +1,4 @@
-﻿using AllReady.ViewModels.Organization;
+﻿using AllReady.ViewModels;
 using MediatR;
 
 namespace AllReady.Features.Organizations

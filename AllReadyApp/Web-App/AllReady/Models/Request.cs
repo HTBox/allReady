@@ -33,5 +33,7 @@ namespace AllReady.Models
         public Event Event { get; set; }
 
         public ICollection<ItineraryRequest> Itineraries { get; set; }
+
+        public DateTime DateAdded { get; set; }
     }
 }

@@ -2,7 +2,6 @@
 using AllReady.Features.Campaigns;
 using AllReady.Models;
 using AllReady.ViewModels;
-using AllReady.ViewModels.Campaign;
 using Moq;
 using Xunit;
 

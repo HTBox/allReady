@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AllReady.Features.Event;
 using AllReady.Models;
 using AllReady.ViewModels;
-using AllReady.ViewModels.Event;
 using Moq;
 using Xunit;
 

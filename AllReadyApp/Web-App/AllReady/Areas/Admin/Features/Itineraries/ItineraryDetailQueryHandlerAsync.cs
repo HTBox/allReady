@@ -28,8 +28,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 .Include(x => x.TeamMembers).ThenInclude(x => x.Task)
                 .Include(x => x.Requests).ThenInclude(x => x.Request)
                 .Where(a => a.Id == message.ItineraryId)
-                .Select(i => new ItineraryDetailsModel
-                {
+                .Select(i => new ItineraryDetailsModel {
                     Id = i.Id,
                     Name = i.Name,
                     Date = i.Date,
@@ -42,14 +41,14 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     {
                         VolunteerEmail = tm.User.Email,
                         TaskName = tm.Task.Name,
-                        FullName = tm.User.Name
+                        FullName = string.Concat(tm.User.Name)
                     }).ToList(),
                     Requests = i.Requests.Select(r => new RequestListModel
                     {
                         Name = r.Request.Name,
                         Address = r.Request.Address,
                         City = r.Request.City,
-                        Status = r.Request.Status.ToString()
+                        Status = r.Request.Status
                     }).ToList()
                 })
                 .SingleOrDefaultAsync().ConfigureAwait(false);
