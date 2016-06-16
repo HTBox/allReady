@@ -9,10 +9,6 @@ using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Models.ItineraryModels;
 using AllReady.Areas.Admin.Models.Validators;
 using System.Linq;
-using AllReady.Areas.Admin.Models.RequestModels;
-using System.Collections.Generic;
-using Microsoft.AspNet.Http.Internal;
-using AllReady.Areas.Admin.Features.Organizations;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -108,13 +104,6 @@ namespace AllReady.Areas.Admin.Controllers
             // this flow should be reviews and enhanced in a future PR using knockout to send and handle the error messaging on the details page
             // for the purpose of the upcoming red cross testing I chose to leave this since a failure here would be an edge case
 
-            var orgId = await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = id });
-
-            if(orgId == 0 || !User.IsOrganizationAdmin(orgId))
-            {
-                return HttpUnauthorized();
-            }
-
             if (id == 0 || selectedTeamMember == 0)
             {
                 return RedirectToAction("Details", new { id = id });
@@ -123,66 +112,6 @@ namespace AllReady.Areas.Admin.Controllers
             var isSuccess = await _mediator.SendAsync(new AddTeamMemberCommand { ItineraryId = id, TaskSignupId = selectedTeamMember });
 
             return RedirectToAction("Details", new { id = id });
-        }
-
-        [HttpGet]
-        [Route("Admin/Itinerary/{id}/[Action]")]
-        public async Task<IActionResult> SelectRequests(int id)
-        {
-            var orgId = await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = id });
-
-            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
-            {
-                return HttpUnauthorized();
-            }
-
-            var model = new SelectItineraryRequestsModel();
-
-            var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = id });
-
-            model.CampaignId = itinerary.CampaignId;
-            model.CampaignName = itinerary.CampaignName;
-            model.EventId = itinerary.EventId;
-            model.EventName = itinerary.EventName;
-            model.ItineraryName = itinerary.Name;
-
-            var requests =  await _mediator.SendAsync(new RequestListItemsQuery { criteria = new RequestSearchCriteria() });
-
-            foreach(var request in requests)
-            {
-                var selectItem = new RequestSelectModel
-                {
-                    Id = request.Id,
-                    Name = request.Name,
-                };
-
-                model.Requests.Add(selectItem);
-            }
-            
-            return View("SelectRequests", model);
-        }
-
-        [HttpPost]
-        [Route("Admin/Itinerary/{id}/[Action]")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddRequests(int id, string[] selectedRequests)
-        {
-            // todo - error handling - and checking user is an org admin with access or a site admin
-            // sgordon: We will likely make that check in the AddRequestCommand since we'll have the itinerary details we can check against the user
-
-            var orgId = await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = id });
-
-            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
-            {
-                return HttpUnauthorized();
-            }
-
-            if (selectedRequests.Count() > 0)
-            { 
-                var result = await _mediator.SendAsync(new AddRequestsCommand { ItineraryId = id, RequestIdsToAdd = selectedRequests.ToList() });
-            }
-
-            return RedirectToAction(nameof(Details), new { id = id });
         }
     }
 }

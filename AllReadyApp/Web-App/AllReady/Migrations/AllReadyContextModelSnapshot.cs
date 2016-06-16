@@ -2,7 +2,6 @@ using System;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Infrastructure;
 using Microsoft.Data.Entity.Metadata;
-using Microsoft.Data.Entity.Migrations;
 using AllReady.Models;
 
 namespace AllReady.Migrations
@@ -57,11 +56,13 @@ namespace AllReady.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
+                    b.Property<string>("FirstName");
+
+                    b.Property<string>("LastName");
+
                     b.Property<bool>("LockoutEnabled");
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
-
-                    b.Property<string>("Name");
 
                     b.Property<string>("NormalizedEmail")
                         .HasAnnotation("MaxLength", 256);
@@ -294,10 +295,6 @@ namespace AllReady.Migrations
 
                     b.Property<Guid>("RequestId");
 
-                    b.Property<DateTime>("DateAssigned");
-
-                    b.Property<int>("OrderIndex");
-
                     b.HasKey("ItineraryId", "RequestId");
                 });
 
@@ -383,8 +380,6 @@ namespace AllReady.Migrations
                     b.Property<string>("Address");
 
                     b.Property<string>("City");
-
-                    b.Property<DateTime>("DateAdded");
 
                     b.Property<string>("Email");
 
