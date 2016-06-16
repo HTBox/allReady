@@ -102,7 +102,11 @@ else
         </h3>
     </div>
 </div>
-
+<div class="row">
+    <div class="col-md-12">
+        <a asp-action="SelectRequests" asp-controller="Itinerary" asp-route-area="Admin" class="btn btn-default">Add Requests</a>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-12">
         @if (Model.Requests.Any())
