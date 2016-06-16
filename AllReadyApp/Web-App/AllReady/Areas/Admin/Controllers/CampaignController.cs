@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Models;
@@ -11,7 +10,6 @@ using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
-using AllReady.Areas.Admin.Models.Validators;
 
 namespace AllReady.Areas.Admin.Controllers
 {

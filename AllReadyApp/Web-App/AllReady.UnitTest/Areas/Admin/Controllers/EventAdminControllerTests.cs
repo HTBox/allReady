@@ -122,7 +122,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel());
 
             var eventDetailModelValidator = new Mock<IValidateEventDetailModels>();
-            eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventDetailModel>(), It.IsAny<CampaignSummaryModel>()))
+            eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventEditModel>(), It.IsAny<CampaignSummaryModel>()))
                 .Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new EventController(imageService.Object, mediator.Object, eventDetailModelValidator.Object);
@@ -133,7 +133,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             });
 
             sut.ModelState.AddModelError("test", "test");
-            var result = (ViewResult)await sut.Create(It.IsAny<int>(), It.IsAny<EventDetailModel>(), null);
+            var result = (ViewResult)await sut.Create(It.IsAny<int>(), It.IsAny<EventEditModel>(), null);
 
             Assert.Equal("Edit", result.ViewName);
         }
@@ -147,7 +147,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel());
 
             var eventDetailModelValidator = new Mock<IValidateEventDetailModels>();
-            eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventDetailModel>(), It.IsAny<CampaignSummaryModel>()))
+            eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventEditModel>(), It.IsAny<CampaignSummaryModel>()))
                 .Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("ErrorKey", "ErrorMessage") });
 
             var sut = new EventController(imageService.Object, mediator.Object, eventDetailModelValidator.Object);
@@ -157,7 +157,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 new Claim(AllReady.Security.ClaimTypes.Organization, "1")
             });
 
-            var result = (ViewResult)await sut.Create(1, It.IsAny<EventDetailModel>(), null);
+            var result = (ViewResult)await sut.Create(1, It.IsAny<EventEditModel>(), null);
             Assert.Equal("Edit", result.ViewName);
         }
 

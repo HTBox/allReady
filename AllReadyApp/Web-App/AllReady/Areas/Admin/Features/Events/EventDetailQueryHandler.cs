@@ -1,5 +1,4 @@
-﻿using System;
-using AllReady.Areas.Admin.Models;
+﻿using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;

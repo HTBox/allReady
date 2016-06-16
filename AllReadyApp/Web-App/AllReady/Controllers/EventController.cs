@@ -3,8 +3,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Features.Event;
-using AllReady.Models;
-using AllReady.ViewModels;
+using AllReady.ViewModels.Event;
+using AllReady.ViewModels.Shared;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
@@ -82,8 +82,8 @@ namespace AllReady.Controllers
                 await _mediator.SendAsync(new EventSignupCommand { EventSignup = signupModel });
             }
 
-                //TODO: handle invalid event signup info (phone, email) in a useful way
-                //  would be best to handle it in KO on the client side (prevent clicking Volunteer)
+            //TODO: handle invalid event signup info (phone, email) in a useful way
+            //  would be best to handle it in KO on the client side (prevent clicking Volunteer)
 
             return RedirectToAction(nameof(ShowEvent), new { id = signupModel.EventId });
         }

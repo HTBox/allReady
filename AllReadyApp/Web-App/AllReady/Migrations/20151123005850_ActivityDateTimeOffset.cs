@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Data.Entity.Migrations;
 
 namespace AllReady.Migrations

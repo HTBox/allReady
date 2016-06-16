@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Features.Admin;
 using AllReady.Models;
+using AllReady.ViewModels.Account;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;

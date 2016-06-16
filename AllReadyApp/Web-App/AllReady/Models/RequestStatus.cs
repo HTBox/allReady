@@ -2,9 +2,9 @@
 {
     public enum RequestStatus
     {
-        UnAssigned = 0,
-        Assigned = 1,
-        Completed = 2,
-        Canceled = 3
+        New,
+        Assigned,
+        Completed,
+        Canceled
     }
 }
