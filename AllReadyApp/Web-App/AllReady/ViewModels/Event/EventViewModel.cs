@@ -52,7 +52,7 @@ namespace AllReady.ViewModels.Event
 
             SignupModel = new EventSignupViewModel();
 
-            RequiredSkills = campaignEvent.RequiredSkills?.Select(acsk => acsk.Skill).ToList();
+            RequiredSkills = campaignEvent.RequiredSkills?.Select(acsk => new SkillViewModel(acsk.Skill)).ToList();
             IsLimitVolunteers = campaignEvent.IsLimitVolunteers;
             IsAllowWaitList = campaignEvent.IsAllowWaitList;
             
@@ -76,8 +76,8 @@ namespace AllReady.ViewModels.Event
         public bool IsUserVolunteeredForEvent { get; set; }
         public List<ApplicationUser> Volunteers { get; set; }
         public string UserId { get; set; }
-        public List<Skill> RequiredSkills { get; set; }
-        public List<Skill> UserSkills { get; set; }
+        public List<SkillViewModel> RequiredSkills { get; set; }
+        public List<SkillViewModel> UserSkills { get; set; }
         public int NumberOfVolunteersRequired { get; set; }
         public EventSignupViewModel SignupModel { get; set; }
         public bool IsClosed { get; set; }
@@ -129,7 +129,7 @@ namespace AllReady.ViewModels.Event
                 var userId = user.GetUserId();
                 var appUser = dataAccess.GetUser(userId);
                 viewModel.UserId = userId;
-                viewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => us.Skill).ToList();
+                viewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
                 viewModel.IsUserVolunteeredForEvent = dataAccess.GetEventSignups(viewModel.Id, userId).Any();
                 var assignedTasks = campaignEvent.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
                 viewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
