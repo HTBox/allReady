@@ -26,6 +26,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 .SingleOrDefaultAsync()
                 .ConfigureAwait(false);
 
+            //TODO: move this check, and PotentialItineraryTeamMembersQuery to controller so we can return meaningful error message to UI before dispatching AddTeamMemberCommand
             if (itinerary == null)
             {
                 // todo: sgordon: enhance this with a error message so the controller can better respond to the issue
@@ -62,7 +63,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 await _mediator.PublishAsync(new VolunteerAssignedToItinerary { TaskSignupId = message.TaskSignupId, ItineraryId = message.ItineraryId})
                     .ConfigureAwait(false);
             }
-
+            
             return true;
         }
     }
