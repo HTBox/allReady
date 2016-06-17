@@ -10,8 +10,6 @@ using AllReady.Areas.Admin.Models.ItineraryModels;
 using AllReady.Areas.Admin.Models.Validators;
 using System.Linq;
 using AllReady.Areas.Admin.Models.RequestModels;
-using System.Collections.Generic;
-using Microsoft.AspNet.Http.Internal;
 using AllReady.Areas.Admin.Features.Organizations;
 
 namespace AllReady.Areas.Admin.Controllers
