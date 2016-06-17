@@ -49,7 +49,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                         Name = r.Request.Name,
                         Address = r.Request.Address,
                         City = r.Request.City,
-                        Status = r.Request.Status.ToString()
+                        Status = r.Request.Status
                     }).ToList()
                 })
                 .SingleOrDefaultAsync().ConfigureAwait(false);
