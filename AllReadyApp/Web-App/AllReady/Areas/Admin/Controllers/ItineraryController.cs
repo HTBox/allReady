@@ -89,7 +89,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpBadRequest(ModelState);
             }
 
-            var result = await _mediator.SendAsync(new EditItineraryCommand() { Itinerary = model });
+            var result = await _mediator.SendAsync(new EditItineraryCommand { Itinerary = model });
 
             if (result > 0)
             {
