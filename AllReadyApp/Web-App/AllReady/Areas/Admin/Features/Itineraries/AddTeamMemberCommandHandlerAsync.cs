@@ -3,6 +3,7 @@ using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
 using System.Linq;
+using AllReady.Features.Notifications;
 
 namespace AllReady.Areas.Admin.Features.Itineraries
 {
@@ -27,6 +28,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     Date = x.Date
                 }).SingleOrDefaultAsync();
 
+            //TODO: move this check, and PotentialItineraryTeamMembersQuery to controller so we can return meaningful error message to UI before dispatching AddTeamMemberCommand
             if (itinerary == null)
             {
                 // todo: sgordon: enhance this with a error message so the controller can better respond to the issue
@@ -47,7 +49,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 }
             }
                         
-            if(matchedSignup)
+            if (matchedSignup)
             {
                 var taskSignup = new TaskSignup
                 {
@@ -58,8 +60,10 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 _context.TaskSignups.Attach(taskSignup);
                 _context.Entry(taskSignup).Property(x => x.ItineraryId).IsModified = true;
                 await _context.SaveChangesAsync();
+
+                await _mediator.PublishAsync(new VolunteerAssignedToItinerary { TaskSignupId = message.TaskSignupId, ItineraryId = message.ItineraryId}).ConfigureAwait(false);
             }
-            
+
             return true;
         }
     }
