@@ -40,6 +40,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     OrganizationId = i.Event.Campaign.ManagingOrganizationId,
                     TeamMembers = i.TeamMembers.Select(tm => new TeamListModel
                     {
+                        TaskSignupId = tm.Id,
                         VolunteerEmail = tm.User.Email,
                         TaskName = tm.Task.Name,
                         FullName = tm.User.Name
