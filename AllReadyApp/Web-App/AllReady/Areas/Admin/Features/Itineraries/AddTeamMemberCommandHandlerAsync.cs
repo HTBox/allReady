@@ -22,13 +22,9 @@ namespace AllReady.Areas.Admin.Features.Itineraries
         {
             var itinerary = await _context.Itineraries
                 .Where(x => x.Id == message.ItineraryId)
-                .Select(x => new
-                {
-                    EventId = x.EventId,
-                    Date = x.Date
-                }).SingleOrDefaultAsync();
+                .Select(x => new { x.EventId, x.Date })
+                .SingleOrDefaultAsync();
 
-            //TODO: move this check, and PotentialItineraryTeamMembersQuery to controller so we can return meaningful error message to UI before dispatching AddTeamMemberCommand
             if (itinerary == null)
             {
                 // todo: sgordon: enhance this with a error message so the controller can better respond to the issue

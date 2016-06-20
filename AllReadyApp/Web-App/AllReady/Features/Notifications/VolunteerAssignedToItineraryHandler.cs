@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
@@ -28,7 +25,7 @@ namespace AllReady.Features.Notifications
 
             if (string.IsNullOrWhiteSpace(emailAddress) && string.IsNullOrWhiteSpace(sms)) return;
 
-            //construct subject and body of message
+            //TODO: construct subject and body of message
             var subject = "You've been assigned to an intinerary";
             var message = "You've been assigned to an Intinerary";
 
@@ -38,7 +35,7 @@ namespace AllReady.Features.Notifications
                 notifyVolunteersViewModel.SmsMessage = message;
                 notifyVolunteersViewModel.SmsRecipients.Add(sms);
             }
-            if(!string.IsNullOrWhiteSpace(emailAddress))
+            if (!string.IsNullOrWhiteSpace(emailAddress))
             {
                 notifyVolunteersViewModel.Subject = subject;
                 notifyVolunteersViewModel.EmailRecipients.Add(emailAddress);
