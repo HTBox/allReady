@@ -17,7 +17,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
         public async Task<bool> Handle(RemoveTeamMemberCommand message)
         {
             var taskSignup = await _context.TaskSignups
-                .FirstOrDefaultAsync(x => x.Id == message.TaskSignupId);
+                .FirstOrDefaultAsync(x => x.Id == message.TaskSignupId).ConfigureAwait(false);
 
             if (taskSignup == null)
             {
@@ -25,7 +25,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             }
 
             taskSignup.ItineraryId = null;
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync().ConfigureAwait(false);
             
             return true;
         }

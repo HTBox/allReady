@@ -29,7 +29,7 @@ namespace AllReady.Areas.Admin.Features.TaskSignups
                             VolunteerName = x.User.Name,
                             VolunteerEmail = x.PreferredEmail ?? x.User.Email
                         })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync().ConfigureAwait(false);
         }
     }
 }
