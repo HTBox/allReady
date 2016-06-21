@@ -386,7 +386,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByIntineraryIdQuery>())).ReturnsAsync(1);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
             sut.SetClaims(new List<Claim>
@@ -404,7 +404,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByIntineraryIdQuery>())).ReturnsAsync(1);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
             sut.SetClaims(new List<Claim>
@@ -422,7 +422,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByIntineraryIdQuery>())).ReturnsAsync(1);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
             sut.SetClaims(new List<Claim>
@@ -442,7 +442,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByIntineraryIdQuery>())).ReturnsAsync(1);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
             sut.SetClaims(new List<Claim>
@@ -452,7 +452,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             await sut.AddTeamMember(itineraryId, 0);
 
-            mockMediator.Verify(x => x.SendAsync(It.Is<OrganizationIdByIntineraryIdQuery>(y => y.ItineraryId == itineraryId)), Times.Once);
+            mockMediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == itineraryId)), Times.Once);
         }
 
         [Fact]
@@ -462,7 +462,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByIntineraryIdQuery>())).ReturnsAsync(1);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
             sut.SetClaims(new List<Claim>
@@ -483,7 +483,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByIntineraryIdQuery>())).ReturnsAsync(1);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
             sut.SetClaims(new List<Claim>

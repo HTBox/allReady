@@ -2,7 +2,7 @@
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationIdByIntineraryIdQuery : IAsyncRequest<int>
+    public class OrganizationIdQuery : IAsyncRequest<int>
     {
         public int ItineraryId { get; set; }
     }

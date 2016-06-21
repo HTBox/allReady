@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationIdByItineraryQueryHandlerAsync : IAsyncRequestHandler<OrganizationIdByIntineraryIdQuery, int>
+    public class OrganizationIdQueryHandlerAsync : IAsyncRequestHandler<OrganizationIdQuery, int>
     {
         private readonly AllReadyContext _context;
 
-        public OrganizationIdByItineraryQueryHandlerAsync(AllReadyContext context)
+        public OrganizationIdQueryHandlerAsync(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<int> Handle(OrganizationIdByIntineraryIdQuery message)
+        public async Task<int> Handle(OrganizationIdQuery message)
         {
             return await _context.Itineraries.AsNoTracking()
                 .Include(i => i.Event.Campaign)

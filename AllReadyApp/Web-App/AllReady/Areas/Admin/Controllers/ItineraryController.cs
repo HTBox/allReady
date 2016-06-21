@@ -221,7 +221,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         private async Task<int> GetOrganizationIdBy(int intinerayId)
         {
-            return await _mediator.SendAsync(new OrganizationIdByIntineraryIdQuery { ItineraryId = intinerayId });
+            return await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = intinerayId });
         }
     }
 }
