@@ -18,7 +18,11 @@ namespace AllReady.Features.Notifications
 
         public async Task Handle(VolunteerAssignedToItinerary notification)
         {
-            var taskSignup = await _context.TaskSignups.SingleAsync(ts => ts.Id == notification.TaskSignupId).ConfigureAwait(false);
+            var taskSignup = await _context.TaskSignups
+                .AsNoTracking()
+                .Include(x => x.User)
+                .SingleAsync(ts => ts.Id == notification.TaskSignupId)
+                .ConfigureAwait(false);
 
             var emailAddress = !string.IsNullOrWhiteSpace(taskSignup.PreferredEmail) ? taskSignup.PreferredEmail : taskSignup.User?.Email;
             var sms = !string.IsNullOrWhiteSpace(taskSignup.PreferredPhoneNumber) ? taskSignup.PreferredPhoneNumber : taskSignup.User?.PhoneNumber;
