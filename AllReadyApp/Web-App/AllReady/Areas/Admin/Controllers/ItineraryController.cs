@@ -185,7 +185,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
         public async Task<IActionResult> ConfirmRemoveTeamMember(int itineraryId, int taskSignupId)
         {
-            var orgId = await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = itineraryId });
+            var orgId = await GetOrganizationIdBy(itineraryId);
 
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
@@ -203,18 +203,18 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryTokenAttribute]
+        [ValidateAntiForgeryToken]
         [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
         public async Task<IActionResult> RemoveTeamMember(int itineraryId, int taskSignupId)
         {
-            var orgId = await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = itineraryId });
+            var orgId = await GetOrganizationIdBy(itineraryId);
 
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
                 return HttpUnauthorized();
             }
 
-            var result = await _mediator.SendAsync(new RemoveTeamMemberCommand() { TaskSignupId = taskSignupId });
+            var result = await _mediator.SendAsync(new RemoveTeamMemberCommand { TaskSignupId = taskSignupId });
 
             return RedirectToAction("Details", new {id = itineraryId });
         }
