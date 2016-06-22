@@ -23,7 +23,8 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             var itinerary = await _context.Itineraries
                 .Where(x => x.Id == message.ItineraryId)
                 .Select(x => new { x.EventId, x.Date })
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync()
+                .ConfigureAwait(false);
 
             if (itinerary == null)
             {
@@ -32,7 +33,8 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             }
 
             // We requery for potential team members in case something has changed or the task signup id was modified before posting
-            var potentialTaskSignups = await _mediator.SendAsync(new PotentialItineraryTeamMembersQuery { EventId = itinerary.EventId, Date = itinerary.Date });
+            var potentialTaskSignups = await _mediator.SendAsync(new PotentialItineraryTeamMembersQuery { EventId = itinerary.EventId, Date = itinerary.Date })
+                .ConfigureAwait(false);
 
             var matchedSignup = false;
             foreach(var signup in potentialTaskSignups)
@@ -55,9 +57,10 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
                 _context.TaskSignups.Attach(taskSignup);
                 _context.Entry(taskSignup).Property(x => x.ItineraryId).IsModified = true;
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync().ConfigureAwait(false);
 
-                await _mediator.PublishAsync(new VolunteerAssignedToItinerary { TaskSignupId = message.TaskSignupId, ItineraryId = message.ItineraryId}).ConfigureAwait(false);
+                await _mediator.PublishAsync(new VolunteerAssignedToItinerary { TaskSignupId = message.TaskSignupId, ItineraryId = message.ItineraryId})
+                    .ConfigureAwait(false);
             }
 
             return true;
