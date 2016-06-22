@@ -69,6 +69,7 @@ else
                     <th>
                         Assigned Task
                     </th>
+                    <th></th>
                 </tr>
                 @foreach (var teamMember in Model.TeamMembers)
                 {
@@ -81,6 +82,9 @@ else
                         </td>
                         <td>
                             <p>@teamMember.TaskName</p>
+                        </td>
+                        <td>
+                            <a data-toggle="tooltip" data-placement="top" title="Remove" asp-action="ConfirmRemoveTeamMember" asp-controller="Itinerary" asp-route-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-taskSignupId="@teamMember.TaskSignupId" class="btn btn-danger"><span class="fa fa-remove"></span></a>
                         </td>
                     </tr>
                 }

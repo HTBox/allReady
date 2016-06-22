@@ -11,6 +11,7 @@ using AllReady.Areas.Admin.Models.Validators;
 using System.Linq;
 using AllReady.Areas.Admin.Models.RequestModels;
 using AllReady.Areas.Admin.Features.Organizations;
+using AllReady.Areas.Admin.Features.TaskSignups;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -174,12 +175,50 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
 
-            if (selectedRequests.Count() > 0)
+            if (selectedRequests.Any())
             { 
                 var result = await _mediator.SendAsync(new AddRequestsCommand { ItineraryId = id, RequestIdsToAdd = selectedRequests.ToList() });
             }
 
             return RedirectToAction(nameof(Details), new { id = id });
+        }
+
+        [HttpGet]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
+        public async Task<IActionResult> ConfirmRemoveTeamMember(int itineraryId, int taskSignupId)
+        {
+            var orgId = await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = itineraryId });
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            var model = await _mediator.SendAsync(new TaskSignupSummaryQuery {TaskSignupId = taskSignupId});
+
+            if (model == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View("ConfirmRemoveTeamMember", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryTokenAttribute]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
+        public async Task<IActionResult> RemoveTeamMember(int itineraryId, int taskSignupId)
+        {
+            var orgId = await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = itineraryId });
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            var result = await _mediator.SendAsync(new RemoveTeamMemberCommand() { TaskSignupId = taskSignupId });
+
+            return RedirectToAction("Details", new {id = itineraryId });
         }
     }
 }
