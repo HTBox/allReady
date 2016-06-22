@@ -205,7 +205,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryTokenAttribute]
+        [ValidateAntiForgeryToken]
         [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
         public async Task<IActionResult> RemoveTeamMember(int itineraryId, int taskSignupId)
         {
@@ -216,7 +216,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
 
-            var result = await _mediator.SendAsync(new RemoveTeamMemberCommand() { TaskSignupId = taskSignupId });
+            var result = await _mediator.SendAsync(new RemoveTeamMemberCommand { TaskSignupId = taskSignupId });
 
             return RedirectToAction("Details", new {id = itineraryId });
         }
