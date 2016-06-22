@@ -107,9 +107,8 @@ namespace AllReady.Areas.Admin.Controllers
             // this flow should be reviews and enhanced in a future PR using knockout to send and handle the error messaging on the details page
             // for the purpose of the upcoming red cross testing I chose to leave this since a failure here would be an edge case
 
-            var orgId = await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = id });
-
-            if(orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            var orgId = await GetOrganizationIdBy(id);
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
                 return HttpUnauthorized();
             }
@@ -128,7 +127,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Itinerary/{id}/[Action]")]
         public async Task<IActionResult> SelectRequests(int id)
         {
-            var orgId = await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = id });
+            var orgId = await GetOrganizationIdBy(id);
 
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
@@ -167,8 +166,7 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> AddRequests(int id, string[] selectedRequests)
         {
             // todo - error handling
-
-            var orgId = await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = id });
+            var orgId = await GetOrganizationIdBy(id);
 
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
@@ -187,7 +185,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
         public async Task<IActionResult> ConfirmRemoveTeamMember(int itineraryId, int taskSignupId)
         {
-            var orgId = await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = itineraryId });
+            var orgId = await GetOrganizationIdBy(itineraryId);
 
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
@@ -205,20 +203,25 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryTokenAttribute]
+        [ValidateAntiForgeryToken]
         [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
         public async Task<IActionResult> RemoveTeamMember(int itineraryId, int taskSignupId)
         {
-            var orgId = await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = itineraryId });
+            var orgId = await GetOrganizationIdBy(itineraryId);
 
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
                 return HttpUnauthorized();
             }
 
-            var result = await _mediator.SendAsync(new RemoveTeamMemberCommand() { TaskSignupId = taskSignupId });
+            var result = await _mediator.SendAsync(new RemoveTeamMemberCommand { TaskSignupId = taskSignupId });
 
             return RedirectToAction("Details", new {id = itineraryId });
+        }
+
+        private async Task<int> GetOrganizationIdBy(int intinerayId)
+        {
+            return await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = intinerayId });
         }
     }
 }
