@@ -21,31 +21,26 @@ namespace AllReady.Controllers
             _mediator = mediator;
         }
 
-        [Route("~/MyEvents")]
-        [Authorize]
-        public IActionResult GetMyEvents()
-        {
-            var viewModel = _mediator.Send(new GetMyEventsQuery { UserId = User.GetUserId() });
-            return View("MyEvents", viewModel);
-        }
+        // note: sgordon: These are currently not used as we've simplified the my events page. Note that My Events is moved to VolunteerController and now known as dashboard.
+        // once we review functionality needed for that page we may reinstate these in some form so leaving for now.
 
-        [Route("~/MyEvents/{id}/tasks")]
-        [Authorize]
-        public IActionResult GetMyTasks(int id)
-        {
-            var view = _mediator.Send(new GetMyTasksQuery { EventId = id, UserId = User.GetUserId() });
-            return Json(view);
-        }
+        //[Route("~/MyEvents/{id}/tasks")]
+        //[Authorize]
+        //public IActionResult GetMyTasks(int id)
+        //{
+        //    var view = _mediator.Send(new GetMyTasksQuery { EventId = id, UserId = User.GetUserId() });
+        //    return Json(view);
+        //}
 
-        [HttpPost]
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        [Route("~/MyEvents/{id}/tasks")]
-        public async Task<IActionResult> UpdateMyTasks(int id, [FromBody] List<TaskSignupViewModel> model)
-        {
-            await _mediator.SendAsync(new UpdateMyTasksCommandAsync { TaskSignups = model, UserId = User.GetUserId() });
-            return Json(new { success = true });
-        }
+        //[HttpPost]
+        //[Authorize]
+        //[ValidateAntiForgeryToken]
+        //[Route("~/MyEvents/{id}/tasks")]
+        //public async Task<IActionResult> UpdateMyTasks(int id, [FromBody] List<TaskSignupViewModel> model)
+        //{
+        //    await _mediator.SendAsync(new UpdateMyTasksCommandAsync { TaskSignups = model, UserId = User.GetUserId() });
+        //    return Json(new { success = true });
+        //}
 
         [HttpGet]
         public IActionResult Index()
