@@ -222,6 +222,44 @@ namespace AllReady.Areas.Admin.Controllers
             return RedirectToAction("Details", new {id = itineraryId });
         }
 
+        [HttpGet]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{requestId}")]
+        public async Task<IActionResult> ConfirmRemoveRequest(int itineraryId, Guid requestId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            var model = await _mediator.SendAsync(new RequestSummaryQuery { RequestId = requestId });
+
+            if (model == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View("ConfirmRemoveRequest", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{requestId}")]
+        public async Task<IActionResult> RemoveRequest(int itineraryId, Guid requestId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            var result = await _mediator.SendAsync(new RemoveRequestCommand { RequestId = requestId, ItineraryId = itineraryId });
+
+            return RedirectToAction("Details", new { id = itineraryId });
+        }
+
         private async Task<int> GetOrganizationIdBy(int intinerayId)
         {
             return await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = intinerayId });

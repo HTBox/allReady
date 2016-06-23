@@ -129,6 +129,9 @@ else
                     <th>
                         City
                     </th>
+                    <th>
+
+                    </th>
                 </tr>
                 @foreach (var request in Model.Requests)
                 {
@@ -144,6 +147,9 @@ else
                         </td>
                         <td>
                             <p>@request.City</p>
+                        </td>
+                        <td>
+                            <a data-toggle="tooltip" data-placement="top" title="Remove" asp-action="ConfirmRemoveRequest" asp-controller="Itinerary" asp-route-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="btn btn-danger"><span class="fa fa-remove"></span></a>
                         </td>
                     </tr>
                 }
