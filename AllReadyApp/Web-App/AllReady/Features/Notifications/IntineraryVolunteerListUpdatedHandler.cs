@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
@@ -21,9 +22,6 @@ namespace AllReady.Features.Notifications
 
         public async Task Handle(IntineraryVolunteerListUpdated notification)
         {
-            //when volunteer is unassigned, the TaskSignup's ItineraryId is set to null in RemoveTeamMemberCommandHandlerAsync, so in an unassign scenario, the .Include to 
-            //Itinerary will pull back null, which, in turn, throws a null reference exception below when trying to retrieve taskSignup.Itinerary.[PROPERTY_NAME]
-            //this is why we have a separate query for Intinerary by IntineraryId supplied on the notification
             var taskSignup = await _context.TaskSignups
                 .AsNoTracking()
                 .Include(x => x.User)
