@@ -2,7 +2,7 @@
 
 namespace AllReady.Features.Notifications
 {
-    public class VolunteerSignupNotification : INotification, IAsyncNotification
+    public class VolunteerSignupNotification : IAsyncNotification
     {
         public int EventId { get; set; }
         public int? TaskId { get; set; }

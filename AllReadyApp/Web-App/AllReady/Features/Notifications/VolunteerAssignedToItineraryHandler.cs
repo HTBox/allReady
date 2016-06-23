@@ -29,22 +29,20 @@ namespace AllReady.Features.Notifications
 
             if (string.IsNullOrWhiteSpace(emailAddress) && string.IsNullOrWhiteSpace(sms)) return;
 
-            //TODO: construct subject and body of message
-            var subject = "You've been assigned to an intinerary";
-            var message = "You've been assigned to an Intinerary";
+            var emailMessage = "The volunteer organizer has assigned you to a team for [date]. See your [allReady Volunteer Dashboard] for more information.";
 
             var notifyVolunteersViewModel = new NotifyVolunteersViewModel();
             if (!string.IsNullOrWhiteSpace(sms))
             {
-                notifyVolunteersViewModel.SmsMessage = message;
+                notifyVolunteersViewModel.SmsMessage = "You’ve been assigned to a team for [date] [link to volunteer dashboard]";
                 notifyVolunteersViewModel.SmsRecipients.Add(sms);
             }
             if (!string.IsNullOrWhiteSpace(emailAddress))
             {
-                notifyVolunteersViewModel.Subject = subject;
+                notifyVolunteersViewModel.Subject = "You've been assigned to a team for [date]";
                 notifyVolunteersViewModel.EmailRecipients.Add(emailAddress);
-                notifyVolunteersViewModel.EmailMessage = message;
-                notifyVolunteersViewModel.HtmlMessage = message;
+                notifyVolunteersViewModel.EmailMessage = emailMessage;
+                notifyVolunteersViewModel.HtmlMessage = emailMessage;
             }
 
             await _mediator.SendAsync(new NotifyVolunteersCommand { ViewModel = notifyVolunteersViewModel }).ConfigureAwait(false);
