@@ -13,6 +13,7 @@ namespace AllReady.Areas.Admin.Models.ItineraryModels
         public string EventName { get; set; }
         public int CampaignId { get; set; }
         public string CampaignName { get; set; }
+        public DateTime DateAddedUtc { get; set; }
 
         public RequestSearchCriteria Criteria { get; set; }
         public List<RequestSelectModel> Requests { get; set; } = new List<RequestSelectModel>();
