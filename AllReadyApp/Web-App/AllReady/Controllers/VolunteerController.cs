@@ -25,7 +25,13 @@ namespace AllReady.Controllers
         }
 
         [HttpGet]
-        [Route("/v")]
+        [Route("~/v")]
+        public IActionResult DashboardShortUrl()
+        {
+            return RedirectToAction("Dashboard");
+        }
+
+        [HttpGet]
         [Route("~/Volunteers/Dashboard")]
         public async Task<IActionResult> Dashboard()
         {
