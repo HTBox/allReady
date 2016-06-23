@@ -25,6 +25,7 @@ namespace AllReady.Controllers
         }
 
         [HttpGet]
+        [Route("/v")]
         [Route("~/Volunteers/Dashboard")]
         public async Task<IActionResult> Dashboard()
         {

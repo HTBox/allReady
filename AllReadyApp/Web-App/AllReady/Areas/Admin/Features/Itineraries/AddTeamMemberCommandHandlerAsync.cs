@@ -59,7 +59,8 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 _context.Entry(taskSignup).Property(x => x.ItineraryId).IsModified = true;
                 await _context.SaveChangesAsync().ConfigureAwait(false);
 
-                await _mediator.PublishAsync(new VolunteerAssignedToItinerary { TaskSignupId = message.TaskSignupId, ItineraryId = message.ItineraryId})
+                await _mediator
+                    .PublishAsync(new IntineraryVolunteerListUpdated { TaskSignupId = message.TaskSignupId, ItineraryId = message.ItineraryId, UpdateType = UpdateType.VolunteerAssigned})
                     .ConfigureAwait(false);
             }
 
