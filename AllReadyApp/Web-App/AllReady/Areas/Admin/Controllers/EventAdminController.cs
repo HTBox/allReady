@@ -79,7 +79,7 @@ namespace AllReady.Areas.Admin.Controllers
                 OrganizationId = campaign.OrganizationId,
                 OrganizationName = campaign.OrganizationName,
                 StartDateTime = DateTime.Today.Date,
-                EndDateTime = DateTime.Today.Date.AddMonths(1)
+                EndDateTime = DateTime.Today.Date
             };
 
             return View("Edit", campaignEvent);
