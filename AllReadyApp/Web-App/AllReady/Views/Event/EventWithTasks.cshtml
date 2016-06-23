@@ -86,106 +86,109 @@
             {
                 @*User Tasks*@
                 <div class="row">
-                    <div class="col-sm-12">
-                        <h3>My Assigned Tasks</h3>
-                    </div>
-                    <div class="col-sm-12">
-                        <div class="form-inline">
-                            <div class="form-group">
-                                <input type="text" class="form-control input-sm" data-bind="textInput: userTasks.searchTerm" placeholder="Search tasks" />
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: userTasks.showOld }, click: userTasks.showOld.toggle">
-                                    <i class="fa" data-bind="css: { 'fa-square-o': !userTasks.showOld(), 'fa-check-square-o': userTasks.showOld }"></i>
-                                    Show Closed Tasks
-                                </button>
-                            </div>
+                    <div data-bind="visible: filteredUserTasks().filtered().length > 0">
+                        <div class="col-sm-12">
+                            <h3>My Assigned Tasks</h3>
                         </div>
-                        <br />
-                    </div>
+                        <div class="col-sm-12">
+                            <div class="form-inline">
+                                <div class="form-group">
+                                    <input type="text" class="form-control input-sm" data-bind="textInput: userTasks.searchTerm" placeholder="Search tasks" />
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: userTasks.showOld }, click: userTasks.showOld.toggle">
+                                        <i class="fa" data-bind="css: { 'fa-square-o': !userTasks.showOld(), 'fa-check-square-o': userTasks.showOld }"></i>
+                                        Show Closed Tasks
+                                    </button>
+                                </div>
+                            </div>
+                            <br />
+                        </div>
 
-                    @*User Tasks Accordion*@
-                    <div class="col-sm-12">
-                        <span class="label-warning label no-matching-tasks" data-bind="visible: !filteredUserTasks().filtered().length">No matching tasks.</span>
-                        <div class="task-list" id="UserTasksAccordion" data-bind="foreach: filteredUserTasks().filtered().sort(sortStartDateTimeAsc), accordion: { listSource: userTasks }">
-                            <div class="panel-group">
-                                <div class="panel panel-default task-panel">
-                                    <div class="panel-heading" style="display: none" data-bind="visible: true" role="tab" id="headingOne">
-                                        <div class="panel-title">
-                                            <div class="toggle-accordion-icon">
-                                                <span class="fa fa-caret-down accordion-expand-icon" data-toggle-accordion></span>
-                                                <span class="fa fa-caret-up accordion-collapse-icon" data-toggle-accordion></span>
-                                            </div>
-                                            <div data-toggle-accordion>
-                                                <span class="task-name" data-bind="text: Name, css: { isFull: IsFull }"></span>
-                                                <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
-                                                <div style="display: inline">
-                                                    <span class="label label-success" data-bind="visible: hasAllMatchingSkills, tooltip: { title: 'You have all of the required skills needed for this task!', placement: 'top' }">Match</span>
-                                                    <span class="label label-warning" data-bind="visible: !hasAllMatchingSkills() && hasAtLeastOneMatchingSkill(), tooltip: { title: 'You have at least one of the required skills needed for this task!', placement: 'top' }">Match</span>
-                                                    <span class="label label-info" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', tooltip: { title: 'Assigned' }"><span class="fa fa-arrow-right"></span></span>
-                                                    <span class="label label-primary" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', tooltip: { title: 'Accepted' }"><span class="fa fa-thumbs-o-up"></span></span>
-                                                    <span class="label label-warning" data-bind="visible: AssignedVolunteers[0].Status === 'Rejected', tooltip: { title: 'Rejected' }"><span class="fa fa-thumbs-o-down"></span></span>
-                                                    <span class="label label-success" data-bind="visible: AssignedVolunteers[0].Status === 'Completed', tooltip: { title: 'Completed' }"><span class="fa fa-check"></span></span>
-                                                    <span class="label label-danger" data-bind="visible: AssignedVolunteers[0].Status === 'CanNotComplete', tooltip: { title: 'Unable to complete (' + AssignedVolunteers[0].StatusDescription + ')' }"><span class="fa fa-times"></span></span>
-                                                    <br />
+
+                        @*User Tasks Accordion*@
+                        <div class="col-sm-12">
+                            <span class="label-warning label no-matching-tasks" data-bind="visible: !filteredUserTasks().filtered().length">No matching tasks.</span>
+                            <div class="task-list" id="UserTasksAccordion" data-bind="foreach: filteredUserTasks().filtered().sort(sortStartDateTimeAsc), accordion: { listSource: userTasks }">
+                                <div class="panel-group">
+                                    <div class="panel panel-default task-panel">
+                                        <div class="panel-heading" style="display: none" data-bind="visible: true" role="tab" id="headingOne">
+                                            <div class="panel-title">
+                                                <div class="toggle-accordion-icon">
+                                                    <span class="fa fa-caret-down accordion-expand-icon" data-toggle-accordion></span>
+                                                    <span class="fa fa-caret-up accordion-collapse-icon" data-toggle-accordion></span>
                                                 </div>
-                                                <span class="task-datetime" data-bind="html: DisplayDateTime"></span><br />
-                                            </div>
+                                                <div data-toggle-accordion>
+                                                    <span class="task-name" data-bind="text: Name, css: { isFull: IsFull }"></span>
+                                                    <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                                                    <div style="display: inline">
+                                                        <span class="label label-success" data-bind="visible: hasAllMatchingSkills, tooltip: { title: 'You have all of the required skills needed for this task!', placement: 'top' }">Match</span>
+                                                        <span class="label label-warning" data-bind="visible: !hasAllMatchingSkills() && hasAtLeastOneMatchingSkill(), tooltip: { title: 'You have at least one of the required skills needed for this task!', placement: 'top' }">Match</span>
+                                                        <span class="label label-info" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', tooltip: { title: 'Assigned' }"><span class="fa fa-arrow-right"></span></span>
+                                                        <span class="label label-primary" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', tooltip: { title: 'Accepted' }"><span class="fa fa-thumbs-o-up"></span></span>
+                                                        <span class="label label-warning" data-bind="visible: AssignedVolunteers[0].Status === 'Rejected', tooltip: { title: 'Rejected' }"><span class="fa fa-thumbs-o-down"></span></span>
+                                                        <span class="label label-success" data-bind="visible: AssignedVolunteers[0].Status === 'Completed', tooltip: { title: 'Completed' }"><span class="fa fa-check"></span></span>
+                                                        <span class="label label-danger" data-bind="visible: AssignedVolunteers[0].Status === 'CanNotComplete', tooltip: { title: 'Unable to complete (' + AssignedVolunteers[0].StatusDescription + ')' }"><span class="fa fa-times"></span></span>
+                                                        <br />
+                                                    </div>
+                                                    <span class="task-datetime" data-bind="html: DisplayDateTime"></span><br />
+                                                </div>
 
-                                            <div class="btn-group" data-bind="visible: currentStatus !== 'Completed' && currentStatus !== 'CanNotComplete'">
-                                                <button type="button" class="btn btn-default btn-sm" data-bind="visible: currentStatus === 'Accepted', click: $root.changeTaskStatus.bind($data, 'Completed', '')">Mark Complete</button>
-                                                <button type="button" class="btn btn-default btn-sm" data-bind="visible: currentStatus === 'Assigned', click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Mark Complete</button>
-                                                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-                                                    <span class="caret"></span>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li data-bind="visible: currentStatus === 'Assigned'">
-                                                        <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Rejected', '')">Reject</a>
-                                                    </li>
-                                                    <li data-bind="visible: currentStatus === 'Accepted'">
-                                                        <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.confirmCannotComplete">Mark Unable to Complete</a>
-                                                        @*<a href="#" class="btn btn-default btn-sm" data-bind="click: $root.confirmUnenrollFromTask">Unable to Complete</a>*@
-                                                    </li>
-                                                    <li data-bind="visible: currentStatus === 'Accepted'">
-                                                        <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.confirmUnenrollFromTask">Unenroll</a>
-                                                    </li>
-                                                    <li data-bind="visible: currentStatus === 'Completed'">
-                                                        <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Undo Mark Complete</a>
-                                                    </li>
-                                                    <li data-bind="visible: currentStatus === 'CanNotComplete'">
-                                                        <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Undo Mark Cannot Complete</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-
-                                            <div class="btn-group" data-bind="visible: currentStatus === 'Completed'">
-                                                <button class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Undo Complete</button>
-                                            </div>
-
-                                            <div class="btn-group" data-bind="visible: currentStatus === 'CanNotComplete'">
-                                                <button class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Undo Cannot Complete</button>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                    <div data-bind="attr: {id: 'Task-'+Id}" class="panel-collapse collapse" role="tabpanel">
-                                        <div class="panel-body">
-                                            <p data-bind="text: Description"></p>
-                                            <p data-bind="visible: IsLimitVolunteers, text: VolunteerLimitDisplay"></p>
-
-                                            <div class="row task-skills-container" data-bind="visible: skillsWithIsUser().length" style="display: none">
-                                                <div class="col-sm-12">
-                                                    <h5>Needed Skills:</h5>
-                                                    <ul data-bind="foreach: skillsWithIsUser">
-                                                        <li>
-                                                            <span data-bind="text: HierarchicalName"></span>
-                                                            <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
-                                                            <span class="label label-success" data-bind="visible: IsUserSkill, tooltip: { title: 'You have this skill!', placement: 'top' }">
-                                                                <span class="fa fa-check" aria-hidden="true"></span>
-                                                                Match
-                                                            </span>
+                                                <div class="btn-group" data-bind="visible: currentStatus !== 'Completed' && currentStatus !== 'CanNotComplete'">
+                                                    <button type="button" class="btn btn-default btn-sm" data-bind="visible: currentStatus === 'Accepted', click: $root.changeTaskStatus.bind($data, 'Completed', '')">Mark Complete</button>
+                                                    <button type="button" class="btn btn-default btn-sm" data-bind="visible: currentStatus === 'Assigned', click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Mark Complete</button>
+                                                    <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li data-bind="visible: currentStatus === 'Assigned'">
+                                                            <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Rejected', '')">Reject</a>
+                                                        </li>
+                                                        <li data-bind="visible: currentStatus === 'Accepted'">
+                                                            <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.confirmCannotComplete">Mark Unable to Complete</a>
+                                                            @*<a href="#" class="btn btn-default btn-sm" data-bind="click: $root.confirmUnenrollFromTask">Unable to Complete</a>*@
+                                                        </li>
+                                                        <li data-bind="visible: currentStatus === 'Accepted'">
+                                                            <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.confirmUnenrollFromTask">Unenroll</a>
+                                                        </li>
+                                                        <li data-bind="visible: currentStatus === 'Completed'">
+                                                            <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Undo Mark Complete</a>
+                                                        </li>
+                                                        <li data-bind="visible: currentStatus === 'CanNotComplete'">
+                                                            <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Undo Mark Cannot Complete</a>
                                                         </li>
                                                     </ul>
+                                                </div>
+
+                                                <div class="btn-group" data-bind="visible: currentStatus === 'Completed'">
+                                                    <button class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Undo Complete</button>
+                                                </div>
+
+                                                <div class="btn-group" data-bind="visible: currentStatus === 'CanNotComplete'">
+                                                    <button class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Undo Cannot Complete</button>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div data-bind="attr: {id: 'Task-'+Id}" class="panel-collapse collapse" role="tabpanel">
+                                            <div class="panel-body">
+                                                <p data-bind="text: Description"></p>
+                                                <p data-bind="visible: IsLimitVolunteers, text: VolunteerLimitDisplay"></p>
+
+                                                <div class="row task-skills-container" data-bind="visible: skillsWithIsUser().length" style="display: none">
+                                                    <div class="col-sm-12">
+                                                        <h5>Needed Skills:</h5>
+                                                        <ul data-bind="foreach: skillsWithIsUser">
+                                                            <li>
+                                                                <span data-bind="text: HierarchicalName"></span>
+                                                                <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                                                                <span class="label label-success" data-bind="visible: IsUserSkill, tooltip: { title: 'You have this skill!', placement: 'top' }">
+                                                                    <span class="fa fa-check" aria-hidden="true"></span>
+                                                                    Match
+                                                                </span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
