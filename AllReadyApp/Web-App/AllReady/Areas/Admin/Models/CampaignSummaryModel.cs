@@ -66,6 +66,9 @@ namespace AllReady.Areas.Admin.Models
         [Phone]
         public string PrimaryContactPhoneNumber { get; set; }
 
+        [MaxLength(150)]
+        public string Headline { get; set; }
+
         [Display(Name = "Email")]
         [EmailAddress]
         public string PrimaryContactEmail { get; set; }

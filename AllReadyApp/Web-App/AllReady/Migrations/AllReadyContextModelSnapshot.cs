@@ -121,6 +121,9 @@ namespace AllReady.Migrations
 
                     b.Property<string>("FullDescription");
 
+                    b.Property<string>("Headline")
+                        .HasAnnotation("MaxLength", 150);
+
                     b.Property<string>("ImageUrl");
 
                     b.Property<int?>("LocationId");
@@ -224,6 +227,9 @@ namespace AllReady.Migrations
                     b.Property<DateTimeOffset>("EndDateTime");
 
                     b.Property<int>("EventType");
+
+                    b.Property<string>("Headline")
+                        .HasAnnotation("MaxLength", 150);
 
                     b.Property<string>("ImageUrl");
 
@@ -471,7 +477,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("StatusDescription");
 
-                    b.Property<int?>("TaskId");
+                    b.Property<int>("TaskId");
 
                     b.Property<string>("UserId");
 

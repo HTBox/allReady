@@ -42,6 +42,7 @@ namespace AllReady.Areas.Admin.Features.Events
                     Location = campaignEvent.Location.ToEditModel(),
                     RequiredSkills = campaignEvent.RequiredSkills,
                     ImageUrl = campaignEvent.ImageUrl,
+                    Headline = campaignEvent.Headline
                 };
             }
 
