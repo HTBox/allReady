@@ -47,6 +47,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     }).ToList(),
                     Requests = i.Requests.Select(r => new RequestListModel
                     {
+                        Id = r.Request.RequestId,
                         Name = r.Request.Name,
                         Address = r.Request.Address,
                         City = r.Request.City,
