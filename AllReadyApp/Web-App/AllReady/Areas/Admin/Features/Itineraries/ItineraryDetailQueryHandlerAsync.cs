@@ -45,7 +45,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                         TaskName = tm.Task.Name,
                         FullName = tm.User.Name
                     }).ToList(),
-                    Requests = i.Requests.Select(r => new RequestListModel
+                    Requests = i.Requests.OrderBy(r => r.OrderIndex).Select(r => new RequestListModel
                     {
                         Name = r.Request.Name,
                         Address = r.Request.Address,
@@ -58,7 +58,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             if (itineraryDetails == null) return null;
 
             itineraryDetails.PotentialTeamMembers = await _mediator.SendAsync(new PotentialItineraryTeamMembersQuery { EventId = itineraryDetails.EventId, Date = itineraryDetails.Date });
-            itineraryDetails.HasPotentialTeamMembers = itineraryDetails.PotentialTeamMembers.Count() > 0;
+            itineraryDetails.HasPotentialTeamMembers = itineraryDetails.PotentialTeamMembers.Any();
             itineraryDetails.PotentialTeamMembers = itineraryDetails.PotentialTeamMembers.AddNullOptionToFront("<Please select your next team member>");
 
             return itineraryDetails;
