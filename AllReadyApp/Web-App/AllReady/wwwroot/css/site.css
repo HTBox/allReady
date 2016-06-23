@@ -517,3 +517,7 @@ a:hover .myevents-block  {
 .myevents-block p {
     font-size:14px;
 }
+
+.lister-logo {
+    max-width: 400px;
+}
