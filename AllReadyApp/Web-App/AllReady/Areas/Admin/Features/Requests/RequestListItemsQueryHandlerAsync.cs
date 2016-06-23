@@ -1,6 +1,5 @@
 ﻿using AllReady.Areas.Admin.Models.ItineraryModels;
 using AllReady.Models;
-using AllReady.Services;
 using MediatR;
 using Microsoft.Data.Entity;
 using System.Collections.Generic;
@@ -41,7 +40,15 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
             // todo: sgordon: date added filtering
 
-            return await results.Select(r => new RequestListModel { Id = r.RequestId, Name = r.Name, Address = r.Address, City = r.City, Status = r.Status }).ToListAsync().ConfigureAwait(false);
+            return await results.Select(r => new RequestListModel
+            {
+                Id = r.RequestId,
+                Name = r.Name,
+                Address = r.Address,
+                City = r.City,
+                Status = r.Status,
+                DateAdded = r.DateAdded
+            }).ToListAsync().ConfigureAwait(false);
         }
     }
 }

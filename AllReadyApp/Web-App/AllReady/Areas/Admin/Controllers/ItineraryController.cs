@@ -152,6 +152,9 @@ namespace AllReady.Areas.Admin.Controllers
                 {
                     Id = request.Id,
                     Name = request.Name,
+                    DateAdded = request.DateAdded,
+                    City =  request.City,
+                    Address = request.Address
                 };
 
                 model.Requests.Add(selectItem);
