@@ -99,7 +99,6 @@ namespace AllReady.Controllers
             return View(model);
         }
 
-        //
         // GET: /Account/Register
         [HttpGet]
         [AllowAnonymous]
@@ -108,7 +107,6 @@ namespace AllReady.Controllers
             return View();
         }
 
-        //
         // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
@@ -119,6 +117,8 @@ namespace AllReady.Controllers
             {
                 var user = new ApplicationUser
                 {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
                     UserName = model.Email,
                     Email = model.Email,
                     TimeZoneId = _generalSettings.Value.DefaultTimeZone
@@ -130,8 +130,12 @@ namespace AllReady.Controllers
                     // Send an email with this link
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                    var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmEmail), Controller = "Account", Values = new { userId = user.Id, token = token },
-                        Protocol = HttpContext.Request.Scheme });
+                    var callbackUrl = Url.Action(new UrlActionContext {
+                        Action = nameof(ConfirmEmail),
+                        Controller = "Account",
+                        Values = new { userId = user.Id, token },
+                        Protocol = HttpContext.Request.Scheme }
+                    );
 
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account", 
                         $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
@@ -148,7 +152,6 @@ namespace AllReady.Controllers
             return View(model);
         }
 
-        //
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -188,7 +191,6 @@ namespace AllReady.Controllers
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
-        //
         // GET: /Account/ForgotPassword
         [HttpGet]
         [AllowAnonymous]
@@ -197,7 +199,6 @@ namespace AllReady.Controllers
             return View();
         }
 
-        //
         // POST: /Account/ForgotPassword
         [HttpPost]
         [AllowAnonymous]
@@ -226,7 +227,6 @@ namespace AllReady.Controllers
             return View(model);
         }
 
-        //
         // GET: /Account/ResetPassword
         [HttpGet]
         [AllowAnonymous]
@@ -235,7 +235,6 @@ namespace AllReady.Controllers
             return code == null ? View("Error") : View();
         }
 
-        //
         // POST: /Account/ResetPassword
         [HttpPost]
         [AllowAnonymous]
@@ -265,7 +264,6 @@ namespace AllReady.Controllers
             return View();
         }
 
-        //
         // GET: /Account/ResetPasswordConfirmation
         [HttpGet]
         [AllowAnonymous]
@@ -274,7 +272,6 @@ namespace AllReady.Controllers
             return View();
         }
 
-        //
         // POST: /Account/ExternalLogin
         [HttpPost]
         [AllowAnonymous]
@@ -287,7 +284,6 @@ namespace AllReady.Controllers
             return new ChallengeResult(provider, properties);
         }
 
-        //
         // GET: /Account/ExternalLoginCallback
         [HttpGet]
         [AllowAnonymous]
@@ -316,7 +312,6 @@ namespace AllReady.Controllers
             return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
         }
 
-        //
         // POST: /Account/ExternalLoginConfirmation
         [HttpPost]
         [AllowAnonymous]
@@ -365,8 +360,6 @@ namespace AllReady.Controllers
             return View(model);
         }
 
-        #region Helpers
-
         private void AddErrorsToModelState(IdentityResult result)
         {
             foreach (var error in result.Errors)
@@ -394,7 +387,5 @@ namespace AllReady.Controllers
 
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
-
-        #endregion
     }
 }
