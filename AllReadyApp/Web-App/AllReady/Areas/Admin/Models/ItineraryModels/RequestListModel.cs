@@ -11,5 +11,7 @@ namespace AllReady.Areas.Admin.Models.ItineraryModels
         public string City { get; set; }
         public DateTime DateAdded { get; set; }
         public RequestStatus Status { get; set; }
+        public bool IsFirst { get; set; }
+        public bool IsLast { get; set; }
     }
 }

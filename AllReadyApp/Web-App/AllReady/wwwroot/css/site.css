@@ -521,3 +521,8 @@ a:hover .myevents-block  {
 .lister-logo {
     max-width: 400px;
 }
+
+.right-action-btn {
+    display: inline-block;
+    margin-left: 8px;
+}
