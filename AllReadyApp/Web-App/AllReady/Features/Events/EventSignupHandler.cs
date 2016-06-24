@@ -55,7 +55,7 @@ namespace AllReady.Features.Event
                 {
                     var skillsToAdd = campaignEvent.RequiredSkills
                         .Where(acsk => eventSignup.AddSkillIds.Contains(acsk.SkillId))
-                        .Select(acsk => new UserSkill() { SkillId = acsk.SkillId, UserId = user.Id });
+                        .Select(acsk => new UserSkill { SkillId = acsk.SkillId, UserId = user.Id });
                     user.AssociatedSkills.AddRange(skillsToAdd.Where(toAdd => !user.AssociatedSkills.Any(existing => existing.SkillId == toAdd.SkillId)));
 
                     _context.Update(user);
@@ -64,7 +64,7 @@ namespace AllReady.Features.Event
                 await _context.SaveChangesAsync().ConfigureAwait(false);
 
                     //Notify admins of a new volunteer
-                await _mediator.PublishAsync(new VolunteerSignupNotification() { EventId = eventSignup.EventId, UserId = eventSignup.UserId, TaskId = null })
+                await _mediator.PublishAsync(new VolunteerSignupNotification { EventId = eventSignup.EventId, UserId = eventSignup.UserId, TaskId = null })
                     .ConfigureAwait(false);
             }
         }
