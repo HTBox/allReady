@@ -17,6 +17,8 @@ namespace AllReady.ViewModels.Organization
             Name = organization.Name;
             LogoUrl = organization.LogoUrl;
             WebUrl = organization.WebUrl;
+            Description = organization.DescriptionHtml;
+            Summary = organization.Summary;
 
             if (organization.Campaigns != null)
             {
@@ -34,6 +36,9 @@ namespace AllReady.ViewModels.Organization
         public string Name { get; set; }
         public string LogoUrl { get; set; }
         public string WebUrl { get; set; }
+
+        public string Description { get; set; }
+        public string Summary { get; set; }
 
         public List<CampaignViewModel> Campaigns { get; set; }
 

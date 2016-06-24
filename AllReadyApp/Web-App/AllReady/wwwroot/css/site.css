@@ -526,3 +526,10 @@ a:hover .myevents-block  {
     display: inline-block;
     margin-left: 8px;
 }
+
+.org-image {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    max-height: 250px;
+    max-width: 600px;
+}
