@@ -299,7 +299,12 @@ namespace AllReady.Controllers
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
             var email = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
+            var claims = externalLoginInfo.ExternalPrincipal.Claims;
 
+            string firstName;
+            string lastName;
+            RetrieveFirstAndLastNameFromFacebook(externalLoginInfo, out firstName, out lastName);
+            
             if (result.Succeeded)
             {
                 var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = email });
@@ -310,7 +315,7 @@ namespace AllReady.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             ViewData["LoginProvider"] = externalLoginInfo.LoginProvider;
 
-            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
+            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email, FirstName = firstName, LastName = lastName });
         }
 
         // POST: /Account/ExternalLoginConfirmation
@@ -387,6 +392,20 @@ namespace AllReady.Controllers
             }
 
             return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        private static void RetrieveFirstAndLastNameFromFacebook(ExternalLoginInfo externalLoginInfo, out string firstName, out string lastName)
+        {
+            var name = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
+
+            firstName = string.Empty;
+            lastName = string.Empty;
+            if (string.IsNullOrEmpty(name))
+                return;
+
+            var array = name.Split(' ');
+            firstName = array[0];
+            lastName = array[1];
         }
     }
 }

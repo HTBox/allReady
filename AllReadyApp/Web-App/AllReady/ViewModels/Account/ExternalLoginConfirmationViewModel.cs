@@ -18,7 +18,7 @@ namespace AllReady.ViewModels.Account
 
         [Required]
         [Phone]
-        [Display(Name="Phone number")]
+        [Display(Name="Phone Number")]
         public string PhoneNumber { get; set; }
     }
 }
