@@ -299,11 +299,10 @@ namespace AllReady.Controllers
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
             var email = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
-            var claims = externalLoginInfo.ExternalPrincipal.Claims;
 
             string firstName;
             string lastName;
-            RetrieveFirstAndLastNameFromFacebook(externalLoginInfo, out firstName, out lastName);
+            RetrieveFirstAndLastNameFromExternalPrincipal(externalLoginInfo, out firstName, out lastName);
             
             if (result.Succeeded)
             {
@@ -394,7 +393,7 @@ namespace AllReady.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
-        private static void RetrieveFirstAndLastNameFromFacebook(ExternalLoginInfo externalLoginInfo, out string firstName, out string lastName)
+        private static void RetrieveFirstAndLastNameFromExternalPrincipal(ExternalLoginInfo externalLoginInfo, out string firstName, out string lastName)
         {
             var name = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
 

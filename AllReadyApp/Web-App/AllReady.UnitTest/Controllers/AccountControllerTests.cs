@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using AllReady.Areas.Admin.Controllers;
 using System;
 using AllReady.ViewModels.Account;
-using AllReady.Migrations;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace AllReady.UnitTest.Controllers
@@ -74,7 +73,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task LoginPostReturnsSameViewAndViewModelWhenModelStatIsInvalid()
+        public async Task LoginPostReturnsSameViewAndViewModel_WhenModelStatIsInvalid()
         {
             const string testUrl = "return url";
             var loginViewModel = new LoginViewModel();
@@ -174,7 +173,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task RegisterPostReturnsSameViewAndViewModelWhenModelStateIsInvalid()
+        public async Task RegisterPostReturnsSameViewAndViewModel_WhenModelStateIsInvalid()
         {
             var registerViewModel = new RegisterViewModel();
 
@@ -190,7 +189,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task RegisterPostInvokesCreateAsyncWithTheCorrectParametersWhenModelStateIsValid()
+        public async Task RegisterPostInvokesCreateAsyncWithTheCorrectParameters_WhenModelStateIsValid()
         {
             const string defaultTimeZone = "DefaultTimeZone";
 
@@ -213,7 +212,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task RegisterPostInvokesGenerateEmailConfirmationTokenAsyncWithTheCorrectParametersWhenModelStateIsValidAndUserCreationIsSuccessful()
+        public async Task RegisterPostInvokesGenerateEmailConfirmationTokenAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndUserCreationIsSuccessful()
         {
             const string defaultTimeZone = "DefaultTimeZone";
 
@@ -241,7 +240,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task RegisterPostInvokesUrlActionWithTheCorrectParametersWhenModelStateIsValidAndUserCreationIsSuccessful()
+        public async Task RegisterPostInvokesUrlActionWithTheCorrectParameters_WhenModelStateIsValid_AndUserCreationIsSuccessful()
         {
             const string requestScheme = "requestScheme";
 
@@ -271,7 +270,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task RegisterPostInvokesSendEmailAsyncWithTheCorrectParametersWhenModelStateIsValidAndUserCreationIsSuccessful()
+        public async Task RegisterPostInvokesSendEmailAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndUserCreationIsSuccessful()
         {
             const string callbackUrl = "callbackUrl";
 
@@ -305,7 +304,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task RegisterPostInvokesAddClaimAsyncWithTheCorrectParametersWhenModelStateIsValidAndUserCreationIsSuccessful()
+        public async Task RegisterPostInvokesAddClaimAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndUserCreationIsSuccessful()
         {
             const string defaultTimeZone = "DefaultTimeZone";
 
@@ -341,7 +340,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task RegisterPostInvokesSignInAsyncWithTheCorrectParametersWhenModelStateIsValidAndUserCreationIsSuccessful()
+        public async Task RegisterPostInvokesSignInAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndUserCreationIsSuccessful()
         {
             const string defaultTimeZone = "DefaultTimeZone";
 
@@ -379,7 +378,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task RegisterPostRedirectsToCorrectActionAndControllerWhenModelStateIsValidAndUserCreationIsSuccessful()
+        public async Task RegisterPostRedirectsToCorrectActionAndController_WhenModelStateIsValid_AndUserCreationIsSuccessful()
         {
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
             generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
@@ -411,7 +410,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task RegisterPostAddsIdentityResultErrorsToModelStateErrorWhenUserCreationFails()
+        public async Task RegisterPostAddsIdentityResultErrorsToModelStateError_WhenUserCreationFails()
         {
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
             generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
@@ -430,7 +429,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task RegisterPostReturnsTheSameViewAndViewModelWhenUserCreationFails()
+        public async Task RegisterPostReturnsTheSameViewAndViewModel_WhenUserCreationFails()
         {
             var model = new RegisterViewModel();
 
@@ -486,7 +485,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task LogOffRedirectToCorrectActionAndController()
+        public async Task LogOffRedirectsToCorrectActionAndController()
         {
             var signInManager = CreateSignInManagerMock(CreateUserManagerMock());
             signInManager.Setup(x => x.SignOutAsync()).Returns(() => Task.FromResult(It.IsAny<Task>()));
@@ -500,7 +499,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ConfirmEmailReturnsErrorViewWhenUserIdIsNull()
+        public async Task ConfirmEmailReturnsErrorView_WhenUserIdIsNull()
         {
             var sut = CreateAccountControllerWithNoInjectedDependencies();
 
@@ -510,7 +509,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ConfirmEmailReturnsErrorViewWhenTokenIsNull()
+        public async Task ConfirmEmailReturnsErrorView_WhenTokenIsNull()
         {
             var sut = CreateAccountControllerWithNoInjectedDependencies();
 
@@ -520,7 +519,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ConfirmEmailInvokesFindByIdAsyncWithCorrectUserIdWhenUserIdAndTokenAreNotNull()
+        public async Task ConfirmEmailInvokesFindByIdAsyncWithCorrectUserId_WhenUserIdAndTokenAreNotNull()
         {
             var userId = "userId";
             var token = "someToken";
@@ -534,7 +533,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ConfirmEmailReturnsErrorViewWhenUserIsNullAndUserIdAndTokenAreNotNull()
+        public async Task ConfirmEmailReturnsErrorView_WhenUserIsNull_AndUserIdAndTokenAreNotNull()
         {
             var userId = "userId";
             var token = "someToken";
@@ -550,7 +549,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ConfirmEmailInvokesConfirmEmailAsyncWithTheCorrectParametersWhenUserAndUserIdAndTokenAreNotNull()
+        public async Task ConfirmEmailInvokesConfirmEmailAsyncWithTheCorrectParameters_WhenUserAndUserIdAndTokenAreNotNull()
         {
             var userId = "userId";
             var token = "someToken";
@@ -568,7 +567,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ConfirmEmailInvokesSendAsyncWithTheCorrectParametersWhenUsersProfileIsCompleteAndUsersEmailIsConfirmedAndUserAndUserIdAndTokenAreNotNull()
+        public async Task ConfirmEmailInvokesSendAsyncWithTheCorrectParameters_WhenUsersProfileIsComplete_AndUsersEmailIsConfirmed_AndUserAndUserIdAndTokenAreNotNull()
         {
             var userId = "userId";
             var token = "someToken";
@@ -601,7 +600,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ConfirmEmailInvokesRefreshSignInAsyncWithTheCorrectParametersWhenUserIsSignedInAndUsersProfileIsCompleteAndUsersEmailIsConfirmedAndUserAndUserIdAndTokenAreNotNull()
+        public async Task ConfirmEmailInvokesRefreshSignInAsyncWithTheCorrectParameters_WhenUserIsSignedIn_AndUsersProfileIsComplete_AndUsersEmailIsConfirmed_AndUserAndUserIdAndTokenAreNotNull()
         {
             var userId = "userId";
             var token = "someToken";
@@ -636,7 +635,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ConfirmEmailReturnsErrorViewWhenUsersEmailCannotBeConfirmed()
+        public async Task ConfirmEmailReturnsErrorView_WhenUsersEmailCannotBeConfirmed()
         {
             var userId = "userId";
             var token = "someToken";
@@ -654,7 +653,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ConfirmEmailReturnsConfirmEmailViewWhenUsersEmailCanBeConfirmed()
+        public async Task ConfirmEmailReturnsConfirmEmailView_WhenUsersEmailCanBeConfirmed()
 		{
 			var userId = "userId";
 			var token = "someToken";
@@ -735,7 +734,7 @@ namespace AllReady.UnitTest.Controllers
 		}
 
         [Fact]
-        public async Task ForgotPasswordPostInvokesIsEmailConfirmedAsyncWithThecorrectUserWhenModelStateIsValid()
+        public async Task ForgotPasswordPostInvokesIsEmailConfirmedAsyncWithThecorrectUser_WhenModelStateIsValid()
 		{
 			var email = "user@domain.tld";
 
@@ -758,7 +757,7 @@ namespace AllReady.UnitTest.Controllers
 		}
 
 		[Fact]
-        public async Task ForgotPasswordPostReturnsForgotPasswordConfirmationViewWhenModelStateIsValidAndUserIsNull()
+        public async Task ForgotPasswordPostReturnsForgotPasswordConfirmationView_WhenModelStateIsValid_AndUserIsNull()
 		{
 			var email = "user@domain.tld";
 			
@@ -781,7 +780,7 @@ namespace AllReady.UnitTest.Controllers
 		}
 
 		[Fact]
-        public async Task ForgotPasswordPostReturnsForgotPasswordConfirmationViewWhenModelStateIsValidAndUsersEmailIsUnverified()
+        public async Task ForgotPasswordPostReturnsForgotPasswordConfirmationView_WhenModelStateIsValid_AndUsersEmailIsUnverified()
 		{
 			var email = "user@domain.tld";
 
@@ -805,7 +804,7 @@ namespace AllReady.UnitTest.Controllers
 		}
 
 		[Fact]
-		public async Task ForgotPasswordPostInvokesGeneratePasswordResetTokenAsyncWithCorrectUserWhenModelStateIsValidAndUserIsNotNullAndUsersEmailHasBeenVerified()
+		public async Task ForgotPasswordPostInvokesGeneratePasswordResetTokenAsyncWithCorrectUser_WhenModelStateIsValid_AndUserIsNotNull_AndUsersEmailHasBeenVerified()
 		{
             var email = "user@domain.tld";
 
@@ -836,7 +835,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
 		[Fact]
-        public async Task ForgotPasswordPostInvokesUrlActionWithCorrectParametersWhenModelStateIsValidAndUserIsNotNullAndUsersEmailHasBeenVerified()
+        public async Task ForgotPasswordPostInvokesUrlActionWithCorrectParameters_WhenModelStateIsValid_AndUserIsNotNull_AndUsersEmailHasBeenVerified()
         {
             const string requestScheme = "requestScheme";
             var email = "user@domain.tld";
@@ -873,7 +872,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ForgotPasswordPostInvokesSendEmailAsyncWithCorrectParametersWhenModelStateIsValidAndUserIsNotNullAndUsersEmailHasBeenVerified()
+        public async Task ForgotPasswordPostInvokesSendEmailAsyncWithCorrectParameters_WhenModelStateIsValid_AndUserIsNotNull_AndUsersEmailHasBeenVerified()
         {
             var email = "user@domain.tld";
             const string callbackUrl = "callbackUrl";
@@ -908,9 +907,9 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ForgotPasswordPostReturnsForgotPasswordConfirmationViewWhenModelStateIsValidAndUserIsNotNullAndUsersEmailHasBeenVerified()
+        public async Task ForgotPasswordPostReturnsForgotPasswordConfirmationView_WhenModelStateIsValid_AndUserIsNotNull_AndUsersEmailHasBeenVerified()
         {
-            var email = "user@domain.tld";
+            const string email = "user@domain.tld";
 
             var vm = new ForgotPasswordViewModel()
             {
@@ -940,9 +939,8 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ForgotPasswordPostReturnsTheSameViewAndViewModelWhenModelStateIsInvalid()
+        public async Task ForgotPasswordPostReturnsTheSameViewAndViewModel_WhenModelStateIsInvalid()
         {
-
             var vm = new ForgotPasswordViewModel();
 
             var sut = CreateAccountControllerWithNoInjectedDependencies();
@@ -1016,7 +1014,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ResetPasswordPostReturnsTheSameViewAndViewModelWhenModelStateIsInvalid()
+        public async Task ResetPasswordPostReturnsTheSameViewAndViewModel_WhenModelStateIsInvalid()
         {
             var vm = new ResetPasswordViewModel();
 
@@ -1032,7 +1030,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ResetPasswordPostInvokesFindByNameAsyncWithTheCorrecEmailWhenModelStateIsValid()
+        public async Task ResetPasswordPostInvokesFindByNameAsyncWithTheCorrecEmail_WhenModelStateIsValid()
         {
             var email = "user@domain.tld";
 
@@ -1055,7 +1053,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ResetPasswordPostRedirectsToCorrectActionWhenUserIsNullAndModelStateIsValid()
+        public async Task ResetPasswordPostRedirectsToCorrectAction_WhenUserIsNull_AndModelStateIsValid()
         {
             var email = "user@domain.tld";
 
@@ -1075,7 +1073,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ResetPasswordPostInvokesResetPasswordAsyncWithCorrectParametersWhenUserIsNotNullAndModelStateIsValid()
+        public async Task ResetPasswordPostInvokesResetPasswordAsyncWithCorrectParameters_WhenUserIsNotNull_AndModelStateIsValid()
         {
             var email = "user@domain.tld";
 
@@ -1100,7 +1098,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ResetPasswordPostRedirectsToCorrectActionWhenUsersPasswordResetSucceededAndUserIsNotNullAndModelStateIsValid()
+        public async Task ResetPasswordPostRedirectsToCorrectAction_WhenUsersPasswordResetSucceeded_AndUserIsNotNull_AndModelStateIsValid()
         {
             var email = "user@domain.tld";
 
@@ -1123,7 +1121,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ResetPasswordPostAddsIdentityResultErrorsToModelStateErrorsWhenUsersPasswordResetFailedAndUserIsNotNullAndModelStateIsValid()
+        public async Task ResetPasswordPostAddsIdentityResultErrorsToModelStateErrors_WhenUsersPasswordResetFailed_AndUserIsNotNull_AndModelStateIsValid()
         {
             var email = "user@domain.tld";
 
@@ -1148,7 +1146,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ResetPasswordPostReturnsAViewWhenUsersPasswordResetFailedAndUserIsNotNullAndModelStateIsValid()
+        public async Task ResetPasswordPostReturnsAView_WhenUsersPasswordResetFailed_AndUserIsNotNull_AndModelStateIsValid()
         {
             var email = "user@domain.tld";
 
@@ -1267,63 +1265,77 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackRedirectsToCorrectActionWhenExternalLoginInfoIsNull()
+        public async Task ExternalLoginCallbackRedirectsToCorrectAction_WhenExternalLoginInfoIsNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackInvokesExternalLoginSignInAsyncWithCorrectParametersWhenExternalLoginInfoIsNotNull()
+        public async Task ExternalLoginCallbackInvokesExternalLoginSignInAsyncWithCorrectParameters_WhenExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackSendsAsyncApplicationUserQueryWhenExternalLoginIsSuccessfulAndExternalLoginInfoIsNotNull()
+        public async Task ExternalLoginCallbackPopulatesCorrectValuesForFirstNameAndLastNameFromNameClaim__WhenNameClaimIsNotNull_AndExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackRedirectsToLocalWithCorrectUrlWhenReturnUrlIsLocalUrl()
+        public async Task ExternalLoginCallbackPopulatesStringEmptyForFirstNameAndLastNameFromNameClaim__WhenNameClaimIsNull_AndExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndControllerWhenUserIsASiteAdmin()
+        public async Task ExternalLoginCallbackSendsApplicationUserQueryAsync_WhenExternalLoginIsSuccessful_AndExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndControllerWithCorrerctRouteValuesWhenUserIsAnOrgAdmin()
+        public async Task ExternalLoginCallbackRedirectsToLocalWithCorrectUrl_WhenReturnUrlIsLocalUrl()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndControllerWhenUrlIsNotALocalUrlAndUserTypeIsNotASiteAdminOrAnOrgAdmin()
+        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndController_WhenUserIsASiteAdmin()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackAddsCorrectDataToViewDataWhenWhenExternalLoginIsUnsuccessfulOrExternalLoginInfoIsNull()
+        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndControllerWithCorrerctRouteValues_WhenUserIsAnOrgAdmin()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackReturnsExternalLoginConfirmationViewAndCorrecgtViewModelWhenWhenExternalLoginIsUnsuccessfulOrExternalLoginInfoIsNull()
+        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndController_WhenUrlIsNotALocalUrl_AndUserTypeIsNotASiteAdminOrAnOrgAdmin()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginCallbackAddsCorrectDataToViewData_When_WhenExternalLoginIsUnsuccessfulOrExternalLoginInfoIsNull()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginCallbackReturnsExternalLoginConfirmationViewAndCorrecgtViewModel_When_WhenExternalLoginIsUnsuccessfulOrExternalLoginInfoIsNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
@@ -1358,7 +1370,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ExternalLoginConfirmationInvokesGetExternalLoginInfoAsyncWhenModelStateIsValid()
+        public async Task ExternalLoginConfirmationInvokesGetExternalLoginInfoAsync_WhenModelStateIsValid()
         {
             var userManager = CreateUserManagerMock();
             var signInManager = CreateSignInManagerMock(userManager);
@@ -1383,11 +1395,10 @@ namespace AllReady.UnitTest.Controllers
             var result = await sut.ExternalLoginConfirmation(viewmodel) as ViewResult;
 
             Assert.Equal(result.ViewName, "ExternalLoginFailure");
-
         }
 
         [Fact]
-        public async Task ExternalLoginConfirmationInvokesCreateAsyncWithCorrectUserWhenExternalLoginInfoIsSuccessfulAndModelStateIsValid()
+        public async Task ExternalLoginConfirmationInvokesCreateAsyncWithCorrectUser_WhenExternalLoginInfoIsSuccessful_AndModelStateIsValid()
         {
             var userManager = CreateUserManagerMock();
             userManager.Setup(u => u.CreateAsync(It.IsAny<ApplicationUser>())).Returns(Task.FromResult<IdentityResult>(new IdentityResult()));
@@ -1405,7 +1416,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ExternalLoginConfirmationInvokesAddLoginAsyncWithCorrectParametersWhenUserIsCreatedSuccessfully()
+        public async Task ExternalLoginConfirmationInvokesAddLoginAsyncWithCorrectParameters_WhenUserIsCreatedSuccessfully()
         {
             var userManager = CreateUserManagerMockWithSucessIdentityResult();
             var signInManager = CreateSignInManagerMock(userManager);
@@ -1421,14 +1432,14 @@ namespace AllReady.UnitTest.Controllers
             userManager.Verify(u => u.AddLoginAsync(It.Is<ApplicationUser>(au => au.Email == viewModel.Email
                     && au.FirstName == viewModel.FirstName
                     && au.LastName == viewModel.LastName
-                                                                                    && au.PhoneNumber == viewModel.PhoneNumber),
-                                                     It.Is<ExternalLoginInfo>(ei => ei.LoginProvider == "test"
-                                                                                    && ei.ProviderKey == "testKey"
-                                                                                    && ei.ProviderDisplayName == "testDisplayName")));
-        }
+                    && au.PhoneNumber == viewModel.PhoneNumber),
+                It.Is<ExternalLoginInfo>(ei => ei.LoginProvider == "test"
+                    && ei.ProviderKey == "testKey"
+                    && ei.ProviderDisplayName == "testDisplayName")));
+}
 
         [Fact]
-        public async Task ExternalLoginConfirmationInvokesSignInAsyncWithCorrectParametersWhenExternalLoginIsAddedSuccessfully()
+        public async Task ExternalLoginConfirmationInvokesSignInAsyncWithCorrectParameters_WhenExternalLoginIsAddedSuccessfully()
         {
             var userManager = CreateUserManagerMockWithSucessIdentityResult();
             var signInManager = CreateSignInManagerMock(userManager);
@@ -1448,13 +1459,13 @@ namespace AllReady.UnitTest.Controllers
             signInManager.Verify(s => s.SignInAsync(It.Is<ApplicationUser>(au => au.Email == viewModel.Email
                 && au.FirstName == viewModel.FirstName
                 && au.LastName == viewModel.LastName
-                                                                                 && au.PhoneNumber == viewModel.PhoneNumber),
-                                                    It.Is<bool>(p => p == false),
-                                                    It.Is<string>(auth => auth == null)));
+                && au.PhoneNumber == viewModel.PhoneNumber),
+                It.Is<bool>(p => p == false),
+                It.Is<string>(auth => auth == null)));
         }
 
         [Fact]
-        public async Task ExternalLoginConfirmationRedirectsToCorrectUrlWhenUrlIsLocalUrl()
+        public async Task ExternalLoginConfirmationRedirectsToCorrectUrl_WhenUrlIsLocalUrl()
         {
             var userManager = CreateUserManagerMockWithSucessIdentityResult();
             var signInManager = CreateSignInManagerMock(userManager);
@@ -1475,7 +1486,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ExternalLoginConfirmationRedirectsToCorrectActionAndControllerWithCorrectRouteValuesWhenUserIsSiteAdmin()
+        public async Task ExternalLoginConfirmationRedirectsToCorrectActionAndControllerWithCorrectRouteValues_WhenUserIsSiteAdmin()
         {
             var userManager = CreateUserManagerMockWithSucessIdentityResult();
             var signInManager = CreateSignInManagerMock(userManager);
@@ -1506,7 +1517,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ExternalLoginConfirmationRedirectsToCorrectActionAndContrllerWithCorrectRouteValuesWhenUserIsOrgAdmin()
+        public async Task ExternalLoginConfirmationRedirectsToCorrectActionAndContrllerWithCorrectRouteValues_WhenUserIsOrgAdmin()
         {
             var userManager = CreateUserManagerMockWithSucessIdentityResult();
             var signInManager = CreateSignInManagerMock(userManager);
@@ -1537,7 +1548,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ExternalLoginConfirmationRedirectsToCorrectActionAndContrllerWhenUrlIsNotLocalUrlAndUserIsNeitherSiteAdminOrOrgAdmin()
+        public async Task ExternalLoginConfirmationRedirectsToCorrectActionAndContrller_WhenUrlIsNotLocalUrl_AndUserIsNeitherSiteAdminOrOrgAdmin()
         {
             var userManager = CreateUserManagerMockWithSucessIdentityResult();
             var signInManager = CreateSignInManagerMock(userManager);
@@ -1557,7 +1568,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ExternalLoginConfirmationAddsIdentityResultErrorsToModelStateErrorWhenUserIsCreatedSuccessfully()
+        public async Task ExternalLoginConfirmationAddsIdentityResultErrorsToModelStateError_WhenUserIsCreatedSuccessfully()
         {
             var userManager = CreateUserManagerMock();
             userManager.Setup(u => u.CreateAsync(It.IsAny<ApplicationUser>()))
@@ -1585,12 +1596,12 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ExternalLoginConfirmationPutsCorrectDataInViewDataWithCorrectKeyWhenModelStateIsInvalid()
+        public async Task ExternalLoginConfirmationPutsCorrectDataInViewDataWithCorrectKey_WhenModelStateIsInvalid()
         {
-            var returnUrlKey = "ReturnUrl";
-            var returnUrlValue = "http:\\test.url.com";
-            ExternalLoginConfirmationViewModel model = new ExternalLoginConfirmationViewModel();
-            AccountController controller = AccountController();
+            const string returnUrlKey = "ReturnUrl";
+            const string returnUrlValue = "http:\\test.url.com";
+            var model = new ExternalLoginConfirmationViewModel();
+            var controller = AccountController();
             controller.AddModelStateError();
             controller.SetFakeUser("test");
             var result = await controller.ExternalLoginConfirmation(model, returnUrlValue) as ViewResult;
@@ -1602,10 +1613,10 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ExternalLoginConfirmationReturnsCorrectViewModelWhenModelStateIsInvalid()
+        public async Task ExternalLoginConfirmationReturnsCorrectViewModel_WhenModelStateIsInvalid()
         {
-            ExternalLoginConfirmationViewModel model = new ExternalLoginConfirmationViewModel();
-            AccountController controller = AccountController();
+            var model = new ExternalLoginConfirmationViewModel();
+            var controller = AccountController();
             controller.AddModelStateError();
             controller.SetFakeUser("test");
             var result = await controller.ExternalLoginConfirmation(model) as ViewResult;
@@ -1649,9 +1660,7 @@ namespace AllReady.UnitTest.Controllers
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
                     It.IsAny<bool>()))
-                .ReturnsAsync(signInResult == default(SignInResult)
-                            ? SignInResult.Success
-                            : signInResult
+                .ReturnsAsync(signInResult == default(SignInResult) ? SignInResult.Success : signInResult
                 );
             var emailSenderMock = new Mock<IEmailSender>();
             var generalSettingsMock = new Mock<IOptions<GeneralSettings>>();

@@ -6,6 +6,11 @@ using Newtonsoft.Json;
 
 namespace AllReady.Controllers
 {
+    //this class is intended to be used by developers who want to run a local smtp server in order to work with notifications or confirmation email and sms messages
+    //for smoke testing the system. To use this class, download a local smtp server (smtp4dev is an example of one of many of these: https://smtp4dev.codeplex.com/)
+    //and change the container to use SmtpEmailSender instead of FakeQueueWriterService for IQueueStorageService in Startup.cs at this line:
+    //services.AddTransient<IQueueStorageService, FakeQueueWriterService>();
+    //just remember to change back to FakeQueueWriterService service before committing ;)
     public class SmtpEmailSender : IQueueStorageService
     {
         public Task SendMessageAsync(string queueName, string message)
@@ -13,6 +18,7 @@ namespace AllReady.Controllers
             MailMessage mailMessage;
             if (queueName == QueueStorageService.Queues.SmsQueue)
             {
+                //turn sms message into email message
                 var sms = JsonConvert.DeserializeObject<QueuedSmsMessage>(message);
                 mailMessage = new MailMessage("fakesender@fakesender.com", "fakereceiver0@fakereceiver.com")
                 {
