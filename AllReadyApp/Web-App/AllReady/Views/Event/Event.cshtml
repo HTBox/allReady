@@ -23,11 +23,15 @@
                 {
                     <div class="col-sm-2">
                         <h2></h2>
-                        <img src="@Model.ImageUrl" class="img-responsive"/>
+                        <img src="@Model.ImageUrl" class="img-responsive" />
                     </div>
                 }
                 <div class="@(string.IsNullOrEmpty(Model.ImageUrl) ? "col-sm-12" : "col-sm-10" )">
                     <h2>@Model.Title</h2>
+                    @if (Model.HasHeadline)
+                    {
+                        <h3>@Model.Headline</h3>
+                    }
                     <p class="date-address">
                         <time value="Model.StartDateTime" format="F"></time> - <time value="Model.EndDateTime" format="F"></time>
                         <em>

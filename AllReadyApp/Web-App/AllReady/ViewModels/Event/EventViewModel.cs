@@ -55,7 +55,7 @@ namespace AllReady.ViewModels.Event
             RequiredSkills = campaignEvent.RequiredSkills?.Select(acsk => new SkillViewModel(acsk.Skill)).ToList();
             IsLimitVolunteers = campaignEvent.IsLimitVolunteers;
             IsAllowWaitList = campaignEvent.IsAllowWaitList;
-            
+            Headline = campaignEvent.Headline;
         }
 
         public int Id { get; set; }
@@ -88,6 +88,9 @@ namespace AllReady.ViewModels.Event
         public int NumberOfUsersSignedUp => UsersSignedUp.Count;
         public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
         public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
+
+        public string Headline { get; set; }
+        public bool HasHeadline => !string.IsNullOrEmpty(Headline);
     }
 
     public static class EventViewModelExtension
