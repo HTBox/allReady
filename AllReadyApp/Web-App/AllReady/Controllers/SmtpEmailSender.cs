@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Mail;
+﻿using System.Net.Mail;
 using System.Threading.Tasks;
 using AllReady.Models.Notifications;
 using AllReady.Services;
@@ -14,18 +10,28 @@ namespace AllReady.Controllers
     {
         public Task SendMessageAsync(string queueName, string message)
         {
+            MailMessage mailMessage;
             if (queueName == QueueStorageService.Queues.SmsQueue)
-                return Task.FromResult(0);
-
-            var email = JsonConvert.DeserializeObject<QueuedEmailMessage>(message);
-
-            var mailMessage = new MailMessage("fakeemailaddress@fakeemailaddress.com", email.Recipient)
             {
-                Body = email.Message,
-                IsBodyHtml = true,
-                Subject = email.Subject
-            };
-            this.SendMessage(mailMessage);
+                var sms = JsonConvert.DeserializeObject<QueuedSmsMessage>(message);
+                mailMessage = new MailMessage("fakesender@fakesender.com", "fakereceiver0@fakereceiver.com")
+                {
+                    Subject = "SmsMessagePretendingToBeAnEmailMessage",
+                    Body = sms.Message,
+                };
+                SendMessage(mailMessage);
+            }
+            else
+            {
+                var email = JsonConvert.DeserializeObject<QueuedEmailMessage>(message);
+                mailMessage = new MailMessage("fakeemailaddress@fakeemailaddress.com", email.Recipient)
+                {
+                    Subject = email.Subject,
+                    Body = email.Message,
+                    IsBodyHtml = true
+                };
+                SendMessage(mailMessage);
+            }
 
             return Task.FromResult(0);
         }
