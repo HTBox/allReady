@@ -1,12 +1,8 @@
 ﻿using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
-using AllReady.Models;
-using AllReady.Security;
-using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
-using System.Linq;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -49,7 +45,6 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Organization/Edit/5
         public IActionResult Edit(int id)
         {
-
             var organization = _mediator.Send(new OrganizationEditQuery { Id = id });
             if (organization == null)
             {

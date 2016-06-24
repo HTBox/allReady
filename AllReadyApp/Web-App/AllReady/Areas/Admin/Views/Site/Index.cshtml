@@ -27,11 +27,11 @@
                             <a data-toggle="tooltip" data-placement="top" title="Reset Password" asp-action="ResetPassword" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-recycle"></span></a>
                             @if (!item.IsUserType(UserType.SiteAdmin) && !item.IsUserType(UserType.OrgAdmin)) {
                                 <a data-toggle="tooltip" data-placement="top" title="Make Site Admin" asp-action="AssignSiteAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-user-secret"></span></a>
-                                <a data-toggle="tooltip" data-placement="top" title="Make Org Admin" asp-action="AssignTenantAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-group"></span></a>
+                                <a data-toggle="tooltip" data-placement="top" title="Make Org Admin" asp-action="AssignOrganizationAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-group"></span></a>
                             } else if (item.IsUserType(UserType.SiteAdmin)) {
                                 <a data-toggle="tooltip" data-placement="top" title="Revoke Site Admin" asp-action="RevokeSiteAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-user-secret"></span></a>
                             } else if (item.IsUserType(UserType.OrgAdmin)) {
-                                <a data-toggle="tooltip" data-placement="top" title="Revoke Org Admin" asp-action="RevokeTenantAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-group"></span></a>
+                                <a data-toggle="tooltip" data-placement="top" title="Revoke Org Admin" asp-action="RevokeOrganizationAdmin" asp-controller="Site" asp-route-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-group"></span></a>
                             }
                         </div>
                     </td>

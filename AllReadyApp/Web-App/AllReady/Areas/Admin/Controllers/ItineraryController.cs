@@ -9,6 +9,9 @@ using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Models.ItineraryModels;
 using AllReady.Areas.Admin.Models.Validators;
 using System.Linq;
+using AllReady.Areas.Admin.Models.RequestModels;
+using AllReady.Areas.Admin.Features.Organizations;
+using AllReady.Areas.Admin.Features.TaskSignups;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -85,7 +88,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpBadRequest(ModelState);
             }
 
-            var result = await _mediator.SendAsync(new EditItineraryCommand() { Itinerary = model });
+            var result = await _mediator.SendAsync(new EditItineraryCommand { Itinerary = model });
 
             if (result > 0)
             {
@@ -104,6 +107,12 @@ namespace AllReady.Areas.Admin.Controllers
             // this flow should be reviews and enhanced in a future PR using knockout to send and handle the error messaging on the details page
             // for the purpose of the upcoming red cross testing I chose to leave this since a failure here would be an edge case
 
+            var orgId = await GetOrganizationIdBy(id);
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
             if (id == 0 || selectedTeamMember == 0)
             {
                 return RedirectToAction("Details", new { id = id });
@@ -112,6 +121,182 @@ namespace AllReady.Areas.Admin.Controllers
             var isSuccess = await _mediator.SendAsync(new AddTeamMemberCommand { ItineraryId = id, TaskSignupId = selectedTeamMember });
 
             return RedirectToAction("Details", new { id = id });
+        }
+
+        [HttpGet]
+        [Route("Admin/Itinerary/{id}/[Action]")]
+        public async Task<IActionResult> SelectRequests(int id)
+        {
+            var orgId = await GetOrganizationIdBy(id);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            var model = new SelectItineraryRequestsModel();
+
+            var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = id });
+
+            model.CampaignId = itinerary.CampaignId;
+            model.CampaignName = itinerary.CampaignName;
+            model.EventId = itinerary.EventId;
+            model.EventName = itinerary.EventName;
+            model.ItineraryName = itinerary.Name;
+
+            var requests =  await _mediator.SendAsync(new RequestListItemsQuery { criteria = new RequestSearchCriteria() });
+
+            foreach(var request in requests)
+            {
+                var selectItem = new RequestSelectModel
+                {
+                    Id = request.Id,
+                    Name = request.Name,
+                    DateAdded = request.DateAdded,
+                    City =  request.City,
+                    Address = request.Address
+                };
+
+                model.Requests.Add(selectItem);
+            }
+            
+            return View("SelectRequests", model);
+        }
+
+        [HttpPost]
+        [Route("Admin/Itinerary/{id}/[Action]")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddRequests(int id, string[] selectedRequests)
+        {
+            // todo - error handling
+            var orgId = await GetOrganizationIdBy(id);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            if (selectedRequests.Any())
+            { 
+                var result = await _mediator.SendAsync(new AddRequestsCommand { ItineraryId = id, RequestIdsToAdd = selectedRequests.ToList() });
+            }
+
+            return RedirectToAction(nameof(Details), new { id = id });
+        }
+
+        [HttpGet]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
+        public async Task<IActionResult> ConfirmRemoveTeamMember(int itineraryId, int taskSignupId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            var model = await _mediator.SendAsync(new TaskSignupSummaryQuery {TaskSignupId = taskSignupId});
+
+            if (model == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View("ConfirmRemoveTeamMember", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
+        public async Task<IActionResult> RemoveTeamMember(int itineraryId, int taskSignupId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            var result = await _mediator.SendAsync(new RemoveTeamMemberCommand { TaskSignupId = taskSignupId });
+
+            return RedirectToAction("Details", new {id = itineraryId });
+        }
+
+        [HttpGet]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{requestId}")]
+        public async Task<IActionResult> ConfirmRemoveRequest(int itineraryId, Guid requestId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            var model = await _mediator.SendAsync(new RequestSummaryQuery { RequestId = requestId });
+
+            if (model == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View("ConfirmRemoveRequest", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{requestId}")]
+        public async Task<IActionResult> RemoveRequest(int itineraryId, Guid requestId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            var result = await _mediator.SendAsync(new RemoveRequestCommand { RequestId = requestId, ItineraryId = itineraryId });
+
+            return RedirectToAction("Details", new { id = itineraryId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{requestId}")]
+        public async Task<IActionResult> MoveRequestUp(int itineraryId, Guid requestId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            var result = await _mediator.SendAsync(new ReorderRequestCommand { RequestId = requestId, ItineraryId = itineraryId, ReOrderDirection = ReorderRequestCommand.Direction.Up });
+
+            return RedirectToAction("Details", new { id = itineraryId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{requestId}")]
+        public async Task<IActionResult> MoveRequestDown(int itineraryId, Guid requestId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            var result = await _mediator.SendAsync(new ReorderRequestCommand { RequestId = requestId, ItineraryId = itineraryId, ReOrderDirection = ReorderRequestCommand.Direction.Down });
+
+            return RedirectToAction("Details", new { id = itineraryId });
+        }
+
+        private async Task<int> GetOrganizationIdBy(int intinerayId)
+        {
+            return await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = intinerayId });
         }
     }
 }

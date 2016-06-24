@@ -48,6 +48,12 @@ namespace AllReady.Models
 
         public bool IsAllowWaitList { get; set; } = false;
 
+        /// <summary>
+        /// A short piece of optional text which organizers can use to help generate views/volunteers
+        /// </summary>
+        [MaxLength(150)]
+        public string Headline { get; set; }
+
         [NotMapped]
         public int NumberOfUsersSignedUp => UsersSignedUp.Count;
 

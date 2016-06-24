@@ -19,12 +19,7 @@ namespace AllReady.Areas.Admin.Features.Events
         }
         public async Task<int> Handle(EditEventCommand message)
         {
-            var campaignEvent = await GetEvent(message);
-
-            if (campaignEvent == null)
-            {
-                campaignEvent = new Event();
-            }
+            var campaignEvent = await GetEvent(message) ?? new Event();
 
             campaignEvent.Name = message.Event.Name;
             campaignEvent.Description = message.Event.Description;
@@ -72,6 +67,8 @@ namespace AllReady.Areas.Admin.Features.Events
                 campaignEvent.Location = campaignEvent.Location.UpdateModel(message.Event.Location);
                 _context.Update(campaignEvent.Location);
             }
+
+            campaignEvent.Headline = message.Event.Headline;
 
             _context.Update(campaignEvent);
             await _context.SaveChangesAsync().ConfigureAwait(false);

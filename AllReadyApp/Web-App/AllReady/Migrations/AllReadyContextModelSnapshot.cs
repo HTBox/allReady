@@ -57,11 +57,13 @@ namespace AllReady.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
+                    b.Property<string>("FirstName");
+
+                    b.Property<string>("LastName");
+
                     b.Property<bool>("LockoutEnabled");
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
-
-                    b.Property<string>("Name");
 
                     b.Property<string>("NormalizedEmail")
                         .HasAnnotation("MaxLength", 256);
@@ -118,6 +120,9 @@ namespace AllReady.Migrations
                     b.Property<bool>("Featured");
 
                     b.Property<string>("FullDescription");
+
+                    b.Property<string>("Headline")
+                        .HasAnnotation("MaxLength", 150);
 
                     b.Property<string>("ImageUrl");
 
@@ -223,6 +228,9 @@ namespace AllReady.Migrations
 
                     b.Property<int>("EventType");
 
+                    b.Property<string>("Headline")
+                        .HasAnnotation("MaxLength", 150);
+
                     b.Property<string>("ImageUrl");
 
                     b.Property<bool>("IsAllowWaitList");
@@ -294,6 +302,10 @@ namespace AllReady.Migrations
 
                     b.Property<Guid>("RequestId");
 
+                    b.Property<DateTime>("DateAssigned");
+
+                    b.Property<int>("OrderIndex");
+
                     b.HasKey("ItineraryId", "RequestId");
                 });
 
@@ -326,6 +338,8 @@ namespace AllReady.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("DescriptionHtml");
+
                     b.Property<int?>("LocationId");
 
                     b.Property<string>("LogoUrl");
@@ -334,6 +348,9 @@ namespace AllReady.Migrations
                         .IsRequired();
 
                     b.Property<string>("PrivacyPolicy");
+
+                    b.Property<string>("Summary")
+                        .HasAnnotation("MaxLength", 250);
 
                     b.Property<string>("WebUrl");
 
@@ -379,6 +396,8 @@ namespace AllReady.Migrations
                     b.Property<string>("Address");
 
                     b.Property<string>("City");
+
+                    b.Property<DateTime>("DateAdded");
 
                     b.Property<string>("Email");
 
@@ -463,7 +482,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("StatusDescription");
 
-                    b.Property<int?>("TaskId");
+                    b.Property<int>("TaskId");
 
                     b.Property<string>("UserId");
 

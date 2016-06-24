@@ -22,6 +22,12 @@ namespace AllReady.Models
         [Display(Name = "External Link Text")]
         public string ExternalUrlText { get; set; }
 
+        /// <summary>
+        /// A short piece of optional text which organizers can use to help generate views/volunteers
+        /// </summary>
+        [MaxLength(150)]
+        public string Headline { get; set; }
+
         [Display(Name = "Managing Organization")]
         public int ManagingOrganizationId { get; set; }
         public Organization ManagingOrganization { get; set; }

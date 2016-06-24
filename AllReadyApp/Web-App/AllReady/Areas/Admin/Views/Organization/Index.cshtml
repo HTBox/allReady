@@ -13,37 +13,39 @@
     <div class="col-md-12">
         <table class="table table-responsive table-condensed">
             <tr>
-                <th>Actions</th>
-                <th>
+                <th class="col-md-3">
+                </th>
+                <th class="col-md-3">
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
-                <th>
+                <th class="col-md-4">
                     @Html.DisplayNameFor(model => model.WebUrl)
                 </th>
-                <th></th>
+                <th class="col-md-2"></th>
             </tr>
-            @foreach (var item in Model) {
+            @foreach (var item in Model)
+            {
                 <tr>
                     <td>
-                        <div class="btn-group btn-group-sm row-btn-margin">
-                            <a data-toggle="tooltip" data-placement="top" title="Edit" href="@Url.Action("Edit", "Organization", new { id = item.Id })" class="btn btn-success"><span class="fa fa-edit"></span></a>
-                        </div>
+                        @if (!string.IsNullOrEmpty(item.LogoUrl))
+                        {
+                            <a href="@Url.Action("Details", "Organization", new {id = item.Id})">
+                                <img src="@item.LogoUrl" alt="@item.Name" class="lister-logo" />
+                            </a>
+                        }
                     </td>
                     <td>
-                        <a href="@Url.Action("Details", "Organization", new { id = item.Id })">
-                            @if (String.IsNullOrEmpty(item.LogoUrl)) {
-                                @item.Name
-                            } else {
-                                <img src="@item.LogoUrl" alt="@item.Name" class="org-image" />
-                            }
-                        </a>
+                        <a href="@Url.Action("Details", "Organization", new { id = item.Id })">@item.Name</a>
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.WebUrl)
                     </td>
                     <td>
-                        <div class="btn-group btn-group-sm pull-right row-btn-margin">
+                        <div class="btn-group btn-group-sm row-btn-margin pull-right">
                             <a data-toggle="tooltip" data-placement="top" title="Delete" href="@Url.Action("Delete", "Organization", new { id = item.Id })" class="btn btn-danger"><span class="fa fa-remove"></span></a>
+                        </div>
+                        <div class="btn-group btn-group-sm row-btn-margin pull-right">
+                            <a data-toggle="tooltip" data-placement="top" title="Edit" href="@Url.Action("Edit", "Organization", new {id = item.Id})" class="btn btn-success"><span class="fa fa-edit"></span></a>
                         </div>
                     </td>
                 </tr>
@@ -61,8 +63,8 @@
 
 @section scripts {
     <script type="text/javascript">
-        $(document).ready(function() {
-            $('[data-toggle="tooltip"]').tooltip({container:'body'});
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
         });
     </script>
 }

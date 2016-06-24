@@ -7,6 +7,11 @@
     <form asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm"> 
         <ul class="nav navbar-nav navbar-right login-status">
             <li>
+                <a asp-controller="Volunteer" asp-action="Dashboard" title="Dashboard">
+                    Dashboard
+                </a>
+            </li>
+            <li>
                 <a asp-controller="Manage" asp-action="Index" title="Manage">Hello @User.GetDisplayName() 
                 @if(User.IsUserProfileIncomplete() )
                 {

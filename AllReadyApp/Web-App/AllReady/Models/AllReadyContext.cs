@@ -106,7 +106,7 @@ namespace AllReady.Models
 
         private void Map(EntityTypeBuilder<TaskSignup> builder)
         {
-            builder.HasOne(u => u.Task);
+            builder.HasOne(u => u.Task).WithMany(x => x.AssignedVolunteers).HasForeignKey(x => x.TaskId);
         }
 
         private void Map(EntityTypeBuilder<AllReadyTask> builder)

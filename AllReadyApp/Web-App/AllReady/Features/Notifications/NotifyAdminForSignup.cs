@@ -122,20 +122,7 @@ namespace AllReady.Features.Notifications
             }
         }
 
-        private string GetEventSkillsInfo(Models.Event campaignEvent, ApplicationUser volunteer)
-        {
-            var result = new StringBuilder();
-            if (campaignEvent.RequiredSkills.Count == 0) return result.ToString();
-            result.AppendLine("   Skills Required:");
-            foreach (var skill in campaignEvent.RequiredSkills)
-            {
-                var userMatch = volunteer.AssociatedSkills.Any(vs => vs.SkillId == skill.SkillId);
-                result.AppendLine($"      {skill.Skill.Name} {(userMatch ? "(match)" : string.Empty)}");
-            }
-            return result.ToString();
-        }
-
-        private string GetTaskSkillsInfo(AllReadyTask task, ApplicationUser volunteer)
+        private static string GetTaskSkillsInfo(AllReadyTask task, ApplicationUser volunteer)
         {
             var result = new StringBuilder();
             if (task.RequiredSkills.Count == 0) return result.ToString();

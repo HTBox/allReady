@@ -8,13 +8,13 @@ using AllReady.Extensions;
 using AllReady.Models;
 using AllReady.Security;
 using AllReady.Services;
-using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
 using AllReady.Areas.Admin.Models.Validators;
 using AllReady.Features.Event;
+using AllReady.ViewModels.Event;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -79,7 +79,7 @@ namespace AllReady.Areas.Admin.Controllers
                 OrganizationId = campaign.OrganizationId,
                 OrganizationName = campaign.OrganizationName,
                 StartDateTime = DateTime.Today.Date,
-                EndDateTime = DateTime.Today.Date.AddMonths(1)
+                EndDateTime = DateTime.Today.Date
             };
 
             return View("Edit", campaignEvent);

@@ -45,7 +45,7 @@ namespace AllReady
                 builder.AddApplicationInsightsSettings(developerMode: true);
 
             }
-            builder.AddEnvironmentVariables();
+
             Configuration = builder.Build();
             Configuration["version"] = appEnv.ApplicationVersion; // version in project.json
         }
