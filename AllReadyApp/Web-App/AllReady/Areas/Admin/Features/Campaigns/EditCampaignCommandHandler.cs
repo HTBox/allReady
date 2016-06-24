@@ -9,7 +9,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 {
     public class EditCampaignCommandHandler : IAsyncRequestHandler<EditCampaignCommand, int>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
 
         public EditCampaignCommandHandler(AllReadyContext context)
         {
@@ -23,12 +23,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                 .Include(tc => tc.CampaignContacts)
                 .Include(i => i.CampaignImpact)
                 .SingleOrDefaultAsync(c => c.Id == message.Campaign.Id)
-                .ConfigureAwait(false);
-
-            if (campaign == null)
-            {
-                campaign = new Campaign();
-            }
+                .ConfigureAwait(false) ?? new Campaign();
 
             campaign.Name = message.Campaign.Name;
             campaign.Description = message.Campaign.Description;
@@ -53,6 +48,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.Location = campaign.Location.UpdateModel(message.Campaign.Location);
 
             campaign.Featured = message.Campaign.Featured;
+            campaign.Headline = message.Campaign.Headline;
 
             if (campaign.CampaignImpact != null)
             {

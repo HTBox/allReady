@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AllReady.Migrations;
 using AllReady.Models;
 using AllReady.ViewModels.Event;
 
@@ -35,6 +36,7 @@ namespace AllReady.ViewModels.Campaign
             HasPrivacyPolicy = !string.IsNullOrEmpty(campaign.ManagingOrganization?.PrivacyPolicy);
             Location = campaign.Location;
             Featured = campaign.Featured;
+            Headline = campaign.Headline;
         }
 
         public int Id { get; set; }
@@ -86,6 +88,9 @@ namespace AllReady.ViewModels.Campaign
 
         public bool HasPrivacyPolicy { get; set; }
         public bool Featured { get; set; }
+
+        public string Headline { get; set; }
+        public bool HasHeadline => !string.IsNullOrEmpty(Headline);
     }
 
     public static class CampaignViewModelExtensions

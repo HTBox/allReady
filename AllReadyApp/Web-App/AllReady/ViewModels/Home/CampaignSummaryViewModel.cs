@@ -7,5 +7,6 @@
         public string Description { get; set; }
         public string ImageUrl { get; set; }
         public Models.Organization Organization { get; set; }
+        public string Headline { get; set; }
     }
 }

@@ -48,7 +48,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     StartDate = campaign.StartDateTime,
                     EndDate = campaign.EndDateTime,
                     Location = campaign.Location.ToEditModel(),
-                    CampaignImpact = campaign.CampaignImpact != null ? campaign.CampaignImpact : new CampaignImpact()
+                    CampaignImpact = campaign.CampaignImpact ?? new CampaignImpact(),
+                    Headline = campaign.Headline
                 };
 
                 if (!campaign.CampaignContacts.Any())// Include isn't including

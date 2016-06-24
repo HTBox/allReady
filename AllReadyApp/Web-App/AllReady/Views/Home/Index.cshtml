@@ -25,6 +25,10 @@
                             </div>
                                 <div class="col-md-9">
                                     <h3>@Model.FeaturedCampaign.Title</h3>
+                                    @if(!string.IsNullOrEmpty(Model.FeaturedCampaign.Headline))
+                                    {
+                                        <p><strong>@Model.FeaturedCampaign.Headline</strong></p>
+                                    }
                                     <h4>Managed by @Model.FeaturedCampaign.Organization.Name</h4>
                                     <p>@Model.FeaturedCampaign.Description</p>
                                 </div>
@@ -33,6 +37,10 @@
                         {
                             <div class="col-md-12">
                                 <h3>@Model.FeaturedCampaign.Title</h3>
+                                @if (!string.IsNullOrEmpty(Model.FeaturedCampaign.Headline))
+                                {
+                                    <p><strong>@Model.FeaturedCampaign.Headline</strong></p>
+                                }
                                 <h4>Managed by @Model.FeaturedCampaign.Organization.Name</h4>
                                 <p>@Model.FeaturedCampaign.Description</p>
                             </div>

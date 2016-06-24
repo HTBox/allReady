@@ -41,6 +41,9 @@ namespace AllReady.Areas.Admin.Models
         
         public string TimeZoneId { get; set; }
 
+        [MaxLength(150)]
+        public string Headline { get; set; }
+
         [Display(Name = "Start Date")]
         public DateTimeOffset StartDateTime { get; set; }
         [Display(Name = "End Date")]

@@ -28,6 +28,7 @@ namespace AllReady.Features.Campaigns
                     Description = c.Description,
                     ImageUrl = c.ImageUrl,
                     Organization = c.ManagingOrganization,
+                    Headline = c.Headline
                 })
                 .OrderBy(c => c.Id)
                 .FirstOrDefaultAsync();
