@@ -14,36 +14,45 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         private int other_id;
         private int firePrev_id;
         private int otherCampaign_id;
-
-        protected override void LoadTestData()
+        public Organization Htb()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
-
-            var htb = new Organization
-            {
+            return new Organization {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
                 WebUrl = "http://www.htbox.org",
-                Campaigns = new List<Campaign>(),                
+                Campaigns = new List<Campaign>(),
             };
-
-            var other = new Organization
+        }
+        public Organization Other()
+        {
+            return new Organization
             {
                 Name = "Other Org",
                 Campaigns = new List<Campaign>(),
             };
-
-            var firePrev = new Campaign
+        }
+        public Campaign FirePrev()
+        {
+            return new Campaign
             {
                 Name = "Neighborhood Fire Prevention Days",
-                ManagingOrganization = htb
             };
-
-            var otherCampaign = new Campaign
+        }
+        public Campaign OtherCampaign()
+        {
+            return new Campaign
             {
                 Name = "Some other campaign",
-                ManagingOrganization = other
             };
+        }
+        protected override void LoadTestData()
+        {
+            var context = ServiceProvider.GetService<AllReadyContext>();
+
+            var htb = Htb();
+            var other = Other();
+            var firePrev = FirePrev();
+            var otherCampaign = OtherCampaign();
 
             context.Organizations.Add(htb);
             context.Organizations.Add(other);

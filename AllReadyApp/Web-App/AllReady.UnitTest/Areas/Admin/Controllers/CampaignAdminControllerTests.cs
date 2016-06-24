@@ -16,13 +16,12 @@ using System.Linq;
 using System;
 using AllReady.Extensions;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
     public class CampaignAdminControllerTests
     {
-        //delete this line when all unit tests using it have been completed
-        private readonly Task taskFromResultZero = Task.FromResult(0);
 
         [Fact]
         public void IndexSendsCampaignListQueryWithCorrectDataWhenUserIsOrgAdmin()
@@ -61,11 +60,17 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
+        public void IndexReturnsCorrectViewModel()
+        {
+            IndexReturnsCorrectDataWhenUserIsOrgAdmin();
+            IndexReturnsCorrectDataWhenUserIsNotOrgAdmin();
+        }
+
         public void IndexReturnsCorrectDataWhenUserIsOrgAdmin()
         {
             int OrganizationId = 99;
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.Send(It.IsAny<CampaignListQuery>()))
+            mockMediator.Setup(x => x.Send(It.Is<CampaignListQuery>(c => c.OrganizationId == OrganizationId)))
                 .Returns((CampaignListQuery q) => {
                     List<CampaignSummaryModel> ret = new List<CampaignSummaryModel>();
                     ret.Add(new CampaignSummaryModel { OrganizationId = OrganizationId });
@@ -74,6 +79,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             );
             var mockImageService = new Mock<IImageService>();
             CampaignController controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+
             List<Claim> claims = new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
@@ -82,8 +88,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.SetClaims(claims);
 
             ViewResult view = (ViewResult)controller.Index();
-
-            // verify the fetch was called
             mockMediator.Verify(mock => mock.Send(It.Is<CampaignListQuery>(c => c.OrganizationId == OrganizationId)));
 
             // Org admin should only see own campaigns
@@ -91,20 +95,56 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(viewModel);
             Assert.Equal(viewModel.Count(), 1);
             Assert.Equal(viewModel.First().OrganizationId, OrganizationId);
-            
         }
 
-
-        [Fact(Skip = "NotImplemented")]
-        public void IndexReturnsCorrectViewModel()
+        public void IndexReturnsCorrectDataWhenUserIsNotOrgAdmin()
         {
+            int OrganizationId = 99;
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.Send(It.Is<CampaignListQuery>(c => c.OrganizationId == null)))
+                .Returns((CampaignListQuery q) => {
+                    // return some models 
+                    List<CampaignSummaryModel> ret = new List<CampaignSummaryModel>();
+                    ret.Add(new CampaignSummaryModel { OrganizationId = OrganizationId });
+                    ret.Add(new CampaignSummaryModel { OrganizationId = OrganizationId + 1 });
+                    return ret;
+                }
+            );
+            var mockImageService = new Mock<IImageService>();
+            CampaignController controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
+            };
+            controller.SetClaims(claims);
+
+            // All campaigns returned when not OrgAdmin
+            ViewResult view = (ViewResult)controller.Index();
+
+            // verify the fetch was called
+            mockMediator.Verify(mock => mock.Send(It.Is<CampaignListQuery>(c => c.OrganizationId == null)));
+
+            // Site admin should only see all campaigns
+            IEnumerable<CampaignSummaryModel> viewModel = (IEnumerable<CampaignSummaryModel>)view.ViewData.Model;
+            Assert.NotNull(viewModel);
+            Assert.Equal(viewModel.Count(), 2);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DetailsSendsCampaignDetailQueryWithCorrectCampaignId()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            int CAMPAIGN_ID = 100;
+            int ORGANIZATION_ID = 99;
+            var mockMediator = new Mock<IMediator>();
+
+            // model is not null
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignDetailQuery>(c => c.CampaignId == CAMPAIGN_ID))).ReturnsAsync(new CampaignDetailModel { OrganizationId = ORGANIZATION_ID, Id = CAMPAIGN_ID }).Verifiable();
+
+            CampaignController controller = new CampaignController(mockMediator.Object, null);
+            controller.SetClaims(new List<Claim>()); // create a User for the controller
+            var view = await controller.Details(CAMPAIGN_ID);
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<CampaignDetailQuery>(c => c.CampaignId == CAMPAIGN_ID)));
         }
 
         [Fact]
@@ -129,23 +169,55 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<ViewResult>(await controller.Details(It.IsAny<int>()));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DetailsReturnsCorrectViewModelWhenViewModelIsNotNullAndUserIsOrgAdmin()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            int CAMPAIGN_ID = 100;
+            int ORGANIZATION_ID = 99;
+            var mockMediator = new Mock<IMediator>();
+
+            // model is not null
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignDetailQuery>(c=>c.CampaignId == CAMPAIGN_ID))).ReturnsAsync(new CampaignDetailModel { OrganizationId = ORGANIZATION_ID, Id = CAMPAIGN_ID }).Verifiable();
+
+            // user is org admin
+            CampaignController controller = new CampaignController(mockMediator.Object, null);
+            controller.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, ORGANIZATION_ID.ToString())
+            });
+
+            ViewResult view = (ViewResult)(await controller.Details(CAMPAIGN_ID));
+            CampaignDetailModel viewModel = (CampaignDetailModel)view.ViewData.Model;
+            Assert.Equal(viewModel.Id, CAMPAIGN_ID);
+            Assert.Equal(viewModel.OrganizationId, ORGANIZATION_ID);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void CreateReturnsCorrectViewWithCorrectViewModel()
         {
+            var mockMediator = new Mock<IMediator>();
+            var mockImageService = new Mock<IImageService>();
+            CampaignController controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            ViewResult view = (ViewResult) controller.Create();
+            CampaignSummaryModel viewModel = (CampaignSummaryModel)view.ViewData.Model;
+            Assert.Equal(view.ViewName, "Edit");
+            Assert.NotNull(viewModel);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditGetSendsCampaignSummaryQueryWithCorrectCampaignId()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            int CAMPAIGN_ID = 100;
+            var mockMediator = new Mock<IMediator>();
+
+            // model is not null
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(c => c.CampaignId == CAMPAIGN_ID))).ReturnsAsync(new CampaignSummaryModel { Id = CAMPAIGN_ID });
+
+            CampaignController controller = new CampaignController(mockMediator.Object, null);
+            controller.SetClaims(new List<Claim>()); // create a User for the controller
+            var view = await controller.Edit(CAMPAIGN_ID);
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(c => c.CampaignId == CAMPAIGN_ID)));
         }
 
         [Fact]
@@ -176,13 +248,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), It.IsAny<int>());
             var result = await controller.Edit(null, null);
             Assert.IsType<BadRequestResult>(result);
-        }
-
-        [Fact]
-        public async Task EditPostReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
-        {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
         }
 
         [Fact]
@@ -273,11 +338,27 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             //TODO: test that the value associated with the key is correct
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditPostReturnsCorrectViewModelWhenInvalidImageFormatIsSupplied()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            int ORGANIZATION_ID = 100;
+            var mockMediator = new Mock<IMediator>();
+            var mockImageService = new Mock<IImageService>();
+
+            var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, ORGANIZATION_ID.ToString())
+            });
+
+            var file = FormFile("audio/mpeg3");
+            CampaignSummaryModel model = MassiveTrafficLightOutage_model;
+            model.OrganizationId = ORGANIZATION_ID;
+
+            ViewResult view = (ViewResult)(await sut.Edit(model, file));
+            CampaignSummaryModel viewModel = (CampaignSummaryModel)view.ViewData.Model;
+            Assert.True(Object.ReferenceEquals(model, viewModel));
         }
 
         [Fact]
@@ -307,21 +388,35 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 It.Is<IFormFile>(i => i == file)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void EditPostHasHttpPostAttribute()
         {
+            HttpPostAttribute attr = (HttpPostAttribute)typeof(CampaignController).GetMethod(nameof(CampaignController.Edit), new Type[] { typeof(CampaignSummaryModel), typeof(IFormFile) }).GetCustomAttribute(typeof(HttpPostAttribute));
+            Assert.NotNull(attr);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void EditPostHasValidateAntiForgeryTokenttribute()
         {
+            ValidateAntiForgeryTokenAttribute attr = (ValidateAntiForgeryTokenAttribute)typeof(CampaignController).GetMethod(nameof(CampaignController.Edit), new Type[] { typeof(CampaignSummaryModel), typeof(IFormFile) }).GetCustomAttribute(typeof(ValidateAntiForgeryTokenAttribute));
+            Assert.NotNull(attr);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DeleteSendsCampaignSummaryQueryWithCorrectCampaignId()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            int ORGANIZATION_ID = 99;
+            int CAMPAIGN_ID = 100;
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(c => c.CampaignId == CAMPAIGN_ID))).ReturnsAsync(new CampaignSummaryModel { Id = CAMPAIGN_ID, OrganizationId = ORGANIZATION_ID });
+            CampaignController controller = new CampaignController(mockMediator.Object, null);
+            controller.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, ORGANIZATION_ID.ToString())
+            });
+            ViewResult view = (ViewResult)(await controller.Delete(CAMPAIGN_ID));
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(c => c.CampaignId == CAMPAIGN_ID)), Times.Once);
         }
 
         [Fact]
@@ -346,11 +441,22 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<ViewResult>(await controller.Delete(It.IsAny<int>()));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DeleteReturnsCorrectViewModelWhenUserIsOrgAdmin()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            int ORGANIZATION_ID = 99;
+            int CAMPAIGN_ID = 100;
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(c => c.CampaignId == CAMPAIGN_ID))).ReturnsAsync(new CampaignSummaryModel { Id = CAMPAIGN_ID, OrganizationId = ORGANIZATION_ID });
+            CampaignController controller = new CampaignController(mockMediator.Object, null);
+            controller.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, ORGANIZATION_ID.ToString())
+            });
+            ViewResult view = (ViewResult)(await controller.Delete(CAMPAIGN_ID));
+            CampaignSummaryModel viewModel = (CampaignSummaryModel)view.ViewData.Model;
+            Assert.Equal(viewModel.Id, CAMPAIGN_ID);
         }
 
         public async Task DeleteConfirmedSendsCampaignSummaryQueryWithCorrectCampaignId()
@@ -415,50 +521,83 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(result.RouteValues, routeValues);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void DeleteConfirmedHasHttpPostAttribute()
         {
+            HttpPostAttribute attr = (HttpPostAttribute)typeof(CampaignController).GetMethod(nameof(CampaignController.DeleteConfirmed), new Type[] { typeof(int) }).GetCustomAttribute(typeof(HttpPostAttribute));
+            Assert.NotNull(attr);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void DeleteConfirmedHasActionNameAttributeWithCorrectName()
         {
+            ActionNameAttribute attr = (ActionNameAttribute)typeof(CampaignController).GetMethod(nameof(CampaignController.DeleteConfirmed), new Type[] { typeof(int) }).GetCustomAttribute(typeof(ActionNameAttribute));
+            Assert.Equal(attr.Name, "Delete");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void DeleteConfirmedHasValidateAntiForgeryTokenAttribute()
         {
+            ValidateAntiForgeryTokenAttribute attr = (ValidateAntiForgeryTokenAttribute)typeof(CampaignController).GetMethod(nameof(CampaignController.DeleteConfirmed), new Type[] { typeof(int) }).GetCustomAttribute(typeof(ValidateAntiForgeryTokenAttribute));
+            Assert.NotNull(attr);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task LockUnlockReturnsHttpUnauthorizedResultWhenUserIsNotSiteAdmin()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            CampaignController controller = new CampaignController(null, null);
+            controller.SetClaims(new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()) });
+            Assert.IsType<HttpUnauthorizedResult>(await controller.LockUnlock(100));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task LockUnlockSendsLockUnlockCampaignCommandWithCorrectCampaignIdWhenUserIsSiteAdmin()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            int CAMPAIGN_ID = 99;
+            var mockMediator = new Mock<IMediator>();
+            CampaignController controller = new CampaignController(mockMediator.Object, null);
+            List<Claim> claims = new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()) };
+            controller.SetClaims(claims);
+
+            await controller.LockUnlock(CAMPAIGN_ID);
+
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<LockUnlockCampaignCommand>(q => q.CampaignId == CAMPAIGN_ID)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task LockUnlockRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsSiteAdmin()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            int CAMPAIGN_ID = 100;
+            var mockMediator = new Mock<IMediator>();
+
+            CampaignController controller = new CampaignController(mockMediator.Object, null);
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
+            };
+            controller.SetClaims(claims);
+
+            RedirectToActionResult view = (RedirectToActionResult)await controller.LockUnlock(CAMPAIGN_ID);
+
+            // verify the next route
+            Assert.Equal(view.ActionName, nameof(CampaignController.Details));
+            Assert.Equal(view.RouteValues["area"], "Admin");
+            Assert.Equal(view.RouteValues["id"], CAMPAIGN_ID);
+
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void LockUnlockHasHttpPostAttribute()
         {
+            HttpPostAttribute attr = (HttpPostAttribute)typeof(CampaignController).GetMethod(nameof(CampaignController.LockUnlock), new Type[] { typeof(int) }).GetCustomAttribute(typeof(HttpPostAttribute));
+            Assert.NotNull(attr);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void LockUnlockdHasValidateAntiForgeryTokenAttribute()
         {
+            ValidateAntiForgeryTokenAttribute attr = (ValidateAntiForgeryTokenAttribute)typeof(CampaignController).GetMethod(nameof(CampaignController.LockUnlock), new Type[] { typeof(int) }).GetCustomAttribute(typeof(ValidateAntiForgeryTokenAttribute));
+            Assert.NotNull(attr);
         }
 
         #region Helper Methods
