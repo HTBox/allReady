@@ -62,6 +62,12 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             itineraryDetails.HasPotentialTeamMembers = itineraryDetails.PotentialTeamMembers.Any();
             itineraryDetails.PotentialTeamMembers = itineraryDetails.PotentialTeamMembers.AddNullOptionToFront("<Please select your next team member>");
 
+            if (itineraryDetails.Requests.Any())
+            {
+                itineraryDetails.Requests[0].IsFirst = true;
+                itineraryDetails.Requests[itineraryDetails.Requests.Count - 1].IsLast = true;
+            }
+
             return itineraryDetails;
         }
     }

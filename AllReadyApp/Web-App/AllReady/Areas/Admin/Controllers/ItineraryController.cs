@@ -260,6 +260,40 @@ namespace AllReady.Areas.Admin.Controllers
             return RedirectToAction("Details", new { id = itineraryId });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{requestId}")]
+        public async Task<IActionResult> MoveRequestUp(int itineraryId, Guid requestId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            var result = await _mediator.SendAsync(new ReorderRequestCommand { RequestId = requestId, ItineraryId = itineraryId, ReOrderDirection = ReorderRequestCommand.Direction.Up });
+
+            return RedirectToAction("Details", new { id = itineraryId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{requestId}")]
+        public async Task<IActionResult> MoveRequestDown(int itineraryId, Guid requestId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            var result = await _mediator.SendAsync(new ReorderRequestCommand { RequestId = requestId, ItineraryId = itineraryId, ReOrderDirection = ReorderRequestCommand.Direction.Down });
+
+            return RedirectToAction("Details", new { id = itineraryId });
+        }
+
         private async Task<int> GetOrganizationIdBy(int intinerayId)
         {
             return await _mediator.SendAsync(new OrganizationIdQuery { ItineraryId = intinerayId });
