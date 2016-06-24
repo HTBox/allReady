@@ -223,11 +223,12 @@ namespace AllReady.UnitTest.Controllers
 
             var userManager = CreateUserManagerMock();
             userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<string>()));
 
             var signInManager = CreateSignInManagerMock(userManager);
             var emailSenderMock = new Mock<IEmailSender>();
 
-            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, null);
+            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, Mock.Of<IMediator>());
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = Mock.Of<IUrlHelper>();
 
@@ -250,11 +251,12 @@ namespace AllReady.UnitTest.Controllers
             var userManager = CreateUserManagerMock();
             userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
             userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
+            userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<string>()));
 
             var signInManager = CreateSignInManagerMock(userManager);
             var emailSenderMock = new Mock<IEmailSender>();
 
-            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, null);
+            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, Mock.Of<IMediator>());
 
             sut.SetFakeHttpRequestSchemeTo(requestScheme);
             var urlHelper = new Mock<IUrlHelper>();
@@ -282,6 +284,7 @@ namespace AllReady.UnitTest.Controllers
             var userManager = CreateUserManagerMock();
             userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
             userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
+            userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<string>()));
 
             var signInManager = CreateSignInManagerMock(userManager);
 
@@ -290,7 +293,7 @@ namespace AllReady.UnitTest.Controllers
 
             var emailSenderMock = new Mock<IEmailSender>();
 
-            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, null);
+            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, Mock.Of<IMediator>());
 
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = urlHelper.Object;
@@ -301,6 +304,20 @@ namespace AllReady.UnitTest.Controllers
                 It.Is<string>(y => y == model.Email),
                 It.IsAny<string>(),
                 It.Is<string>(y => y.Contains(callbackUrl))), Times.Once);
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task RegisterPostInvokesGenerateChangePhoneNumberTokenAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndUserCreationIsSuccessful()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task RegisterPostSendsSendAccountSecurityTokenSmsWithCorrectParameters_WhenModelStateIsValid_AndUserCreationIsSuccessful()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
         }
 
         [Fact]
@@ -316,6 +333,7 @@ namespace AllReady.UnitTest.Controllers
             var userManager = CreateUserManagerMock();
             userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
             userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
+            userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<string>()));
 
             var signInManager = CreateSignInManagerMock(userManager);
 
@@ -325,7 +343,7 @@ namespace AllReady.UnitTest.Controllers
             var emailSenderMock = new Mock<IEmailSender>();
             emailSenderMock.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<Task>()));
 
-            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, null);
+            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, Mock.Of<IMediator>());
 
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = urlHelper.Object;
@@ -352,6 +370,7 @@ namespace AllReady.UnitTest.Controllers
             var userManager = CreateUserManagerMock();
             userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
             userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
+            userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<string>()));
 
             var signInManager = CreateSignInManagerMock(userManager);
 
@@ -363,7 +382,7 @@ namespace AllReady.UnitTest.Controllers
 
             userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).Returns(() => Task.FromResult(IdentityResult.Success));
 
-            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, null);
+            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, Mock.Of<IMediator>());
 
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = urlHelper.Object;
@@ -386,6 +405,7 @@ namespace AllReady.UnitTest.Controllers
             var userManager = CreateUserManagerMock();
             userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
             userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
+            userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<string>()));
 
             var signInManager = CreateSignInManagerMock(userManager);
 
@@ -398,7 +418,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).Returns(() => Task.FromResult(IdentityResult.Success));
             signInManager.Setup(x => x.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), null)).Returns(() => Task.FromResult(It.IsAny<Task>()));
 
-            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, null);
+            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, Mock.Of<IMediator>());
 
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = urlHelper.Object;
