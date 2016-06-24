@@ -109,7 +109,7 @@
             <div class="form-group">
                 <label asp-for="StartDateTime" class="control-label col-md-2"></label>
                 <div class="col-md-10">
-                    <input asp-for="StartDateTime" class="form-control datetimepicker" />
+                    <input asp-for="StartDateTime" class="form-control datetimepicker start-date-time" />
                     <time-zone-name time-zone-id="@Model.TimeZoneId" class="text-muted"></time-zone-name><br />
                     <span asp-validation-for="StartDateTime" class="text-danger"></span>
                 </div>
@@ -117,7 +117,7 @@
             <div class="form-group">
                 <label asp-for="EndDateTime" class="control-label col-md-2"></label>
                 <div class="col-md-10">
-                    <input asp-for="EndDateTime" class="form-control datetimepicker" />
+                    <input asp-for="EndDateTime" class="form-control datetimepicker end-date-time" />
                     <time-zone-name time-zone-id="@Model.TimeZoneId" class="text-muted"></time-zone-name><br />
                     <span asp-validation-for="EndDateTime" class="text-danger"></span>
                 </div>
@@ -183,8 +183,15 @@
     <script src="~/js/eventmap.js"></script>
     <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
     <script type="text/javascript">
-        (function (ko, $, requiredSkills, availableSkills) {
+        $(".start-date-time")
+            .focusout(function() {
+                var value = $(this).val();
 
+                $(".end-date-time").val(value);
+            });
+
+        (function (ko, $, requiredSkills, availableSkills) {
+            
             function AdminEventViewModel(requiredSkills, availableSkills) {
 
                 function RequiredSkillObservable(skillModel) {
