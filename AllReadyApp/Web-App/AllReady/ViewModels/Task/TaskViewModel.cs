@@ -25,14 +25,12 @@ namespace AllReady.ViewModels.Task
 
             if (task.StartDateTime.HasValue)
             {
-                var startDateWithUtcKind = DateTime.SpecifyKind(DateTime.Parse(task.StartDateTime.Value.ToString()), DateTimeKind.Utc);
-                StartDateTime = new DateTimeOffset(startDateWithUtcKind);
+                StartDateTime = task.StartDateTime.Value;
             }
 
             if (task.EndDateTime.HasValue)
             {
-                var endDateWithUtcKind = DateTime.SpecifyKind(DateTime.Parse(task.EndDateTime.Value.ToString()), DateTimeKind.Utc);
-                EndDateTime = new DateTimeOffset(endDateWithUtcKind);
+                EndDateTime = task.EndDateTime.Value;
             }
 
             if (task.Event != null)
