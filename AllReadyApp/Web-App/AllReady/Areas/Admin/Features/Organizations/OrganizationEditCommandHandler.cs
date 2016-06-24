@@ -8,7 +8,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
 {
     public class OrganizationEditCommandHandler : IRequestHandler<OrganizationEditCommand, int>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
 
         public OrganizationEditCommandHandler(AllReadyContext context)
         {
@@ -17,31 +17,29 @@ namespace AllReady.Areas.Admin.Features.Organizations
 
         public int Handle(OrganizationEditCommand message)
         {
-            var organization = _context
-                    .Organizations
-                    .Include(l => l.Location)
-                    .Include(tc => tc.OrganizationContacts)
-                    .SingleOrDefault(t => t.Id == message.Organization.Id);
+            var org = _context
+                .Organizations
+                .Include(l => l.Location)
+                .Include(tc => tc.OrganizationContacts)
+                .SingleOrDefault(t => t.Id == message.Organization.Id) ?? new Organization();
 
-            if (organization == null)
-            {
-                organization = new Organization();
-            }
+            org.Name = message.Organization.Name;
+            org.LogoUrl = message.Organization.LogoUrl;
+            org.WebUrl = message.Organization.WebUrl;
 
-            organization.Name = message.Organization.Name;
-            organization.LogoUrl = message.Organization.LogoUrl;
-            organization.WebUrl = message.Organization.WebUrl;
+            org.DescriptionHtml = message.Organization.Description;
+            org.Summary = message.Organization.Summary;
 
-            organization = organization.UpdateOrganizationContact(message.Organization, _context);
-            organization.Location = organization.Location.UpdateModel(message.Organization.Location);
-            organization.Location.PostalCode = message.Organization.Location.PostalCode;
+            org = org.UpdateOrganizationContact(message.Organization, _context);
+            org.Location = org.Location.UpdateModel(message.Organization.Location);
+            org.Location.PostalCode = message.Organization.Location.PostalCode;
 
-            organization.PrivacyPolicy = message.Organization.PrivacyPolicy;
+            org.PrivacyPolicy = message.Organization.PrivacyPolicy;
 
-            _context.Update(organization);
+            _context.Update(org);
             _context.SaveChanges();
 
-            return organization.Id;
+            return org.Id;
         }       
     }
 }
