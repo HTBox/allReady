@@ -45,7 +45,6 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Organization/Edit/5
         public IActionResult Edit(int id)
         {
-
             var organization = _mediator.Send(new OrganizationEditQuery { Id = id });
             if (organization == null)
             {
