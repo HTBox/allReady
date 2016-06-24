@@ -19,6 +19,7 @@ namespace AllReady.Features.Organizations
         {
             var result = await _context.Organizations.AsNoTracking()
                 .Include(t => t.Campaigns)
+                .Include(t => t.Location)
                 .SingleOrDefaultAsync(t => t.Id == message.Id);
 
             if (result == null)

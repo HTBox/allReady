@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AllReady.ViewModels.Campaign;
+using System.Text;
 
 namespace AllReady.ViewModels.Organization
 {
@@ -29,6 +30,20 @@ namespace AllReady.ViewModels.Organization
                 Campaigns = new List<CampaignViewModel>();
             }
 
+            if (organization.Location != null)
+            {
+                var address = new StringBuilder();
+
+                if (!string.IsNullOrEmpty(organization.Location.Address1)) address.Append(organization.Location.Address1 + ", ");
+                if (!string.IsNullOrEmpty(organization.Location.Address2)) address.Append(organization.Location.Address2 + ", ");
+                if (!string.IsNullOrEmpty(organization.Location.City)) address.Append(organization.Location.City + ", ");
+                if (!string.IsNullOrEmpty(organization.Location.State)) address.Append(organization.Location.State + ", ");
+                if (!string.IsNullOrEmpty(organization.Location.PostalCode)) address.Append(organization.Location.PostalCode + ", ");
+                if (!string.IsNullOrEmpty(organization.Location.Country)) address.Append(organization.Location.Country + ", ");
+
+                FullAddress = address.ToString().TrimEnd(' ').TrimEnd(',');
+            }
+
             HasPrivacyPolicy = !string.IsNullOrEmpty(organization.PrivacyPolicy);
         }
 
@@ -37,11 +52,13 @@ namespace AllReady.ViewModels.Organization
         public string LogoUrl { get; set; }
         public string WebUrl { get; set; }
 
+        public string FullAddress { get; set; }
+
         public string Description { get; set; }
         public string Summary { get; set; }
 
         public List<CampaignViewModel> Campaigns { get; set; }
 
         public bool HasPrivacyPolicy { get; set; }
-    }    
+    }
 }
