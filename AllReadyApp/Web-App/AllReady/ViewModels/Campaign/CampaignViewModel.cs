@@ -26,6 +26,7 @@ namespace AllReady.ViewModels.Campaign
             ExternalUrlText = campaign.ExternalUrlText;
             ManagingOrganizationName = campaign.ManagingOrganization?.Name ?? string.Empty;
             ManagingOrganizationId = campaign.ManagingOrganization?.Id ?? 0;
+            ManagingOrganizationLogo = campaign.ManagingOrganization?.LogoUrl ?? string.Empty;
             TimeZoneId = campaign.TimeZoneId;
             StartDate = campaign.StartDateTime;
             EndDate = campaign.EndDateTime;
@@ -71,6 +72,8 @@ namespace AllReady.ViewModels.Campaign
         public int ManagingOrganizationId { get; set; }
 
         public string ManagingOrganizationName { get; set; }
+
+        public string ManagingOrganizationLogo { get; set; }
 
         public CampaignImpact CampaignImpact { get; set; }
 
