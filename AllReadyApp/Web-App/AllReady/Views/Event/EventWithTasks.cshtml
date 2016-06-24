@@ -240,7 +240,9 @@
                                             <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
                                             <span class="label label-success" data-bind="visible: hasAllMatchingSkills, tooltip: { title: 'You have all of the required skills needed for this task!', placement: 'top' }">Match</span>
                                             <span class="label label-warning" data-bind="visible: !hasAllMatchingSkills() && hasAtLeastOneMatchingSkill(), tooltip: { title: 'You have at least one of the required skills needed for this task!', placement: 'top' }">Match</span>
-                                            <br />
+                                            <br/>
+                                            <span data-bind="text: VolunteersRequiredText"></span>
+                                            <br/>
                                             <span class="task-datetime" data-bind="html: DisplayDateTime"></span><br />
                                         </div>
                                         <div class="btn-group">

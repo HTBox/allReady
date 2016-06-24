@@ -130,6 +130,20 @@ namespace AllReady.ViewModels.Task
         public bool IsAllowWaitList { get; set; } = true;
         public int NumberOfUsersSignedUp { get; set; }
         public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
+        public int AmountOfVolunteersNeeded => NumberOfVolunteersRequired - NumberOfUsersSignedUp;
+
+        public string VolunteersRequiredText
+        {
+            get
+            {
+                if (IsFull) return "No more volunteers currently required";
+
+                var pluralisation = AmountOfVolunteersNeeded == 1 ? " volunteer " : " volunteers ";
+
+                return string.Concat(AmountOfVolunteersNeeded, pluralisation, "still needed");
+            }
+        }
+
         public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
         public string DisplayDateTime => GetDisplayDate();
         public string VolunteerLimitDisplay => $"Volunteer Limit: {NumberOfVolunteersRequired}, Spots Remaining: {NumberOfVolunteersRequired - NumberOfUsersSignedUp}";
@@ -142,7 +156,7 @@ namespace AllReady.ViewModels.Task
             {
                 return $"{StartDateTime:dddd, MMMM dd, yyyy} from {StartDateTime:t} - {EndDateTime:t}";
             }
-            return $"{StartDateTime:dddd, MMMM dd, yyyy} at {StartDateTime:t} to<br>{EndDateTime:dddd, MMMM dd, yyyy} at {EndDateTime:t}";
+            return $"{StartDateTime:dddd, MMMM dd, yyyy} at {StartDateTime:t} to {EndDateTime:dddd, MMMM dd, yyyy} at {EndDateTime:t}";
         }
 
         public TaskViewModel(AllReadyTask task, bool isUserSignedupForTask)
