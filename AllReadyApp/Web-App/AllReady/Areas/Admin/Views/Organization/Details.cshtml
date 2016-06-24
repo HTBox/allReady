@@ -9,7 +9,17 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-3">
+        @if (!string.IsNullOrEmpty(Model.LogoUrl))
+        {
+            <img src="@Model.LogoUrl" alt="@Model.Name" />
+        }
+        else
+        {
+            <p>No logo specified</p>
+        }
+    </div>
+    <div class="col-md-9">
         <dl class="dl-horizontal">
             <dt>
                 @Html.DisplayNameFor(model => model.LogoUrl)
