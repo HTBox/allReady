@@ -338,6 +338,8 @@ namespace AllReady.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("DescriptionHtml");
+
                     b.Property<int?>("LocationId");
 
                     b.Property<string>("LogoUrl");
@@ -346,6 +348,9 @@ namespace AllReady.Migrations
                         .IsRequired();
 
                     b.Property<string>("PrivacyPolicy");
+
+                    b.Property<string>("Summary")
+                        .HasAnnotation("MaxLength", 250);
 
                     b.Property<string>("WebUrl");
 
@@ -477,7 +482,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("StatusDescription");
 
-                    b.Property<int?>("TaskId");
+                    b.Property<int>("TaskId");
 
                     b.Property<string>("UserId");
 
