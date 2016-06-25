@@ -75,8 +75,8 @@ namespace AllReady.Controllers
             // Changing all the potential properties that the VM could have modified.
             allReadyTask.Name = value.Name;
             allReadyTask.Description = value.Description;
-            allReadyTask.StartDateTime = value.StartDateTime.Value.UtcDateTime;
-            allReadyTask.EndDateTime = value.EndDateTime.Value.UtcDateTime;
+            allReadyTask.StartDateTime = value.StartDateTime.UtcDateTime;
+            allReadyTask.EndDateTime = value.EndDateTime.UtcDateTime;
 
             await _mediator.SendAsync(new UpdateTaskCommandAsync { AllReadyTask = allReadyTask });
 
