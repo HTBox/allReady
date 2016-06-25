@@ -25,7 +25,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             // Apply filtering based on criteria
             if (message.criteria.RequestId.HasValue)
             { 
-            results = results.Where(r => r.RequestId == message.criteria.RequestId.Value);
+                results = results.Where(r => r.RequestId == message.criteria.RequestId.Value);
             }
 
             if (message.criteria.IncludeAssigned)
@@ -33,9 +33,14 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 results = results.Where(r => r.Status == RequestStatus.Assigned);
             }
 
-            if(message.criteria.IncludeCanceled)
+            if (message.criteria.IncludeCanceled)
             {
                 results = results.Where(r => r.Status == RequestStatus.Canceled);
+            }
+
+            if (message.criteria.EventId.HasValue)
+            {
+                results = results.Where(r => r.EventId == message.criteria.EventId.Value);
             }
 
             // todo: sgordon: date added filtering
