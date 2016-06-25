@@ -38,6 +38,9 @@ namespace AllReady.Areas.Admin.Models
         [MaxLength(250)]
         public string Summary { get; set; }
 
+        [Display(Name = "Privacy Policy Url")]
+        public string PrivacyPolicyUrl { get; set; }
+
         [Display(Name = "Privacy Policy")]
         public string PrivacyPolicy { get; set; }
     }
