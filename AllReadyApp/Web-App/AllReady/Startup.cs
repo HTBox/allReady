@@ -132,7 +132,8 @@ namespace AllReady
             else
             {
                 // this writer service will just write to the default logger
-                services.AddTransient<IQueueStorageService, FakeQueueWriterService>();
+                //services.AddTransient<IQueueStorageService, FakeQueueWriterService>();
+                services.AddTransient<IQueueStorageService, SmtpEmailSender>();
             }
 
             var containerBuilder = new ContainerBuilder();

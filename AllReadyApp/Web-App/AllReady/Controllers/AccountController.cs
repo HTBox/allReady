@@ -358,6 +358,25 @@ namespace AllReady.Controllers
                     result = await _userManager.AddLoginAsync(user, externalLoginInfo);
                     if (result.Succeeded)
                     {
+                        var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        var callbackUrl = Url.Action(new UrlActionContext
+                        {
+                            Action = nameof(ConfirmEmail),
+                            Controller = "Account",
+                            Values = new { userId = user.Id, token = emailConfirmationToken },
+                            Protocol = HttpContext.Request.Scheme
+                        }
+                        );
+
+                        await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account",
+                            $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
+
+                        var changePhoneNumberToken = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
+                        await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = model.PhoneNumber, Token = changePhoneNumberToken });
+
+                        //TODO: mgmccarthy: should we add the claim that the user's profile is incomplete for external auth like we're doing in .Register(RegisterViewModel model)?
+                        //await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
+
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         return RedirectToLocal(returnUrl, user);
                     }
