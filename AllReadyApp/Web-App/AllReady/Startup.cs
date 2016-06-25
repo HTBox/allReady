@@ -126,17 +126,18 @@ namespace AllReady
       //services.AddSingleton<GeoService>();
       services.AddTransient<SampleDataGenerator>();
 
-      if (Configuration["Data:Storage:EnableAzureQueueService"] == "true")
-      {
-        // This setting is false by default. To enable queue processing you will 
-        // need to override the setting in your user secrets or env vars.
-        services.AddTransient<IQueueStorageService, QueueStorageService>();
-      }
-      else
-      {
-        // this writer service will just write to the default logger
-        services.AddTransient<IQueueStorageService, FakeQueueWriterService>();
-      }
+            if (Configuration["Data:Storage:EnableAzureQueueService"] == "true")
+            {
+                // This setting is false by default. To enable queue processing you will 
+                // need to override the setting in your user secrets or env vars.
+                services.AddTransient<IQueueStorageService, QueueStorageService>();
+            }
+            else
+            {
+                // this writer service will just write to the default logger
+                //services.AddTransient<IQueueStorageService, FakeQueueWriterService>();
+                services.AddTransient<IQueueStorageService, SmtpEmailSender>();
+            }
 
       var containerBuilder = new ContainerBuilder();
 
