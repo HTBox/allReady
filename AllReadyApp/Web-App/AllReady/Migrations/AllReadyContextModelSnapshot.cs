@@ -349,6 +349,8 @@ namespace AllReady.Migrations
 
                     b.Property<string>("PrivacyPolicy");
 
+                    b.Property<string>("PrivacyPolicyUrl");
+
                     b.Property<string>("Summary")
                         .HasAnnotation("MaxLength", 250);
 
