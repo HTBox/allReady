@@ -45,6 +45,7 @@ namespace AllReady.ViewModels.Organization
             }
 
             HasPrivacyPolicy = !string.IsNullOrEmpty(organization.PrivacyPolicy);
+            PrivacyPolicyUrl = organization.PrivacyPolicyUrl;
         }
 
         public int Id { get; set; }
@@ -59,6 +60,8 @@ namespace AllReady.ViewModels.Organization
 
         public List<CampaignViewModel> Campaigns { get; set; }
 
+        public string PrivacyPolicyUrl { get; set; }
+        public bool HasPrivacyPolicyUrl => !string.IsNullOrEmpty(PrivacyPolicyUrl);
         public bool HasPrivacyPolicy { get; set; }
     }
 }
