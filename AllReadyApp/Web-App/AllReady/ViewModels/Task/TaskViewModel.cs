@@ -22,16 +22,8 @@ namespace AllReady.ViewModels.Task
             Id = task.Id;
             Name = task.Name;
             Description = task.Description;
-
-            if (task.StartDateTime.HasValue)
-            {
-                StartDateTime = task.StartDateTime.Value;
-            }
-
-            if (task.EndDateTime.HasValue)
-            {
-                EndDateTime = task.EndDateTime.Value;
-            }
+            StartDateTime = task.StartDateTime;
+            EndDateTime = task.EndDateTime;
 
             if (task.Event != null)
             {
@@ -113,9 +105,9 @@ namespace AllReady.ViewModels.Task
         public List<SkillViewModel> RequiredSkillObjects { get; set; } = new List<SkillViewModel>();
 
         [Display(Name = "Starting time")]
-        public DateTimeOffset? StartDateTime { get; set; }
+        public DateTimeOffset StartDateTime { get; set; }
         [Display(Name = "Ending time")]
-        public DateTimeOffset? EndDateTime { get; set; }
+        public DateTimeOffset EndDateTime { get; set; }
 
         public bool IsUserSignedUpForTask { get; private set; }
 
@@ -148,12 +140,9 @@ namespace AllReady.ViewModels.Task
 
         private string GetDisplayDate()
         {
-            if (StartDateTime == null) return "Dates not specified";
-            if (EndDateTime == null) return $"{StartDateTime:dddd, MMMM dd, yyyy} at {StartDateTime:t}";
-            if (StartDateTime.Value.Date == EndDateTime.Value.Date)
-            {
+            if (StartDateTime.Date == EndDateTime.Date)
                 return $"{StartDateTime:dddd, MMMM dd, yyyy} from {StartDateTime:t} - {EndDateTime:t}";
-            }
+
             return $"{StartDateTime:dddd, MMMM dd, yyyy} at {StartDateTime:t} to {EndDateTime:dddd, MMMM dd, yyyy} at {EndDateTime:t}";
         }
 
@@ -199,8 +188,8 @@ namespace AllReady.ViewModels.Task
             dbtask.Id = taskViewModel.Id;
             dbtask.Description = taskViewModel.Description;
             dbtask.Event = campaignEvent;
-            dbtask.EndDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.EndDateTime.Value.UtcDateTime : new DateTime?();
-            dbtask.StartDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.StartDateTime.Value.UtcDateTime : new DateTime?();
+            dbtask.EndDateTime = taskViewModel.EndDateTime.UtcDateTime;
+            dbtask.StartDateTime = taskViewModel.StartDateTime.UtcDateTime;
             dbtask.Name = taskViewModel.Name;
             dbtask.RequiredSkills = dbtask.RequiredSkills ?? new List<TaskSkill>();
             taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();

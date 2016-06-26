@@ -24,10 +24,10 @@ namespace AllReady.Areas.Admin.Models
         public string TimeZoneId { get; set; }
 
         [Display(Name = "Start date")]
-        public DateTimeOffset? StartDateTime { get; set; }
+        public DateTimeOffset StartDateTime { get; set; }
         
         [Display(Name = "End date")]
-        public DateTimeOffset? EndDateTime { get; set; }
+        public DateTimeOffset EndDateTime { get; set; }
 
         public bool IsUserSignedUpForTask { get; set; }
 

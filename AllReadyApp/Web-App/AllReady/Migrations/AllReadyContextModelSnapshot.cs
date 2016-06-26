@@ -23,7 +23,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<DateTimeOffset?>("EndDateTime");
+                    b.Property<DateTimeOffset>("EndDateTime");
 
                     b.Property<int?>("EventId");
 
@@ -38,7 +38,7 @@ namespace AllReady.Migrations
 
                     b.Property<int?>("OrganizationId");
 
-                    b.Property<DateTimeOffset?>("StartDateTime");
+                    b.Property<DateTimeOffset>("StartDateTime");
 
                     b.HasKey("Id");
                 });
