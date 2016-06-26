@@ -788,54 +788,116 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RemoveTeamMemberSendsOrganizationIdQueryWithCorrectIntineraryId()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var itineraryId = It.IsAny<int>();
+            var mockMediator = new Mock<IMediator>();
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            
+            await sut.RemoveTeamMember(itineraryId, It.IsAny<int>());
+
+            mockMediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == itineraryId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RemoveTeamMemberReturnsHttpUnauthorizedWhenOrganizationIdIsZero()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var itineraryId = It.IsAny<int>();
+            var taskSignupId = It.IsAny<int>();
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+
+            Assert.IsType<HttpUnauthorizedResult>(await sut.RemoveTeamMember(itineraryId, taskSignupId));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RemoveTeamMemberReturnsHttpUnauthorizedWhenUserIsNotOrgAdmin()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var itineraryId = It.IsAny<int>();
+            var taskSignupId = It.IsAny<int>();
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.BasicUser.ToString())
+            });
+
+            Assert.IsType<HttpUnauthorizedResult>(await sut.RemoveTeamMember(itineraryId, taskSignupId));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RemoveTeamMemberSendsRemoveTeamMemberCommandWithCorrectTaskSignupIdWhenOrganizationIsNotZero_AndUserIsOrgAdmin()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var itineraryId = It.IsAny<int>();
+            var taskSignupId = It.IsAny<int>();
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            await sut.RemoveTeamMember(itineraryId, taskSignupId);
+
+            mockMediator.Verify(x => x.SendAsync(It.Is<RemoveTeamMemberCommand>(y => y.TaskSignupId == taskSignupId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RemoveTeamMemberRedirectsToCorrectActionWithCorrectRouteValuesWhenOrganizationIdIsNotZero_AndUserIsOrgAdmin()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var itineraryId = It.IsAny<int>();
+            var taskSignupId = It.IsAny<int>();
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            await sut.RemoveTeamMember(itineraryId, taskSignupId);
+
+            mockMediator.Verify(x => x.SendAsync(It.Is<RemoveTeamMemberCommand>(y => y.TaskSignupId == taskSignupId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void RemoveTeamMemberHasHttpPostAttribute()
         {
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var attribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void RemoveTeamMemberHasValidateAntiForgeryTokenAttribute()
         {
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var attribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void RemoveTeamMemberHasRouteAttributeWithCorrectRoute()
         {
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var routeAttribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
+            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}");
         }
 
         #region Helper Methods
