@@ -520,39 +520,115 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{id}/[Action]");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task AddRequestsSendsOrganizationIdQueryWithCorrectIntineraryId()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const int itineraryId = 1;
+            string[] selectedRequests = {"request1", "request2"};
+
+            var mockMediator = new Mock<IMediator>();
+
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddRequestsCommand>())).ReturnsAsync(true);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            await sut.AddRequests(itineraryId, selectedRequests);
+
+            mockMediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == itineraryId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task AddRequestsReturnsHttpUnauthorizedWhenOrganizationIdIsZero()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const int itineraryId = 1;
+            string[] selectedRequests = { "request1", "request2" };
+
+            var mockMediator = new Mock<IMediator>();
+
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddRequestsCommand>())).ReturnsAsync(true);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "0")
+            });
+
+            Assert.IsType<HttpUnauthorizedResult>(await sut.AddRequests(itineraryId, selectedRequests));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task AddRequestsReturnsHttpUnauthorizedWhenUserIsNotOrgAdmin()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const int itineraryId = 1;
+            string[] selectedRequests = { "request1", "request2" };
+
+            var mockMediator = new Mock<IMediator>();
+
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddRequestsCommand>())).ReturnsAsync(true);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
+            });
+
+            Assert.IsType<HttpUnauthorizedResult>(await sut.AddRequests(itineraryId, selectedRequests));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task AddRequestsSendsAddRequestsCommandWhenThereAreSelecteRequests()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const int itineraryId = 1;
+            string[] selectedRequests = { "request1", "request2" };
+
+            var mockMediator = new Mock<IMediator>();
+
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddRequestsCommand>())).ReturnsAsync(true);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            await sut.AddRequests(itineraryId, selectedRequests);
+
+            mockMediator.Verify(x => x.SendAsync(It.Is<AddRequestsCommand>(y => y.ItineraryId == itineraryId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task AddRequestsRedirectsToCorrectActionWithCorrectRouteValuesWhenOrganizationIdIsNotZero_AndUserIsOrgAdmin_AndThereAreSelectedRequests()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const int itineraryId = 1;
+            string[] selectedRequests = { "request1", "request2" };
+
+            var mockMediator = new Mock<IMediator>();
+
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddRequestsCommand>())).ReturnsAsync(true);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            var result = await sut.AddRequests(itineraryId, selectedRequests) as RedirectToActionResult;
+
+            Assert.Equal(result.ActionName, nameof(ItineraryController.Details));
+            Assert.Equal(result.RouteValues, new Dictionary<string, object> { ["id"] = itineraryId });
         }
 
         [Fact]
@@ -563,9 +639,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(attribute);        
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void AddRequestsHasRouteAttributeWithCorrectRoute()
         {
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var routeAttribute = sut.GetAttributesOn(x => x.AddRequests(It.IsAny<int>(), It.IsAny<string[]>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
+            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{id}/[Action]");
         }
 
         [Fact]
