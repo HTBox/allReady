@@ -522,20 +522,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task AddRequestsSendsOrganizationIdQueryWithCorrectIntineraryId()
         {
-            const int itineraryId = 1;
-            string[] selectedRequests = {"request1", "request2"};
-
+            var itineraryId = It.IsAny<int>();
+            var selectedRequests = new[] { "request1", "request2" };
             var mockMediator = new Mock<IMediator>();
 
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddRequestsCommand>())).ReturnsAsync(true);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
-
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
-            });
 
             await sut.AddRequests(itineraryId, selectedRequests);
 
@@ -545,20 +536,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task AddRequestsReturnsHttpUnauthorizedWhenOrganizationIdIsZero()
         {
-            const int itineraryId = 1;
-            string[] selectedRequests = { "request1", "request2" };
+            var itineraryId = It.IsAny<int>();
+            var selectedRequests = new[] { "request1", "request2" };
 
             var mockMediator = new Mock<IMediator>();
-
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddRequestsCommand>())).ReturnsAsync(true);
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "0")
-            });
 
             Assert.IsType<HttpUnauthorizedResult>(await sut.AddRequests(itineraryId, selectedRequests));
         }
@@ -566,18 +550,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task AddRequestsReturnsHttpUnauthorizedWhenUserIsNotOrgAdmin()
         {
-            const int itineraryId = 1;
-            string[] selectedRequests = { "request1", "request2" };
+            var itineraryId = It.IsAny<int>();
+            var selectedRequests = new[]{ "request1", "request2" };
 
             var mockMediator = new Mock<IMediator>();
-
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddRequestsCommand>())).ReturnsAsync(true);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
             sut.SetClaims(new List<Claim>
             {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.BasicUser.ToString())
             });
 
             Assert.IsType<HttpUnauthorizedResult>(await sut.AddRequests(itineraryId, selectedRequests));
@@ -586,12 +568,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task AddRequestsSendsAddRequestsCommandWhenThereAreSelecteRequests()
         {
-            const int itineraryId = 1;
-            string[] selectedRequests = { "request1", "request2" };
+            var itineraryId = It.IsAny<int>();
+            var selectedRequests = new[]{ "request1", "request2" };
 
             var mockMediator = new Mock<IMediator>();
-
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddRequestsCommand>())).ReturnsAsync(true);
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
@@ -609,12 +589,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task AddRequestsRedirectsToCorrectActionWithCorrectRouteValuesWhenOrganizationIdIsNotZero_AndUserIsOrgAdmin_AndThereAreSelectedRequests()
         {
-            const int itineraryId = 1;
-            string[] selectedRequests = { "request1", "request2" };
+            var itineraryId = It.IsAny<int>();
+            var selectedRequests = new[]{ "request1", "request2" };
 
             var mockMediator = new Mock<IMediator>();
 
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddRequestsCommand>())).ReturnsAsync(true);
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
@@ -658,8 +637,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task ConfirmRemoveTeamMemberSendsOrganizationIdQueryWithTheCorrectItineraryId()
         {
-            const int itineraryId = 1;
-            const int taskSignupId = 1;
+            var itineraryId = It.IsAny<int>();
+            var taskSignupId = It.IsAny<int>();
 
             var mockMediator = new Mock<IMediator>();
 
@@ -673,8 +652,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task ConfirmRemoveTeamMemberReturnsHttpUnauthorizedWhenOrganizationIdIsZero()
         {
-            const int itineraryId = 1;
-            const int taskSignupId = 1;
+            var itineraryId = It.IsAny<int>();
+            var taskSignupId = It.IsAny<int>();
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
@@ -687,8 +666,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task ConfirmRemoveTeamMemberReturnsHttpUnauthorizedWhenUserIsNotOrgAdmin()
         {
-            const int itineraryId = 1;
-            const int taskSignupId = 1;
+            var itineraryId = It.IsAny<int>();
+            var taskSignupId = It.IsAny<int>();
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
@@ -705,8 +684,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task ConfirmRemoveTeamMemberSendsTaskSignupSummaryQueryWithCorrectTaskSignupIdWhenOrganizationIdIsNotZero_AndUserIsOrgAdmin()
         {
-            const int itineraryId = 1;
-            const int taskSignupId = 1;
+            var itineraryId = It.IsAny<int>();
+            var taskSignupId = It.IsAny<int>();
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
@@ -726,8 +705,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task ConfirmRemoveTeamMemberReturnsHttpNotFoundWhenTaskSignupSummaryModelIsNull()
         {
-            const int itineraryId = 1;
-            const int taskSignupId = 1;
+            var itineraryId = It.IsAny<int>();
+            var taskSignupId = It.IsAny<int>();
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
@@ -746,12 +725,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task ConfirmRemoveTeamMemberReturnsTheCorrectViewAndViewModel()
         {
-            const int itineraryId = 1;
-            const int taskSignupId = 1;
+            var itineraryId = It.IsAny<int>();
+            var taskSignupId = It.IsAny<int>();
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<TaskSignupSummaryQuery>())).ReturnsAsync(new TaskSignupSummaryModel { TaskSignupId = taskSignupId, VolunteerEmail = "test@test.com", VolunteerName = "Test McTesterson"});
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<TaskSignupSummaryQuery>())).ReturnsAsync(new TaskSignupSummaryModel { TaskSignupId = taskSignupId, VolunteerEmail = "user@domain.tld", VolunteerName = "Test McTesterson"});
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
             sut.SetClaims(new List<Claim>
