@@ -70,12 +70,16 @@ else
             <div id="campaignGrid" class="table-responsive">
                 <table class="table" data-bind="css: { hide: !campaigns().length }">
                     <tr>
+                        <th></th>
                         <th><span title="Name of the campaign">Title</span></th>
                         <th><span title="Description of the campaign">Description</span></th>
                         <th><span title="Date of the campaign">Dates</span></th>
                     </tr>
                     <!-- ko foreach: campaigns -->
                     <tr>
+                        <td>
+                            <img data-bind="attr: { src: ImageUrl }" class="img-responsive" />
+                        </td>
                         <td>
                             <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
                         </td>
