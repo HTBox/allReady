@@ -14,40 +14,11 @@ namespace AllReady.Models
                 return _dbContext.TaskSignups
                           .Include(x => x.Task)
                           .Include(x => x.User)
-                          .Include(x => x.Task.Activity)
-                          .Include(x => x.Task.Activity.Campaign)
+                          .Include(x => x.Task.Event)
+                          .Include(x => x.Task.Event.Campaign)
                           .Include(x => x.Task.Organization)
                           .ToArray();
             }
-        }
-
-        TaskSignup IAllReadyDataAccess.GetTaskSignup(int taskId, string userId)
-        {
-            return _dbContext.TaskSignups
-              .Include(x => x.Task)
-              .Include(x => x.User)
-              .ToArray()
-              .Where(x => x.Task.Id == taskId)
-              .Where(x => x.User.Id.Equals(userId))
-              .SingleOrDefault();
-        }
-
-        Task IAllReadyDataAccess.AddTaskSignupAsync(TaskSignup taskSignup)
-        {
-            _dbContext.TaskSignups.Add(taskSignup);
-            return _dbContext.SaveChangesAsync();
-        }
-
-        Task IAllReadyDataAccess.DeleteTaskSignupAsync(int taskSignupId)
-        {
-            var taskSignup = _dbContext.TaskSignups.SingleOrDefault(c => c.Id == taskSignupId);
-
-            if (taskSignup != null)
-            {
-                _dbContext.TaskSignups.Remove(taskSignup);
-                return _dbContext.SaveChangesAsync();
-            }
-            return null;
         }
 
         Task IAllReadyDataAccess.UpdateTaskSignupAsync(TaskSignup value)

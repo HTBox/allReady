@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using AllReady.Areas.Admin.Models.Validators;
+using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.Security;
 using AllReady.Services;
@@ -112,6 +114,8 @@ namespace AllReady
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
+            services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
+            services.AddTransient<IValidateEventDetailModels, EventDetailModelValidator>();
             services.AddSingleton<IImageService, ImageService>();
             //services.AddSingleton<GeoService>();
             services.AddTransient<SampleDataGenerator>();

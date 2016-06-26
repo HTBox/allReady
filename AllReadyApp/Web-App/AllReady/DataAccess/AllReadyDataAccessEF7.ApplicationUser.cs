@@ -17,6 +17,7 @@ namespace AllReady.Models
                     .ToList();
             }
         }
+
         ApplicationUser IAllReadyDataAccess.GetUser(string userId)
         {
             return _dbContext.Users
@@ -24,23 +25,6 @@ namespace AllReady.Models
                 .Include(u => u.AssociatedSkills).ThenInclude((UserSkill us) => us.Skill)
                 .Include(u => u.Claims)
                 .SingleOrDefault();
-        }
-
-        Task IAllReadyDataAccess.AddUser(ApplicationUser value)
-        {
-            _dbContext.Users.Add(value);
-            return _dbContext.SaveChangesAsync();
-        }
-
-        Task IAllReadyDataAccess.DeleteUser(string userId)
-        {
-            var toDelete = _dbContext.Users.Where(u => u.Id == userId).SingleOrDefault();
-            if (toDelete != null)
-            {
-                _dbContext.Users.Remove(toDelete);
-                return _dbContext.SaveChangesAsync();
-            }
-            return null;
         }
 
         Task IAllReadyDataAccess.UpdateUser(ApplicationUser value)

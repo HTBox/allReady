@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.AspNet.Mvc;
 using Moq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace AllReady.UnitTest.Controllers
@@ -12,15 +13,36 @@ namespace AllReady.UnitTest.Controllers
     public class HomeControllerTests
     {
         [Fact]
-        public void IndexSendsCampaignQuery()
+        public async Task IndexSendsCampaignQuery()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(m => m.Send(It.IsAny<CampaignQuery>())).Returns(new List<CampaignViewModel>());
 
             var sut = new HomeController(mockMediator.Object);
-            sut.Index();
+            var result = (ViewResult)await sut.Index();
 
             mockMediator.Verify(x => x.Send(It.IsAny<CampaignQuery>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task IndexSendsFeaturedCampaignQuery()
+        {
+            var mockMediator = new Mock<IMediator>();
+
+            var sut = new HomeController(mockMediator.Object);
+            var result = (ViewResult)await sut.Index();
+
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<FeaturedCampaignQueryAsync>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task IndexReturnsCorrectViewResult()
+        {
+            var mockMediator = new Mock<IMediator>();
+
+            var sut = new HomeController(mockMediator.Object);
+            var result = (ViewResult)await sut.Index();
+
+            Assert.NotNull(result);       
         }
 
         [Fact]
@@ -58,8 +80,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void PrivacyPolicy_ReturnsCorrectView()
         {
-            var mockMediator = new Mock<IMediator>();
-            var controller = new HomeController(mockMediator.Object);
+            var controller = new HomeController(Mock.Of<IMediator>());
 
             var result = (ViewResult)controller.PrivacyPolicy();
 

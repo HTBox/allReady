@@ -20,6 +20,14 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Full Description")]
         public string FullDescription { get; set; }
 
+        [Display(Name = "External Link")]
+        [Url]
+        public string ExternalUrl { get; set; }
+
+        [Display(Name = "External Link Text")]
+        public string ExternalUrlText { get; set; }
+
+
         [Display(Name = "Organization")]
         public int OrganizationId { get; set; }
 
@@ -63,5 +71,7 @@ namespace AllReady.Areas.Admin.Models
         public string PrimaryContactEmail { get; set; }
 
         public bool Locked { get; set; }
+
+        public bool Featured { get; set; }
     }
 }

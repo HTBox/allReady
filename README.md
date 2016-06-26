@@ -6,8 +6,17 @@
 
 This repo contains the code for **allReady**, an open-source solution focused on increasing awareness, efficiency and impact of preparedness campaigns as they are delivered by humanitarian and disaster response organizations in local communities.
 
++ [Upcoming Go Live Release on June 11th](#upcoming-go-live-release)
 + [Project overview](#project-overview)
 + [How you can help](#how-you-can-help)
+
+##Upcoming Go Live Release
+As announced during our [recent Standup on March 19th](https://www.youtube.com/watch?v=EZBMDUj0NLo), we have identified our next major milestone for the allReady project to “Go Live” and help a community be prepared in a big way. The Northwest Region of the American Red Cross (we’ll call it the Seattle Region for reference below) will be holding a large preparedness event in their territory on Saturday, June 11.
+
+We are targeting feature complete for May 16th with user testing & issue fixing following that until June 11th.
+
+
+You can find our prioritized requirements & issues at our [June 11th Go Live Milestone](https://github.com/HTBox/allReady/milestones/%22June%20Go%20Live%22%20Public%20Release%20Feature%20Complete) and more information at our [recent blog post](http://www.htbox.org/blog/allready-update-on-go-live-plans-thank-you).
 
 ##Project overview
 allReady is focused on increasing awareness, efficiency and impact of preparedness campaigns delivered by humanitarian and disaster response organizations in local communities.  As community preparedness and resliency increases, the potential for impactful disasters (both large and small) is greatly decreased.  Though not as visible or emotionally salient as saving children from a burning building, preparedness activities like ensuring working smoke detectors in a community, follows the industry rule of thumb where an hour or dollar spent before a disaster is worth 15-30 afterwards.  The goal of allReady hinges on growing awareness of, and engaging communities and their volunteers in preparedness campaigns, and more aspirationally, to "put disaster response out of business" by preparing communities to be reslient to inevitable disasters. 

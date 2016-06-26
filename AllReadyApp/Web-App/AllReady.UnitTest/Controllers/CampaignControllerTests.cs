@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AllReady.Extensions;
 using AllReady.Features.Campaigns;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
@@ -103,7 +102,7 @@ namespace AllReady.UnitTest.Controllers
             {
                 Url = mockUrlHelper.Object
             };
-            sut.SetFakeHttpContext().SetFakeHttpRequestSchemeTo(requestScheme);
+            sut.SetFakeHttpRequestSchemeTo(requestScheme);
 
             sut.Details(It.IsAny<int>());
 

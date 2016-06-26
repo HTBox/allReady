@@ -9,6 +9,7 @@ using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.Routing;
 using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Controllers
@@ -19,7 +20,7 @@ namespace AllReady.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
-        private readonly GeneralSettings _generalSettings;
+        private readonly IOptions<GeneralSettings> _generalSettings;
         private readonly IMediator _mediator;
 
         public AccountController(
@@ -33,7 +34,7 @@ namespace AllReady.Controllers
             _emailSender = emailSender;
             _userManager = userManager;
             _signInManager = signInManager;
-            _generalSettings = generalSettings.Value;
+            _generalSettings = generalSettings;
             _mediator = mediator;
         }
 
@@ -53,14 +54,14 @@ namespace AllReady.Controllers
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+
             if (ModelState.IsValid)
             {
                 // Require admin users to have a confirmed email before they can log on.
                 var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = model.Email });
                 if (user != null)
                 {
-                    var isAdminUser = user.IsUserType(UserType.OrgAdmin) ||
-                                      user.IsUserType(UserType.SiteAdmin);
+                    var isAdminUser = user.IsUserType(UserType.OrgAdmin) || user.IsUserType(UserType.SiteAdmin);
                     if (isAdminUser && !await _userManager.IsEmailConfirmedAsync(user))
                     {
                         //TODO: Showing the error page here makes for a bad experience for the user.
@@ -77,19 +78,20 @@ namespace AllReady.Controllers
                 {
                     return RedirectToLocal(returnUrl, user);
                 }
+
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToAction(nameof(AdminController.SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    return RedirectToAction(nameof(AdminController.SendCode), "Admin", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 }
+
                 if (result.IsLockedOut)
                 {
                     return View("Lockout");
                 }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return View(model);
-                }
+
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+
+                return View(model);
             }
 
             // If we got this far, something failed, redisplay form
@@ -118,22 +120,27 @@ namespace AllReady.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    TimeZoneId = _generalSettings.DefaultTimeZone
+                    TimeZoneId = _generalSettings.Value.DefaultTimeZone
                 };
+
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                     // Send an email with this link
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account",
-                        "Please confirm your allReady account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                    var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmEmail), Controller = "Account", Values = new { userId = user.Id, token = token },
+                        Protocol = HttpContext.Request.Scheme });
+
+                    await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account", 
+                        $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
                     await _signInManager.SignInAsync(user, isPersistent: false);
+
                     return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
-                AddErrors(result);
+
+                AddErrorsToModelState(result);
             }
 
             // If we got this far, something failed, redisplay form
@@ -153,27 +160,28 @@ namespace AllReady.Controllers
         // GET: /Account/ConfirmEmail
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
-            if (userId == null || code == null)
+            if (userId == null || token == null)
             {
                 return View("Error");
             }
+            
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
                 return View("Error");
             }
-            var result = await _userManager.ConfirmEmailAsync(user, code);
+            
+            var result = await _userManager.ConfirmEmailAsync(user, token);
 
             if (result.Succeeded && user.IsProfileComplete())
             {
                 await _mediator.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id });
                 if (User.IsSignedIn())
-                {
                     await _signInManager.RefreshSignInAsync(user);
-                }
             }
+
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
@@ -202,12 +210,12 @@ namespace AllReady.Controllers
                     return View("ForgotPasswordConfirmation");
                 }
 
-                //For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                 //Send an email with this link
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                await _emailSender.SendEmailAsync(model.Email, "Reset allReady Password",
-                   "Please reset your allReady password by clicking here: <a href=\"" + callbackUrl + "\">link</a>");
+                var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ResetPassword), Controller = "Account", Values = new { userId = user.Id, code = code },
+                    Protocol = HttpContext.Request.Scheme });
+                await _emailSender.SendEmailAsync(model.Email, "Reset allReady Password", $"Please reset your allReady password by clicking here: <a href=\"{callbackUrl}\">link</a>");
+
                 return View("ForgotPasswordConfirmation");
             }
 
@@ -235,18 +243,22 @@ namespace AllReady.Controllers
             {
                 return View(model);
             }
+
             var user = await _userManager.FindByNameAsync(model.Email);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
-                return RedirectToAction(nameof(ResetPasswordConfirmation), "Account");
+                return RedirectToAction(nameof(ResetPasswordConfirmation));
             }
+
             var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
             if (result.Succeeded)
             {
-                return RedirectToAction(nameof(ResetPasswordConfirmation), "Account");
+                return RedirectToAction(nameof(ResetPasswordConfirmation));
             }
-            AddErrors(result);
+
+            AddErrorsToModelState(result);
+
             return View();
         }
 
@@ -259,7 +271,6 @@ namespace AllReady.Controllers
             return View();
         }
 
-
         //
         // POST: /Account/ExternalLogin
         [HttpPost]
@@ -268,7 +279,7 @@ namespace AllReady.Controllers
         public IActionResult ExternalLogin(string provider, string returnUrl = null)
         {
             // Request a redirect to the external login provider.
-            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
+            var redirectUrl = Url.Action(new UrlActionContext { Action = nameof(ExternalLoginCallback), Values = new { ReturnUrl = returnUrl }});
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return new ChallengeResult(provider, properties);
         }
@@ -279,28 +290,27 @@ namespace AllReady.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
         {
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
+            var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+            if (externalLoginInfo == null)
             {
                 return RedirectToAction(nameof(Login));
             }
 
             // Sign in the user with this external login provider if the user already has a login.
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
-            var email = info.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
+            var result = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
+            var email = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
 
             if (result.Succeeded)
             {
                 var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = email });
                 return RedirectToLocal(returnUrl, user);
             }
-            else
-            {
-                // If the user does not have an account, then ask the user to create an account.
-                ViewData["ReturnUrl"] = returnUrl;
-                ViewData["LoginProvider"] = info.LoginProvider;
-                return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
-            }
+            
+            // If the user does not have an account, then ask the user to create an account.
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["LoginProvider"] = externalLoginInfo.LoginProvider;
+
+            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
         }
 
         //
@@ -318,8 +328,8 @@ namespace AllReady.Controllers
             if (ModelState.IsValid)
             {
                 // Get the information about the user from the external login provider
-                var info = await _signInManager.GetExternalLoginInfoAsync();
-                if (info == null)
+                var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+                if (externalLoginInfo == null)
                 {
                     return View("ExternalLoginFailure");
                 }
@@ -328,7 +338,7 @@ namespace AllReady.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    TimeZoneId = _generalSettings.DefaultTimeZone,
+                    TimeZoneId = _generalSettings.Value.DefaultTimeZone,
                     Name = model.Name,
                     PhoneNumber = model.PhoneNumber
                 };
@@ -336,7 +346,7 @@ namespace AllReady.Controllers
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
-                    result = await _userManager.AddLoginAsync(user, info);
+                    result = await _userManager.AddLoginAsync(user, externalLoginInfo);
                     if (result.Succeeded)
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
@@ -344,28 +354,21 @@ namespace AllReady.Controllers
                     }
                 }
 
-                AddErrors(result);
+                AddErrorsToModelState(result);
             }
 
             ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
 
-
-
         #region Helpers
 
-        private void AddErrors(IdentityResult result)
+        private void AddErrorsToModelState(IdentityResult result)
         {
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
-        }
-
-        private async Task<ApplicationUser> GetCurrentUserAsync()
-        {
-            return await _userManager.FindByIdAsync(HttpContext.User.GetUserId());
         }
 
         private IActionResult RedirectToLocal(string returnUrl, ApplicationUser user)
@@ -379,14 +382,13 @@ namespace AllReady.Controllers
             {
                 return RedirectToAction(nameof(SiteController.Index), "Site", new { area = "Admin" });
             }
-            else if (user.IsUserType(UserType.OrgAdmin))
+
+            if (user.IsUserType(UserType.OrgAdmin))
             {
-                return base.RedirectToAction(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = "Admin" });
+                return RedirectToAction(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = "Admin" });
             }
-            else
-            {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
+
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         #endregion

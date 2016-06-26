@@ -47,17 +47,17 @@ input.main-search {
 .main-heading {
     color: #fff;
 }
-.activity-results > h3 {
+.event-results > h3 {
     color: #fff;
 }
-.activity-results a {
+.event-results a {
     text-decoration: none;
     font-size: 16px;
 }
-.activity-results a:hover {
+.event-results a:hover {
     text-decoration: underline;
 }
-.activity-results h3 {
+.event-results h3 {
     color: #333333;
     padding-top:20px;
     padding-bottom:10px;
@@ -88,4 +88,28 @@ input.main-search {
 
 .inline-form {
     display: inline-block;
+}
+
+.featured-campaign {
+    border: 1px solid #d58033;
+    padding: 6px;
+    margin: 10px;
+    background: #e4cdb8;
+}
+
+.featured-campaign h2 {
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+.featured-campaign h3 {
+    margin-top: 0;
+}
+
+.featured-campaign h4 {
+    margin-top: 5px;
+}
+
+.featured-campaign h4, p{
+    color: black;
 }

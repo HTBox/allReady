@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24627.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "AllReadyApp", "Mobile-App\AllReadyApp.jsproj", "{60010232-B3E1-40B7-AA8E-991BD2695BDE}"
 EndProject
@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{2C1DD2C4-73F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{364DE571-98D2-4F69-8D93-F25F832E7D7A}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		global.json = global.json
 		NuGet.config = NuGet.config
 	EndProjectSection
@@ -22,8 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{AE4E0DB3-05E
 		SQL\01-fnGetCoordinatesForPostalCode.sql = SQL\01-fnGetCoordinatesForPostalCode.sql
 		SQL\02-GetClosestLocations.sql = SQL\02-GetClosestLocations.sql
 		SQL\03-GetCoordinatesForPostalCode.sql = SQL\03-GetCoordinatesForPostalCode.sql
-		SQL\04-GetClosestActivities.sql = SQL\04-GetClosestActivities.sql
-		SQL\05-GetClosestActivitiesByPostalCode.sql = SQL\05-GetClosestActivitiesByPostalCode.sql
+		SQL\04-GetClosestEvents.sql = SQL\04-GetClosestEvents.sql
+		SQL\05-GetClosestEventsByPostalCode.sql = SQL\05-GetClosestEventsByPostalCode.sql
 	EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "AllReady.UnitTest", "Web-App\AllReady.UnitTest\AllReady.UnitTest.xproj", "{5A76269A-F855-40CA-A4B0-472F48DD49A5}"

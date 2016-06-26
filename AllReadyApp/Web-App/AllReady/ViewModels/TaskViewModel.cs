@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using AllReady.Features.Event;
+using AllReady.Features.Manage;
+using AllReady.Features.Tasks;
 using AllReady.Models;
+using MediatR;
 
 namespace AllReady.ViewModels
 {
@@ -12,39 +16,34 @@ namespace AllReady.ViewModels
         {
         }
 
-        public TaskViewModel(AllReadyTask task, string userId=null)
+        public TaskViewModel(AllReadyTask task, string userId = null)
         {
             Id = task.Id;
             Name = task.Name;
             Description = task.Description;
 
-
             if (task.StartDateTime.HasValue)
             {
-                DateTime startDateWithUtcKind = DateTime.SpecifyKind(
-                    DateTime.Parse(task.StartDateTime.Value.ToString()),
-                    DateTimeKind.Utc);
+                var startDateWithUtcKind = DateTime.SpecifyKind(DateTime.Parse(task.StartDateTime.Value.ToString()), DateTimeKind.Utc);
                 StartDateTime = new DateTimeOffset(startDateWithUtcKind);
             }
 
             if (task.EndDateTime.HasValue)
             {
-                DateTime endDateWithUtcKind = DateTime.SpecifyKind(
-                    DateTime.Parse(task.EndDateTime.Value.ToString()),
-                    DateTimeKind.Utc);
+                var endDateWithUtcKind = DateTime.SpecifyKind(DateTime.Parse(task.EndDateTime.Value.ToString()), DateTimeKind.Utc);
                 EndDateTime = new DateTimeOffset(endDateWithUtcKind);
             }
 
-            if (task.Activity != null)
+            if (task.Event != null)
             {
-                ActivityId = task.Activity.Id;
-                ActivityName = task.Activity.Name;
+                EventId = task.Event.Id;
+                eventName = task.Event.Name;
             }
 
-            if (task.Activity?.Campaign != null)
+            if (task.Event?.Campaign != null)
             {
-                CampaignId = task.Activity.Campaign.Id;
-                CampaignName = task.Activity.Campaign.Name;
+                CampaignId = task.Event.Campaign.Id;
+                CampaignName = task.Event.Campaign.Name;
             }
 
             if (task.Organization != null)
@@ -60,21 +59,29 @@ namespace AllReady.ViewModels
                 {
                     IsUserSignedUpForTask = task.AssignedVolunteers.Any(au => au.User.Id == userId);
                 }
-                this.AssignedVolunteers = new List<TaskSignupViewModel>();
+
+                AssignedVolunteers = new List<TaskSignupViewModel>();
+
                 if (IsUserSignedUpForTask)
-                {                    
+                {
                     foreach (var t in task.AssignedVolunteers.Where(au => au.User.Id == userId))
                     {
-                        this.AssignedVolunteers.Add(new TaskSignupViewModel(t));
+                        AssignedVolunteers.Add(new TaskSignupViewModel(t));
                     }
                 }
             }
 
             if (task.RequiredSkills != null)
             {
-                this.RequiredSkills = task.RequiredSkills.Select(t => t.SkillId);
+                RequiredSkills = task.RequiredSkills.Select(t => t.SkillId);
+                RequiredSkillObjects = task.RequiredSkills?.Select(t => t.Skill).ToList();
             }
 
+            NumberOfVolunteersRequired = task.NumberOfVolunteersRequired;
+            NumberOfUsersSignedUp = task.NumberOfUsersSignedUp;
+            IsLimitVolunteers = task.IsLimitVolunteers;
+            IsAllowWaitList = task.IsAllowWaitList;
+            IsClosed = task.IsClosed;
         }
 
         public int Id { get; set; }
@@ -87,11 +94,11 @@ namespace AllReady.ViewModels
         public string Description { get; set; }
 
         [Required]
-        [Display(Name = "Activity")]
-        public int ActivityId { get; set; }
+        [Display(Name = "Event")]
+        public int EventId { get; set; }
 
-        [Display(Name = "Activity")]
-        public string ActivityName { get; set; }
+        [Display(Name = "Event")]
+        public string eventName { get; set; }
 
         public int CampaignId { get; set; }
 
@@ -99,10 +106,12 @@ namespace AllReady.ViewModels
         public string CampaignName { get; set; }
 
         public int OrganizationId { get; set; }
+        public int NumberOfVolunteersRequired { get; set; }
         public string OrganizationName { get; set; }
 
         [Display(Name = "Required Skills")]
         public IEnumerable<int> RequiredSkills { get; set; } = new List<int>();
+        public List<Skill> RequiredSkillObjects { get; set; } = new List<Skill>();
 
         [Display(Name = "Starting time")]
         public DateTimeOffset? StartDateTime { get; set; }
@@ -113,14 +122,33 @@ namespace AllReady.ViewModels
 
         public List<TaskSignupViewModel> AssignedVolunteers { get; set; } = new List<TaskSignupViewModel>();
 
+        public bool IsClosed { get; private set; } = false;
+     
         public int AcceptedVolunteerCount => AssignedVolunteers?.Where(v => v.Status == "Accepted").Count() ?? 0;
+        public bool IsLimitVolunteers { get; set; } = true;
+        public bool IsAllowWaitList { get; set; } = true;
+        public int NumberOfUsersSignedUp { get; set; }
+        public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
+        public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
+        public string DisplayDateTime => GetDisplayDate();
+        public string VolunteerLimitDisplay => $"Volunteer Limit: {NumberOfVolunteersRequired}, Spots Remaining: {NumberOfVolunteersRequired - NumberOfUsersSignedUp}";
+
+        private string GetDisplayDate()
+        {
+            if (StartDateTime == null) return "Dates not specified";
+            if (EndDateTime == null) return $"{StartDateTime:dddd, MMMM dd, yyyy} at {StartDateTime:t}";
+            if (StartDateTime.Value.Date == EndDateTime.Value.Date)
+            {
+                return $"{StartDateTime:dddd, MMMM dd, yyyy} from {StartDateTime:t} - {EndDateTime:t}";
+            }
+            return $"{StartDateTime:dddd, MMMM dd, yyyy} at {StartDateTime:t} to<br>{EndDateTime:dddd, MMMM dd, yyyy} at {EndDateTime:t}";
+        }
 
         public TaskViewModel(AllReadyTask task, bool isUserSignedupForTask)
             : this(task)
         {
             IsUserSignedUpForTask = isUserSignedupForTask;
         }
-
     }
 
     public static class TaskViewModelExtensions
@@ -135,31 +163,31 @@ namespace AllReady.ViewModels
             return tasks.Select(task => task.ToViewModel());
         }
 
-        public static AllReadyTask ToModel(this TaskViewModel taskViewModel, IAllReadyDataAccess dataAccess)
+        public static AllReadyTask ToModel(this TaskViewModel taskViewModel, IMediator mediator)
         {
-            var activity = dataAccess.GetActivity(taskViewModel.ActivityId);
-
-            if (activity == null)
+            var campaignEvent = mediator.Send(new EventByIdQuery { EventId = taskViewModel.EventId });
+            if (campaignEvent == null)
+            {
                 return null;
+            }
 
-            bool newTask = true;
+            var newTask = true;
             AllReadyTask dbtask;
-
             if (taskViewModel.Id == 0)
             {
                 dbtask = new AllReadyTask();
             }
             else
             {
-                dbtask = dataAccess.GetTask(taskViewModel.Id);
+                dbtask = mediator.Send(new TaskByTaskIdQuery { TaskId = taskViewModel.Id });
                 newTask = false;
             }
 
             dbtask.Id = taskViewModel.Id;
             dbtask.Description = taskViewModel.Description;
-            dbtask.Activity = activity;
-            dbtask.EndDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.EndDateTime.Value.UtcDateTime : new Nullable<DateTime>();
-            dbtask.StartDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.StartDateTime.Value.UtcDateTime : new Nullable<DateTime>();
+            dbtask.Event = campaignEvent;
+            dbtask.EndDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.EndDateTime.Value.UtcDateTime : new DateTime?();
+            dbtask.StartDateTime = taskViewModel.EndDateTime.HasValue ? taskViewModel.StartDateTime.Value.UtcDateTime : new DateTime?();
             dbtask.Name = taskViewModel.Name;
             dbtask.RequiredSkills = dbtask.RequiredSkills ?? new List<TaskSkill>();
             taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();
@@ -184,13 +212,12 @@ namespace AllReady.ViewModels
             }
             // end workaround
 
-
             if (taskViewModel.AssignedVolunteers != null && taskViewModel.AssignedVolunteers.Count > 0)
             {
                 var taskUsersList = taskViewModel.AssignedVolunteers.Select(tvm => new TaskSignup
                 {
                     Task = dbtask,
-                    User = dataAccess.GetUser(tvm.UserId)
+                    User = mediator.Send(new UserByUserIdQuery { UserId = tvm.UserId })
                 }).ToList();
 
                 // We may be updating an existing task
@@ -201,7 +228,7 @@ namespace AllReady.ViewModels
                 else
                 {
                     // Can probably rewrite this more efficiently.
-                    foreach (TaskSignup taskUsers in taskUsersList)
+                    foreach (var taskUsers in taskUsersList)
                     {
                         if (!(from entry in dbtask.AssignedVolunteers
                               where entry.User.Id == taskUsers.User.Id
@@ -214,13 +241,11 @@ namespace AllReady.ViewModels
             }
 
             return dbtask;
-
         }
 
-        public static IEnumerable<AllReadyTask> ToModel(this IEnumerable<TaskViewModel> tasks, IAllReadyDataAccess dataContext)
+        public static IEnumerable<AllReadyTask> ToModel(this IEnumerable<TaskViewModel> tasks, IMediator mediator)
         {
-            return tasks.Select(task => task.ToModel(dataContext));
+            return tasks.Select(task => task.ToModel(mediator));
         }
-
     }
 }

@@ -14,7 +14,7 @@ namespace AllReady.Extensions
         /// <returns></returns>
         public static bool IsAcceptableImageContentType(this IFormFile file)
         {
-            bool isImageContentType = false;
+            var isImageContentType = false;
             var contentType = file.ContentType.ToLowerInvariant();
 
             if (contentType == "image/png" ||

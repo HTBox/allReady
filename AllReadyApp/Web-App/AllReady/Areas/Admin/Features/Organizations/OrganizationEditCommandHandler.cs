@@ -19,7 +19,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
         {
             var organization = _context
                     .Organizations
-                    .Include(l => l.Location).ThenInclude(p => p.PostalCode)
+                    .Include(l => l.Location)
                     .Include(tc => tc.OrganizationContacts)
                     .SingleOrDefault(t => t.Id == message.Organization.Id);
 
@@ -34,11 +34,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
 
             organization = organization.UpdateOrganizationContact(message.Organization, _context);
             organization.Location = organization.Location.UpdateModel(message.Organization.Location);
-
-            if (organization.Location != null)
-            {
-                _context.Update(organization.Location);
-            }
+            organization.Location.PostalCode = message.Organization.Location.PostalCode;
 
             organization.PrivacyPolicy = message.Organization.PrivacyPolicy;
 

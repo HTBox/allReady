@@ -6,15 +6,15 @@ namespace AllReady.Models
     public interface IAllReadyDataAccess
     {
 
-        #region Activity CRUD
-        IEnumerable<Activity> Activities { get; }
-        Activity GetActivity(int activityId);
-        int GetManagingOrganizationId(int activityId);
-        IEnumerable<ActivitySignup> GetActivitySignups(string userId);
-        IEnumerable<ActivitySignup> GetActivitySignups(int activityId, string userId);
-        Task UpdateActivity(Activity value);
-        IEnumerable<Activity> ActivitiesByPostalCode(string postalCode, int distance);
-        IEnumerable<Activity> ActivitiesByGeography(double latitude, double longitude, int distance);
+        #region Event CRUD
+        IEnumerable<Event> Events { get; }
+        Event GetEvent(int eventId);
+        int GetManagingOrganizationId(int eventId);
+        IEnumerable<EventSignup> GetEventSignups(string userId);
+        IEnumerable<EventSignup> GetEventSignups(int eventId, string userId);
+        Task UpdateEvent(Event value);
+        IEnumerable<Event> EventsByPostalCode(string postalCode, int distance);
+        IEnumerable<Event> EventsByGeography(double latitude, double longitude, int distance);
         IEnumerable<Resource> GetResourcesByCategory(string category);
 
         #endregion
@@ -23,17 +23,6 @@ namespace AllReady.Models
 
         IEnumerable<Campaign> Campaigns { get; }
         Campaign GetCampaign(int campaignId);
-        Task UpdateCampaign(Campaign value);
-
-        #endregion
-
-        #region Organization CRUD
-
-        IEnumerable<Organization> Organizations { get; }
-        Organization GetOrganization(int organizationId);
-        Task AddOrganization(Organization value);
-        Task DeleteOrganization(int id);
-        Task UpdateOrganization(Organization value);
 
         #endregion
 
@@ -43,44 +32,30 @@ namespace AllReady.Models
 
         ApplicationUser GetUser(string userId);
 
-        Task AddUser(ApplicationUser value);
-
-        Task DeleteUser(string userId);
-
         Task UpdateUser(ApplicationUser value);
 
         #endregion
 
-        #region ActivitySignup CRUD
+        #region EventSignup CRUD
 
-        IEnumerable<ActivitySignup> ActivitySignups { get; }
+        IEnumerable<EventSignup> EventSignups { get; }
 
-        ActivitySignup GetActivitySignup(int activityId, string userId);
+        EventSignup GetEventSignup(int eventId, string userId);
 
-        Task AddActivitySignupAsync(ActivitySignup userSignup);
+        Task AddEventSignupAsync(EventSignup userSignup);
 
-        Task DeleteActivityAndTaskSignupsAsync(int activitySignupId);
-
-        Task UpdateActivitySignupAsync(ActivitySignup value);
+        Task DeleteEventAndTaskSignupsAsync(int eventSignupId);
 
         #endregion
 
         #region TaskSignup CRUD
         IEnumerable<TaskSignup> TaskSignups { get; }
 
-        TaskSignup GetTaskSignup(int taskId, string userId);
-
-        Task AddTaskSignupAsync(TaskSignup taskSignup);
-
-        Task DeleteTaskSignupAsync(int taskSignupId);
-
         Task UpdateTaskSignupAsync(TaskSignup value);
         #endregion
 
         #region AllReadyTask CRUD
         IEnumerable<AllReadyTask> Tasks { get; }
-
-        AllReadyTask GetTask(int taskId, string userId);
 
         AllReadyTask GetTask(int taskId);
 
@@ -89,20 +64,10 @@ namespace AllReady.Models
         Task DeleteTaskAsync(int taskId);
 
         Task UpdateTaskAsync(AllReadyTask value);
-        IEnumerable<TaskSignup> GetTasksAssignedToUser(int activityId, string userId);
+
+        IEnumerable<TaskSignup> GetTasksAssignedToUser(int eventId, string userId);
 
         #endregion
 
-        #region Skill CRUD
-        IEnumerable<Skill> Skills { get; }
-
-        #endregion
-
-        #region Closest Locations
-
-        IEnumerable<ClosestLocation> GetClosestLocations(LocationQuery query);
-        IEnumerable<PostalCodeGeoCoordinate> GetPostalCodeCoordinates(string postalCode);
-
-        #endregion Closest Locations
     }
 }

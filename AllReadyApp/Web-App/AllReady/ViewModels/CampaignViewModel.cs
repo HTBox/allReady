@@ -9,7 +9,7 @@ namespace AllReady.ViewModels
     {
         public CampaignViewModel()
         {
-            Activities = new List<ActivityViewModel>();
+            Events = new List<EventViewModel>();
         }
 
         public CampaignViewModel(Campaign campaign)
@@ -21,16 +21,19 @@ namespace AllReady.ViewModels
             Name = campaign.Name;
             Description = campaign.Description;
             FullDescription = campaign.FullDescription;
+            ExternalUrl = campaign.ExternalUrl;
+            ExternalUrlText = campaign.ExternalUrlText;
             ManagingOrganizationName = campaign.ManagingOrganization?.Name ?? string.Empty;
             ManagingOrganizationId = campaign.ManagingOrganization?.Id ?? 0;
             TimeZoneId = campaign.TimeZoneId;
             StartDate = campaign.StartDateTime;
             EndDate = campaign.EndDateTime;
-            Activities = campaign.Activities != null ? campaign.Activities.ToViewModel() : Enumerable.Empty<ActivityViewModel>();
+            Events = campaign.Events != null ? campaign.Events.ToViewModel() : Enumerable.Empty<EventViewModel>();
             CampaignImpact = campaign.CampaignImpact;
             ImageUrl = campaign.ImageUrl;
-
             HasPrivacyPolicy = !string.IsNullOrEmpty(campaign.ManagingOrganization?.PrivacyPolicy);
+            Location = campaign.Location;
+            Featured = campaign.Featured;
         }
 
         public int Id { get; set; }
@@ -39,9 +42,30 @@ namespace AllReady.ViewModels
 
         public string Description { get; set; }
 
+        public string ExternalUrl { get; set; }
+        
+        public string ExternalUrlText { get; set; }
+
         public string FullDescription { get; set; }
 
         public string ImageUrl { get; set; }
+
+        public Location Location { get; set; }
+
+        public string LocationSummary
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(Location?.City) && !string.IsNullOrEmpty(Location?.State))
+                    return $"{Location.City}, {Location.State}";
+                if (!string.IsNullOrEmpty(Location?.City))
+                    return $"{Location.City}";
+                if (!string.IsNullOrEmpty(Location?.State))
+                    return $"{Location.State}";
+
+                return string.Empty;
+            }
+        }
 
         public int ManagingOrganizationId { get; set; }
 
@@ -57,9 +81,10 @@ namespace AllReady.ViewModels
 
         public DateTimeOffset EndDate { get; set; }
 
-        public IEnumerable<ActivityViewModel> Activities { get; set; }
+        public IEnumerable<EventViewModel> Events { get; set; }
 
         public bool HasPrivacyPolicy { get; set; }
+        public bool Featured { get; set; }
     }
 
     public static class CampaignViewModelExtensions

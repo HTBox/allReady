@@ -1,0 +1,40 @@
+﻿@using System.Security.Claims
+@using AllReady.Security
+@model EventViewModel
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            getGeoCoordinates('@Model.Location?.Address1',
+                '@Model.Location?.Address2',
+                '@Model.Location?.City',
+                '@Model.Location?.State',
+                '@Model.Location?.PostalCode',
+                '@Model.Location?.Country',
+                function(result) {
+                    var positionCoordsList = [
+                        { latitude: result.latitude, longitude: result.longitude }
+                    ];
+                    $("#bingMap").css("width", "300px").css("height", "300px");
+                    renderBingMap('bingMap', positionCoordsList);
+                });
+        });
+        var modelStuff = @Json.Serialize(new
+                         {
+                             tasks = Model.Tasks,
+                             userTasks = Model.UserTasks,
+                             eventSkills = Model.RequiredSkills,
+                             userSkills = Model.UserSkills,
+                             isVolunteeredForEvent = Model.IsUserVolunteeredForEvent,
+                             signupModelSeed = Model.SignupModel,
+                             eventTitle = Model.Title,
+                             isSignedIn = User.IsSignedIn(),
+                             loginUrl = "/Account/Login?ReturnUrl=/Event/" + @Model.Id
+                         });
+
+
+    </script>
+    <script type="text/javascript" src="~/js/ko.bindings.js"></script>
+    <script type="text/javascript" src="~/lib/knockout.mapping/knockout.mapping.js"></script>
+    <script type="text/javascript" src="~/js/event.js"></script>
+    <script type="text/javascript" src="~/js/showmodal.js"></script>
+    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>

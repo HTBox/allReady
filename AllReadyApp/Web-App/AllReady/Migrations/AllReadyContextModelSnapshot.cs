@@ -16,76 +16,20 @@ namespace AllReady.Migrations
                 .HasAnnotation("ProductVersion", "7.0.0-rc1-16348")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("AllReady.Models.Activity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("ActivityType");
-
-                    b.Property<int>("CampaignId");
-
-                    b.Property<string>("Description");
-
-                    b.Property<DateTimeOffset>("EndDateTime");
-
-                    b.Property<string>("ImageUrl");
-
-                    b.Property<int?>("LocationId");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<int>("NumberOfVolunteersRequired");
-
-                    b.Property<string>("OrganizerId");
-
-                    b.Property<DateTimeOffset>("StartDateTime");
-
-                    b.HasKey("Id");
-                });
-
-            modelBuilder.Entity("AllReady.Models.ActivitySignup", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("ActivityId");
-
-                    b.Property<string>("AdditionalInfo");
-
-                    b.Property<DateTime?>("CheckinDateTime");
-
-                    b.Property<string>("PreferredEmail");
-
-                    b.Property<string>("PreferredPhoneNumber");
-
-                    b.Property<DateTime>("SignupDateTime");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("Id");
-                });
-
-            modelBuilder.Entity("AllReady.Models.ActivitySkill", b =>
-                {
-                    b.Property<int>("ActivityId");
-
-                    b.Property<int>("SkillId");
-
-                    b.HasKey("ActivityId", "SkillId");
-                });
-
             modelBuilder.Entity("AllReady.Models.AllReadyTask", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("ActivityId");
-
                     b.Property<string>("Description");
 
                     b.Property<DateTimeOffset?>("EndDateTime");
+
+                    b.Property<int?>("EventId");
+
+                    b.Property<bool>("IsAllowWaitList");
+
+                    b.Property<bool>("IsLimitVolunteers");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -166,6 +110,12 @@ namespace AllReady.Migrations
                     b.Property<string>("Description");
 
                     b.Property<DateTimeOffset>("EndDateTime");
+
+                    b.Property<string>("ExternalUrl");
+
+                    b.Property<string>("ExternalUrlText");
+
+                    b.Property<bool>("Featured");
 
                     b.Property<string>("FullDescription");
 
@@ -260,6 +210,70 @@ namespace AllReady.Migrations
                     b.HasKey("Id");
                 });
 
+            modelBuilder.Entity("AllReady.Models.Event", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("CampaignId");
+
+                    b.Property<string>("Description");
+
+                    b.Property<DateTimeOffset>("EndDateTime");
+
+                    b.Property<int>("EventType");
+
+                    b.Property<string>("ImageUrl");
+
+                    b.Property<bool>("IsAllowWaitList");
+
+                    b.Property<bool>("IsLimitVolunteers");
+
+                    b.Property<int?>("LocationId");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<int>("NumberOfVolunteersRequired");
+
+                    b.Property<string>("OrganizerId");
+
+                    b.Property<DateTimeOffset>("StartDateTime");
+
+                    b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.EventSignup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AdditionalInfo");
+
+                    b.Property<DateTime?>("CheckinDateTime");
+
+                    b.Property<int?>("EventId");
+
+                    b.Property<string>("PreferredEmail");
+
+                    b.Property<string>("PreferredPhoneNumber");
+
+                    b.Property<DateTime>("SignupDateTime");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.EventSkill", b =>
+                {
+                    b.Property<int>("EventId");
+
+                    b.Property<int>("SkillId");
+
+                    b.HasKey("EventId", "SkillId");
+                });
+
             modelBuilder.Entity("AllReady.Models.Location", b =>
                 {
                     b.Property<int>("Id")
@@ -277,7 +291,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("PhoneNumber");
 
-                    b.Property<string>("PostalCodePostalCode");
+                    b.Property<string>("PostalCode");
 
                     b.Property<string>("State");
 
@@ -377,6 +391,12 @@ namespace AllReady.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AdditionalInfo");
+
+                    b.Property<string>("PreferredEmail");
+
+                    b.Property<string>("PreferredPhoneNumber");
 
                     b.Property<string>("Status");
 
@@ -491,48 +511,11 @@ namespace AllReady.Migrations
                     b.HasAnnotation("Relational:TableName", "AspNetUserRoles");
                 });
 
-            modelBuilder.Entity("AllReady.Models.Activity", b =>
-                {
-                    b.HasOne("AllReady.Models.Campaign")
-                        .WithMany()
-                        .HasForeignKey("CampaignId");
-
-                    b.HasOne("AllReady.Models.Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId");
-
-                    b.HasOne("AllReady.Models.ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("OrganizerId");
-                });
-
-            modelBuilder.Entity("AllReady.Models.ActivitySignup", b =>
-                {
-                    b.HasOne("AllReady.Models.Activity")
-                        .WithMany()
-                        .HasForeignKey("ActivityId");
-
-                    b.HasOne("AllReady.Models.ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("AllReady.Models.ActivitySkill", b =>
-                {
-                    b.HasOne("AllReady.Models.Activity")
-                        .WithMany()
-                        .HasForeignKey("ActivityId");
-
-                    b.HasOne("AllReady.Models.Skill")
-                        .WithMany()
-                        .HasForeignKey("SkillId");
-                });
-
             modelBuilder.Entity("AllReady.Models.AllReadyTask", b =>
                 {
-                    b.HasOne("AllReady.Models.Activity")
+                    b.HasOne("AllReady.Models.Event")
                         .WithMany()
-                        .HasForeignKey("ActivityId");
+                        .HasForeignKey("EventId");
 
                     b.HasOne("AllReady.Models.Organization")
                         .WithMany()
@@ -587,11 +570,41 @@ namespace AllReady.Migrations
                         .HasForeignKey("OrganizationId");
                 });
 
-            modelBuilder.Entity("AllReady.Models.Location", b =>
+            modelBuilder.Entity("AllReady.Models.Event", b =>
                 {
-                    b.HasOne("AllReady.Models.PostalCodeGeo")
+                    b.HasOne("AllReady.Models.Campaign")
                         .WithMany()
-                        .HasForeignKey("PostalCodePostalCode");
+                        .HasForeignKey("CampaignId");
+
+                    b.HasOne("AllReady.Models.Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
+
+                    b.HasOne("AllReady.Models.ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("OrganizerId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.EventSignup", b =>
+                {
+                    b.HasOne("AllReady.Models.Event")
+                        .WithMany()
+                        .HasForeignKey("EventId");
+
+                    b.HasOne("AllReady.Models.ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.EventSkill", b =>
+                {
+                    b.HasOne("AllReady.Models.Event")
+                        .WithMany()
+                        .HasForeignKey("EventId");
+
+                    b.HasOne("AllReady.Models.Skill")
+                        .WithMany()
+                        .HasForeignKey("SkillId");
                 });
 
             modelBuilder.Entity("AllReady.Models.Organization", b =>

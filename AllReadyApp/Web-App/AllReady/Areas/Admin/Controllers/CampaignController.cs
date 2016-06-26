@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Models;
@@ -10,6 +11,7 @@ using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
+using AllReady.Areas.Admin.Models.Validators;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -30,35 +32,37 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Index()
         {
             var query = new CampaignListQuery();
+
             if (User.IsUserType(UserType.OrgAdmin))
             {
                 query.OrganizationId = User.GetOrganizationId();
             }
+
             var campaigns = _mediator.Send(query);
+
             return View(campaigns);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            CampaignDetailModel campaign = _mediator.Send(new CampaignDetailQuery { CampaignId = id });
-
-            if (campaign == null)
+            var viewModel = await _mediator.SendAsync(new CampaignDetailQuery { CampaignId = id });
+            if (viewModel == null)
             {
                 return HttpNotFound();
             }
 
-            if (!User.IsOrganizationAdmin(campaign.OrganizationId))
+            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return HttpUnauthorized();
             }
 
-            return View(campaign);
+            return View(viewModel);
         }
 
         // GET: Campaign/Create
         public IActionResult Create()
         {
-            return View("Edit", new CampaignSummaryModel()
+            return View("Edit", new CampaignSummaryModel
             {
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddMonths(1)
@@ -66,21 +70,20 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Campaign/Edit/5
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            CampaignSummaryModel campaign = _mediator.Send(new CampaignSummaryQuery { CampaignId = id });
-
-            if (campaign == null)
+            var viewModel = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = id }); //not covered
+            if (viewModel == null)
             {
                 return HttpNotFound();
             }
 
-            if (!User.IsOrganizationAdmin(campaign.OrganizationId))
+            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return HttpUnauthorized();
             }
 
-            return View(campaign);
+            return View(viewModel);
         }
 
         // POST: Campaign/Edit/5
@@ -98,23 +101,9 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
 
-            // Temporary code to avoid current database update error when the post code geo does not exist in the database.
-            if (!string.IsNullOrEmpty(campaign.Location?.PostalCode))
+            if (campaign.EndDate < campaign.StartDate)
             {
-                bool validPostcode = await _mediator.SendAsync(new CheckValidPostcodeQueryAsync
-                {
-                    Postcode = new PostalCodeGeo
-                    {
-                        City = campaign.Location.City,
-                        State = campaign.Location.State,
-                        PostalCode = campaign.Location.PostalCode
-                    }
-                });
-
-                if (!validPostcode)
-                {
-                    ModelState.AddModelError(campaign.Location.PostalCode, "The city, state and postal code combination is not valid");
-                }
+                ModelState.AddModelError(nameof(campaign.EndDate), "The end date must fall on or after the start date.");
             }
 
             if (ModelState.IsValid)
@@ -132,56 +121,59 @@ namespace AllReady.Areas.Admin.Controllers
                     }
                 }
 
-                int id = _mediator.Send(new EditCampaignCommand { Campaign = campaign });
-                return RedirectToAction("Details", new { area = "Admin", id = id });
+                var id = await _mediator.SendAsync(new EditCampaignCommand { Campaign = campaign });
+
+                return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
             }
+
             return View(campaign);
         }
 
         // GET: Campaign/Delete/5
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            CampaignSummaryModel campaign = _mediator.Send(new CampaignSummaryQuery { CampaignId = id });
-
-            if (campaign == null)
+            var viewModel = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = id });
+            if (viewModel == null)
             {
                 return HttpNotFound();
             }
-            if (!User.IsOrganizationAdmin(campaign.OrganizationId))
+
+            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return HttpUnauthorized();
             }
 
-            return View(campaign);
+            return View(viewModel);
         }
 
         // POST: Campaign/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            CampaignSummaryModel campaign = _mediator.Send(new CampaignSummaryQuery { CampaignId = id });
-
-            if (!User.IsOrganizationAdmin(campaign.OrganizationId))
+            var viewModel = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = id });
+            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return HttpUnauthorized();
             }
 
-            _mediator.Send(new DeleteCampaignCommand { CampaignId = id });
-            return RedirectToAction("Index", new { area = "Admin" });
+            await _mediator.SendAsync(new DeleteCampaignCommand { CampaignId = id });
+
+            return RedirectToAction(nameof(Index), new { area = "Admin" });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult LockUnlock(int id)
+        public async Task<IActionResult> LockUnlock(int id)
         {
             if (!User.IsUserType(UserType.SiteAdmin))
             {
                 return HttpUnauthorized();
             }
 
-            _mediator.Send(new LockUnlockCampaignCommand { CampaignId = id });
-            return RedirectToAction("Details", new { area = "Admin", id = id });
+            await _mediator.SendAsync(new LockUnlockCampaignCommand { CampaignId = id });
+
+            return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
         }
     }
 }

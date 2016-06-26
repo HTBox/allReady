@@ -14,6 +14,13 @@ namespace AllReady.Areas.Admin.Models
 
         public string FullDescription { get; set; }
 
+        [Display(Name = "External URL")]
+        public string ExternalUrl { get; set; }
+
+        [Display(Name = "External URL Text")]
+        public string ExternalUrlText { get; set; }
+
+
         [Display(Name = "Organization")]
         public int OrganizationId { get; set; }
 
@@ -34,7 +41,7 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "End Date")]
         public DateTimeOffset EndDate { get; set; }
 
-		public IEnumerable<ActivitySummaryModel> Activities { get; set; }
+		public IEnumerable<EventSummaryModel> Events { get; set; }
         public CampaignImpact CampaignImpact { get; set; }
 
         [UIHint("Location")]
@@ -55,5 +62,6 @@ namespace AllReady.Areas.Admin.Models
 
         public bool Locked { get; set; }
 
+        public bool Featured { get; set; }
     }
 }

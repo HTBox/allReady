@@ -2,7 +2,7 @@
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class DeleteCampaignCommand : IRequest
+    public class DeleteCampaignCommand : IAsyncRequest
     {
         public int CampaignId {get; set;}
     }

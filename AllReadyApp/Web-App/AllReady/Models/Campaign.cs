@@ -15,6 +15,13 @@ namespace AllReady.Models
         [Display(Name = "Full Description")]
         public string FullDescription { get; set; }
 
+        [Display(Name="External Link")]
+        [Url]
+        public string ExternalUrl { get; set; }
+
+        [Display(Name = "External Link Text")]
+        public string ExternalUrlText { get; set; }
+
         [Display(Name = "Managing Organization")]
         public int ManagingOrganizationId { get; set; }
         public Organization ManagingOrganization { get; set; }
@@ -44,7 +51,7 @@ namespace AllReady.Models
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
         public DateTimeOffset EndDateTime { get; set; }
 
-        public List<Activity> Activities { get; set; }
+        public List<Event> Events { get; set; }
 
         public ApplicationUser Organizer { get; set; }
 
@@ -56,5 +63,7 @@ namespace AllReady.Models
         public List<CampaignContact> CampaignContacts { get; set; }
 
         public bool Locked { get; set; }
+
+        public bool Featured { get; set; }
     }
 }

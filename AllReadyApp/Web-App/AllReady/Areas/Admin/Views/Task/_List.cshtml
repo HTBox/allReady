@@ -35,11 +35,11 @@
                     else if (item.AssignedVolunteers.Count == 1)
                     {
                         <td>@item.AssignedVolunteers[0].UserName</td>
-                        @*<td>@(item.AssignedVolunteers[0].HasVolunteered ? "": "*")</td>*@
+                        <td>@(item.AssignedVolunteers[0]?.Status ?? "*")</td>
                     }
                     else
                     {
-                        <td><a asp-controller="Task" asp-action="Details" asp-route-area="Admin" asp-route-activityId="@item.ActivityId" asp-route-id="@item.Id">Multiple Volunteers</a></td>
+                        <td><a asp-controller="Task" asp-action="Details" asp-route-area="Admin" asp-route-eventId="@item.EventId" asp-route-id="@item.Id">Multiple Volunteers</a></td>
                         <td>@item.AcceptedVolunteerCount / @item.AssignedVolunteers.Count Accepted</td>
                     }
 

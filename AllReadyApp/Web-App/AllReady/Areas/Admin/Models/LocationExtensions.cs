@@ -6,7 +6,11 @@ namespace AllReady.Areas.Admin.Models
     {
         public static LocationDisplayModel ToModel(this Location location)
         {
-            if (location == null) { return new LocationDisplayModel(); }
+            if (location == null)
+            {
+                return new LocationDisplayModel();
+            }
+
             return new LocationDisplayModel
             {
                 Id = location.Id,
@@ -16,7 +20,7 @@ namespace AllReady.Areas.Admin.Models
                 Country = location.Country,
                 Name = location.Name,
                 PhoneNumber = location.PhoneNumber,
-                PostalCode = location.PostalCode?.PostalCode,
+                PostalCode = location.PostalCode,
                 State = location.State
             };
         }
@@ -24,7 +28,11 @@ namespace AllReady.Areas.Admin.Models
         public static LocationEditModel ToEditModel(this Location location)
         {
             //TODO: Do I want to keep LocationEditModel and LocationDisplayModel ??
-            if (location == null) { return new LocationEditModel(); }
+            if (location == null)
+            {
+                return new LocationEditModel();
+            }
+
             return new LocationEditModel
             {
                 Id = location.Id,
@@ -34,11 +42,10 @@ namespace AllReady.Areas.Admin.Models
                 Country = location.Country,
                 Name = location.Name,
                 PhoneNumber = location.PhoneNumber,
-                PostalCode = location.PostalCode?.PostalCode,
+                PostalCode = location.PostalCode,
                 State = location.State
             };            
         }
-
 
         public static Location UpdateModel(this Location location, LocationEditModel locationEditModel)
         {
@@ -61,10 +68,7 @@ namespace AllReady.Areas.Admin.Models
                     location.Country = locationEditModel.Country;
                     location.Name = locationEditModel.Name;
                     location.PhoneNumber = locationEditModel.PhoneNumber;
-                    if (!string.IsNullOrWhiteSpace(locationEditModel.PostalCode))
-                    {
-                        location.PostalCode = new PostalCodeGeo { PostalCode = locationEditModel.PostalCode, City = locationEditModel.City, State = locationEditModel.State };
-                    }
+                    location.PostalCode = locationEditModel.PostalCode;
                     location.State = locationEditModel.State;
                     return location;
                 }

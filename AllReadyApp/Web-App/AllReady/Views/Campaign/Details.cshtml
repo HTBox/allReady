@@ -5,7 +5,7 @@
 
 <div class="row">
     <div id="col-main">
-        <div class="col-md-9"><h2>@Model.Name</h2></div>
+        <div class="col-md-9"><h2>@if (Model.Featured) {<i class="fa fa-star star-highlight" aria-hidden="true"></i>} @Model.Name</h2></div>
         <div class="col-md-3 share-buttons">
             <a href="mailto:?subject=Check out @Model.Name&body=Check it out at @ViewBag.AbsoluteUrl" title="Share by Email">
                 <img src="~/images/share-email.png">
@@ -26,17 +26,25 @@
             <time value="Model.StartDate" format="D"></time> - <time value="Model.EndDate" format="D"></time>
             <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
         </p>
+        <p>@Model.LocationSummary</p>
     </div>
 </div>
 
 <div class="row">
     <div id="col-main" class="col-md-8">
+        @if (!string.IsNullOrEmpty(Model.ExternalUrl))
+        {
+            <a href="@Model.ExternalUrl" target="_blank">@(string.IsNullOrWhiteSpace(Model.ExternalUrlText) ? Model.ExternalUrl : Model.ExternalUrlText) <i class="fa fa-external-link"></i></a>
+        }
+        <hr />
         @if (!String.IsNullOrEmpty(Model.ImageUrl))
         {
             <div class="row">
                 <img src="@Model.ImageUrl" class="img-responsive" />
             </div>
+            <hr/>
         }
+
         @Html.Raw(Model.FullDescription)
     </div>
 
@@ -53,18 +61,18 @@
 <div class="row">
 
     <div class="col-md-6">
-        <h3>Activities for this Campaign</h3>
+        <h3>Events for this Campaign</h3>
     </div>
     <div class="col-md-6">
         <div class="pull-right">
             <div class="form-inline">
                 <div class="form-group">
-                    <input type="text" class="form-control input-sm" data-bind="textInput: activities.searchTerm" placeholder="Search activities" />
+                    <input type="text" class="form-control input-sm" data-bind="textInput: events.searchTerm" placeholder="Search events" />
                 </div>
                 <div class="form-group">
-                    <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: activities.showOld }, click: activities.showOld.toggle">
-                        <i class="fa" data-bind="css: { 'fa-square-o': !activities.showOld(), 'fa-check-square-o': activities.showOld }"></i>
-                        Show Closed Activities
+                    <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: events.showOld }, click: events.showOld.toggle">
+                        <i class="fa" data-bind="css: { 'fa-square-o': !events.showOld(), 'fa-check-square-o': events.showOld }"></i>
+                        Show Closed Events
                     </button>
                     <span data-bind="text: '(' + total + ')' "></span>
                 </div>
@@ -76,12 +84,12 @@
 @*<div class="col-sm-12">
         <div class="form-inline">
             <div class="form-group">
-                <input type="text" class="form-control input-sm" data-bind="textInput: activities.searchTerm" placeholder="Search activities" />
+                <input type="text" class="form-control input-sm" data-bind="textInput: events.searchTerm" placeholder="Search events" />
             </div>
             <div class="form-group">
-                <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: activities.showOld }, click: activities.showOld.toggle">
-                    <i class="fa" data-bind="css: { 'fa-square-o': !activities.showOld(), 'fa-check-square-o': activities.showOld }"></i>
-                    Show Closed Activities
+                <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: events.showOld }, click: events.showOld.toggle">
+                    <i class="fa" data-bind="css: { 'fa-square-o': !events.showOld(), 'fa-check-square-o': events.showOld }"></i>
+                    Show Closed Events
                 </button>
             </div>
         </div>
@@ -89,9 +97,9 @@
 
 
 <div class="row">
-    <div class="hide text-center" data-bind="css: { hide: activities.filtered().length }">
+    <div class="hide text-center" data-bind="css: { hide: events.filtered().length }">
         <div class="alert alert-warning" role="alert">
-            <strong>No matching activities.</strong>
+            <strong>No matching events.</strong>
         </div>
     </div>
     <div class="col-md-2">
@@ -102,19 +110,23 @@
     </div>
     <div class="col-md-9">
         <div class="table-responsive">
-            <table class="table" data-bind="css: { hide: !activities.filtered().length }">
+            <table class="table" data-bind="css: { hide: !events.filtered().length }">
                 <tr>
-                    <th><span title="Name of the activity">Title</span></th>
-                    <th><span title="Description of the activity">Description</span></th>
-                    <th><span title="Date of the activity">Dates</span></th>
+                    <th><span title="Name of the event">Title</span></th>
+                    <th><span title="Description of the event">Description</span></th>
+                    <th><span title="Event Location">Location</span></th>
+                    <th><span title="Date of the event">Dates</span></th>
                 </tr>
-                <!-- ko foreach: activities.filtered -->
+                <!-- ko foreach: events.filtered -->
                 <tr>
                     <td>
-                        <a data-bind="attr: { href: '/Activity/' + Id }, text: Name"></a>
+                        <a data-bind="attr: { href: '/Event/' + Id }, text: Name"></a>
                     </td>
                     <td>
                         <span data-bind="text: Description"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: Location ? Location.Summary : '' "></span>
                     </td>
                     <td>
                         <span data-bind="text: displayDate()"></span>
@@ -132,8 +144,8 @@
         <h3>Resources for this campaign</h3>
     </div>
     <div class="col-md-12 text-center" data-bind="if: resources && resources.length > 0">
-        <div class="activity-results">
-            <div class="activity-wrapper" data-bind="foreach: resources">
+        <div class="event-results">
+            <div class="event-wrapper" data-bind="foreach: resources">
                 <p><label data-bind="text: Name"></label></p>
             </div>
         </div>
@@ -151,7 +163,7 @@
 
 @section scripts {
     <script>
-        var modelActivities = @Json.Serialize(Model.Activities);
+        var modelEvents = @Json.Serialize(Model.Events);
     </script>
     <script type="text/javascript" src="~/js/campaign.js"></script>
 

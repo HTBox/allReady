@@ -75,12 +75,29 @@
         </div>
         <div class="form-group">
             <div class="control-label col-md-2">
-                <label asp-for="FullDescription"></label> @*class="col-md-2 control-label"*@
+                <label asp-for="FullDescription"></label>
                 <p><cite>This formatted text will be used as your landing page content</cite></p>
             </div>
             <div class="col-md-10">
                 <textarea asp-for="FullDescription" class="form-control wysiwyg" rows="6"></textarea>
                 <span asp-validation-for="FullDescription" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="control-label col-md-2">
+                <label asp-for="ExternalUrl"></label>
+                <p><cite>Optional link to an outside page</cite></p>
+            </div>
+            <div class="col-md-10">
+                <input asp-for="ExternalUrl" class="form-control" />
+                <span asp-validation-for="ExternalUrl" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="ExternalUrlText" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="ExternalUrlText" class="form-control" />
+                <span asp-validation-for="ExternalUrlText" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
@@ -139,6 +156,13 @@
                 <span asp-validation-for="PrimaryContactEmail" class="text-danger"></span>
             </div>
         </div>
+		<div class="form-group">
+			<label asp-for="Featured" class="col-md-2 control-label"></label>
+			<div class="col-md-10">
+				<input type="checkbox" asp-for="Featured" />
+				<span asp-validation-for="Featured" class="text-danger"></span>
+			</div>
+		</div>
         <div class="form-horizontal">
             @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
             {

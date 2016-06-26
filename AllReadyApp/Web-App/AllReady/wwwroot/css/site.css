@@ -70,22 +70,24 @@ footer {
 }
 
     .btn.btn-default, a.btn.btn-default {
-        background-color: hsl(28.6, 62.9%, 41.2%);
+        background-color: #d58033;
         color: #fff;
+        border-radius: 6px;
+        border-width: 0;
     }
 
         .btn.btn-default.active, a.btn.btn-default.active {
-            background-color: hsl(28.9, 80.4%, 50%);
+            background-color: #ab6627;
             color: #fff;
         }
 
             .btn.btn-default.active:hover, .btn.btn-default.active:focus {
-                background-color: hsl(28.9, 80.4%, 60%);
+                background-color: #ab6627;
             }
 
         .btn.btn-default:hover, .btn.btn-default:focus {
             color: #fff;
-            background-color: hsl(28.9, 80.4%, 68%);
+            background-color: #ab6627;
         }
 
 .btn-volunteer {
@@ -121,8 +123,8 @@ ul.nav a:focus {
     text-decoration: underline;
 }
 
-ul.nav.nav-tabs > li > a:hover {
-    /* issue 551 */
+.nav-tabs > li > a:hover,
+.nav-tabs > li > a:focus {
     color: #000;
 }
 
@@ -273,7 +275,7 @@ Navigation
     margin-bottom: 30px;
 }
 
-.activity-list > a {
+.event-list > a {
     display: block;
 }
 
@@ -308,7 +310,7 @@ Navigation
 }
 
 .unvolunteer {
-    width: 100%;
+    width: 55%;
     text-align: center;
     font-size: 9.5pt;
 }
@@ -336,6 +338,8 @@ Navigation
     position: absolute;
     bottom: 0;
     right: 0;
+    margin-right: 1rem;
+    margin-bottom: .5rem;
     font-size: 9px;
 }
 
@@ -372,10 +376,129 @@ Navigation
     stroke-width: 3;
 }
 
+/* Event Details Page */
+#EventDetail h3 {
+    margin-top: 10px;
+}
+
+.no-matching-tasks {
+    font-size: 15px;
+}
+
+#CampaignInfo .panel-heading {
+    width: 215px;
+    float: left;
+}
+
+#CampaignInfo .toggle-accordion-icon {
+    width: 25px;
+    float: left;
+    margin-top: 25px;
+    margin-left: -39px;   
+}
+
+.task-panel .panel-title {
+    font-size: 14px;
+    margin-left: -10px;
+}
+
+.task-panel .panel-title .toggle-accordion-icon, #CampaignInfo .toggle-accordion-icon
+{
+    width: 25px;
+    float: left;
+    font-size: 24px;
+    color: hsl(28.6, 62.9%, 41.2%);
+}
+
+#CampaignInfo .toggle-accordion-icon {
+    margin-top: 7px;
+}
+
+#CampaignInfo .panel-heading {
+    background-color: white;
+}
+
+#CampaignInfo h3 {
+    margin-top: 1px;
+}
+
+[data-toggle-accordion] {
+    cursor: pointer;
+}
+
+.task-panel .panel-heading {
+    background: #DFDED6 no-repeat top left;
+}
+
+.task-panel .panel-body {
+    background: #E9E6E3 repeat-y top;
+}
+
+.task-panel .task-name {
+    font-weight: bold;
+}
+.task-panel .task-name.isFull {
+    font-weight: normal;
+}
+
+.task-panel .task-datetime {
+    font-size: 13px;
+}
+
+.task-panel .task-skills-container {
+}
+
+.task-panel .btn-group {
+    float: right;
+    margin-top: -32px;
+}
+
+.task-panel .btn-group > .btn {
+    margin-top: -3px;
+}
+
+.task-panel .btn-group > .btn-sm {
+    margin-top: -2px;
+}
+
+.task-list {
+    width: 80%;
+}
+
+#TasksAccordion .task-panel .task-button-container {
+    width: 34%;
+    margin: 0 auto;
+}
+
+#UserTasksAccordion .task-panel .task-button-container {
+    width: 84%;
+    margin: 0 auto;
+}
+
+#UserTasksAccordion .task-panel .task-button-container.twoButtons {
+    width: 46%;
+    margin: 0 auto;
+}
+
+/* Event Edit Page */
+#IsLimitVolunteers, #IsAllowWaitList {
+    margin-left: -170px;
+}
+
 .inline-form {
     display: inline-block;
 }
 
-h2.inline-form {
-    padding-right: 10px;
+.star-highlight {
+    color: #609E43;
+}
+
+.row-btn-margin {
+    margin-top: -0.2em;
+    margin-bottom: -0.2em;
+}
+
+.org-image {
+    max-width: 400px;
+    max-height: 100px;
 }

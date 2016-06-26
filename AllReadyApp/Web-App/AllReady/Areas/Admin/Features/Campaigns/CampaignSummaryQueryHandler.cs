@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
@@ -6,7 +7,7 @@ using Microsoft.Data.Entity;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class CampaignSummaryQueryHandler : IRequestHandler<CampaignSummaryQuery, CampaignSummaryModel>
+    public class CampaignSummaryQueryHandler : IAsyncRequestHandler<CampaignSummaryQuery, CampaignSummaryModel>
     {
         private AllReadyContext _context;
 
@@ -15,17 +16,19 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             _context = context;
 
         }
-        public CampaignSummaryModel Handle(CampaignSummaryQuery message)
+
+        public async Task<CampaignSummaryModel> Handle(CampaignSummaryQuery message)
         {
             CampaignSummaryModel result = null;
 
-            var campaign = _context.Campaigns
+            var campaign = await _context.Campaigns
                 .AsNoTracking()
                 .Include(ci => ci.CampaignImpact)
                 .Include(mt => mt.ManagingOrganization)
-                .Include(l => l.Location).ThenInclude(p => p.PostalCode)
+                .Include(l => l.Location)
                 .Include(c => c.CampaignContacts).ThenInclude(tc => tc.Contact)
-                .SingleOrDefault(c => c.Id == message.CampaignId);
+                .SingleOrDefaultAsync(c => c.Id == message.CampaignId)
+                .ConfigureAwait(false);
 
             if (campaign != null)
             {
@@ -34,7 +37,10 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Id = campaign.Id,
                     Name = campaign.Name,
                     Description = campaign.Description,
+                    Featured = campaign.Featured,
                     FullDescription = campaign.FullDescription,
+                    ExternalUrl = campaign.ExternalUrl,
+                    ExternalUrlText = campaign.ExternalUrlText,
                     OrganizationId = campaign.ManagingOrganizationId,
                     OrganizationName = campaign.ManagingOrganization.Name,
                     ImageUrl = campaign.ImageUrl,
@@ -44,19 +50,19 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Location = campaign.Location.ToEditModel(),
                     CampaignImpact = campaign.CampaignImpact != null ? campaign.CampaignImpact : new CampaignImpact()
                 };
+
                 if (!campaign.CampaignContacts.Any())// Include isn't including
                 {
-                    campaign.CampaignContacts = _context.CampaignContacts.Include(c => c.Contact).Where(cc => cc.CampaignId == campaign.Id).ToList();
+                    campaign.CampaignContacts = await _context.CampaignContacts.Include(c => c.Contact).Where(cc => cc.CampaignId == campaign.Id).ToListAsync().ConfigureAwait(false);
                 }
+
                 if (campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
                 {
                     result = (CampaignSummaryModel)campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(result);
                 }
-
             }
 
             return result;
         }
-       
     }
 }

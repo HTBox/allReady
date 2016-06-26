@@ -42,7 +42,6 @@ namespace AllReady.Features.Notifications
                 var email = JsonConvert.SerializeObject(queuedEmail);
                 await _storageService.SendMessageAsync(QueueStorageService.Queues.EmailQueue, email);
             }
-
         }
     }
 }

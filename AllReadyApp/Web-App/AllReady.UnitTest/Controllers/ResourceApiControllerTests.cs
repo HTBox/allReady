@@ -1,44 +1,61 @@
 ﻿using AllReady.Controllers;
 using AllReady.Models;
-using AllReady.ViewModels;
 using System.Collections.Generic;
 using Moq;
 using Xunit;
 using System.Linq;
+using AllReady.Features.Resource;
+using AllReady.UnitTest.Extensions;
+using AllReady.ViewModels;
+using MediatR;
+using Microsoft.AspNet.Mvc;
 
 namespace AllReady.UnitTest.Controllers
 {
-    public class ResourceApiControllerTests : TestBase
+    public class ResourceApiControllerTests
     {
         [Fact]
-        public void GetResourcesByCategory()
+        public void GetResourcesByCategorySendsResourcesByCategoryQueryWithCorrectData()
         {
-            //Arrange
-            var mockAllReadyDataAccess = new Mock<IAllReadyDataAccess>();
+            const string category = "category";
 
-            string resourceCat1 = "1", resourceCat2 = "2";
-            var cat1Resources = new List<Resource>()
-            {
-                new Resource() { Id = 1 }
-            };
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ResourcesByCategoryQuery>())).Returns(new List<Resource>());
 
-            var cat2Resources = new List<Resource>()
-            {
-                new Resource() { Id = 2 }
-            };
+            var sut = new ResourceApiController(mediator.Object);
+            sut.GetResourcesByCategory(category);
 
-            mockAllReadyDataAccess.Setup(x => x.GetResourcesByCategory(resourceCat1)).Returns(cat1Resources);
-            mockAllReadyDataAccess.Setup(x => x.GetResourcesByCategory(resourceCat2)).Returns(cat2Resources);
+            mediator.Verify(x => x.Send(It.Is<ResourcesByCategoryQuery>(y => y.Category == category)));
+        }
 
-            var controller = new ResourceApiController(mockAllReadyDataAccess.Object);
+        [Fact]
+        public void GetResourcesByCategoryReturnsCorrectModel()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<ResourcesByCategoryQuery>())).Returns(new List<Resource> { new Resource() });
 
-            //Act
-            var cat1ResourceResults = controller.GetResourcesByCategory(resourceCat1);
-            var cat2ResourceResults = controller.GetResourcesByCategory(resourceCat2);
+            var sut = new ResourceApiController(mediator.Object);
+            var results = sut.GetResourcesByCategory(It.IsAny<string>());
 
-            //Assert
-            Assert.True(cat1ResourceResults.Any(x => x.Id == 1));
-            Assert.True(cat2ResourceResults.Any(x => x.Id == 2));
+            Assert.IsType<List<ResourceViewModel>>(results);
+        }
+
+        [Fact]
+        public void ControllerHasRouteAtttributeWithTheCorrectTemplate()
+        {
+            var sut = new ResourceApiController(null);
+            var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "api/resource");
+        }
+
+        [Fact]
+        public void ControllerHasProducesAtttributeWithTheCorrectContentType()
+        {
+            var sut = new ResourceApiController(null);
+            var attribute = sut.GetAttributes().OfType<ProducesAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
         }
     }
 }

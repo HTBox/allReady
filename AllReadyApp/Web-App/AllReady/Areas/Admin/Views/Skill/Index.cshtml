@@ -2,14 +2,15 @@
 @using AllReady.Security;
 
 <div class="row">
-    <div class="cold-md-12">
+    <div class="col-md-12">
         <h2>@ViewData["Title"]</h2>
     </div>
 </div>
 <div class="row">
-    <div class="cold-md-12">
-        <table class="table">
+    <div class="col-md-12">
+        <table class="table table-responsive table-condensed">
             <tr>
+                <th>Action</th>
                 <th>
                     @Html.DisplayNameFor(model => model.First().HierarchicalName)
                 </th>
@@ -29,6 +30,11 @@
             {
                 <tr>
                     <td>
+                        <div class="btn-group btn-group-sm row-btn-margin">
+                            <a data-toggle="tooltip" data-placement="top" title="Edit" asp-route-area="Admin" asp-controller="Skill" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success"><span class="fa fa-edit"></span></a>
+                        </div>
+                    </td>
+                    <td>
                         @item.HierarchicalName
                     </td>
                     <td>
@@ -41,8 +47,9 @@
                         </td>
                     }
                     <td>
-                        <a class="btn btn-default" asp-route-area="Admin" asp-controller="Skill" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                        <a class="btn btn-default" asp-route-area="Admin" asp-controller="Skill" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        <div class="btn-group btn-group-sm row-btn-margin pull-right">
+                            <a data-toggle="tooltip" data-placement="top" title="Delete" asp-route-area="Admin" asp-controller="Skill" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger"><span class="fa fa-remove"></span></a>
+                        </div>
                     </td>
                 </tr>
             }
@@ -51,7 +58,16 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        <a class="btn btn-default" asp-route-area="Admin" asp-controller="Skill" asp-action="Create">Create New</a>
+        <div class="btn-group btn-group-sm row-btn-margin">
+            <a data-toggle="tooltip" data-placement="top" title="Create New" asp-route-area="Admin" asp-controller="Skill" asp-action="Create" class="btn btn-success"><span class="fa fa-plus"></span></a>
+        </div>
     </div>
 </div>
 
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('[data-toggle="tooltip"]').tooltip({container:'body'});
+        });
+    </script>
+}

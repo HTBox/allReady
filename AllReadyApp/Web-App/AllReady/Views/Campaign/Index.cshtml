@@ -5,18 +5,12 @@
     ViewData["Title"] = "All Registered Campaigns";
     @addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
 }
-<environment names="Development">
-    <link rel="stylesheet" href="~/css/campaignStyle.css" />
-</environment>
-<environment names="Staging,Production">
-    <link rel="stylesheet" href="~/css/campaignStyle.css" asp-file-version="true" />
-</environment>
 
 <div class="row">
     <div class="col-md-12 text-center">
-        <div class="activity-results" data-bind="if: loadingDone">
+        <div class="event-results" data-bind="if: loadingDone">
             <h3>Campaigns near <span data-bind="text: searchTerm"></span></h3>
-            <div class="activity-wrapper" data-bind="foreach: campaignsNearZip">
+            <div class="event-wrapper" data-bind="foreach: campaignsNearZip">
                 <p><a data-bind="attr: { href: '/Campaign/' + CampaignId }, text: Title"></a></p>
             </div>
             <a data-bind="attr: { href: '/Campaign'}">See more campaigns</a>
@@ -74,6 +68,7 @@
                 <tr>
                     <td>
                         <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
+                        <i data-bind="visible: Featured" class="fa fa-star star-highlight" aria-hidden="true"></i>
                     </td>
                     <td>
                         <span data-bind="text: Description"></span>

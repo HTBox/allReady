@@ -1,4 +1,5 @@
-﻿@using AllReady.Security;
+﻿@using System.Threading.Tasks
+@using AllReady.Security
 @model AllReady.Areas.Admin.Models.TaskSummaryModel
 @{
     ViewData["Title"] = "Tasks Details";
@@ -9,7 +10,7 @@
         <ol class="breadcrumb">
             <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
             <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Activity" asp-action="Details" asp-route-id="@Model.ActivityId" asp-route-area="Admin">@Model.ActivityName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-route-area="Admin">@Model.EventName</a></li>
             <li>@Model.Name</li>
         </ol>
     </div>
@@ -35,10 +36,25 @@
             </p>
         }
 
-        <h4>
+        @if (Model.RequiredSkills.Any())
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>Required Skills</h3>
+                    <ul>
+                        @foreach (var requiredSkill in Model.RequiredSkills)
+                {
+                            <li><strong>@requiredSkill.Skill.HierarchicalName</strong></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+
+        <h3>
             Volunteers @if (Model.NumberOfVolunteersRequired > 0)
             { <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span> }
-        </h4>
+        </h3>
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#Assigned">Assigned Volunteers</a> </li>
             <li><a data-toggle="tab" href="#All">All Volunteers</a></li>
@@ -48,7 +64,7 @@
             <div id="Assigned" class="tab-pane fade in active">
                 <h3>Assigned Volunteers</h3>
                 @if (Model.AssignedVolunteers.Any())
-            {
+                {
                     <button type="button" class="btn btn-primary" disabled="@(!Model.AssignedVolunteers.Any())" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button>
                         <table class="table">
                             <tr>
@@ -57,7 +73,7 @@
                                 </th>
                             </tr>
                             @foreach (var volunteer in Model.AssignedVolunteers)
-                {
+                            {
                                 <tr>
                                     <td>@volunteer.UserName</td>
 
@@ -147,7 +163,6 @@
     <script type="text/javascript">
         $(function () {
             var taskDetailsAdmin = new HTBox.TaskDetailAdmin();
-
         });
     </script>
 }

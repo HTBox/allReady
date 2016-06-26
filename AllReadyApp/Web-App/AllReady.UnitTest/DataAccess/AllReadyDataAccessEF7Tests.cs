@@ -15,7 +15,6 @@ namespace AllReady.UnitTest.DataAccess
         private static IServiceProvider _serviceProvider;
         private static bool populatedData;
 
-        //used to be public ActivityApiControllerTest constructor
         public AllReadyDataAccessEF7Tests()
         {
             if (_serviceProvider == null)
@@ -35,86 +34,105 @@ namespace AllReady.UnitTest.DataAccess
             }
         }
 
+        #region Event
         [Fact]
-        public async Task DeleteActivityAndTaskSignupsAsyncDoesNotDeleteActivitySignupsOrTaskSignupsForUnkownActivitySignupId()
+        public void GetResourcesByCategoryReturnsOnlyThoseResourcesWithMatchingCategory()
         {
-            const int anActivitySignupIdThatDoesNotExist = 1000;
+            const string categoryToMatch = "category1";
 
-            var sut = CreateSutAndPopulateTestData();
+            var context = _serviceProvider.GetService<AllReadyContext>();
+            context.Resources.Add(new Resource { CategoryTag = categoryToMatch });
+            context.Resources.Add(new Resource { CategoryTag = "shouldNotMatchThisCategory" });
+            context.SaveChanges();
 
-            var countOfActivitySignupsBeforeMethodInvocation = sut.ActivitySignups.Count();
+            var sut = (IAllReadyDataAccess)new AllReadyDataAccessEF7(context);
+            var results = sut.GetResourcesByCategory(categoryToMatch).ToList();
+
+            Assert.Equal(results.Single().CategoryTag, categoryToMatch);
+        }
+        #endregion
+
+        #region EventSignup
+        [Fact]
+        public async Task DeleteEventAndTaskSignupsAsyncDoesNotDeleteEventSignupsOrTaskSignupsForUnkownEventSignupId()
+        {
+            const int anEventSignupIdThatDoesNotExist = 1000;
+
+            var sut = CreateSutAndPopulateTestDataForEventSignup();
+
+            var countOfEventSignupsBeforeMethodInvocation = sut.EventSignups.Count();
             var countOfTaskSignupsBeforeMethodInvocation = sut.TaskSignups.Count();
 
-            await sut.DeleteActivityAndTaskSignupsAsync(anActivitySignupIdThatDoesNotExist);
+            await sut.DeleteEventAndTaskSignupsAsync(anEventSignupIdThatDoesNotExist);
 
-            var countOfActivitySignsupsAfterMethodInvocation = sut.ActivitySignups.Count();
+            var countOfEventSignsupsAfterMethodInvocation = sut.EventSignups.Count();
             var countOfTaskSignsupsAfterMethodInvocation = sut.TaskSignups.Count();
 
-            Assert.Equal(countOfActivitySignupsBeforeMethodInvocation, countOfActivitySignsupsAfterMethodInvocation);
+            Assert.Equal(countOfEventSignupsBeforeMethodInvocation, countOfEventSignsupsAfterMethodInvocation);
             Assert.Equal(countOfTaskSignupsBeforeMethodInvocation, countOfTaskSignsupsAfterMethodInvocation);
         }
 
         [Fact]
-        public async Task DeleteActivityAndTaskSignupsAsyncRemovesActivitySignup()
+        public async Task DeleteEventAndTaskSignupsAsyncRemovesEventSignup()
         {
-            const int activitySignupId = 5;
+            const int eventSignupId = 5;
 
-            var sut = CreateSutAndPopulateTestData();
-            await sut.DeleteActivityAndTaskSignupsAsync(activitySignupId);
+            var sut = CreateSutAndPopulateTestDataForEventSignup();
+            await sut.DeleteEventAndTaskSignupsAsync(eventSignupId);
 
             var context = _serviceProvider.GetService<AllReadyContext>();
-            var numOfUsersSignedUp = context.Activities.First(e => e.Id == activitySignupId).UsersSignedUp.Count;
+            var numOfUsersSignedUp = context.Events.First(e => e.Id == eventSignupId).UsersSignedUp.Count;
             Assert.Equal(0, numOfUsersSignedUp);
         }
 
         [Fact]
-        public async void DeleteActivityAndTaskSignupsAsyncRemovesTaskSignup()
+        public async Task DeleteEventAndTaskSignupsAsyncRemovesTaskSignup()
         {
-            const int activitySignupId = 5;
+            const int eventSignupId = 5;
 
-            var sut = CreateSutAndPopulateTestData();
-            await sut.DeleteActivityAndTaskSignupsAsync(activitySignupId);
+            var sut = CreateSutAndPopulateTestDataForEventSignup();
+            await sut.DeleteEventAndTaskSignupsAsync(eventSignupId);
 
             var context = _serviceProvider.GetService<AllReadyContext>();
-            var numOfTasksSignedUpFor = context.TaskSignups.Count(e => e.Task.Activity.Id == activitySignupId);
+            var numOfTasksSignedUpFor = context.TaskSignups.Count(e => e.Task.Event.Id == eventSignupId);
             Assert.Equal(0, numOfTasksSignedUpFor);
         }
 
-        public IAllReadyDataAccess CreateSutAndPopulateTestData()
+        public IAllReadyDataAccess CreateSutAndPopulateTestDataForEventSignup()
         {
             var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
             var allReadyDataAccess = new AllReadyDataAccessEF7(allReadyContext);
-            PopulateData(allReadyContext);
+            PopulateDataForEventSignup(allReadyContext);
             return allReadyDataAccess;
         }
 
-        private static void PopulateData(DbContext context)
+        private static void PopulateDataForEventSignup(DbContext context)
         {
             if (!populatedData)
             {
-                var activities = TestActivityModelProvider.GetActivities();
+                var campaignEvents = TestEventModelProvider.GetEvents();
 
-                foreach (var activity in activities)
+                foreach (var campaignEvent in campaignEvents)
                 {
-                    context.Add(activity);
-                    context.Add(activity.Campaign);
+                    context.Add(campaignEvent);
+                    context.Add(campaignEvent.Campaign);
                 }
                 context.SaveChanges();
                 populatedData = true;
             }
         }
 
-        private static class TestActivityModelProvider
+        private static class TestEventModelProvider
         {
             private const string CampaignNameFormat = "Campaign {0}";
             private const string CampaignDescriptionFormat = "Description for campaign {0}";
             private const string OrganizationNameFormat = "Test Organization {0}";
-            private const string ActivityNameFormat = "Activity {0}";
-            private const string ActivityDescriptionFormat = "Description for activity {0}";
+            private const string EventNameFormat = "Event {0}";
+            private const string EventDescriptionFormat = "Description for event {0}";
             private const string UserNameFormat = "User {0}";
             private const string TaskDescriptionFormat = "Task {0}";
 
-            public static IEnumerable<Activity> GetActivities()
+            public static IEnumerable<Event> GetEvents()
             {
                 var users = Enumerable.Range(1, 10).Select(n => new ApplicationUser
                 {
@@ -138,17 +156,17 @@ namespace AllReady.UnitTest.DataAccess
                 })
                 .ToArray();
 
-                var activities = Enumerable.Range(1, 10).Select(n => new Activity
+                var campaignEvents = Enumerable.Range(1, 10).Select(n => new Event
                 {
                     Campaign = campaigns[n - 1],
                     EndDateTime = DateTime.MaxValue.ToUniversalTime(),
                     StartDateTime = DateTime.MinValue.ToUniversalTime(),
-                    Name = string.Format(ActivityNameFormat, n),
-                    Description = string.Format(ActivityDescriptionFormat, n),
+                    Name = string.Format(EventNameFormat, n),
+                    Description = string.Format(EventDescriptionFormat, n),
                     Id = n,
-                    UsersSignedUp = new List<ActivitySignup>
+                    UsersSignedUp = new List<EventSignup>
                     {
-                        new ActivitySignup
+                        new EventSignup
                         {
                             User = users[n - 1],
                             SignupDateTime = DateTime.Now.ToUniversalTime(),
@@ -177,8 +195,11 @@ namespace AllReady.UnitTest.DataAccess
                     }
                 }).ToArray();
 
-                return activities;
+                return campaignEvents;
             }
         }
+
+        #endregion
+
     }
 }

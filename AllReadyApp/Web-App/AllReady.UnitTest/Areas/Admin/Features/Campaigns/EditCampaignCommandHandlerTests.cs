@@ -2,6 +2,8 @@
 using AllReady.Areas.Admin.Models;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using AllReady.UnitTest.Features.Campaigns;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
@@ -9,14 +11,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
     public class EditCampaignCommandHandlerTests : InMemoryContextTest
     {
         [Fact]
-        public void AddNewCampaign()
+        public async Task AddNewCampaign()
         {
             // Arrange
             var handler = new EditCampaignCommandHandler(Context);
             var newCampaign = new CampaignSummaryModel { Name = "New", Description = "Desc", TimeZoneId ="UTC" };
 
             // Act
-            var result = handler.Handle(new EditCampaignCommand { Campaign = newCampaign });
+            var result = await handler.Handle(new EditCampaignCommand { Campaign = newCampaign });
 
             // Assert
             Assert.Equal(5, Context.Campaigns.Count());
@@ -28,7 +30,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         /// </summary>
         /// <remarks>This test is not testing the creation of location record, or impact record as those should be seperate tests</remarks>
         [Fact]
-        public void UpdatingExistingCampaignUpdatesAllCoreProperties()
+        public async Task UpdatingExistingCampaignUpdatesAllCoreProperties()
         {
             // Arrange
             var name = "New Name";
@@ -52,7 +54,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             };
 
             // Act
-            var result = handler.Handle(new EditCampaignCommand { Campaign = updatedCampaign });
+            var result = await handler.Handle(new EditCampaignCommand { Campaign = updatedCampaign });
             var savedCampaign = Context.Campaigns.SingleOrDefault(s => s.Id == 2);
 
             // Assert
@@ -69,7 +71,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         }
 
         [Fact]
-        public void UpdatingExistingCampaignUpdatesLocationWithAllProperties()
+        public async Task UpdatingExistingCampaignUpdatesLocationWithAllProperties()
         {
             // Arrange
             var name = "New Name";
@@ -94,7 +96,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             };
 
             // Act
-            var result = handler.Handle(new EditCampaignCommand { Campaign = updatedCampaign });
+            await handler.Handle(new EditCampaignCommand { Campaign = updatedCampaign });
             var savedCampaign = Context.Campaigns.SingleOrDefault(s => s.Id == 2);
 
             // Assert
@@ -102,12 +104,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Assert.Equal(address2, savedCampaign.Location.Address2);
             Assert.Equal(city, savedCampaign.Location.City);
             Assert.Equal(state, savedCampaign.Location.State);
-            Assert.Equal(postcode, savedCampaign.Location.PostalCode.PostalCode);
+            Assert.Equal(postcode, savedCampaign.Location.PostalCode);
             Assert.Equal(country, savedCampaign.Location.Country);
         }
 
         [Fact]
-        public void UpdatingExistingCampaignWithNoPriorContactAddsContactWithAllProperties()
+        public async Task UpdatingExistingCampaignWithNoPriorContactAddsContactWithAllProperties()
         {
             // Arrange
             var name = "New Name";
@@ -133,7 +135,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             };
 
             // Act
-            var result = handler.Handle(new EditCampaignCommand { Campaign = updatedCampaign });
+            await handler.Handle(new EditCampaignCommand { Campaign = updatedCampaign });
             var newContact = Context.Contacts.OrderBy(c=>c.Id).LastOrDefault();
 
             // Assert
@@ -146,7 +148,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Assert.Equal(firstname, newContact.FirstName);
             Assert.Equal(lastname, newContact.LastName);
             Assert.Equal(telephone, newContact.PhoneNumber);
-        }        
+        }
 
         protected override void LoadTestData()
         {

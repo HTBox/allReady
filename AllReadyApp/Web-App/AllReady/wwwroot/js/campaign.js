@@ -29,8 +29,8 @@ function ResourcesViewModel(category)
 }
 
 
-(function (ko, $, activities) {
-    function Activity(item) {
+(function (ko, $, events) {
+    function Event(item) {
         for (var prop in item) {
             this[prop] = item[prop];
         }
@@ -39,18 +39,19 @@ function ResourcesViewModel(category)
             var start = moment(this.StartDateTime).utcOffset(this.StartDateTime).format("dddd, MMMM Do YYYY");
             var end = moment(this.EndDateTime).utcOffset(this.EndDateTime).format("dddd, MMMM Do YYYY");
             return start + ' - ' + end;
-        }
+        };
+        
         return this;
     }
-    function CampaignViewModel(activities) {
-        var list = activities.map(function (item) { return new Activity(item); })
+    function CampaignViewModel(events) {
+        var list = events.map(function (item) { return new Event(item); })
 
-        this.activities = ko.observableArray(list).filterBeforeDate("EndDateTime").textFilter(["Title", "Description"]);
+        this.events = ko.observableArray(list).filterBeforeDate("EndDateTime").textFilter(["Title", "Description"]);
         this.resources = ko.observableArray([]);
 
         this.total = list.length;
 
     }
 
-    ko.applyBindings(new CampaignViewModel(activities));
-})(ko, $, modelActivities);
+    ko.applyBindings(new CampaignViewModel(events));
+})(ko, $, modelEvents);

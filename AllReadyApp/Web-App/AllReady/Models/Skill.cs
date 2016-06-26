@@ -11,9 +11,12 @@ namespace AllReady.Models
         public int? OwningOrganizationId { get; set; }
         [Display(Name = "Owning organization")]
         public Organization OwningOrganization { get; set; }
+
         public int? ParentSkillId { get; set; }
+
         [Display(Name = "Parent skill")]
         public virtual Skill ParentSkill { get; set; }
+
         public string HierarchicalName
         {
             get

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Data.Entity;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyAdminForTaskSignupStatusChange : INotificationHandler<TaskSignupStatusChanged>
+    public class NotifyAdminForTaskSignupStatusChange : IAsyncNotificationHandler<TaskSignupStatusChanged>
     {
         private readonly AllReadyContext _context;
         private readonly IMediator _mediator;
@@ -20,33 +21,35 @@ namespace AllReady.Features.Notifications
             _options = options;
         }
 
-        public void Handle(TaskSignupStatusChanged notification)
+        public async Task Handle(TaskSignupStatusChanged notification)
         {
-            var taskSignup = _context.TaskSignups
+            var taskSignup = await _context.TaskSignups
                 .Include(ts => ts.Task)
-                    .ThenInclude(t => t.Activity).ThenInclude(a => a.Organizer)
+                    .ThenInclude(t => t.Event).ThenInclude(a => a.Organizer)
                 .Include(ts => ts.Task)
-                    .ThenInclude(t => t.Activity).ThenInclude(a => a.Campaign).ThenInclude(c => c.CampaignContacts).ThenInclude(cc => cc.Contact)
+                    .ThenInclude(t => t.Event).ThenInclude(a => a.Campaign).ThenInclude(c => c.CampaignContacts).ThenInclude(cc => cc.Contact)
                 .Include(ts => ts.User)
-                .Single(ts => ts.Id == notification.SignupId);
+                .SingleAsync(ts => ts.Id == notification.SignupId)
+                .ConfigureAwait(false);
+
             var volunteer = taskSignup.User;
             var task = taskSignup.Task;
-            var activity = task.Activity;
-            var campaign = activity.Campaign;
+            var campaignEvent = task.Event;
+            var campaign = campaignEvent.Campaign;
 
             var campaignContact = campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
             var adminEmail = campaignContact?.Contact.Email;
 
             if (!string.IsNullOrWhiteSpace(adminEmail))
             {
-                var link = $"View activity: http://{_options.Value.SiteBaseUrl}/Admin/Task/Details/{taskSignup.Task.Id}";
+                var link = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Task/Details/{taskSignup.Task.Id}";
                 var subject = $"Task status changed ({taskSignup.Status}) for volunteer {volunteer.Name ?? volunteer.Email}";
 
                 var message = $@"A volunteer's status has changed for a task.
                                     Volunteer: {volunteer.Name} ({volunteer.Email})
                                     New status: {taskSignup.Status}
                                     Task: {task.Name} {link}
-                                    Activity: {activity.Name}
+                                    Event: {campaignEvent.Name}
                                     Campaign: {campaign.Name}";
 
                 var command = new NotifyVolunteersCommand
@@ -60,7 +63,7 @@ namespace AllReady.Features.Notifications
                     }
                 };
 
-                _mediator.SendAsync(command);
+                await _mediator.SendAsync(command).ConfigureAwait(false);
             }
         }
     }
