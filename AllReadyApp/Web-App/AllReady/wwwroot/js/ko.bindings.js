@@ -15,7 +15,7 @@ ko.bindingHandlers.accordion = {
             contentClass = ".collapse",
             openItem = ko.utils.unwrapObservable(options.openItem) || false,
             itemClass = "." + (ko.utils.unwrapObservable(options.item) || "panel-group"),
-            accordionDirectionIconClass = "." + (ko.utils.unwrapObservable(options.expandIcon) || "accordion-icon-direction"),
+            accordionDirectionIconClass = "." + (ko.utils.unwrapObservable(options.itemIconDirection) || "accordion-icon-direction"),
             items = $(elem).find(contentClass);
 
         initializeAccordion();
