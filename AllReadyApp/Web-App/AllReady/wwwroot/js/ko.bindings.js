@@ -15,7 +15,7 @@ ko.bindingHandlers.accordion = {
             contentClass = ".collapse",
             openItem = ko.utils.unwrapObservable(options.openItem) || false,
             itemClass = "." + (ko.utils.unwrapObservable(options.item) || "panel-group"),
-            accordionExpandIconClass = "." + (ko.utils.unwrapObservable(options.expandIcon) || "accordion-icon-direction"),
+            accordionDirectionIconClass = "." + (ko.utils.unwrapObservable(options.expandIcon) || "accordion-icon-direction"),
             items = $(elem).find(contentClass);
 
         initializeAccordion();
@@ -53,9 +53,9 @@ ko.bindingHandlers.accordion = {
 
         function toggleAccordionItemIconDirection(event) {
             var $currentPanel = $(event.target).closest(itemClass);
-            var $accordionExpandIconClass = $currentPanel.find(accordionExpandIconClass);
+            var $accordionDirectionIcon = $currentPanel.find(accordionDirectionIconClass);
 
-            $accordionExpandIconClass.toggleClass("fa-caret-down fa-caret-up");
+            $accordionDirectionIcon.toggleClass("fa-caret-down fa-caret-up");
         }
     }
 };
