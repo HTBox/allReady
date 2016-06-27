@@ -198,7 +198,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(@"Failed to assign API role for {userId}", ex);
+                _logger.LogError($"Failed to assign API role for {userId}", ex);
                 ViewBag.ErrorMessage = $"Failed to assign API role for {userId}. Exception thrown.";
                 return View();
             }
@@ -216,6 +216,25 @@ namespace AllReady.Areas.Admin.Controllers
             else
             {
                 return HttpBadRequest("Can't manage keys for a user without the API role.");
+            }
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GenerateToken(string userId)
+        {
+            var user = GetUser(userId);
+            try
+            {
+                var token = await _userManager.GenerateUserTokenAsync(user, "Default", TokenTypes.ApiKey);
+                ViewBag.ApiToken = token;
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to create API key for {userId}", ex);
+                ViewBag.ErrorMessage = $"Failed to assign API role for {userId}. Exception thrown.";
+                return View();
             }
 
         }

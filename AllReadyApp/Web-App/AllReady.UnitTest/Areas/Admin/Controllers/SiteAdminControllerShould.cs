@@ -366,7 +366,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task SearchForCorrectUserWhenManagingApiKeys()
+        public void SearchForCorrectUserWhenManagingApiKeys()
         {
             var mediator = new Mock<IMediator>();
             var logger = new Mock<ILogger<SiteController>>();
@@ -375,10 +375,24 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId))).Returns(new ApplicationUser());
             var controller = new SiteController(null, logger.Object, mediator.Object);
 
-            await controller.ManageApiKeys(userId);
+            controller.ManageApiKeys(userId);
             mediator.Verify(m => m.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)), Times.Once);
         }
 
+
+        [Fact]
+        public async Task SearchForCorrectUserWhenGeneratingApiKeys()
+        {
+            var mediator = new Mock<IMediator>();
+            var logger = new Mock<ILogger<SiteController>>();
+
+            string userId = Guid.NewGuid().ToString();
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId))).Returns(new ApplicationUser());
+            var controller = new SiteController(null, logger.Object, mediator.Object);
+
+            await controller.GenerateToken(userId);
+            mediator.Verify(m => m.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)), Times.Once);
+        }
 
         [Fact(Skip = "NotImplemented")]
         public async Task AssignSiteAdminInvokesAddClaimAsyncWithCorrrectParameters()

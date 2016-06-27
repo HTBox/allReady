@@ -7,4 +7,8 @@
     SiteAdmin,
     ApiAccess
   }
+    public class TokenTypes
+    {
+        public const string ApiKey = "api-key";
+    }
 }
