@@ -241,7 +241,7 @@ namespace AllReady
             app.UseTokenProtection(new TokenProtectedResourceOptions
             {
                 Path = "api/request",
-                PolicyName = "request-injest"
+                PolicyName = "api-request-injest"
             });
 
             // Add authentication middleware to the request pipeline. You can configure options such as Id and Secret in the ConfigureServices method.
