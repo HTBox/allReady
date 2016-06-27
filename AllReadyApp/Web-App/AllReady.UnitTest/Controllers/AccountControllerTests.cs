@@ -1438,17 +1438,23 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task ExternalLoginConfirmationInvokesAddLoginAsyncWithCorrectParameters_WhenUserIsCreatedSuccessfully()
         {
+            const string defaultTimeZone = "DefaultTimeZone";
+
             var userManager = CreateUserManagerMockWithSucessIdentityResult();
             var signInManager = CreateSignInManagerMock(userManager);
             SetupSignInManagerWithTestExternalLoginValue(signInManager, "test", "testKey", "testDisplayName");
             var urlHelperMock = CreateUrlHelperMockObject();
             SetupUrlHelperMockToReturnTrueForLocalUrl(urlHelperMock);
             var viewModel = CreateExternalLoginConfirmationViewModel();
-            var generalSettings = CreateGeneralSettingsMockObject();
-            var sut = new AccountController(userManager.Object, signInManager.Object, null, generalSettings.Object, null);
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = defaultTimeZone });
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, Mock.Of<IEmailSender>(), generalSettings.Object, Mock.Of<IMediator>());
             sut.SetFakeUser("test");
             sut.Url = urlHelperMock.Object;
             await sut.ExternalLoginConfirmation(viewModel, "testUrl");
+
             userManager.Verify(u => u.AddLoginAsync(It.Is<ApplicationUser>(au => au.Email == viewModel.Email
                     && au.FirstName == viewModel.FirstName
                     && au.LastName == viewModel.LastName
