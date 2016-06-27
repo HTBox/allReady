@@ -19,7 +19,7 @@ using AllReady.Features.Login;
 using System.Collections.Generic;
 using AllReady.Areas.Admin.Controllers;
 using System;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using AllReady.Features.Manage;
 using AllReady.ViewModels.Account;
 using AllReady.Features.Manage;
 namespace AllReady.UnitTest.Controllers
