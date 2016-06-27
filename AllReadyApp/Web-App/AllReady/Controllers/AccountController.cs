@@ -5,7 +5,6 @@ using AllReady.Features.Login;
 using AllReady.Features.Manage;
 using AllReady.Models;
 using AllReady.Security;
-using AllReady.Services;
 using AllReady.ViewModels.Account;
 using MediatR;
 using Microsoft.AspNet.Authorization;
@@ -21,19 +20,16 @@ namespace AllReady.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IEmailSender _emailSender;
         private readonly IOptions<GeneralSettings> _generalSettings;
         private readonly IMediator _mediator;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IEmailSender emailSender,
             IOptions<GeneralSettings> generalSettings,
             IMediator mediator
             )
         {
-            _emailSender = emailSender;
             _userManager = userManager;
             _signInManager = signInManager;
             _generalSettings = generalSettings;
@@ -129,7 +125,6 @@ namespace AllReady.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    // Send an email with this link
                     var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
                     var callbackUrl = Url.Action(new UrlActionContext {
@@ -213,17 +208,15 @@ namespace AllReady.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByNameAsync(model.Email);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return View("ForgotPasswordConfirmation");
                 }
 
-                //Send an email with this link
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ResetPassword), Controller = "Account", Values = new { userId = user.Id, code },
                     Protocol = HttpContext.Request.Scheme });
-                //await _emailSender.SendEmailAsync(model.Email, "Reset allReady Password", $"Please reset your allReady password by clicking here: <a href=\"{callbackUrl}\">link</a>");
                 await _mediator.SendAsync(new SendResetPasswordEmail { Email = model.Email, CallbackUrl = callbackUrl });
 
                 return View("ForgotPasswordConfirmation");
