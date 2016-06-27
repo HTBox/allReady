@@ -12,6 +12,13 @@
 
 <h2>Warning</h2>
 <p>Are you sure you want to create a new API key?</p>
+
+<p>
+    Once you create the API key you will see it displayed on the screen. This will be 
+    your only opportunity to note it, and you will not be able to reveal the key again. If 
+    you lose the key, you'll need to regenerate it.
+</p>
+
 <a asp-controller="Site" asp-action ="GenerateToken" asp-route-userId="@Model.Id" class="btn btn-sm btn-warning" >Generate New API Key <span class="fa fa-key"></span></a>
 
 <a asp-controller="Site" asp-action="Index" class="btn btn-default btn-lg">Back to Safety <span class="fa fa-life-saver"></span></a>
