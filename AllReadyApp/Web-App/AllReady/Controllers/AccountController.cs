@@ -410,7 +410,37 @@ namespace AllReady.Controllers
                 return RedirectToAction(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = "Admin" });
             }
 
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+      return RedirectToAction(nameof(HomeController.Index), "Home");
+    }
+
+        //TODO: mgmccarthy: this is brittle method and will be revisieted as more and more external auth providers are added. 
+        //Most likely, there will be some type of interface that represents the extracting of available user data based on external
+        //auth provider that will allow us to get at the correct information w/out all these magic string tests. Not to mention this method will grow in complexity and 
+        //make unit testing really tough.
+        private static void RetrieveFirstAndLastNameFromExternalPrincipal(ExternalLoginInfo externalLoginInfo, out string firstName, out string lastName)
+        {
+            firstName = string.Empty;
+            lastName = string.Empty;
+
+            if (externalLoginInfo.LoginProvider == "Google")
+            {
+                firstName = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.GivenName);
+                lastName = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.Surname);
+            }
+
+            if (externalLoginInfo.LoginProvider == "Facebook" || externalLoginInfo.LoginProvider == "Microsoft")
+            {
+                var name = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
+                if (string.IsNullOrEmpty(name))
+                    return;
+
+                var array = name.Split(' ');
+                if (array.Length < 2)
+                    return;
+
+                firstName = array[0];
+                lastName = array[1];
+            }
         }
     }
 }
