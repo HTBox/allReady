@@ -139,8 +139,9 @@ namespace AllReady.Controllers
                         Protocol = HttpContext.Request.Scheme }
                     );
 
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account", 
-                        $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
+                    //await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account", 
+                    //    $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
+                    await _mediator.SendAsync(new SendConfirmAccountEmail { Email = user.Email, CallbackUrl = callbackUrl });
 
                     var changePhoneNumberToken = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
                     await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = model.PhoneNumber, Token = changePhoneNumberToken });
@@ -335,7 +336,6 @@ namespace AllReady.Controllers
 
             if (ModelState.IsValid)
             {
-                // Get the information about the user from the external login provider
                 var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
                 if (externalLoginInfo == null)
                 {
@@ -365,19 +365,18 @@ namespace AllReady.Controllers
                             Controller = "Account",
                             Values = new { userId = user.Id, token = emailConfirmationToken },
                             Protocol = HttpContext.Request.Scheme
-                        }
-                        );
+                        });
 
-                        await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account",
-                            $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
+                        //await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account", 
+                        //    $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
+                        await _mediator.SendAsync(new SendConfirmAccountEmail { Email = user.Email, CallbackUrl = callbackUrl });
 
                         var changePhoneNumberToken = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
                         await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = model.PhoneNumber, Token = changePhoneNumberToken });
 
-                        //TODO: mgmccarthy: should we add the claim that the user's profile is incomplete for external auth like we're doing in .Register(RegisterViewModel model)?
-                        //await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
-
+                        await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
                         await _signInManager.SignInAsync(user, isPersistent: false);
+
                         return RedirectToLocal(returnUrl, user);
                     }
                 }
@@ -417,6 +416,10 @@ namespace AllReady.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
+        //TODO: mgmccarthy: this is brittle method and will be revisieted as more and more external auth providers are added. 
+        //Most likely, there will be some type of interface that represents the extracting of available user data based on external
+        //auth provider that will allow us to get at the correct information w/out all these magic string tests. Not to mention this method will grow in complexity and 
+        //make unit testing really tough.
         private static void RetrieveFirstAndLastNameFromExternalPrincipal(ExternalLoginInfo externalLoginInfo, out string firstName, out string lastName)
         {
             var name = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
