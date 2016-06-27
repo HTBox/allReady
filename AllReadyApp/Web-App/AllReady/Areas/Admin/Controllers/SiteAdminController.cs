@@ -203,6 +203,17 @@ namespace AllReady.Areas.Admin.Controllers
                 return View();
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ManageApiKeys(string userId)
+        {
+            var user = GetUser(userId);
+            
+
+            return View();
+        }
+
+        [HttpGet]
         public IActionResult AssignOrganizationAdmin(string userId)
         {
             var user = GetUser(userId);
