@@ -959,7 +959,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Setup(x => x.FindByNameAsync(email)).Returns(() => Task.FromResult(user));
             userManager.Setup(x => x.ResetPasswordAsync(user, It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
 
-            var sut = new AccountController(userManager.Object, null, null,null);
+            var sut = new AccountController(userManager.Object, null, null, null);
             await sut.ResetPassword(vm);
 
             userManager.Verify(m => m.FindByNameAsync(email), Times.Once);
