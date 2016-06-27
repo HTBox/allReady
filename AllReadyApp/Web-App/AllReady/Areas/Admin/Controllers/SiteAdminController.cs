@@ -205,12 +205,19 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ManageApiKeys(string userId)
+        public IActionResult ManageApiKeys(string userId)
         {
             var user = GetUser(userId);
             
+            if(user.IsUserType(UserType.ApiAccess))
+            {
+                return View(user);
+            }
+            else
+            {
+                return HttpBadRequest("Can't manage keys for a user without the API role.");
+            }
 
-            return View();
         }
 
         [HttpGet]
