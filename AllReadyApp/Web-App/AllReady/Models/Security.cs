@@ -4,6 +4,7 @@
   {
     BasicUser,
     OrgAdmin,
-    SiteAdmin
+    SiteAdmin,
+    ApiAccess
   }
 }
