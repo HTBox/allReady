@@ -19,6 +19,7 @@ using AllReady.Features.Login;
 using System.Collections.Generic;
 using AllReady.Areas.Admin.Controllers;
 using System;
+using AllReady.Features.Manage;
 using AllReady.ViewModels.Account;
 using Microsoft.AspNet.Identity.EntityFramework;
 
@@ -271,10 +272,9 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task RegisterPostInvokesSendEmailAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndUserCreationIsSuccessful()
+        public async Task RegisterPostSendsSendConfirmAccountEmailWithTheCorrectParameters_WhenModelStateIsValid_AndUserCreationIsSuccessful()
         {
             const string callbackUrl = "callbackUrl";
-
             var model = new RegisterViewModel { Email = "email" };
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
@@ -290,17 +290,14 @@ namespace AllReady.UnitTest.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(callbackUrl);
 
-            var emailSenderMock = new Mock<IEmailSender>();
+            var mediator = new Mock<IMediator>();
 
-            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, Mock.Of<IMediator>());
+            var sut = new AccountController(userManager.Object, signInManager.Object, Mock.Of<IEmailSender>(), generalSettings.Object, mediator.Object);
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = urlHelper.Object;
             await sut.Register(model);
 
-            emailSenderMock.Verify(x => x.SendEmailAsync(
-                It.Is<string>(y => y == model.Email),
-                It.IsAny<string>(),
-                It.Is<string>(y => y.Contains(callbackUrl))), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<SendConfirmAccountEmail>(y => y.Email == model.Email && y.CallbackUrl == callbackUrl)), Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -321,7 +318,6 @@ namespace AllReady.UnitTest.Controllers
         public async Task RegisterPostInvokesAddClaimAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndUserCreationIsSuccessful()
         {
             const string defaultTimeZone = "DefaultTimeZone";
-
             var model = new RegisterViewModel { Email = "email" };
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
@@ -337,10 +333,7 @@ namespace AllReady.UnitTest.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
-            var emailSenderMock = new Mock<IEmailSender>();
-            emailSenderMock.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<Task>()));
-
-            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, Mock.Of<IMediator>());
+            var sut = new AccountController(userManager.Object, signInManager.Object, Mock.Of<IEmailSender>(), generalSettings.Object, Mock.Of<IMediator>());
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = urlHelper.Object;
             await sut.Register(model);
@@ -371,12 +364,9 @@ namespace AllReady.UnitTest.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
-            var emailSenderMock = new Mock<IEmailSender>();
-            emailSenderMock.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<Task>()));
-
             userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).Returns(() => Task.FromResult(IdentityResult.Success));
 
-            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, Mock.Of<IMediator>());
+            var sut = new AccountController(userManager.Object, signInManager.Object, Mock.Of<IEmailSender>(), generalSettings.Object, Mock.Of<IMediator>());
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = urlHelper.Object;
             await sut.Register(model);
@@ -404,13 +394,10 @@ namespace AllReady.UnitTest.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
-            var emailSenderMock = new Mock<IEmailSender>();
-            emailSenderMock.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<Task>()));
-
             userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).Returns(() => Task.FromResult(IdentityResult.Success));
             signInManager.Setup(x => x.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), null)).Returns(() => Task.FromResult(It.IsAny<Task>()));
 
-            var sut = new AccountController(userManager.Object, signInManager.Object, emailSenderMock.Object, generalSettings.Object, Mock.Of<IMediator>());
+            var sut = new AccountController(userManager.Object, signInManager.Object, Mock.Of<IEmailSender>(), generalSettings.Object, Mock.Of<IMediator>());
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = urlHelper.Object;
 
@@ -813,10 +800,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Setup(x => x.IsEmailConfirmedAsync(user)).Returns(() => Task.FromResult(true));
             userManager.Setup(x => x.GeneratePasswordResetTokenAsync(user)).Returns(() => Task.FromResult(It.IsAny<string>()));
 
-            var emailSender = new Mock<IEmailSender>();
-            emailSender.Setup(x => x.SendEmailAsync(email, It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<Task>()));
-
-            var sut = new AccountController(userManager.Object, null, emailSender.Object, null, null);
+            var sut = new AccountController(userManager.Object, null, Mock.Of<IEmailSender>(), null, null);
             var urlHelper = new Mock<IUrlHelper>();
             sut.SetFakeHttpRequestSchemeTo(requestScheme);
             sut.Url = urlHelper.Object;
@@ -1357,6 +1341,48 @@ namespace AllReady.UnitTest.Controllers
             It.Is<ExternalLoginInfo>(ei => ei.LoginProvider == loginProvider
                 && ei.ProviderKey == providerKey
                 && ei.ProviderDisplayName == displayName)));
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationInvokesGenerateEmailConfirmationTokenAsyncWithCorrectApplicationUser_WhenUserIsSignedIn_AndModelStateIsValid_AndExternalLoginInfoIsRetreived_AndUserCreationIsSuccessful_AndExternalLoginInfoIsAddedToUser()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationInvokesUrlAction_WithTheCorrectParameters_WhenUserIsSignedIn_AndModelStateIsValid_AndExternalLoginInfoIsRetreived_AndUserCreationIsSuccessful_AndExternalLoginInfoIsAddedToUser()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationSendsSendConfirmAccountEmailWithCorrectParameters_WhenUserIsSignedIn_AndModelStateIsValid_AndExternalLoginInfoIsRetreived_AndUserCreationIsSuccessful_AndExternalLoginInfoIsAddedToUser()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationInvokesGenerateChangePhoneNumberTokenAsyncWithTheCorrectParameters_WhenUserIsSignedIn_AndModelStateIsValid_AndExternalLoginInfoIsRetreived_AndUserCreationIsSuccessful_AndExternalLoginInfoIsAddedToUser()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationSendsSendAccountSecurityTokenSmsWithCorrectParameters_WhenUserIsSignedIn_AndModelStateIsValid_AndExternalLoginInfoIsRetreived_AndUserCreationIsSuccessful_AndExternalLoginInfoIsAddedToUser()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginConfirmationInvokesSignInAsyncWithCorrectParameters_WhenUserIsSignedIn_AndModelStateIsValid_AndExternalLoginInfoIsRetreived_AndUserCreationIsSuccessful_AndExternalLoginInfoIsAddedToUser()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
         }
 
         [Fact]
