@@ -188,6 +188,21 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> AssignApiAccessRole(string userId)
+        {
+            try
+            {
+                var user = GetUser(userId);
+                await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.ApiAccess.ToName()));
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(@"Failed to assign API role for {userId}", ex);
+                ViewBag.ErrorMessage = $"Failed to assign API role for {userId}. Exception thrown.";
+                return View();
+            }
+        }
         public IActionResult AssignOrganizationAdmin(string userId)
         {
             var user = GetUser(userId);

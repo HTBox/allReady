@@ -350,6 +350,20 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Verify(m => m.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)), Times.Once);
         }
 
+        [Fact]
+        public async Task AssignApiRoleQueriesForCorrectId()
+        {
+            var mediator = new Mock<IMediator>();
+            var logger = new Mock<ILogger<SiteController>>();
+
+            string userId = Guid.NewGuid().ToString();
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId))).Returns(new ApplicationUser());
+            var controller = new SiteController(null, logger.Object, mediator.Object);
+
+            await controller.AssignApiAccessRole(userId);
+            mediator.Verify(m => m.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)), Times.Once);
+        }
+
         [Fact(Skip = "NotImplemented")]
         public async Task AssignSiteAdminInvokesAddClaimAsyncWithCorrrectParameters()
         {
