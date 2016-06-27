@@ -141,8 +141,6 @@ namespace AllReady.Controllers
           }
           );
 
-                    //await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account", 
-                    //    $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
                     await _mediator.SendAsync(new SendConfirmAccountEmail { Email = user.Email, CallbackUrl = callbackUrl });
 
           var changePhoneNumberToken = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
@@ -223,16 +221,12 @@ namespace AllReady.Controllers
           return View("ForgotPasswordConfirmation");
         }
 
-        //Send an email with this link
-        var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var callbackUrl = Url.Action(new UrlActionContext
-        {
-          Action = nameof(ResetPassword),
-          Controller = "Account",
-          Values = new { userId = user.Id, code = code },
-          Protocol = HttpContext.Request.Scheme
-        });
-        await _emailSender.SendEmailAsync(model.Email, "Reset allReady Password", $"Please reset your allReady password by clicking here: <a href=\"{callbackUrl}\">link</a>");
+                //Send an email with this link
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ResetPassword), Controller = "Account", Values = new { userId = user.Id, code },
+                    Protocol = HttpContext.Request.Scheme });
+                //await _emailSender.SendEmailAsync(model.Email, "Reset allReady Password", $"Please reset your allReady password by clicking here: <a href=\"{callbackUrl}\">link</a>");
+                await _mediator.SendAsync(new SendResetPasswordEmail { Email = model.Email, CallbackUrl = callbackUrl });
 
         return View("ForgotPasswordConfirmation");
       }
@@ -374,8 +368,6 @@ namespace AllReady.Controllers
                             Protocol = HttpContext.Request.Scheme
                         });
 
-                        //await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account", 
-                        //    $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
                         await _mediator.SendAsync(new SendConfirmAccountEmail { Email = user.Email, CallbackUrl = callbackUrl });
 
                         var changePhoneNumberToken = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
