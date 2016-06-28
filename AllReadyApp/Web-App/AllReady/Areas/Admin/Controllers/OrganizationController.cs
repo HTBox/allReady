@@ -1,8 +1,10 @@
 ﻿using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.Models.Validators;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
+using System.Linq;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -11,10 +13,12 @@ namespace AllReady.Areas.Admin.Controllers
     public class OrganizationController : Controller
     {
         private readonly IMediator _mediator;
+        private readonly IOrganizationEditModelValidator _organizationValidator;
 
-        public OrganizationController(IMediator mediator)
+        public OrganizationController(IMediator mediator, IOrganizationEditModelValidator validator)
         {
             _mediator = mediator;
+            _organizationValidator = validator;
         }
 
         // GET: Organization
@@ -63,7 +67,10 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpBadRequest();
             }
-            
+
+            var errors = _organizationValidator.Validate(organization);
+            errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
+
             if (ModelState.IsValid)
             {
                 bool isNameUnique = _mediator.Send(new OrganizationNameUniqueQuery() { OrganizationName = organization.Name, OrganizationId = organization.Id });
