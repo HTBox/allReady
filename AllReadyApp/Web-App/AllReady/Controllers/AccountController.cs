@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Drawing.Design;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Features.Login;
@@ -358,15 +359,22 @@ namespace AllReady.Controllers
                     if (result.Succeeded)
                     {
                         var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        var callbackUrl = Url.Action(new UrlActionContext
+                        if (model.EmailIsVerifiedByExternalLoginProvider)
                         {
-                            Action = nameof(ConfirmEmail),
-                            Controller = "Account",
-                            Values = new { userId = user.Id, token = emailConfirmationToken },
-                            Protocol = HttpContext.Request.Scheme
-                        });
-
-                        await _mediator.SendAsync(new SendConfirmAccountEmail { Email = user.Email, CallbackUrl = callbackUrl });
+                            //automatially verify the email with AllReady (b/c it's already been verified with the external login provider) and do not send a confirmation email
+                            await _userManager.ConfirmEmailAsync(user, emailConfirmationToken);
+                        }
+                        else
+                        {
+                            var callbackUrl = Url.Action(new UrlActionContext
+                            {
+                                Action = nameof(ConfirmEmail),
+                                Controller = "Account",
+                                Values = new { userId = user.Id, token = emailConfirmationToken },
+                                Protocol = HttpContext.Request.Scheme
+                            });
+                            await _mediator.SendAsync(new SendConfirmAccountEmail { Email = user.Email, CallbackUrl = callbackUrl });
+                        }
 
                         var changePhoneNumberToken = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
                         await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = model.PhoneNumber, Token = changePhoneNumberToken });

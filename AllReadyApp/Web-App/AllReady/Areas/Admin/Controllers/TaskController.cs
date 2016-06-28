@@ -213,7 +213,7 @@ namespace AllReady.Areas.Admin.Controllers
             return Ok();
         }
 
-        //mgmccarthy: mediator query and handler need to be changed to async when Issue #622 is addressed
+        //TODO: mgmccarthy: mediator query and handler need to be changed to async when Issue #622 is addressed
         private Event GetEventBy(int eventId) => 
             _mediator.Send(new EventByIdQuery { EventId = eventId });
     }
