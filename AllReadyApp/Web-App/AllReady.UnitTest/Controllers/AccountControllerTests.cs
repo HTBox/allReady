@@ -1165,21 +1165,35 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackPopulatesCorrectValuesForFirstNameAndLastNameFromNameClaim__WhenNameClaimIsNotNull_AndExternalLoginInfoIsNotNull()
+        public async Task ExternalLoginCallbackPopulatesCorrectValuesForFirstNameAndLastName_WhenLoginProviderIsGoogle_AndExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackPopulatesStringEmptyForFirstNameAndLastNameFromNameClaim__WhenNameClaimIsNull_AndExternalLoginInfoIsNotNull()
+        public async Task ExternalLoginCallbackPopulatesCorrectValuesForFirstNameAndLastName_WhenLoginProviderIsFacebook_AndExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackSendsApplicationUserQueryAsync_WhenExternalLoginIsSuccessful_AndExternalLoginInfoIsNotNull()
+        public async Task ExternalLoginCallbackPopulatesCorrectValuesForFirstNameAndLastName_WhenLoginProviderIsMicrosoft_AndExternalLoginInfoIsNotNull()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginCallbackPopulatesCorrectValuesForFirstNameAndLastName_WhenLoginProviderIsTwitter_AndExternalLoginInfoIsNotNull()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginCallbackSendsApplicationUserQueryAsyncWithCorrectUsername_WhenExternalLoginIsSuccessful_AndExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;

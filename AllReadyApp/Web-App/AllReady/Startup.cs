@@ -254,36 +254,43 @@ namespace AllReady
 
                 app.UseFacebookAuthentication(options);
             }
-            // app.UseGoogleAuthentication();
+            if (Configuration["Authentication:MicrosoftAccount:ClientId"] != null)
+            {
+                app.UseMicrosoftAccountAuthentication(options =>
+                {
+                    options.ClientId = Configuration["Authentication:MicrosoftAccount:ClientId"];
+                    options.ClientSecret = Configuration["Authentication:MicrosoftAccount:ClientSecret"];
+                    options.Scope.Add("wl.basic");
+                    options.Scope.Add("wl.signin");
+                    options.Scope.Add("wl.emails");
+                    options.Scope.Add("wl.phone_numbers");
+                });
+            }
+            //TODO: mgmccarthy: working on getting email from Twitter
+            //http://www.bigbrainintelligence.com/Post/get-users-email-address-from-twitter-oauth-ap
+            if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
+            {
+                app.UseTwitterAuthentication(options =>
+                {
+                    options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
+                    options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
+                });
+            }
+            if (Configuration["Authentication:Google:ClientId"] != null)
+            {
+                app.UseGoogleAuthentication(options =>
+                {
+                    options.ClientId = Configuration["Authentication:Google:ClientId"];
+                    options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                });
+            }
 
-      if (Configuration["Authentication:MicrosoftAccount:ClientId"] != null)
-      {
-        var options = new MicrosoftAccountOptions()
-        {
-          ClientId = Configuration["Authentication:MicrosoftAccount:ClientId"],
-          ClientSecret = Configuration["Authentication:MicrosoftAccount:ClientSecret"]
-        };
-        options.Scope.Add("wl.basic");
-        options.Scope.Add("wl.signin");
-
-        app.UseMicrosoftAccountAuthentication(options);
-      }
-
-      if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
-      {
-        app.UseTwitterAuthentication(new TwitterOptions()
-        {
-          ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"],
-          ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"]
-        });
-      }
-
-      // Add MVC to the request pipeline.
-      app.UseMvc(routes =>
-      {
-        routes.MapRoute(
-                   name: "areaRoute",
-                   template: "{area:exists}/{controller}/{action=Index}/{id?}");
+            // Add MVC to the request pipeline.
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                     name: "areaRoute",
+                     template: "{area:exists}/{controller}/{action=Index}/{id?}");
 
         routes.MapRoute(
                   name: "default",

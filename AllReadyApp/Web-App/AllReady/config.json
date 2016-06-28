@@ -34,16 +34,20 @@
   },
   "Authentication": {
     "Facebook": {
-        "AppId": "[facebookappId]",
-        "AppSecret": "[facebookappsecret]"
-      },
+      "AppId": "[facebookappId]",
+      "AppSecret": "[facebookappsecret]"
+    },
     "Twitter": {
-      "ConsumerKey": "[twitterkey]",
-      "ConsumerSecret": "[twittersecret]"
+      "ConsumerKey": "[twitterconsumerkey]",
+      "ConsumerSecret": "[twitterconsumersecret]"
     },
     "MicrosoftAccount": {
-      "ClientId": "[twitterclient]",
-      "ClientSecret": "[twittersecret]"
+      "ClientId": "[microsoftclientid]",
+      "ClientSecret": "[microsoftclientsecret]"
+    },
+    "Google": {
+      "ClientId": "[googleclientid]",
+      "ClientSecret": "[googleclientsecret]"
     },
     "SendGrid": {
       "UserName": "[sendgriduser]",
