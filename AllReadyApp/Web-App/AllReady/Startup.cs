@@ -267,7 +267,8 @@ namespace AllReady
 
                 app.UseMicrosoftAccountAuthentication(options);
             }
-
+            //TODO: mgmccarthy: working on getting email from Twitter
+            //http://www.bigbrainintelligence.com/Post/get-users-email-address-from-twitter-oauth-ap
             if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
             {
                 var options = new TwitterOptions

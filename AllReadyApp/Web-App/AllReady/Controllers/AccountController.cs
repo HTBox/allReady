@@ -413,10 +413,6 @@ namespace AllReady.Controllers
       return RedirectToAction(nameof(HomeController.Index), "Home");
     }
 
-        //TODO: mgmccarthy: this is brittle method and will be revisieted as more and more external auth providers are added. 
-        //Most likely, there will be some type of interface that represents the extracting of available user data based on external
-        //auth provider that will allow us to get at the correct information w/out all these magic string tests. Not to mention this method will grow in complexity and 
-        //make unit testing really tough.
         private static void RetrieveFirstAndLastNameFromExternalPrincipal(ExternalLoginInfo externalLoginInfo, out string firstName, out string lastName)
         {
             firstName = string.Empty;
