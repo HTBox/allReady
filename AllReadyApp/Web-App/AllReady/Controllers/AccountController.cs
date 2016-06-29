@@ -361,7 +361,6 @@ namespace AllReady.Controllers
                         var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                         if (model.EmailIsVerifiedByExternalLoginProvider)
                         {
-                            //automatially verify the email with AllReady (b/c it's already been verified with the external login provider) and do not send a confirmation email
                             await _userManager.ConfirmEmailAsync(user, emailConfirmationToken);
                         }
                         else
