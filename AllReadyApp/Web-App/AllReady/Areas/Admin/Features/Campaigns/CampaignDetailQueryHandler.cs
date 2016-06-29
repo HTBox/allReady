@@ -63,7 +63,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                         OrganizationName = campaign.ManagingOrganization.Name,
                         ImageUrl = a.ImageUrl,
                         UsersSignedUp = a.UsersSignedUp,
-                        IsLimitVolunteers = a.IsLimitVolunteers,
                     })
                 };
 

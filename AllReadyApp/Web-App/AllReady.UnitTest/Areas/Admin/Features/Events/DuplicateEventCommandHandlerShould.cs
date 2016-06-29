@@ -46,7 +46,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(new DateTimeOffset(2016, 1, 31, 0, 0, 0, new TimeSpan()), sut.EndDateTime);
             Assert.Equal("Organizer", sut.Organizer.Id);
             Assert.Equal("ImageUrl", sut.ImageUrl);
-            Assert.Equal(false, sut.IsLimitVolunteers);
         }
 
         [Fact]
@@ -272,7 +271,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                     new EventSkill() { Skill = skillOne },
                     new EventSkill() { Skill = skillTwo },
                 },
-                IsLimitVolunteers = false,
             };
 
             Context.Add(@event.Campaign);

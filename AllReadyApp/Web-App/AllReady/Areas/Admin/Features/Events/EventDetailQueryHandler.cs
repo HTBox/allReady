@@ -40,7 +40,6 @@ namespace AllReady.Areas.Admin.Features.Events
                     EndDateTime = campaignEvent.EndDateTime,
                     Volunteers = campaignEvent.UsersSignedUp.Select(u => u.User.UserName).ToList(),
                     NumberOfVolunteersRequired = campaignEvent.NumberOfVolunteersRequired,
-                    IsLimitVolunteers = campaignEvent.IsLimitVolunteers,
                     Location = campaignEvent.Location.ToEditModel(),
                     RequiredSkills = campaignEvent.RequiredSkills,
                     ImageUrl = campaignEvent.ImageUrl,

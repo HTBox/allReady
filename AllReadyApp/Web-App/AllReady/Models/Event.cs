@@ -44,8 +44,6 @@ namespace AllReady.Models
         [Display(Name = "Required skills")]
         public List<EventSkill> RequiredSkills { get; set; } = new List<EventSkill>();
 
-        public bool IsLimitVolunteers { get; set; } = true;
-
         /// <summary>
         /// A short piece of optional text which organizers can use to help generate views/volunteers
         /// </summary>

@@ -44,7 +44,6 @@ namespace AllReady.Areas.Admin.Features.Events
                 Organizer = @event.Organizer,
                 ImageUrl = @event.ImageUrl,
                 RequiredSkills = CloneEventRequiredSkills(@event).ToList(),
-                IsLimitVolunteers = @event.IsLimitVolunteers,
             };
             return newEvent;
         }

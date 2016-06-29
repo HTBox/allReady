@@ -37,7 +37,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
             task.EndDateTime = new DateTimeOffset(endDateValue.Year, endDateValue.Month, endDateValue.Day, endDateValue.Hour, endDateValue.Minute, 0, endDateTimeOffset);
 
             task.NumberOfVolunteersRequired = message.Task.NumberOfVolunteersRequired;
-            task.IsLimitVolunteers = task.Event.IsLimitVolunteers;
 
             if (task.Id > 0)
             {

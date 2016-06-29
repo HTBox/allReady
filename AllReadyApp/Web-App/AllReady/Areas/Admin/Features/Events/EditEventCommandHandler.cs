@@ -36,18 +36,6 @@ namespace AllReady.Areas.Admin.Features.Events
             campaignEvent.ImageUrl = message.Event.ImageUrl;
             campaignEvent.NumberOfVolunteersRequired = message.Event.NumberOfVolunteersRequired;
 
-            if (campaignEvent.IsLimitVolunteers != message.Event.IsLimitVolunteers)
-            {
-                campaignEvent.IsLimitVolunteers = message.Event.IsLimitVolunteers;
-                
-                // cascade values to all tasks associated with this event
-                foreach (var task in _context.Tasks.Where(task => task.Event.Id == campaignEvent.Id))
-                {
-                    task.IsLimitVolunteers = campaignEvent.IsLimitVolunteers;
-                    _context.Update(task);
-                }
-            }
-
             if (campaignEvent.Id > 0)
             {
                 var skillsToRemove = _context.EventSkills.Where(skill => skill.EventId == campaignEvent.Id && (message.Event.RequiredSkills == null ||
