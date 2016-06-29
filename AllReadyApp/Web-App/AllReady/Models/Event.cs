@@ -54,9 +54,6 @@ namespace AllReady.Models
         [MaxLength(150)]
         public string Headline { get; set; }
 
-        [NotMapped]
-        public int NumberOfUsersSignedUp => UsersSignedUp.Count;
-
         public bool IsUserInAnyTask(string userId)
         {
             return Tasks.Any(task => task.AssignedVolunteers.Any(av => av.User.Id == userId));

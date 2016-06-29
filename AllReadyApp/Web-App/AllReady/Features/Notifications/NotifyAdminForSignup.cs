@@ -69,14 +69,13 @@ namespace AllReady.Features.Notifications
                 var volunteerEmail = !string.IsNullOrWhiteSpace(eventSignup?.PreferredEmail) ? eventSignup.PreferredEmail : volunteer.Email;
                 var volunteerPhoneNumber = !string.IsNullOrWhiteSpace(eventSignup?.PreferredPhoneNumber) ? eventSignup.PreferredPhoneNumber : volunteer.PhoneNumber;
                 var volunteerComments = eventSignup?.AdditionalInfo ?? string.Empty;
-                var remainingRequiredVolunteersPhrase = $"{campaignEvent.NumberOfUsersSignedUp}/{campaignEvent.NumberOfVolunteersRequired}";
                 var typeOfSignupPhrase = "an event";
 
                     //set for task signup
                     volunteerEmail = !string.IsNullOrWhiteSpace(taskSignup?.PreferredEmail) ? taskSignup.PreferredEmail : volunteerEmail;
                     volunteerPhoneNumber = !string.IsNullOrWhiteSpace(taskSignup?.PreferredPhoneNumber) ? taskSignup.PreferredPhoneNumber : volunteerPhoneNumber;
                     volunteerComments = !string.IsNullOrWhiteSpace(taskSignup?.AdditionalInfo) ? taskSignup.AdditionalInfo : volunteerComments;
-                    remainingRequiredVolunteersPhrase = $"{task.NumberOfUsersSignedUp}/{task.NumberOfVolunteersRequired}";
+                    var remainingRequiredVolunteersPhrase = $"{task.NumberOfUsersSignedUp}/{task.NumberOfVolunteersRequired}";
                     typeOfSignupPhrase = "a task";
 
                 var subject = $"A volunteer has signed up for {typeOfSignupPhrase}";
