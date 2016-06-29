@@ -53,10 +53,9 @@ namespace AllReady.Areas.Admin.Models
 
         [Display(Name = "Allow Wait List")]
         public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
-        public bool IsAllowWaitList { get; set; } = true;
         public int NumberOfUsersSignedUp => UsersSignedUp.Count;
         public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
-        public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
+        public bool IsAllowSignups => !IsLimitVolunteers || !IsFull;
 
     }
 }

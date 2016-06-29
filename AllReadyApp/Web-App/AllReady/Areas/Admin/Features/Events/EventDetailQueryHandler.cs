@@ -41,7 +41,6 @@ namespace AllReady.Areas.Admin.Features.Events
                     Volunteers = campaignEvent.UsersSignedUp.Select(u => u.User.UserName).ToList(),
                     NumberOfVolunteersRequired = campaignEvent.NumberOfVolunteersRequired,
                     IsLimitVolunteers = campaignEvent.IsLimitVolunteers,
-                    IsAllowWaitList = campaignEvent.IsAllowWaitList,
                     Location = campaignEvent.Location.ToEditModel(),
                     RequiredSkills = campaignEvent.RequiredSkills,
                     ImageUrl = campaignEvent.ImageUrl,

@@ -45,7 +45,6 @@ namespace AllReady.Areas.Admin.Features.Events
                 ImageUrl = @event.ImageUrl,
                 RequiredSkills = CloneEventRequiredSkills(@event).ToList(),
                 IsLimitVolunteers = @event.IsLimitVolunteers,
-                IsAllowWaitList = @event.IsAllowWaitList
             };
             return newEvent;
         }

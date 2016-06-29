@@ -47,7 +47,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal("Organizer", sut.Organizer.Id);
             Assert.Equal("ImageUrl", sut.ImageUrl);
             Assert.Equal(false, sut.IsLimitVolunteers);
-            Assert.Equal(true, sut.IsAllowWaitList);
         }
 
         [Fact]
@@ -274,7 +273,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                     new EventSkill() { Skill = skillTwo },
                 },
                 IsLimitVolunteers = false,
-                IsAllowWaitList = true
             };
 
             Context.Add(@event.Campaign);

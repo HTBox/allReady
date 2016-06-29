@@ -38,7 +38,6 @@ namespace AllReady.Areas.Admin.Features.Events
                     EndDateTime = campaignEvent.EndDateTime,
                     NumberOfVolunteersRequired = campaignEvent.NumberOfVolunteersRequired,
                     IsLimitVolunteers = campaignEvent.IsLimitVolunteers,
-                    IsAllowWaitList = campaignEvent.IsAllowWaitList,
                     ImageUrl = campaignEvent.ImageUrl,
                 };
             }

@@ -38,7 +38,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             task.NumberOfVolunteersRequired = message.Task.NumberOfVolunteersRequired;
             task.IsLimitVolunteers = task.Event.IsLimitVolunteers;
-            task.IsAllowWaitList = task.Event.IsAllowWaitList;
 
             if (task.Id > 0)
             {

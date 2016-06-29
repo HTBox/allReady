@@ -46,8 +46,6 @@ namespace AllReady.Models
 
         public bool IsLimitVolunteers { get; set; } = true;
 
-        public bool IsAllowWaitList { get; set; } = false;
-
         /// <summary>
         /// A short piece of optional text which organizers can use to help generate views/volunteers
         /// </summary>
