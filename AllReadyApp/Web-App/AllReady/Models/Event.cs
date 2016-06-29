@@ -57,9 +57,6 @@ namespace AllReady.Models
         [NotMapped]
         public int NumberOfUsersSignedUp => UsersSignedUp.Count;
 
-        [NotMapped]
-        public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
-
         public bool IsUserInAnyTask(string userId)
         {
             return Tasks.Any(task => task.AssignedVolunteers.Any(av => av.User.Id == userId));
