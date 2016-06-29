@@ -35,7 +35,6 @@ namespace AllReady.Features.Notifications
                     EventName = campaignEvent.Name,
                     Description = campaignEvent.Description,
                     UsersSignedUp = campaignEvent.UsersSignedUp,
-                    NumberOfVolunteersRequired = campaignEvent.NumberOfVolunteersRequired,
                     Tasks = campaignEvent.Tasks.Select(t => new TaskSummaryModel
                     {
                         Id = t.Id,

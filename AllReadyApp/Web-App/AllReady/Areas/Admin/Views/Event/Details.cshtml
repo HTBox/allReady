@@ -60,10 +60,8 @@
 <div class="row">
     <div class="col-md-12">
         <h3>
-            Volunteers @if (Model.NumberOfVolunteersRequired > 0)
-            {
-                <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span>
-            } <button type="button" class="btn btn-primary" disabled="@(!Model.Volunteers.Any())" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button>
+            Volunteers
+            <button type="button" class="btn btn-primary" disabled="@(!Model.Volunteers.Any())" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button>
         </h3>
         @if (Model.Volunteers == null || Model.Volunteers.Count == 0)
         {

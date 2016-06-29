@@ -36,7 +36,6 @@ namespace AllReady.Areas.Admin.Features.Events
                     TimeZoneId = campaignEvent.Campaign.TimeZoneId,
                     StartDateTime = campaignEvent.StartDateTime,
                     EndDateTime = campaignEvent.EndDateTime,
-                    NumberOfVolunteersRequired = campaignEvent.NumberOfVolunteersRequired,
                     Location = campaignEvent.Location.ToEditModel(),
                     RequiredSkills = campaignEvent.RequiredSkills,
                     ImageUrl = campaignEvent.ImageUrl,

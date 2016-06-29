@@ -35,10 +35,6 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Browse for image")]
         public string FileUpload { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage = "'Volunteers Required' must be greater than 0")]
-        [Display(Name = "Volunteers Required")]
-        public int NumberOfVolunteersRequired { get; set; }
-        
         public string TimeZoneId { get; set; }
 
         [MaxLength(150)]
@@ -52,8 +48,5 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Allow Wait List")]
         public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
         public int NumberOfUsersSignedUp => UsersSignedUp.Count;
-        public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
-        public bool IsAllowSignups => !IsFull;
-
     }
 }

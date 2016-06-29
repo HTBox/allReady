@@ -34,7 +34,6 @@ namespace AllReady.Areas.Admin.Features.Events
             campaignEvent.CampaignId = message.Event.CampaignId;
             
             campaignEvent.ImageUrl = message.Event.ImageUrl;
-            campaignEvent.NumberOfVolunteersRequired = message.Event.NumberOfVolunteersRequired;
 
             if (campaignEvent.Id > 0)
             {

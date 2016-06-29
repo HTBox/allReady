@@ -39,7 +39,6 @@ namespace AllReady.Areas.Admin.Features.Events
                     StartDateTime = campaignEvent.StartDateTime,
                     EndDateTime = campaignEvent.EndDateTime,
                     Volunteers = campaignEvent.UsersSignedUp.Select(u => u.User.UserName).ToList(),
-                    NumberOfVolunteersRequired = campaignEvent.NumberOfVolunteersRequired,
                     Location = campaignEvent.Location.ToEditModel(),
                     RequiredSkills = campaignEvent.RequiredSkills,
                     ImageUrl = campaignEvent.ImageUrl,
