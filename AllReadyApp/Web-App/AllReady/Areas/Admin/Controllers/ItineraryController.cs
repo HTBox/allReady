@@ -134,9 +134,26 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
 
+            var model = await BuildSelectItineraryRequestsModel(id, new RequestSearchCriteria());
+
+            return View("SelectRequests", model);
+        }
+
+        [HttpPost]
+        [Route("Admin/Itinerary/{id}/[Action]")]
+        public async Task<IActionResult> SelectRequests(int id, SelectItineraryRequestsModel model)
+        {
+            var newModel = await BuildSelectItineraryRequestsModel(id, new RequestSearchCriteria { Keywords = model.KeywordsFilter });
+
+            return View("SelectRequests", newModel);
+        }
+
+        private async Task<SelectItineraryRequestsModel> BuildSelectItineraryRequestsModel(int itineraryId,
+            RequestSearchCriteria criteria)
+        {
             var model = new SelectItineraryRequestsModel();
 
-            var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = id });
+            var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = itineraryId });
 
             model.CampaignId = itinerary.CampaignId;
             model.CampaignName = itinerary.CampaignName;
@@ -144,7 +161,9 @@ namespace AllReady.Areas.Admin.Controllers
             model.EventName = itinerary.EventName;
             model.ItineraryName = itinerary.Name;
 
-            var requests = await _mediator.SendAsync(new RequestListItemsQuery { criteria = new RequestSearchCriteria { EventId = model.EventId } });
+            criteria.EventId = itinerary.EventId;
+
+            var requests = await _mediator.SendAsync(new RequestListItemsQuery { Criteria = criteria });
 
             foreach (var request in requests)
             {
@@ -154,13 +173,14 @@ namespace AllReady.Areas.Admin.Controllers
                     Name = request.Name,
                     DateAdded = request.DateAdded,
                     City = request.City,
-                    Address = request.Address
+                    Address = request.Address,
+                    Postcode = request.Postcode
                 };
 
                 model.Requests.Add(selectItem);
             }
 
-            return View("SelectRequests", model);
+            return model;
         }
 
         [HttpPost]
