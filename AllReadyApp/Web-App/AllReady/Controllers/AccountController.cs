@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Features.Login;
@@ -6,12 +7,15 @@ using AllReady.Features.Manage;
 using AllReady.Models;
 using AllReady.Security;
 using AllReady.ViewModels.Account;
+using LinqToTwitter;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.Routing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.OptionsModel;
+using UserType = AllReady.Models.UserType;
 
 namespace AllReady.Controllers
 {
@@ -22,18 +26,21 @@ namespace AllReady.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IOptions<GeneralSettings> _generalSettings;
         private readonly IMediator _mediator;
+        private readonly IConfiguration _configuration;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IOptions<GeneralSettings> generalSettings,
-            IMediator mediator
+            IMediator mediator,
+            IConfiguration configuration
             )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _generalSettings = generalSettings;
             _mediator = mediator;
+            _configuration = configuration;
         }
 
     // GET: /Account/Login
@@ -296,23 +303,72 @@ namespace AllReady.Controllers
         return RedirectToAction(nameof(Login));
       }
 
-      // Sign in the user with this external login provider if the user already has a login.
-      var result = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
-      var email = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
+            // Sign in the user with this external login provider if the user already has a login.
+            var externalLoginSignInAsyncResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
 
-      string firstName;
-      string lastName;
-      RetrieveFirstAndLastNameFromExternalPrincipal(externalLoginInfo, out firstName, out lastName);
+            if (externalLoginInfo.LoginProvider == "Twitter")
+            {
+                var userId = externalLoginInfo.ExternalPrincipal.FindFirstValue("urn:twitter:userid");
+                var screenName = externalLoginInfo.ExternalPrincipal.FindFirstValue("urn:twitter:screenname");
+                //var screenName = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
 
-      if (result.Succeeded)
-      {
-        var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = email });
-        return RedirectToLocal(returnUrl, user);
-      }
+                var authTwitter = new SingleUserAuthorizer
+                {
+                    CredentialStore = new SingleUserInMemoryCredentialStore
+                    {
+                        ConsumerKey = _configuration["Authentication:Twitter:ConsumerKey"],
+                        ConsumerSecret = _configuration["Authentication:Twitter:ConsumerSecret"],
+                        UserID = ulong.Parse(userId),
+                        ScreenName = screenName,
+                        OAuthToken = _configuration["Authentication:Twitter:OAuthToken"],
+                        OAuthTokenSecret = _configuration["Authentication:Twitter:OAuthSecret"]
+                    }
+                };
+                await authTwitter.AuthorizeAsync();
 
-      // If the user does not have an account, then ask the user to create an account.
-      ViewData["ReturnUrl"] = returnUrl;
-      ViewData["LoginProvider"] = externalLoginInfo.LoginProvider;
+                var twitterCtx = new TwitterContext(authTwitter);
+
+                //THIS WORKS
+                //https://linqtotwitter.codeplex.com/wikipage?title=Single%20User%20Authorization
+                //var searchResponse =
+                //await
+                //(from search in twitterCtx.Search
+                // where search.Type == SearchType.Search &&
+                //       search.Query == "\"LINQ to Twitter\""
+                // select search)
+                //.SingleOrDefaultAsync();
+
+                //this fails
+                //var account = await (from acct in twitterCtx.Account select acct).SingleOrDefaultAsync();
+
+                var verifyResponse = await
+                    (from acct in twitterCtx.Account
+                     where (acct.Type == AccountType.VerifyCredentials) && (acct.IncludeEmail)
+                     select acct).SingleOrDefaultAsync();
+
+                //if (verifyResponse != null && verifyResponse.User != null)
+                //{
+                //    User twitterUser = verifyResponse.User;
+                //    //assign email to existing authentication object
+                //    loginInfo.Email = twitterUser.Email;
+                //}
+            }
+
+            var email = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
+
+            string firstName;
+            string lastName;
+            RetrieveFirstAndLastNameFromExternalPrincipal(externalLoginInfo, out firstName, out lastName);
+            
+            if (externalLoginSignInAsyncResult.Succeeded)
+            {
+                var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = email });
+                return RedirectToLocal(returnUrl, user);
+            }
+            
+            // If the user does not have an account, then ask the user to create an account.
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["LoginProvider"] = externalLoginInfo.LoginProvider;
 
       return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email, FirstName = firstName, LastName = lastName });
     }
