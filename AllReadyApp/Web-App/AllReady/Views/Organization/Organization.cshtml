@@ -79,7 +79,15 @@
     </div>
 </div>
 
-@if (Model.HasPrivacyPolicy)
+@if (Model.HasPrivacyPolicyUrl)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <p class="text-center"><a href="@Model.PrivacyPolicyUrl" target="_blank">@Model.Name Privacy Policy</a></p>
+        </div>
+    </div>
+}
+else if (Model.HasPrivacyPolicy)
 {
     <div class="row">
         <div class="col-md-12">

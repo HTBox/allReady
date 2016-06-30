@@ -58,7 +58,12 @@ namespace AllReady.Models
         public List<OrganizationContact> OrganizationContacts { get; set; }
 
         /// <summary>
-        /// Represents html for an organization specific privacy policy
+        /// The url for an external organization privacy policy document
+        /// </summary>
+        public string PrivacyPolicyUrl { get; set; }
+
+        /// <summary>
+        /// The html for an organization specific privacy policy
         /// </summary>
         public string PrivacyPolicy { get; set; }
     }

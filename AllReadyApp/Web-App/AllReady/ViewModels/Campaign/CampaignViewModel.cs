@@ -35,6 +35,7 @@ namespace AllReady.ViewModels.Campaign
             CampaignImpact = campaign.CampaignImpact;
             ImageUrl = campaign.ImageUrl;
             HasPrivacyPolicy = !string.IsNullOrEmpty(campaign.ManagingOrganization?.PrivacyPolicy);
+            PrivacyPolicyUrl = campaign.ManagingOrganization?.PrivacyPolicyUrl;
             Location = campaign.Location;
             Featured = campaign.Featured;
             Headline = campaign.Headline;
@@ -88,6 +89,9 @@ namespace AllReady.ViewModels.Campaign
         public DateTimeOffset EndDate { get; set; }
 
         public IEnumerable<EventViewModel> Events { get; set; }
+
+        public string PrivacyPolicyUrl { get; set; }
+        public bool HasPrivacyPolicyUrl => !string.IsNullOrEmpty(PrivacyPolicyUrl);
 
         public bool HasPrivacyPolicy { get; set; }
         public bool Featured { get; set; }

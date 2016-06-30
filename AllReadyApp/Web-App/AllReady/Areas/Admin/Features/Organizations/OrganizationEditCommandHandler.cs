@@ -35,6 +35,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
             org.Location.PostalCode = message.Organization.Location.PostalCode;
 
             org.PrivacyPolicy = message.Organization.PrivacyPolicy;
+            org.PrivacyPolicyUrl = message.Organization.PrivacyPolicyUrl;
 
             _context.Update(org);
             _context.SaveChanges();

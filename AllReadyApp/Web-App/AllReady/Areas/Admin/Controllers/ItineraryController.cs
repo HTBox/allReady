@@ -144,22 +144,22 @@ namespace AllReady.Areas.Admin.Controllers
             model.EventName = itinerary.EventName;
             model.ItineraryName = itinerary.Name;
 
-            var requests =  await _mediator.SendAsync(new RequestListItemsQuery { criteria = new RequestSearchCriteria() });
+            var requests = await _mediator.SendAsync(new RequestListItemsQuery { criteria = new RequestSearchCriteria { EventId = model.EventId } });
 
-            foreach(var request in requests)
+            foreach (var request in requests)
             {
                 var selectItem = new RequestSelectModel
                 {
                     Id = request.Id,
                     Name = request.Name,
                     DateAdded = request.DateAdded,
-                    City =  request.City,
+                    City = request.City,
                     Address = request.Address
                 };
 
                 model.Requests.Add(selectItem);
             }
-            
+
             return View("SelectRequests", model);
         }
 
@@ -177,7 +177,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             if (selectedRequests.Any())
-            { 
+            {
                 var result = await _mediator.SendAsync(new AddRequestsCommand { ItineraryId = id, RequestIdsToAdd = selectedRequests.ToList() });
             }
 
@@ -195,7 +195,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpUnauthorized();
             }
 
-            var model = await _mediator.SendAsync(new TaskSignupSummaryQuery {TaskSignupId = taskSignupId});
+            var model = await _mediator.SendAsync(new TaskSignupSummaryQuery { TaskSignupId = taskSignupId });
 
             if (model == null)
             {
@@ -219,7 +219,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             var result = await _mediator.SendAsync(new RemoveTeamMemberCommand { TaskSignupId = taskSignupId });
 
-            return RedirectToAction("Details", new {id = itineraryId });
+            return RedirectToAction("Details", new { id = itineraryId });
         }
 
         [HttpGet]

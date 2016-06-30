@@ -24,54 +24,43 @@ namespace AllReady.Areas.Admin.Models.Validators
         {
             var result = new List<KeyValuePair<string, string>>();
 
-            if (model.StartDateTime.HasValue || model.EndDateTime.HasValue)
+            var campaignEvent = _mediator.Send(new EventByIdQuery { EventId = model.EventId });
+
+            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(campaignEvent.Campaign.TimeZoneId);
+
+            // sgordon: Date time conversion seems overly complex and may be refactored per #710
+            var startDateValue = model.StartDateTime;
+            var startDateTimeOffset = timeZoneInfo.GetUtcOffset(startDateValue);
+            var convertedStartDateTime = new DateTimeOffset(startDateValue.Year, startDateValue.Month, startDateValue.Day, startDateValue.Hour, startDateValue.Minute, 0, startDateTimeOffset);
+
+            var endDateValue = model.EndDateTime;
+            var endDateTimeOffset = timeZoneInfo.GetUtcOffset(endDateValue);
+            var convertedEndDateTime = new DateTimeOffset(endDateValue.Year, endDateValue.Month, endDateValue.Day, endDateValue.Hour, endDateValue.Minute, 0, endDateTimeOffset);
+
+            // Rule - End date cannot be earlier than start date
+            if (convertedEndDateTime < convertedStartDateTime)
             {
-                var campaignEvent = _mediator.Send(new EventByIdQuery { EventId = model.EventId });
+                result.Add(new KeyValuePair<string, string>(nameof(model.EndDateTime), "End date cannot be earlier than the start date"));
+            }
 
-                var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(campaignEvent.Campaign.TimeZoneId);
+            // Rule - Start date cannot be out of range of parent event
+            if (convertedStartDateTime < campaignEvent.StartDateTime)
+            {
+                result.Add(new KeyValuePair<string, string>(nameof(model.StartDateTime), "Start date cannot be earlier than the event start date " + campaignEvent.StartDateTime.ToString("d")));
+            }
 
-                // sgordon: Date time conversion seems overly complex and may be refactored per #710
-                DateTimeOffset? convertedStartDateTime = null;
-                if (model.StartDateTime.HasValue)
+            // Rule - End date cannot be out of range of parent event
+            if (convertedEndDateTime > campaignEvent.EndDateTime)
+            {
+                result.Add(new KeyValuePair<string, string>(nameof(model.EndDateTime), "End date cannot be later than the event end date " + campaignEvent.EndDateTime.ToString("d")));
+            }
+
+            // Rule - Itinerary tasks must start and end on same calendar day
+            if (campaignEvent.EventType == EventType.Itinerary)
+            {
+                if (convertedStartDateTime.Date != convertedEndDateTime.Date)
                 {
-                    var startDateValue = model.StartDateTime.Value;
-                    var startDateTimeOffset = timeZoneInfo.GetUtcOffset(startDateValue);
-                    convertedStartDateTime = new DateTimeOffset(startDateValue.Year, startDateValue.Month, startDateValue.Day, startDateValue.Hour, startDateValue.Minute, 0, startDateTimeOffset);
-                }
-
-                DateTimeOffset? convertedEndDateTime = null;
-                if (model.EndDateTime.HasValue)
-                {
-                    var endDateValue = model.EndDateTime.Value;
-                    var endDateTimeOffset = timeZoneInfo.GetUtcOffset(endDateValue);
-                    convertedEndDateTime = new DateTimeOffset(endDateValue.Year, endDateValue.Month, endDateValue.Day, endDateValue.Hour, endDateValue.Minute, 0, endDateTimeOffset);
-                }
-
-                // Rule - End date cannot be earlier than start date
-                if (convertedStartDateTime.HasValue && convertedEndDateTime.HasValue && convertedEndDateTime.Value < convertedStartDateTime.Value)
-                {
-                    result.Add(new KeyValuePair<string, string>(nameof(model.EndDateTime), "End date cannot be earlier than the start date"));
-                }
-
-                // Rule - Start date cannot be out of range of parent event
-                if (convertedStartDateTime.HasValue && convertedStartDateTime < campaignEvent.StartDateTime)
-                {
-                    result.Add(new KeyValuePair<string, string>(nameof(model.StartDateTime), "Start date cannot be earlier than the event start date " + campaignEvent.StartDateTime.ToString("d")));
-                }
-
-                // Rule - End date cannot be out of range of parent event
-                if (convertedEndDateTime.HasValue && convertedEndDateTime > campaignEvent.EndDateTime)
-                {
-                    result.Add(new KeyValuePair<string, string>(nameof(model.EndDateTime), "End date cannot be later than the event end date " + campaignEvent.EndDateTime.ToString("d")));
-                }
-
-                // Rule - Itinerary tasks must start and end on same calendar day
-                if (campaignEvent.EventType == EventType.Itinerary && convertedStartDateTime.HasValue && convertedEndDateTime.HasValue)
-                {
-                    if (convertedStartDateTime.Value.Date != convertedEndDateTime.Value.Date)
-                    {
-                        result.Add(new KeyValuePair<string, string>(nameof(model.EndDateTime), "For itinerary events the task end date must occur on the same day as the start date. Tasks cannot span multiple days"));
-                    }
+                    result.Add(new KeyValuePair<string, string>(nameof(model.EndDateTime), "For itinerary events the task end date must occur on the same day as the start date. Tasks cannot span multiple days"));
                 }
             }
 

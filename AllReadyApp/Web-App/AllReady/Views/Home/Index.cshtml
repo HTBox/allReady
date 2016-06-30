@@ -70,13 +70,16 @@ else
             <div id="campaignGrid" class="table-responsive">
                 <table class="table" data-bind="css: { hide: !campaigns().length }">
                     <tr>
+                        <th></th>
                         <th><span title="Name of the campaign">Title</span></th>
                         <th><span title="Description of the campaign">Description</span></th>
                         <th><span title="Date of the campaign">Dates</span></th>
-                        <th><span title="Locations of the campaign">Locations</span></th>
                     </tr>
                     <!-- ko foreach: campaigns -->
                     <tr>
+                        <td>
+                            <img data-bind="attr: { src: ImageUrl }" class="img-responsive" />
+                        </td>
                         <td>
                             <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
                         </td>
@@ -85,9 +88,6 @@ else
                         </td>
                         <td>
                             <span data-bind="text: displayDate()"></span>
-                        </td>
-                        <td>
-                            <a data-bind="attr: { href: '/Campaign/Map/' + Id }">Map</a>
                         </td>
                     </tr>
                     <!-- /ko -->
