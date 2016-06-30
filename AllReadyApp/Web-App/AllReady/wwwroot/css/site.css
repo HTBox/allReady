@@ -533,3 +533,24 @@ a:hover .myevents-block  {
     max-height: 250px;
     max-width: 600px;
 }
+
+.org-tile {
+    height: 220px;
+    border: 1px solid #ab6627;
+    background: rgba(171, 102, 39, 0.15);
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 20px;
+    color: black;
+}
+
+.org-tile  img {
+    max-height: 140px;
+}
+
+.org-tile h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 20px;
+}
+
