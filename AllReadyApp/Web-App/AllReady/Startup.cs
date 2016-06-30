@@ -5,6 +5,7 @@ using AllReady.Areas.Admin.Models.Validators;
 using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.Security;
+using AllReady.Security.AuthoizationHandlers;
 using AllReady.Services;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
@@ -20,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
+using Microsoft.AspNet.Authorization;
 
 namespace AllReady
 {
@@ -43,7 +45,6 @@ namespace AllReady
 
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
                 builder.AddApplicationInsightsSettings(developerMode: true);
-
             }
 
             Configuration = builder.Build();
@@ -97,6 +98,9 @@ namespace AllReady
                 options.AddPolicy("OrgAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "OrgAdmin", "SiteAdmin"));
                 options.AddPolicy("SiteAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "SiteAdmin"));
             });
+
+            services.AddSingleton<IAuthorizationHandler, OrganizationIdAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, ItineraryAuthorizationHandler>();
 
             // Add MVC services to the services container.
             services.AddMvc();

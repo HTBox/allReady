@@ -14,6 +14,7 @@ using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
 using AllReady.Areas.Admin.Models.Validators;
 using AllReady.Features.Event;
+using AllReady.Security.AuthoizationHandlers;
 using AllReady.ViewModels.Event;
 
 namespace AllReady.Areas.Admin.Controllers
@@ -25,12 +26,14 @@ namespace AllReady.Areas.Admin.Controllers
         private readonly IImageService _imageService;
         private readonly IMediator _mediator;
         private readonly IValidateEventDetailModels _eventDetailModelValidator;
+        private readonly IAuthorizationService _authorizationService;
 
-        public EventController(IImageService imageService, IMediator mediator, IValidateEventDetailModels eventDetailModelValidator)
+        public EventController(IImageService imageService, IMediator mediator, IValidateEventDetailModels eventDetailModelValidator, IAuthorizationService authorizationService)
         {
             _imageService = imageService;
             _mediator = mediator;
             _eventDetailModelValidator = eventDetailModelValidator;
+            _authorizationService = authorizationService;
         }
 
         // GET: Event/Details/5
@@ -44,9 +47,9 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+            if (!await _authorizationService.AuthorizeAsync(User, campaignEvent, OrganizationOperations.Manage))
             {
-                return HttpUnauthorized();
+                return new ChallengeResult();
             }
 
             campaignEvent.ItinerariesDetailsUrl = GenerateItineraryDetailsTemplateUrl();

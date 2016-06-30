@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNet.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using AllReady.Security.AuthoizationHandlers;
 
 namespace AllReady.Areas.Admin.Models.ItineraryModels
 {
-    public class ItineraryDetailsModel
+    public class ItineraryDetailsModel : IOrganizationIdAuthorizable
     {
         public int Id { get; set; }
         public string Name { get; set; }

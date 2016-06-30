@@ -12,6 +12,8 @@ using System.Linq;
 using AllReady.Areas.Admin.Models.RequestModels;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Features.TaskSignups;
+using AllReady.Models;
+using AllReady.Security.AuthoizationHandlers;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -21,8 +23,9 @@ namespace AllReady.Areas.Admin.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IItineraryEditModelValidator _itineraryValidator;
+        private readonly IAuthorizationService _authorizationService;
 
-        public ItineraryController(IMediator mediator, IItineraryEditModelValidator itineraryValidator)
+        public ItineraryController(IMediator mediator, IItineraryEditModelValidator itineraryValidator, IAuthorizationService authorizationService)
         {
             if (mediator == null)
             {
@@ -34,8 +37,14 @@ namespace AllReady.Areas.Admin.Controllers
                 throw new ArgumentNullException(nameof(itineraryValidator));
             }
 
+            if (authorizationService == null)
+            {
+                throw new ArgumentNullException(nameof(authorizationService));
+            }
+
             _mediator = mediator;
             _itineraryValidator = itineraryValidator;
+            _authorizationService = authorizationService;
         }
 
         [HttpGet]
@@ -49,9 +58,9 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpNotFound();
             }
 
-            if (!User.IsOrganizationAdmin(itinerary.OrganizationId))
+            if (!await _authorizationService.AuthorizeAsync(User, itinerary, OrganizationOperations.Manage))
             {
-                return HttpUnauthorized();
+                return new ChallengeResult();
             }
 
             return View("Details", itinerary);
@@ -62,7 +71,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ItineraryEditModel model)
         {
-            if (model == null)
+            if (model == null || model?.EventId == 0)
             {
                 return HttpBadRequest();
             }
@@ -74,9 +83,9 @@ namespace AllReady.Areas.Admin.Controllers
                 return HttpBadRequest();
             }
 
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+            if (! await _authorizationService.AuthorizeAsync(User, campaignEvent, OrganizationOperations.Manage))
             {
-                return HttpUnauthorized();
+                return new ChallengeResult();
             }
 
             var errors = _itineraryValidator.Validate(model, campaignEvent);
@@ -107,10 +116,11 @@ namespace AllReady.Areas.Admin.Controllers
             // this flow should be reviews and enhanced in a future PR using knockout to send and handle the error messaging on the details page
             // for the purpose of the upcoming red cross testing I chose to leave this since a failure here would be an edge case
 
-            var orgId = await GetOrganizationIdBy(id);
-            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            var itinerary = new ItineraryAuthorizationStub(id);
+
+            if (!await _authorizationService.AuthorizeAsync(User, itinerary, OrganizationOperations.Manage))
             {
-                return HttpUnauthorized();
+                return new ChallengeResult();
             }
 
             if (id == 0 || selectedTeamMember == 0)

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using AllReady.Models;
+using AllReady.Security.AuthoizationHandlers;
 
 namespace AllReady.Areas.Admin.Models
 {
-    public class EventSummaryModel
+    public class EventSummaryModel : IOrganizationIdAuthorizable
     {
         public int Id { get; set; }
 
