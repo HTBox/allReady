@@ -112,11 +112,8 @@ namespace AllReady.Areas.Admin.Features.Events
                 var existingStartDateTime = task.StartDateTime;
                 var existingEndDateTime = task.EndDateTime;
 
-                if (task.StartDateTime.HasValue)
-                    task.StartDateTime = updateModel.StartDateTime - (@event.StartDateTime - task.StartDateTime.Value);
-
-                if (task.EndDateTime.HasValue && task.StartDateTime.HasValue)
-                    task.EndDateTime = task.StartDateTime + (existingEndDateTime - existingStartDateTime);
+                task.StartDateTime = updateModel.StartDateTime - (@event.StartDateTime - task.StartDateTime);
+                task.EndDateTime = task.StartDateTime + (existingEndDateTime - existingStartDateTime);
             }
         }
 

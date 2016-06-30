@@ -39,7 +39,8 @@ namespace AllReady.Areas.Admin.Features.Organizations
                 WebUrl = org.WebUrl,
                 Description = org.DescriptionHtml,
                 Summary =  org.Summary,
-                PrivacyPolicy = org.PrivacyPolicy
+                PrivacyPolicy = org.PrivacyPolicy,
+                PrivacyPolicyUrl = org.PrivacyPolicyUrl
             };
 
             if (org.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)

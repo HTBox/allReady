@@ -55,7 +55,7 @@ namespace AllReady.Features.Notifications
                 message.AppendLine($"   Campaign: {notificationModel.CampaignName}");
                 message.AppendLine($"   Event: {notificationModel.EventName} ({eventLink})");
                     message.AppendLine($"   Task: {taskModel.Name} ({$"View task: {_options.Value.SiteBaseUrl}Admin/Task/Details/{taskModel.Id}"})");
-                    message.AppendLine($"   Task Start Date: {taskModel.StartDateTime?.Date.ToShortDateString()}");
+                    message.AppendLine($"   Task Start Date: {taskModel.StartDateTime.Date.ToShortDateString()}");
                 message.AppendLine($"   Remaining/Required Volunteers: {remainingRequiredVolunteersPhrase}");
                 message.AppendLine();
 

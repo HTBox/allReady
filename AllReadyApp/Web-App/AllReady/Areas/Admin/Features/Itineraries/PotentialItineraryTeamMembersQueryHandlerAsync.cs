@@ -27,7 +27,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 .Where(x => x.Task.Event.Id == message.EventId)
                 .Where(x => x.Status == Tasks.TaskStatus.Accepted.ToString())
                 .Where(x => x.Itinerary == null)
-                .Where(x => x.Task.StartDateTime.HasValue && x.Task.StartDateTime.Value.Date == message.Date)
+                .Where(x => x.Task.StartDateTime.Date == message.Date)
                 .Select(x => new SelectListItem
                 {
                     Text = string.Concat(x.User.Email, " : ", x.Task.Name),

@@ -7,5 +7,6 @@ namespace AllReady.Areas.Admin.Models.RequestModels
         public Guid? RequestId { get; set; }
         public bool IncludeAssigned { get; set; } = false;
         public bool IncludeCanceled { get; set; } = false;
+        public int? EventId { get; set; }
     }
 }
