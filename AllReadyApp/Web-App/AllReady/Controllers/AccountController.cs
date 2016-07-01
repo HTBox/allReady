@@ -311,61 +311,68 @@ namespace AllReady.Controllers
             // Sign in the user with this external login provider if the user already has a login.
             var externalLoginSignInAsyncResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
 
-            if (externalLoginInfo.LoginProvider == "Twitter")
-            {
-                var userId = externalLoginInfo.ExternalPrincipal.FindFirstValue("urn:twitter:userid");
-                var screenName = externalLoginInfo.ExternalPrincipal.FindFirstValue("urn:twitter:screenname");
-                //var screenName = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
+            //if (externalLoginInfo.LoginProvider == "Twitter")
+            //{
+            //    var userId = externalLoginInfo.ExternalPrincipal.FindFirstValue("urn:twitter:userid");
+            //    var screenName = externalLoginInfo.ExternalPrincipal.FindFirstValue("urn:twitter:screenname");
+            //    //OR this, not too sure if using claims is the "preferred" way
+            //    //var screenName = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
 
-                var authTwitter = new SingleUserAuthorizer
-                {
-                    CredentialStore = new SingleUserInMemoryCredentialStore
-                    {
-                        ConsumerKey = _configuration["Authentication:Twitter:ConsumerKey"],
-                        ConsumerSecret = _configuration["Authentication:Twitter:ConsumerSecret"],
-                        UserID = ulong.Parse(userId),
-                        ScreenName = screenName,
-                        OAuthToken = _configuration["Authentication:Twitter:OAuthToken"],
-                        OAuthTokenSecret = _configuration["Authentication:Twitter:OAuthSecret"]
-                    }
-                };
-                await authTwitter.AuthorizeAsync();
+            //    var authTwitter = new SingleUserAuthorizer
+            //    {
+            //        CredentialStore = new SingleUserInMemoryCredentialStore
+            //        {
+            //            ConsumerKey = _configuration["Authentication:Twitter:ConsumerKey"],
+            //            ConsumerSecret = _configuration["Authentication:Twitter:ConsumerSecret"],
+            //            UserID = ulong.Parse(userId),
+            //            ScreenName = screenName,
+            //            OAuthToken = _configuration["Authentication:Twitter:OAuthToken"],
+            //            OAuthTokenSecret = _configuration["Authentication:Twitter:OAuthSecret"]
+            //        }
+            //    };
+            //    await authTwitter.AuthorizeAsync();
 
-                var twitterCtx = new TwitterContext(authTwitter);
+            //    var twitterCtx = new TwitterContext(authTwitter);
 
-                var verifyResponse = await
-                    (from acct in twitterCtx.Account
-                        // ReSharper disable once RedundantBoolCompare
-                        where (acct.Type == AccountType.VerifyCredentials) && (acct.IncludeEmail == true) //VERY important you explicitly keep the "== true" part of comparison here. ReSharper will prompt you to remove this, and if it does, the query will not work
-                        select acct).SingleOrDefaultAsync();
+            //    var verifyResponse = await
+            //        (from acct in twitterCtx.Account
+            //             // ReSharper disable once RedundantBoolCompare
+            //         where (acct.Type == AccountType.VerifyCredentials) && (acct.IncludeEmail == true) //VERY important you explicitly keep the "== true" part of comparison here. ReSharper will prompt you to remove this, and if it does, the query will not work
+            //         select acct).SingleOrDefaultAsync();
 
-                if (verifyResponse != null && verifyResponse.User != null)
-                {
-                    var twitterUser = verifyResponse.User;
-                    if (twitterUser != null)
-                    {
-                        email = twitterUser.Email;
+            //    if (verifyResponse != null && verifyResponse.User != null)
+            //    {
+            //        var twitterUser = verifyResponse.User;
+            //        if (twitterUser != null)
+            //        {
+            //            email = twitterUser.Email;
 
-                        if (!string.IsNullOrEmpty(twitterUser.Name))
-                        {
-                            var array = twitterUser.Name.Split(' ');
-                            if (array.Length > 1)
-                            {
-                                firstName = array[0];
-                                lastName = array[1];
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                email = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
-                RetrieveFirstAndLastNameFromExternalPrincipal(externalLoginInfo, out firstName, out lastName);
-            }
+            //            if (!string.IsNullOrEmpty(twitterUser.Name))
+            //            {
+            //                var array = twitterUser.Name.Split(' ');
+            //                if (array.Length > 1)
+            //                {
+            //                    firstName = array[0];
+            //                    lastName = array[1];
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    email = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
+            //    RetrieveFirstAndLastNameFromExternalPrincipal(externalLoginInfo, out firstName, out lastName);
+            //}
 
-            //RetrieveFirstAndLastNameFromExternalPrincipal(externalLoginInfo, out firstName, out lastName);
-            
+            //only Facebook and Google so far
+            var factory = new ExternalUserInformationProviderFactory();
+            var externalUserInformationProvider = factory.GetExternalUserInformationProviderFor(externalLoginInfo.LoginProvider);
+            var externalUserInformation = externalUserInformationProvider.GetExternalUserInformationWith(externalLoginInfo, _configuration);
+            email = externalUserInformation.Email;
+            firstName = externalUserInformation.FirstName;
+            lastName = externalUserInformation.LastName;
+
             if (externalLoginSignInAsyncResult.Succeeded)
             {
                 var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = email });
