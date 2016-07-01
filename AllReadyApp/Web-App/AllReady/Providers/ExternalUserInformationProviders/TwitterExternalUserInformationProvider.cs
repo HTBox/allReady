@@ -1,13 +1,13 @@
 using System.Linq;
 using LinqToTwitter;
 using Microsoft.AspNet.Identity;
-using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
 
 namespace AllReady.Providers.ExternalUserInformationProviders
 {
     public class TwitterExternalUserInformationProvider : IProvideExternalUserInformation
     {
-        public ExternalUserInformation GetExternalUserInformationWith(ExternalLoginInfo externalLoginInfo, IConfiguration configuration)
+        public ExternalUserInformation GetExternalUserInformationWith(ExternalLoginInfo externalLoginInfo)
         {
             var externalUserInformation = new ExternalUserInformation();
 
@@ -18,12 +18,12 @@ namespace AllReady.Providers.ExternalUserInformationProviders
             {
                 CredentialStore = new SingleUserInMemoryCredentialStore
                 {
-                    ConsumerKey = configuration["Authentication:Twitter:ConsumerKey"],
-                    ConsumerSecret = configuration["Authentication:Twitter:ConsumerSecret"],
+                    ConsumerKey = ConsumerKey(),
+                    ConsumerSecret = ConsumerSecret(),
+                    OAuthToken = OAuthToken(),
+                    OAuthTokenSecret = OAuthSecret(),
                     UserID = ulong.Parse(userId),
-                    ScreenName = screenName,
-                    OAuthToken = configuration["Authentication:Twitter:OAuthToken"],
-                    OAuthTokenSecret = configuration["Authentication:Twitter:OAuthSecret"]
+                    ScreenName = screenName
                 }
             };
 
@@ -57,6 +57,26 @@ namespace AllReady.Providers.ExternalUserInformationProviders
             }
 
             return externalUserInformation;
+        }
+
+        protected string ConsumerKey()
+        {
+            return Startup.Configuration["Authentication:Twitter:ConsumerKey"];
+        }
+
+        protected string ConsumerSecret()
+        {
+            return Startup.Configuration["Authentication:Twitter:ConsumerSecret"];
+        }
+
+        protected string OAuthToken()
+        {
+            return Startup.Configuration["Authentication:Twitter:OAuthToken"];
+        }
+
+        protected string OAuthSecret()
+        {
+            return Startup.Configuration["Authentication:Twitter:OAuthSecret"];
         }
     }
 }

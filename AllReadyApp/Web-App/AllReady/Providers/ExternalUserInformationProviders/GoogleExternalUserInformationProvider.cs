@@ -1,12 +1,11 @@
 using System.Security.Claims;
 using Microsoft.AspNet.Identity;
-using Microsoft.Extensions.Configuration;
 
 namespace AllReady.Providers.ExternalUserInformationProviders
 {
     public class GoogleExternalUserInformationProvider : IProvideExternalUserInformation
     {
-        public ExternalUserInformation GetExternalUserInformationWith(ExternalLoginInfo externalLoginInfo, IConfiguration configuration)
+        public ExternalUserInformation GetExternalUserInformationWith(ExternalLoginInfo externalLoginInfo)
         {
             var externalUserInformation = new ExternalUserInformation
             {

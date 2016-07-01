@@ -299,11 +299,6 @@ namespace AllReady.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
         {
-            string firstName = null;
-            string lastName = null;
-            string email = null;
-            string name = null;
-
             var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
             if (externalLoginInfo == null)
             {
@@ -314,13 +309,14 @@ namespace AllReady.Controllers
             var externalLoginSignInAsyncResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
 
             var externalUserInformationProvider = _externalUserInformationProviderFactory.GetExternalUserInformationProviderFor(externalLoginInfo.LoginProvider);
-            var externalUserInformation = externalUserInformationProvider.GetExternalUserInformationWith(externalLoginInfo, _configuration);
-            email = externalUserInformation.Email;
-            firstName = externalUserInformation.FirstName;
-            lastName = externalUserInformation.LastName;
+            var externalUserInformation = externalUserInformationProvider.GetExternalUserInformationWith(externalLoginInfo);
+            var email = externalUserInformation.Email;
+            var firstName = externalUserInformation.FirstName;
+            var lastName = externalUserInformation.LastName;
 
             if (externalLoginSignInAsyncResult.Succeeded)
             {
+                //TODO: will getting email this way be a problems if the user already has a login and is logging in after registering with the system?
                 var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = email });
                 return RedirectToLocal(returnUrl, user);
             }
@@ -332,42 +328,16 @@ namespace AllReady.Controllers
             return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email, FirstName = firstName, LastName = lastName });
         }
 
-        //private static void RetrieveFirstAndLastNameFromExternalPrincipal(ExternalLoginInfo externalLoginInfo, out string firstName, out string lastName)
-        //{
-        //    firstName = string.Empty;
-        //    lastName = string.Empty;
-
-        //    if (externalLoginInfo.LoginProvider == "Google")
-        //    {
-        //        firstName = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.GivenName);
-        //        lastName = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Surname);
-        //    }
-
-        //    if (externalLoginInfo.LoginProvider == "Facebook" || externalLoginInfo.LoginProvider == "Microsoft")
-        //    {
-        //        var name = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
-        //        if (string.IsNullOrEmpty(name))
-        //            return;
-
-        //        var array = name.Split(' ');
-        //        if (array.Length < 2)
-        //            return;
-
-        //        firstName = array[0];
-        //        lastName = array[1];
-        //    }
-        //}
-
-    // POST: /Account/ExternalLoginConfirmation
-    [HttpPost]
-    [AllowAnonymous]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl = null)
-    {
-      if (_signInManager.IsSignedIn(User))
-      {
-        return RedirectToAction(nameof(ManageController.Index), "Manage");
-      }
+        // POST: /Account/ExternalLoginConfirmation
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl = null)
+        {
+            if (_signInManager.IsSignedIn(User))
+            {
+                return RedirectToAction(nameof(ManageController.Index), "Manage");
+            }
 
             if (ModelState.IsValid)
             {
