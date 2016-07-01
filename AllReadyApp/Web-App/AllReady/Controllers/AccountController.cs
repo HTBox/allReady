@@ -330,21 +330,18 @@ namespace AllReady.Controllers
 
                 //THIS WORKS
                 //https://linqtotwitter.codeplex.com/wikipage?title=Single%20User%20Authorization
-                //var searchResponse =
-                //await
-                //(from search in twitterCtx.Search
-                // where search.Type == SearchType.Search &&
-                //       search.Query == "\"LINQ to Twitter\""
-                // select search)
-                //.SingleOrDefaultAsync();
+                var searchResponse = await (from search in twitterCtx.Search
+                 where search.Type == SearchType.Search && search.Query == "\"LINQ to Twitter\""
+                 select search)
+                .SingleOrDefaultAsync();
 
                 //this fails
                 //var account = await (from acct in twitterCtx.Account select acct).SingleOrDefaultAsync();
 
-                var verifyResponse = await
-                    (from acct in twitterCtx.Account
-                     where (acct.Type == AccountType.VerifyCredentials) && (acct.IncludeEmail)
-                     select acct).SingleOrDefaultAsync();
+                //var verifyResponse = await
+                //    (from acct in twitterCtx.Account
+                //     where (acct.Type == AccountType.VerifyCredentials) && (acct.IncludeEmail)
+                //     select acct).SingleOrDefaultAsync();
 
                 //if (verifyResponse != null && verifyResponse.User != null)
                 //{
