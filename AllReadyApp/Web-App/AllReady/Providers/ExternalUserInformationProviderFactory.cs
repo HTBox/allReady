@@ -1,4 +1,5 @@
 ﻿using AllReady.Providers.ExternalUserInformationProviders;
+using Microsoft.Extensions.Configuration;
 
 namespace AllReady.Providers
 {
@@ -9,6 +10,13 @@ namespace AllReady.Providers
 
     public class ExternalUserInformationProviderFactory : IExternalUserInformationProviderFactory
     {
+        private readonly IConfiguration configuration;
+
+        public ExternalUserInformationProviderFactory(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
+
         public IProvideExternalUserInformation GetExternalUserInformationProviderFor(string loginProvider)
         {
             switch (loginProvider)
@@ -20,7 +28,7 @@ namespace AllReady.Providers
                 case "Microsoft":
                     return new MicosoftExternalUserInformationProvider();
                 case "Twitter":
-                    return new TwitterExternalUserInformationProvider();
+                    return new TwitterExternalUserInformationProvider { Configuration = configuration };
             }
             return null;
         }
