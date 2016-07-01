@@ -292,16 +292,21 @@ namespace AllReady.Controllers
       return new ChallengeResult(provider, properties);
     }
 
-    // GET: /Account/ExternalLoginCallback
-    [HttpGet]
-    [AllowAnonymous]
-    public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
-    {
-      var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
-      if (externalLoginInfo == null)
-      {
-        return RedirectToAction(nameof(Login));
-      }
+        // GET: /Account/ExternalLoginCallback
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
+        {
+            string firstName = null;
+            string lastName = null;
+            string email = null;
+            string name = null;
+
+            var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+            if (externalLoginInfo == null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
 
             // Sign in the user with this external login provider if the user already has a login.
             var externalLoginSignInAsyncResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
@@ -328,34 +333,38 @@ namespace AllReady.Controllers
 
                 var twitterCtx = new TwitterContext(authTwitter);
 
-                //THIS WORKS
-                //https://linqtotwitter.codeplex.com/wikipage?title=Single%20User%20Authorization
-                var searchResponse = await (from search in twitterCtx.Search
-                 where search.Type == SearchType.Search && search.Query == "\"LINQ to Twitter\""
-                 select search)
-                .SingleOrDefaultAsync();
+                var verifyResponse = await
+                    (from acct in twitterCtx.Account
+                        // ReSharper disable once RedundantBoolCompare
+                        where (acct.Type == AccountType.VerifyCredentials) && (acct.IncludeEmail == true) //VERY important you explicitly keep the "== true" part of comparison here. ReSharper will prompt you to remove this, and if it does, the query will not work
+                        select acct).SingleOrDefaultAsync();
 
-                //this fails
-                //var account = await (from acct in twitterCtx.Account select acct).SingleOrDefaultAsync();
+                if (verifyResponse != null && verifyResponse.User != null)
+                {
+                    var twitterUser = verifyResponse.User;
+                    if (twitterUser != null)
+                    {
+                        email = twitterUser.Email;
 
-                //var verifyResponse = await
-                //    (from acct in twitterCtx.Account
-                //     where (acct.Type == AccountType.VerifyCredentials) && (acct.IncludeEmail)
-                //     select acct).SingleOrDefaultAsync();
-
-                //if (verifyResponse != null && verifyResponse.User != null)
-                //{
-                //    User twitterUser = verifyResponse.User;
-                //    //assign email to existing authentication object
-                //    loginInfo.Email = twitterUser.Email;
-                //}
+                        if (!string.IsNullOrEmpty(twitterUser.Name))
+                        {
+                            var array = twitterUser.Name.Split(' ');
+                            if (array.Length > 1)
+                            {
+                                firstName = array[0];
+                                lastName = array[1];
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                email = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
+                RetrieveFirstAndLastNameFromExternalPrincipal(externalLoginInfo, out firstName, out lastName);
             }
 
-            var email = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
-
-            string firstName;
-            string lastName;
-            RetrieveFirstAndLastNameFromExternalPrincipal(externalLoginInfo, out firstName, out lastName);
+            //RetrieveFirstAndLastNameFromExternalPrincipal(externalLoginInfo, out firstName, out lastName);
             
             if (externalLoginSignInAsyncResult.Succeeded)
             {
@@ -367,8 +376,34 @@ namespace AllReady.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             ViewData["LoginProvider"] = externalLoginInfo.LoginProvider;
 
-      return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email, FirstName = firstName, LastName = lastName });
-    }
+            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email, FirstName = firstName, LastName = lastName });
+        }
+
+        private static void RetrieveFirstAndLastNameFromExternalPrincipal(ExternalLoginInfo externalLoginInfo, out string firstName, out string lastName)
+        {
+            firstName = string.Empty;
+            lastName = string.Empty;
+
+            if (externalLoginInfo.LoginProvider == "Google")
+            {
+                firstName = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.GivenName);
+                lastName = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Surname);
+            }
+
+            if (externalLoginInfo.LoginProvider == "Facebook" || externalLoginInfo.LoginProvider == "Microsoft")
+            {
+                var name = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
+                if (string.IsNullOrEmpty(name))
+                    return;
+
+                var array = name.Split(' ');
+                if (array.Length < 2)
+                    return;
+
+                firstName = array[0];
+                lastName = array[1];
+            }
+        }
 
     // POST: /Account/ExternalLoginConfirmation
     [HttpPost]
