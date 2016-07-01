@@ -1,4 +1,6 @@
-﻿namespace AllReady.Controllers
+﻿using AllReady.Providers.ExternalUserInformationProviders;
+
+namespace AllReady.Providers
 {
     public interface IExternalUserInformationProviderFactory
     {
@@ -7,7 +9,7 @@
 
     public class ExternalUserInformationProviderFactory : IExternalUserInformationProviderFactory
     {
-        //make string loginProvider an enum LoginProvier
+        //TODO: make string loginProvider an enum LoginProvier
         public IProvideExternalUserInformation GetExternalUserInformationProviderFor(string loginProvider)
         {
             switch (loginProvider)

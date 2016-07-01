@@ -1,13 +1,12 @@
-﻿using System.Linq;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Features.Login;
 using AllReady.Features.Manage;
 using AllReady.Models;
+using AllReady.Providers;
 using AllReady.Security;
 using AllReady.ViewModels.Account;
-using LinqToTwitter;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
@@ -27,13 +26,15 @@ namespace AllReady.Controllers
         private readonly IOptions<GeneralSettings> _generalSettings;
         private readonly IMediator _mediator;
         private readonly IConfiguration _configuration;
+        private readonly IExternalUserInformationProviderFactory _externalUserInformationProviderFactory;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IOptions<GeneralSettings> generalSettings,
             IMediator mediator,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IExternalUserInformationProviderFactory externalUserInformationProviderFactory
             )
         {
             _userManager = userManager;
@@ -41,6 +42,7 @@ namespace AllReady.Controllers
             _generalSettings = generalSettings;
             _mediator = mediator;
             _configuration = configuration;
+            _externalUserInformationProviderFactory = externalUserInformationProviderFactory;
         }
 
     // GET: /Account/Login
@@ -311,63 +313,7 @@ namespace AllReady.Controllers
             // Sign in the user with this external login provider if the user already has a login.
             var externalLoginSignInAsyncResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
 
-            //if (externalLoginInfo.LoginProvider == "Twitter")
-            //{
-            //    var userId = externalLoginInfo.ExternalPrincipal.FindFirstValue("urn:twitter:userid");
-            //    var screenName = externalLoginInfo.ExternalPrincipal.FindFirstValue("urn:twitter:screenname");
-            //    //OR this, not too sure if using claims is the "preferred" way
-            //    //var screenName = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
-
-            //    var authTwitter = new SingleUserAuthorizer
-            //    {
-            //        CredentialStore = new SingleUserInMemoryCredentialStore
-            //        {
-            //            ConsumerKey = _configuration["Authentication:Twitter:ConsumerKey"],
-            //            ConsumerSecret = _configuration["Authentication:Twitter:ConsumerSecret"],
-            //            UserID = ulong.Parse(userId),
-            //            ScreenName = screenName,
-            //            OAuthToken = _configuration["Authentication:Twitter:OAuthToken"],
-            //            OAuthTokenSecret = _configuration["Authentication:Twitter:OAuthSecret"]
-            //        }
-            //    };
-            //    await authTwitter.AuthorizeAsync();
-
-            //    var twitterCtx = new TwitterContext(authTwitter);
-
-            //    var verifyResponse = await
-            //        (from acct in twitterCtx.Account
-            //             // ReSharper disable once RedundantBoolCompare
-            //         where (acct.Type == AccountType.VerifyCredentials) && (acct.IncludeEmail == true) //VERY important you explicitly keep the "== true" part of comparison here. ReSharper will prompt you to remove this, and if it does, the query will not work
-            //         select acct).SingleOrDefaultAsync();
-
-            //    if (verifyResponse != null && verifyResponse.User != null)
-            //    {
-            //        var twitterUser = verifyResponse.User;
-            //        if (twitterUser != null)
-            //        {
-            //            email = twitterUser.Email;
-
-            //            if (!string.IsNullOrEmpty(twitterUser.Name))
-            //            {
-            //                var array = twitterUser.Name.Split(' ');
-            //                if (array.Length > 1)
-            //                {
-            //                    firstName = array[0];
-            //                    lastName = array[1];
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    email = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
-            //    RetrieveFirstAndLastNameFromExternalPrincipal(externalLoginInfo, out firstName, out lastName);
-            //}
-
-            //only Facebook and Google so far
-            var factory = new ExternalUserInformationProviderFactory();
-            var externalUserInformationProvider = factory.GetExternalUserInformationProviderFor(externalLoginInfo.LoginProvider);
+            var externalUserInformationProvider = _externalUserInformationProviderFactory.GetExternalUserInformationProviderFor(externalLoginInfo.LoginProvider);
             var externalUserInformation = externalUserInformationProvider.GetExternalUserInformationWith(externalLoginInfo, _configuration);
             email = externalUserInformation.Email;
             firstName = externalUserInformation.FirstName;
@@ -386,31 +332,31 @@ namespace AllReady.Controllers
             return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email, FirstName = firstName, LastName = lastName });
         }
 
-        private static void RetrieveFirstAndLastNameFromExternalPrincipal(ExternalLoginInfo externalLoginInfo, out string firstName, out string lastName)
-        {
-            firstName = string.Empty;
-            lastName = string.Empty;
+        //private static void RetrieveFirstAndLastNameFromExternalPrincipal(ExternalLoginInfo externalLoginInfo, out string firstName, out string lastName)
+        //{
+        //    firstName = string.Empty;
+        //    lastName = string.Empty;
 
-            if (externalLoginInfo.LoginProvider == "Google")
-            {
-                firstName = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.GivenName);
-                lastName = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Surname);
-            }
+        //    if (externalLoginInfo.LoginProvider == "Google")
+        //    {
+        //        firstName = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.GivenName);
+        //        lastName = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Surname);
+        //    }
 
-            if (externalLoginInfo.LoginProvider == "Facebook" || externalLoginInfo.LoginProvider == "Microsoft")
-            {
-                var name = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
-                if (string.IsNullOrEmpty(name))
-                    return;
+        //    if (externalLoginInfo.LoginProvider == "Facebook" || externalLoginInfo.LoginProvider == "Microsoft")
+        //    {
+        //        var name = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
+        //        if (string.IsNullOrEmpty(name))
+        //            return;
 
-                var array = name.Split(' ');
-                if (array.Length < 2)
-                    return;
+        //        var array = name.Split(' ');
+        //        if (array.Length < 2)
+        //            return;
 
-                firstName = array[0];
-                lastName = array[1];
-            }
-        }
+        //        firstName = array[0];
+        //        lastName = array[1];
+        //    }
+        //}
 
     // POST: /Account/ExternalLoginConfirmation
     [HttpPost]

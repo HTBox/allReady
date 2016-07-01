@@ -5,6 +5,7 @@ using AllReady.Areas.Admin.Models.Validators;
 using AllReady.Controllers;
 using AllReady.DataAccess;
 using AllReady.Models;
+using AllReady.Providers;
 using AllReady.Security;
 using AllReady.Services;
 using Autofac;
@@ -115,21 +116,22 @@ namespace AllReady
             return container.Resolve<IServiceProvider>();
         }
 
-        private IContainer CreateIoCContainer(IServiceCollection services)
-        {
-            // todo: move these to a proper autofac module
-            // Register application services.
-            services.AddSingleton((x) => Configuration);
-            services.AddTransient<IEmailSender, AuthMessageSender>();
-            services.AddTransient<ISmsSender, AuthMessageSender>();
-            services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
-            services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
-            services.AddTransient<IValidateEventDetailModels, EventEditModelValidator>();
-            services.AddTransient<ITaskSummaryModelValidator, TaskSummaryModelValidator>();
-            services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
-            services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
-            services.AddSingleton<IImageService, ImageService>();
-            services.AddSingleton<IGeocoder, GoogleGeocoder>();
+    private IContainer CreateIoCContainer(IServiceCollection services)
+    {
+      // todo: move these to a proper autofac module
+      // Register application services.
+      services.AddSingleton((x) => Configuration);
+      services.AddTransient<IEmailSender, AuthMessageSender>();
+      services.AddTransient<ISmsSender, AuthMessageSender>();
+      services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
+      services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
+      services.AddTransient<IValidateEventDetailModels, EventEditModelValidator>();
+      services.AddTransient<ITaskSummaryModelValidator, TaskSummaryModelValidator>();
+      services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
+      services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
+      services.AddSingleton<IImageService, ImageService>();
+            services.AddSingleton<IExternalUserInformationProviderFactory, ExternalUserInformationProviderFactory>();
+            //services.AddSingleton<GeoService>();
             services.AddTransient<SampleDataGenerator>();
 
             if (Configuration["Data:Storage:EnableAzureQueueService"] == "true")
