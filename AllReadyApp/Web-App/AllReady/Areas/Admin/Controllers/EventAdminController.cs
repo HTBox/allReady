@@ -288,32 +288,6 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MessageAllVolunteers(MessageEventVolunteersModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return HttpBadRequest(ModelState);
-            }
-            
-            //TODO: Query only for the organization Id rather than the whole event detail
-            var campaignEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = model.EventId });
-            if (campaignEvent == null)
-            {
-                return HttpNotFound();
-            }
-
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
-            {
-                return HttpUnauthorized();
-            }
-
-            await _mediator.SendAsync(new MessageEventVolunteersCommand { Model = model });
-
-            return Ok();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostEventFile(int id, IFormFile file)
         {
             var campaignEvent = GetEventBy(id);

@@ -127,22 +127,6 @@ namespace AllReady.Controllers
             return new {Status = "success"};
         }
 
-        [HttpDelete("{id}/signup")]
-        [Authorize]
-        [Obsolete("", true)]
-        public async Task<IActionResult> UnregisterEvent(int id)
-        {
-            var eventSignup = _mediator.Send(new EventSignupByEventIdAndUserIdQuery { EventId = id, UserId = User.GetUserId() });
-            if (eventSignup == null)
-            {
-                return HttpNotFound();
-            }
-
-            await _mediator.SendAsync(new UnregisterEvent { EventSignupId = eventSignup.Id, UserId = eventSignup.User.Id});
-
-            return new HttpStatusCodeResult((int)HttpStatusCode.OK);
-        }
-
         private Event GetEventBy(int eventId) => _mediator.Send(new EventByIdQuery { EventId = eventId });
     }
 }

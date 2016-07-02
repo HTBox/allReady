@@ -71,7 +71,6 @@ namespace AllReady.ViewModels.Event
         public LocationViewModel Location { get; set; }
         public List<TaskViewModel> Tasks { get; set; } = new List<TaskViewModel>();
         public List<TaskViewModel> UserTasks { get; set; } = new List<TaskViewModel>();
-        public bool IsUserVolunteeredForEvent { get; set; }
         public string UserId { get; set; }
         public List<SkillViewModel> RequiredSkills { get; set; }
         public List<SkillViewModel> UserSkills { get; set; }
@@ -124,7 +123,6 @@ namespace AllReady.ViewModels.Event
                 var appUser = dataAccess.GetUser(userId);
                 viewModel.UserId = userId;
                 viewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
-                viewModel.IsUserVolunteeredForEvent = dataAccess.GetEventSignups(viewModel.Id, userId).Any();
                 var assignedTasks = campaignEvent.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
                 viewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
                 var unassignedTasks = campaignEvent.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != userId)).ToList();

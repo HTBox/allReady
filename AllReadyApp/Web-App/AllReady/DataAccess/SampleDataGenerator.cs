@@ -55,7 +55,6 @@ namespace AllReady.Models
             List<Campaign> campaigns = new List<Campaign>();
             List<AllReadyTask> tasks = new List<AllReadyTask>();
             List<Resource> resources = new List<Resource>();
-            List<EventSignup> eventSignups = new List<EventSignup>();
             List<Contact> contacts = GetContacts();
             var skills = new List<Skill>();
 
@@ -391,12 +390,6 @@ namespace AllReady.Models
             users.Add(user3);
             #endregion
 
-            #region ActvitySignups
-            eventSignups.Add(new EventSignup { Event = madrona, User = user1, SignupDateTime = DateTime.UtcNow });
-            eventSignups.Add(new EventSignup { Event = madrona, User = user2, SignupDateTime = DateTime.UtcNow });
-            eventSignups.Add(new EventSignup { Event = madrona, User = user3, SignupDateTime = DateTime.UtcNow });
-            #endregion
-
             #region TaskSignups
             int i = 0;
             foreach (var task in tasks.Where(t => t.Event == madrona))
@@ -416,7 +409,6 @@ namespace AllReady.Models
             #endregion
 
             #region Wrap Up DB  
-            _context.EventSignup.AddRange(eventSignups);
             _context.SaveChanges();
             #endregion
 

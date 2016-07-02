@@ -54,11 +54,6 @@ namespace AllReady.UnitTest.Features.Notifications
             context.Organizations.Add(htb);
             context.Events.Add(queenAnne);
 
-            var eventSignups = new List<EventSignup>();
-            eventSignups.Add(new EventSignup { Event = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow });
-            eventSignups.Add(new EventSignup { Event = queenAnne, User = user2, SignupDateTime = DateTime.UtcNow });
-
-            context.EventSignup.AddRange(eventSignups);
             context.SaveChanges();
         }
 

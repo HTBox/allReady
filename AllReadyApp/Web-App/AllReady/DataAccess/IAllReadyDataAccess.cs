@@ -11,8 +11,6 @@ namespace AllReady.Models
         IEnumerable<Event> Events { get; }
         Event GetEvent(int eventId);
         int GetManagingOrganizationId(int eventId);
-        IEnumerable<EventSignup> GetEventSignups(string userId);
-        IEnumerable<EventSignup> GetEventSignups(int eventId, string userId);
         Task UpdateEvent(Event value);
         IEnumerable<Event> EventsByPostalCode(string postalCode, int distance);
         IEnumerable<Event> EventsByGeography(double latitude, double longitude, int distance);
@@ -34,16 +32,6 @@ namespace AllReady.Models
         ApplicationUser GetUser(string userId);
 
         Task UpdateUser(ApplicationUser value);
-
-        #endregion
-
-        #region EventSignup CRUD
-
-        IEnumerable<EventSignup> EventSignups { get; }
-
-        EventSignup GetEventSignup(int eventId, string userId);
-
-        Task AddEventSignupAsync(EventSignup userSignup);
 
         #endregion
 

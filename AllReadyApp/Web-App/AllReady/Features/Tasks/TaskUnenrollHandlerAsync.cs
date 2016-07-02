@@ -30,19 +30,7 @@ namespace AllReady.Features.Tasks
                 return new TaskUnenrollResult { Status = "failure" };
             }
 
-            var taskSignUps = await _context.TaskSignups.Where(a => a.User.Id == message.UserId && a.Task.Event.Id == taskSignUp.Task.Event.Id).CountAsync();
-
             _context.TaskSignups.Remove(taskSignUp);
-
-            if (taskSignUps == 1)
-            {
-                var eventSignup = await _context.EventSignup.SingleOrDefaultAsync(u => u.User.Id == message.UserId && u.Event.Id == taskSignUp.Task.Event.Id);
-
-                if (eventSignup != null)
-                {
-                    _context.EventSignup.Remove(eventSignup);
-                }
-            }
 
             await _context.SaveChangesAsync();
 
