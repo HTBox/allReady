@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = "API Key Generated";
+}
+<h2>Managing User API Access Key</h2>
+
+<h2>You have generated a new API Key</h2>
+
+<pre>
+    @ViewBag.ApiToken
+</pre>
+
+<h2>Warning</h2>
+
+<p>
+    This is your only opportunity to note the key, and you will not be able to reveal the key 
+    again. If you lose the key, you'll need to regenerate the API key used by the.
+</p>
+
+<p>
+    <a asp-controller="Site" asp-action="Index" class="btn btn-default">Back to Admin home</a>
+</p>
+
+

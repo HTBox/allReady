@@ -20,16 +20,14 @@ using System.Reflection;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
-    public class CampaignAdminControllerTests
+    public class CampaignAdminControllerTests 
     {
-
         [Fact]
         public void IndexSendsCampaignListQueryWithCorrectDataWhenUserIsOrgAdmin()
         {
             int OrganizationId = 99;
             var mockMediator = new Mock<IMediator>();
-            var mockImageService = new Mock<IImageService>();
-            CampaignController controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            CampaignController controller = new CampaignController(mockMediator.Object, null);
             List<Claim> claims = new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
@@ -46,8 +44,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void IndexSendsCampaignListQueryWithCorrectDataWhenUserIsNotOrgAdmin()
         {
             var mockMediator = new Mock<IMediator>();
-            var mockImageService = new Mock<IImageService>();
-            CampaignController controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            CampaignController controller = new CampaignController(mockMediator.Object, null);
             List<Claim> claims = new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
@@ -77,8 +74,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     return ret;
                 }
             );
-            var mockImageService = new Mock<IImageService>();
-            CampaignController controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            CampaignController controller = new CampaignController(mockMediator.Object, null);
 
             List<Claim> claims = new List<Claim>
             {
@@ -110,8 +106,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     return ret;
                 }
             );
-            var mockImageService = new Mock<IImageService>();
-            CampaignController controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            CampaignController controller = new CampaignController(mockMediator.Object, null);
 
             List<Claim> claims = new List<Claim>
             {
@@ -197,8 +192,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CreateReturnsCorrectViewWithCorrectViewModel()
         {
             var mockMediator = new Mock<IMediator>();
-            var mockImageService = new Mock<IImageService>();
-            CampaignController controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            CampaignController controller = new CampaignController(mockMediator.Object, null);
             ViewResult view = (ViewResult) controller.Create();
             CampaignSummaryModel viewModel = (CampaignSummaryModel)view.ViewData.Model;
             Assert.Equal(view.ViewName, "Edit");
@@ -369,7 +363,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             var mockImageService = new Mock<IImageService>();
-            mockImageService.Setup(mock => mock.UploadCampaignImageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<IFormFile>())).Returns(() => Task.FromResult("")).Verifiable();
 
             var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
             sut.SetClaims(new List<Claim>
@@ -606,9 +599,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignDetailQuery>())).ReturnsAsync(null).Verifiable();
 
-            var mockImageService = new Mock<IImageService>();
-
-            controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            controller = new CampaignController(mockMediator.Object, null);
 
             return mockMediator;
         }
@@ -618,8 +609,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(null).Verifiable();
 
-            var mockImageService = new Mock<IImageService>();
-            controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            controller = new CampaignController(mockMediator.Object, null);
             return mockMediator;
         }
 
@@ -628,9 +618,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignDetailQuery>())).ReturnsAsync(new CampaignDetailModel { OrganizationId = organizationId }).Verifiable();
 
-            var mockImageService = new Mock<IImageService>();
-
-            var controller = new CampaignController(mockMediator.Object, mockImageService.Object);
+            var controller = new CampaignController(mockMediator.Object, null);
             controller.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, userType),

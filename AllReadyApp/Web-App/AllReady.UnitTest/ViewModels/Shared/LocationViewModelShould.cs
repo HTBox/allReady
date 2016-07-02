@@ -1,7 +1,7 @@
 ﻿using AllReady.ViewModels.Shared;
 using Xunit;
 
-namespace AllReady.UnitTest.ViewModels
+namespace AllReady.UnitTest.ViewModels.Shared
 {
     public class LocationViewModelShould
     {
@@ -9,10 +9,7 @@ namespace AllReady.UnitTest.ViewModels
         public void ReturnCityAndStateWhenBothArePresent()
         {
             // arrange
-            var model = new LocationViewModel{
-                City = "HappyTown",
-                State = "Utopia"
-            };
+            var model = new LocationViewModel { City = "HappyTown", State = "Utopia" };
 
             // assert
             Assert.Equal("HappyTown, Utopia", model.Summary);

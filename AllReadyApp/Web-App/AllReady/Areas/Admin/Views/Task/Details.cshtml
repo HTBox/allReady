@@ -21,14 +21,10 @@
         <h2>@Model.Name <a asp-controller="Task" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-controller="Task" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
         <p>@Model.Description</p>
         <p>
-            <time value="Model.StartDateTime.Value"></time> - <time value="Model.EndDateTime.Value"></time>
-            @if (Model.EndDateTime.HasValue || Model.StartDateTime.HasValue)
-            {
+            <time value="Model.StartDateTime"></time> - <time value="Model.EndDateTime"></time>
                 <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
-            }
         </p>
-        @if (!string.IsNullOrEmpty(userTimeZoneId) && Model.TimeZoneId != userTimeZoneId
-                    && (Model.EndDateTime.HasValue || Model.StartDateTime.HasValue))
+        @if (!string.IsNullOrEmpty(userTimeZoneId) && Model.TimeZoneId != userTimeZoneId)
         {
             <p>
                 <time value="Model.StartDateTime" target-time-zone-id="@userTimeZoneId"></time> - <time value="Model.EndDateTime" target-time-zone-id="@userTimeZoneId"></time>

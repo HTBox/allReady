@@ -7,13 +7,6 @@ namespace AllReady.ViewModels.Home
     {
         public List<CampaignViewModel> Campaigns { get; set; }
         public CampaignSummaryViewModel FeaturedCampaign { get; set; }
-
-        public bool HasFeaturedCampaign
-        {
-            get
-            {
-                return FeaturedCampaign != null;               
-            }
-        }
+        public bool HasFeaturedCampaign => FeaturedCampaign != null;
     }
 }
