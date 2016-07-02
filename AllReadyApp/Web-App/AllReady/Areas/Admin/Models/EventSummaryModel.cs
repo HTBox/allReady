@@ -44,9 +44,5 @@ namespace AllReady.Areas.Admin.Models
         public DateTimeOffset StartDateTime { get; set; }
         [Display(Name = "End Date")]
         public DateTimeOffset EndDateTime { get; set; }
-
-        [Display(Name = "Allow Wait List")]
-        public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
-        public int NumberOfUsersSignedUp => UsersSignedUp.Count;
     }
 }

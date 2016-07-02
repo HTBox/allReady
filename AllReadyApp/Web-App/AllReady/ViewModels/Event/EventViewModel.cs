@@ -72,7 +72,6 @@ namespace AllReady.ViewModels.Event
         public List<TaskViewModel> Tasks { get; set; } = new List<TaskViewModel>();
         public List<TaskViewModel> UserTasks { get; set; } = new List<TaskViewModel>();
         public bool IsUserVolunteeredForEvent { get; set; }
-        public List<ApplicationUser> Volunteers { get; set; }
         public string UserId { get; set; }
         public List<SkillViewModel> RequiredSkills { get; set; }
         public List<SkillViewModel> UserSkills { get; set; }
@@ -80,7 +79,6 @@ namespace AllReady.ViewModels.Event
         public EventSignupViewModel SignupModel { get; set; }
         public bool IsClosed { get; set; }
         public bool HasPrivacyPolicy { get; set; }
-        public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
 
         public string Headline { get; set; }
         public bool HasHeadline => !string.IsNullOrEmpty(Headline);

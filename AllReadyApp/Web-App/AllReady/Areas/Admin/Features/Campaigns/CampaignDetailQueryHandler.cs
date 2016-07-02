@@ -62,7 +62,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                         OrganizationId = campaign.ManagingOrganizationId,
                         OrganizationName = campaign.ManagingOrganization.Name,
                         ImageUrl = a.ImageUrl,
-                        UsersSignedUp = a.UsersSignedUp,
                     })
                 };
 

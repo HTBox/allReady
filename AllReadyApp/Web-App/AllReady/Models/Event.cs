@@ -32,8 +32,6 @@ namespace AllReady.Models
 
         public List<AllReadyTask> Tasks { get; set; } = new List<AllReadyTask>();
 
-        public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
-
         public ApplicationUser Organizer { get; set; }
 
         [Display(Name = "Image")]

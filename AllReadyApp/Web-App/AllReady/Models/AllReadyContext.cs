@@ -140,9 +140,6 @@ namespace AllReady.Models
             builder.HasMany(a => a.Tasks)
                 .WithOne(t => t.Event)
                 .OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(a => a.UsersSignedUp)
-                .WithOne(u => u.Event)
-                .OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(a => a.RequiredSkills).WithOne(acsk => acsk.Event);
             builder.Property(p => p.Name).IsRequired();
             builder.HasMany(x => x.Itineraries).WithOne(x => x.Event).HasForeignKey(x => x.EventId).IsRequired();

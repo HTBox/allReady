@@ -34,7 +34,6 @@ namespace AllReady.Features.Notifications
                     Volunteer = volunteer,
                     EventName = campaignEvent.Name,
                     Description = campaignEvent.Description,
-                    UsersSignedUp = campaignEvent.UsersSignedUp,
                     Tasks = campaignEvent.Tasks.Select(t => new TaskSummaryModel
                     {
                         Id = t.Id,
@@ -66,7 +65,6 @@ namespace AllReady.Features.Notifications
                 .Include(a => a.Campaign)
                 .Include(a => a.Campaign.CampaignContacts).ThenInclude(c => c.Contact)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(av => av.User)
-                .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
                 .SingleOrDefaultAsync(a => a.Id == message.EventId).ConfigureAwait(false);
         }
     }

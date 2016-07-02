@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AllReady.Models
@@ -43,8 +44,6 @@ namespace AllReady.Models
         EventSignup GetEventSignup(int eventId, string userId);
 
         Task AddEventSignupAsync(EventSignup userSignup);
-
-        Task DeleteEventAndTaskSignupsAsync(int eventSignupId);
 
         #endregion
 

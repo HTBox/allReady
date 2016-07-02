@@ -286,27 +286,6 @@ namespace AllReady.Areas.Admin.Controllers
             return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = "Admin", id = campaignEvent.CampaignId });
         }
 
-        [HttpGet]
-        public IActionResult Assign(int id)
-        {
-            var campaignEvent = GetEventBy(id);
-            if (campaignEvent == null)
-            {
-                return HttpNotFound();
-            }
-
-            if (!User.IsOrganizationAdmin(campaignEvent.Campaign.ManagingOrganizationId))
-            {
-                return HttpUnauthorized();
-            }
-
-            var model = new EventViewModel(campaignEvent);
-            model.Tasks = model.Tasks.OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList();
-            model.Volunteers = campaignEvent.UsersSignedUp.Select(u => u.User).ToList();
-
-            return View(model);
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MessageAllVolunteers(MessageEventVolunteersModel model)

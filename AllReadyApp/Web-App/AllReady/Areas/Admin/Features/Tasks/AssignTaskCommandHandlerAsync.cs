@@ -48,33 +48,12 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
                         task.AssignedVolunteers.Add(taskSignup);
                         taskSignups.Add(taskSignup);
-
-                        // If the user has not already been signed up for the event, sign them up
-                        if (campaignEvent.UsersSignedUp.All(acsu => acsu.User.Id != userId))
-                        {
-                            campaignEvent.UsersSignedUp.Add(new EventSignup
-                            {
-                                Event = campaignEvent,
-                                User = user,
-                                PreferredEmail = user.Email,
-                                PreferredPhoneNumber = user.PhoneNumber,
-                                AdditionalInfo = string.Empty,
-                                SignupDateTime = DateTime.UtcNow
-                            });
-                        }
                     }
                 }
 
                 //Remove task signups where the the user id is not included in the current list of assigned user id's
                 var taskSignupsToRemove = task.AssignedVolunteers.Where(taskSignup => message.UserIds.All(uid => uid != taskSignup.User.Id)).ToList();
                 taskSignupsToRemove.ForEach(taskSignup => task.AssignedVolunteers.Remove(taskSignup));
-
-                    // delete the event signups where the user is no longer signed up for any tasks
-                    (from taskSignup in taskSignupsToRemove
-                        where !campaignEvent.IsUserInAnyTask(taskSignup.User.Id)
-                        select campaignEvent.UsersSignedUp.FirstOrDefault(u => u.User.Id == taskSignup.User.Id))
-                        .ToList()
-                        .ForEach(signup => campaignEvent.UsersSignedUp.Remove(signup));
             }
             await _context.SaveChangesAsync();
 
@@ -105,7 +84,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
         private AllReadyTask GetTask(AssignTaskCommandAsync message)
         {
             var task = _context.Tasks
-                .Include(t => t.Event).ThenInclude(a => a.UsersSignedUp)
+                .Include(t => t.Event)
                 .SingleOrDefault(c => c.Id == message.TaskId);
             return task;
         }

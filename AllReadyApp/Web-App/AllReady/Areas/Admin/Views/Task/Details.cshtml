@@ -66,59 +66,26 @@
                 @if (Model.AssignedVolunteers.Any())
                 {
                     <button type="button" class="btn btn-primary" disabled="@(!Model.AssignedVolunteers.Any())" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button>
-                        <table class="table">
+                    <table class="table">
+                        <tr>
+                            <th>
+                                Volunteer Name
+                            </th>
+                        </tr>
+                        @foreach (var volunteer in Model.AssignedVolunteers)
+                        {
                             <tr>
-                                <th>
-                                    Volunteer Name
-                                </th>
-                            </tr>
-                            @foreach (var volunteer in Model.AssignedVolunteers)
-                            {
-                                <tr>
-                                    <td>@volunteer.UserName</td>
+                                <td>@volunteer.UserName</td>
 
-                                </tr>
-                            }
-                        </table>
+                            </tr>
+                        }
+                    </table>
                 }
                 else
                 {
                     <div>No volunteers yet.</div>
                 }
             </div>
-
-            <div id="All" class="tab-pane fade">
-                <h3>All Volunteers</h3>
-                @if (Model.AllVolunteers.Count > 0)
-                {
-                    <form asp-controller="Task" asp-action="Assign" asp-route-area="Admin" method="post">
-
-                        <input type="hidden" asp-for="Id" />
-                        <table class="table">
-                            <tr>
-                                <th>&nbsp;</th>
-                                <th>
-                                    Volunteer Name
-                                </th>
-                            </tr>
-                            @foreach (var volunteer in Model.AllVolunteers)
-                            {
-                                <tr>
-                                    <td><input type="checkbox" value="@volunteer.UserId" @(volunteer.HasVolunteered ? "checked" : "") name="userIds" /></td>
-                                    <td>@volunteer.UserName</td>
-                                </tr>
-                            }
-                        </table>
-                        <input type="submit" value="Save" class="btn btn-primary" />
-
-                    </form>
-                }
-                else
-                {
-                    < text > No volunteers yet. </ text >
-                }
-            </div>
-
         </div>
 
     </div>

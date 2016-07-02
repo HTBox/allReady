@@ -16,7 +16,6 @@ namespace AllReady.Models
                                 .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
                                 .Include(a => a.Tasks)
                                 .Include(a => a.RequiredSkills)
-                                .Include(a => a.UsersSignedUp)
                                 .OrderBy(a => a.EndDateTime)
                                 .ToList();
             }
@@ -51,7 +50,6 @@ namespace AllReady.Models
                 .Include(a => a.RequiredSkills).ThenInclude(rs => rs.Skill).ThenInclude(s => s.ParentSkill)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(tu => tu.User)
                 .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
-                .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
                 .SingleOrDefault(a => a.Id == eventId);
         }
 

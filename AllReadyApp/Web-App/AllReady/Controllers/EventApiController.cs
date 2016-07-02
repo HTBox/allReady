@@ -105,27 +105,6 @@ namespace AllReady.Controllers
             return View("NoUserCheckin", campaignEvent);
         }
 
-        [HttpPut("{id}/checkin")]
-        [Authorize] 
-        public async Task<ActionResult> PutCheckin(int id)
-        {
-            var campaignEvent = GetEventBy(id);
-            if (campaignEvent == null)
-            {
-                return HttpNotFound();
-            }
-            
-            var userSignup = campaignEvent.UsersSignedUp.FirstOrDefault(u => u.User.Id == User.GetUserId());
-            if (userSignup != null && userSignup.CheckinDateTime == null)
-            {
-                userSignup.CheckinDateTime = DateTimeUtcNow.Invoke();
-                await _mediator.SendAsync(new AddEventSignupCommandAsync { EventSignup = userSignup });
-                return Json(new { Event = new { campaignEvent.Name, campaignEvent.Description }});
-            }
-
-            return Json(new { NeedsSignup = true, Event = new { campaignEvent.Name, campaignEvent.Description }});
-        }
-
         [ValidateAntiForgeryToken]
         [HttpPost("signup")]
         [Authorize]
@@ -150,6 +129,7 @@ namespace AllReady.Controllers
 
         [HttpDelete("{id}/signup")]
         [Authorize]
+        [Obsolete("", true)]
         public async Task<IActionResult> UnregisterEvent(int id)
         {
             var eventSignup = _mediator.Send(new EventSignupByEventIdAndUserIdQuery { EventId = id, UserId = User.GetUserId() });
