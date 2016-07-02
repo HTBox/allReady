@@ -99,7 +99,7 @@ namespace AllReady.UnitTest.ViewModels.Campaign
         [Fact]
         public void SetEventsToCampaignsEventsProjectedToEventViewModel_WhenCampaignsEventsIsNotNull()
         {
-            var campaign = new Models.Campaign { Events = new List<Event> { new Event { Id = 1} }};
+            var campaign = new Models.Campaign { Events = new List<Models.Event> { new Models.Event { Id = 1} }};
             var eventViewModels = campaign.Events.ToViewModel();
             var sut = new CampaignViewModel(campaign);
             Assert.Equal(sut.Events.First().Id, eventViewModels.First().Id);
