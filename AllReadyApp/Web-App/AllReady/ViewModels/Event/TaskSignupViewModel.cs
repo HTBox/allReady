@@ -29,13 +29,11 @@ namespace AllReady.ViewModels.Event
                 TaskName = taskSignup.Task.Name;
             }
 
-            if(taskSignup.User != null)
+            if (taskSignup.User != null)
             {
                 UserId = taskSignup.User.Id;
                 UserName = taskSignup.User.UserName;
             }
-
-
         }
     }
 }
