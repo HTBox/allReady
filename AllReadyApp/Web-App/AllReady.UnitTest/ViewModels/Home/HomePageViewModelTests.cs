@@ -1,12 +1,7 @@
-﻿using AllReady.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AllReady.ViewModels.Home;
+﻿using AllReady.ViewModels.Home;
 using Xunit;
 
-namespace AllReady.UnitTest.ViewModels
+namespace AllReady.UnitTest.ViewModels.Home
 {
     public class HomePageViewModelTests
     {
@@ -14,14 +9,13 @@ namespace AllReady.UnitTest.ViewModels
         public void HasFeaturedCampaignShouldReturnFalseIfViewModelHasNoFeaturedCampaign()
         {
             var sut = new HomePageViewModel();
-
             Assert.False(sut.HasFeaturedCampaign);
         }
 
         [Fact]
         public void HasFeaturedCampaignShouldReturnTrueIfViewMModelHasAFeaturedCampaign()
         {
-            var sut = new HomePageViewModel()
+            var sut = new HomePageViewModel
             {
                 FeaturedCampaign = new CampaignSummaryViewModel { Id = 1, Title = "Something" }
             };

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AllReady.Migrations;
 using AllReady.Models;
 using AllReady.ViewModels.Event;
 

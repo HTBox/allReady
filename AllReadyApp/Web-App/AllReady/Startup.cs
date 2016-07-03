@@ -21,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
+using AllReady.Security.Middleware;
 
 namespace AllReady
 {
@@ -229,22 +230,27 @@ namespace AllReady
       // Add cookie-based authentication to the request pipeline.
       app.UseIdentity();
 
-      // Add authentication middleware to the request pipeline. You can configure options such as Id and Secret in the ConfigureServices method.
-      // For more information see http://go.microsoft.com/fwlink/?LinkID=532715
-      if (Configuration["Authentication:Facebook:AppId"] != null)
-      {
-        var options = new FacebookOptions()
-        {
-          AppId = Configuration["Authentication:Facebook:AppId"],
-          AppSecret = Configuration["Authentication:Facebook:AppSecret"],
-          BackchannelHttpHandler = new FacebookBackChannelHandler(),
-          UserInformationEndpoint = "https://graph.facebook.com/v2.5/me?fields=id,name,email,first_name,last_name"
-        };
+            // Add token-based protection to the request inject pipeline
+            app.UseTokenProtection(new TokenProtectedResourceOptions
+            {
+                Path = "api/request",
+                PolicyName = "api-request-injest"
+            });
 
-        options.Scope.Add("email");
-
-        app.UseFacebookAuthentication();
-      }
+            // Add authentication middleware to the request pipeline. You can configure options such as Id and Secret in the ConfigureServices method.
+            // For more information see http://go.microsoft.com/fwlink/?LinkID=532715
+            if (Configuration["Authentication:Facebook:AppId"] != null)
+            {
+                app.UseFacebookAuthentication(options =>
+                {
+                    options.AppId = Configuration["Authentication:Facebook:AppId"];
+                    options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                    options.Scope.Add("email");
+                    options.BackchannelHttpHandler = new FacebookBackChannelHandler();
+                    options.UserInformationEndpoint = "https://graph.facebook.com/v2.5/me?fields=id,name,email,first_name,last_name";
+                });
+            }
+            // app.UseGoogleAuthentication();
 
       if (Configuration["Authentication:MicrosoftAccount:ClientId"] != null)
       {
