@@ -58,7 +58,7 @@ namespace AllReady.Security
 
         public static string GetDisplayName(this ClaimsPrincipal user, UserManager<ApplicationUser> userManager)
         {
-            var username = userManager.GetUserId(user);
+            var username = userManager.GetUserName(user);
             var displayNameClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.DisplayName);
             if (displayNameClaim != null)
                 username = user.Claims.Single(c => c.Type == ClaimTypes.DisplayName).Value;

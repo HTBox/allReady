@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "description": "AllReady",
   "buildOptions": {
-    "emitEntryPoint": true
+    "emitEntryPoint": true,
+    "preserveCompilationContext": true
   },
 
   "dependencies": {
