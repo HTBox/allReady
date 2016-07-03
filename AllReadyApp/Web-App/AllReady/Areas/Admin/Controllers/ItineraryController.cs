@@ -141,6 +141,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [Route("Admin/Itinerary/{id}/[Action]")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SelectRequests(int id, SelectItineraryRequestsModel model)
         {
             var newModel = await BuildSelectItineraryRequestsModel(id, new RequestSearchCriteria { Keywords = model.KeywordsFilter });
