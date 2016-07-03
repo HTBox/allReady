@@ -215,7 +215,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
             else
             {
-                return HttpBadRequest("Can't manage keys for a user without the API role.");
+                return BadRequest("Can't manage keys for a user without the API role.");
             }
 
         }

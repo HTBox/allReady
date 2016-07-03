@@ -241,14 +241,17 @@ namespace AllReady
             // For more information see http://go.microsoft.com/fwlink/?LinkID=532715
             if (Configuration["Authentication:Facebook:AppId"] != null)
             {
-                app.UseFacebookAuthentication(options =>
-                {
-                    options.AppId = Configuration["Authentication:Facebook:AppId"];
-                    options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-                    options.Scope.Add("email");
-                    options.BackchannelHttpHandler = new FacebookBackChannelHandler();
-                    options.UserInformationEndpoint = "https://graph.facebook.com/v2.5/me?fields=id,name,email,first_name,last_name";
-                });
+               var options = new FacebookOptions()
+               {
+                 AppId = Configuration["Authentication:Facebook:AppId"],
+                 AppSecret = Configuration["Authentication:Facebook:AppSecret"],
+                 BackchannelHttpHandler = new FacebookBackChannelHandler(),
+                 UserInformationEndpoint = "https://graph.facebook.com/v2.5/me?fields=id,name,email,first_name,last_name"
+               };
+
+                options.Scope.Add("email");
+
+                app.UseFacebookAuthentication(options);
             }
             // app.UseGoogleAuthentication();
 
