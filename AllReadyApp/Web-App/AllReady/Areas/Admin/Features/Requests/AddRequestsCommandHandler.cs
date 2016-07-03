@@ -23,7 +23,8 @@ namespace AllReady.Areas.Admin.Features.Requests
             foreach (var request in message.Requests)
             {
                 // todo: do basic data validation
-                _context.Requests.Add(request);
+                if(!_context.Requests.Any(r => r.ProviderId == request.ProviderId))
+                    _context.Requests.Add(request);
             }
             _context.SaveChanges();
 
