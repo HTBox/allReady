@@ -241,7 +241,7 @@ namespace AllReady
             // Add token-based protection to the request inject pipeline
             app.UseTokenProtection(new TokenProtectedResourceOptions
             {
-                Path = "api/request",
+                Path = "/api/request",
                 PolicyName = "api-request-injest"
             });
 
