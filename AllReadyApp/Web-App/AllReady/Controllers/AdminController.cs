@@ -4,12 +4,12 @@ using AllReady.Areas.Admin.Controllers;
 using AllReady.Features.Admin;
 using AllReady.Models;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Mvc.Routing;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Options;
 
 namespace AllReady.Controllers
 {

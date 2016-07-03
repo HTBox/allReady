@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Organizations
 {

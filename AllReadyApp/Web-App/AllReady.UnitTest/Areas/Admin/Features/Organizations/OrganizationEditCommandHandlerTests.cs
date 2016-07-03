@@ -23,7 +23,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 
             // Assert
             Assert.Single(Context.Organizations.Where(t => t.Id == id));
-            Assert.Equal(Context.Entry(fetchedOrg).State, Microsoft.Data.Entity.EntityState.Unchanged);
+            Assert.Equal(Context.Entry(fetchedOrg).State, Microsoft.EntityFrameworkCore.EntityState.Unchanged);
         }
 
         protected override void LoadTestData()

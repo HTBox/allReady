@@ -7,8 +7,8 @@ using AllReady.Features.Event;
 using AllReady.Models;
 using AllReady.Security;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -30,7 +30,7 @@ namespace AllReady.Areas.Admin.Controllers
             var campaignEvent = GetEventBy(eventId);
             if (campaignEvent == null || !User.IsOrganizationAdmin(campaignEvent.Campaign.ManagingOrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
             
             var viewModel = new TaskEditModel
@@ -64,7 +64,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 if (!User.IsOrganizationAdmin(model.OrganizationId))
                 {
-                    return HttpUnauthorized();
+                    return Unauthorized();
                 }
                 
                 await _mediator.SendAsync(new EditTaskCommandAsync { Task = model });
@@ -91,7 +91,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 if (!User.IsOrganizationAdmin(model.OrganizationId))
                 {
-                    return HttpUnauthorized();
+                    return Unauthorized();
                 }
                 
                 await _mediator.SendAsync(new EditTaskCommandAsync { Task = model });
@@ -109,12 +109,12 @@ namespace AllReady.Areas.Admin.Controllers
             var task = await _mediator.SendAsync(new EditTaskQueryAsync { TaskId = id });
             if (task == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!User.IsOrganizationAdmin(task.OrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
             
             return View(task);
@@ -126,12 +126,12 @@ namespace AllReady.Areas.Admin.Controllers
             var task = await _mediator.SendAsync(new TaskQueryAsync { TaskId = id });
             if (task == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!User.IsOrganizationAdmin(task.OrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
             
             return View(task);
@@ -144,7 +144,7 @@ namespace AllReady.Areas.Admin.Controllers
             var task = await _mediator.SendAsync(new TaskQueryAsync { TaskId = id });
             if (task == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             
             return View(task);
@@ -157,12 +157,12 @@ namespace AllReady.Areas.Admin.Controllers
             var taskSummaryModel = await _mediator.SendAsync(new TaskQueryAsync { TaskId = id });
             if (taskSummaryModel == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!User.IsOrganizationAdmin(taskSummaryModel.OrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
             
             await _mediator.SendAsync(new DeleteTaskCommandAsync { TaskId = id });
@@ -180,7 +180,7 @@ namespace AllReady.Areas.Admin.Controllers
             var campaignEvent = GetEventBy(taskSummaryModel.EventId);
             if (!User.IsOrganizationAdmin(campaignEvent.Campaign.ManagingOrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
             
             await _mediator.SendAsync(new AssignTaskCommandAsync { TaskId = id, UserIds = userIds });
@@ -195,18 +195,18 @@ namespace AllReady.Areas.Admin.Controllers
             //TODO: Query only for the organization Id rather than the whole event detail
             if (!ModelState.IsValid)
             {
-                return HttpBadRequest(ModelState);
+                return BadRequest(ModelState);
             }
             
             var task = await _mediator.SendAsync(new TaskQueryAsync { TaskId = model.TaskId });
             if (task == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!User.IsOrganizationAdmin(task.OrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
             
             await _mediator.SendAsync(new MessageTaskVolunteersCommandAsync { Model = model });

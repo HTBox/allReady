@@ -6,8 +6,9 @@ using AllReady.Features.Event;
 using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.Controllers
@@ -15,17 +16,19 @@ namespace AllReady.Controllers
     public class EventController : Controller
     {
         private readonly IMediator _mediator;
+        private UserManager<ApplicationUser> _userManager;
 
-        public EventController(IMediator mediator)
+        public EventController(IMediator mediator, UserManager<ApplicationUser> userManager)
         {
             _mediator = mediator;
+            _userManager = userManager;
         }
 
         [Route("~/MyEvents")]
         [Authorize]
         public IActionResult GetMyEvents()
         {
-            var viewModel = _mediator.Send(new GetMyEventsQuery { UserId = User.GetUserId() });
+            var viewModel = _mediator.Send(new GetMyEventsQuery { UserId = _userManager.GetUserId(User) });
             return View("MyEvents", viewModel);
         }
 
@@ -33,7 +36,7 @@ namespace AllReady.Controllers
         [Authorize]
         public IActionResult GetMyTasks(int id)
         {
-            var view = _mediator.Send(new GetMyTasksQuery { EventId = id, UserId = User.GetUserId() });
+            var view = _mediator.Send(new GetMyTasksQuery { EventId = id, UserId = _userManager.GetUserId(User) });
             return Json(view);
         }
 
@@ -43,7 +46,7 @@ namespace AllReady.Controllers
         [Route("~/MyEvents/{id}/tasks")]
         public async Task<IActionResult> UpdateMyTasks(int id, [FromBody] List<TaskSignupViewModel> model)
         {
-            await _mediator.SendAsync(new UpdateMyTasksCommandAsync { TaskSignups = model, UserId = User.GetUserId() });
+            await _mediator.SendAsync(new UpdateMyTasksCommandAsync { TaskSignups = model, UserId = _userManager.GetUserId(User) });
             return Json(new { success = true });
         }
 
@@ -60,7 +63,7 @@ namespace AllReady.Controllers
             var viewModel = _mediator.Send(new ShowEventQuery { EventId = id, User = User });
             if (viewModel == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             return viewModel.EventType == EventTypes.EventManaged
@@ -76,7 +79,7 @@ namespace AllReady.Controllers
         {
             if (signupModel == null)
             {
-                return HttpBadRequest();
+                return BadRequest();
             }
 
             if (ModelState.IsValid)
@@ -97,7 +100,7 @@ namespace AllReady.Controllers
         {
             if (userId == null)
             {
-                return HttpBadRequest();
+                return BadRequest();
             }
 
             await _mediator.SendAsync(new TaskStatusChangeCommandAsync { TaskStatus = status, TaskId = taskId, UserId = userId, TaskStatusDescription = statusDesc });

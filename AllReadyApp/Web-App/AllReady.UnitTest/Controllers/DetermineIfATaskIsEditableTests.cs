@@ -20,7 +20,7 @@ namespace AllReady.UnitTest.Controllers
             }));
 
             var sut = new DetermineIfATaskIsEditable();
-            var result = sut.For(claimsPrincipal, null);
+            var result = sut.For(claimsPrincipal, null, null);
 
             Assert.True(result);
         }
@@ -36,7 +36,7 @@ namespace AllReady.UnitTest.Controllers
             }));
 
             var sut = new DetermineIfATaskIsEditable();
-            var result = sut.For(claimsPrincipal, null);
+            var result = sut.For(claimsPrincipal, null, null);
 
             Assert.True(result);
         }
@@ -56,7 +56,7 @@ namespace AllReady.UnitTest.Controllers
             var allReadyTask = new AllReadyTask { Event = new Event { Organizer = new ApplicationUser { Id = userId }}};
 
             var sut = new DetermineIfATaskIsEditable();
-            var result = sut.For(claimsPrincipal, allReadyTask);
+            var result = sut.For(claimsPrincipal, allReadyTask, null);
 
             Assert.True(result);
         }
@@ -76,7 +76,7 @@ namespace AllReady.UnitTest.Controllers
             var allReadyTask = new AllReadyTask { Event = new Event { Campaign = new Campaign { Organizer = new ApplicationUser { Id = userId }}}};
 
             var sut = new DetermineIfATaskIsEditable();
-            var result = sut.For(claimsPrincipal, allReadyTask);
+            var result = sut.For(claimsPrincipal, allReadyTask, null);
 
             Assert.True(result);
         }

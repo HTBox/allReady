@@ -8,7 +8,7 @@ using AllReady.Features.Resource;
 using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels;
 using MediatR;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -55,7 +55,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new ResourceApiController(null);
             var attribute = sut.GetAttributes().OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
+            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
         }
     }
 }

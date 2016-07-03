@@ -2,9 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Http.Authentication;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.AspNetCore.Http.Authentication;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AllReady.Models
 {

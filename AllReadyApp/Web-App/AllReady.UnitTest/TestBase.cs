@@ -1,14 +1,14 @@
 ﻿using AllReady.Models;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Http.Features;
-using Microsoft.AspNet.Http.Features.Authentication;
-using Microsoft.AspNet.Http.Features.Authentication.Internal;
-using Microsoft.AspNet.Http.Internal;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Data.Entity;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Http.Features.Authentication;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Hosting.Internal;
 
 namespace AllReady.UnitTest
 {
@@ -28,9 +28,7 @@ namespace AllReady.UnitTest
                 var services = new ServiceCollection();
 
                 // set up empty in-memory test db
-                services.AddEntityFramework()
-                    .AddInMemoryDatabase()
-                    .AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase());
+                services.AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase());
 
                 // add identity service
                 services.AddIdentity<ApplicationUser, IdentityRole>()

@@ -1,6 +1,6 @@
 ﻿
 using System.Linq;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 
 namespace AllReady.UnitTest
 {

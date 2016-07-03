@@ -9,12 +9,12 @@ using AllReady.Models;
 using AllReady.Services;
 using AllReady.UnitTest.Extensions;
 using MediatR;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 using System.Linq;
 using AllReady.Areas.Admin.Models.Validators;
-using Microsoft.AspNet.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {

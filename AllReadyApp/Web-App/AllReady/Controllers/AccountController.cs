@@ -6,11 +6,11 @@ using AllReady.Models;
 using AllReady.Security;
 using AllReady.Services;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Routing;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Options;
 
 namespace AllReady.Controllers
 {
@@ -178,7 +178,7 @@ namespace AllReady.Controllers
             if (result.Succeeded && user.IsProfileComplete())
             {
                 await _mediator.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id });
-                if (User.IsSignedIn())
+                if (_signInManager.IsSignedIn(User))
                     await _signInManager.RefreshSignInAsync(user);
             }
 
@@ -298,7 +298,7 @@ namespace AllReady.Controllers
 
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
-            var email = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
+            var email = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
 
             if (result.Succeeded)
             {
@@ -320,7 +320,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl = null)
         {
-            if (User.IsSignedIn())
+            if (_signInManager.IsSignedIn(User))
             {
                 return RedirectToAction(nameof(ManageController.Index), "Manage");
             }

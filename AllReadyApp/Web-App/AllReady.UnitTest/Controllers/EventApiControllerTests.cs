@@ -8,10 +8,10 @@ using AllReady.ViewModels;
 using AllReady.Features.Event;
 using AllReady.UnitTest.Extensions;
 using MediatR;
-using Microsoft.AspNet.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Moq;
 using Xunit;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -21,7 +21,7 @@ namespace AllReady.UnitTest.Controllers
         public void GetSendsEventsWithUnlockedCampaignsQuery()
         {
             var mediator = new Mock<IMediator>();
-            var sut = new EventApiController(mediator.Object);
+            var sut = new EventApiController(mediator.Object, null);
             sut.Get();
 
             mediator.Verify(x => x.Send(It.IsAny<EventsWithUnlockedCampaignsQuery>()), Times.Once);
@@ -33,7 +33,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventsWithUnlockedCampaignsQuery>())).Returns(new List<EventViewModel>());
 
-            var sut = new EventApiController(mediator.Object);
+            var sut = new EventApiController(mediator.Object, null);
             var results = sut.Get();
 
             Assert.IsType<List<EventViewModel>>(results);
@@ -42,7 +42,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void GetHasHttpGetAttribute()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Get()).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -54,7 +54,7 @@ namespace AllReady.UnitTest.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() }});
-            var sut = new EventApiController(mediator.Object);
+            var sut = new EventApiController(mediator.Object, null);
 
             sut.Get(eventId);
 
@@ -66,7 +66,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() }});
-            var sut = new EventApiController(mediator.Object);
+            var sut = new EventApiController(mediator.Object, null);
             var result = sut.Get(It.IsAny<int>());
 
             Assert.IsType<EventViewModel>(result);
@@ -81,13 +81,13 @@ namespace AllReady.UnitTest.Controllers
         //        .SetFakeUser("1");
 
         //    var result = controller.Get(It.IsAny<int>());
-        //    Assert.IsType<HttpNotFoundResult>(result);
+        //    Assert.IsType<NotFoundResult>(result);
         //}
 
         [Fact]
         public void GetByIdHasHttpGetAttributeWithCorrectTemplate()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Get(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "{id}");
@@ -96,11 +96,11 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void GetByIdHasProducesAttributeWithCorrectContentTypes()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Get(It.IsAny<int>())).OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Type, typeof(EventViewModel));
-            Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
+            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
         }
 
         [Fact]
@@ -112,7 +112,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventsByPostalCodeQuery>())).Returns(new List<Event>());
 
-            var sut = new EventApiController(mediator.Object);
+            var sut = new EventApiController(mediator.Object, null);
             sut.GetEventsByPostalCode(zip, miles);
 
             mediator.Verify(x => x.Send(It.Is<EventsByPostalCodeQuery>(y => y.PostalCode == zip && y.Distance == miles)), Times.Once);
@@ -124,7 +124,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventsByPostalCodeQuery>())).Returns(new List<Event>());
 
-            var sut = new EventApiController(mediator.Object);
+            var sut = new EventApiController(mediator.Object, null);
             var result = sut.GetEventsByPostalCode(It.IsAny<string>(), It.IsAny<int>());
 
             Assert.IsType<List<EventViewModel>>(result);
@@ -133,7 +133,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void GetEventsByPostalCodeHasRouteAttributeWithRoute()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var attribute = sut.GetAttributesOn(x => x.GetEventsByPostalCode(It.IsAny<string>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "search");
@@ -149,7 +149,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventsByGeographyQuery>())).Returns(new List<Event>());
 
-            var sut = new EventApiController(mediator.Object);
+            var sut = new EventApiController(mediator.Object, null);
             sut.GetEventsByGeography(latitude, longitude, miles);
 
             mediator.Verify(x => x.Send(It.Is<EventsByGeographyQuery>(y => y.Latitude == latitude && y.Longitude == longitude && y.Miles == miles)), Times.Once);
@@ -161,7 +161,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventsByGeographyQuery>())).Returns(new List<Event>());
 
-            var sut = new EventApiController(mediator.Object);
+            var sut = new EventApiController(mediator.Object, null);
             var result = sut.GetEventsByGeography(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>());
 
             Assert.IsType<List<EventViewModel>>(result);
@@ -170,7 +170,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void GetEventsByLocationHasRouteAttributeWithCorrectRoute()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var attribute = sut.GetAttributesOn(x => x.GetEventsByGeography(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "searchbylocation");
@@ -179,7 +179,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void GetQrCodeHasHttpGetAttributeWithCorrectTemplate()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var attribute = sut.GetAttributesOn(x => x.GetQrCode(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "{id}/qrcode");
@@ -188,9 +188,9 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void GetCheckinReturnsHttpNotFoundWhenUnableToFindEventByEventId()
         {
-            var sut = new EventApiController(Mock.Of<IMediator>());
+            var sut = new EventApiController(Mock.Of<IMediator>(), null);
             var result = sut.GetCheckin(It.IsAny<int>());
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -199,7 +199,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() } });
 
-            var sut = new EventApiController(mediator.Object);
+            var sut = new EventApiController(mediator.Object, null);
             var result = (ViewResult)sut.GetCheckin(It.IsAny<int>());
 
             Assert.IsType<Event>(result.ViewData.Model);
@@ -211,7 +211,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() }});
 
-            var sut = new EventApiController(mediator.Object);
+            var sut = new EventApiController(mediator.Object, null);
             var result = (ViewResult)sut.GetCheckin(It.IsAny<int>());
 
             Assert.Equal("NoUserCheckin", result.ViewName);
@@ -220,7 +220,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void GetCheckinHasHttpGetAttributeWithCorrectTemplate()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var attribute = sut.GetAttributesOn(x => x.GetCheckin(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "{id}/checkin");
@@ -229,10 +229,10 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task PutCheckinReturnsHttpNotFoundWhenUnableToFindEventByEventId()
         {
-            var sut = new EventApiController(Mock.Of<IMediator>());
+            var sut = new EventApiController(Mock.Of<IMediator>(), null);
             var result = await sut.PutCheckin(It.IsAny<int>());
 
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -243,7 +243,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event());
 
-            var sut = new EventApiController(mediator.Object);
+            var sut = new EventApiController(mediator.Object, null);
             await sut.PutCheckin(eventId);
 
             mediator.Verify(x => x.Send(It.Is<EventByIdQuery>(y => y.EventId == eventId)), Times.Once);
@@ -262,7 +262,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(campaignEvent);
 
-            var sut = new EventApiController(mediator.Object) { DateTimeUtcNow = () => utcNow };
+            var sut = new EventApiController(mediator.Object, null) { DateTimeUtcNow = () => utcNow };
             sut.SetFakeUser(userId);
             await sut.PutCheckin(It.IsAny<int>());
 
@@ -282,7 +282,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(campaignEvent);
 
-            var sut = new EventApiController(mediator.Object);
+            var sut = new EventApiController(mediator.Object, null);
             sut.SetFakeUser(userId);
 
             var expected = $"{{ Event = {{ Name = {campaignEvent.Name}, Description = {campaignEvent.Description} }} }}";
@@ -302,7 +302,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(campaignEvent);
 
-            var sut = new EventApiController(mediator.Object);
+            var sut = new EventApiController(mediator.Object, null);
             sut.SetFakeUser(userId);
 
             var expected = $"{{ NeedsSignup = True, Event = {{ Name = {campaignEvent.Name}, Description = {campaignEvent.Description} }} }}";
@@ -316,7 +316,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void PutCheckinHasHttpPutAttributeWithCorrectTemplate()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var attribute = (HttpPutAttribute)sut.GetAttributesOn(x => x.PutCheckin(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(HttpPutAttribute));
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "{id}/checkin");
@@ -325,7 +325,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void PutCheckinHasAuthorizeAttribute()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var attribute = (AuthorizeAttribute)sut.GetAttributesOn(x => x.PutCheckin(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(AuthorizeAttribute));
             Assert.NotNull(attribute);
         }
@@ -333,7 +333,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task RegisterEventReturnsHttpBadRequetWhenSignupModelIsNull()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var result = await sut.RegisterEvent(null);
             Assert.IsType<BadRequestResult>(result);
         }
@@ -343,7 +343,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const string modelStateErrorMessage = "modelStateErrorMessage";
 
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             sut.AddModelStateErrorWithErrorMessage(modelStateErrorMessage);
 
             var jsonResult = (JsonResult)await sut.RegisterEvent(new EventSignupViewModel());
@@ -360,7 +360,7 @@ namespace AllReady.UnitTest.Controllers
             var model = new EventSignupViewModel();
             var mediator = new Mock<IMediator>();
 
-            var sut = new EventApiController(mediator.Object);
+            var sut = new EventApiController(mediator.Object, null);
             await sut.RegisterEvent(model);
 
             mediator.Verify(x => x.SendAsync(It.Is<EventSignupCommand>(command => command.EventSignup.Equals(model))));
@@ -369,7 +369,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task RegisterEventReturnsSuccess()
         {
-            var sut = new EventApiController(Mock.Of<IMediator>());
+            var sut = new EventApiController(Mock.Of<IMediator>(), null);
             var result = await sut.RegisterEvent(new EventSignupViewModel());
 
             Assert.True(result.ToString().Contains("success"));
@@ -378,7 +378,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void RegisterEventHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var attribute = (ValidateAntiForgeryTokenAttribute)sut.GetAttributesOn(x => x.RegisterEvent(It.IsAny<EventSignupViewModel>())).SingleOrDefault(x => x.GetType() == typeof(ValidateAntiForgeryTokenAttribute));
             Assert.NotNull(attribute);
         }
@@ -386,7 +386,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void RegisterEventHasHttpPostAttributeWithCorrectTemplate()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var attribute = (HttpPostAttribute)sut.GetAttributesOn(x => x.RegisterEvent(It.IsAny<EventSignupViewModel>())).SingleOrDefault(x => x.GetType() == typeof(HttpPostAttribute));
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "signup");
@@ -395,11 +395,11 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task UnregisterEventReturnsHttpNotFoundWhenUnableToGetEventSignupByEventSignupIdAndUserId()
         {
-            var controller = new EventApiController(Mock.Of<IMediator>());
+            var controller = new EventApiController(Mock.Of<IMediator>(), null);
             controller.SetDefaultHttpContext();
 
             var result = await controller.UnregisterEvent(It.IsAny<int>());
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -412,7 +412,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.Send(It.IsAny<EventSignupByEventIdAndUserIdQuery>()))
                 .Returns(new EventSignup { Event = new Event(), User = new ApplicationUser() });
 
-            var controller = new EventApiController(mediator.Object);
+            var controller = new EventApiController(mediator.Object, null);
             controller.SetFakeUser(userId);
 
             await controller.UnregisterEvent(eventId);
@@ -430,7 +430,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.Send(It.IsAny<EventSignupByEventIdAndUserIdQuery>()))
                 .Returns(new EventSignup { Id = eventSignupId, Event = new Event(), User = new ApplicationUser() });
 
-            var controller = new EventApiController(mediator.Object);
+            var controller = new EventApiController(mediator.Object, null);
             controller.SetDefaultHttpContext();
 
             await controller.UnregisterEvent(eventId);
@@ -441,7 +441,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void UnregisterEventHasHttpDeleteAttributeWithCorrectTemplate()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var attribute = (HttpDeleteAttribute)sut.GetAttributesOn(x => x.UnregisterEvent(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(HttpDeleteAttribute));
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "{id}/signup");
@@ -450,7 +450,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void UnregisterEventHasAuthorizeAttribute()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var attribute = (AuthorizeAttribute)sut.GetAttributesOn(x => x.UnregisterEvent(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(AuthorizeAttribute));
             Assert.NotNull(attribute);
         }
@@ -458,7 +458,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ControllerHasRouteAtttributeWithTheCorrectRoute()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "api/event");
@@ -467,10 +467,10 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ControllerHasProducesAtttributeWithTheCorrectContentType()
         {
-            var sut = new EventApiController(null);
+            var sut = new EventApiController(null, null);
             var attribute = sut.GetAttributes().OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
+            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
         }
     }
 }

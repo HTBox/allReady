@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Models;
-using Microsoft.AspNet.Hosting;
-using Microsoft.Data.Entity;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -22,9 +23,7 @@ namespace AllReady.UnitTest.DataAccess
                 var services = new ServiceCollection();
 
                 // Add EF (Full DB, not In-Memory)
-                services.AddEntityFramework()
-                    .AddInMemoryDatabase()
-                    .AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase());
+                services.AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase());
 
                 // Setup hosting environment
                 IHostingEnvironment hostingEnvironment = new HostingEnvironment();

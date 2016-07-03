@@ -6,7 +6,7 @@ using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels;
 using MediatR;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
@@ -83,7 +83,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignApiController(null);
             var attribute = sut.GetAttributes().OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
+            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
         }
     }
 }

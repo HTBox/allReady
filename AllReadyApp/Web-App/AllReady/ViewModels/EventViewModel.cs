@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using AllReady.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.ViewModels
 {
@@ -120,11 +121,11 @@ namespace AllReady.ViewModels
             return campaignEvents.Select(campaignEvent => new EventViewModel(campaignEvent));
         }
 
-        public static EventViewModel WithUserInfo(this EventViewModel viewModel, Event campaignEvent, ClaimsPrincipal user, IAllReadyDataAccess dataAccess)
+        public static EventViewModel WithUserInfo(this EventViewModel viewModel, Event campaignEvent, ClaimsPrincipal user, IAllReadyDataAccess dataAccess, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signedInManager)
         {
-            if (user.IsSignedIn())
+            if (signedInManager.IsSignedIn(user))
             {
-                var userId = user.GetUserId();
+                var userId = userManager.GetUserId(user);
                 var appUser = dataAccess.GetUser(userId);
                 viewModel.UserId = userId;
                 viewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => us.Skill).ToList();

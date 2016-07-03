@@ -4,8 +4,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Services;
-using Microsoft.AspNet.Identity;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace AllReady.Models
 {

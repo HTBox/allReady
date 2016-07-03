@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using AllReady.Features.Campaigns;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
-using Microsoft.AspNet.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace AllReady.Controllers
 {
@@ -33,7 +33,7 @@ namespace AllReady.Controllers
             var campaign = GetCampaign(id);
 
             if (campaign == null || campaign.Locked)
-                return HttpNotFound();
+                return NotFound();
 
             ViewBag.AbsoluteUrl = UrlEncode(Url.Action(new UrlActionContext { Action = "Details", Controller = "Campaign", Values = null, Protocol = Request.Scheme }));
 
@@ -47,7 +47,7 @@ namespace AllReady.Controllers
             var campaign = GetCampaign(id);
 
             if (campaign == null)
-                return HttpNotFound();
+                return NotFound();
 
             return View("Map", new CampaignViewModel(campaign));
         }
@@ -66,7 +66,7 @@ namespace AllReady.Controllers
             var campaign = GetCampaign(id);
 
             if (campaign == null || campaign.Locked)
-                return HttpNotFound();
+                return NotFound();
 
             return Json(campaign.ToViewModel());
         }

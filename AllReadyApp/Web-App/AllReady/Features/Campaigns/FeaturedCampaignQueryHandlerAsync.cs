@@ -3,7 +3,7 @@ using AllReady.ViewModels;
 using MediatR;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Campaigns
 {

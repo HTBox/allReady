@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using AllReady.Features.Login;
 using AllReady.Models;
 using AllReady.Security;
-using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Login

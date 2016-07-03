@@ -3,9 +3,9 @@ using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -102,7 +102,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var result = _sut.Details(Id);
 
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -174,8 +174,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var controller = new OrganizationController(mockMediator.Object);
 
-            var mockContext = MockActionContextWithUser(SiteAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(SiteAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             controller.Edit(_organizationEditModel);
 
@@ -191,7 +191,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var result = _sut.Edit(Id);
 
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -226,8 +226,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var controller = new OrganizationController(new Mock<IMediator>().Object);
 
-            var mockContext = MockActionContextWithUser(SiteAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(SiteAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             controller.ModelState.AddModelError("foo", "bar");
 
@@ -246,8 +246,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var controller = new OrganizationController(mockMediator.Object);
 
-            var mockContext = MockActionContextWithUser(SiteAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(SiteAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             var model = new OrganizationEditModel();
 
@@ -277,7 +277,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                         
             var result = _sut.Delete(null);
 
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -289,7 +289,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var result = _sut.Delete(Id);
 
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -430,12 +430,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     }));
         }
 
-        private static Mock<ActionContext> MockActionContextWithUser(ClaimsPrincipal principle)
+        private static Mock<ControllerContext> MockControllerContextWithUser(ClaimsPrincipal principle)
         {
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User)
                 .Returns(() => principle);
-            var mockContext = new Mock<ActionContext>();
+            var mockContext = new Mock<ControllerContext>();
 
             mockContext.Object.HttpContext = mockHttpContext.Object;
             return mockContext;

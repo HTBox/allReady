@@ -1,79 +1,100 @@
 {
-    "webroot": "wwwroot",
-    "userSecretsId": "aspnet5-AllReady-468aac76-4430-43e6-848e-f4a3b90d61d0",
-    "version": "1.0.0",
-    "description": "AllReady",
-    "compilationOptions": {
-        "emitEntryPoint": true
-    },
+  "webroot": "wwwroot",
+  "userSecretsId": "aspnet5-AllReady-468aac76-4430-43e6-848e-f4a3b90d61d0",
+  "version": "1.0.0",
+  "description": "AllReady",
+  "buildOptions": {
+    "emitEntryPoint": true
+  },
 
-    "dependencies": {
-        "EntityFramework.MicrosoftSqlServer": "7.0.0-rc1-final",
-        "EntityFramework.Commands": "7.0.0-rc1-final",
-        "EntityFramework.Core": "7.0.0-rc1-final",
-        "Microsoft.ApplicationInsights.AspNet": "1.0.0-rc1",
-        "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
-        "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
-        "Microsoft.AspNet.Authentication.Cookies": "1.0.0-rc1-final",
-        "Microsoft.AspNet.Authentication.Facebook": "1.0.0-rc1-final",
-        "Microsoft.AspNet.Authentication.Google": "1.0.0-rc1-final",
-        "Microsoft.AspNet.Authentication.MicrosoftAccount": "1.0.0-rc1-final",
-        "Microsoft.AspNet.Authentication.Twitter": "1.0.0-rc1-final",
-        "Microsoft.AspNet.Diagnostics": "1.0.0-rc1-final",
-        "Microsoft.AspNet.Diagnostics.Entity": "7.0.0-rc1-final",
-        "Microsoft.AspNet.Identity.EntityFramework": "3.0.0-rc1-final",
-        "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
-        "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
-        "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
-        "Microsoft.AspNet.Tooling.Razor": "1.0.0-rc1-final",
-        "Microsoft.AspNet.Cors": "6.0.0-rc1-final",
-        "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc1-final",
-        "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
-        "Microsoft.Extensions.Configuration.UserSecrets": "1.0.0-rc1-final",
-        "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
-        "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
-        "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-*",
-        "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-rc1-final",
-        "Microsoft.AspNet.Mvc.WebApiCompatShim": "6.0.0-rc1-final",
-        "ZXing.Net": "0.14.0.1",
-        "WindowsAzure.Storage": "4.4.1-preview",
-        "MediatR": "2.0.2",
-        "Sendgrid": "6.1.0",
-        "Twilio": "4.0.3",
-        "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
-        "Autofac": "4.0.0-rc1-177",
-        "Autofac.Extensions.DependencyInjection": "4.0.0-rc1-177"
+  "dependencies": {
+    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
+    "Microsoft.EntityFrameworkCore": "1.0.0",
+    "Microsoft.ApplicationInsights.AspNetCore": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.0.0",
+    "Microsoft.AspNetCore.Mvc.TagHelpers": "1.0.0",
+    "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0",
+    "Microsoft.AspNetCore.Authentication.Facebook": "1.0.0",
+    "Microsoft.AspNetCore.Authentication.Google": "1.0.0",
+    "Microsoft.AspNetCore.Authentication.MicrosoftAccount": "1.0.0",
+    "Microsoft.AspNetCore.Authentication.Twitter": "1.0.0",
+    "Microsoft.AspNetCore.Diagnostics": "1.0.0",
+    "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "1.0.0",
+    "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.0.0",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
+    "Microsoft.AspNetCore.StaticFiles": "1.0.0",
+    "Microsoft.AspNetCore.Cors": "1.0.0",
+    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.Extensions.Configuration.UserSecrets": "1.0.0",
+    "Microsoft.Extensions.Logging": "1.0.0",
+    "Microsoft.Extensions.Logging.Console": "1.0.0",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
+    "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
+    "Microsoft.AspNetCore.Mvc.WebApiCompatShim": "1.0.0",
+    "ZXing.Net": "0.14.0.1",
+    "WindowsAzure.Storage": "4.4.1-preview",
+    "MediatR": "2.0.2",
+    "Sendgrid": "6.1.0",
+    "Twilio": "4.0.3",
+    "Microsoft.Extensions.Logging.Debug": "1.0.0",
+    "Autofac": "4.0.0-rc1-177",
+    "Autofac.Extensions.DependencyInjection": "4.0.0-rc1-177",
+    "Microsoft.AspNetCore.Razor.Tools": {
+      "version": "1.0.0-preview2-final",
+      "type": "build"
     },
-
-    "commands": {
-        "web": "Microsoft.AspNet.Server.Kestrel",
-        "ef": "EntityFramework.Commands"
+    "Microsoft.EntityFrameworkCore.Tools": {
+      "version": "1.0.0-preview2-final",
+      "type": "build"
     },
-
-    "frameworks": {
-        "dnx451": {
-            "dependencies": {
-                "AllReady.Models": "1.0.0-*"
-            },
-            "frameworkAssemblies": {
-                "System.Drawing": "4.0.0.0"
-            }
-        }
+    "Microsoft.VisualStudio.Web.CodeGenerators.Mvc": {
+      "version": "1.0.0-preview2-final",
+      "type": "build"
     },
-
-    "exclude": [
-        "wwwroot",
-        "node_modules",
-        "bower_components"
-    ],
-    "publishExclude": [
-        "node_modules",
-        "bower_components",
-        "**.xproj",
-        "**.user",
-        "**.vspscc"
-    ],
-    "scripts": {
-        "prepublish": [ "npm install", "bower install", "gulp clean", "gulp min" ]
+    "Microsoft.VisualStudio.Web.CodeGeneration.Tools": {
+      "version": "1.0.0-preview2-final",
+      "type": "build"
     }
+  },
+
+  "tools": {
+    "Microsoft.AspNetCore.Razor.Tools": "1.0.0-preview2-final",
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview2-final",
+    "Microsoft.EntityFrameworkCore.Tools": "1.0.0-preview2-final",
+    "Microsoft.Extensions.SecretManager.Tools": "1.0.0-preview2-final",
+    "Microsoft.VisualStudio.Web.CodeGeneration.Tools": {
+      "version": "1.0.0-preview2-final",
+      "imports": [
+        "portable-net45+win8"
+      ]
+    }
+
+  },
+
+  "frameworks": {
+    "net451": {
+      "dependencies": {
+        "AllReady.Models": "1.0.0-*"
+      },
+      "frameworkAssemblies": {
+        "System.Drawing": "4.0.0.0"
+      }
+    }
+  },
+
+  "publishOptions": {
+    "include": [
+      "wwwroot",
+      "Views",
+      "appsettings.json",
+      "web.config"
+    ]
+  },
+
+  "scripts": {
+    "prepublish": [ "npm install", "bower install", "gulp clean", "gulp min" ]
+  }
 }

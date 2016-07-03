@@ -3,23 +3,23 @@ using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.Services;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Mvc;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 using MediatR;
 using AllReady.UnitTest.Extensions;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc.Routing;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Routing;
 using System.Security.Claims;
 using AllReady.Extensions;
 using AllReady.Features.Login;
 using System.Collections.Generic;
 using AllReady.Areas.Admin.Controllers;
 using System;
-using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -110,7 +110,7 @@ namespace AllReady.UnitTest.Controllers
             var loginViewModel = new LoginViewModel { Email = "", Password = "", RememberMe = false };
             const string testLocalUrl = "/foo/bar";
 
-            var controller = AccountController(SignInResult.Failed);
+            var controller = AccountController(Microsoft.AspNetCore.Identity.SignInResult.Failed);
             var result = await controller.Login(loginViewModel, testLocalUrl);
 
             Assert.IsType<ViewResult>(result);
@@ -1345,7 +1345,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task ExternalLoginConfirmationRedirectsToCorrectActionIfUserIsSignedIn()
         {
             var sut = AccountController();
-            var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "test") }, IdentityCookieOptions.ApplicationCookieAuthenticationType);
+            var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "test") }, new IdentityCookieOptions().ApplicationCookieAuthenticationScheme);
             sut.SetFakeUser("test");
             sut.HttpContext.User.AddIdentity(identity);
             var result = await sut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel()) as RedirectToActionResult;
@@ -1626,7 +1626,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        private static AccountController AccountController(SignInResult signInResult = default(SignInResult))
+        private static AccountController AccountController(Microsoft.AspNetCore.Identity.SignInResult signInResult = default(Microsoft.AspNetCore.Identity.SignInResult))
         {
             var userManagerMock = CreateUserManagerMock();
             var signInManagerMock = CreateSignInManagerMock(userManagerMock);
@@ -1636,8 +1636,8 @@ namespace AllReady.UnitTest.Controllers
                     It.IsAny<string>(),
                     It.IsAny<bool>(),
                     It.IsAny<bool>()))
-                .ReturnsAsync(signInResult == default(SignInResult)
-                            ? SignInResult.Success
+                .ReturnsAsync(signInResult == default(Microsoft.AspNetCore.Identity.SignInResult)
+                            ? Microsoft.AspNetCore.Identity.SignInResult.Success
                             : signInResult
                 );
             var emailSenderMock = new Mock<IEmailSender>();

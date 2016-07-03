@@ -2,7 +2,7 @@
 using AllReady.Features.ClosestLocation;
 using AllReady.Models;
 using MediatR;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Controllers
 {

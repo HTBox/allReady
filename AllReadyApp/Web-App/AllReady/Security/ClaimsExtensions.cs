@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 using AllReady.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.Security
 {
@@ -55,9 +56,9 @@ namespace AllReady.Security
             return !string.IsNullOrEmpty(timeZoneId) ? TimeZoneInfo.FindSystemTimeZoneById(timeZoneId) : null;
         }
 
-        public static string GetDisplayName(this ClaimsPrincipal user)
+        public static string GetDisplayName(this ClaimsPrincipal user, UserManager<ApplicationUser> userManager)
         {
-            var username = user.GetUserName();
+            var username = userManager.GetUserId(user);
             var displayNameClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.DisplayName);
             if (displayNameClaim != null)
                 username = user.Claims.Single(c => c.Type == ClaimTypes.DisplayName).Value;

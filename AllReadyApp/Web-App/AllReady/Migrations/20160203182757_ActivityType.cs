@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using AllReady.Models;
-using Microsoft.Data.Entity.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AllReady.Migrations
 {

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using AllReady.Features.Organizations;
 using MediatR;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Controllers
 {
@@ -25,14 +25,14 @@ namespace AllReady.Controllers
         {
             if (id <= 0)
             { 
-                return HttpBadRequest();
+                return BadRequest();
             }
 
             var model = await _mediator.SendAsync(new OrganizationDetailsQueryAsync { Id = id });
 
             if (model == null)
             { 
-                return HttpNotFound();
+                return NotFound();
             }
 
             return View("Organization", model);
@@ -43,7 +43,7 @@ namespace AllReady.Controllers
         {
             if (id <= 0)
             { 
-                return HttpBadRequest();
+                return BadRequest();
             }
 
             var model = await _mediator.SendAsync(new OrganziationPrivacyPolicyQueryAsync { OrganizationId = id });

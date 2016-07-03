@@ -10,9 +10,9 @@ using AllReady.Security;
 using AllReady.Services;
 using AllReady.ViewModels;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using AllReady.Areas.Admin.Models.Validators;
 using AllReady.Features.Event;
 
@@ -41,12 +41,12 @@ namespace AllReady.Areas.Admin.Controllers
             var campaignEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = id });
             if (campaignEvent == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             return View(campaignEvent);
@@ -59,7 +59,7 @@ namespace AllReady.Areas.Admin.Controllers
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
             if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             var campaignEvent = new EventDetailModel
@@ -85,7 +85,7 @@ namespace AllReady.Areas.Admin.Controllers
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
             if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             var errors = _eventDetailModelValidator.Validate(campaignEvent, campaign);
@@ -127,12 +127,12 @@ namespace AllReady.Areas.Admin.Controllers
             var campaignEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = id });
             if (campaignEvent == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             return View(campaignEvent);
@@ -145,13 +145,13 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (campaignEvent == null)
             {
-                return HttpBadRequest();
+                return BadRequest();
             }
             
             var organizationId = _mediator.Send(new ManagingOrganizationIdByEventIdQuery { EventId = campaignEvent.Id });
             if (!User.IsOrganizationAdmin(organizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignEvent.CampaignId });
@@ -189,12 +189,12 @@ namespace AllReady.Areas.Admin.Controllers
             var campaignEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = id });
             if (campaignEvent == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             return View(campaignEvent);
@@ -209,12 +209,12 @@ namespace AllReady.Areas.Admin.Controllers
             var campaignEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = id });
             if (campaignEvent == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             await _mediator.SendAsync(new DeleteEventCommand { EventId = id });
@@ -228,12 +228,12 @@ namespace AllReady.Areas.Admin.Controllers
             var campaignEvent = GetEventBy(id);
             if (campaignEvent == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!User.IsOrganizationAdmin(campaignEvent.Campaign.ManagingOrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             var model = new EventViewModel(campaignEvent);
@@ -249,19 +249,19 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return HttpBadRequest(ModelState);
+                return BadRequest(ModelState);
             }
             
             //TODO: Query only for the organization Id rather than the whole event detail
             var campaignEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = model.EventId });
             if (campaignEvent == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             await _mediator.SendAsync(new MessageEventVolunteersCommand { Model = model });

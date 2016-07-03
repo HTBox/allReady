@@ -2,7 +2,7 @@
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
