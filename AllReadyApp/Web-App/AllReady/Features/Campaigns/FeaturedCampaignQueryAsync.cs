@@ -1,4 +1,4 @@
-﻿using AllReady.ViewModels;
+﻿using AllReady.ViewModels.Home;
 using MediatR;
 
 namespace AllReady.Features.Campaigns

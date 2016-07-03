@@ -1,0 +1,74 @@
+﻿@model AllReady.Areas.Admin.Models.ItineraryModels.SelectItineraryRequestsModel
+
+@{
+    ViewData["Title"] = "Select Requests";
+}
+
+@{
+    ViewData["Title"] = "Select Requests";
+}
+
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-area="Admin" asp-route-id="@Model.EventId">@Model.EventName</a></li>
+            <li><a asp-action="Details" asp-controller="Itinerary" asp-route-area="Admin">@Model.ItineraryName</a></li>
+            <li>Select Requests</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <h2>Select Requests</h2>
+        <p>Please choose the requests you would like to add to your itinerary.</p>
+    </div>
+</div>
+
+<form asp-controller="Itinerary" asp-action="AddRequests">
+
+    <div class="row">
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary submit-form">Add Selected Requests</button>
+            <a asp-action="Details" asp-controller="Itinerary" asp-route-area="Admin" class="btn btn-default">Cancel</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            @if (Model.Requests.Count > 0)
+            {
+            <table class="table">
+                <tr>
+                    <th></th>
+                    <th>Request Name</th>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>Date Added</th>
+                </tr>
+                @foreach (var req in Model.Requests)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="selectedRequests" value="@req.Id" @Html.Raw(req.IsSelected) ? "checked" : "" ) />
+                        </td>
+                        <td>@req.Name</td>
+                        <td>@req.Address</td>
+                        <td>@req.City</td>
+                        <td>@req.DateAdded</td>
+                    </tr>
+                }
+            </table>
+            }
+            else
+            {
+                <br />
+                <p>There are no new requests which can be added</p>
+            }
+
+        </div>
+    </div>
+
+</form>

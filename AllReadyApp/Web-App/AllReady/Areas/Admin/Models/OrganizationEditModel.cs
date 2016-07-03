@@ -8,7 +8,10 @@ namespace AllReady.Areas.Admin.Models
 
         [Required]
         public string Name { get; set; }        
+
         public string LogoUrl { get; set; }
+
+        [Display(Name = "Website URL")]
         public string WebUrl { get; set; }
           
         [UIHint("Location")]
@@ -27,6 +30,17 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Email")]
         [EmailAddress]
         public string PrimaryContactEmail { get; set; }
+
+        [Display(Name = "Full Description")]
+        public string Description { get; set; }
+
+        [Display(Name = "Summary Description")]
+        [MaxLength(250)]
+        public string Summary { get; set; }
+
+        [Url]
+        [Display(Name = "Privacy Policy Url")]
+        public string PrivacyPolicyUrl { get; set; }
 
         [Display(Name = "Privacy Policy")]
         public string PrivacyPolicy { get; set; }

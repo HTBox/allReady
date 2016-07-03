@@ -8,6 +8,7 @@ using Moq;
 using System.Threading.Tasks;
 using Xunit;
 using AllReady.UnitTest.Extensions;
+using AllReady.ViewModels.Organization;
 
 namespace AllReady.UnitTest.Controllers
 {

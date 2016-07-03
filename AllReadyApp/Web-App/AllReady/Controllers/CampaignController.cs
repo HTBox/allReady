@@ -2,7 +2,7 @@
 using AllReady.Features.Campaigns;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Models;
-using AllReady.ViewModels;
+using AllReady.ViewModels.Campaign;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Routing;
 

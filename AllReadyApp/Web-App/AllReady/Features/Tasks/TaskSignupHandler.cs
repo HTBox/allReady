@@ -12,12 +12,12 @@ namespace AllReady.Features.Tasks
 {
     public class TaskSignupHandlerAsync : IAsyncRequestHandler<TaskSignupCommandAsync, TaskSignupResult>
     {
-        private readonly IMediator _bus;
+        private readonly IMediator _mediator;
         private readonly AllReadyContext _context;
 
-        public TaskSignupHandlerAsync(IMediator bus, AllReadyContext context)
+        public TaskSignupHandlerAsync(IMediator mediator, AllReadyContext context)
         {
-            _bus = bus;
+            _mediator = mediator;
             _context = context;
         }
 
@@ -99,7 +99,7 @@ namespace AllReady.Features.Tasks
             await _context.SaveChangesAsync().ConfigureAwait(false);
 
             //Notify admins of a new volunteer
-            await _bus.PublishAsync(new VolunteerSignupNotification { EventId = model.EventId, UserId = model.UserId, TaskId = task.Id })
+            await _mediator.PublishAsync(new VolunteerSignupNotification { EventId = model.EventId, UserId = model.UserId, TaskId = task.Id })
                 .ConfigureAwait(false);
 
             return new TaskSignupResult {Status = "success", Task = task};

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using AllReady.Models;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AllReady.Migrations
@@ -30,7 +27,7 @@ namespace AllReady.Migrations
                 name: "ActivityType",
                 table: "Activity",
                 nullable: false,
-                defaultValue: Models.EventTypes.EventManaged);
+                defaultValue: Models.EventType.Itinerary);
             migrationBuilder.AddForeignKey(
                 name: "FK_Activity_Campaign_CampaignId",
                 table: "Activity",

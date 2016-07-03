@@ -56,10 +56,7 @@
                         @Html.DisplayFor(modelItem => item.OrganizationName)
                     </td>
                     <td>
-                        @if (item.StartDate != DateTime.MinValue)
-                        {
-                            @:@Html.DisplayFor(modelItem => item.StartDate) - @Html.DisplayFor(modelItem => item.EndDate)                            
-                        }
+                        @Html.DisplayFor(modelItem => item.StartDate) - @Html.DisplayFor(modelItem => item.EndDate)
                     </td>
                     @* TODO: Delete *@
                 </tr>

@@ -4,6 +4,7 @@ using AllReady.Models;
 using AllReady.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using AllReady.ViewModels.Organization;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Organizations

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Features.Notifications;
@@ -34,7 +34,7 @@ namespace AllReady.Features.Tasks
 
             _context.TaskSignups.Remove(taskSignUp);
 
-            if (taskSignUp.Task.Event.EventType != EventTypes.EventManaged && taskSignUps == 1)
+            if (taskSignUps == 1)
             {
                 var eventSignup = await _context.EventSignup.SingleOrDefaultAsync(u => u.User.Id == message.UserId && u.Event.Id == taskSignUp.Task.Event.Id);
 

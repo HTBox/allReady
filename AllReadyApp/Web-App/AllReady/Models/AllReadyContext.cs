@@ -1,21 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AllReady.Models
 {
   public class AllReadyContext : IdentityDbContext<ApplicationUser>
   {
-    public AllReadyContext()
-    {
-
-    }
-
-    public AllReadyContext(DbContextOptions options) : base(options)
-    {
-
-    }
-
     public virtual DbSet<Organization> Organizations { get; set; }
     public DbSet<EventSignup> EventSignup { get; set; }
     public DbSet<Campaign> Campaigns { get; set; }
@@ -36,6 +27,9 @@ namespace AllReady.Models
     public DbSet<CampaignContact> CampaignContacts { get; set; }
     public DbSet<ClosestLocation> ClosestLocations { get; set; }
     public DbSet<PostalCodeGeoCoordinate> PostalCodeGeoCoordinates { get; set; }
+    public DbSet<Request> Requests { get; set; }
+    public DbSet<Itinerary> Itineraries { get; set; }
+    public DbSet<ItineraryRequest> ItineraryRequests { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -60,6 +54,16 @@ namespace AllReady.Models
       Map(modelBuilder.Entity<CampaignImpact>());
       Map(modelBuilder.Entity<ClosestLocation>());
       Map(modelBuilder.Entity<PostalCodeGeoCoordinate>());
+      Map(modelBuilder.Entity<Request>());
+      Map(modelBuilder.Entity<Itinerary>());
+      Map(modelBuilder.Entity<ItineraryRequest>());
+    }
+
+    private void Map(EntityTypeBuilder<Request> builder)
+    {
+      builder.ToTable("Request");
+      builder.HasKey(x => x.RequestId);
+      builder.HasMany(x => x.Itineraries).WithOne(x => x.Request).HasForeignKey(x => x.RequestId);
     }
 
     private void Map(EntityTypeBuilder<CampaignImpact> builder)
@@ -108,7 +112,7 @@ namespace AllReady.Models
     private void Map(EntityTypeBuilder<TaskSignup> builder)
     {
       builder.ToTable("TaskSignup");
-      builder.HasOne(u => u.Task);
+      builder.HasOne(u => u.Task).WithMany(x => x.AssignedVolunteers).HasForeignKey(x => x.TaskId);
     }
 
     private void Map(EntityTypeBuilder<AllReadyTask> builder)
@@ -116,7 +120,9 @@ namespace AllReady.Models
       builder.ToTable("AllReadyTask");
       builder.HasOne(t => t.Event);
       builder.HasOne(t => t.Organization);
-      builder.HasMany(t => t.AssignedVolunteers);
+      builder.HasMany(t => t.AssignedVolunteers)
+          .WithOne(ts => ts.Task)
+          .OnDelete(DeleteBehavior.Cascade);
       builder.HasMany(t => t.RequiredSkills).WithOne(ts => ts.Task);
       builder.Property(p => p.Name).IsRequired();
     }
@@ -141,10 +147,16 @@ namespace AllReady.Models
       builder.ToTable("Event");
       builder.HasOne(a => a.Campaign);
       builder.HasOne(a => a.Location);
-      builder.HasMany(a => a.Tasks);
-      builder.HasMany(a => a.UsersSignedUp);
+      builder.HasMany(a => a.Tasks)
+          .WithOne(t => t.Event)
+          .OnDelete(DeleteBehavior.Cascade);
+      builder.HasMany(a => a.UsersSignedUp)
+          .WithOne(u => u.Event)
+          .OnDelete(DeleteBehavior.Cascade);
       builder.HasMany(a => a.RequiredSkills).WithOne(acsk => acsk.Event);
       builder.Property(p => p.Name).IsRequired();
+      builder.HasMany(x => x.Itineraries).WithOne(x => x.Event).HasForeignKey(x => x.EventId).IsRequired();
+      builder.HasMany(x => x.Requests).WithOne(x => x.Event).HasForeignKey(x => x.EventId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
     }
 
     private void Map(EntityTypeBuilder<EventSkill> builder)
@@ -162,7 +174,7 @@ namespace AllReady.Models
 
     private void Map(EntityTypeBuilder<CampaignSponsors> builder)
     {
-      builder.ToTable("CampaignContact");
+      builder.ToTable("CampaignSponsors");
       builder.HasOne(s => s.Campaign)
              .WithMany(c => c.ParticipatingOrganizations);
       builder.HasOne(s => s.Organization);
@@ -201,6 +213,20 @@ namespace AllReady.Models
     {
       builder.ToTable("PostalCodeGeoCoordinate");
       builder.HasKey(us => new { us.Latitude, us.Longitude });
+    }
+
+    public void Map(EntityTypeBuilder<Itinerary> builder)
+    {
+      builder.ToTable("Itinerary");
+      builder.HasKey(x => x.Id);
+      builder.HasMany(x => x.Requests).WithOne(x => x.Itinerary).HasForeignKey((x => x.ItineraryId));
+      builder.HasMany(x => x.TeamMembers).WithOne(x => x.Itinerary).HasForeignKey(x => x.ItineraryId).IsRequired(false);
+    }
+
+    public void Map(EntityTypeBuilder<ItineraryRequest> builder)
+    {
+      builder.ToTable("ItineraryRequest");
+      builder.HasKey(x => new { x.ItineraryId, x.RequestId });
     }
   }
 }

@@ -1,4 +1,5 @@
-﻿@model ExternalLoginConfirmationViewModel
+﻿@using AllReady.ViewModels.Account
+@model ExternalLoginConfirmationViewModel
 @{
     ViewData["Title"] = "Register";
 }
@@ -13,21 +14,28 @@
 
     <p class="text-info">
         You've successfully authenticated with <strong>@ViewData["LoginProvider"]</strong>.
-        Please enter an email for this site below and click the Register button to finish
+        Please enter your First Name, Last Name, Email and Phone Number for this site below and click the Register button to finish
         logging in.
     </p>
     <div class="form-group">
-        <label asp-for="Email" class="col-md-2 control-label"></label>
+        <label asp-for="FirstName" class="col-md-2 control-label"></label>
         <div class="col-md-10">
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email" class="text-danger"></span>
+            <input asp-for="FirstName" class="form-control"/>
+            <span asp-validation-for="FirstName" class="text-danger"></span>
         </div>
     </div>
     <div class="form-group">
-        <label asp-for="Name" class="col-md-2 control-label"></label>
+        <label asp-for="LastName" class="col-md-2 control-label"></label>
         <div class="col-md-10">
-            <input asp-for="Name" class="form-control" />
-            <span asp-validation-for="Name" class="text-danger"></span>
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Email" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Email" class="form-control"/>
+            <span asp-validation-for="Email" class="text-danger"></span>
         </div>
     </div>
     <div class="form-group">

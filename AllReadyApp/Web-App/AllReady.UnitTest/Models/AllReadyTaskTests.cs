@@ -25,13 +25,5 @@ namespace AllReady.UnitTest.DataModels
 
             Assert.False(sut.IsClosed);
         }
-
-        [Fact]
-        public void IsClosed_ShouldBeFalse_IfEndDateIsNull()
-        {
-            var sut = new AllReadyTask();
-
-            Assert.False(sut.IsClosed);
-        }
     }
 }

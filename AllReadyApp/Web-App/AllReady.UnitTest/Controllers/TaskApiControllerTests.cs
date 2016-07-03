@@ -10,6 +10,8 @@ using AllReady.Features.Tasks;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels;
+using AllReady.ViewModels.Shared;
+using AllReady.ViewModels.Task;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

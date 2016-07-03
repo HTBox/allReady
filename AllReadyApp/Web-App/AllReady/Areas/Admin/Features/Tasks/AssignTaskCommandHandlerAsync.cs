@@ -1,4 +1,4 @@
-﻿using AllReady.Features.Notifications;
+using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
 using System;
@@ -50,7 +50,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                         taskSignups.Add(taskSignup);
 
                         // If the user has not already been signed up for the event, sign them up
-                        if (campaignEvent.EventType != EventTypes.EventManaged && campaignEvent.UsersSignedUp.All(acsu => acsu.User.Id != userId))
+                        if (campaignEvent.UsersSignedUp.All(acsu => acsu.User.Id != userId))
                         {
                             campaignEvent.UsersSignedUp.Add(new EventSignup
                             {
@@ -69,15 +69,12 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 var taskSignupsToRemove = task.AssignedVolunteers.Where(taskSignup => message.UserIds.All(uid => uid != taskSignup.User.Id)).ToList();
                 taskSignupsToRemove.ForEach(taskSignup => task.AssignedVolunteers.Remove(taskSignup));
 
-                if (campaignEvent.EventType != EventTypes.EventManaged)
-                {
                     // delete the event signups where the user is no longer signed up for any tasks
                     (from taskSignup in taskSignupsToRemove
                         where !campaignEvent.IsUserInAnyTask(taskSignup.User.Id)
                         select campaignEvent.UsersSignedUp.FirstOrDefault(u => u.User.Id == taskSignup.User.Id))
                         .ToList()
                         .ForEach(signup => campaignEvent.UsersSignedUp.Remove(signup));
-                }
             }
             await _context.SaveChangesAsync();
 

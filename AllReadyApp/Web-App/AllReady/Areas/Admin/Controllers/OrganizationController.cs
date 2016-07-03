@@ -1,7 +1,7 @@
-﻿using AllReady.Areas.Admin.Features.Organizations;
+﻿using System.Linq;
+using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
-using AllReady.Models;
-using AllReady.Security;
+using AllReady.Areas.Admin.Models.Validators;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +13,12 @@ namespace AllReady.Areas.Admin.Controllers
     public class OrganizationController : Controller
     {
         private readonly IMediator _mediator;
+        private readonly IOrganizationEditModelValidator _organizationValidator;
 
-        public OrganizationController(IMediator mediator)
+        public OrganizationController(IMediator mediator, IOrganizationEditModelValidator validator)
         {
             _mediator = mediator;
+            _organizationValidator = validator;
         }
 
         // GET: Organization
@@ -47,7 +49,6 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Organization/Edit/5
         public IActionResult Edit(int id)
         {
-
             var organization = _mediator.Send(new OrganizationEditQuery { Id = id });
             if (organization == null)
             {
@@ -66,11 +67,22 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return BadRequest();
             }
-            
+
+            var errors = _organizationValidator.Validate(organization);
+            errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
+
             if (ModelState.IsValid)
             {
-                int id = _mediator.Send(new OrganizationEditCommand { Organization = organization });
-                return RedirectToAction("Details", new { id = id, area = "Admin" });
+                bool isNameUnique = _mediator.Send(new OrganizationNameUniqueQuery() { OrganizationName = organization.Name, OrganizationId = organization.Id });
+                if (isNameUnique)
+                {
+                    int id = _mediator.Send(new OrganizationEditCommand { Organization = organization });
+                    return RedirectToAction("Details", new { id = id, area = "Admin" });
+                }
+                else
+                {
+                    ModelState.AddModelError(nameof(organization.Name), "Organization with same name already exists. Please use different name.");
+                }
             }
 
             return View("Edit", organization);
@@ -101,6 +113,6 @@ namespace AllReady.Areas.Admin.Controllers
         {
             _mediator.Send(new OrganizationDeleteCommand { Id= id });
             return RedirectToAction("Index");
-        }
+        }               
     }
 }

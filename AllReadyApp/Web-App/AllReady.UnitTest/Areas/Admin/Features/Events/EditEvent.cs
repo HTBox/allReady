@@ -38,7 +38,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             context.Organizations.Add(htb);
             context.SaveChanges();
 
-            var vm = new EventDetailModel
+            var vm = new EventEditModel
             {
                 CampaignId = 1,
                 TimeZoneId = "Central Standard Time"
@@ -95,7 +95,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
 
             var startDateTime = new DateTime(2015, 7, 12, 4, 15, 0);
             var endDateTime = new DateTime(2015, 12, 7, 15, 10, 0);
-            var vm = new EventDetailModel
+            var vm = new EventEditModel
             {
                 CampaignId = queenAnne.CampaignId,
                 CampaignName = queenAnne.Campaign.Name,
@@ -108,10 +108,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 RequiredSkills = queenAnne.RequiredSkills,
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = startDateTime,
-                Tasks = null,
                 OrganizationId = queenAnne.Campaign.ManagingOrganizationId,
                 OrganizationName = queenAnne.Campaign.ManagingOrganization.Name,
-                Volunteers = null
             };
             var query = new EditEventCommand { Event = vm };
             var handler = new EditEventCommandHandler(context);
@@ -202,7 +200,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 PhoneNumber = "New number"
             });
 
-            var locationEdit = new EventDetailModel
+            var locationEdit = new EventEditModel
             {
                 CampaignId = queenAnne.CampaignId,
                 CampaignName = queenAnne.Campaign.Name,
@@ -215,10 +213,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 RequiredSkills = queenAnne.RequiredSkills,
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = queenAnne.StartDateTime,
-                Tasks = null,
                 OrganizationId = queenAnne.Campaign.ManagingOrganizationId,
                 OrganizationName = queenAnne.Campaign.ManagingOrganization.Name,
-                Volunteers = null
             };
 
             var query = new EditEventCommand { Event = locationEdit };

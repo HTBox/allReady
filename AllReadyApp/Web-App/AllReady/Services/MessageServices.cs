@@ -44,6 +44,7 @@ namespace AllReady.Services
             return _mediator.SendAsync(command);
         }
     }
+
     public interface IEmailSender
     {
         Task SendEmailAsync(string email, string subject, string message);

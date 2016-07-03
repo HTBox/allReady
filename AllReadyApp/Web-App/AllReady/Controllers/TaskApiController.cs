@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Security;
 using AllReady.Models;
-using AllReady.ViewModels;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Extensions;
 using AllReady.Features.Tasks;
+using AllReady.ViewModels.Shared;
+using AllReady.ViewModels.Task;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using DeleteTaskCommandAsync = AllReady.Features.Tasks.DeleteTaskCommandAsync;
@@ -74,11 +75,11 @@ namespace AllReady.Controllers
       if (!hasPermissions)
         return Unauthorized();
 
-      // Changing all the potential properties that the VM could have modified.
-      allReadyTask.Name = value.Name;
-      allReadyTask.Description = value.Description;
-      allReadyTask.StartDateTime = value.StartDateTime.Value.UtcDateTime;
-      allReadyTask.EndDateTime = value.EndDateTime.Value.UtcDateTime;
+            // Changing all the potential properties that the VM could have modified.
+            allReadyTask.Name = value.Name;
+            allReadyTask.Description = value.Description;
+            allReadyTask.StartDateTime = value.StartDateTime.UtcDateTime;
+            allReadyTask.EndDateTime = value.EndDateTime.UtcDateTime;
 
       await _mediator.SendAsync(new UpdateTaskCommandAsync { AllReadyTask = allReadyTask });
 

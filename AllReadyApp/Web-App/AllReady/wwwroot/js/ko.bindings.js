@@ -15,8 +15,7 @@ ko.bindingHandlers.accordion = {
             contentClass = ".collapse",
             openItem = ko.utils.unwrapObservable(options.openItem) || false,
             itemClass = "." + (ko.utils.unwrapObservable(options.item) || "panel-group"),
-            expandIconClass = "." + (ko.utils.unwrapObservable(options.expandIcon) || "accordion-expand-icon"),
-            collapseIconClass = "." + (ko.utils.unwrapObservable(options.collapseIcon) || "accordion-collapse-icon"),
+            accordionDirectionIconClass = "." + (ko.utils.unwrapObservable(options.itemIconDirection) || "accordion-icon-direction"),
             items = $(elem).find(contentClass);
 
         initializeAccordion();
@@ -35,19 +34,11 @@ ko.bindingHandlers.accordion = {
         });
 
         $(elem).on("show.bs.collapse", function (event) {
-            var $currentPanel = $(event.target).closest(itemClass);
-            var $currentExpandIcon = $currentPanel.find(expandIconClass);
-            var $currentCollapseIcon = $currentPanel.find(collapseIconClass);
-            $currentExpandIcon.hide();
-            $currentCollapseIcon.show();
+            toggleAccordionItemIconDirection(event);
         });
 
         $(elem).on("hide.bs.collapse", function (event) {
-            var $currentPanel = $(event.target).closest(itemClass);
-            var $currentExpandIcon = $currentPanel.find(expandIconClass);
-            var $currentCollapseIcon = $currentPanel.find(collapseIconClass);
-            $currentExpandIcon.show();
-            $currentCollapseIcon.hide();
+            toggleAccordionItemIconDirection(event);
         });
 
         // if initial open item specified, expand it
@@ -58,9 +49,13 @@ ko.bindingHandlers.accordion = {
         function initializeAccordion() {
             // activate all items
             $(elem).find(contentClass).collapse({ parent: elem, toggle: false });
+        }
 
-            // hide all of the 'collapse' icons, the 'expand' icons will be initially showing
-            $(elem).find(collapseIconClass).hide();
+        function toggleAccordionItemIconDirection(event) {
+            var $currentPanel = $(event.target).closest(itemClass);
+            var $accordionDirectionIcon = $currentPanel.find(accordionDirectionIconClass);
+
+            $accordionDirectionIcon.toggleClass("fa-caret-down fa-caret-up");
         }
     }
 };

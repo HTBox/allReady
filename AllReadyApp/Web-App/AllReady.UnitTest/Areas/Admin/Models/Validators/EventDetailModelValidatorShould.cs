@@ -10,9 +10,9 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         [Fact]
         public void ReturnsCorrectErrorWhenEndDateTimeIsLessThanStartDateTime()
         {
-            var validator = new EventDetailModelValidator();
+            var validator = new EventEditModelValidator();
             var parentCampaign = new CampaignSummaryModel { EndDate = new DateTimeOffset(new DateTime(1999, 2, 1)) };
-            var model = new EventDetailModel
+            var model = new EventEditModel
             {
                 StartDateTime = new DateTimeOffset(new DateTime(2000, 1, 1)),
                 EndDateTime = new DateTimeOffset(new DateTime(1999, 1, 1))
@@ -27,14 +27,14 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         [Fact]
         public void ReturnsCorrectErrorWhenModelsStartDateTimeIsLessThanParentCampaignsStartDate()
         {
-            var validator = new EventDetailModelValidator();
+            var validator = new EventEditModelValidator();
             var parentCampaign = new CampaignSummaryModel
             {
                 StartDate = new DateTimeOffset(new DateTime(2000, 1, 1)),
                 EndDate = new DateTimeOffset(new DateTime(2001, 2, 1))
             };
 
-            var model = new EventDetailModel
+            var model = new EventEditModel
             {
                 EndDateTime = new DateTimeOffset(new DateTime(2001, 1, 1))
             };
@@ -48,13 +48,13 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         [Fact]
         public void RetrunsCorrectErrorWhenModelsEndDateTimeIsGreaterThanParentCampaignsEndDate()
         {
-            var validator = new EventDetailModelValidator();
+            var validator = new EventEditModelValidator();
             var parentCampaign = new CampaignSummaryModel
             {
                 StartDate = new DateTimeOffset(new DateTime(2000, 1, 1)),
                 EndDate = new DateTimeOffset(new DateTime(2001, 1, 1))
             };
-            var model = new EventDetailModel
+            var model = new EventEditModel
             {
                 StartDateTime = new DateTimeOffset(new DateTime(2001, 1, 1)),
                 EndDateTime = new DateTimeOffset(new DateTime(2001, 2, 1)),

@@ -9,7 +9,7 @@
         this.displayDate = function () {
             var start = moment(this.StartDate).utcOffset(this.StartDate).format("dddd, MMMM Do YYYY");
             var end = moment(this.EndDate).utcOffset(this.EndDate).format("dddd, MMMM Do YYYY");
-            return start + ' - ' + end;
+            return start + ' to ' + end;
         }
         return this;
     }

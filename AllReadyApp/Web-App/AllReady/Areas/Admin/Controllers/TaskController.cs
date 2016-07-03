@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.Models.Validators;
 using AllReady.Features.Event;
 using AllReady.Models;
 using AllReady.Security;
@@ -17,10 +18,12 @@ namespace AllReady.Areas.Admin.Controllers
     public class TaskController : Controller
     {
         private readonly IMediator _mediator;
+        private readonly ITaskSummaryModelValidator _taskDetailModelValidator;
 
-        public TaskController(IMediator mediator)
+        public TaskController(IMediator mediator, ITaskSummaryModelValidator taskDetailModelValidator)
         {
             _mediator = mediator;
+            _taskDetailModelValidator = taskDetailModelValidator;
         }
 
         [HttpGet]
@@ -33,10 +36,10 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
             
-            var viewModel = new TaskEditModel
+            var viewModel = new TaskSummaryModel
             {
                 EventId = campaignEvent.Id,
-                EventName = campaignEvent.Name,
+                EventName = campaignEvent.Name,                
                 CampaignId = campaignEvent.CampaignId,
                 CampaignName = campaignEvent.Campaign.Name,
                 OrganizationId = campaignEvent.Campaign.ManagingOrganizationId,
@@ -51,14 +54,11 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Task/Create/{eventId}")]
-        public async Task<IActionResult> Create(int eventId, TaskEditModel model)
+        public async Task<IActionResult> Create(int eventId, TaskSummaryModel model)
         {
-            if (model.EndDateTime < model.StartDateTime)
-            {
-                ModelState.AddModelError(nameof(model.EndDateTime), "Ending time cannot be earlier than the starting time");
-            }
-            
-            WarnDateTimeOutOfRange(ref model);
+            var errors = _taskDetailModelValidator.Validate(model);
+
+            errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)
             {
@@ -78,14 +78,11 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(TaskEditModel model)
+        public async Task<IActionResult> Edit(TaskSummaryModel model)
         {
-            if (model.EndDateTime < model.StartDateTime)
-            {
-                ModelState.AddModelError(nameof(model.EndDateTime), "Ending time cannot be earlier than the starting time");
-            }
-            
-            WarnDateTimeOutOfRange(ref model);
+            var errors = _taskDetailModelValidator.Validate(model);
+
+            errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)
             {
@@ -212,40 +209,6 @@ namespace AllReady.Areas.Admin.Controllers
             await _mediator.SendAsync(new MessageTaskVolunteersCommandAsync { Model = model });
 
             return Ok();
-        }
-
-        private void WarnDateTimeOutOfRange(ref TaskEditModel model)
-        {
-            if (model.StartDateTime.HasValue || model.EndDateTime.HasValue)
-            {
-                var campaignEvent = GetEventBy(model.EventId);
-                var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(campaignEvent.Campaign.TimeZoneId);
-
-                DateTimeOffset? convertedStartDateTime = null;
-                if (model.StartDateTime.HasValue)
-                {
-                    var startDateValue = model.StartDateTime.Value;
-                    var startDateTimeOffset = timeZoneInfo.GetUtcOffset(startDateValue);
-                    convertedStartDateTime = new DateTimeOffset(startDateValue.Year, startDateValue.Month, startDateValue.Day, startDateValue.Hour, startDateValue.Minute, 0, startDateTimeOffset);
-                }
-
-                DateTimeOffset? convertedEndDateTime = null;
-                if (model.EndDateTime.HasValue)
-                {
-                    var endDateValue = model.EndDateTime.Value;
-                    var endDateTimeOffset = timeZoneInfo.GetUtcOffset(endDateValue);
-                    convertedEndDateTime = new DateTimeOffset(endDateValue.Year, endDateValue.Month, endDateValue.Day, endDateValue.Hour, endDateValue.Minute, 0, endDateTimeOffset);
-                }
-
-                if ((convertedStartDateTime < campaignEvent.StartDateTime || convertedEndDateTime > campaignEvent.EndDateTime) &&
-                    (model.IgnoreTimeRangeWarning == false))
-                {
-                    ModelState.AddModelError("", "Although valid, task time is out of range for event time from " +
-                        campaignEvent.StartDateTime.DateTime.ToString("g") + " to " + campaignEvent.EndDateTime.DateTime.ToString("g") + " " + campaignEvent.Campaign.TimeZoneId);
-                    ModelState.Remove("IgnoreTimeRangeWarning");
-                    model.IgnoreTimeRangeWarning = true;
-                }
-            }
         }
 
         //mgmccarthy: mediator query and handler need to be changed to async when Issue #622 is addressed

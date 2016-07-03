@@ -1,11 +1,15 @@
-﻿@model CampaignViewModel
+﻿@using AllReady.ViewModels.Campaign
+@model AllReady.ViewModels.Campaign.CampaignViewModel
 @{
     ViewData["Title"] = Model.Name;
 }
 
 <div class="row">
     <div id="col-main">
-        <div class="col-md-9"><h2>@if (Model.Featured) {<i class="fa fa-star star-highlight" aria-hidden="true"></i>} @Model.Name</h2></div>
+        <div class="col-md-9">
+            <h2>@if (Model.Featured)
+                {<i class="fa fa-star star-highlight" aria-hidden="true"></i>} @Model.Name</h2>
+        </div>
         <div class="col-md-3 share-buttons">
             <a href="mailto:?subject=Check out @Model.Name&body=Check it out at @ViewBag.AbsoluteUrl" title="Share by Email">
                 <img src="~/images/share-email.png">
@@ -22,6 +26,10 @@
 
 <div class="row">
     <div class="col-md-12">
+        @if (Model.HasHeadline)
+            {
+            <h3>@Model.Headline</h3>
+        }
         <p class="date-address">
             <time value="Model.StartDate" format="D"></time> - <time value="Model.EndDate" format="D"></time>
             <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
@@ -152,7 +160,15 @@
     </div>
 </div>
 
-@if (Model.HasPrivacyPolicy)
+@if (Model.HasPrivacyPolicyUrl)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <p class="text-center"><a href="@Model.PrivacyPolicyUrl" target="_blank">@Model.ManagingOrganizationName Privacy Policy</a></p>
+        </div>
+    </div>
+}
+else if (Model.HasPrivacyPolicy)
 {
     <div class="row">
         <div class="col-md-12">

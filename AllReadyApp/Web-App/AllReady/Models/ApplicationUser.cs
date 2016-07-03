@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
@@ -11,7 +12,12 @@ namespace AllReady.Models
         [Display(Name = "Associated skills")]
         public List<UserSkill> AssociatedSkills { get; set; } = new List<UserSkill>();
 
-        public string Name { get; set; }
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        [NotMapped]
+        public string Name => $"{FirstName} {LastName}";
 
         [Display(Name = "Time Zone")]
         [Required]
@@ -25,21 +31,26 @@ namespace AllReady.Models
 
             if (!EmailConfirmed)
             {
-                validationResults.Add(new ValidationResult("Verify your email address", new string[] { nameof(Email) }));
+                validationResults.Add(new ValidationResult("Verify your email address", new[] { nameof(Email) }));
             }
 
-            if (string.IsNullOrWhiteSpace(Name))
+            if (string.IsNullOrWhiteSpace(FirstName))
             {
-                validationResults.Add(new ValidationResult("Enter your name", new string[] { nameof(Name) }));
+                validationResults.Add(new ValidationResult("Enter your first name", new[] { nameof(FirstName) }));
+            }
+
+            if (string.IsNullOrWhiteSpace(LastName))
+            {
+                validationResults.Add(new ValidationResult("Enter your last name", new[] { nameof(LastName) }));
             }
 
             if (string.IsNullOrWhiteSpace(PhoneNumber))
             {
-                validationResults.Add(new ValidationResult("Add a phone number", new string[] { nameof(PhoneNumber) }));
+                validationResults.Add(new ValidationResult("Add a phone number", new[] { nameof(PhoneNumber) }));
             }
             else if (!PhoneNumberConfirmed)
             {
-                validationResults.Add(new ValidationResult("Confirm your phone number", new string[] { nameof(PhoneNumberConfirmed) }));
+                validationResults.Add(new ValidationResult("Confirm your phone number", new[] { nameof(PhoneNumberConfirmed) }));
             }
             return validationResults;
         }

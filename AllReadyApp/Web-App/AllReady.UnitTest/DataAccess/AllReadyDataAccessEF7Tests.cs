@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace AllReady.UnitTest.DataAccess  
+namespace AllReady.UnitTest.DataAccess
 {
     public class AllReadyDataAccessEF7Tests : TestBase
     {
@@ -136,7 +136,8 @@ namespace AllReady.UnitTest.DataAccess
                 var users = Enumerable.Range(1, 10).Select(n => new ApplicationUser
                 {
                     Id = n.ToString(),
-                    Name = string.Format(UserNameFormat, n)
+                    FirstName = string.Format(UserNameFormat, n),
+                    LastName = string.Format(UserNameFormat, n)
                 })
                 .ToArray();
 
@@ -158,8 +159,8 @@ namespace AllReady.UnitTest.DataAccess
                 var campaignEvents = Enumerable.Range(1, 10).Select(n => new Event
                 {
                     Campaign = campaigns[n - 1],
-                    EndDateTime = DateTime.MaxValue.ToUniversalTime(),
-                    StartDateTime = DateTime.MinValue.ToUniversalTime(),
+                    EndDateTime = new DateTime(2200, 12, 31).ToUniversalTime(),
+                    StartDateTime = new DateTime(1753, 1, 1).ToUniversalTime(),
                     Name = string.Format(EventNameFormat, n),
                     Description = string.Format(EventDescriptionFormat, n),
                     Id = n,
@@ -197,8 +198,6 @@ namespace AllReady.UnitTest.DataAccess
                 return campaignEvents;
             }
         }
-
         #endregion
-
     }
 }
