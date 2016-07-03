@@ -4,6 +4,7 @@ using System.Linq;
 using AllReady.Models;
 using AllReady.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Moq;
 using Xunit;
 

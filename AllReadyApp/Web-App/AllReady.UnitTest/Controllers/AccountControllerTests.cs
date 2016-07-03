@@ -1706,7 +1706,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock() =>
-            new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
+            new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
 
         private static Mock<SignInManager<ApplicationUser>> CreateSignInManagerMock(Mock<UserManager<ApplicationUser>> userManager)
         {

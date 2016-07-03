@@ -641,7 +641,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
         private static Mock<UserManager<ApplicationUser>> CreateApplicationUserMock()
         {
-            return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
+            return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null,null);
         }    
     }
 }
