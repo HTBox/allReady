@@ -21,6 +21,8 @@
             @if (User.IsUserType(UserType.SiteAdmin))
             {
                 <li @(isAdmin && controllerName == "Site" ? " class=active" : "")><a asp-route-area="Admin" asp-route-controller="Site" asp-route-action="Index">Site Admin</a></li>
+                <li class="divider"></li>
+                <li @(isAdmin && controllerName == "Import" ? " class=active" : "")><a asp-route-area="Admin" asp-route-controller="Import" asp-route-action="Index">Import Data</a></li>
             }
         </ul>
     </li>
