@@ -27,7 +27,7 @@ namespace AllReady
 {
   public class Startup
   {
-    public Startup(IHostingEnvironment env, ApplicationEnvironment appEnv)
+    public Startup(IHostingEnvironment env)
     {
       // Setup configuration sources.
       var builder = new ConfigurationBuilder()
@@ -49,7 +49,8 @@ namespace AllReady
       }
 
       Configuration = builder.Build();
-      Configuration["version"] = appEnv.ApplicationVersion; // version in project.json
+
+      Configuration["version"] = new ApplicationEnvironment().ApplicationVersion; // version in project.json
     }
 
     public IConfiguration Configuration { get; set; }
