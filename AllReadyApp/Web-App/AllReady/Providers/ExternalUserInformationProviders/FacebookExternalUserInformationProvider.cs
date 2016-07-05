@@ -14,14 +14,14 @@ namespace AllReady.Providers.ExternalUserInformationProviders
             {
                 return externalUserInformation;
             }
-            
+
             var array = name.Split(' ');
             if (array.Length < 2)
             {
                 return externalUserInformation;
             }
-            
-            externalUserInformation.FirstName= array[0];
+
+            externalUserInformation.FirstName = array[0];
             externalUserInformation.LastName = array[1];
 
             return externalUserInformation;
