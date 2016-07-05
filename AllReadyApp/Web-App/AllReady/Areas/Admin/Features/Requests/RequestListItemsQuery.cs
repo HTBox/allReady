@@ -3,7 +3,7 @@ using AllReady.Areas.Admin.Models.RequestModels;
 using MediatR;
 using System.Collections.Generic;
 
-namespace AllReady.Areas.Admin.Features.Itineraries
+namespace AllReady.Areas.Admin.Features.Requests
 {
     public class RequestListItemsQuery : IAsyncRequest<List<RequestListModel>>
     {

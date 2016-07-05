@@ -66,7 +66,7 @@ footer {
 }
 
 .btn {
-    border-radius: 0;
+    border-radius: 6px;
 }
 
     .btn.btn-default, a.btn.btn-default {
@@ -403,13 +403,12 @@ Navigation
     margin-left: -10px;
 }
 
-.task-panel .panel-title .toggle-accordion-icon, #CampaignInfo .toggle-accordion-icon
-{
-    width: 25px;
-    float: left;
-    font-size: 24px;
-    color: hsl(28.6, 62.9%, 41.2%);
-}
+    .task-panel .panel-title .toggle-accordion-icon, #CampaignInfo .toggle-accordion-icon {
+        width: 25px;
+        float: left;
+        font-size: 24px;
+        color: hsl(28.6, 62.9%, 41.2%);
+    }
 
 #CampaignInfo h3 {
     margin-top: 1px;
@@ -430,9 +429,10 @@ Navigation
 .task-panel .task-name {
     font-weight: bold;
 }
-.task-panel .task-name.isFull {
-    font-weight: normal;
-}
+
+    .task-panel .task-name.isFull {
+        font-weight: normal;
+    }
 
 .task-panel .task-datetime {
     font-size: 13px;
@@ -446,13 +446,13 @@ Navigation
     margin-top: -32px;
 }
 
-.task-panel .btn-group > .btn {
-    margin-top: -3px;
-}
+    .task-panel .btn-group > .btn {
+        margin-top: -3px;
+    }
 
-.task-panel .btn-group > .btn-sm {
-    margin-top: -2px;
-}
+    .task-panel .btn-group > .btn-sm {
+        margin-top: -2px;
+    }
 
 .task-list {
     width: 80%;
@@ -468,10 +468,10 @@ Navigation
     margin: 0 auto;
 }
 
-#UserTasksAccordion .task-panel .task-button-container.twoButtons {
-    width: 46%;
-    margin: 0 auto;
-}
+    #UserTasksAccordion .task-panel .task-button-container.twoButtons {
+        width: 46%;
+        margin: 0 auto;
+    }
 
 /* Event Edit Page */
 
@@ -492,30 +492,30 @@ Navigation
     margin-left: 3px;
 }
 
-a .myevents-block  {
+a .myevents-block {
     color: #000;
 }
 
-a:hover .myevents-block  {
+a:hover .myevents-block {
     background: #f5eae1;
 }
 
 .myevents-block h5 {
-    font-size:15px;
+    font-size: 15px;
     margin-top: 3px;
 }
 
 .myevents-block h4 {
-    font-size:18px;
-    font-weight:bold;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .myevents-block h6 {
-    font-size:14px;
+    font-size: 14px;
 }
 
 .myevents-block p {
-    font-size:14px;
+    font-size: 14px;
 }
 
 .lister-logo {
@@ -544,13 +544,12 @@ a:hover .myevents-block  {
     color: black;
 }
 
-.org-tile  img {
-    max-height: 140px;
-}
+    .org-tile img {
+        max-height: 140px;
+    }
 
-.org-tile h2 {
-    margin-top: 0;
-    margin-bottom: 25px;
-    font-size: 20px;
-}
-
+    .org-tile h2 {
+        margin-top: 0;
+        margin-bottom: 25px;
+        font-size: 20px;
+    }
