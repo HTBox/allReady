@@ -316,7 +316,6 @@ namespace AllReady.Controllers
 
             if (externalLoginSignInAsyncResult.Succeeded)
             {
-                //TODO: will getting email this way be a problems if the user already has a login and is logging in after registering with the system?
                 var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = email });
                 return RedirectToLocal(returnUrl, user);
             }
