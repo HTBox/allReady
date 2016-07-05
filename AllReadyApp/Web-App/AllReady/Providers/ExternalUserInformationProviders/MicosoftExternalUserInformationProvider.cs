@@ -11,12 +11,16 @@ namespace AllReady.Providers.ExternalUserInformationProviders
 
             var name = externalLoginInfo.ExternalPrincipal.FindFirstValue(ClaimTypes.Name);
             if (string.IsNullOrEmpty(name))
+            {
                 return externalUserInformation;
-
+            }
+            
             var array = name.Split(' ');
             if (array.Length < 2)
+            {
                 return externalUserInformation;
-
+            }
+            
             externalUserInformation.FirstName = array[0];
             externalUserInformation.LastName = array[1];
 

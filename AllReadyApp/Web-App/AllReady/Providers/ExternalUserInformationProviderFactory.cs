@@ -28,7 +28,7 @@ namespace AllReady.Providers
                 case "Microsoft":
                     return new MicosoftExternalUserInformationProvider();
                 case "Twitter":
-                    return new TwitterExternalUserInformationProvider { Configuration = configuration };
+                    return new TwitterExternalUserInformationProvider(configuration);
             }
             return null;
         }

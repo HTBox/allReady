@@ -8,7 +8,12 @@ namespace AllReady.Providers.ExternalUserInformationProviders
 {
     public class TwitterExternalUserInformationProvider : IProvideExternalUserInformation
     {
-        public IConfiguration Configuration { get; set; }
+        private readonly IConfiguration configuration;
+
+        public TwitterExternalUserInformationProvider(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
 
         public ExternalUserInformation GetExternalUserInformationWith(ExternalLoginInfo externalLoginInfo)
         {
@@ -21,10 +26,10 @@ namespace AllReady.Providers.ExternalUserInformationProviders
             {
                 CredentialStore = new SingleUserInMemoryCredentialStore
                 {
-                    ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"],
-                    ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"],
-                    OAuthToken = Configuration["Authentication:Twitter:OAuthToken"],
-                    OAuthTokenSecret = Configuration["Authentication:Twitter:OAuthSecret"],
+                    ConsumerKey = configuration["Authentication:Twitter:ConsumerKey"],
+                    ConsumerSecret = configuration["Authentication:Twitter:ConsumerSecret"],
+                    OAuthToken = configuration["Authentication:Twitter:OAuthToken"],
+                    OAuthTokenSecret = configuration["Authentication:Twitter:OAuthSecret"],
                     UserID = ulong.Parse(userId),
                     ScreenName = screenName
                 }
@@ -37,7 +42,7 @@ namespace AllReady.Providers.ExternalUserInformationProviders
 
             var verifyResponse = (from acct in twitterCtx.Account
                 // ReSharper disable once RedundantBoolCompare
-                where (acct.Type == AccountType.VerifyCredentials) && (acct.IncludeEmail == true) //VERY important you explicitly keep the "== true" part of comparison here. ReSharper will prompt you to remove this, and if it does, the query will not wor
+                where (acct.Type == AccountType.VerifyCredentials) && (acct.IncludeEmail == true) //VERY important you explicitly keep the "== true" part of comparison here. ReSharper will prompt you to remove this, and if it does, the query will not work
                 select acct).SingleOrDefaultAsync().Result; //TODO: make contract async to not force locking on async invocations
 
             if (verifyResponse != null && verifyResponse.User != null)
