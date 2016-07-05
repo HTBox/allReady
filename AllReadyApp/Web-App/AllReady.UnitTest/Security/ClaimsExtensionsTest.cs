@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.UnitTest.Security
 {
-  public class ClaimsExtensionsTest
+  public class ClaimsExtensionsTest : TestBase
   {
-    private UserManager<ApplicationUser> _userManager;
+    UserManager<ApplicationUser> _userManager;
 
-    public ClaimsExtensionsTest(UserManager<ApplicationUser> userManager)
+    public ClaimsExtensionsTest()
     {
-      _userManager = userManager;
+      _userManager = (UserManager<ApplicationUser>)ServiceProvider.GetService(typeof(UserManager<ApplicationUser>));
     }
 
     [Fact]

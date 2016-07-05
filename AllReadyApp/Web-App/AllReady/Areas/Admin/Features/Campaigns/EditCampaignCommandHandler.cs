@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
+using AllReady.Extensions;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -52,15 +53,15 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
             if (campaign.CampaignImpact != null)
             {
-                _context.Update(campaign.CampaignImpact);
+                _context.AddOrUpdate(campaign.CampaignImpact);
             }
 
             if (campaign.Location != null)
             {
-                _context.Update(campaign.Location);
+                _context.AddOrUpdate(campaign.Location);
             }
 
-            _context.Update(campaign);
+            _context.AddOrUpdate(campaign);
 
             await _context.SaveChangesAsync().ConfigureAwait(false);
 

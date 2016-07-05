@@ -222,5 +222,6 @@ namespace AllReady.Models
     {
       builder.HasKey(x => new { x.ItineraryId, x.RequestId });
     }
+
   }
 }

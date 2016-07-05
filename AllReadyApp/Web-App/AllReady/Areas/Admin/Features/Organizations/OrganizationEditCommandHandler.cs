@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using AllReady.Areas.Admin.Models;
+using AllReady.Extensions;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +38,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
             org.PrivacyPolicy = message.Organization.PrivacyPolicy;
             org.PrivacyPolicyUrl = message.Organization.PrivacyPolicyUrl;
 
-            _context.Update(org);
+            _context.AddOrUpdate(org);
             _context.SaveChanges();
 
             return org.Id;
