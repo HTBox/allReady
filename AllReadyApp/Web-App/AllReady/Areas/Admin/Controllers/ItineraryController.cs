@@ -11,7 +11,9 @@ using AllReady.Areas.Admin.Models.Validators;
 using System.Linq;
 using AllReady.Areas.Admin.Models.RequestModels;
 using AllReady.Areas.Admin.Features.Organizations;
+using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.Features.TaskSignups;
+using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -311,6 +313,44 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             var result = await _mediator.SendAsync(new ReorderRequestCommand { RequestId = requestId, ItineraryId = itineraryId, ReOrderDirection = ReorderRequestCommand.Direction.Down });
+
+            return RedirectToAction("Details", new { id = itineraryId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{requestId}")]
+        public async Task<IActionResult> MarkComplete(int itineraryId, Guid requestId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            // todo: sgordon - Extend this to return success / failure message to the user
+
+            await _mediator.SendAsync(new RequestStatusChangeCommand() { RequestId = requestId, NewStatus = RequestStatus.Completed});
+
+            return RedirectToAction("Details", new { id = itineraryId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{requestId}")]
+        public async Task<IActionResult> MarkIncomplete(int itineraryId, Guid requestId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return HttpUnauthorized();
+            }
+
+            // todo: sgordon - Extend this to return success / failure message to the user
+
+            await _mediator.SendAsync(new RequestStatusChangeCommand() { RequestId = requestId, NewStatus = RequestStatus.Assigned });
 
             return RedirectToAction("Details", new { id = itineraryId });
         }
