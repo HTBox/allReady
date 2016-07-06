@@ -108,6 +108,7 @@ namespace AllReady.ViewModels.Event
             };
             return value;
         }
+
         public static Location ToModel(this LocationViewModel location)
         {
             var value = new Location
@@ -121,38 +122,39 @@ namespace AllReady.ViewModels.Event
             };
             return value;
         }
+
         public static IEnumerable<EventViewModel> ToViewModel(this IEnumerable<Models.Event> campaignEvents)
         {
             return campaignEvents.Select(campaignEvent => new EventViewModel(campaignEvent));
         }
 
-        public static EventViewModel WithUserInfo(this EventViewModel viewModel, Models.Event campaignEvent, ClaimsPrincipal user, IAllReadyDataAccess dataAccess, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signedInManager)
-        {
-            if (signedInManager.IsSignedIn(user))
-            {
-                var userId = userManager.GetUserId(user);
-                var appUser = dataAccess.GetUser(userId);
-                viewModel.UserId = userId;
-                viewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
-                viewModel.IsUserVolunteeredForEvent = dataAccess.GetEventSignups(viewModel.Id, userId).Any();
-                var assignedTasks = campaignEvent.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
-                viewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
-                var unassignedTasks = campaignEvent.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != userId)).ToList();
-                viewModel.Tasks = new List<TaskViewModel>(unassignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
-                viewModel.SignupModel = new EventSignupViewModel()
-                {
-                    EventId = viewModel.Id,
-                    UserId = userId,
-                    Name = appUser.Name,
-                    PreferredEmail = appUser.Email,
-                    PreferredPhoneNumber = appUser.PhoneNumber
-                };
-            }
-            else
-            {
-                viewModel.UserTasks = new List<TaskViewModel>();
-            }
-            return viewModel;
-        }
+        //public static EventViewModel WithUserInfo(this EventViewModel viewModel, Models.Event campaignEvent, ClaimsPrincipal user, IAllReadyDataAccess dataAccess)
+        //{
+        //    if (user.IsSignedIn())
+        //    {
+        //        var userId = user.GetUserId();
+        //        var appUser = dataAccess.GetUser(userId);
+        //        viewModel.UserId = userId;
+        //        viewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
+        //        viewModel.IsUserVolunteeredForEvent = dataAccess.GetEventSignups(viewModel.Id, userId).Any();
+        //        var assignedTasks = campaignEvent.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
+        //        viewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
+        //        var unassignedTasks = campaignEvent.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != userId)).ToList();
+        //        viewModel.Tasks = new List<TaskViewModel>(unassignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
+        //        viewModel.SignupModel = new EventSignupViewModel()
+        //        {
+        //            EventId = viewModel.Id,
+        //            UserId = userId,
+        //            Name = appUser.Name,
+        //            PreferredEmail = appUser.Email,
+        //            PreferredPhoneNumber = appUser.PhoneNumber
+        //        };
+        //    }
+        //    else
+        //    {
+        //        viewModel.UserTasks = new List<TaskViewModel>();
+        //    }
+        //    return viewModel;
+        //}
     }
 }
