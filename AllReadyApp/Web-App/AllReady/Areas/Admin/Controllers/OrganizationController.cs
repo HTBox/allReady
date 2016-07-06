@@ -3,8 +3,10 @@ using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
 using AllReady.Areas.Admin.Models.Validators;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Mvc;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -55,13 +57,13 @@ namespace AllReady.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            return View("Edit",organization);
+            return View("Edit", organization);
         }
 
         // POST: Organization/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(OrganizationEditModel organization)
+        public async Task<IActionResult> Edit(OrganizationEditModel organization)
         {
             if (organization == null)
             {
@@ -73,16 +75,14 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                bool isNameUnique = _mediator.Send(new OrganizationNameUniqueQuery() { OrganizationName = organization.Name, OrganizationId = organization.Id });
+                var isNameUnique = await _mediator.SendAsync(new OrganizationNameUniqueQuery { OrganizationName = organization.Name, OrganizationId = organization.Id });
                 if (isNameUnique)
                 {
-                    int id = _mediator.Send(new OrganizationEditCommand { Organization = organization });
-                    return RedirectToAction("Details", new { id = id, area = "Admin" });
+                    var id = await _mediator.SendAsync(new OrganizationEditCommand { Organization = organization });
+                    return RedirectToAction(nameof(Details), new { id, area = "Admin" });
                 }
-                else
-                {
-                    ModelState.AddModelError(nameof(organization.Name), "Organization with same name already exists. Please use different name.");
-                }
+
+                ModelState.AddModelError(nameof(organization.Name), "Organization with same name already exists. Please use different name.");
             }
 
             return View("Edit", organization);
@@ -97,6 +97,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
             var organization = _mediator.Send(new OrganizationDetailQuery { Id = id.Value });
             if (organization == null)
             {
@@ -112,7 +113,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult DeleteConfirmed(int id)
         {
             _mediator.Send(new OrganizationDeleteCommand { Id= id });
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }               
     }
 }

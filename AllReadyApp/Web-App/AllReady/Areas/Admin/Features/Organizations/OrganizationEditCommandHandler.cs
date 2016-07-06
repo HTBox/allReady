@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Extensions;
 using AllReady.Models;
@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationEditCommandHandler : IRequestHandler<OrganizationEditCommand, int>
+    public class OrganizationEditCommandHandler : IAsyncRequestHandler<OrganizationEditCommand, int>
     {
         private readonly AllReadyContext _context;
 
@@ -16,13 +16,13 @@ namespace AllReady.Areas.Admin.Features.Organizations
             _context = context;
         }
 
-        public int Handle(OrganizationEditCommand message)
+        public async Task<int> Handle(OrganizationEditCommand message)
         {
-            var org = _context
+            var org = await _context
                 .Organizations
                 .Include(l => l.Location)
                 .Include(tc => tc.OrganizationContacts)
-                .SingleOrDefault(t => t.Id == message.Organization.Id) ?? new Organization();
+                .SingleOrDefaultAsync(t => t.Id == message.Organization.Id).ConfigureAwait(false) ?? new Organization();
 
             org.Name = message.Organization.Name;
             org.LogoUrl = message.Organization.LogoUrl;
@@ -31,15 +31,16 @@ namespace AllReady.Areas.Admin.Features.Organizations
             org.DescriptionHtml = message.Organization.Description;
             org.Summary = message.Organization.Summary;
 
-            org = org.UpdateOrganizationContact(message.Organization, _context);
+            //TODO: mgmccarthy: pull code from ContactExtension.UpdateOrganizationContact into this handler as it's the only code that uses it
+            org = await org.UpdateOrganizationContact(message.Organization, _context).ConfigureAwait(false);
             org.Location = org.Location.UpdateModel(message.Organization.Location);
             org.Location.PostalCode = message.Organization.Location.PostalCode;
 
             org.PrivacyPolicy = message.Organization.PrivacyPolicy;
             org.PrivacyPolicyUrl = message.Organization.PrivacyPolicyUrl;
 
-            _context.AddOrUpdate(org);
-            _context.SaveChanges();
+            _context.Update(org);
+            await _context.SaveChangesAsync();
 
             return org.Id;
         }       

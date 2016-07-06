@@ -13,13 +13,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
         public void AddOrganization()
         {
             // Arrange
-            Organization org = CreateAgincourtAwareness();
-            OrganizationEditModel orgModel = OrganizationEditCommandHandlerTests.ToEditModel_Organization(org);
+            var org = CreateAgincourtAwareness();
+            var orgModel = OrganizationEditCommandHandlerTests.ToEditModel_Organization(org);
 
             // Act
-            OrganizationEditCommandHandler handler = new OrganizationEditCommandHandler(Context);
+            var handler = new OrganizationEditCommandHandler(Context);
             int id = handler.Handle(new OrganizationEditCommand() { Organization = orgModel });
-            Organization fetchedOrg = Context.Organizations.Where(t => t.Id == id).First();
+            var fetchedOrg = Context.Organizations.Where(t => t.Id == id).First();
 
             // Assert
             Assert.Single(Context.Organizations.Where(t => t.Id == id));
@@ -46,7 +46,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
         /// and it's location and primary contact built from values from the supplied organization. </returns>
         public static OrganizationEditModel ToEditModel_Organization(Organization organization)
         {
-            OrganizationEditModel ret = new OrganizationEditModel()
+            var ret = new OrganizationEditModel()
             {
                 Id = organization.Id,
                 Name = organization.Name,
