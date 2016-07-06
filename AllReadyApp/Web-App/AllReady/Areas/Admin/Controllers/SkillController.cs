@@ -6,8 +6,8 @@ using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using AllReady.Security;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -36,13 +36,13 @@ namespace AllReady.Areas.Admin.Controllers
             var organizationId = User.GetOrganizationId();
             if (!organizationId.HasValue)
             {
-                return new HttpUnauthorizedResult(); // Edge case of user having Org Admin claim but not Org Id claim
+                return new UnauthorizedResult(); // Edge case of user having Org Admin claim but not Org Id claim
             }
             
             var organizationName = await _mediator.SendAsync(new OrganizationNameQueryAsync { Id = organizationId.Value });
             if (string.IsNullOrEmpty(organizationName))
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             ViewData["Title"] = $"Skills - {organizationName}";
@@ -59,7 +59,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (!User.IsUserType(UserType.SiteAdmin) && !organizationId.HasValue)
             {
-                return new HttpUnauthorizedResult(); // Edge case of user having Org Admin claim but not Org Id claim
+                return new UnauthorizedResult(); // Edge case of user having Org Admin claim but not Org Id claim
             }
             
             var model = new SkillEditModel();
@@ -104,7 +104,7 @@ namespace AllReady.Areas.Admin.Controllers
                 var organizationId = User.GetOrganizationId();
                 if (!organizationId.HasValue)
                 {
-                    return new HttpUnauthorizedResult(); // Edge case of user having Org Admin claim but not Org Id claim
+                    return new UnauthorizedResult(); // Edge case of user having Org Admin claim but not Org Id claim
                 }
                 
                 model.ParentSelection = await _mediator.SendAsync(new SkillListQueryAsync { OrganizationId = organizationId.Value });
@@ -120,7 +120,7 @@ namespace AllReady.Areas.Admin.Controllers
             var model = await _mediator.SendAsync(new SkillEditQueryAsync { Id = id });
             if (model == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (User.IsUserType(UserType.SiteAdmin))
@@ -135,7 +135,7 @@ namespace AllReady.Areas.Admin.Controllers
                 // security check to ensure the skill belongs to the same org as the org admin
                 if (!organizationId.HasValue || model.OwningOrganizationId != organizationId)
                 {
-                    return new HttpUnauthorizedResult();
+                    return new UnauthorizedResult();
                 }
                 
                 model.ParentSelection = await _mediator.SendAsync(new SkillListQueryAsync { OrganizationId = organizationId.Value });
@@ -167,7 +167,7 @@ namespace AllReady.Areas.Admin.Controllers
                 var organizationId = User.GetOrganizationId();
                 if (!organizationId.HasValue)
                 {
-                    return new HttpUnauthorizedResult(); // Edge case of user having Org Admin claim but not Org Id claim
+                    return new UnauthorizedResult(); // Edge case of user having Org Admin claim but not Org Id claim
                 }
 
                 model.ParentSelection = await _mediator.SendAsync(new SkillListQueryAsync { OrganizationId = organizationId.Value });
@@ -185,7 +185,7 @@ namespace AllReady.Areas.Admin.Controllers
             var model = await _mediator.SendAsync(new SkillDeleteQueryAsync { Id = id });
             if (model == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             // security check to ensure the skill belongs to the same org as the org admin
@@ -196,7 +196,7 @@ namespace AllReady.Areas.Admin.Controllers
                 // security check to ensure the skill belongs to the same org as the org admin
                 if (!organizationId.HasValue || model.OwningOrganizationId != organizationId)
                 {
-                    return new HttpUnauthorizedResult();
+                    return new UnauthorizedResult();
                 }
             }
 
@@ -211,7 +211,7 @@ namespace AllReady.Areas.Admin.Controllers
             var model = await _mediator.SendAsync(new SkillDeleteQueryAsync { Id = id });
             if (model == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             // security check to ensure the skill belongs to the same org as the org admin
@@ -222,7 +222,7 @@ namespace AllReady.Areas.Admin.Controllers
                 // security check to ensure the skill belongs to the same org as the org admin
                 if (!organizationId.HasValue || model.OwningOrganizationId != organizationId)
                 {
-                    return new HttpUnauthorizedResult();
+                    return new UnauthorizedResult();
                 }
             }
 

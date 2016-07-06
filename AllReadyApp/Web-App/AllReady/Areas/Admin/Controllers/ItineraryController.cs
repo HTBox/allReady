@@ -1,21 +1,21 @@
-﻿using AllReady.Areas.Admin.Features.Itineraries;
-using AllReady.Security;
-using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
-using System;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Events;
-using AllReady.Areas.Admin.Models.ItineraryModels;
-using AllReady.Areas.Admin.Models.Validators;
-using System.Linq;
-using AllReady.Areas.Admin.Models.RequestModels;
+using AllReady.Areas.Admin.Features.Itineraries;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Features.TaskSignups;
+using AllReady.Areas.Admin.Models.ItineraryModels;
+using AllReady.Areas.Admin.Models.RequestModels;
+using AllReady.Areas.Admin.Models.Validators;
+using AllReady.Security;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+  [Area("Admin")]
     [Authorize("OrgAdmin")]
     public class ItineraryController : Controller
     {
@@ -46,12 +46,12 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (itinerary == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!User.IsOrganizationAdmin(itinerary.OrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             return View("Details", itinerary);
@@ -64,19 +64,19 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (model == null)
             {
-                return HttpBadRequest();
+                return BadRequest();
             }
 
             var campaignEvent = await _mediator.SendAsync(new EventSummaryQuery { EventId = model.EventId });
 
             if (campaignEvent == null)
             {
-                return HttpBadRequest();
+                return BadRequest();
             }
 
             if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             var errors = _itineraryValidator.Validate(model, campaignEvent);
@@ -85,7 +85,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (!ModelState.IsValid)
             {
-                return HttpBadRequest(ModelState);
+                return BadRequest(ModelState);
             }
 
             var result = await _mediator.SendAsync(new EditItineraryCommand { Itinerary = model });
@@ -95,7 +95,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Ok(result);
             }
 
-            return HttpBadRequest();
+            return BadRequest();
         }
 
         [HttpPost]
@@ -110,7 +110,7 @@ namespace AllReady.Areas.Admin.Controllers
             var orgId = await GetOrganizationIdBy(id);
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             if (id == 0 || selectedTeamMember == 0)
@@ -131,7 +131,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             var model = new SelectItineraryRequestsModel();
@@ -173,7 +173,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             if (selectedRequests.Any())
@@ -192,14 +192,14 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             var model = await _mediator.SendAsync(new TaskSignupSummaryQuery { TaskSignupId = taskSignupId });
 
             if (model == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             return View("ConfirmRemoveTeamMember", model);
@@ -214,7 +214,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             var result = await _mediator.SendAsync(new RemoveTeamMemberCommand { TaskSignupId = taskSignupId });
@@ -230,14 +230,14 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             var model = await _mediator.SendAsync(new RequestSummaryQuery { RequestId = requestId });
 
             if (model == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             return View("ConfirmRemoveRequest", model);
@@ -252,7 +252,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             var result = await _mediator.SendAsync(new RemoveRequestCommand { RequestId = requestId, ItineraryId = itineraryId });
@@ -269,7 +269,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             var result = await _mediator.SendAsync(new ReorderRequestCommand { RequestId = requestId, ItineraryId = itineraryId, ReOrderDirection = ReorderRequestCommand.Direction.Up });
@@ -286,7 +286,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
-                return HttpUnauthorized();
+                return Unauthorized();
             }
 
             var result = await _mediator.SendAsync(new ReorderRequestCommand { RequestId = requestId, ItineraryId = itineraryId, ReOrderDirection = ReorderRequestCommand.Direction.Down });

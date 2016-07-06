@@ -3,7 +3,7 @@ using AllReady.Controllers;
 using AllReady.Features.Organizations;
 using AllReady.ViewModels;
 using MediatR;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System.Threading.Tasks;
 using Xunit;
@@ -75,7 +75,7 @@ namespace AllReady.UnitTest.Controllers
             OrganizationController controller;
             MockMediatorOrganizationDetailsQueryNullResult(out controller);
 
-            var result = await controller.ShowOrganization(1) as HttpNotFoundResult;
+            var result = await controller.ShowOrganization(1) as NotFoundResult;
 
             Assert.NotNull(result);
         }

@@ -5,7 +5,7 @@ using AllReady.Features.ClosestLocation;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using MediatR;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 

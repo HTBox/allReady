@@ -72,8 +72,8 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     @{
-                        var descriptor = (Microsoft.AspNet.Mvc.Controllers.ControllerActionDescriptor)ViewContext.ActionDescriptor;
-                        var areaName = descriptor.RouteConstraints[0].RouteValue; // there must be a better way to get the area name!
+                        var descriptor = (Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)ViewContext.ActionDescriptor;
+                        var areaName = descriptor.RouteValues["area"]; // there must be a better way to get the area name!
                         var controllerName = descriptor.ControllerName;
                         var isUser = areaName != "Admin";
                     }

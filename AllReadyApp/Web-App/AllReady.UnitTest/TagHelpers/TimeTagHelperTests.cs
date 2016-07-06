@@ -1,25 +1,26 @@
 ﻿using AllReady.TagHelpers;
-using Microsoft.AspNet.Razor.TagHelpers;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using System.Text.Encodings.Web;
 
 namespace AllReady.UnitTest.TagHelpers
 {
     public class TimeTagHelperTests
     {
-        private Func<bool, Task<TagHelperContent>> GetEmptyChildContent()
+        private Func<bool, HtmlEncoder, Task<TagHelperContent>> GetEmptyChildContent()
         {
             TagHelperContent content = new DefaultTagHelperContent();
-            return b => Task.FromResult(content);
+            return (b, encoder) => Task.FromResult(content);
         }
 
         private TagHelperContext GetContext()
         {
-            return new TagHelperContext(new IReadOnlyTagHelperAttribute[] { }, new Dictionary<object, object>(), Guid.NewGuid().ToString());
+            return new TagHelperContext(new TagHelperAttributeList(), new Dictionary<object, object>(), Guid.NewGuid().ToString());
         }
 
         private TagHelperOutput GetOutput()

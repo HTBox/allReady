@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.Features.Tasks
