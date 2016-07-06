@@ -7,6 +7,6 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 {
     public class RequestListItemsQuery : IAsyncRequest<List<RequestListModel>>
     {
-        public RequestSearchCriteria criteria { get; set; }
+        public RequestSearchCriteria Criteria { get; set; }
     }
 }

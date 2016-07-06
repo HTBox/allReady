@@ -68,6 +68,10 @@ footer {
 .btn {
     border-radius: 0;
 }
+    .btn.btn-primary, a.btn.btn-primary {
+        border-radius: 6px;
+        border-width: 0;
+    }
 
     .btn.btn-default, a.btn.btn-default {
         background-color: #d58033;
@@ -534,6 +538,19 @@ a:hover .myevents-block  {
     max-width: 600px;
 }
 
+.request-filter-section {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 15px;
+    border: 1px solid #ab6627;
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
+
+.request-filter-section input { 
+    width: 300px;
+    margin-right: 14px;
+}
 .org-tile {
     height: 220px;
     border: 1px solid #ab6627;
