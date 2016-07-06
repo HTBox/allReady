@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationListQuery : IRequest<IEnumerable<OrganizationSummaryModel>>
+    public class OrganizationListQuery : IAsyncRequest<List<OrganizationSummaryModel>>
     {
     }
 }

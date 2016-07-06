@@ -24,16 +24,16 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Organization
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var list = _mediator.Send(new OrganizationListQuery());
+            var list = await _mediator.SendAsync(new OrganizationListQuery());
             return View(list);
         }
 
         // GET: Organization/Details/5
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var organization = _mediator.Send(new OrganizationDetailQuery { Id = id });
+            var organization = await _mediator.SendAsync(new OrganizationDetailQuery { Id = id });
             if (organization == null)
             {
                 return NotFound();
@@ -49,9 +49,9 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Organization/Edit/5
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var organization = _mediator.Send(new OrganizationEditQuery { Id = id });
+            var organization = await _mediator.SendAsync(new OrganizationEditQuery { Id = id });
             if (organization == null)
             {
                 return NotFound();
@@ -90,7 +90,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         // GET: Organization/Delete/5
         [ActionName("Delete")]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             // Needs comments:  This method doesn't delete things.
             if (id == null)
@@ -98,7 +98,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var organization = _mediator.Send(new OrganizationDetailQuery { Id = id.Value });
+            var organization = await _mediator.SendAsync(new OrganizationDetailQuery { Id = id.Value });
             if (organization == null)
             {
                 return NotFound();
@@ -110,9 +110,9 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Organization/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            _mediator.Send(new OrganizationDeleteCommand { Id= id });
+            await _mediator.SendAsync(new OrganizationDeleteCommand { Id= id });
             return RedirectToAction(nameof(Index));
         }               
     }

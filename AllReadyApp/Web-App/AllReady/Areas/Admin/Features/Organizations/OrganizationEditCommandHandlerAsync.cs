@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationEditCommandHandler : IAsyncRequestHandler<OrganizationEditCommand, int>
+    public class OrganizationEditCommandHandlerAsync : IAsyncRequestHandler<OrganizationEditCommand, int>
     {
         private readonly AllReadyContext _context;
 
-        public OrganizationEditCommandHandler(AllReadyContext context)
+        public OrganizationEditCommandHandlerAsync(AllReadyContext context)
         {
             _context = context;
         }
@@ -31,7 +31,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
             org.DescriptionHtml = message.Organization.Description;
             org.Summary = message.Organization.Summary;
 
-            //TODO: mgmccarthy: pull code from ContactExtension.UpdateOrganizationContact into this handler as it's the only code that uses it
+            //TODO: mgmccarthy: pull code from ContactExtension.UpdateOrganizationContact into this handler as this the only code that uses it and it should not be in an extension method... espeically doing database access
             org = await org.UpdateOrganizationContact(message.Organization, _context).ConfigureAwait(false);
             org.Location = org.Location.UpdateModel(message.Organization.Location);
             org.Location.PostalCode = message.Organization.Location.PostalCode;

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationContactQueryHandlerAsync : IAsyncRequestHandler<OrganizationContactQueryAsync , ContactInformationModel>
+    public class OrganizationContactQueryHandlerAsync : IAsyncRequestHandler<OrganizationContactQuery , ContactInformationModel>
     {
         private readonly AllReadyContext _context;
         public OrganizationContactQueryHandlerAsync(AllReadyContext context)
@@ -15,14 +15,16 @@ namespace AllReady.Areas.Admin.Features.Organizations
             _context = context;
         }
 
-        public async Task<ContactInformationModel> Handle(OrganizationContactQueryAsync  message)
+        public async Task<ContactInformationModel> Handle(OrganizationContactQuery  message)
         {
             var contactInfo = new ContactInformationModel();
 
-            var organization = await _context.Organizations.AsNoTracking()
+            var organization = await _context.Organizations
+                .AsNoTracking()
                 .Include(l => l.Location).ThenInclude(pc => pc.PostalCode)
                 .Include(oc => oc.OrganizationContacts).ThenInclude(c => c.Contact)
-               .SingleOrDefaultAsync(o => o.Id == message.OrganizationId);
+                .SingleOrDefaultAsync(o => o.Id == message.OrganizationId)
+                .ConfigureAwait(false);
 
             if (organization == null)
             {
