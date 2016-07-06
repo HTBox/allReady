@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using AllReady.Controllers;
 using AllReady.UnitTest.Extensions;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 

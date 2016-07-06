@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using AllReady.Models;
 using AllReady.Services;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Moq;
 using Xunit;
 

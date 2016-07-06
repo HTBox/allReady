@@ -8,15 +8,15 @@ using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels.Account;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Mvc;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
-using Microsoft.AspNet.Mvc.Routing;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -757,7 +757,7 @@ namespace AllReady.UnitTest.Controllers
             };
 
             var signInManager = CreateSignInManagerMock();
-            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(new SignInResult());
+            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(new Microsoft.AspNetCore.Identity.SignInResult());
 
             var sut = new AdminController(null, signInManager.Object, null, null, null);
             await sut.VerifyCode(model);
@@ -769,7 +769,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task VerifyCodePostAddsErrorMessageToModelStateErrorWhenTwoFactorSignInAsyncIsNotSuccessful()
         {
             var signInManager = CreateSignInManagerMock();
-            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(new SignInResult());
+            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(new Microsoft.AspNetCore.Identity.SignInResult());
 
             var sut = new AdminController(null, signInManager.Object, null, null, null);
             await sut.VerifyCode(new VerifyCodeViewModel());
@@ -782,7 +782,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task VerifyCodePostReturnsLockoutViewIfTwoFactorSignInAsyncFailsAndIsLockedOut()
         {
             var signInManager = CreateSignInManagerMock();
-            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(SignInResult.LockedOut);
+            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.LockedOut);
 
             var sut = new AdminController(null, signInManager.Object, null, null, null);
             var result = await sut.VerifyCode(new VerifyCodeViewModel()) as ViewResult;
@@ -796,7 +796,7 @@ namespace AllReady.UnitTest.Controllers
             var model = new VerifyCodeViewModel { ReturnUrl = "returnUrl" };
 
             var signInManager = CreateSignInManagerMock();
-            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(SignInResult.Success);
+            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.IsLocalUrl(model.ReturnUrl)).Returns(true);
@@ -811,7 +811,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task VerifyCodePostRedirectsToHomeControllerIndexWhenTwoFactorSignInAsyncSucceedsAndReturnUrlIsNotLocalUrl()
         {
             var signInManager = CreateSignInManagerMock();
-            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(SignInResult.Success);
+            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns(false);
@@ -848,7 +848,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock() => 
-            new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
+            new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
 
         private static Mock<SignInManager<ApplicationUser>> CreateSignInManagerMock(IMock<UserManager<ApplicationUser>> userManagerMock = null)
         {

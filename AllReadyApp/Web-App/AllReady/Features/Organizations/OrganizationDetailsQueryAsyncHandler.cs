@@ -2,7 +2,7 @@
 using AllReady.Models;
 using AllReady.ViewModels.Organization;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Organizations
 {

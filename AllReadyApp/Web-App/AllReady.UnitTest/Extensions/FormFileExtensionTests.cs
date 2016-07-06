@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AllReady.Extensions;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Http.Features.Internal;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using Xunit;
 
