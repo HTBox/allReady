@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AllReady.Areas.Admin.Features.Itineraries
+namespace AllReady.Areas.Admin.Features.Requests
 {
     public class RequestListItemsQueryHandlerAsync : IAsyncRequestHandler<RequestListItemsQuery, List<RequestListModel>>
     {
@@ -23,24 +23,33 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 .Where(r => r.Status == RequestStatus.UnAssigned);
 
             // Apply filtering based on criteria
-            if (message.criteria.RequestId.HasValue)
+            if (message.Criteria.RequestId.HasValue)
             { 
-                results = results.Where(r => r.RequestId == message.criteria.RequestId.Value);
+                results = results.Where(r => r.RequestId == message.Criteria.RequestId.Value);
             }
 
-            if (message.criteria.IncludeAssigned)
+            if (message.Criteria.IncludeAssigned)
             {
                 results = results.Where(r => r.Status == RequestStatus.Assigned);
             }
 
-            if (message.criteria.IncludeCanceled)
+            if (message.Criteria.IncludeCanceled)
             {
                 results = results.Where(r => r.Status == RequestStatus.Canceled);
             }
 
-            if (message.criteria.EventId.HasValue)
+            if (message.Criteria.EventId.HasValue)
             {
-                results = results.Where(r => r.EventId == message.criteria.EventId.Value);
+                results = results.Where(r => r.EventId == message.Criteria.EventId.Value);
+            }
+
+            if (!string.IsNullOrEmpty(message.Criteria.Keywords))
+            {
+                results = results.Where(r => 
+                            r.Zip.Contains(message.Criteria.Keywords) || 
+                            r.Address.Contains(message.Criteria.Keywords) ||
+                            r.City.Contains(message.Criteria.Keywords) || 
+                            r.Name.Contains(message.Criteria.Keywords));
             }
 
             // todo: sgordon: date added filtering
@@ -51,6 +60,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 Name = r.Name,
                 Address = r.Address,
                 City = r.City,
+                Postcode = r.Zip,
                 Status = r.Status,
                 DateAdded = r.DateAdded
             }).ToListAsync().ConfigureAwait(false);

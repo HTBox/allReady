@@ -4,10 +4,12 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Itineraries;
 using AllReady.Areas.Admin.Features.Organizations;
+using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.Features.TaskSignups;
 using AllReady.Areas.Admin.Models.ItineraryModels;
 using AllReady.Areas.Admin.Models.RequestModels;
 using AllReady.Areas.Admin.Models.Validators;
+using AllReady.Models;
 using AllReady.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -134,9 +136,27 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
+            var model = await BuildSelectItineraryRequestsModel(id, new RequestSearchCriteria());
+
+            return View("SelectRequests", model);
+        }
+
+        [HttpPost]
+        [Route("Admin/Itinerary/{id}/[Action]")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SelectRequests(int id, SelectItineraryRequestsModel model)
+        {
+            var newModel = await BuildSelectItineraryRequestsModel(id, new RequestSearchCriteria { Keywords = model.KeywordsFilter });
+
+            return View("SelectRequests", newModel);
+        }
+
+        private async Task<SelectItineraryRequestsModel> BuildSelectItineraryRequestsModel(int itineraryId,
+            RequestSearchCriteria criteria)
+        {
             var model = new SelectItineraryRequestsModel();
 
-            var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = id });
+            var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = itineraryId });
 
             model.CampaignId = itinerary.CampaignId;
             model.CampaignName = itinerary.CampaignName;
@@ -144,7 +164,9 @@ namespace AllReady.Areas.Admin.Controllers
             model.EventName = itinerary.EventName;
             model.ItineraryName = itinerary.Name;
 
-            var requests = await _mediator.SendAsync(new RequestListItemsQuery { criteria = new RequestSearchCriteria { EventId = model.EventId } });
+            criteria.EventId = itinerary.EventId;
+
+            var requests = await _mediator.SendAsync(new RequestListItemsQuery { Criteria = criteria });
 
             foreach (var request in requests)
             {
@@ -154,13 +176,14 @@ namespace AllReady.Areas.Admin.Controllers
                     Name = request.Name,
                     DateAdded = request.DateAdded,
                     City = request.City,
-                    Address = request.Address
+                    Address = request.Address,
+                    Postcode = request.Postcode
                 };
 
                 model.Requests.Add(selectItem);
             }
 
-            return View("SelectRequests", model);
+            return model;
         }
 
         [HttpPost]
@@ -290,6 +313,44 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             var result = await _mediator.SendAsync(new ReorderRequestCommand { RequestId = requestId, ItineraryId = itineraryId, ReOrderDirection = ReorderRequestCommand.Direction.Down });
+
+            return RedirectToAction("Details", new { id = itineraryId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{requestId}")]
+        public async Task<IActionResult> MarkComplete(int itineraryId, Guid requestId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return Unauthorized();
+            }
+
+            // todo: sgordon - Extend this to return success / failure message to the user
+
+            await _mediator.SendAsync(new RequestStatusChangeCommand() { RequestId = requestId, NewStatus = RequestStatus.Completed});
+
+            return RedirectToAction("Details", new { id = itineraryId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{requestId}")]
+        public async Task<IActionResult> MarkIncomplete(int itineraryId, Guid requestId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return Unauthorized();
+            }
+
+            // todo: sgordon - Extend this to return success / failure message to the user
+
+            await _mediator.SendAsync(new RequestStatusChangeCommand() { RequestId = requestId, NewStatus = RequestStatus.Assigned });
 
             return RedirectToAction("Details", new { id = itineraryId });
         }

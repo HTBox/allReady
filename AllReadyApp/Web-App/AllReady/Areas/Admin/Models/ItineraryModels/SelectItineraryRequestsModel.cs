@@ -1,8 +1,6 @@
 ﻿using AllReady.Areas.Admin.Models.RequestModels;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Models.ItineraryModels
 {
@@ -14,6 +12,8 @@ namespace AllReady.Areas.Admin.Models.ItineraryModels
         public int CampaignId { get; set; }
         public string CampaignName { get; set; }
         public DateTime DateAddedUtc { get; set; }
+
+        public string KeywordsFilter { get; set; }
 
         public RequestSearchCriteria Criteria { get; set; }
         public List<RequestSelectModel> Requests { get; set; } = new List<RequestSelectModel>();

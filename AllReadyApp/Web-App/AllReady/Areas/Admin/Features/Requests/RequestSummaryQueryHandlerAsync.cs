@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using AllReady.Areas.Admin.Models.RequestModels;
 
-namespace AllReady.Areas.Admin.Features.TaskSignups
+namespace AllReady.Areas.Admin.Features.Requests
 {
     public class RequestSummaryQueryHandlerAsync : IAsyncRequestHandler<RequestSummaryQuery, RequestSummaryModel>
     {
