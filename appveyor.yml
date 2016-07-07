@@ -42,16 +42,5 @@ build_script:
 test_script:
  - ps: cd .\AllReadyApp\Web-App\AllReady.UnitTest
  - cmd: dnx test 
- # Comment out the integration tests, until we figure out why they
- # continue to time out.
- # - ps: cd C:\Projects\allReady\AllReadyApp\Web-App\AllReady
- # - cmd: set Data:DefaultConnection:ConnectionString=Server=(local)\SQL2014;Database=AllReady;User ID=sa;Password=Password12!
- # - cmd: set Hosting:Environment=Development
- # - ps: sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [AllReady]"
- # - cmd: echo "== starting web server =="
- # - ps: start-process "dnx" "web --server.urls http://localhost:33310" -RedirectStandardOutput "c:\logs\ketral.log"
- # - cmd: echo "==Finished launching website=="
- # - cmd: timeout 60
- # - cmd: C:\Projects\allReady\AllReadyApp\AllReady.IntegrationTest\bin\Debug\AllReady.IntegrationTest.exe
- # - cmd: echo "== Finished running integration tests =="
+
 

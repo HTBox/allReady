@@ -1,6 +1,6 @@
 ﻿using AllReady.Features.Campaigns;
 using MediatR;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using AllReady.ViewModels.Home;
 

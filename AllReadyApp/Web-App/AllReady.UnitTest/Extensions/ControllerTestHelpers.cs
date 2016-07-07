@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using AllReady.Models;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Http.Internal;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.UnitTest.Extensions
 {
@@ -14,7 +14,7 @@ namespace AllReady.UnitTest.Extensions
     {
         public static void SetDefaultHttpContext(this Controller controller)
         {
-            controller.ActionContext.HttpContext = new DefaultHttpContext();
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
         }
 
         public static void SetFakeHttpRequestSchemeTo(this Controller controller, string requestScheme)
@@ -38,7 +38,7 @@ namespace AllReady.UnitTest.Extensions
             SetFakeHttpContextIfNotAlreadySet(controller);
 
             var identity = new ClaimsIdentity(new List<Claim> {
-                    new Claim(ClaimTypes.NameIdentifier, userId)},IdentityCookieOptions.ApplicationCookieAuthenticationType);
+                    new Claim(ClaimTypes.NameIdentifier, userId)},new IdentityCookieOptions().ApplicationCookieAuthenticationScheme);
             var claimsPrincipal = new ClaimsPrincipal(identity);
            
             Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
@@ -119,8 +119,8 @@ namespace AllReady.UnitTest.Extensions
 
         private static void SetFakeHttpContextIfNotAlreadySet(Controller controller)
         {
-            if (controller.ActionContext.HttpContext == null)
-                controller.ActionContext.HttpContext = FakeHttpContext();
+            if (controller.ControllerContext.HttpContext == null)
+                controller.ControllerContext.HttpContext = FakeHttpContext();
         }
 
         private static HttpContext FakeHttpContext()

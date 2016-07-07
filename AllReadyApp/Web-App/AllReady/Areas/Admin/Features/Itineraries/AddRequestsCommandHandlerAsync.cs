@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Data.Entity;
 using System.Linq;
 using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Itineraries
 {

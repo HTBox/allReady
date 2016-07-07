@@ -4,7 +4,7 @@ using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using AllReady.Security;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Users
 {

@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Data.Entity;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace AllReady.Features.Notifications
 {

@@ -2,7 +2,7 @@
 using System.Linq;
 using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Models;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 

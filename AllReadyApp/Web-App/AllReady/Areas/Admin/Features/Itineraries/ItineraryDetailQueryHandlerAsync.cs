@@ -2,9 +2,9 @@
 using AllReady.Models;
 using AllReady.Services;
 using MediatR;
-using Microsoft.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Itineraries
 {

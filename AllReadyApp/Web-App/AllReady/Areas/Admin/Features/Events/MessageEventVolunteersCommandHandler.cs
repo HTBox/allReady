@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Events
 {

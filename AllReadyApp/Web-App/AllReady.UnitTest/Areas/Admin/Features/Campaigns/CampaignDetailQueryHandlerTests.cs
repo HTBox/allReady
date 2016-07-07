@@ -10,7 +10,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
 {
     public class CampaignDetailQueryHandlerTests : InMemoryContextTest
     {
-        protected override void LoadTestData()
+    private int _campaignId;
+
+    protected override void LoadTestData()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
 
@@ -24,20 +26,21 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
 
             var firePrev = new Campaign
             {
-                Id = 1,
                 Name = "Neighborhood Fire Prevention Days",
                 ManagingOrganization = htb
             };
             htb.Campaigns.Add(firePrev);
             context.Organizations.Add(htb);
             context.SaveChanges();
+
+            _campaignId = firePrev.Id;
         }
 
         [Fact]
         public async Task CampaignExists()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new CampaignDetailQuery { CampaignId = 1 };
+            var query = new CampaignDetailQuery { CampaignId = _campaignId };
             var handler = new CampaignDetailQueryHandler(context);
             var result = await handler.Handle(query);
             Assert.NotNull(result);

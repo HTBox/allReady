@@ -1,7 +1,7 @@
 ﻿using AllReady.Areas.Admin.Models.ItineraryModels;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

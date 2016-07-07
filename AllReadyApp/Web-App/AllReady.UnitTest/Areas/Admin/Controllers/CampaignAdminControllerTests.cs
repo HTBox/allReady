@@ -8,10 +8,10 @@ using AllReady.Models;
 using AllReady.Services;
 using AllReady.UnitTest.Extensions;
 using MediatR;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using Xunit;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System;
 using AllReady.Extensions;
@@ -147,14 +147,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             CampaignController controller;
             MockMediatorCampaignDetailQuery(out controller);
-            Assert.IsType<HttpNotFoundResult>(await controller.Details(It.IsAny<int>()));
+            Assert.IsType<NotFoundResult>(await controller.Details(It.IsAny<int>()));
         }
 
         [Fact]
         public async Task DetailsReturnsHttpUnauthorizedResultIfUserIsNotOrgAdmin()
         {
             var controller = CampaignControllerWithDetailQuery(UserType.BasicUser.ToString(), It.IsAny<int>());
-            Assert.IsType<HttpUnauthorizedResult>(await controller.Details(It.IsAny<int>()));
+            Assert.IsType<UnauthorizedResult>(await controller.Details(It.IsAny<int>()));
         }
 
         [Fact]
@@ -219,14 +219,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             CampaignController controller;
             MockMediatorCampaignSummaryQuery(out controller);
-            Assert.IsType<HttpNotFoundResult>(await controller.Edit(It.IsAny<int>()));
+            Assert.IsType<NotFoundResult>(await controller.Edit(It.IsAny<int>()));
         }
 
         [Fact]
         public async Task EditGetReturnsHttpUnauthorizedResultWhenUserIsNotAnOrgAdmin()
         {
             var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), It.IsAny<int>());
-            Assert.IsType<HttpUnauthorizedResult>(await controller.Edit(It.IsAny<int>()));
+            Assert.IsType<UnauthorizedResult>(await controller.Edit(It.IsAny<int>()));
         }
 
         [Fact]
@@ -306,7 +306,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), It.IsAny<int>());
             var result = await controller.Edit(new CampaignSummaryModel { OrganizationId = It.IsAny<int>() }, null);
-            Assert.IsType<HttpUnauthorizedResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]
@@ -417,14 +417,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             CampaignController controller;
             MockMediatorCampaignSummaryQuery(out controller);
-            Assert.IsType<HttpNotFoundResult>(await controller.Delete(It.IsAny<int>()));
+            Assert.IsType<NotFoundResult>(await controller.Delete(It.IsAny<int>()));
         }
 
         [Fact]
         public async Task DeleteReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
-            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), It.IsAny<int>());
-            Assert.IsType<HttpUnauthorizedResult>(await controller.Delete(It.IsAny<int>()));
+            var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), It.IsAny<int>());   
+            Assert.IsType<UnauthorizedResult>(await controller.Delete(It.IsAny<int>()));
         }
 
         [Fact]
@@ -467,7 +467,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DetailConfirmedReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
             var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), It.IsAny<int>());
-            Assert.IsType<HttpUnauthorizedResult>(await controller.DeleteConfirmed(It.IsAny<int>()));
+            Assert.IsType<UnauthorizedResult>(await controller.DeleteConfirmed(It.IsAny<int>()));
         }
 
         [Fact]
@@ -540,7 +540,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             CampaignController controller = new CampaignController(null, null);
             controller.SetClaims(new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()) });
-            Assert.IsType<HttpUnauthorizedResult>(await controller.LockUnlock(100));
+            Assert.IsType<UnauthorizedResult>(await controller.LockUnlock(100));
         }
 
         [Fact]
