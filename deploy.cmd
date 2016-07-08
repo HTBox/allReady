@@ -82,36 +82,31 @@ IF "%DEPLOYMENT_TARGET:~-1%"=="\" (
     SET DEPLOYMENT_TARGET=%DEPLOYMENT_TARGET:~0,-1%
 )
 
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Deployment
+:: ----------
 
-:: 1. Set DNX Path
-set DNVM_CMD_PATH_FILE="%USERPROFILE%\.dnx\temp-set-envvars.cmd"
-set DNX_RUNTIME="%USERPROFILE%\.dnx\runtimes\dnx-clr-win-x86.1.0.0-rc1-final"
+echo Handling ASP.NET Core Web Application deployment.
 
-:: 2. Install DNX
-call :ExecuteCmd PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "[System.Threading.Thread]::CurrentThread.CurrentCulture = ''; [System.Threading.Thread]::CurrentThread.CurrentUICulture = '';$CmdPathFile='%DNVM_CMD_PATH_FILE%';& '%SCM_DNVM_PS_PATH%' " install 1.0.0-rc1-final -arch x86 -r clr %SCM_DNVM_INSTALL_OPTIONS%
+:: 1. Restore nuget packages
+call :ExecuteCmd nuget.exe restore -packagesavemode nuspec
 IF !ERRORLEVEL! NEQ 0 goto error
 
-
-:: 3. Run DNU Restore, Nuget restore for specific projects
-call %DNX_RUNTIME%\bin\dnu restore "%DEPLOYMENT_SOURCE%" %SCM_DNU_RESTORE_OPTIONS%
-IF !ERRORLEVEL! NEQ 0 goto error
-call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\NotificationsProcessor\packages.config" -SolutionDirectory "%DEPLOYMENT_SOURCE%" -source https://www.nuget.org/api/v2/
-IF !ERRORLEVEL! NEQ 0 goto error
-
+:: 2. Build and publish
 :: 4. Run Our Custom build steps:
 call :ExecuteCmd PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "(Get-Content AllReadyApp\Web-App\AllReady\version.json).replace('GITVERSION', (git rev-parse --short HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json"
 call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\AllReady.Models\AllReady.Models.csproj"
 IF !ERRORLEVEL! NEQ 0 goto error
-call %DNX_RUNTIME%\bin\dnu build "%DEPLOYMENT_SOURCE%\wrap\AllReady.Models\project.json"
+call dotnet build "%DEPLOYMENT_SOURCE%\wrap\AllReady.Models\project.json"
 IF !ERRORLEVEL! NEQ 0 goto error
-call %DNX_RUNTIME%\bin\dnu build "%DEPLOYMENT_SOURCE%\Web-App\AllReady\project.json"
+call dotnet build "%DEPLOYMENT_SOURCE%\Web-App\AllReady\project.json"
 IF !ERRORLEVEL! NEQ 0 goto error
-call %DNX_RUNTIME%\bin\dnu build "%DEPLOYMENT_SOURCE%\Web-App\AllReady.UnitTest\project.json"
+call dotnet build "%DEPLOYMENT_SOURCE%\Web-App\AllReady.UnitTest\project.json"
 IF !ERRORLEVEL! NEQ 0 goto error
 call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\NotificationsProcessor\NotificationsProcessor.csproj"
 
-:: 4.1. Publish the site:
-call %DNX_RUNTIME%\bin\dnu publish "%DEPLOYMENT_SOURCE%\Web-App\AllReady\project.json" --runtime %DNX_RUNTIME% --out "%DEPLOYMENT_TEMP%" %SCM_DNU_PUBLISH_OPTIONS%
+
+call :ExecuteCmd dotnet publish "{PROJECT_JSON}" --output "%DEPLOYMENT_TEMP%" --configuration Release
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 4.2 Xcopy the webjobs:
@@ -122,10 +117,13 @@ mkdir "%DEPLOYMENT_TEMP%\wwwroot\app_data\jobs\continuous\notificationsprocessor
 
 call xcopy /S "%DEPLOYMENT_SOURCE%\NotificationsProcessor\bin\debug" "%DEPLOYMENT_TEMP%\wwwroot\app_data\jobs\continuous\notificationsprocessor\"
 
-:: 5. KuduSync
-call %KUDU_SYNC_CMD% -v 50 -f "%DEPLOYMENT_TEMP%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
+
+:: 3. KuduSync
+call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_TEMP%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
 IF !ERRORLEVEL! NEQ 0 goto error
-)
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
