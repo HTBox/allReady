@@ -33,4 +33,15 @@
         public string InsertSampleData { get; set; }
         public string InsertTestUsers { get; set; }
     }
+
+    public class Authentication
+    {
+        public class Twitter
+        {
+            public string ConsumerKey { get; set; }
+            public string ConsumerSecret { get; set; }
+            public string OAuthToken { get; set; }
+            public string OAuthSecret { get; set; }
+        }
+    }
 }

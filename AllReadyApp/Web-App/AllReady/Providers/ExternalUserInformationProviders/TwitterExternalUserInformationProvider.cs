@@ -10,6 +10,10 @@ namespace AllReady.Providers.ExternalUserInformationProviders
     {
         private readonly IConfiguration configuration;
 
+        //IOptions<SampleDataSettings> options
+        //_settings.Value.DefaultAdminUsername
+        
+        //IOptions<Authentciation> options ???
         public TwitterExternalUserInformationProvider(IConfiguration configuration)
         {
             this.configuration = configuration;
