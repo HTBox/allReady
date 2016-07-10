@@ -11,7 +11,9 @@ namespace AllReady.Providers
     public class ExternalUserInformationProviderFactory : IExternalUserInformationProviderFactory
     {
         private readonly IConfiguration configuration;
+        //private readonly IOptions<SampleDataSettings> sampleDataSettings;
 
+        //, IOptions<SampleDataSettings> sampleDataSettings
         public ExternalUserInformationProviderFactory(IConfiguration configuration)
         {
             this.configuration = configuration;
@@ -28,6 +30,7 @@ namespace AllReady.Providers
                 case "Microsoft":
                     return new MicosoftExternalUserInformationProvider();
                 case "Twitter":
+                    //usage: _sampleDataSettings.Value.DefaultAdminUsername
                     return new TwitterExternalUserInformationProvider(configuration);
             }
             return null;

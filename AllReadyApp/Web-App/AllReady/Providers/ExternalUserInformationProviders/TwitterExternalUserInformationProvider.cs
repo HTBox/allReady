@@ -31,6 +31,7 @@ namespace AllReady.Providers.ExternalUserInformationProviders
                 CredentialStore = new SingleUserInMemoryCredentialStore
                 {
                     ConsumerKey = configuration["Authentication:Twitter:ConsumerKey"],
+                    //ConsumerKey = configuration.Get<string>("Authentication:Twitter:ConsumerKey"),
                     ConsumerSecret = configuration["Authentication:Twitter:ConsumerSecret"],
                     OAuthToken = configuration["Authentication:Twitter:OAuthToken"],
                     OAuthTokenSecret = configuration["Authentication:Twitter:OAuthSecret"],
