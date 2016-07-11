@@ -4,6 +4,11 @@
   {
     BasicUser,
     OrgAdmin,
-    SiteAdmin
+    SiteAdmin,
+    ApiAccess
   }
+    public class TokenTypes
+    {
+        public const string ApiKey = "api-key";
+    }
 }

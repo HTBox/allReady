@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -347,6 +348,49 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var controller = new SiteController(null, logger.Object, mediator.Object);
 
             await controller.AssignSiteAdmin(userId);
+            mediator.Verify(m => m.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)), Times.Once);
+        }
+
+        [Fact]
+        public async Task AssignApiRoleQueriesForCorrectId()
+        {
+            var mediator = new Mock<IMediator>();
+            var logger = new Mock<ILogger<SiteController>>();
+
+            string userId = Guid.NewGuid().ToString();
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId))).Returns(new ApplicationUser());
+            var controller = new SiteController(null, logger.Object, mediator.Object);
+
+            await controller.AssignApiAccessRole(userId);
+            mediator.Verify(m => m.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)), Times.Once);
+        }
+
+        [Fact]
+        public void SearchForCorrectUserWhenManagingApiKeys()
+        {
+            var mediator = new Mock<IMediator>();
+            var logger = new Mock<ILogger<SiteController>>();
+
+            string userId = Guid.NewGuid().ToString();
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId))).Returns(new ApplicationUser());
+            var controller = new SiteController(null, logger.Object, mediator.Object);
+
+            controller.ManageApiKeys(userId);
+            mediator.Verify(m => m.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)), Times.Once);
+        }
+
+
+        [Fact]
+        public async Task SearchForCorrectUserWhenGeneratingApiKeys()
+        {
+            var mediator = new Mock<IMediator>();
+            var logger = new Mock<ILogger<SiteController>>();
+
+            string userId = Guid.NewGuid().ToString();
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId))).Returns(new ApplicationUser());
+            var controller = new SiteController(null, logger.Object, mediator.Object);
+
+            await controller.GenerateToken(userId);
             mediator.Verify(m => m.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)), Times.Once);
         }
 
