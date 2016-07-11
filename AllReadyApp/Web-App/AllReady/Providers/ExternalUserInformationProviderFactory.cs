@@ -1,5 +1,5 @@
 ﻿using AllReady.Providers.ExternalUserInformationProviders;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Providers
 {
@@ -10,13 +10,11 @@ namespace AllReady.Providers
 
     public class ExternalUserInformationProviderFactory : IExternalUserInformationProviderFactory
     {
-        private readonly IConfiguration configuration;
-        //private readonly IOptions<SampleDataSettings> sampleDataSettings;
+        private readonly IOptions<TwitterAuthenticationSettings> twitterAuthenticationSettings;
 
-        //, IOptions<SampleDataSettings> sampleDataSettings
-        public ExternalUserInformationProviderFactory(IConfiguration configuration)
+        public ExternalUserInformationProviderFactory(IOptions<TwitterAuthenticationSettings> twitterAuthenticationSettings)
         {
-            this.configuration = configuration;
+            this.twitterAuthenticationSettings = twitterAuthenticationSettings;
         }
 
         public IProvideExternalUserInformation GetExternalUserInformationProviderFor(string loginProvider)
@@ -30,8 +28,7 @@ namespace AllReady.Providers
                 case "Microsoft":
                     return new MicosoftExternalUserInformationProvider();
                 case "Twitter":
-                    //usage: _sampleDataSettings.Value.DefaultAdminUsername
-                    return new TwitterExternalUserInformationProvider(configuration);
+                    return new TwitterExternalUserInformationProvider(twitterAuthenticationSettings);
             }
             return null;
         }

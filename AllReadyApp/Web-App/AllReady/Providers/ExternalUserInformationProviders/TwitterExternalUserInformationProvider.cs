@@ -2,21 +2,17 @@ using System.Linq;
 using LinqToTwitter;
 using Microsoft.AspNet.Identity;
 using System.Security.Claims;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.OptionsModel;
 
 namespace AllReady.Providers.ExternalUserInformationProviders
 {
     public class TwitterExternalUserInformationProvider : IProvideExternalUserInformation
     {
-        private readonly IConfiguration configuration;
+        private readonly IOptions<TwitterAuthenticationSettings> twitterAuthenticationSettings;
 
-        //IOptions<SampleDataSettings> options
-        //_settings.Value.DefaultAdminUsername
-        
-        //IOptions<Authentciation> options ???
-        public TwitterExternalUserInformationProvider(IConfiguration configuration)
+        public TwitterExternalUserInformationProvider(IOptions<TwitterAuthenticationSettings> twitterAuthenticationSettings)
         {
-            this.configuration = configuration;
+            this.twitterAuthenticationSettings = twitterAuthenticationSettings;
         }
 
         public ExternalUserInformation GetExternalUserInformationWith(ExternalLoginInfo externalLoginInfo)
@@ -30,11 +26,11 @@ namespace AllReady.Providers.ExternalUserInformationProviders
             {
                 CredentialStore = new SingleUserInMemoryCredentialStore
                 {
-                    ConsumerKey = configuration["Authentication:Twitter:ConsumerKey"],
-                    //ConsumerKey = configuration.Get<string>("Authentication:Twitter:ConsumerKey"),
-                    ConsumerSecret = configuration["Authentication:Twitter:ConsumerSecret"],
-                    OAuthToken = configuration["Authentication:Twitter:OAuthToken"],
-                    OAuthTokenSecret = configuration["Authentication:Twitter:OAuthSecret"],
+                    ConsumerKey = twitterAuthenticationSettings.Value.ConsumerKey,
+                    ConsumerSecret = twitterAuthenticationSettings.Value.ConsumerSecret,
+                    OAuthToken = twitterAuthenticationSettings.Value.OAuthToken,
+                    OAuthTokenSecret = twitterAuthenticationSettings.Value.OAuthSecret,
+
                     UserID = ulong.Parse(userId),
                     ScreenName = screenName
                 }
