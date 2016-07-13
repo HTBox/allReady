@@ -22,7 +22,7 @@
   },
   "Data": {
     "DefaultConnection": {
-      "ConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
+      "ConnectionString": "Server=.;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
     },
     "Storage": {
       "AzureStorage": "[storagekey]",    

@@ -6,7 +6,7 @@
 
 <h2>@ViewData["Title"].</h2>
 
-<form asp-controller="Manage" asp-action="VerifyPhoneNumber" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
+<form asp-controller="Manage" asp-action="VerifyPhoneNumber" asp-route-returnurl="@ViewData[Constant.ViewData.RETURN_URL]" method="post" class="form-horizontal" role="form">
     <input asp-for="PhoneNumber" type="hidden" />
     <h4>Add a phone number.</h4>
     <h5>@ViewData["Status"]</h5>

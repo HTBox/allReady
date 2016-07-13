@@ -15,7 +15,7 @@
                     <td>
                         @if ((bool)ViewData["ShowRemoveButton"])
                         {
-                            <form asp-controller="Manage" asp-action="RemoveLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
+                            <form asp-controller="Manage" asp-action="RemoveLogin" asp-route-returnurl="@ViewData[Constant.ViewData.RETURN_URL]" method="post" class="form-horizontal" role="form">
                                 <div>
                                     <input asp-for="@account.LoginProvider" type="hidden" />
                                     <input asp-for="@account.ProviderKey" type="hidden" />

@@ -35,11 +35,11 @@ namespace AllReady.UnitTest.Controllers
             var sut = AccountController();
 
             var result = (ViewResult)sut.Login();
-            Assert.Null(result.ViewData["ReturnUrl"]);
+            Assert.Null(result.ViewData[Constant.ViewData.RETURN_URL]);
 
             const string testUrl = "return url";
             result = (ViewResult)sut.Login(testUrl);
-            Assert.Equal(testUrl, result.ViewData["ReturnUrl"]);
+            Assert.Equal(testUrl, result.ViewData[Constant.ViewData.RETURN_URL]);
         }
 
         [Fact]
