@@ -45,7 +45,7 @@ namespace AllReady.Controllers
         [AllowAnonymous]
         public IActionResult Login(string returnUrl = null)
         {
-            ViewData[Constant.ViewData.RETURN_URL] = returnUrl;
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
@@ -55,7 +55,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
-            ViewData[Constant.ViewData.RETURN_URL] = returnUrl;
+            ViewData["ReturnUrl"] = returnUrl;
 
             if (ModelState.IsValid)
             {
@@ -316,7 +316,7 @@ namespace AllReady.Controllers
             }
             
             // If the user does not have an account, then ask the user to create an account.
-            ViewData[Constant.ViewData.RETURN_URL] = returnUrl;
+            ViewData["ReturnUrl"] = returnUrl;
             ViewData["LoginProvider"] = externalLoginInfo.LoginProvider;
 
             return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email, FirstName = firstName, LastName = lastName });
@@ -366,7 +366,7 @@ namespace AllReady.Controllers
                 AddErrorsToModelState(result);
             }
 
-            ViewData[Constant.ViewData.RETURN_URL] = returnUrl;
+            ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
 
