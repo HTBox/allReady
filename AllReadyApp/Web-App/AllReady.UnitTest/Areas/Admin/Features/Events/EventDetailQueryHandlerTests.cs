@@ -13,8 +13,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
     {
         protected override void LoadTestData()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
-
             var seattlePostalCode = "98117";
             var seattle = new Location
             {
@@ -156,26 +154,25 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 Task = task1,
             };
 
-            context.Requests.AddRange(request1, request2, request3);
-            context.Itineraries.AddRange(itinerary1, itinerary2);
-            context.ItineraryRequests.AddRange(itineraryReq1, itineraryReq2, itineraryReq3);
-            context.Locations.Add(seattle);
-            context.Organizations.Add(htb);
-            context.Events.Add(queenAnne);
-            context.Events.Add(rallyEvent);
-            context.Users.Add(user1);
-            context.Tasks.Add(task1);
-            context.TaskSignups.Add(taskSignup);
+            Context.Requests.AddRange(request1, request2, request3);
+            Context.Itineraries.AddRange(itinerary1, itinerary2);
+            Context.ItineraryRequests.AddRange(itineraryReq1, itineraryReq2, itineraryReq3);
+            Context.Locations.Add(seattle);
+            Context.Organizations.Add(htb);
+            Context.Events.Add(queenAnne);
+            Context.Events.Add(rallyEvent);
+            Context.Users.Add(user1);
+            Context.Tasks.Add(task1);
+            Context.TaskSignups.Add(taskSignup);
 
-            context.SaveChanges();
+            Context.SaveChanges();
         }
 
         [Fact]
         public async Task EventExists()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
             var query = new EventDetailQuery { EventId = 1 };
-            var handler = new EventDetailQueryHandler(context);
+            var handler = new EventDetailQueryHandler(Context);
             var result = await handler.Handle(query);
             Assert.NotNull(result);
         }
@@ -183,9 +180,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task EventDoesNotExist()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
             var query = new EventDetailQuery();
-            var handler = new EventDetailQueryHandler(context);
+            var handler = new EventDetailQueryHandler(Context);
             var result = await handler.Handle(query);
             Assert.Null(result);
         }
@@ -193,9 +189,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task EventIncludesAllLocationInformation()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
             var query = new EventDetailQuery { EventId = 1 };
-            var handler = new EventDetailQueryHandler(context);
+            var handler = new EventDetailQueryHandler(Context);
             var result = await handler.Handle(query);
 
             Assert.NotNull(result.Location);
@@ -212,9 +207,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task ItineraryEventIncludesCorrectItineraryDetails()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
             var query = new EventDetailQuery { EventId = 1 };
-            var handler = new EventDetailQueryHandler(context);
+            var handler = new EventDetailQueryHandler(Context);
             var result = await handler.Handle(query);
 
             Assert.NotNull(result.Itineraries);

@@ -18,18 +18,16 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 
         protected override void LoadTestData()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
-            context.Organizations.AddRange(organizations);
-            context.SaveChanges();
+            Context.Organizations.AddRange(organizations);
+            Context.SaveChanges();
         }
 
         [Fact]
         public void InvokeGetOrganizationWithCorrectOrganizationId()
         {
             var THE_ID = 1;
-            var context = ServiceProvider.GetService<AllReadyContext>();
             var message = new OrganizationByIdQuery { OrganizationId = THE_ID };
-            var sut = new OrganizationByIdQueryHandler(context);
+            var sut = new OrganizationByIdQueryHandler(Context);
             var result = sut.Handle(message);
 
             Assert.Equal(result.Id, THE_ID);
