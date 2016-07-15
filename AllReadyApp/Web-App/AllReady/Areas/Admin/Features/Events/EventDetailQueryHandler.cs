@@ -38,10 +38,6 @@ namespace AllReady.Areas.Admin.Features.Events
                     TimeZoneId = campaignEvent.Campaign.TimeZoneId,
                     StartDateTime = campaignEvent.StartDateTime,
                     EndDateTime = campaignEvent.EndDateTime,
-                    Volunteers = campaignEvent.UsersSignedUp.Select(u => u.User.UserName).ToList(),
-                    NumberOfVolunteersRequired = campaignEvent.NumberOfVolunteersRequired,
-                    IsLimitVolunteers = campaignEvent.IsLimitVolunteers,
-                    IsAllowWaitList = campaignEvent.IsAllowWaitList,
                     Location = campaignEvent.Location.ToEditModel(),
                     RequiredSkills = campaignEvent.RequiredSkills,
                     ImageUrl = campaignEvent.ImageUrl,
@@ -88,7 +84,6 @@ namespace AllReady.Areas.Admin.Features.Events
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(av => av.User)
                 .Include(a => a.RequiredSkills).ThenInclude(s => s.Skill).ThenInclude(s => s.ParentSkill)
                 .Include(a => a.Location)
-                .Include(a => a.UsersSignedUp).ThenInclude(a => a.User)
                 .Include(a => a.Itineraries).ThenInclude(a => a.TeamMembers)
                 .Include(a => a.Itineraries).ThenInclude(a => a.Requests)
                 .SingleOrDefaultAsync(a => a.Id == message.EventId)

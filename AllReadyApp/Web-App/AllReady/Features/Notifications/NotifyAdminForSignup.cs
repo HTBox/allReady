@@ -38,8 +38,6 @@ namespace AllReady.Features.Notifications
                     .Include(a => a.RequiredSkills).ThenInclude(r => r.Skill)
                     .SingleAsync(a => a.Id == notification.EventId).ConfigureAwait(false);
 
-                var eventSignup = campaignEvent.UsersSignedUp.FirstOrDefault(a => a.User.Id == notification.UserId);
-
                 var campaign = await _context.Campaigns
                     .Include(c => c.CampaignContacts).ThenInclude(cc => cc.Contact)
                     .SingleOrDefaultAsync(c => c.Id == campaignEvent.CampaignId).ConfigureAwait(false);
@@ -65,19 +63,12 @@ namespace AllReady.Features.Notifications
                     taskLink = $"View task: http://{_options.Value.SiteBaseUrl}/Admin/task/Details/{task.Id}";
                     taskSignup = task.AssignedVolunteers.FirstOrDefault(t => t.User.Id == volunteer.Id);
 
-                //set defaults for event signup
-                var volunteerEmail = !string.IsNullOrWhiteSpace(eventSignup?.PreferredEmail) ? eventSignup.PreferredEmail : volunteer.Email;
-                var volunteerPhoneNumber = !string.IsNullOrWhiteSpace(eventSignup?.PreferredPhoneNumber) ? eventSignup.PreferredPhoneNumber : volunteer.PhoneNumber;
-                var volunteerComments = eventSignup?.AdditionalInfo ?? string.Empty;
-                var remainingRequiredVolunteersPhrase = $"{campaignEvent.NumberOfUsersSignedUp}/{campaignEvent.NumberOfVolunteersRequired}";
-                var typeOfSignupPhrase = "an event";
-
                     //set for task signup
-                    volunteerEmail = !string.IsNullOrWhiteSpace(taskSignup?.PreferredEmail) ? taskSignup.PreferredEmail : volunteerEmail;
-                    volunteerPhoneNumber = !string.IsNullOrWhiteSpace(taskSignup?.PreferredPhoneNumber) ? taskSignup.PreferredPhoneNumber : volunteerPhoneNumber;
-                    volunteerComments = !string.IsNullOrWhiteSpace(taskSignup?.AdditionalInfo) ? taskSignup.AdditionalInfo : volunteerComments;
-                    remainingRequiredVolunteersPhrase = $"{task.NumberOfUsersSignedUp}/{task.NumberOfVolunteersRequired}";
-                    typeOfSignupPhrase = "a task";
+                    var volunteerEmail = !string.IsNullOrWhiteSpace(taskSignup?.PreferredEmail) ? taskSignup.PreferredEmail : volunteer.Email;
+                    var volunteerPhoneNumber = !string.IsNullOrWhiteSpace(taskSignup?.PreferredPhoneNumber) ? taskSignup.PreferredPhoneNumber : volunteer.PhoneNumber;
+                    var volunteerComments = taskSignup.AdditionalInfo ?? string.Empty;
+                    var remainingRequiredVolunteersPhrase = $"{task.NumberOfUsersSignedUp}/{task.NumberOfVolunteersRequired}";
+                    var typeOfSignupPhrase = "a task";
 
                 var subject = $"A volunteer has signed up for {typeOfSignupPhrase}";
 

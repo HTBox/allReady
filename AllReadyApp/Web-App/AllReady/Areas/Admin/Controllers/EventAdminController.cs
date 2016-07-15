@@ -286,53 +286,6 @@ namespace AllReady.Areas.Admin.Controllers
             return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = "Admin", id = campaignEvent.CampaignId });
         }
 
-        [HttpGet]
-        public IActionResult Assign(int id)
-        {
-            var campaignEvent = GetEventBy(id);
-            if (campaignEvent == null)
-            {
-                return HttpNotFound();
-            }
-
-            if (!User.IsOrganizationAdmin(campaignEvent.Campaign.ManagingOrganizationId))
-            {
-                return HttpUnauthorized();
-            }
-
-            var model = new EventViewModel(campaignEvent);
-            model.Tasks = model.Tasks.OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList();
-            model.Volunteers = campaignEvent.UsersSignedUp.Select(u => u.User).ToList();
-
-            return View(model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MessageAllVolunteers(MessageEventVolunteersModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return HttpBadRequest(ModelState);
-            }
-            
-            //TODO: Query only for the organization Id rather than the whole event detail
-            var campaignEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = model.EventId });
-            if (campaignEvent == null)
-            {
-                return HttpNotFound();
-            }
-
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
-            {
-                return HttpUnauthorized();
-            }
-
-            await _mediator.SendAsync(new MessageEventVolunteersCommand { Model = model });
-
-            return Ok();
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostEventFile(int id, IFormFile file)

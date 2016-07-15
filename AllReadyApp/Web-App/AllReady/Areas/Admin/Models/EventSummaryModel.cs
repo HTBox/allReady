@@ -35,10 +35,6 @@ namespace AllReady.Areas.Admin.Models
         [Display(Name = "Browse for image")]
         public string FileUpload { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage = "'Volunteers Required' must be greater than 0")]
-        [Display(Name = "Volunteers Required")]
-        public int NumberOfVolunteersRequired { get; set; }
-        
         public string TimeZoneId { get; set; }
 
         [MaxLength(150)]
@@ -48,15 +44,5 @@ namespace AllReady.Areas.Admin.Models
         public DateTimeOffset StartDateTime { get; set; }
         [Display(Name = "End Date")]
         public DateTimeOffset EndDateTime { get; set; }
-        [Display(Name = "Enforce Volunteer Limit")]
-        public bool IsLimitVolunteers { get; set; } = true;
-
-        [Display(Name = "Allow Wait List")]
-        public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
-        public bool IsAllowWaitList { get; set; } = true;
-        public int NumberOfUsersSignedUp => UsersSignedUp.Count;
-        public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
-        public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
-
     }
 }

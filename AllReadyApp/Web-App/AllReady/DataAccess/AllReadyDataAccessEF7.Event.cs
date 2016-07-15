@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
@@ -16,7 +17,6 @@ namespace AllReady.Models
                                 .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
                                 .Include(a => a.Tasks)
                                 .Include(a => a.RequiredSkills)
-                                .Include(a => a.UsersSignedUp)
                                 .OrderBy(a => a.EndDateTime)
                                 .ToList();
             }
@@ -51,35 +51,12 @@ namespace AllReady.Models
                 .Include(a => a.RequiredSkills).ThenInclude(rs => rs.Skill).ThenInclude(s => s.ParentSkill)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(tu => tu.User)
                 .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
-                .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
                 .SingleOrDefault(a => a.Id == eventId);
         }
 
         int IAllReadyDataAccess.GetManagingOrganizationId(int eventId)
         {
             return _dbContext.Events.Where(a => a.Id == eventId).Select(a => a.Campaign.ManagingOrganizationId).FirstOrDefault();
-        }
-
-        IEnumerable<EventSignup> IAllReadyDataAccess.GetEventSignups(int eventId, string userId)
-        {
-            return _dbContext.EventSignup
-                        .Include(x => x.User)
-                        .Include(x => x.Event)
-                        .Include(x => x.Event.Campaign)                        
-                        .Where(x => x.Event.Id == eventId && x.User.Id == userId)
-                        .OrderBy(x => x.Event.StartDateTime)
-                        .ToArray();
-        }
-
-        IEnumerable<EventSignup> IAllReadyDataAccess.GetEventSignups(string userId)
-        {
-            return _dbContext.EventSignup
-                        .Include(x => x.User)
-                        .Include(x => x.Event)
-                        .Include(x => x.Event.Campaign)                        
-                        .Where(x => x.User.Id == userId)
-                        .OrderBy(x => x.Event.StartDateTime)
-                        .ToArray();
         }
 
         IEnumerable<TaskSignup> IAllReadyDataAccess.GetTasksAssignedToUser(int eventId, string userId)

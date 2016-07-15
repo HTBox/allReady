@@ -31,7 +31,6 @@ namespace AllReady.Features.Tasks
 
             var campaignEvent = await _context.Events
                 .Include(a => a.RequiredSkills)
-                .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
                 .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(s => s.Skill)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers)
                 .SingleOrDefaultAsync(a => a.Id == model.EventId).ConfigureAwait(false);
@@ -51,22 +50,6 @@ namespace AllReady.Features.Tasks
             if (task.IsClosed)
             {
                 return new TaskSignupResult { Status = TaskSignupResult.FAILURE_CLOSEDTASK };
-            }
-
-            campaignEvent.UsersSignedUp = campaignEvent.UsersSignedUp ?? new List<EventSignup>();
-
-            // If the user has not already been signed up for the event, sign them up
-            if (!campaignEvent.UsersSignedUp.Any(eventSignup => eventSignup.User.Id == user.Id))
-            {
-                campaignEvent.UsersSignedUp.Add(new EventSignup
-                {
-                    Event = campaignEvent,
-                    User = user,
-                    PreferredEmail = model.PreferredEmail,
-                    PreferredPhoneNumber = model.PreferredPhoneNumber,
-                    AdditionalInfo = model.AdditionalInfo,
-                    SignupDateTime = DateTime.UtcNow
-                });
             }
 
             // If somehow the user has already been signed up for the task, don't sign them up again

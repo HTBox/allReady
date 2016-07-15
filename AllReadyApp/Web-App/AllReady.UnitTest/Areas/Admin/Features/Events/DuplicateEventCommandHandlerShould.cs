@@ -41,13 +41,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal("Name", sut.Name);
             Assert.Equal("Description", sut.Description);
             Assert.Equal(EventType.Itinerary, sut.EventType);
-            Assert.Equal(10, sut.NumberOfVolunteersRequired);
             Assert.Equal(new DateTimeOffset(2016, 1, 1, 0, 0, 0, new TimeSpan()), sut.StartDateTime);
             Assert.Equal(new DateTimeOffset(2016, 1, 31, 0, 0, 0, new TimeSpan()), sut.EndDateTime);
             Assert.Equal("Organizer", sut.Organizer.Id);
             Assert.Equal("ImageUrl", sut.ImageUrl);
-            Assert.Equal(false, sut.IsLimitVolunteers);
-            Assert.Equal(true, sut.IsAllowWaitList);
         }
 
         [Fact]
@@ -163,15 +160,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         }
 
         [Fact]
-        public async Task CreateNewEventWithoutCopyingUsersSignedUp()
-        {
-            var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
-            var sut = await GetEvent(eventId);
-
-            Assert.Equal(0, sut.UsersSignedUp.Count());
-        }
-
-        [Fact]
         public async Task CreateNewEventWithTheSameRequiredSkills()
         {
             var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
@@ -219,7 +207,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 Name = "Name",
                 Description = "Description",
                 EventType = EventType.Itinerary,
-                NumberOfVolunteersRequired = 10,
                 StartDateTime = new DateTimeOffset(2016, 1, 1, 0, 0, 0, new TimeSpan()),
                 EndDateTime = new DateTimeOffset(2016, 1, 31, 0, 0, 0, new TimeSpan()),
                 Location = new Location()
@@ -261,11 +248,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                         }
                     },
                 },
-                UsersSignedUp = new List<EventSignup>()
-                {
-                    new EventSignup(),
-                    new EventSignup(),
-                },
                 Organizer = new ApplicationUser() { Id = "Organizer" },
                 ImageUrl = "ImageUrl",
                 RequiredSkills = new List<EventSkill>()
@@ -273,8 +255,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                     new EventSkill() { Skill = skillOne },
                     new EventSkill() { Skill = skillTwo },
                 },
-                IsLimitVolunteers = false,
-                IsAllowWaitList = true
             };
 
             Context.Add(@event.Campaign);

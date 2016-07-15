@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using System;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Metadata;
 using Microsoft.Data.Entity.Metadata.Builders;
@@ -8,7 +9,6 @@ namespace AllReady.Models
     public class AllReadyContext : IdentityDbContext<ApplicationUser>
     {
         public virtual DbSet<Organization> Organizations { get; set; }
-        public DbSet<EventSignup> EventSignup { get; set; }
         public DbSet<Campaign> Campaigns { get; set; }
         public DbSet<CampaignImpact> CampaignImpacts { get; set; }
         public DbSet<Event> Events { get; set; }
@@ -41,7 +41,6 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<CampaignSponsors>());
             Map(modelBuilder.Entity<Event>());
             Map(modelBuilder.Entity<EventSkill>());
-            Map(modelBuilder.Entity<EventSignup>());
             Map(modelBuilder.Entity<AllReadyTask>());
             Map(modelBuilder.Entity<TaskSkill>());
             Map(modelBuilder.Entity<TaskSignup>());
@@ -125,23 +124,12 @@ namespace AllReady.Models
             builder.HasKey(acsk => new { acsk.TaskId, acsk.SkillId });
         }
 
-        private void Map(EntityTypeBuilder<EventSignup> builder)
-        {
-            builder.HasOne(t => t.User);
-            builder.HasOne(t => t.Event);
-            builder.Property(t => t.SignupDateTime)
-                   .IsRequired();
-        }
-
         private void Map(EntityTypeBuilder<Event> builder)
         {
             builder.HasOne(a => a.Campaign);
             builder.HasOne(a => a.Location);
             builder.HasMany(a => a.Tasks)
                 .WithOne(t => t.Event)
-                .OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(a => a.UsersSignedUp)
-                .WithOne(u => u.Event)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(a => a.RequiredSkills).WithOne(acsk => acsk.Event);
             builder.Property(p => p.Name).IsRequired();

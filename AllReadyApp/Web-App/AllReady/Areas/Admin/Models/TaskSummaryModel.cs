@@ -37,8 +37,6 @@ namespace AllReady.Areas.Admin.Models
 
         public List<VolunteerModel> AssignedVolunteers { get; set; } = new List<VolunteerModel>();
 
-        public List<VolunteerModel> AllVolunteers { get; set; } = new List<VolunteerModel>();
-
         public List<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();
 
         public int AcceptedVolunteerCount => AssignedVolunteers?.Count(v => v.HasVolunteered) ?? 0;

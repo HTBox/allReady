@@ -36,7 +36,6 @@ namespace AllReady.Areas.Admin.Features.Events
                 Name = @event.Name,
                 Description = @event.Description,
                 EventType = @event.EventType,
-                NumberOfVolunteersRequired = @event.NumberOfVolunteersRequired,
                 StartDateTime = @event.StartDateTime,
                 EndDateTime = @event.EndDateTime,
                 Location = CloneLocation(@event.Location),
@@ -44,8 +43,6 @@ namespace AllReady.Areas.Admin.Features.Events
                 Organizer = @event.Organizer,
                 ImageUrl = @event.ImageUrl,
                 RequiredSkills = CloneEventRequiredSkills(@event).ToList(),
-                IsLimitVolunteers = @event.IsLimitVolunteers,
-                IsAllowWaitList = @event.IsAllowWaitList
             };
             return newEvent;
         }

@@ -22,8 +22,6 @@ namespace AllReady.Models
         [Display(Name = "Event Type")]
         public EventType EventType { get; set; }    
         
-        public int NumberOfVolunteersRequired { get; set; }
-
         [Display(Name = "Start date")]
         public DateTimeOffset StartDateTime { get; set; }
 
@@ -34,8 +32,6 @@ namespace AllReady.Models
 
         public List<AllReadyTask> Tasks { get; set; } = new List<AllReadyTask>();
 
-        public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
-
         public ApplicationUser Organizer { get; set; }
 
         [Display(Name = "Image")]
@@ -44,24 +40,11 @@ namespace AllReady.Models
         [Display(Name = "Required skills")]
         public List<EventSkill> RequiredSkills { get; set; } = new List<EventSkill>();
 
-        public bool IsLimitVolunteers { get; set; } = true;
-
-        public bool IsAllowWaitList { get; set; } = false;
-
         /// <summary>
         /// A short piece of optional text which organizers can use to help generate views/volunteers
         /// </summary>
         [MaxLength(150)]
         public string Headline { get; set; }
-
-        [NotMapped]
-        public int NumberOfUsersSignedUp => UsersSignedUp.Count;
-
-        [NotMapped]
-        public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
-
-        [NotMapped]
-        public bool IsAllowSignups => !IsLimitVolunteers || !IsFull  || IsAllowWaitList;
 
         public bool IsUserInAnyTask(string userId)
         {

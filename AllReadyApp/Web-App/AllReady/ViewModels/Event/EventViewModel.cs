@@ -53,8 +53,6 @@ namespace AllReady.ViewModels.Event
             SignupModel = new EventSignupViewModel();
 
             RequiredSkills = campaignEvent.RequiredSkills?.Select(acsk => new SkillViewModel(acsk.Skill)).ToList();
-            IsLimitVolunteers = campaignEvent.IsLimitVolunteers;
-            IsAllowWaitList = campaignEvent.IsAllowWaitList;
             Headline = campaignEvent.Headline;
         }
 
@@ -73,8 +71,6 @@ namespace AllReady.ViewModels.Event
         public LocationViewModel Location { get; set; }
         public List<TaskViewModel> Tasks { get; set; } = new List<TaskViewModel>();
         public List<TaskViewModel> UserTasks { get; set; } = new List<TaskViewModel>();
-        public bool IsUserVolunteeredForEvent { get; set; }
-        public List<ApplicationUser> Volunteers { get; set; }
         public string UserId { get; set; }
         public List<SkillViewModel> RequiredSkills { get; set; }
         public List<SkillViewModel> UserSkills { get; set; }
@@ -82,12 +78,6 @@ namespace AllReady.ViewModels.Event
         public EventSignupViewModel SignupModel { get; set; }
         public bool IsClosed { get; set; }
         public bool HasPrivacyPolicy { get; set; }
-        public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
-        public bool IsLimitVolunteers { get; set; } = true;
-        public bool IsAllowWaitList { get; set; } = true;
-        public int NumberOfUsersSignedUp => UsersSignedUp.Count;
-        public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
-        public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
 
         public string Headline { get; set; }
         public bool HasHeadline => !string.IsNullOrEmpty(Headline);
@@ -133,7 +123,6 @@ namespace AllReady.ViewModels.Event
                 var appUser = dataAccess.GetUser(userId);
                 viewModel.UserId = userId;
                 viewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
-                viewModel.IsUserVolunteeredForEvent = dataAccess.GetEventSignups(viewModel.Id, userId).Any();
                 var assignedTasks = campaignEvent.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
                 viewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
                 var unassignedTasks = campaignEvent.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != userId)).ToList();

@@ -34,21 +34,6 @@ namespace AllReady.Areas.Admin.Features.Events
             campaignEvent.CampaignId = message.Event.CampaignId;
             
             campaignEvent.ImageUrl = message.Event.ImageUrl;
-            campaignEvent.NumberOfVolunteersRequired = message.Event.NumberOfVolunteersRequired;
-
-            if (campaignEvent.IsLimitVolunteers != message.Event.IsLimitVolunteers || campaignEvent.IsAllowWaitList != message.Event.IsAllowWaitList)
-            {
-                campaignEvent.IsAllowWaitList = message.Event.IsAllowWaitList;
-                campaignEvent.IsLimitVolunteers = message.Event.IsLimitVolunteers;
-                
-                // cascade values to all tasks associated with this event
-                foreach (var task in _context.Tasks.Where(task => task.Event.Id == campaignEvent.Id))
-                {
-                    task.IsLimitVolunteers = campaignEvent.IsLimitVolunteers;
-                    task.IsAllowWaitList = campaignEvent.IsAllowWaitList;
-                    _context.Update(task);
-                }
-            }
 
             if (campaignEvent.Id > 0)
             {

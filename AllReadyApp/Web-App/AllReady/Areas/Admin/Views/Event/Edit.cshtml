@@ -85,33 +85,6 @@
                     <span asp-validation-for="EventType" class="text-danger"></span>
                 </div>
             </div>
-            <div class="form-group">
-                <label asp-for="NumberOfVolunteersRequired" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="NumberOfVolunteersRequired" class="form-control" />
-                    <span asp-validation-for="NumberOfVolunteersRequired" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="IsLimitVolunteers" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="IsLimitVolunteers" type="checkbox" class="form-control" />
-                    <span asp-validation-for="IsLimitVolunteers" class="text-danger"></span>
-                </div>
-            </div>
-
-            <!-- Uncomment this code when wait list functionality is completed -->
-            @*@{
-                    var displaySetting = Model.IsLimitVolunteers ? "" : "style=display:none";
-                }
-                <div id="IsAllowWaitListControl" class="form-group" @displaySetting>
-                    <label asp-for="IsAllowWaitList" class="control-label col-md-2"></label>
-                    <div class="col-md-10">
-                        <input asp-for="IsAllowWaitList" type="checkbox" class="form-control" />
-                        <span asp-validation-for="IsAllowWaitList" class="text-danger"></span>
-                    </div>
-                </div>*@
 
             <div class="form-group">
                 <label asp-for="StartDateTime" class="control-label col-md-2"></label>
@@ -227,12 +200,6 @@
             }
 
             ko.applyBindings(new AdminEventViewModel(requiredSkills, availableSkills));
-
-            $(document).ready(function(){
-                $('#IsLimitVolunteers').click(function() {
-                    $("#IsAllowWaitListControl").toggle(this.checked);
-                });
-            });
 
         })(ko, $,
             @Json.Serialize(Model.RequiredSkills.Select(rs => new { Id = rs.SkillId })),
