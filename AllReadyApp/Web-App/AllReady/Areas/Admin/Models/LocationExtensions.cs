@@ -1,4 +1,5 @@
 ﻿using AllReady.Models;
+using AllReady.ViewModels.Shared;
 
 namespace AllReady.Areas.Admin.Models
 {
@@ -74,6 +75,19 @@ namespace AllReady.Areas.Admin.Models
                 }
             }
             return location;
+        }
+
+        public static LocationViewModel ToViewModel(this Location location)
+        {
+            var value = new LocationViewModel
+            {
+                Address1 = location.Address1,
+                Address2 = location.Address2,
+                City = location.City,
+                PostalCode = location.PostalCode,
+                State = location.State
+            };
+            return value;
         }
     }
 }

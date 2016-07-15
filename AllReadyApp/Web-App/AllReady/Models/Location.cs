@@ -14,20 +14,4 @@ namespace AllReady.Models
         public string PhoneNumber { get; set; }
         public string Country { get; set; } = "USA";
     }
-
-    public static class LocationExtensions
-    {
-        public static LocationViewModel ToViewModel(this Location location)
-        {
-            var value = new LocationViewModel
-            {
-                Address1 = location.Address1,
-                Address2 = location.Address2,
-                City = location.City,
-                PostalCode = location.PostalCode,
-                State = location.State
-            };
-            return value;
-        }
-    }
 }
