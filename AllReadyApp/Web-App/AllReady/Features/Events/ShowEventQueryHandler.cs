@@ -26,10 +26,11 @@ namespace AllReady.Features.Event
     {
       var campaignEvent = _dataAccess.GetEvent(message.EventId);
 
-      if (campaignEvent == null || campaignEvent.Campaign.Locked)
-      {
-        return null;
-      }
+            if (campaignEvent == null || campaignEvent.Campaign.Locked)
+            {
+                return null;
+            }
+            //return new EventViewModel(campaignEvent).WithUserInfo(campaignEvent, message.User, _dataAccess);
 
             var eventViewModel = new EventViewModel(campaignEvent);
 
@@ -53,7 +54,6 @@ namespace AllReady.Features.Event
                 PreferredPhoneNumber = appUser.PhoneNumber
             };
 
-            //return new EventViewModel(campaignEvent).WithUserInfo(campaignEvent, message.User, _dataAccess);
             return eventViewModel;
         }
     }
