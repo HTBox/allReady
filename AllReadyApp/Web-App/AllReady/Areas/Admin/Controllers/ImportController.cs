@@ -38,6 +38,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Index(IFormFile file)
         {
             using (var stream = file.OpenReadStream())
