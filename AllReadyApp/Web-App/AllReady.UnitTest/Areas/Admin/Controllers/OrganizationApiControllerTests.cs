@@ -6,8 +6,8 @@ using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
@@ -54,7 +54,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var attribute = sut.GetAttributesOn(x => x.GetContact(It.IsAny<int>())).OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Type, typeof (ContactInformationModel));
-            Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
+            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new OrganizationApiController(null);
             var attribute = sut.GetAttributes().OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.ContentTypes.Select(x => x.MediaType).First(), "application/json");
+            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
         }
 
         [Fact]

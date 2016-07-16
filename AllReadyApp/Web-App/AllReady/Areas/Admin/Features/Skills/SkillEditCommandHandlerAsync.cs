@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
+using AllReady.Extensions;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Skills
 {
@@ -30,7 +31,7 @@ namespace AllReady.Areas.Admin.Features.Skills
             skill.ParentSkillId = msgSkill.ParentSkillId;
             skill.Description = msgSkill.Description;
 
-            _context.Skills.Update(skill);
+            _context.AddOrUpdate(skill);
             await _context.SaveChangesAsync();
 
             return skill.Id;

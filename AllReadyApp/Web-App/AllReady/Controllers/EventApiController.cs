@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using AllReady.Models;
 using System;
 using System.Collections.Generic;
@@ -13,6 +13,7 @@ using AllReady.Features.Event;
 using AllReady.ViewModels.Event;
 using AllReady.ViewModels.Shared;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.Controllers
 {
@@ -22,10 +23,12 @@ namespace AllReady.Controllers
     {
         private readonly IMediator _mediator;
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
+        private UserManager<ApplicationUser> _userManager;
 
-        public EventApiController(IMediator mediator)
+        public EventApiController(IMediator mediator, UserManager<ApplicationUser> userManager)
         {
             _mediator = mediator;
+            _userManager = userManager;
         }
 
         // GET: api/values
@@ -46,7 +49,9 @@ namespace AllReady.Controllers
                 return new EventViewModel(campaignEvent);
             }
             
-            HttpNotFound();
+
+            // BUG Change this to IActionResult and use NotFound instead of null
+            NotFound();
             return null;
         }
 
@@ -99,7 +104,7 @@ namespace AllReady.Controllers
             var campaignEvent = GetEventBy(id);
             if (campaignEvent == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             
             return View("NoUserCheckin", campaignEvent);
@@ -112,10 +117,10 @@ namespace AllReady.Controllers
             var campaignEvent = GetEventBy(id);
             if (campaignEvent == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             
-            var userSignup = campaignEvent.UsersSignedUp.FirstOrDefault(u => u.User.Id == User.GetUserId());
+            var userSignup = campaignEvent.UsersSignedUp.FirstOrDefault(u => u.User.Id == _userManager.GetUserId(User));
             if (userSignup != null && userSignup.CheckinDateTime == null)
             {
                 userSignup.CheckinDateTime = DateTimeUtcNow.Invoke();
@@ -133,7 +138,7 @@ namespace AllReady.Controllers
         {
             if (signupModel == null)
             {
-                return HttpBadRequest();
+                return BadRequest();
             }
             
             if (!ModelState.IsValid)
@@ -152,15 +157,15 @@ namespace AllReady.Controllers
         [Authorize]
         public async Task<IActionResult> UnregisterEvent(int id)
         {
-            var eventSignup = _mediator.Send(new EventSignupByEventIdAndUserIdQuery { EventId = id, UserId = User.GetUserId() });
+            var eventSignup = _mediator.Send(new EventSignupByEventIdAndUserIdQuery { EventId = id, UserId = _userManager.GetUserId(User) });
             if (eventSignup == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             await _mediator.SendAsync(new UnregisterEvent { EventSignupId = eventSignup.Id, UserId = eventSignup.User.Id});
 
-            return new HttpStatusCodeResult((int)HttpStatusCode.OK);
+            return Ok();
         }
 
         private Event GetEventBy(int eventId) => _mediator.Send(new EventByIdQuery { EventId = eventId });

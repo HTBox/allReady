@@ -5,8 +5,8 @@ using AllReady.Features.Manage;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using MediatR;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
@@ -685,7 +685,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
         private static Mock<UserManager<ApplicationUser>> CreateApplicationUserMock()
         {
-            return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
+            return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null,null);
         }    
     }
 }

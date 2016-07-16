@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Itineraries
 {
@@ -30,7 +30,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
                 return itinerary.Id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // There was an error somewhere
                 return 0;

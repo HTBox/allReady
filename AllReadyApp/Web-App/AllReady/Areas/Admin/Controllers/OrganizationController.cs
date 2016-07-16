@@ -1,10 +1,10 @@
-﻿using AllReady.Areas.Admin.Features.Organizations;
+﻿using System.Linq;
+using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
 using AllReady.Areas.Admin.Models.Validators;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
-using System.Linq;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -34,7 +34,7 @@ namespace AllReady.Areas.Admin.Controllers
             var organization = _mediator.Send(new OrganizationDetailQuery { Id = id });
             if (organization == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             return View(organization);
@@ -52,7 +52,7 @@ namespace AllReady.Areas.Admin.Controllers
             var organization = _mediator.Send(new OrganizationEditQuery { Id = id });
             if (organization == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             return View("Edit",organization);
@@ -65,7 +65,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (organization == null)
             {
-                return HttpBadRequest();
+                return BadRequest();
             }
 
             var errors = _organizationValidator.Validate(organization);
@@ -95,12 +95,12 @@ namespace AllReady.Areas.Admin.Controllers
             // Needs comments:  This method doesn't delete things.
             if (id == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             var organization = _mediator.Send(new OrganizationDetailQuery { Id = id.Value });
             if (organization == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             return View(organization);

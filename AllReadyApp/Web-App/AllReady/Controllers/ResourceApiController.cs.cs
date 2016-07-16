@@ -3,7 +3,7 @@ using System.Linq;
 using AllReady.Features.Resource;
 using AllReady.ViewModels.Resource;
 using MediatR;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Controllers
 {

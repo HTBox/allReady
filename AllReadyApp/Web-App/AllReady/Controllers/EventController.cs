@@ -3,11 +3,13 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Features.Event;
+using AllReady.Models;
 using AllReady.ViewModels.Event;
 using AllReady.ViewModels.Shared;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.Controllers
@@ -15,10 +17,12 @@ namespace AllReady.Controllers
     public class EventController : Controller
     {
         private readonly IMediator _mediator;
+        private UserManager<ApplicationUser> _userManager;
 
-        public EventController(IMediator mediator)
+        public EventController(IMediator mediator, UserManager<ApplicationUser> userManager)
         {
             _mediator = mediator;
+            _userManager = userManager;
         }
 
         // note: sgordon: These are currently not used as we've simplified the my events page. Note that My Events is moved to VolunteerController and now known as dashboard.
@@ -55,7 +59,7 @@ namespace AllReady.Controllers
             var viewModel = _mediator.Send(new ShowEventQuery { EventId = id, User = User });
             if (viewModel == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             return View("EventWithTasks", viewModel);
@@ -69,7 +73,7 @@ namespace AllReady.Controllers
         {
             if (signupModel == null)
             {
-                return HttpBadRequest();
+                return BadRequest();
             }
 
             if (ModelState.IsValid)
@@ -90,7 +94,7 @@ namespace AllReady.Controllers
         {
             if (userId == null)
             {
-                return HttpBadRequest();
+                return BadRequest();
             }
 
             await _mediator.SendAsync(new TaskStatusChangeCommandAsync { TaskStatus = status, TaskId = taskId, UserId = userId, TaskStatusDescription = statusDesc });

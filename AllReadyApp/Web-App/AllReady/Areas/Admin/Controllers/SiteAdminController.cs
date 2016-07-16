@@ -11,11 +11,11 @@ using AllReady.Features.Manage;
 using AllReady.Models;
 using AllReady.Security;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Mvc.Routing;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 
 namespace AllReady.Areas.Admin.Controllers
@@ -215,7 +215,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
             else
             {
-                return HttpBadRequest("Can't manage keys for a user without the API role.");
+                return BadRequest("Can't manage keys for a user without the API role.");
             }
 
         }
