@@ -7,7 +7,7 @@ namespace AllReady.UnitTest.Features.Organizations
 {
     public class OrganizationPrivacyPolicyQueryHandlerAsyncTests : InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task OrgWithNoPrivacyPolicy_ReturnsNullContent()
         {
             var handler = new OrganizationPrivacyPolicyQueryHandlerAsync(Context);
@@ -18,7 +18,7 @@ namespace AllReady.UnitTest.Features.Organizations
             Assert.Null(result.Content);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task OrgWithValidPrivacyPolicy_ReturnsContent()
         {
             var handler = new OrganizationPrivacyPolicyQueryHandlerAsync(Context);
@@ -29,7 +29,7 @@ namespace AllReady.UnitTest.Features.Organizations
             Assert.Equal("<h2>Line 1</h2><p>Line 2</p>", result.Content);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task NullReturnedWhenSkillIdDoesNotExists()
         {
             var handler = new OrganizationPrivacyPolicyQueryHandlerAsync(Context);
@@ -38,7 +38,7 @@ namespace AllReady.UnitTest.Features.Organizations
             Assert.Null(result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task NullReturnedWhenSkillIdNotInMessage()
         {
             var handler = new OrganizationPrivacyPolicyQueryHandlerAsync(Context);

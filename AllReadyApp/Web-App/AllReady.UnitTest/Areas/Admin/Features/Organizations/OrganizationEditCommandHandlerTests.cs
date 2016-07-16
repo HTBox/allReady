@@ -9,7 +9,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 {
     public class OrganizationEditCommandHandlerTests : InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void AddOrganization()
         {
             // Arrange

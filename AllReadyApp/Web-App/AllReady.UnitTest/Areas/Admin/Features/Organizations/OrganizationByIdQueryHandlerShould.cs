@@ -23,7 +23,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
             context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void InvokeGetOrganizationWithCorrectOrganizationId()
         {
             var THE_ID = 1;

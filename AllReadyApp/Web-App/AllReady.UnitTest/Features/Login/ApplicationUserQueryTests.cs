@@ -20,7 +20,7 @@ namespace AllReady.UnitTest.Features.Login
             Context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task QueryUserThatExists()
         {
             var queryHandler = new ApplicationUserQueryHandler(Context);

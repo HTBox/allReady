@@ -16,7 +16,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ModelIsCreated()
         {
             var sut = new EditEventCommandHandler(Context);

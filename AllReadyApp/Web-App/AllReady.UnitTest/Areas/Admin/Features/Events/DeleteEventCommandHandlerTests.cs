@@ -47,7 +47,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void ExistingEvent()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
@@ -59,7 +59,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(0, data);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void EventDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
@@ -69,7 +69,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             //TODO: this test needs to be completed to actually test something
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void EventIsDeleted()
         {
             const int eventId = 1;

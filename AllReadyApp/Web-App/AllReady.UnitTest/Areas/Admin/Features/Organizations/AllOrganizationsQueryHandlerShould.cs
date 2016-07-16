@@ -23,7 +23,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
             context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void InvokeOrganizations()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();

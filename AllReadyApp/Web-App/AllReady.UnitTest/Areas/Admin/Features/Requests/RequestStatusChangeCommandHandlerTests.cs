@@ -57,7 +57,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
             result.ShouldBeTrue();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async void Handle_WithNewStatusAssignedInMessage_UpdatesRequest()
         {
             var query = new RequestStatusChangeCommand

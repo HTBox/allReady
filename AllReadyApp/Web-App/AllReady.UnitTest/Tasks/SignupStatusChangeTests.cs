@@ -80,7 +80,7 @@ namespace AllReady.UnitTest.Tasks
             context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task VolunteerAcceptsTask()
         {
             var mediator = new Mock<IMediator>();

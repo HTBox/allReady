@@ -68,7 +68,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             otherCampaign_id = otherCampaign.Id;
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void GetCampaignsWithoutOrgIdSet()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
@@ -80,7 +80,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Assert.Equal(1, result.Count(c => c.Id == otherCampaign_id));
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void GetCampaignsWithOrgIdSet()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();

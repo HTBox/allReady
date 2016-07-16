@@ -75,7 +75,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task SendMessageToAssignedVolunteers()
         {
             const string expectedMessage = "This is my message for all you task peeps";

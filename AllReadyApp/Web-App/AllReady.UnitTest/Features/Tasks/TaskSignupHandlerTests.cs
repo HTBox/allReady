@@ -13,7 +13,7 @@ namespace AllReady.UnitTest.Features.Tasks
 {
     public class TaskSignupHandlerTests : InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task Result_ShouldBe_ClosedTaskFailure_IfTaskIsClosed()
         {
             var mockMediator = new Mock<IMediator>();
@@ -26,7 +26,7 @@ namespace AllReady.UnitTest.Features.Tasks
             Assert.Equal(0, Context.TaskSignups.Count());
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task Result_ShouldBe_CampaignNotFound_IfCampaignIdDoesNotExist()
         {
             var mockMediator = new Mock<IMediator>();
@@ -39,7 +39,7 @@ namespace AllReady.UnitTest.Features.Tasks
             Assert.Equal(0, Context.TaskSignups.Count());
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task Result_ShouldBe_TaskNotFound_IfTaskIdDoesNotExist()
         {
             var mockMediator = new Mock<IMediator>();

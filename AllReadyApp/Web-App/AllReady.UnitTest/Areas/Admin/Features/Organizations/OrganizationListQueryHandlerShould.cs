@@ -9,7 +9,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 {
     public class OrganizationListQueryHandlerShould : InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void ReturnAllOrganizationsAsOrganizationSummaryModels()
         {
             var message = new OrganizationListQuery();
