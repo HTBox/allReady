@@ -201,7 +201,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (selectedRequests.Any())
             {
-                var result = await _mediator.SendAsync(new AddRequestsCommand { ItineraryId = id, RequestIdsToAdd = selectedRequests.ToList() });
+                var result = await _mediator.SendAsync(new Features.Itineraries.AddRequestsCommand { ItineraryId = id, RequestIdsToAdd = selectedRequests.ToList() });
             }
 
             return RedirectToAction(nameof(Details), new { id = id });
