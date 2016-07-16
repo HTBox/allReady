@@ -38,7 +38,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             context.Organizations.Add(htb);
             context.SaveChanges();
 
-            var vm = new EventDetailModel
+            var vm = new EventEditModel
             {
                 CampaignId = 1,
                 TimeZoneId = "Central Standard Time"
@@ -95,7 +95,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
 
             var startDateTime = new DateTime(2015, 7, 12, 4, 15, 0);
             var endDateTime = new DateTime(2015, 12, 7, 15, 10, 0);
-            var vm = new EventDetailModel
+            var vm = new EventEditModel
             {
                 CampaignId = queenAnne.CampaignId,
                 CampaignName = queenAnne.Campaign.Name,
@@ -108,10 +108,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 RequiredSkills = queenAnne.RequiredSkills,
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = startDateTime,
-                Tasks = null,
                 OrganizationId = queenAnne.Campaign.ManagingOrganizationId,
                 OrganizationName = queenAnne.Campaign.ManagingOrganization.Name,
-                Volunteers = null
             };
             var query = new EditEventCommand { Event = vm };
             var handler = new EditEventCommandHandler(context);
@@ -139,7 +137,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task ExistingEventUpdateLocation()
         {
-            var seattlePostalCode = new PostalCodeGeo { City = "Seattle", PostalCode = "98117", State = "WA" };
+            var seattlePostalCode = "98117";
 
             var seattle = new Location
             {
@@ -194,7 +192,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             {
                 Address1 = "123 new address",
                 Address2 = "new suite",
-                PostalCode = new PostalCodeGeo { City = "Bellevue", PostalCode = "98004", State = "WA" },
+                PostalCode = "98004",
                 City = "Bellevue",
                 State = "WA",
                 Country = "USA",
@@ -202,7 +200,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 PhoneNumber = "New number"
             });
 
-            var locationEdit = new EventDetailModel
+            var locationEdit = new EventEditModel
             {
                 CampaignId = queenAnne.CampaignId,
                 CampaignName = queenAnne.Campaign.Name,
@@ -215,10 +213,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 RequiredSkills = queenAnne.RequiredSkills,
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = queenAnne.StartDateTime,
-                Tasks = null,
                 OrganizationId = queenAnne.Campaign.ManagingOrganizationId,
                 OrganizationName = queenAnne.Campaign.ManagingOrganization.Name,
-                Volunteers = null
             };
 
             var query = new EditEventCommand { Event = locationEdit };
@@ -230,7 +226,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(data.Location.Address1, NEW_LOCATION.Address1);
             Assert.Equal(data.Location.Address2, NEW_LOCATION.Address2);
             Assert.Equal(data.Location.City, NEW_LOCATION.City);
-            Assert.Equal(data.Location.PostalCode?.PostalCode, NEW_LOCATION.PostalCode);
+            Assert.Equal(data.Location.PostalCode, NEW_LOCATION.PostalCode);
             Assert.Equal(data.Location.State, NEW_LOCATION.State);
             Assert.Equal(data.Location.Country, NEW_LOCATION.Country);
             Assert.Equal(data.Location.PhoneNumber, NEW_LOCATION.PhoneNumber);

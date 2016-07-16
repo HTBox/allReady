@@ -9,7 +9,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 {
     public class EditCampaignCommandHandler : IAsyncRequestHandler<EditCampaignCommand, int>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
 
         public EditCampaignCommandHandler(AllReadyContext context)
         {
@@ -19,16 +19,11 @@ namespace AllReady.Areas.Admin.Features.Campaigns
         public async Task<int> Handle(EditCampaignCommand message)
         {
             var campaign = await _context.Campaigns
-                .Include(l => l.Location).ThenInclude(p => p.PostalCode)
+                .Include(l => l.Location)
                 .Include(tc => tc.CampaignContacts)
                 .Include(i => i.CampaignImpact)
                 .SingleOrDefaultAsync(c => c.Id == message.Campaign.Id)
-                .ConfigureAwait(false);
-
-            if (campaign == null)
-            {
-                campaign = new Campaign();
-            }
+                .ConfigureAwait(false) ?? new Campaign();
 
             campaign.Name = message.Campaign.Name;
             campaign.Description = message.Campaign.Description;
@@ -51,6 +46,9 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign = campaign.UpdateCampaignContact(message.Campaign, _context);
             campaign.CampaignImpact = campaign.CampaignImpact.UpdateModel(message.Campaign.CampaignImpact);
             campaign.Location = campaign.Location.UpdateModel(message.Campaign.Location);
+
+            campaign.Featured = message.Campaign.Featured;
+            campaign.Headline = message.Campaign.Headline;
 
             if (campaign.CampaignImpact != null)
             {

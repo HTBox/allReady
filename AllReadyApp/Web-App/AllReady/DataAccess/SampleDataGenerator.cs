@@ -115,8 +115,8 @@ namespace AllReady.Models
             {
                 Name = "Working Smoke Detectors Save Lives",
                 ManagingOrganization = htb,
-                StartDateTime = DateTime.Today.AddMonths(-1).ToUniversalTime(),
-                EndDateTime = DateTime.Today.AddMonths(1).ToUniversalTime(),
+                StartDateTime = DateTime.Today.AddMonths(-1),
+                EndDateTime = DateTime.Today.AddMonths(1),
                 CampaignImpact = smokeDetImpact,
                 TimeZoneId = "Central Standard Time"
             };
@@ -192,8 +192,8 @@ namespace AllReady.Models
             Event southLoopSmoke = new Event()
             {
                 Name = "Smoke Detector Installation and Testing-South Loop",
-                StartDateTime = new DateTime(2015, 7, 6, 10, 0, 0).ToUniversalTime(),
-                EndDateTime = new DateTime(2015, 12, 31, 17, 0, 0).ToUniversalTime(),
+                StartDateTime = DateTime.Today.AddMonths(-1),
+                EndDateTime = DateTime.Today.AddMonths(1),
                 Location = GetRandom<Location>(locations),
                 Campaign = smokeDet
             };
@@ -202,8 +202,8 @@ namespace AllReady.Models
             Event northLoopSmoke = new Event()
             {
                 Name = "Smoke Detector Installation and Testing-Near North Side",
-                StartDateTime = new DateTime(2015, 7, 6, 10, 0, 0).ToUniversalTime(),
-                EndDateTime = new DateTime(2015, 12, 31, 17, 0, 0).ToUniversalTime(),
+                StartDateTime = DateTime.Today.AddMonths(-1),
+                EndDateTime = DateTime.Today.AddMonths(1),
                 Location = GetRandom<Location>(locations),
                 Campaign = smokeDet
             };
@@ -381,9 +381,11 @@ namespace AllReady.Models
             var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
             _userManager.CreateAsync(user1, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user1);
+
             var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
             _userManager.CreateAsync(user2, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user2);
+
             var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
             _userManager.CreateAsync(user3, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user3);
@@ -446,8 +448,8 @@ namespace AllReady.Models
                     Event = campaignEvent,
                     Description = "Description of a very important task # " + i,
                     Name = "Task # " + i,
-                    EndDateTime = DateTime.Now.AddDays(i),
-                    StartDateTime = DateTime.Now.AddDays(i - 1),
+                    EndDateTime = DateTime.Today.AddHours(17).AddDays(i),
+                    StartDateTime = DateTime.Today.AddHours(9).AddDays(i - 1),
                     Organization = organization
                 });
             }
@@ -461,7 +463,7 @@ namespace AllReady.Models
             ret.City = city;
             ret.State = state;
             ret.Country = "US";
-            ret.PostalCode = _context.PostalCodes.FirstOrDefault(p => p.PostalCode == postalCode);
+            ret.PostalCode = postalCode;
             ret.Name = "Humanitarian Toolbox location";
             ret.PhoneNumber = "1-425-555-1212";
             return ret;
@@ -519,20 +521,26 @@ namespace AllReady.Models
             var user = await _userManager.FindByNameAsync(_settings.DefaultAdminUsername);
             if (user == null)
             {
-                user = new ApplicationUser { UserName = _settings.DefaultAdminUsername, Email = _settings.DefaultAdminUsername, TimeZoneId = _generalSettings.DefaultTimeZone };
-                user.EmailConfirmed = true;
+                user = new ApplicationUser
+                {
+                    UserName = _settings.DefaultAdminUsername, Email = _settings.DefaultAdminUsername, TimeZoneId = _generalSettings.DefaultTimeZone, EmailConfirmed = true
+                };
                 _userManager.CreateAsync(user, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
                 _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, "SiteAdmin")).GetAwaiter().GetResult();
 
-                var user2 = new ApplicationUser { UserName = _settings.DefaultOrganizationUsername, Email = _settings.DefaultOrganizationUsername, TimeZoneId = _generalSettings.DefaultTimeZone };
+                var user2 = new ApplicationUser
+                {
+                    UserName = _settings.DefaultOrganizationUsername, Email = _settings.DefaultOrganizationUsername, TimeZoneId = _generalSettings.DefaultTimeZone, EmailConfirmed = true
+                };
                 // For the sake of being able to exercise Organization-specific stuff, we need to associate a organization.
-                user2.EmailConfirmed = true;
                 await _userManager.CreateAsync(user2, _settings.DefaultAdminPassword);
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.UserType, "OrgAdmin"));
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.Organization, _context.Organizations.First().Id.ToString()));
 
-                var user3 = new ApplicationUser { UserName = _settings.DefaultUsername, Email = _settings.DefaultUsername, TimeZoneId = _generalSettings.DefaultTimeZone };
-                user3.EmailConfirmed = true;
+                var user3 = new ApplicationUser
+                {
+                    UserName = _settings.DefaultUsername, Email = _settings.DefaultUsername, TimeZoneId = _generalSettings.DefaultTimeZone, EmailConfirmed = true
+                };
                 await _userManager.CreateAsync(user3, _settings.DefaultAdminPassword);
             }
         }

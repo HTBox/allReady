@@ -25,7 +25,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                 .AsNoTracking()
                 .Include(ci => ci.CampaignImpact)
                 .Include(mt => mt.ManagingOrganization)
-                .Include(l => l.Location).ThenInclude(p => p.PostalCode)
+                .Include(l => l.Location)
                 .Include(c => c.CampaignContacts).ThenInclude(tc => tc.Contact)
                 .SingleOrDefaultAsync(c => c.Id == message.CampaignId)
                 .ConfigureAwait(false);
@@ -37,6 +37,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Id = campaign.Id,
                     Name = campaign.Name,
                     Description = campaign.Description,
+                    Featured = campaign.Featured,
                     FullDescription = campaign.FullDescription,
                     ExternalUrl = campaign.ExternalUrl,
                     ExternalUrlText = campaign.ExternalUrlText,
@@ -47,7 +48,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     StartDate = campaign.StartDateTime,
                     EndDate = campaign.EndDateTime,
                     Location = campaign.Location.ToEditModel(),
-                    CampaignImpact = campaign.CampaignImpact != null ? campaign.CampaignImpact : new CampaignImpact()
+                    CampaignImpact = campaign.CampaignImpact ?? new CampaignImpact(),
+                    Headline = campaign.Headline
                 };
 
                 if (!campaign.CampaignContacts.Any())// Include isn't including

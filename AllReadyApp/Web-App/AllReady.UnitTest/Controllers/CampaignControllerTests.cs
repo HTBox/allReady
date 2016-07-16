@@ -4,6 +4,7 @@ using AllReady.Features.Campaigns;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels;
+using AllReady.ViewModels.Campaign;
 using MediatR;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Routing;

@@ -66,26 +66,32 @@ footer {
 }
 
 .btn {
-    border-radius: 0;
+    border-radius: 6px;
 }
+    .btn.btn-primary, a.btn.btn-primary {
+        border-radius: 6px;
+        border-width: 0;
+    }
 
     .btn.btn-default, a.btn.btn-default {
-        background-color: hsl(28.6, 62.9%, 41.2%);
+        background-color: #d58033;
         color: #fff;
+        border-radius: 6px;
+        border-width: 0;
     }
 
         .btn.btn-default.active, a.btn.btn-default.active {
-            background-color: hsl(28.9, 80.4%, 50%);
+            background-color: #ab6627;
             color: #fff;
         }
 
             .btn.btn-default.active:hover, .btn.btn-default.active:focus {
-                background-color: hsl(28.9, 80.4%, 60%);
+                background-color: #ab6627;
             }
 
         .btn.btn-default:hover, .btn.btn-default:focus {
             color: #fff;
-            background-color: hsl(28.9, 80.4%, 68%);
+            background-color: #ab6627;
         }
 
 .btn-volunteer {
@@ -336,6 +342,8 @@ Navigation
     position: absolute;
     bottom: 0;
     right: 0;
+    margin-right: 1rem;
+    margin-bottom: .5rem;
     font-size: 9px;
 }
 
@@ -384,13 +392,14 @@ Navigation
 #CampaignInfo .panel-heading {
     width: 215px;
     float: left;
+    background-color: white;
 }
 
 #CampaignInfo .toggle-accordion-icon {
     width: 25px;
     float: left;
-    margin-top: 25px;
-    margin-left: -39px;   
+    margin-top: 7px;
+    margin-left: -39px;
 }
 
 .task-panel .panel-title {
@@ -398,21 +407,12 @@ Navigation
     margin-left: -10px;
 }
 
-.task-panel .panel-title .toggle-accordion-icon, #CampaignInfo .toggle-accordion-icon
-{
-    width: 25px;
-    float: left;
-    font-size: 24px;
-    color: hsl(28.6, 62.9%, 41.2%);
-}
-
-#CampaignInfo .toggle-accordion-icon {
-    margin-top: 7px;
-}
-
-#CampaignInfo .panel-heading {
-    background-color: white;
-}
+    .task-panel .panel-title .toggle-accordion-icon, #CampaignInfo .toggle-accordion-icon {
+        width: 25px;
+        float: left;
+        font-size: 24px;
+        color: hsl(28.6, 62.9%, 41.2%);
+    }
 
 #CampaignInfo h3 {
     margin-top: 1px;
@@ -433,9 +433,10 @@ Navigation
 .task-panel .task-name {
     font-weight: bold;
 }
-.task-panel .task-name.isFull {
-    font-weight: normal;
-}
+
+    .task-panel .task-name.isFull {
+        font-weight: normal;
+    }
 
 .task-panel .task-datetime {
     font-size: 13px;
@@ -449,13 +450,13 @@ Navigation
     margin-top: -32px;
 }
 
-.task-panel .btn-group > .btn {
-    margin-top: -3px;
-}
+    .task-panel .btn-group > .btn {
+        margin-top: -3px;
+    }
 
-.task-panel .btn-group > .btn-sm {
-    margin-top: -2px;
-}
+    .task-panel .btn-group > .btn-sm {
+        margin-top: -2px;
+    }
 
 .task-list {
     width: 80%;
@@ -471,16 +472,101 @@ Navigation
     margin: 0 auto;
 }
 
-#UserTasksAccordion .task-panel .task-button-container.twoButtons {
-    width: 46%;
-    margin: 0 auto;
-}
+    #UserTasksAccordion .task-panel .task-button-container.twoButtons {
+        width: 46%;
+        margin: 0 auto;
+    }
 
 /* Event Edit Page */
-#IsLimitVolunteers, #IsAllowWaitList {
-    margin-left: -170px;
-}
 
 .inline-form {
     display: inline-block;
 }
+
+.myevents h3 {
+    margin-bottom: 20px;
+}
+
+.myevents-block {
+    border: 1px solid #ab6627;
+    border-left: 4px solid #ab6627;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    margin-left: 3px;
+}
+
+a .myevents-block {
+    color: #000;
+}
+
+a:hover .myevents-block {
+    background: #f5eae1;
+}
+
+.myevents-block h5 {
+    font-size: 15px;
+    margin-top: 3px;
+}
+
+.myevents-block h4 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.myevents-block h6 {
+    font-size: 14px;
+}
+
+.myevents-block p {
+    font-size: 14px;
+}
+
+.lister-logo {
+    max-width: 400px;
+}
+
+.right-action-btn {
+    display: inline-block;
+    margin-left: 8px;
+}
+
+.org-image {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    max-height: 250px;
+    max-width: 600px;
+}
+
+.request-filter-section {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 15px;
+    border: 1px solid #ab6627;
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
+
+.request-filter-section input { 
+    width: 300px;
+    margin-right: 14px;
+}
+.org-tile {
+    height: 220px;
+    border: 1px solid #ab6627;
+    background: rgba(171, 102, 39, 0.15);
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 20px;
+    color: black;
+}
+
+    .org-tile img {
+        max-height: 140px;
+    }
+
+    .org-tile h2 {
+        margin-top: 0;
+        margin-bottom: 25px;
+        font-size: 20px;
+    }

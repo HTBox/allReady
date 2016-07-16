@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Models;
-using AllReady.Extensions;
 using AllReady.Models;
 using AllReady.Services;
 using AllReady.UnitTest.Extensions;
@@ -14,6 +13,7 @@ using Microsoft.AspNet.Mvc;
 using Moq;
 using Xunit;
 using System.Linq;
+using AllReady.Areas.Admin.Models.Validators;
 using Microsoft.AspNet.Authorization;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
@@ -30,11 +30,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await TaskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DetailsReturnsHttpNotFoundResultWhenEventIsNull()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel());
+
+            var sut = new EventController(null, mediator.Object, null);
+            var result = await sut.Details(It.IsAny<int>());
+
+            Assert.IsType<HttpNotFoundResult>(result);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -61,7 +66,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void DetailsHasHttpGetAttribute()
         {
-            var sut = new EventController(null, null);
+            var sut = new EventController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -69,7 +74,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void DetailsHasRouteAttributeWithCorrectRoute()
         {
-            var sut = new EventController(null, null);
+            var sut = new EventController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Event/Details/{id}");
@@ -111,71 +116,49 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task CreatePostReturnsEditView_When_ModelStateNotValid()
         {
-            var sut = GetEventController();
+            var imageService = new Mock<IImageService>();
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel());
+
+            var eventDetailModelValidator = new Mock<IValidateEventDetailModels>();
+            eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventEditModel>(), It.IsAny<CampaignSummaryModel>()))
+                .Returns(new List<KeyValuePair<string, string>>());
+
+            var sut = new EventController(imageService.Object, mediator.Object, eventDetailModelValidator.Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
             sut.ModelState.AddModelError("test", "test");
-            var eventModel = new EventDetailModel();
-            var result = (ViewResult)await sut.Create(1, eventModel, null);
+            var result = (ViewResult)await sut.Create(It.IsAny<int>(), It.IsAny<EventEditModel>(), null);
 
             Assert.Equal("Edit", result.ViewName);
         }
 
         [Fact]
-        public async Task CreatePostReturnsEditView_When_EventEndDateBeforeStartDate()
+        public async Task CreatePostReturnsEditView_When_EventDetailsModelValidatorHasErrors()
         {
-            var campaignStartDate = new DateTimeOffset(new DateTime(1900, 1, 1));
-            var campaignEndDate = campaignStartDate.AddDays(4);
-            var sut = GetEventController(campaignStartDate, campaignEndDate);
-            var eventModel = new EventDetailModel
+            var imageService = new Mock<IImageService>();
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel());
+
+            var eventDetailModelValidator = new Mock<IValidateEventDetailModels>();
+            eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventEditModel>(), It.IsAny<CampaignSummaryModel>()))
+                .Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("ErrorKey", "ErrorMessage") });
+
+            var sut = new EventController(imageService.Object, mediator.Object, eventDetailModelValidator.Object);
+            sut.SetClaims(new List<Claim>
             {
-                EndDateTime = campaignStartDate.AddDays(1),
-                StartDateTime = campaignStartDate.AddDays(2)
-            };
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
 
-            var result = (ViewResult)await sut.Create(1, eventModel, null);
-
+            var result = (ViewResult)await sut.Create(1, It.IsAny<EventEditModel>(), null);
             Assert.Equal("Edit", result.ViewName);
-            var errors = sut.ModelState.GetErrorMessages();
-            Assert.Equal(1, errors.Count);
-            Assert.Equal("End date cannot be earlier than the start date", errors[0]);
-        }
-
-        [Fact]
-        public async Task CreatePostReturnsEditView_When_EventStartDateBeforeCampaignStartDate()
-        {
-            var campaignStartDate = new DateTimeOffset(new DateTime(1900, 1, 1));
-            var campaignEndDate = campaignStartDate.AddDays(4);
-            var sut = GetEventController(campaignStartDate, campaignEndDate);
-            var eventModel = new EventDetailModel
-            {
-                EndDateTime = campaignStartDate,
-                StartDateTime = campaignStartDate.AddDays(-1)
-            };
-
-            var result = (ViewResult)await sut.Create(1, eventModel, null);
-
-            Assert.Equal("Edit", result.ViewName);
-            var errors = sut.ModelState.GetErrorMessages();
-            Assert.Equal(1, errors.Count);
-            Assert.Equal("Start date cannot be earlier than the campaign start date " + campaignStartDate.ToString("d"), errors[0]);
-        }
-        [Fact]
-        public async Task CreatePostReturnsEditView_When_EventEndDateAfterCampaignEndDate()
-        {
-            var campaignStartDate = new DateTimeOffset(new DateTime(1900, 1, 1));
-            var campaignEndDate = campaignStartDate.AddDays(4);
-            var sut = GetEventController(campaignStartDate, campaignEndDate);
-            var eventModel = new EventDetailModel
-            {
-                EndDateTime = campaignEndDate.AddDays(1),
-                StartDateTime = campaignStartDate
-            };
-
-            var result = (ViewResult)await sut.Create(1, eventModel, null);
-
-            Assert.Equal("Edit", result.ViewName);
-            var errors = sut.ModelState.GetErrorMessages();
-            Assert.Equal(1, errors.Count);
-            Assert.Equal("End date cannot be later than the campaign end date " + campaignEndDate.ToString("d"), errors[0]);
         }
 
         /// <summary>
@@ -258,7 +241,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task EditPostAddsValidationErrorsToModelStateErrorsWhenValidationFails()
+        public async Task EditPostAddsValidationErrorsToModelStateErrorsWhenEventDetailsModelValidatorHasErrors()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task EditPostReturnsCorrectViewWhenEventDetailsModelValidatorHasErrors()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -510,7 +500,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void ControllerHasAreaAtttributeWithTheCorrectAreaName()
         {
-            var sut = new EventController(null, null);
+            var sut = new EventController(null, null, null);
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.RouteValue, "Admin");
@@ -519,7 +509,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void ControllerHasAreaAuthorizeAttributeWithCorrectPolicy()
         {
-            var sut = new EventController(null, null);
+            var sut = new EventController(null, null, null);
             var attribute = sut.GetAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Policy, "OrgAdmin");
@@ -537,7 +527,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel { StartDate = startDate, EndDate = endDate });
 
-            var sut = new EventController(imageService.Object, mediator.Object);
+            var sut = new EventController(imageService.Object, mediator.Object, null);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),

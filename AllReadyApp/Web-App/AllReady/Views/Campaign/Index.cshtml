@@ -1,16 +1,11 @@
-﻿@model IList<CampaignViewModel>
+﻿@model IList<AllReady.ViewModels.Campaign.CampaignViewModel>
 @using AllReady.Security
+@using AllReady.ViewModels.Campaign
 
 @{
     ViewData["Title"] = "All Registered Campaigns";
     @addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
 }
-<environment names="Development">
-    <link rel="stylesheet" href="~/css/campaignStyle.css" />
-</environment>
-<environment names="Staging,Production">
-    <link rel="stylesheet" href="~/css/campaignStyle.css" asp-file-version="true" />
-</environment>
 
 <div class="row">
     <div class="col-md-12 text-center">
@@ -65,24 +60,26 @@
         <div id="campaignGrid" class="table-responsive">
             <table class="table" data-bind="css: { hide: !campaigns.filtered().length }">
                 <tr>
-                    <th><span title="Name of the campaign">Title</span></th>
-                    <th><span title="Description of the campaign">Description</span></th>
-                    <th><span title="Date of the campaign">Dates</span></th>
-                    <th><span title="Locations of the campaign">Locations</span></th>
+                    <th class="col-md-3"><span title="Name of the campaign">Title</span></th>
+                    <th class="col-md-3"><span title="Organizer of the campaign">Organizer</span></th>
+                    <th class="col-md-4"><span title="Description of the campaign">Description</span></th>
+                    <th class="col-md-2"><span title="Date of the campaign">Dates</span></th>
                 </tr>
                 <!-- ko foreach: campaigns.filtered -->
                 <tr>
                     <td>
                         <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
+                        <i data-bind="visible: Featured" class="fa fa-star star-highlight" aria-hidden="true"></i>
+                    </td>
+                    <td>
+                        <span data-bind="text: ManagingOrganizationName"></span>
+                        <div data-bind="visible:ManagingOrganizationLogo != '' || ManagingOrganizationLogo != null"><br/><img width="250" data-bind="attr:{src: ManagingOrganizationLogo}" /></div>
                     </td>
                     <td>
                         <span data-bind="text: Description"></span>
                     </td>
                     <td>
                         <span data-bind="text: displayDate()"></span>
-                    </td>
-                    <td>
-                        <a data-bind="attr: { href: '/Campaign/Map/' + Id }">Map</a>
                     </td>
                 </tr>
                 <!-- /ko -->

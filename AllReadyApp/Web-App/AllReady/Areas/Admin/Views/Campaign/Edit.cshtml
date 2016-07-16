@@ -69,8 +69,15 @@
         <div class="form-group">
             <label asp-for="Description" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Description" class="form-control" />
+                <input asp-for="Description" class="form-control"/>
                 <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Headline" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Headline" class="form-control" />
+                <span asp-validation-for="Headline" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
@@ -156,6 +163,13 @@
                 <span asp-validation-for="PrimaryContactEmail" class="text-danger"></span>
             </div>
         </div>
+		<div class="form-group">
+			<label asp-for="Featured" class="col-md-2 control-label"></label>
+			<div class="col-md-10">
+				<input type="checkbox" asp-for="Featured" />
+				<span asp-validation-for="Featured" class="text-danger"></span>
+			</div>
+		</div>
         <div class="form-horizontal">
             @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
             {

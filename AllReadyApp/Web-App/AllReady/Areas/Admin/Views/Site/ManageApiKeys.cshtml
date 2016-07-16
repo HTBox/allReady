@@ -1,0 +1,30 @@
+﻿@model ApplicationUser
+@{
+    ViewBag.Title = "Managing API Key";
+}
+<h2>Managing User API Access Key for @Model.UserName</h2>
+
+<p>
+    Generating an API key irrevocably destroys the previous key that the user may have
+    been using. <b>Only</b> create a new key if the user has requested one or you suspect
+    that the key has been compromised.
+</p>
+
+<h2>Warning</h2>
+<p>Are you sure you want to create a new API key?</p>
+
+<p>
+    Once you create the API key you will see it displayed on the screen. This will be 
+    your only opportunity to note it, and you will not be able to reveal the key again. If 
+    you lose the key, you'll need to regenerate it.
+</p>
+
+<p>
+    <a asp-controller="Site" asp-action="GenerateToken" asp-route-userId="@Model.Id" class="btn btn-sm btn-danger">Generate New API Key <span class="fa fa-key"></span></a>
+</p>
+
+<p>
+    <a asp-controller="Site" asp-action="Index" class="btn btn-default">Back to Safety <span class="fa fa-life-saver"></span></a>
+</p>
+
+

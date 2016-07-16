@@ -61,7 +61,9 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmDeleteUser(string userId)
         {
-            await _mediator.SendAsync(new DeleteUserCommand { UserId = userId });
+            var user = await _userManager.FindByIdAsync(userId);
+            await _userManager.DeleteAsync(user);
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -183,6 +185,58 @@ namespace AllReady.Areas.Admin.Controllers
                 ViewBag.ErrorMessage = $"Failed to assign site admin for {userId}. Exception thrown.";
                 return View();
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AssignApiAccessRole(string userId)
+        {
+            try
+            {
+                var user = GetUser(userId);
+                await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.ApiAccess.ToName()));
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to assign API role for {userId}", ex);
+                ViewBag.ErrorMessage = $"Failed to assign API role for {userId}. Exception thrown.";
+                return View();
+            }
+        }
+
+        [HttpGet]
+        public IActionResult ManageApiKeys(string userId)
+        {
+            var user = GetUser(userId);
+            
+            if(user.IsUserType(UserType.ApiAccess))
+            {
+                return View(user);
+            }
+            else
+            {
+                return HttpBadRequest("Can't manage keys for a user without the API role.");
+            }
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GenerateToken(string userId)
+        {
+            var user = GetUser(userId);
+            try
+            {
+                var token = await _userManager.GenerateUserTokenAsync(user, "Default", TokenTypes.ApiKey);
+                ViewBag.ApiToken = token;
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to create API key for {userId}", ex);
+                ViewBag.ErrorMessage = $"Failed to assign API role for {userId}. Exception thrown.";
+                return View();
+            }
+
         }
 
         [HttpGet]

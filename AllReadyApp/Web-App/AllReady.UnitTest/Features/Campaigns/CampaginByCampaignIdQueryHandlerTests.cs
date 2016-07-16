@@ -13,7 +13,7 @@ namespace AllReady.UnitTest.Features.Campaigns
             var message = new CampaignByCampaignIdQuery { CampaignId = 1 };
             var mockedDataAccess = new Mock<IAllReadyDataAccess>();
 
-            var sut = new CampaginByCampaignIdQueryHandler(mockedDataAccess.Object);
+            var sut = new CampaignByCampaignIdQueryHandler(mockedDataAccess.Object);
             sut.Handle(message);
 
             mockedDataAccess.Verify(x => x.GetCampaign(message.CampaignId));
@@ -28,7 +28,7 @@ namespace AllReady.UnitTest.Features.Campaigns
             var mockedDataAccess = new Mock<IAllReadyDataAccess>();
             mockedDataAccess.Setup(m => m.GetCampaign(message.CampaignId)).Returns(campaign);
 
-            var sut = new CampaginByCampaignIdQueryHandler(mockedDataAccess.Object);
+            var sut = new CampaignByCampaignIdQueryHandler(mockedDataAccess.Object);
             var result = sut.Handle(message);
 
             Assert.Same(campaign, result);

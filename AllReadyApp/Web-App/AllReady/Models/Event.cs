@@ -20,7 +20,7 @@ namespace AllReady.Models
         public string Description { get; set; }
 
         [Display(Name = "Event Type")]
-        public EventTypes EventType { get; set; }    
+        public EventType EventType { get; set; }    
         
         public int NumberOfVolunteersRequired { get; set; }
 
@@ -48,6 +48,12 @@ namespace AllReady.Models
 
         public bool IsAllowWaitList { get; set; } = false;
 
+        /// <summary>
+        /// A short piece of optional text which organizers can use to help generate views/volunteers
+        /// </summary>
+        [MaxLength(150)]
+        public string Headline { get; set; }
+
         [NotMapped]
         public int NumberOfUsersSignedUp => UsersSignedUp.Count;
 
@@ -61,5 +67,8 @@ namespace AllReady.Models
         {
             return Tasks.Any(task => task.AssignedVolunteers.Any(av => av.User.Id == userId));
         }
+
+        public ICollection<Request> Requests { get; set; }
+        public ICollection<Itinerary> Itineraries { get; set; }
     }
 }

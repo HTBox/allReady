@@ -51,23 +51,19 @@ namespace AllReady.Features.Notifications
                     return;
                 }
 
-                var IsEventSignup = (campaignEvent.EventType == EventTypes.EventManaged);
                 var eventLink = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Event/Details/{campaignEvent.Id}";
 
                 AllReadyTask task = null;
                 string taskLink = null;
                 TaskSignup taskSignup = null;
 
-                if (!IsEventSignup)
-                {
                     task = await _context.Tasks.SingleOrDefaultAsync(t => t.Id == notification.TaskId).ConfigureAwait(false);
                     if (task == null)
                     {
                         return;
                     }
                     taskLink = $"View task: http://{_options.Value.SiteBaseUrl}/Admin/task/Details/{task.Id}";
-                    taskSignup = task.AssignedVolunteers.FirstOrDefault(t => t.User.Id == volunteer.Id); 
-                }
+                    taskSignup = task.AssignedVolunteers.FirstOrDefault(t => t.User.Id == volunteer.Id);
 
                 //set defaults for event signup
                 var volunteerEmail = !string.IsNullOrWhiteSpace(eventSignup?.PreferredEmail) ? eventSignup.PreferredEmail : volunteer.Email;
@@ -76,15 +72,12 @@ namespace AllReady.Features.Notifications
                 var remainingRequiredVolunteersPhrase = $"{campaignEvent.NumberOfUsersSignedUp}/{campaignEvent.NumberOfVolunteersRequired}";
                 var typeOfSignupPhrase = "an event";
 
-                if (campaignEvent.EventType != EventTypes.EventManaged)
-                {
                     //set for task signup
                     volunteerEmail = !string.IsNullOrWhiteSpace(taskSignup?.PreferredEmail) ? taskSignup.PreferredEmail : volunteerEmail;
                     volunteerPhoneNumber = !string.IsNullOrWhiteSpace(taskSignup?.PreferredPhoneNumber) ? taskSignup.PreferredPhoneNumber : volunteerPhoneNumber;
                     volunteerComments = !string.IsNullOrWhiteSpace(taskSignup?.AdditionalInfo) ? taskSignup.AdditionalInfo : volunteerComments;
                     remainingRequiredVolunteersPhrase = $"{task.NumberOfUsersSignedUp}/{task.NumberOfVolunteersRequired}";
                     typeOfSignupPhrase = "a task";
-                }
 
                 var subject = $"A volunteer has signed up for {typeOfSignupPhrase}";
 
@@ -93,10 +86,7 @@ namespace AllReady.Features.Notifications
                 message.AppendLine();
                 message.AppendLine($"   Campaign: {campaign.Name}");
                 message.AppendLine($"   Event: {campaignEvent.Name} ({eventLink})");
-                if (!IsEventSignup)
-                {
                     message.AppendLine($"   Task: {task.Name} ({taskLink})");
-                }
                 message.AppendLine($"   Remaining/Required Volunteers: {remainingRequiredVolunteersPhrase}");
                 message.AppendLine();
                 message.AppendLine($"   Volunteer Name: {volunteer.Name}");
@@ -104,12 +94,12 @@ namespace AllReady.Features.Notifications
                 message.AppendLine($"   Volunteer PhoneNumber: {volunteerPhoneNumber}");
                 message.AppendLine($"   Volunteer Comments: {volunteerComments}");
                 message.AppendLine();
-                message.AppendLine(IsEventSignup ? GetEventSkillsInfo(campaignEvent, volunteer) : GetTaskSkillsInfo(task, volunteer));
+                message.AppendLine(GetTaskSkillsInfo(task, volunteer));
 
                 Debug.WriteLine(adminEmail);
                 Debug.WriteLine(subject);
                 Debug.WriteLine(message.ToString());
-            
+
                 if (!string.IsNullOrWhiteSpace(adminEmail))
                 {
                     var command = new NotifyVolunteersCommand
@@ -132,20 +122,7 @@ namespace AllReady.Features.Notifications
             }
         }
 
-        private string GetEventSkillsInfo(Models.Event campaignEvent, ApplicationUser volunteer)
-        {
-            var result = new StringBuilder();
-            if (campaignEvent.RequiredSkills.Count == 0) return result.ToString();
-            result.AppendLine("   Skills Required:");
-            foreach (var skill in campaignEvent.RequiredSkills)
-            {
-                var userMatch = volunteer.AssociatedSkills.Any(vs => vs.SkillId == skill.SkillId);
-                result.AppendLine($"      {skill.Skill.Name} {(userMatch ? "(match)" : string.Empty)}");
-            }
-            return result.ToString();
-        }
-
-        private string GetTaskSkillsInfo(AllReadyTask task, ApplicationUser volunteer)
+        private static string GetTaskSkillsInfo(AllReadyTask task, ApplicationUser volunteer)
         {
             var result = new StringBuilder();
             if (task.RequiredSkills.Count == 0) return result.ToString();

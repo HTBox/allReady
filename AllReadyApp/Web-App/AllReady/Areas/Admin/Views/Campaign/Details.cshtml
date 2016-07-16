@@ -16,6 +16,9 @@
     <div id="col-main">
         <div class="col-md-9">
             <h2 class="inline-form">
+                @if (Model.Featured) {
+                    <i class="fa fa-star star-highlight" aria-hidden="true"></i>
+                }
                 @Model.Name
             </h2>
             <a asp-controller="Campaign" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Edit"><i class="fa fa-edit"></i></a>

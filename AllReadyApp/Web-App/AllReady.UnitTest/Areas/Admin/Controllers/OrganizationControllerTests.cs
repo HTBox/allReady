@@ -1,6 +1,7 @@
 ﻿using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.Models.Validators;
 using AllReady.Models;
 using MediatR;
 using Microsoft.AspNet.Authorization;
@@ -141,6 +142,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             CreateSut();
             OrganizationEditModel model = AgincourtAware;
             IRequest<int> command = new OrganizationEditCommand() { Organization = model };
+            _mediator.Setup(y => y.Send(It.IsAny<OrganizationNameUniqueQuery>())).Returns(() =>
+            {
+                return true;
+            });
             _mediator.Setup(x => x.Send(It.IsAny<OrganizationEditCommand>())).Returns(() => {
                 IRequestHandler<OrganizationEditCommand, int> handler = new OrganizationEditCommandHandler(Context);
                 return handler.Handle((OrganizationEditCommand)command);
@@ -152,6 +157,18 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Assert
             Assert.Single(Context.Organizations.Where(t => t.Name == model.Name));
 
+        }
+
+        [Fact]
+        public void CreateNewOrganizationWithExistingOrganizationNameReturnsEditView()
+        {
+            CreateSut();
+            var model = new OrganizationEditModel();
+            model.Name = "test";
+            model.Id = 0;
+            _mediator.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
+            var result = (ViewResult)_sut.Create();
+            Assert.Equal("Edit", result.ViewName);            
         }
         #endregion
 
@@ -171,12 +188,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void EditOrganizationMediatorShouldBeCalledWithAppropriateDataWhenModelStateIsValid()
         {
             var mockMediator = new Mock<IMediator>();
-
-            var controller = new OrganizationController(mockMediator.Object);
+            var controller = new OrganizationController(mockMediator.Object, SuccessValidator());
 
             var mockContext = MockActionContextWithUser(SiteAdmin());
             controller.ActionContext = mockContext.Object;
-
+            mockMediator.Setup(y => y.Send(It.IsAny<OrganizationNameUniqueQuery>())).Returns(() =>{return true;});
             controller.Edit(_organizationEditModel);
 
             mockMediator.Verify(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == _organizationEditModel)));
@@ -224,7 +240,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void EditPostShouldReturnTheEditViewWithTheModelPassedInIfTheModelStateIsInvalid()
         {
-            var controller = new OrganizationController(new Mock<IMediator>().Object);
+            var controller = new OrganizationController(new Mock<IMediator>().Object, SuccessValidator());
 
             var mockContext = MockActionContextWithUser(SiteAdmin());
             controller.ActionContext = mockContext.Object;
@@ -244,13 +260,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mockMediator = new Mock<IMediator>();
 
-            var controller = new OrganizationController(mockMediator.Object);
+            var controller = new OrganizationController(mockMediator.Object, SuccessValidator());
 
             var mockContext = MockActionContextWithUser(SiteAdmin());
             controller.ActionContext = mockContext.Object;
 
             var model = new OrganizationEditModel();
 
+            mockMediator.Setup(y => y.Send(It.IsAny<OrganizationNameUniqueQuery>())).Returns(() => { return true; });
             mockMediator.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
 
             var result = (RedirectToActionResult)controller.Edit(model);
@@ -349,10 +366,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static void CreateSut()
         {
             _mediator = new Mock<IMediator>();
-
-            _sut = new OrganizationController(_mediator.Object);
+            _sut = new OrganizationController(_mediator.Object, SuccessValidator());
         }
-        
+
+        private static IOrganizationEditModelValidator SuccessValidator()
+        {
+            var mock = new Mock<IOrganizationEditModelValidator>();
+            mock.Setup(v => v.Validate(It.IsAny<OrganizationEditModel>())).Returns(new List<KeyValuePair<string, string>>());
+            return mock.Object;
+        }
+
         #region PotentialHelperClass
 
         private static MethodInfo GetMethodInfo(string methodName, Type paramTypePassedToMethod)

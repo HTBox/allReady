@@ -13,7 +13,6 @@ namespace AllReady.Models
             {
                 return _dbContext.Events
                                 .Include(a => a.Location)
-                                .Include(a => a.Location.PostalCode)
                                 .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
                                 .Include(a => a.Tasks)
                                 .Include(a => a.RequiredSkills)
@@ -48,7 +47,6 @@ namespace AllReady.Models
         {
             return _dbContext.Events
                 .Include(a => a.Location)
-                .Include(a => a.Location.PostalCode)
                 .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
                 .Include(a => a.RequiredSkills).ThenInclude(rs => rs.Skill).ThenInclude(s => s.ParentSkill)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(tu => tu.User)
@@ -103,10 +101,5 @@ namespace AllReady.Models
             return _dbContext.Resources.Where(x => x.CategoryTag == category);
         }
 
-        Task IAllReadyDataAccess.UpdateCampaign(Campaign value)
-        {
-            _dbContext.Campaigns.Update(value);
-            return _dbContext.SaveChangesAsync();
-        }
     }
 }

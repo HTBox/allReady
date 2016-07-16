@@ -24,7 +24,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                 .Include(m => m.ManagingOrganization)
                 .Include(ci => ci.CampaignImpact)
                 .Include(c => c.CampaignContacts).ThenInclude(c => c.Contact)
-                .Include(l => l.Location).ThenInclude(p => p.PostalCode)
+                .Include(l => l.Location)
                 .SingleOrDefaultAsync(c => c.Id == message.CampaignId)
                 .ConfigureAwait(false);
 
@@ -48,6 +48,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     CampaignImpact = campaign.CampaignImpact,
                     Location = campaign.Location.ToModel(),
                     Locked = campaign.Locked,
+                    Featured = campaign.Featured,
                     Events = campaign.Events.Select(a => new EventSummaryModel
                     {
                         Id = a.Id,

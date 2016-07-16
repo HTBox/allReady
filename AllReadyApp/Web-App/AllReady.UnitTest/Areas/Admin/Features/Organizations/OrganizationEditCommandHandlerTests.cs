@@ -10,29 +10,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
     public class OrganizationEditCommandHandlerTests : InMemoryContextTest
     {
         [Fact]
-        public void AddOrganizationWithKnownPostalCode()
-        {
-            // Arrange
-            PostalCodeGeo m1T2T9 = OrganizationEditCommandHandlerTests.CreateM1T2T9();
-            Context.PostalCodes.Add(m1T2T9);
-            Context.SaveChanges();
-
-            Organization org = CreateAgincourtAwareness();
-            OrganizationEditModel orgModel = OrganizationEditCommandHandlerTests.ToEditModel_Organization(org);
-
-            // Act
-            OrganizationEditCommandHandler handler = new OrganizationEditCommandHandler(Context);
-            int id = handler.Handle(new OrganizationEditCommand() { Organization = orgModel });
-            Organization fetchedOrg = Context.Organizations.Where(t => t.Id == id).First();
-
-            // Assert
-            Assert.Single(Context.Organizations.Where(t => t.Id == id));
-            Assert.NotEqual(fetchedOrg.Location.City, fetchedOrg.Location.PostalCode.City);
-            Assert.NotEqual(fetchedOrg.Location.State, fetchedOrg.Location.PostalCode.State);
-        }
-
-        [Fact]
-        public void AddOrganizationWithUnknownPostalCode()
+        public void AddOrganization()
         {
             // Arrange
             Organization org = CreateAgincourtAwareness();
@@ -45,21 +23,16 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 
             // Assert
             Assert.Single(Context.Organizations.Where(t => t.Id == id));
-            Assert.Equal(fetchedOrg.Location.City, fetchedOrg.Location.PostalCode.City);
-            Assert.Equal(fetchedOrg.Location.State, fetchedOrg.Location.PostalCode.State);
+            Assert.Equal(Context.Entry(fetchedOrg).State, Microsoft.Data.Entity.EntityState.Unchanged);
         }
 
         protected override void LoadTestData()
         {
         }
 
-        public static PostalCodeGeo CreateM1T2T9()
-        {
-            return new PostalCodeGeo() { City = "Scarborough", PostalCode = "M1T 2T9", State = "ON" };
-        }
         public static Location Create25Bogus()
         {
-            return new Location() { Address1 = "25 Bogus Ave", City = "Agincourt", State = "Ontario", Country = "Canada", PostalCode = CreateM1T2T9() };
+            return new Location() { Address1 = "25 Bogus Ave", City = "Agincourt", State = "Ontario", Country = "Canada", PostalCode = "M1T2T9" };
         }
         public static Organization CreateAgincourtAwareness()
         {

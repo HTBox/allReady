@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using AllReady.Areas.Admin.Models.Validators;
 using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.Security;
@@ -19,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
+using AllReady.Security.Middleware;
 
 namespace AllReady
 {
@@ -44,8 +46,9 @@ namespace AllReady
                 builder.AddApplicationInsightsSettings(developerMode: true);
 
             }
-            builder.AddEnvironmentVariables();
+
             Configuration = builder.Build();
+            Configuration["version"] = appEnv.ApplicationVersion; // version in project.json
         }
 
         public IConfiguration Configuration { get; set; }
@@ -114,6 +117,10 @@ namespace AllReady
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
             services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
+            services.AddTransient<IValidateEventDetailModels, EventEditModelValidator>();
+            services.AddTransient<ITaskSummaryModelValidator, TaskSummaryModelValidator>();
+            services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
+            services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
             services.AddSingleton<IImageService, ImageService>();
             //services.AddSingleton<GeoService>();
             services.AddTransient<SampleDataGenerator>();
@@ -230,6 +237,13 @@ namespace AllReady
 
             // Add cookie-based authentication to the request pipeline.
             app.UseIdentity();
+
+            // Add token-based protection to the request inject pipeline
+            app.UseTokenProtection(new TokenProtectedResourceOptions
+            {
+                Path = "/api/request",
+                PolicyName = "api-request-injest"
+            });
 
             // Add authentication middleware to the request pipeline. You can configure options such as Id and Secret in the ConfigureServices method.
             // For more information see http://go.microsoft.com/fwlink/?LinkID=532715

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Models;
@@ -11,7 +10,6 @@ using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
-using AllReady.Areas.Admin.Models.Validators;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -100,10 +98,11 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return HttpUnauthorized();
             }
-            
-            var validator = new CampaignSummaryModelValidator(_mediator);
-            var errors = await validator.Validate(campaign);
-            errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
+
+            if (campaign.EndDate < campaign.StartDate)
+            {
+                ModelState.AddModelError(nameof(campaign.EndDate), "The end date must fall on or after the start date.");
+            }
 
             if (ModelState.IsValid)
             {

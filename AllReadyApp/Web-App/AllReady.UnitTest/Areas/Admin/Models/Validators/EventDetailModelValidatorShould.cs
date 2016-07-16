@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Areas.Admin.Models.Validators;
-using MediatR;
-using Moq;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Models.Validators
@@ -11,94 +8,62 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
     public class EventDetailModelValidatorShould
     {
         [Fact]
-        public async Task ReportErrorsWhenEndDateIsInvalid()
+        public void ReturnsCorrectErrorWhenEndDateTimeIsLessThanStartDateTime()
         {
-            // arrage
-            var mediator = new Mock<IMediator>();
-            var validator = new EventDetailModelValidator(mediator.Object);
-            var campaign = new CampaignSummaryModel();
-            var model = new EventDetailModel
+            var validator = new EventEditModelValidator();
+            var parentCampaign = new CampaignSummaryModel { EndDate = new DateTimeOffset(new DateTime(1999, 2, 1)) };
+            var model = new EventEditModel
             {
                 StartDateTime = new DateTimeOffset(new DateTime(2000, 1, 1)),
                 EndDateTime = new DateTimeOffset(new DateTime(1999, 1, 1))
             };
 
-            // act
-            var errors = await validator.Validate(model, campaign);
+            var errors = validator.Validate(model, parentCampaign);
 
-            // assert
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
+            Assert.Equal(errors.Find(x => x.Key == "EndDateTime").Value, "End date cannot be earlier than the start date");
         }
 
         [Fact]
-        public async Task ReportErrorsWhenEndDateOutsideCampaignWindow()
+        public void ReturnsCorrectErrorWhenModelsStartDateTimeIsLessThanParentCampaignsStartDate()
         {
-            // arrage
-            var mediator = new Mock<IMediator>();
-            var validator = new EventDetailModelValidator(mediator.Object);
-            var campaign = new CampaignSummaryModel()
+            var validator = new EventEditModelValidator();
+            var parentCampaign = new CampaignSummaryModel
             {
                 StartDate = new DateTimeOffset(new DateTime(2000, 1, 1)),
-                EndDate = new DateTimeOffset(new DateTime(1999, 1, 1))
+                EndDate = new DateTimeOffset(new DateTime(2001, 2, 1))
             };
 
-            var model = new EventDetailModel
+            var model = new EventEditModel
             {
                 EndDateTime = new DateTimeOffset(new DateTime(2001, 1, 1))
             };
 
-            // act
-            var errors = await validator.Validate(model, campaign);
+            var errors = validator.Validate(model, parentCampaign);
 
-            // assert
-            Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
+            Assert.True(errors.Exists(x => x.Key.Equals("StartDateTime")));
+            Assert.Equal(errors.Find(x => x.Key == "StartDateTime").Value, "Start date cannot be earlier than the campaign start date " + parentCampaign.StartDate.ToString("d"));
         }
 
         [Fact]
-        public async Task ReportErrorsWhenStartDateOutsideCampaignWindow()
+        public void RetrunsCorrectErrorWhenModelsEndDateTimeIsGreaterThanParentCampaignsEndDate()
         {
-            // arrage
-            var mediator = new Mock<IMediator>();
-            var validator = new EventDetailModelValidator(mediator.Object);
-            var campaign = new CampaignSummaryModel()
+            var validator = new EventEditModelValidator();
+            var parentCampaign = new CampaignSummaryModel
             {
                 StartDate = new DateTimeOffset(new DateTime(2000, 1, 1)),
                 EndDate = new DateTimeOffset(new DateTime(2001, 1, 1))
             };
-            var model = new EventDetailModel
+            var model = new EventEditModel
             {
-                StartDateTime = new DateTimeOffset(new DateTime(1999, 1, 1)),
+                StartDateTime = new DateTimeOffset(new DateTime(2001, 1, 1)),
+                EndDateTime = new DateTimeOffset(new DateTime(2001, 2, 1)),
             };
 
-            // act
-            var errors = await validator.Validate(model, campaign);
+            var errors = validator.Validate(model, parentCampaign);
 
-            // assert
-            Assert.True(errors.Exists(x => x.Key.Equals("StartDateTime")));
-        }
-
-        [Fact]
-        public async Task ReportErrorsWhenPostalCodeInvalid()
-        {
-            // arrage
-            var mediator = new Mock<IMediator>();
-            var validator = new EventDetailModelValidator(mediator.Object);
-            var campaign = new CampaignSummaryModel();
-            var model = new EventDetailModel
-            {
-                Location = new LocationEditModel()
-                {
-                    PostalCode = "12345",
-                    State = "WA",
-                    City = "Seattle"
-                }
-            };
-
-            // act
-            var errors = await validator.Validate(model, campaign);
-
-            // assert
-            Assert.True(errors.Exists(x => x.Key.Equals("PostalCode")));
+            Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
+            Assert.Equal(errors.Find(x => x.Key == "EndDateTime").Value, "End date cannot be later than the campaign end date " + parentCampaign.EndDate.ToString("d"));
         }
     }
 }

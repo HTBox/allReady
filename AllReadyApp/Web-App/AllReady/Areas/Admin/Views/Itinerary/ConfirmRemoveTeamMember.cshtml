@@ -1,0 +1,31 @@
+﻿@model AllReady.Areas.Admin.Models.TaskSignupModels.TaskSignupSummaryModel
+
+@{  ViewData["Title"] = "Remove team member:  " + Model.VolunteerName; }
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Are you sure you want to remove this team member?</h3>
+        <h4>@ViewData["Title"]</h4>
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.VolunteerName)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.VolunteerEmail)
+            </dd>
+        </dl>
+
+        <form asp-controller="Itinerary" asp-action="RemoveTeamMember" asp-route-itineraryId="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" asp-route-taskSignupId="@Model.TaskSignupId">
+            <input type="hidden" asp-for="@Model.TaskSignupId" />
+            <div class="form-actions no-color">
+                <button type="submit" class="btn btn-primary">Delete</button>
+                <a asp-controller="Itinerary" asp-action="Details" asp-route-area="Admin" asp-route-id="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" class="btn btn-default">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

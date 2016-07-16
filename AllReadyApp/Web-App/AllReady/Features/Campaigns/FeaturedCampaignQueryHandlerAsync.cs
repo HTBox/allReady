@@ -1,8 +1,8 @@
 ﻿using AllReady.Models;
-using AllReady.ViewModels;
 using MediatR;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.ViewModels.Home;
 using Microsoft.Data.Entity;
 
 namespace AllReady.Features.Campaigns
@@ -28,6 +28,7 @@ namespace AllReady.Features.Campaigns
                     Description = c.Description,
                     ImageUrl = c.ImageUrl,
                     Organization = c.ManagingOrganization,
+                    Headline = c.Headline
                 })
                 .OrderBy(c => c.Id)
                 .FirstOrDefaultAsync();

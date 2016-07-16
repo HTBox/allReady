@@ -1,6 +1,9 @@
 ﻿@using System.Security.Claims
 @using AllReady.Security
-@model EventViewModel
+@using AllReady.ViewModels
+@using AllReady.ViewModels.Event
+@using AllReady.ViewModels.Shared
+@model AllReady.ViewModels.Event.EventViewModel
 
     <script type="text/javascript">
         $(document).ready(function() {
@@ -8,7 +11,7 @@
                 '@Model.Location?.Address2',
                 '@Model.Location?.City',
                 '@Model.Location?.State',
-                '@Model.Location?.PostalCode?.PostalCode',
+                '@Model.Location?.PostalCode',
                 '@Model.Location?.Country',
                 function(result) {
                     var positionCoordsList = [

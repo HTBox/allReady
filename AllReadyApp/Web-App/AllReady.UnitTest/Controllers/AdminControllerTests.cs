@@ -6,6 +6,7 @@ using AllReady.Extensions;
 using AllReady.Features.Admin;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
+using AllReady.ViewModels.Account;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;

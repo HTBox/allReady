@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget defaultlocale="en-US" id="com.microsoft.visualstudio.allready" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
-    <name>All Ready</name>
-    <description>A blank project that uses Apache Cordova to help you build an app that targets multiple mobile platforms: Android, iOS, Windows, and Windows Phone.</description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">Apache Cordova Team </author>
+<widget defaultlocale="en-US" id="org.htbox.allready" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
+    <name>allReady</name>
+    <description>allReady brings together community members, volunteers, humanitarian and community organizations to make our communities more resilient to the effects of disasters by making preparedness activities more visible and effective to the communities they serve and the volunteers who support them.</description>
+    <author email="contact@htbox.org" href="http://htbox.org">Humanitarian Toolbox</author>
     <content src="index.html" />
     <access origin="*" />
     <vs:features />
@@ -82,7 +82,6 @@
     <engine name="android" spec="^4.0.2" />
     <engine name="ios" spec="^3.8.0" />
     <engine name="windows" spec="^4.0.0" />
-
     <plugin name="cordova-plugin-whitelist" spec="^1.0.0" />
     <plugin name="cordova-plugin-inappbrowser" spec="^1.0.1" />
     <plugin name="phonegap-plugin-barcodescanner" spec="3.1.2" />

@@ -1,5 +1,5 @@
-﻿@model List<OrganizationViewModel>
-@{  
+﻿@model List<AllReady.ViewModels.Organization.OrganizationViewModel>
+@{
     ViewData["Title"] = "Organizations";
 }
 
@@ -26,11 +26,32 @@
         </div>
     </div>
     <div class="col-md-12">
-        <ul data-bind="foreach: organizations.filtered">
-            <li>
-                <a data-bind="attr: { href: '/Organization/' + Id }, text: Name"></a>
-            </li>
-        </ul>
+        <div class="row" data-bind="foreach: organizations.filtered">
+            <a data-bind="attr: { href: '/Organization/' + Id }">
+                <div class="col-md-6">
+                    <div class="org-tile">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h2 data-bind="text: Name"></h2>
+                            </div>
+                        </div>
+                        <div class="row" data-bind="if: LogoUrl">
+                            <div class="col-xs-5 col-lg-7 org-tile-fixed">
+                                <img data-bind="attr:{src: LogoUrl}" class="img-responsive" />
+                            </div>
+                            <div class="col-xs-7 col-lg-5">
+                                <p data-bind="text: Summary"></p>
+                            </div>
+                        </div>
+                        <div class="row" data-bind="ifnot: LogoUrl">
+                            <div class="col-xs-12 org-tile-fixed">
+                                <p data-bind="text: Summary"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
     </div>
 </div>
 

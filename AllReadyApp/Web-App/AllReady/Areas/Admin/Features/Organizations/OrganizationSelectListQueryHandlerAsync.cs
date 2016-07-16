@@ -10,7 +10,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
 {
     public class OrganizationSelectListQueryHandlerAsync : IAsyncRequestHandler<OrganizationSelectListQueryAsync, IEnumerable<SelectListItem>>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
         public OrganizationSelectListQueryHandlerAsync(AllReadyContext context)
         {
             _context = context;
@@ -18,13 +18,12 @@ namespace AllReady.Areas.Admin.Features.Organizations
 
         public async Task<IEnumerable<SelectListItem>> Handle(OrganizationSelectListQueryAsync message)
         {
-            return await _context.Organizations
-                .Select(s => new SelectListItem
-                {
-                     Text = s.Name,
-                     Value = s.Id.ToString()
-                })
-                .ToListAsync();
+            return await _context.Organizations.Select(s => new SelectListItem
+            {
+                    Text = s.Name,
+                    Value = s.Id.ToString()
+            })
+            .ToListAsync();
         }
     }
 }

@@ -2,9 +2,11 @@
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Features.Login;
+using AllReady.Features.Manage;
 using AllReady.Models;
 using AllReady.Security;
 using AllReady.Services;
+using AllReady.ViewModels.Account;
 using MediatR;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Identity;
@@ -98,7 +100,6 @@ namespace AllReady.Controllers
             return View(model);
         }
 
-        //
         // GET: /Account/Register
         [HttpGet]
         [AllowAnonymous]
@@ -107,7 +108,6 @@ namespace AllReady.Controllers
             return View();
         }
 
-        //
         // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
@@ -118,8 +118,11 @@ namespace AllReady.Controllers
             {
                 var user = new ApplicationUser
                 {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
                     UserName = model.Email,
                     Email = model.Email,
+                    PhoneNumber = model.PhoneNumber,
                     TimeZoneId = _generalSettings.Value.DefaultTimeZone
                 };
 
@@ -127,13 +130,21 @@ namespace AllReady.Controllers
                 if (result.Succeeded)
                 {
                     // Send an email with this link
-                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                    var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmEmail), Controller = "Account", Values = new { userId = user.Id, token = token },
-                        Protocol = HttpContext.Request.Scheme });
+                    var callbackUrl = Url.Action(new UrlActionContext {
+                        Action = nameof(ConfirmEmail),
+                        Controller = "Account",
+                        Values = new { userId = user.Id, token = emailConfirmationToken },
+                        Protocol = HttpContext.Request.Scheme }
+                    );
 
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account", 
                         $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
+
+                    var changePhoneNumberToken = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
+                    await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = model.PhoneNumber, Token = changePhoneNumberToken });
+
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
                     await _signInManager.SignInAsync(user, isPersistent: false);
 
@@ -147,7 +158,6 @@ namespace AllReady.Controllers
             return View(model);
         }
 
-        //
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -179,13 +189,14 @@ namespace AllReady.Controllers
             {
                 await _mediator.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id });
                 if (User.IsSignedIn())
+                {
                     await _signInManager.RefreshSignInAsync(user);
+                }
             }
 
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
-        //
         // GET: /Account/ForgotPassword
         [HttpGet]
         [AllowAnonymous]
@@ -194,7 +205,6 @@ namespace AllReady.Controllers
             return View();
         }
 
-        //
         // POST: /Account/ForgotPassword
         [HttpPost]
         [AllowAnonymous]
@@ -223,7 +233,6 @@ namespace AllReady.Controllers
             return View(model);
         }
 
-        //
         // GET: /Account/ResetPassword
         [HttpGet]
         [AllowAnonymous]
@@ -232,7 +241,6 @@ namespace AllReady.Controllers
             return code == null ? View("Error") : View();
         }
 
-        //
         // POST: /Account/ResetPassword
         [HttpPost]
         [AllowAnonymous]
@@ -262,7 +270,6 @@ namespace AllReady.Controllers
             return View();
         }
 
-        //
         // GET: /Account/ResetPasswordConfirmation
         [HttpGet]
         [AllowAnonymous]
@@ -271,7 +278,6 @@ namespace AllReady.Controllers
             return View();
         }
 
-        //
         // POST: /Account/ExternalLogin
         [HttpPost]
         [AllowAnonymous]
@@ -284,7 +290,6 @@ namespace AllReady.Controllers
             return new ChallengeResult(provider, properties);
         }
 
-        //
         // GET: /Account/ExternalLoginCallback
         [HttpGet]
         [AllowAnonymous]
@@ -300,6 +305,10 @@ namespace AllReady.Controllers
             var result = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
             var email = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
 
+            string firstName;
+            string lastName;
+            RetrieveFirstAndLastNameFromExternalPrincipal(externalLoginInfo, out firstName, out lastName);
+            
             if (result.Succeeded)
             {
                 var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = email });
@@ -310,10 +319,9 @@ namespace AllReady.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             ViewData["LoginProvider"] = externalLoginInfo.LoginProvider;
 
-            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
+            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email, FirstName = firstName, LastName = lastName });
         }
 
-        //
         // POST: /Account/ExternalLoginConfirmation
         [HttpPost]
         [AllowAnonymous]
@@ -339,7 +347,8 @@ namespace AllReady.Controllers
                     UserName = model.Email,
                     Email = model.Email,
                     TimeZoneId = _generalSettings.Value.DefaultTimeZone,
-                    Name = model.Name,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
                     PhoneNumber = model.PhoneNumber
                 };
 
@@ -360,8 +369,6 @@ namespace AllReady.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
-
-        #region Helpers
 
         private void AddErrorsToModelState(IdentityResult result)
         {
@@ -391,6 +398,18 @@ namespace AllReady.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
-        #endregion
+        private static void RetrieveFirstAndLastNameFromExternalPrincipal(ExternalLoginInfo externalLoginInfo, out string firstName, out string lastName)
+        {
+            var name = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
+
+            firstName = string.Empty;
+            lastName = string.Empty;
+            if (string.IsNullOrEmpty(name))
+                return;
+
+            var array = name.Split(' ');
+            firstName = array[0];
+            lastName = array[1];
+        }
     }
 }

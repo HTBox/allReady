@@ -3,7 +3,7 @@
 angular
     .module("Backend", []) //TODO get a better name for factory and module
     .factory("CacheManager", [function () {
-        var rootKey = "allReadyActivities";
+        var rootKey = "allReadyEvents";
         var svc = {};
 
         function getRoot() {
@@ -15,53 +15,53 @@ angular
             window.localStorage.setItem(rootKey, JSON.stringify(rootObject));
         }
 
-        svc.getActivityList = function () {
+        svc.getEventList = function () {
             var rootValue = getRoot();
 
             if (!rootValue) {
                 return null;
             }
 
-            return rootValue.activities || null;
+            return rootValue.events || null;
         };
 
-        svc.getActivity = function (id) {
+        svc.getEvent = function (id) {
             var rootValue = getRoot();
 
-            if (!rootValue || !rootValue.activities) {
+            if (!rootValue || !rootValue.events) {
                 return null;
             }
 
-            var activity = null;
+            var event = null;
 
-            rootValue.activities.some(function (value) {
+            rootValue.events.some(function (value) {
                 if (value.Id === id) {
-                    activity = value;
+                    event = value;
                     return true;
                 }
 
                 return false;
             });
 
-            return activity;
+            return event;
         };
 
-        svc.saveActivityList = function (activityArray) {
+        svc.saveEventList = function (eventArray) {
             var rootValue = {
-                activities: activityArray
+                events: eventArray
             };
 
             saveRoot(rootValue);
         };
 
-        svc.saveActivity = function (activity) {
+        svc.saveEvent = function (event) {
             var rootValue = getRoot();
 
-            if (rootValue && rootValue.activities) {
+            if (rootValue && rootValue.events) {
                 var idx = -1;
 
-                rootValue.activities.some(function (value, index) {
-                    if (value.Id === activity.id) {
+                rootValue.events.some(function (value, index) {
+                    if (value.Id === event.id) {
                         idx = index;
                         return true;
                     }
@@ -70,20 +70,20 @@ angular
                 });
 
                 if (idx !== -1) {
-                    rootValue.activities[idx] = activity;
+                    rootValue.events[idx] = event;
                 } else {
-                    rootValue.activities.push(activity);
+                    rootValue.events.push(event);
                 }
             } else {
                 rootValue = {
-                    activities: [activity]
+                    events: [event]
                 };
             }
 
             saveRoot(rootValue);
         };
 
-        svc.clearActivityCache = function () {
+        svc.clearEventCache = function () {
             if (getRoot()) {
                 window.localStorage.removeItem(rootKey);
             }
@@ -94,60 +94,52 @@ angular
     .factory("Backend", ["$http", "$q", "CacheManager", function ($http, $q, CacheManager) {
         var svc = {};
         var protocol = "https://";
-        var domainUrl = "allready-d.azurewebsites.net"; // NOTE: Update when the site is deployed for real
+        var domainUrl = "allready-d.azurewebsites.net"; // TODO: Update when the site is deployed for real
         var baseUrl = protocol + domainUrl + "/";
 
-
-
-        svc.getActivities = function (forceWebQuery) {
+        svc.getEvents = function (forceWebQuery) {
             forceWebQuery = typeof forceWebQuery !== "undefined" ? forceWebQuery : false;
 
             if (!forceWebQuery) {
-                var cachedList = CacheManager.getActivityList();
+                var cachedList = CacheManager.getEventList();
 
                 if (cachedList) {
                     return $q.when(cachedList);
                 }
             }
 
-            // TODO Use the real API URL
-            return $http.get(baseUrl + "api/activity")
+            return $http.get(baseUrl + "api/event")
                 .then(function (result) {
-                    // <TEMP> For testing purposes
-                    // Limit results to 10
-                    result.data.length = 10;
-                    // Add a default location if needed
-                    result.data.forEach(function (activity) {
-                        activity.location = activity.location || "Seattle Red Cross";
+                    result.data.forEach(function (event) {
+                        event.location = event.location || "Not Set";
                     });
-                    // </TEMP>
 
-                    CacheManager.saveActivityList(result.data);
+                    CacheManager.saveEventList(result.data);
                     return result.data;
                 });
         };
 
-        svc.getActivity = function (id, forceWebQuery) {
+        svc.getEvent = function (id, forceWebQuery) {
             forceWebQuery = typeof forceWebQuery !== "undefined" ? forceWebQuery : false;
 
             if (!forceWebQuery) {
-                var cachedActivity = CacheManager.getActivity(id);
+                var cachedEvent = CacheManager.getEvent(id);
 
-                if (cachedActivity) {
-                    return $q.when(cachedActivity);
+                if (cachedEvent) {
+                    return $q.when(cachedEvent);
                 }
             }
 
             // TODO Use the real API URL
-            return $http.get(baseUrl + "api/activity/" + id)
+            return $http.get(baseUrl + "api/event/" + id)
                 .then(function (result) {
-                    CacheManager.saveActivity(result.data);
+                    CacheManager.saveEvent(result.data);
                     return result.data;
                 });
         };
 
-        svc.checkinActivity = function (checkinCode) {
-            var regex = new RegExp("^https?://" + domainUrl + "/api/activity/[0-9]+/checkin$");
+        svc.checkinEvent = function (checkinCode) {
+            var regex = new RegExp("^https?://" + domainUrl + "/api/event/[0-9]+/checkin$");
             if (checkinCode.match(regex)) {
                 return $http.put(checkinCode);
             } else {
@@ -190,4 +182,3 @@ angular
 
         return svc;
     }]);
-

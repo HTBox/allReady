@@ -23,7 +23,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<DateTimeOffset?>("EndDateTime");
+                    b.Property<DateTimeOffset>("EndDateTime");
 
                     b.Property<int?>("EventId");
 
@@ -38,7 +38,7 @@ namespace AllReady.Migrations
 
                     b.Property<int?>("OrganizationId");
 
-                    b.Property<DateTimeOffset?>("StartDateTime");
+                    b.Property<DateTimeOffset>("StartDateTime");
 
                     b.HasKey("Id");
                 });
@@ -57,11 +57,13 @@ namespace AllReady.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
+                    b.Property<string>("FirstName");
+
+                    b.Property<string>("LastName");
+
                     b.Property<bool>("LockoutEnabled");
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
-
-                    b.Property<string>("Name");
 
                     b.Property<string>("NormalizedEmail")
                         .HasAnnotation("MaxLength", 256);
@@ -118,6 +120,9 @@ namespace AllReady.Migrations
                     b.Property<bool>("Featured");
 
                     b.Property<string>("FullDescription");
+
+                    b.Property<string>("Headline")
+                        .HasAnnotation("MaxLength", 150);
 
                     b.Property<string>("ImageUrl");
 
@@ -223,6 +228,9 @@ namespace AllReady.Migrations
 
                     b.Property<int>("EventType");
 
+                    b.Property<string>("Headline")
+                        .HasAnnotation("MaxLength", 150);
+
                     b.Property<string>("ImageUrl");
 
                     b.Property<bool>("IsAllowWaitList");
@@ -274,6 +282,33 @@ namespace AllReady.Migrations
                     b.HasKey("EventId", "SkillId");
                 });
 
+            modelBuilder.Entity("AllReady.Models.Itinerary", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<int>("EventId");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+                });
+
+            modelBuilder.Entity("AllReady.Models.ItineraryRequest", b =>
+                {
+                    b.Property<int>("ItineraryId");
+
+                    b.Property<Guid>("RequestId");
+
+                    b.Property<DateTime>("DateAssigned");
+
+                    b.Property<int>("OrderIndex");
+
+                    b.HasKey("ItineraryId", "RequestId");
+                });
+
             modelBuilder.Entity("AllReady.Models.Location", b =>
                 {
                     b.Property<int>("Id")
@@ -291,7 +326,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("PhoneNumber");
 
-                    b.Property<string>("PostalCodePostalCode");
+                    b.Property<string>("PostalCode");
 
                     b.Property<string>("State");
 
@@ -303,6 +338,8 @@ namespace AllReady.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("DescriptionHtml");
+
                     b.Property<int?>("LocationId");
 
                     b.Property<string>("LogoUrl");
@@ -311,6 +348,11 @@ namespace AllReady.Migrations
                         .IsRequired();
 
                     b.Property<string>("PrivacyPolicy");
+
+                    b.Property<string>("PrivacyPolicyUrl");
+
+                    b.Property<string>("Summary")
+                        .HasAnnotation("MaxLength", 250);
 
                     b.Property<string>("WebUrl");
 
@@ -346,6 +388,42 @@ namespace AllReady.Migrations
                     b.Property<double>("Longitude");
 
                     b.HasKey("Latitude", "Longitude");
+                });
+
+            modelBuilder.Entity("AllReady.Models.Request", b =>
+                {
+                    b.Property<Guid>("RequestId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Address");
+
+                    b.Property<string>("City");
+
+                    b.Property<DateTime>("DateAdded");
+
+                    b.Property<string>("Email");
+
+                    b.Property<int?>("EventId");
+
+                    b.Property<double>("Latitude");
+
+                    b.Property<double>("Longitude");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("Phone");
+
+                    b.Property<string>("ProviderData");
+
+                    b.Property<string>("ProviderId");
+
+                    b.Property<string>("State");
+
+                    b.Property<int>("Status");
+
+                    b.Property<string>("Zip");
+
+                    b.HasKey("RequestId");
                 });
 
             modelBuilder.Entity("AllReady.Models.Resource", b =>
@@ -394,6 +472,8 @@ namespace AllReady.Migrations
 
                     b.Property<string>("AdditionalInfo");
 
+                    b.Property<int?>("ItineraryId");
+
                     b.Property<string>("PreferredEmail");
 
                     b.Property<string>("PreferredPhoneNumber");
@@ -404,7 +484,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("StatusDescription");
 
-                    b.Property<int?>("TaskId");
+                    b.Property<int>("TaskId");
 
                     b.Property<string>("UserId");
 
@@ -607,11 +687,22 @@ namespace AllReady.Migrations
                         .HasForeignKey("SkillId");
                 });
 
-            modelBuilder.Entity("AllReady.Models.Location", b =>
+            modelBuilder.Entity("AllReady.Models.Itinerary", b =>
                 {
-                    b.HasOne("AllReady.Models.PostalCodeGeo")
+                    b.HasOne("AllReady.Models.Event")
                         .WithMany()
-                        .HasForeignKey("PostalCodePostalCode");
+                        .HasForeignKey("EventId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.ItineraryRequest", b =>
+                {
+                    b.HasOne("AllReady.Models.Itinerary")
+                        .WithMany()
+                        .HasForeignKey("ItineraryId");
+
+                    b.HasOne("AllReady.Models.Request")
+                        .WithMany()
+                        .HasForeignKey("RequestId");
                 });
 
             modelBuilder.Entity("AllReady.Models.Organization", b =>
@@ -632,6 +723,13 @@ namespace AllReady.Migrations
                         .HasForeignKey("OrganizationId");
                 });
 
+            modelBuilder.Entity("AllReady.Models.Request", b =>
+                {
+                    b.HasOne("AllReady.Models.Event")
+                        .WithMany()
+                        .HasForeignKey("EventId");
+                });
+
             modelBuilder.Entity("AllReady.Models.Skill", b =>
                 {
                     b.HasOne("AllReady.Models.Organization")
@@ -645,6 +743,10 @@ namespace AllReady.Migrations
 
             modelBuilder.Entity("AllReady.Models.TaskSignup", b =>
                 {
+                    b.HasOne("AllReady.Models.Itinerary")
+                        .WithMany()
+                        .HasForeignKey("ItineraryId");
+
                     b.HasOne("AllReady.Models.AllReadyTask")
                         .WithMany()
                         .HasForeignKey("TaskId");
