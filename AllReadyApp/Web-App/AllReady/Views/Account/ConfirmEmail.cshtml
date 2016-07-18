@@ -9,7 +9,7 @@
 <div>
     <p>
         Thank you for confirming your email.
-        @if (SignInManager.IsSignedIn(User))
+        @if (!SignInManager.IsSignedIn(User))
         {
             <span>Please <a asp-controller="Account" asp-action="Login">Click here to Log in</a>.</span>
         } 
