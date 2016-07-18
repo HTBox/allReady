@@ -92,13 +92,4 @@ namespace AllReady.ViewModels.Event
         public string Headline { get; set; }
         public bool HasHeadline => !string.IsNullOrEmpty(Headline);
     }
-
-    public static class EventViewModelExtensions
-    {
-        //this method is really operating on the Event class as it's extension type, so must like should be moved to a new EventExtensions class and kept with the Event.cs file
-        public static IEnumerable<EventViewModel> ToViewModel(this IEnumerable<Models.Event> campaignEvents)
-        {
-            return campaignEvents.Select(campaignEvent => new EventViewModel(campaignEvent));
-        }
-    }
 }

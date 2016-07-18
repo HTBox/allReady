@@ -22,17 +22,15 @@ namespace AllReady.Features.Event
       _signInManager = signInManager;
     }
 
-    public EventViewModel Handle(ShowEventQuery message)
-    {
-      var campaignEvent = _dataAccess.GetEvent(message.EventId);
-
-            if (campaignEvent == null || campaignEvent.Campaign.Locked)
+        public EventViewModel Handle(ShowEventQuery message)
+        {
+            var @event = _dataAccess.GetEvent(message.EventId);
+            if (@event == null || @event.Campaign.Locked)
             {
                 return null;
             }
-            //return new EventViewModel(campaignEvent).WithUserInfo(campaignEvent, message.User, _dataAccess);
 
-            var eventViewModel = new EventViewModel(campaignEvent);
+            var eventViewModel = new EventViewModel(@event);
 
             var userId = message.User.GetUserId();
             var appUser = _dataAccess.GetUser(userId);
@@ -40,12 +38,12 @@ namespace AllReady.Features.Event
             eventViewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
             eventViewModel.IsUserVolunteeredForEvent = _dataAccess.GetEventSignups(eventViewModel.Id, userId).Any();
 
-            var assignedTasks = campaignEvent.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
+            var assignedTasks = @event.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
             eventViewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
 
-            var unassignedTasks = campaignEvent.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != userId)).ToList();
+            var unassignedTasks = @event.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != userId)).ToList();
             eventViewModel.Tasks = new List<TaskViewModel>(unassignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
-            eventViewModel.SignupModel = new EventSignupViewModel()
+            eventViewModel.SignupModel = new EventSignupViewModel
             {
                 EventId = eventViewModel.Id,
                 UserId = userId,
