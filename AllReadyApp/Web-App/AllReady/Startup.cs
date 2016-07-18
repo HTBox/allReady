@@ -241,6 +241,7 @@ namespace AllReady
                     UserInformationEndpoint = "https://graph.facebook.com/v2.5/me?fields=id,name,email,first_name,last_name"
                 };
                 options.Scope.Add("email");
+
                 app.UseFacebookAuthentication(options);
             }
 
@@ -251,10 +252,7 @@ namespace AllReady
                     ClientId = Configuration["Authentication:MicrosoftAccount:ClientId"],
                     ClientSecret = Configuration["Authentication:MicrosoftAccount:ClientSecret"]
                 };
-                options.Scope.Add("wl.basic");
-                options.Scope.Add("wl.signin");
-                options.Scope.Add("wl.emails");
-                options.Scope.Add("wl.phone_numbers");
+
                 app.UseMicrosoftAccountAuthentication(options);
             }
 
@@ -265,6 +263,7 @@ namespace AllReady
                     ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"],
                     ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"]
                 };
+
                 app.UseTwitterAuthentication(options);
             }
 
@@ -275,6 +274,7 @@ namespace AllReady
                     ClientId = Configuration["Authentication:Google:ClientId"],
                     ClientSecret = Configuration["Authentication:Google:ClientSecret"]
                 };
+
                 app.UseGoogleAuthentication(options);
             }
 
