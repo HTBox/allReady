@@ -22,52 +22,48 @@ namespace AllReady.Areas.Admin.Models
 
         public static Campaign UpdateCampaignContact(this Campaign campaign, IPrimaryContactModel contactModel, AllReadyContext _context)
         {
-            if (campaign.CampaignContacts == null)
+            bool hasPrimaryContact = campaign.CampaignContacts != null &&
+                campaign.CampaignContacts.Any(campaignContact => campaignContact.ContactType == (int)ContactTypes.Primary);
+
+            bool addOrUpdatePrimaryContact = !string.IsNullOrWhiteSpace(string.Concat(contactModel.PrimaryContactEmail?.Trim() + contactModel.PrimaryContactFirstName?.Trim(), contactModel.PrimaryContactLastName?.Trim(), contactModel.PrimaryContactPhoneNumber?.Trim()));
+
+            // Update existing Primary Campaign Contact
+            if (hasPrimaryContact && addOrUpdatePrimaryContact)
             {
-                campaign.CampaignContacts = new List<CampaignContact>();
+                var contactId = campaign.CampaignContacts.Single(campaignContact => campaignContact.ContactType == (int)ContactTypes.Primary).ContactId;
+                var contact = _context.Contacts.Single(c => c.Id == contactId);
+
+                contact.Email = contactModel.PrimaryContactEmail;
+                contact.FirstName = contactModel.PrimaryContactFirstName;
+                contact.LastName = contactModel.PrimaryContactLastName;
+                contact.PhoneNumber = contactModel.PrimaryContactPhoneNumber;
             }
-
-            var primaryCampaignContact = campaign.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
-            var contactId = primaryCampaignContact?.ContactId;
-            Contact primaryContact;
-
-            var contactInfo = string.Concat(contactModel.PrimaryContactEmail?.Trim() + contactModel.PrimaryContactFirstName?.Trim(), contactModel.PrimaryContactLastName?.Trim(), contactModel.PrimaryContactPhoneNumber?.Trim());
-
-            if (contactId == null)
+            // Delete existing Primary Campaign Contact
+            else if (hasPrimaryContact && !addOrUpdatePrimaryContact)
             {
-                primaryContact = new Contact();
+                var campaignContact = campaign.CampaignContacts.Single(cc => cc.ContactType == (int)ContactTypes.Primary);
+                var contact = _context.Contacts.Single(c => c.Id == campaignContact.ContactId);
+                _context.Remove(contact);
+                _context.Remove(campaignContact);
             }
-            else
+            // Add a Primary Campaign Contact
+            else if (!hasPrimaryContact && addOrUpdatePrimaryContact)
             {
-                primaryContact = _context.Contacts.Single(c => c.Id == contactId);
-            }
-
-            if (string.IsNullOrWhiteSpace(contactInfo) && primaryCampaignContact != null)
-            {
-                //Delete
-                _context.CampaignContacts.Remove(primaryCampaignContact);
-                _context.Remove(primaryCampaignContact);//Not Needed?
-                _context.Remove(primaryCampaignContact.Contact);
-            }
-            else
-            {
-                primaryContact.Email = contactModel.PrimaryContactEmail;
-                primaryContact.FirstName = contactModel.PrimaryContactFirstName;
-                primaryContact.LastName = contactModel.PrimaryContactLastName;
-                primaryContact.PhoneNumber = contactModel.PrimaryContactPhoneNumber;
-                _context.Update(primaryContact);
-
-                if (primaryCampaignContact == null)
+                var campaignContact = new CampaignContact()
                 {
-                    primaryCampaignContact = new CampaignContact
+                    ContactType = (int)ContactTypes.Primary,
+                    Contact = new Contact()
                     {
-                        Contact = primaryContact,
-                        Campaign = campaign,
-                        ContactType = (int)ContactTypes.Primary
-                    };
-                    campaign.CampaignContacts.Add(primaryCampaignContact);
-                    _context.Update(primaryCampaignContact);
-                }
+                        Email = contactModel.PrimaryContactEmail,
+                        FirstName = contactModel.PrimaryContactFirstName,
+                        LastName = contactModel.PrimaryContactLastName,
+                        PhoneNumber = contactModel.PrimaryContactPhoneNumber
+                    },
+                };
+
+                if (campaign.CampaignContacts == null) campaign.CampaignContacts = new List<CampaignContact>();
+                campaign.CampaignContacts.Add(campaignContact);
+                _context.Add(campaignContact);
             }
             return campaign;
         }
