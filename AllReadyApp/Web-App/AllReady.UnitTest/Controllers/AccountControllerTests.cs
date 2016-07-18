@@ -1260,7 +1260,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact(Skip = "RTM Broken Tests")]
         public async Task ExternalLoginConfirmationRedirectsToCorrectActionIfUserIsSignedIn()
         {
-            var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "test") }, IdentityCookieOptions.ApplicationCookieAuthenticationType);
+            var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "test") }, new IdentityCookieOptions().ApplicationCookieAuthenticationScheme);
 
             var sut = AccountController();
             sut.SetFakeUser("userId");
@@ -1629,7 +1629,8 @@ namespace AllReady.UnitTest.Controllers
 
             var signInManagerMock = CreateSignInManagerMock(userManagerMock);
             signInManagerMock.Setup(mock => mock.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
-                .ReturnsAsync(signInResult == default(SignInResult) ? SignInResult.Success : signInResult);
+                //.ReturnsAsync(signInResult == default(SignInResult) ? SignInResult.Success : signInResult);
+                .ReturnsAsync(signInResult == default(Microsoft.AspNetCore.Identity.SignInResult) ? Microsoft.AspNetCore.Identity.SignInResult.Success : signInResult);
 
             var urlHelperMock = new Mock<IUrlHelper>();
             urlHelperMock.Setup(mock => mock.IsLocalUrl(It.Is<string>(x => x.StartsWith("http")))).Returns(false);

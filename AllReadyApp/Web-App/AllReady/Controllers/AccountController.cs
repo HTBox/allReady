@@ -415,13 +415,13 @@ namespace AllReady.Controllers
 
             if (externalLoginInfo.LoginProvider == "Google")
             {
-                firstName = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.GivenName);
-                lastName = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Surname);
+                firstName = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.GivenName);
+                lastName = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.Surname);
             }
 
             if (externalLoginInfo.LoginProvider == "Facebook" || externalLoginInfo.LoginProvider == "Microsoft")
             {
-                var name = externalLoginInfo.ExternalPrincipal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
+                var name = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
                 if (string.IsNullOrEmpty(name))
                     return;
 
