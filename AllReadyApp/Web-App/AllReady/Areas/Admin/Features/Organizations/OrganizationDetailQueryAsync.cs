@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationDetailQuery : IAsyncRequest<OrganizationDetailModel>
+    public class OrganizationDetailQueryAsync : IAsyncRequest<OrganizationDetailModel>
     {
         public int Id { get; set; }
     }

@@ -2,7 +2,7 @@
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationNameUniqueQuery : IAsyncRequest<bool>
+    public class OrganizationNameUniqueQueryAsync : IAsyncRequest<bool>
     {
         public string OrganizationName { get; set; }
         public int OrganizationId { get; set; }

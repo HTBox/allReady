@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationDetailQueryHandlerAsync : IAsyncRequestHandler<OrganizationDetailQuery, OrganizationDetailModel >
+    public class OrganizationDetailQueryHandlerAsync : IAsyncRequestHandler<OrganizationDetailQueryAsync, OrganizationDetailModel >
     {
         private AllReadyContext _context;
 
@@ -16,7 +16,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
             _context = context;
         }
 
-        public async Task<OrganizationDetailModel> Handle(OrganizationDetailQuery message)
+        public async Task<OrganizationDetailModel> Handle(OrganizationDetailQueryAsync message)
         {
             var t = await _context.Organizations
                 .AsNoTracking()

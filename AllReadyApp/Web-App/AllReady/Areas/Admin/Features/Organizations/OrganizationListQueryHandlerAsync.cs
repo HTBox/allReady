@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationListQueryHandlerAsync : IAsyncRequestHandler<OrganizationListQuery, List<OrganizationSummaryModel>>
+    public class OrganizationListQueryHandlerAsync : IAsyncRequestHandler<OrganizationListQueryAysnc, List<OrganizationSummaryModel>>
     {
         private AllReadyContext _context;
         public OrganizationListQueryHandlerAsync(AllReadyContext context)
@@ -17,7 +17,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
             _context = context;
         }
 
-        public async Task<List<OrganizationSummaryModel>> Handle(OrganizationListQuery message)
+        public async Task<List<OrganizationSummaryModel>> Handle(OrganizationListQueryAysnc message)
         {
             return await _context.Organizations.Select(t => new OrganizationSummaryModel
             {

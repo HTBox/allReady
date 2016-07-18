@@ -3,7 +3,7 @@ using System.Linq;
 using AllReady.Extensions;
 using System.Threading.Tasks;
 using AllReady.Models;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Models
 {

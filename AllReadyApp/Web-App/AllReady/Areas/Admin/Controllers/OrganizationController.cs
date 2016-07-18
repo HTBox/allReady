@@ -3,10 +3,9 @@ using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
 using AllReady.Areas.Admin.Models.Validators;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -26,14 +25,14 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Organization
         public async Task<IActionResult> Index()
         {
-            var list = await _mediator.SendAsync(new OrganizationListQuery());
+            var list = await _mediator.SendAsync(new OrganizationListQueryAysnc());
             return View(list);
         }
 
         // GET: Organization/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var organization = await _mediator.SendAsync(new OrganizationDetailQuery { Id = id });
+            var organization = await _mediator.SendAsync(new OrganizationDetailQueryAsync { Id = id });
             if (organization == null)
             {
                 return NotFound();
@@ -51,7 +50,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Organization/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var organization = await _mediator.SendAsync(new OrganizationEditQuery { Id = id });
+            var organization = await _mediator.SendAsync(new OrganizationEditQueryAsync { Id = id });
             if (organization == null)
             {
                 return NotFound();
@@ -75,10 +74,10 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var isNameUnique = await _mediator.SendAsync(new OrganizationNameUniqueQuery { OrganizationName = organization.Name, OrganizationId = organization.Id });
+                var isNameUnique = await _mediator.SendAsync(new OrganizationNameUniqueQueryAsync { OrganizationName = organization.Name, OrganizationId = organization.Id });
                 if (isNameUnique)
                 {
-                    var id = await _mediator.SendAsync(new OrganizationEditCommand { Organization = organization });
+                    var id = await _mediator.SendAsync(new EditOrganizationAsync { Organization = organization });
                     return RedirectToAction(nameof(Details), new { id, area = "Admin" });
                 }
 
@@ -98,7 +97,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var organization = await _mediator.SendAsync(new OrganizationDetailQuery { Id = id.Value });
+            var organization = await _mediator.SendAsync(new OrganizationDetailQueryAsync { Id = id.Value });
             if (organization == null)
             {
                 return NotFound();
@@ -112,7 +111,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _mediator.SendAsync(new OrganizationDeleteCommand { Id= id });
+            await _mediator.SendAsync(new DeleteOrganizationAsync { Id= id });
             return RedirectToAction(nameof(Index));
         }               
     }

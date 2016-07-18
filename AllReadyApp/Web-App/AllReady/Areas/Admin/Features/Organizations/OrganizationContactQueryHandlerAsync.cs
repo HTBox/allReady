@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationContactQueryHandlerAsync : IAsyncRequestHandler<OrganizationContactQuery , ContactInformationModel>
+    public class OrganizationContactQueryHandlerAsync : IAsyncRequestHandler<OrganizationContactQueryAsync , ContactInformationModel>
     {
         private readonly AllReadyContext _context;
         public OrganizationContactQueryHandlerAsync(AllReadyContext context)
@@ -15,7 +15,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
             _context = context;
         }
 
-        public async Task<ContactInformationModel> Handle(OrganizationContactQuery  message)
+        public async Task<ContactInformationModel> Handle(OrganizationContactQueryAsync  message)
         {
             var contactInfo = new ContactInformationModel();
 

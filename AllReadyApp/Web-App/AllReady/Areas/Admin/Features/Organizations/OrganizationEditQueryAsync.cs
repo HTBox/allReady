@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationEditQuery : IAsyncRequest<OrganizationEditModel>
+    public class OrganizationEditQueryAsync : IAsyncRequest<OrganizationEditModel>
     {
         public int Id { get; set; }
     }

@@ -1,19 +1,19 @@
 ﻿using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationDeleteCommandHandlerAsync : AsyncRequestHandler<OrganizationDeleteCommand>
+    public class DeleteOrganizationHandlerAsync : AsyncRequestHandler<DeleteOrganizationAsync>
     {
         private AllReadyContext _context;
-        public OrganizationDeleteCommandHandlerAsync(AllReadyContext context)
+        public DeleteOrganizationHandlerAsync(AllReadyContext context)
         {
             _context = context;
         }
 
-        protected override async Task HandleCore(OrganizationDeleteCommand message)
+        protected override async Task HandleCore(DeleteOrganizationAsync message)
         {
             var organization = await _context.Organizations.SingleOrDefaultAsync(t => t.Id == message.Id).ConfigureAwait(false);
             if (organization != null)

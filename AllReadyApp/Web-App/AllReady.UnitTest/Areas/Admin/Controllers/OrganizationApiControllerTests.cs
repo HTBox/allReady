@@ -24,14 +24,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new OrganizationApiController(mediator.Object);
             await sut.GetContact(organizationId);
 
-            mediator.Verify(x => x.SendAsync(It.Is<OrganizationContactQuery>(y => y.OrganizationId == organizationId && y.ContactType == ContactTypes.Primary)));
+            mediator.Verify(x => x.SendAsync(It.Is<OrganizationContactQueryAsync>(y => y.OrganizationId == organizationId && y.ContactType == ContactTypes.Primary)));
         }
 
         [Fact]
         public async Task GetContactReturnsCorrectModel()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationContactQuery>())).ReturnsAsync(new ContactInformationModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationContactQueryAsync>())).ReturnsAsync(new ContactInformationModel());
 
             var sut = new OrganizationApiController(mediator.Object);
             var result = await sut.GetContact(It.IsAny<int>());

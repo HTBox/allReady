@@ -12,7 +12,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
         [Fact(Skip = "RTM Broken Tests")]
         public async Task ReturnAllOrganizationsAsOrganizationSummaryModels()
         {
-            var message = new OrganizationListQuery();
+            var message = new OrganizationListQueryAysnc();
 
             var organizations = new[]
             {

@@ -1,22 +1,21 @@
 ﻿using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
-using AllReady.Extensions;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationEditCommandHandlerAsync : IAsyncRequestHandler<OrganizationEditCommand, int>
+    public class EditOrganizationHandlerAsync : IAsyncRequestHandler<EditOrganizationAsync, int>
     {
         private readonly AllReadyContext _context;
 
-        public OrganizationEditCommandHandlerAsync(AllReadyContext context)
+        public EditOrganizationHandlerAsync(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<int> Handle(OrganizationEditCommand message)
+        public async Task<int> Handle(EditOrganizationAsync message)
         {
             var org = await _context
                 .Organizations

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 {
-    public class OrganizationEditCommandHandlerAsyncShould : InMemoryContextTest
+    public class EditOrganizationHandlerAsyncShould : InMemoryContextTest
     {
         [Fact(Skip = "RTM Broken Tests")]
         public async Task AddOrganization()
@@ -17,8 +17,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
             var orgModel = ToEditModel_Organization(org);
 
             // Act
-            var handler = new OrganizationEditCommandHandlerAsync(Context);
-            var id = await handler.Handle(new OrganizationEditCommand { Organization = orgModel });
+            var handler = new EditOrganizationHandlerAsync(Context);
+            var id = await handler.Handle(new EditOrganizationAsync { Organization = orgModel });
             var fetchedOrg = Context.Organizations.First(t => t.Id == id);
 
             // Assert
