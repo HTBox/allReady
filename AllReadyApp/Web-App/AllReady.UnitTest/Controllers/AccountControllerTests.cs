@@ -1257,15 +1257,15 @@ namespace AllReady.UnitTest.Controllers
         //          Assert.NotNull(attribute);
         //      }
 
-        [Fact(Skip = "RTM Broken Tests")]
-        public async Task ExternalLoginConfirmationRedirectsToCorrectActionIfUserIsSignedIn()
-        {
-            var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "test") }, new IdentityCookieOptions().ApplicationCookieAuthenticationScheme);
+        //[Fact(Skip = "RTM Broken Tests")]
+        //public async Task ExternalLoginConfirmationRedirectsToCorrectActionIfUserIsSignedIn()
+        //{
+        //    var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "test") }, new IdentityCookieOptions().ApplicationCookieAuthenticationScheme);
 
-            var sut = AccountController();
-            sut.SetFakeUser("userId");
-            sut.HttpContext.User.AddIdentity(identity);
-            var result = await sut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel()) as RedirectToActionResult;
+        //    var sut = AccountController();
+        //    sut.SetFakeUser("userId");
+        //    sut.HttpContext.User.AddIdentity(identity);
+        //    var result = await sut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel()) as RedirectToActionResult;
 
         //          Assert.Equal<string>(result.ControllerName, "Manage");
         //          Assert.Equal<string>(result.ActionName, nameof(ManageController.Index));
@@ -1445,7 +1445,7 @@ namespace AllReady.UnitTest.Controllers
         //          Assert.Equal(result.Url, returnUrl);
         //      }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        //[Fact(Skip = "RTM Broken Tests")]
         //      public async Task ExternalLoginConfirmationRedirectsToCorrectActionAndControllerWithCorrectRouteValues_WhenUserIsSiteAdmin()
         //      {
         //          var userManager = CreateUserManagerMockWithSucessIdentityResult();
@@ -1725,5 +1725,5 @@ namespace AllReady.UnitTest.Controllers
   //          urlHelperMock.Setup(mock => mock.IsLocalUrl(It.Is<string>(x => x.StartsWith(urlBegining)))).Returns(false);
   //          urlHelperMock.Setup(mock => mock.IsLocalUrl(It.Is<string>(x => !x.StartsWith(urlBegining)))).Returns(true);
   //      }
-    }
+  }
 }

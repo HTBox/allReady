@@ -1,5 +1,5 @@
 ﻿using AllReady.Providers.ExternalUserInformationProviders;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 
 namespace AllReady.Providers
 {

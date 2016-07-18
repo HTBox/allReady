@@ -8,12 +8,12 @@ using AllReady.Providers;
 using AllReady.Security;
 using AllReady.ViewModels.Account;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Routing;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using UserType = AllReady.Models.UserType;
 
 namespace AllReady.Controllers

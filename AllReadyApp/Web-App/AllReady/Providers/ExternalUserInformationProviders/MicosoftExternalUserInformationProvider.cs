@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.Providers.ExternalUserInformationProviders
 {
@@ -7,9 +7,9 @@ namespace AllReady.Providers.ExternalUserInformationProviders
     {
         public ExternalUserInformation GetExternalUserInformationWith(ExternalLoginInfo externalLoginInfo)
         {
-            var externalUserInformation = new ExternalUserInformation { Email = externalLoginInfo.ExternalPrincipal.FindFirstValue(ClaimTypes.Email) };
+            var externalUserInformation = new ExternalUserInformation { Email = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email) };
 
-            var name = externalLoginInfo.ExternalPrincipal.FindFirstValue(ClaimTypes.Name);
+            var name = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Name);
             if (string.IsNullOrEmpty(name))
             {
                 return externalUserInformation;

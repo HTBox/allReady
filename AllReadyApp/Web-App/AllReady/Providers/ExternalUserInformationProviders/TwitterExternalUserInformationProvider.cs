@@ -1,8 +1,8 @@
 using System.Linq;
-using LinqToTwitter;
-using Microsoft.AspNet.Identity;
 using System.Security.Claims;
-using Microsoft.Extensions.OptionsModel;
+using LinqToTwitter;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace AllReady.Providers.ExternalUserInformationProviders
 {
@@ -19,8 +19,8 @@ namespace AllReady.Providers.ExternalUserInformationProviders
         {
             var externalUserInformation = new ExternalUserInformation();
 
-            var userId = externalLoginInfo.ExternalPrincipal.FindFirstValue("urn:twitter:userid");
-            var screenName = externalLoginInfo.ExternalPrincipal.FindFirstValue("urn:twitter:screenname");
+            var userId = externalLoginInfo.Principal.FindFirstValue("urn:twitter:userid");
+            var screenName = externalLoginInfo.Principal.FindFirstValue("urn:twitter:screenname");
 
             var authTwitter = new SingleUserAuthorizer
             {
