@@ -20,54 +20,6 @@ namespace AllReady.Areas.Admin.Models
             return contactModel;
         }
 
-        public static Campaign UpdateCampaignContact(this Campaign campaign, IPrimaryContactModel contactModel, AllReadyContext _context)
-        {
-            bool hasPrimaryContact = campaign.CampaignContacts != null &&
-                campaign.CampaignContacts.Any(campaignContact => campaignContact.ContactType == (int)ContactTypes.Primary);
-
-            bool addOrUpdatePrimaryContact = !string.IsNullOrWhiteSpace(string.Concat(contactModel.PrimaryContactEmail?.Trim() + contactModel.PrimaryContactFirstName?.Trim(), contactModel.PrimaryContactLastName?.Trim(), contactModel.PrimaryContactPhoneNumber?.Trim()));
-
-            // Update existing Primary Campaign Contact
-            if (hasPrimaryContact && addOrUpdatePrimaryContact)
-            {
-                var contactId = campaign.CampaignContacts.Single(campaignContact => campaignContact.ContactType == (int)ContactTypes.Primary).ContactId;
-                var contact = _context.Contacts.Single(c => c.Id == contactId);
-
-                contact.Email = contactModel.PrimaryContactEmail;
-                contact.FirstName = contactModel.PrimaryContactFirstName;
-                contact.LastName = contactModel.PrimaryContactLastName;
-                contact.PhoneNumber = contactModel.PrimaryContactPhoneNumber;
-            }
-            // Delete existing Primary Campaign Contact
-            else if (hasPrimaryContact && !addOrUpdatePrimaryContact)
-            {
-                var campaignContact = campaign.CampaignContacts.Single(cc => cc.ContactType == (int)ContactTypes.Primary);
-                var contact = _context.Contacts.Single(c => c.Id == campaignContact.ContactId);
-                _context.Remove(contact);
-                _context.Remove(campaignContact);
-            }
-            // Add a Primary Campaign Contact
-            else if (!hasPrimaryContact && addOrUpdatePrimaryContact)
-            {
-                var campaignContact = new CampaignContact()
-                {
-                    ContactType = (int)ContactTypes.Primary,
-                    Contact = new Contact()
-                    {
-                        Email = contactModel.PrimaryContactEmail,
-                        FirstName = contactModel.PrimaryContactFirstName,
-                        LastName = contactModel.PrimaryContactLastName,
-                        PhoneNumber = contactModel.PrimaryContactPhoneNumber
-                    },
-                };
-
-                if (campaign.CampaignContacts == null) campaign.CampaignContacts = new List<CampaignContact>();
-                campaign.CampaignContacts.Add(campaignContact);
-                _context.Add(campaignContact);
-            }
-            return campaign;
-        }
-
         public static Organization UpdateOrganizationContact(this Organization organization, IPrimaryContactModel contactModel, AllReadyContext _context)
         {
             if (organization.OrganizationContacts == null)
