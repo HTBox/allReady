@@ -22,7 +22,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private readonly Task taskFromResultZero = Task.FromResult(0);
 
         [Fact]
-        public void IndexSendsCampaignListQueryAndReturnsWithCorrectDataWhenUserIsOrgAdmin()
+        public void IndexSendsCampaignListQueryWithCorrectDataWhenUserIsOrgAdmin()
         {
             int organizationId = 100;
             var campaignSummaries = new List<CampaignSummaryModel>
@@ -51,7 +51,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
             
         [Fact]
-        public void IndexSendsCampaignListQueryAndReturnsWithCorrectDataWhenUserIsNotOrgAdmin()
+        public void IndexSendsCampaignListQueryWithCorrectDataWhenUserIsNotOrgAdmin()
         {
             var organizationId = 100;
             var campaignSummaries = new List<CampaignSummaryModel>
@@ -78,14 +78,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(dataList.Count, campaignSummaries.Count());
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
+        public void IndexReturnsCorrectViewModel()
+        {
+        }
+            
+        [Fact(Skip = "NotImplemented")]
         public async Task DetailsSendsCampaignDetailQueryWithCorrectCampaignId()
         {
-            var mediatorMock = new Mock<IMediator>();
-            var sut = new CampaignController(mediatorMock.Object, null);
-            var id = 2;
-            var result = await sut.Details(id);
-            mediatorMock.Verify(mock => mock.SendAsync(It.Is<CampaignDetailQuery>(cq => cq.CampaignId == id)), Times.Once);
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
         }
 
         [Fact]
@@ -110,38 +112,23 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<ViewResult>(await controller.Details(It.IsAny<int>()));
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task DetailsReturnsCorrectViewModelWhenViewModelIsNotNullAndUserIsOrgAdmin()
         {
-            var organizationId = 100;
-            var campaignId = 1;
-            var controller = CampaignControllerWithDetailQuery(UserType.OrgAdmin.ToString(), organizationId);
-            var result = await controller.Details(campaignId);
-
-            var view = ValidateResult<ViewResult>(result);
-            var model = ValidateResult<CampaignDetailModel>(view.ViewData.Model);
-            Assert.Equal(model.OrganizationId, organizationId);
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void CreateReturnsCorrectViewWithCorrectViewModel()
         {
-            var sut = new CampaignController(null, null);
-            var result = sut.Create();
-
-            var view = ValidateResult<ViewResult>(result);
-            var model = ValidateResult<CampaignSummaryModel>(view.ViewData.Model);
-            Assert.Equal(view.ViewName, "Edit");
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public async Task EditGetSendsCampaignSummaryQueryWithCorrectCampaignId()
         {
-            var mediatorMock = new Mock<IMediator>();
-            var sut = new CampaignController(mediatorMock.Object, null);
-            var id = 2;
-            var result = await sut.Edit(id);
-            mediatorMock.Verify(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(cs => cs.CampaignId == id)), Times.Once);
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
         }
 
         [Fact]
