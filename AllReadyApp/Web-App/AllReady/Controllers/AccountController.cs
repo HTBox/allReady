@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using UserType = AllReady.Models.UserType;
 
@@ -116,48 +115,47 @@ namespace AllReady.Controllers
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
-      if (ModelState.IsValid)
-      {
-        var user = new ApplicationUser
+        if (ModelState.IsValid)
         {
-          FirstName = model.FirstName,
-          LastName = model.LastName,
-          UserName = model.Email,
-          Email = model.Email,
-          PhoneNumber = model.PhoneNumber,
-          TimeZoneId = _generalSettings.Value.DefaultTimeZone
-        };
+            var user = new ApplicationUser
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                UserName = model.Email,
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber,
+                TimeZoneId = _generalSettings.Value.DefaultTimeZone
+            };
 
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
+            {
+                var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                var callbackUrl = Url.Action(new UrlActionContext
                 {
-                    var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    Action = nameof(ConfirmEmail),
+                    Controller = "Account",
+                    Values = new { userId = user.Id, token = emailConfirmationToken },
+                    Protocol = HttpContext.Request.Scheme
+                });
 
-          var callbackUrl = Url.Action(new UrlActionContext
-          {
-            Action = nameof(ConfirmEmail),
-            Controller = "Account",
-            Values = new { userId = user.Id, token = emailConfirmationToken },
-            Protocol = HttpContext.Request.Scheme
-          }
-          );
+                await _mediator.SendAsync(new SendConfirmAccountEmail { Email = user.Email, CallbackUrl = callbackUrl });
 
-                    await _mediator.SendAsync(new SendConfirmAccountEmail { Email = user.Email, CallbackUrl = callbackUrl });
+                var changePhoneNumberToken = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
+                await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = model.PhoneNumber, Token = changePhoneNumberToken });
 
-          var changePhoneNumberToken = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
-          await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = model.PhoneNumber, Token = changePhoneNumberToken });
+                await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
+                await _signInManager.SignInAsync(user, isPersistent: false);
 
-          await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
-          await _signInManager.SignInAsync(user, isPersistent: false);
+                return RedirectToAction(nameof(HomeController.Index), "Home");
+            }
 
-          return RedirectToAction(nameof(HomeController.Index), "Home");
+            AddErrorsToModelState(result);
         }
 
-        AddErrorsToModelState(result);
-      }
-
-      // If we got this far, something failed, redisplay form
-      return View(model);
+        // If we got this far, something failed, redisplay form
+        return View(model);
     }
 
     // POST: /Account/LogOff
@@ -291,38 +289,38 @@ namespace AllReady.Controllers
       return new ChallengeResult(provider, properties);
     }
 
-        // GET: /Account/ExternalLoginCallback
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
+    // GET: /Account/ExternalLoginCallback
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
+    {
+        var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+        if (externalLoginInfo == null)
         {
-            var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
-            if (externalLoginInfo == null)
-            {
-                return RedirectToAction(nameof(Login));
-            }
-
-            // Sign in the user with this external login provider if the user already has a login.
-            var externalLoginSignInAsyncResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
-
-            var externalUserInformationProvider = _externalUserInformationProviderFactory.GetExternalUserInformationProviderFor(externalLoginInfo.LoginProvider);
-            var externalUserInformation = externalUserInformationProvider.GetExternalUserInformationWith(externalLoginInfo);
-            var email = externalUserInformation.Email;
-            var firstName = externalUserInformation.FirstName;
-            var lastName = externalUserInformation.LastName;
-
-            if (externalLoginSignInAsyncResult.Succeeded)
-            {
-                var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = email });
-                return RedirectToLocal(returnUrl, user);
-            }
-            
-            // If the user does not have an account, then ask the user to create an account.
-            ViewData["ReturnUrl"] = returnUrl;
-            ViewData["LoginProvider"] = externalLoginInfo.LoginProvider;
-
-            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email, FirstName = firstName, LastName = lastName });
+            return RedirectToAction(nameof(Login));
         }
+
+        // Sign in the user with this external login provider if the user already has a login.
+        var externalLoginSignInAsyncResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
+
+        var externalUserInformationProvider = _externalUserInformationProviderFactory.GetExternalUserInformationProviderFor(externalLoginInfo.LoginProvider);
+        var externalUserInformation = externalUserInformationProvider.GetExternalUserInformationWith(externalLoginInfo);
+        var email = externalUserInformation.Email;
+        var firstName = externalUserInformation.FirstName;
+        var lastName = externalUserInformation.LastName;
+
+        if (externalLoginSignInAsyncResult.Succeeded)
+        {
+            var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = email });
+            return RedirectToLocal(returnUrl, user);
+        }
+            
+        // If the user does not have an account, then ask the user to create an account.
+        ViewData["ReturnUrl"] = returnUrl;
+        ViewData["LoginProvider"] = externalLoginInfo.LoginProvider;
+
+        return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email, FirstName = firstName, LastName = lastName });
+    }
 
         // POST: /Account/ExternalLoginConfirmation
         [HttpPost]
