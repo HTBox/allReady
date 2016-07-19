@@ -1,9 +1,9 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.Providers.ExternalUserInformationProviders
 {
-    public class FacebookExternalUserInformationProvider : IProvideExternalUserInformation
+    public class MicrosoftAndFacebookExternalUserInformationProvider : IProvideExternalUserInformation
     {
         public ExternalUserInformation GetExternalUserInformationWith(ExternalLoginInfo externalLoginInfo)
         {

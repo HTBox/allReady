@@ -22,11 +22,11 @@ namespace AllReady.Providers
             switch (loginProvider)
             {
                 case "Facebook":
-                    return new FacebookExternalUserInformationProvider();
+                    return new MicrosoftAndFacebookExternalUserInformationProvider();
+                case "Microsoft":
+                    return new MicrosoftAndFacebookExternalUserInformationProvider();
                 case "Google":
                     return new GoogleExternalUserInformationProvider();
-                case "Microsoft":
-                    return new MicosoftExternalUserInformationProvider();
                 case "Twitter":
                     return new TwitterExternalUserInformationProvider(twitterAuthenticationSettings);
             }
