@@ -79,17 +79,17 @@ namespace AllReady
                 );
             });
 
-            // Add Identity services to the services container.
-            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                options.Password.RequiredLength = 10;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireDigit = true;
-                options.Password.RequireUppercase = false;
-                options.Cookies.ApplicationCookie.AccessDeniedPath = new PathString("/Home/AccessDenied");
-            })
-            .AddEntityFrameworkStores<AllReadyContext>()
-            .AddDefaultTokenProviders();
+      // Add Identity services to the services container.
+      services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        {
+        options.Password.RequiredLength = 10;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireDigit = true;
+        options.Password.RequireUppercase = false;
+        options.Cookies.ApplicationCookie.AccessDeniedPath = new PathString("/Home/AccessDenied");
+        })
+        .AddEntityFrameworkStores<AllReadyContext>()
+        .AddDefaultTokenProviders();
 
             // Add Authorization rules for the app
             services.AddAuthorization(options =>
@@ -101,10 +101,15 @@ namespace AllReady
             // Add MVC services to the services container.
             services.AddMvc();
 
-            // configure IoC support
-            var container = CreateIoCContainer(services);
-            return container.Resolve<IServiceProvider>();
-        }
+        //register MediatR
+        //https://lostechies.com/jimmybogard/2016/07/19/mediatr-extensions-for-microsoft-dependency-injection-released/
+        services.AddMediatR(typeof(Startup));
+
+        // configure IoC support
+        var container = CreateIoCContainer(services);
+      return container.Resolve<IServiceProvider>();
+
+    }
 
         private IContainer CreateIoCContainer(IServiceCollection services)
         {
@@ -135,22 +140,9 @@ namespace AllReady
                 services.AddTransient<IQueueStorageService, FakeQueueWriterService>();
             }
 
-            var containerBuilder = new ContainerBuilder();
-
-            containerBuilder.RegisterSource(new ContravariantRegistrationSource());
-            containerBuilder.RegisterAssemblyTypes(typeof(IMediator).Assembly).AsImplementedInterfaces();
-            containerBuilder.RegisterAssemblyTypes(typeof(Startup).Assembly).AsImplementedInterfaces();
-            containerBuilder.Register<SingleInstanceFactory>(ctx =>
-            {
-                var c = ctx.Resolve<IComponentContext>();
-                return t => c.Resolve(t);
-            });
-
-            containerBuilder.Register<MultiInstanceFactory>(ctx =>
-            {
-                var c = ctx.Resolve<IComponentContext>();
-                return t => (IEnumerable<object>)c.Resolve(typeof(IEnumerable<>).MakeGenericType(t));
-            });
+      var containerBuilder = new ContainerBuilder();
+      containerBuilder.RegisterSource(new ContravariantRegistrationSource());
+      containerBuilder.RegisterAssemblyTypes(typeof(Startup).Assembly).AsImplementedInterfaces();
 
             //Populate the container with services that were previously registered
             containerBuilder.Populate(services);
