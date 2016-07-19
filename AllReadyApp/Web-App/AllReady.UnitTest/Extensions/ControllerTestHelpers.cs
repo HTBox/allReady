@@ -37,8 +37,7 @@ namespace AllReady.UnitTest.Extensions
         {
             SetFakeHttpContextIfNotAlreadySet(controller);
 
-            var identity = new ClaimsIdentity(new List<Claim> {
-                    new Claim(ClaimTypes.NameIdentifier, userId)},new IdentityCookieOptions().ApplicationCookieAuthenticationScheme);
+            var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId)}, new IdentityCookieOptions().ApplicationCookieAuthenticationScheme);
             var claimsPrincipal = new ClaimsPrincipal(identity);
            
             Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);

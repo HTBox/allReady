@@ -113,7 +113,10 @@ namespace AllReady.UnitTest.Controllers
             var loginViewModel = new LoginViewModel { Email = "", Password = "", RememberMe = false };
             const string testLocalUrl = "/foo/bar";
 
-            var controller = AccountController(SignInResult.Failed);
+            //Microsoft.AspNetCore.Identity.SignInResult.Success
+            //var controller = AccountController(SignInResult.Failed);
+            var controller = AccountController(Microsoft.AspNetCore.Identity.SignInResult.Success);
+
             var result = await controller.Login(loginViewModel, testLocalUrl);
 
             Assert.IsType<ViewResult>(result);
@@ -1257,7 +1260,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact(Skip = "RTM Broken Tests")]
         public async Task ExternalLoginConfirmationRedirectsToCorrectActionIfUserIsSignedIn()
         {
-            var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "test") }, IdentityCookieOptions.ApplicationCookieAuthenticationType);
+            var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "test") }, new IdentityCookieOptions().ApplicationCookieAuthenticationScheme);
 
             var sut = AccountController();
             sut.SetFakeUser("userId");
@@ -1620,7 +1623,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        private static AccountController AccountController(SignInResult signInResult = default(SignInResult))
+        private static AccountController AccountController(Microsoft.AspNetCore.Identity.SignInResult signInResult = default(Microsoft.AspNetCore.Identity.SignInResult))
         {
             var userManagerMock = CreateUserManagerMock();
 

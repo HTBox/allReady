@@ -811,7 +811,8 @@ namespace AllReady.UnitTest.Controllers
         public async Task VerifyCodePostRedirectsToHomeControllerIndexWhenTwoFactorSignInAsyncSucceedsAndReturnUrlIsNotLocalUrl()
         {
             var signInManager = CreateSignInManagerMock();
-            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
+            signInManager.Setup(x => x.TwoFactorSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
+                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns(false);
