@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using AllReady.Models;
-using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AllReady.Services
 {

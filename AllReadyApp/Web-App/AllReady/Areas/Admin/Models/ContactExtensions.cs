@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AllReady.Extensions;
 using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models
@@ -104,7 +105,7 @@ namespace AllReady.Areas.Admin.Models
                 primaryContact.FirstName = contactModel.PrimaryContactFirstName;
                 primaryContact.LastName = contactModel.PrimaryContactLastName;
                 primaryContact.PhoneNumber = contactModel.PrimaryContactPhoneNumber;
-                _context.Update(primaryContact);
+                _context.AddOrUpdate(primaryContact);
 
                 if (primaryCampaignContact == null)
                 {
@@ -115,7 +116,7 @@ namespace AllReady.Areas.Admin.Models
                         ContactType = (int)ContactTypes.Primary
                     };
                     organization.OrganizationContacts.Add(primaryCampaignContact);
-                    _context.Update(primaryCampaignContact);
+                    _context.AddOrUpdate(primaryCampaignContact);
                 }
             }
 

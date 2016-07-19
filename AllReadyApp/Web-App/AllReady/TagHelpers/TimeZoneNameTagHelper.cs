@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.AspNet.Razor.TagHelpers;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace AllReady.TagHelpers
 {

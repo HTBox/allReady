@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models.TaskSignupModels;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.TaskSignups
 {
