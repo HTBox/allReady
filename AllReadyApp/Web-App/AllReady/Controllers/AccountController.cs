@@ -61,7 +61,7 @@ namespace AllReady.Controllers
       if (ModelState.IsValid)
       {
         // Require admin users to have a confirmed email before they can log on.
-        var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = model.Email });
+        var user = await _mediator.SendAsync(new ApplicationUserQueryAsync { UserName = model.Email });
         if (user != null)
         {
           var isAdminUser = user.IsUserType(UserType.OrgAdmin) || user.IsUserType(UserType.SiteAdmin);
@@ -303,23 +303,24 @@ namespace AllReady.Controllers
         // Sign in the user with this external login provider if the user already has a login.
         var externalLoginSignInAsyncResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
 
-        var externalUserInformationProvider = _externalUserInformationProviderFactory.GetExternalUserInformationProviderFor(externalLoginInfo.LoginProvider);
+        var externalUserInformationProvider = _externalUserInformationProviderFactory.GetExternalUserInformationProvider(externalLoginInfo.LoginProvider);
         var externalUserInformation = externalUserInformationProvider.GetExternalUserInformationWith(externalLoginInfo);
-        var email = externalUserInformation.Email;
-        var firstName = externalUserInformation.FirstName;
-        var lastName = externalUserInformation.LastName;
 
         if (externalLoginSignInAsyncResult.Succeeded)
         {
-            var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = email });
+            var user = await _mediator.SendAsync(new ApplicationUserQueryAsync { UserName = externalUserInformation.Email });
             return RedirectToLocal(returnUrl, user);
         }
             
         // If the user does not have an account, then ask the user to create an account.
-        ViewData["ReturnUrl"] = returnUrl;
-        ViewData["LoginProvider"] = externalLoginInfo.LoginProvider;
-
-        return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email, FirstName = firstName, LastName = lastName });
+        return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel
+        {
+            Email = externalUserInformation.Email,
+            FirstName = externalUserInformation.FirstName,
+            LastName = externalUserInformation.LastName,
+            ReturnUrl = returnUrl,
+            LoginProvider = externalLoginInfo.LoginProvider
+        });
     }
 
         // POST: /Account/ExternalLoginConfirmation
@@ -393,50 +394,25 @@ namespace AllReady.Controllers
       }
     }
 
+    //TODO: any items that are not reused across multiple action methods should be pulled out of this method and put back into their action methods
     private IActionResult RedirectToLocal(string returnUrl, ApplicationUser user)
     {
-      if (Url.IsLocalUrl(returnUrl))
-      {
-        return Redirect(returnUrl);
-      }
-
-      if (user.IsUserType(UserType.SiteAdmin))
-      {
-        return RedirectToAction(nameof(SiteController.Index), "Site", new { area = "Admin" });
-      }
-
-      if (user.IsUserType(UserType.OrgAdmin))
-      {
-        return RedirectToAction(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = "Admin" });
-      }
-
-      return RedirectToAction(nameof(HomeController.Index), "Home");
-    }
-
-        private static void RetrieveFirstAndLastNameFromExternalPrincipal(ExternalLoginInfo externalLoginInfo, out string firstName, out string lastName)
+        if (Url.IsLocalUrl(returnUrl))
         {
-            firstName = string.Empty;
-            lastName = string.Empty;
+            return Redirect(returnUrl);
+        }
 
-            if (externalLoginInfo.LoginProvider == "Google")
-            {
-                firstName = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.GivenName);
-                lastName = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.Surname);
-            }
+        if (user.IsUserType(UserType.SiteAdmin))
+        {
+            return RedirectToAction(nameof(SiteController.Index), "Site", new { area = "Admin" });
+        }
 
-            if (externalLoginInfo.LoginProvider == "Facebook" || externalLoginInfo.LoginProvider == "Microsoft")
-            {
-                var name = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
-                if (string.IsNullOrEmpty(name))
-                    return;
+        if (user.IsUserType(UserType.OrgAdmin))
+        {
+            return RedirectToAction(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = "Admin" });
+        }
 
-                var array = name.Split(' ');
-                if (array.Length < 2)
-                    return;
-
-                firstName = array[0];
-                lastName = array[1];
-            }
+        return RedirectToAction(nameof(HomeController.Index), "Home");
         }
     }
 }

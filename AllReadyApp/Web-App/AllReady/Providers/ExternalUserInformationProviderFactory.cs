@@ -5,7 +5,7 @@ namespace AllReady.Providers
 {
     public interface IExternalUserInformationProviderFactory
     {
-        IProvideExternalUserInformation GetExternalUserInformationProviderFor(string loginProvider);
+        IProvideExternalUserInformation GetExternalUserInformationProvider(string loginProvider);
     }
 
     public class ExternalUserInformationProviderFactory : IExternalUserInformationProviderFactory
@@ -17,7 +17,7 @@ namespace AllReady.Providers
             this.twitterAuthenticationSettings = twitterAuthenticationSettings;
         }
 
-        public IProvideExternalUserInformation GetExternalUserInformationProviderFor(string loginProvider)
+        public IProvideExternalUserInformation GetExternalUserInformationProvider(string loginProvider)
         {
             switch (loginProvider)
             {

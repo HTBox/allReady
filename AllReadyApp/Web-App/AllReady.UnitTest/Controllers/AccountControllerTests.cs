@@ -1163,28 +1163,14 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackPopulatesCorrectValuesForFirstNameAndLastName_WhenLoginProviderIsGoogle_AndExternalLoginInfoIsNotNull()
+        public async Task ExternalLoginCallbackInvokesGetExternalUserInformationProviderWithTheCorrectLoginProvider_WhenExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackPopulatesCorrectValuesForFirstNameAndLastName_WhenLoginProviderIsFacebook_AndExternalLoginInfoIsNotNull()
-        {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackPopulatesCorrectValuesForFirstNameAndLastName_WhenLoginProviderIsMicrosoft_AndExternalLoginInfoIsNotNull()
-        {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackPopulatesCorrectValuesForFirstNameAndLastName_WhenLoginProviderIsTwitter_AndExternalLoginInfoIsNotNull()
+        public async Task ExternalLoginCallbackInvokesGetExternalUserInformationWithTheCorrectExternalLoginInfo_WhenExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
@@ -1198,7 +1184,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackRedirectsToLocalWithCorrectUrl_WhenReturnUrlIsLocalUrl()
+        public async Task ExternalLoginCallbackRedirectsToLocalWithCorrectUrl_WhenExternalLoginIsSuccessful_AndExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
@@ -1233,7 +1219,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackReturnsExternalLoginConfirmationViewAndCorrecgtViewModel_When_WhenExternalLoginIsUnsuccessfulOrExternalLoginInfoIsNull()
+        public async Task ExternalLoginCallbackReturnsExternalLoginConfirmationViewAndCorrectViewModel_When_WhenExternalLoginIsUnsuccessfulOrExternalLoginInfoIsNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;

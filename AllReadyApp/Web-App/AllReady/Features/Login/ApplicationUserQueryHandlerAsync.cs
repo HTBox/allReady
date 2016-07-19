@@ -5,16 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Login
 {
-    public class ApplicationUserQueryHandler : IAsyncRequestHandler<ApplicationUserQuery, ApplicationUser>
+    public class ApplicationUserQueryHandlerAsync : IAsyncRequestHandler<ApplicationUserQueryAsync, ApplicationUser>
     {
         private AllReadyContext _context;
 
-        public ApplicationUserQueryHandler(AllReadyContext context)
+        public ApplicationUserQueryHandlerAsync(AllReadyContext context)
         {
             _context = context;
 
         }
-        public async Task<ApplicationUser> Handle(ApplicationUserQuery message)
+        public async Task<ApplicationUser> Handle(ApplicationUserQueryAsync message)
         {
             var normalizedUserName = message.UserName.ToUpperInvariant();
             var user = await _context.Users
