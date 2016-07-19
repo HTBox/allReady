@@ -25,7 +25,6 @@ namespace AllReady.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IOptions<GeneralSettings> _generalSettings;
         private readonly IMediator _mediator;
-        private readonly IConfiguration _configuration;
         private readonly IExternalUserInformationProviderFactory _externalUserInformationProviderFactory;
 
         public AccountController(
@@ -33,7 +32,6 @@ namespace AllReady.Controllers
             SignInManager<ApplicationUser> signInManager,
             IOptions<GeneralSettings> generalSettings,
             IMediator mediator,
-            IConfiguration configuration,
             IExternalUserInformationProviderFactory externalUserInformationProviderFactory
             )
         {
@@ -41,7 +39,6 @@ namespace AllReady.Controllers
             _signInManager = signInManager;
             _generalSettings = generalSettings;
             _mediator = mediator;
-            _configuration = configuration;
             _externalUserInformationProviderFactory = externalUserInformationProviderFactory;
         }
 
