@@ -113,9 +113,7 @@ namespace AllReady.UnitTest.Controllers
             var loginViewModel = new LoginViewModel { Email = "", Password = "", RememberMe = false };
             const string testLocalUrl = "/foo/bar";
 
-            //Microsoft.AspNetCore.Identity.SignInResult.Success
-            //var controller = AccountController(SignInResult.Failed);
-            var controller = AccountController(Microsoft.AspNetCore.Identity.SignInResult.Success);
+            var controller = AccountController(Microsoft.AspNetCore.Identity.SignInResult.Failed);
 
             var result = await controller.Login(loginViewModel, testLocalUrl);
 
@@ -1641,8 +1639,14 @@ namespace AllReady.UnitTest.Controllers
             return controller;
         }
 
+        //private static Mock<UserManager<ApplicationUser>> CreateApplicationUserMock()
+        //{
+        //    return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
+        //}
+
         private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock() =>
-            new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
+            //new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
+            new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
 
         private static Mock<SignInManager<ApplicationUser>> CreateSignInManagerMock(Mock<UserManager<ApplicationUser>> userManager)
         {
