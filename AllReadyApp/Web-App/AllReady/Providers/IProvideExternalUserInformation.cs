@@ -1,11 +1,11 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.Providers
 {
-    //TODO: make contract for GetExternalUserInformationWith to async to not force locking on async invocations inside individual providers
     public interface IProvideExternalUserInformation
     {
-        ExternalUserInformation GetExternalUserInformationWith(ExternalLoginInfo externalLoginInfo);
+        Task<ExternalUserInformation> GetExternalUserInformation(ExternalLoginInfo externalLoginInfo);
     }
 
     public class ExternalUserInformation

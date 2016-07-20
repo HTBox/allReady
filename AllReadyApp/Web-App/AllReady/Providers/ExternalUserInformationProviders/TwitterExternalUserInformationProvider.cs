@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using LinqToTwitter;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -15,7 +16,7 @@ namespace AllReady.Providers.ExternalUserInformationProviders
             this.twitterAuthenticationSettings = twitterAuthenticationSettings;
         }
 
-        public ExternalUserInformation GetExternalUserInformationWith(ExternalLoginInfo externalLoginInfo)
+        public async Task<ExternalUserInformation> GetExternalUserInformation(ExternalLoginInfo externalLoginInfo)
         {
             var externalUserInformation = new ExternalUserInformation();
 
@@ -36,15 +37,13 @@ namespace AllReady.Providers.ExternalUserInformationProviders
                 }
             };
 
-            //TODO: make contract async to not force locking on async invocations
-            authTwitter.AuthorizeAsync().Wait();
+            await authTwitter.AuthorizeAsync();
 
             var twitterCtx = new TwitterContext(authTwitter);
 
-            var verifyResponse = (from acct in twitterCtx.Account
-                // ReSharper disable once RedundantBoolCompare
-                where (acct.Type == AccountType.VerifyCredentials) && (acct.IncludeEmail == true) //VERY important you explicitly keep the "== true" part of comparison here. ReSharper will prompt you to remove this, and if it does, the query will not work
-                select acct).SingleOrDefaultAsync().Result; //TODO: make contract async to not force locking on async invocations
+            //VERY important you explicitly keep the "== true" part of comparison. ReSharper will prompt you to remove this, and if it does, the query will not work
+            var verifyResponse = await (from acct in twitterCtx.Account where (acct.Type == AccountType.VerifyCredentials) && (acct.IncludeEmail == true)
+                select acct).SingleOrDefaultAsync();
 
             if (verifyResponse != null && verifyResponse.User != null)
             {

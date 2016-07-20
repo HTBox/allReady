@@ -302,9 +302,8 @@ namespace AllReady.Controllers
 
         // Sign in the user with this external login provider if the user already has a login.
         var externalLoginSignInAsyncResult = await _signInManager.ExternalLoginSignInAsync(externalLoginInfo.LoginProvider, externalLoginInfo.ProviderKey, isPersistent: false);
-
         var externalUserInformationProvider = _externalUserInformationProviderFactory.GetExternalUserInformationProvider(externalLoginInfo.LoginProvider);
-        var externalUserInformation = externalUserInformationProvider.GetExternalUserInformationWith(externalLoginInfo);
+        var externalUserInformation = await externalUserInformationProvider.GetExternalUserInformation(externalLoginInfo);
 
         if (externalLoginSignInAsyncResult.Succeeded)
         {

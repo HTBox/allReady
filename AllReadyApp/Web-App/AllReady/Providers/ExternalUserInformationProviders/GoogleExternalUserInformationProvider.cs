@@ -1,11 +1,12 @@
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.Providers.ExternalUserInformationProviders
 {
     public class GoogleExternalUserInformationProvider : IProvideExternalUserInformation
     {
-        public ExternalUserInformation GetExternalUserInformationWith(ExternalLoginInfo externalLoginInfo)
+        public Task<ExternalUserInformation> GetExternalUserInformation(ExternalLoginInfo externalLoginInfo)
         {
             var externalUserInformation = new ExternalUserInformation
             {
@@ -13,7 +14,8 @@ namespace AllReady.Providers.ExternalUserInformationProviders
                 FirstName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName),
                 LastName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname)
             };
-            return externalUserInformation;
+
+            return Task.FromResult(externalUserInformation);
         }
     }
 }
