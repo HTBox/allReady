@@ -2,17 +2,13 @@
 using AllReady.Areas.Admin.Models.RequestModels;
 using AllReady.Models;
 using CsvHelper;
-using CsvHelper.Configuration;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Controllers
 {
