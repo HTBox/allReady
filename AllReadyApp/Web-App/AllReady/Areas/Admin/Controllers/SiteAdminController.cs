@@ -153,9 +153,9 @@ namespace AllReady.Areas.Admin.Controllers
                 }
 
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                //mgmccarthy: there is no ResetPassword action methd on the AdminController. Not too sure what to do here.
+                //TODO: mgmccarthy: there is no ResetPassword action methd on the AdminController. Not too sure what to do here. Waiting for feeback via Issue #659
                 var callbackUrl = Url.Action(new UrlActionContext { Action = "ResetPassword", Controller = "Admin", Values = new { userId = user.Id, code = code }, Protocol = HttpContext.Request.Scheme });
-                await _mediator.SendAsync(new SendResetPasswordEmail { Email = user.Email, CallbackUrl = callbackUrl });
+                await _mediator.SendAsync(new Features.Site.SendResetPasswordEmail { Email = user.Email, CallbackUrl = callbackUrl });
 
                 ViewBag.SuccessMessage = $"Sent password reset email for {user.UserName}.";
 
