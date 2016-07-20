@@ -1,26 +1,30 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Extensions
 {
-  public static class ContextExtensions
-  {
-    public static void AddOrUpdate(this DbContext ctx, object entity)
+    public static class ContextExtensions
     {
-      var entry = ctx.Entry(entity);
-      if (entry.State == EntityState.Detached)
-      {
-        ctx.Add(entity);
-      }
-      else if (entry.State == EntityState.Modified)
-      {
-        ctx.Update(entity);
-      }
-    }
+        /// <summary>
+        /// Handles correctly attaching an object to the context for cases where it may be new or modified.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="entity"></param>
+        public static void AddOrUpdate(this DbContext ctx, object entity)
+        {
+            var entry = ctx.Entry(entity);
 
-  }
+            switch (entry.State)
+            {
+                case EntityState.Detached:
+                    ctx.Add(entity);
+                    break;
+                case EntityState.Modified:
+                    ctx.Update(entity);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+    }
 }
