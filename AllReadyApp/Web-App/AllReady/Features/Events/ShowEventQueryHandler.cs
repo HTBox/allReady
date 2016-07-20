@@ -10,17 +10,15 @@ using Microsoft.AspNetCore.Identity;
 namespace AllReady.Features.Event
 {
     public class ShowEventQueryHandler : IRequestHandler<ShowEventQuery, EventViewModel>
-  {
-    private readonly IAllReadyDataAccess _dataAccess;
-    private SignInManager<ApplicationUser> _signInManager;
-    private UserManager<ApplicationUser> _userManager;
-
-    public ShowEventQueryHandler(IAllReadyDataAccess dataAccess, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
     {
-      _dataAccess = dataAccess;
-      _userManager = userManager;
-      _signInManager = signInManager;
-    }
+        private readonly IAllReadyDataAccess _dataAccess;
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public ShowEventQueryHandler(IAllReadyDataAccess dataAccess, UserManager<ApplicationUser> userManager)
+        {
+            _dataAccess = dataAccess;
+            _userManager = userManager;
+        }
 
         public EventViewModel Handle(ShowEventQuery message)
         {
@@ -34,6 +32,7 @@ namespace AllReady.Features.Event
 
             var userId = _userManager.GetUserId(message.User);
             var appUser = _dataAccess.GetUser(userId);
+
             eventViewModel.UserId = userId;
             eventViewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
             eventViewModel.IsUserVolunteeredForEvent = _dataAccess.GetEventSignups(eventViewModel.Id, userId).Any();
@@ -43,6 +42,7 @@ namespace AllReady.Features.Event
 
             var unassignedTasks = @event.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != userId)).ToList();
             eventViewModel.Tasks = new List<TaskViewModel>(unassignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
+
             eventViewModel.SignupModel = new EventSignupViewModel
             {
                 EventId = eventViewModel.Id,

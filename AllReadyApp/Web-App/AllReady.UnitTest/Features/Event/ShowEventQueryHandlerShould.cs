@@ -10,12 +10,19 @@ namespace AllReady.UnitTest.Features.Event
 {
     public class ShowEventQueryHandlerShould
     {
+        //happy path test. set up data to get all possible properties populated when EventViewModel is returned from handler
+        [Fact(Skip = "NotImplemented")]
+        public void SetsEventSignupViewModel_WithTheCorrectData()
+        {
+        }
+
         [Fact]
         public void InvokeGetEventWithTheCorrectEventId()
         {
             var message = new ShowEventQuery { EventId = 1 };
             var dataAccess = new Mock<IAllReadyDataAccess>();
-            var sut = new ShowEventQueryHandler(dataAccess.Object, null, null);
+
+            var sut = new ShowEventQueryHandler(dataAccess.Object, null);
             sut.Handle(message);
 
             dataAccess.Verify(x => x.GetEvent(message.EventId), Times.Once);
@@ -24,80 +31,112 @@ namespace AllReady.UnitTest.Features.Event
         [Fact]
         public void ReturnNullWhenEventIsNotFound()
         {
-            var showEventQuery = new ShowEventQuery { EventId = 1 };
             var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.GetEvent(showEventQuery.EventId)).Returns<Models.Event>(null);
+            dataAccess.Setup(x => x.GetEvent(It.IsAny<int>())).Returns<Models.Event>(null);
 
-            var sut = new ShowEventQueryHandler(dataAccess.Object, null, null);
-            var viewModel = sut.Handle(showEventQuery);
+            var sut = new ShowEventQueryHandler(dataAccess.Object, null);
+            var result = sut.Handle(new ShowEventQuery());
 
-            viewModel.ShouldBeNull();
+            result.ShouldBeNull();
         }
 
         [Fact]
         public void ReturnNullWhenEventsCampaignIslocked()
         {
-            var query = new ShowEventQuery { EventId = 1 };
-            var mockDbAccess = new Mock<IAllReadyDataAccess>();
-            var expectedEvent = new Models.Event { Campaign = new Campaign { Locked = true } };
-            mockDbAccess.Setup(x => x.GetEvent(query.EventId)).Returns(expectedEvent);
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetEvent(It.IsAny<int>())).Returns(new Models.Event { Campaign = new Campaign { Locked = true }});
 
-            var sut = new ShowEventQueryHandler(mockDbAccess.Object, null, null);
-            var viewModel = sut.Handle(query);
+            var sut = new ShowEventQueryHandler(dataAccess.Object, null);
+            var result = sut.Handle(new ShowEventQuery());
 
-            viewModel.ShouldBeNull();
+            result.ShouldBeNull();
         }
 
         [Fact]
         public void InvokeGetUserIdWithTheCorrectUser_WhenEventIsNotNullAndEventsCampaignIsUnlocked()
         {
-            var message = new ShowEventQuery { EventId = 1, User = new ClaimsPrincipal() };
-            var @event = new Models.Event { Campaign = new Campaign { Locked = false } };
+            var message = new ShowEventQuery { User = new ClaimsPrincipal() };
 
             var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.GetEvent(message.EventId)).Returns(@event);
+            dataAccess.Setup(x => x.GetEvent(It.IsAny<int>())).Returns(new Models.Event { Campaign = new Campaign { Locked = false }});
             dataAccess.Setup(x => x.GetUser(It.IsAny<string>())).Returns(new ApplicationUser());
 
             var userManager = CreateUserManagerMock();
 
-            var sut = new ShowEventQueryHandler(dataAccess.Object, userManager.Object, null);
+            var sut = new ShowEventQueryHandler(dataAccess.Object, userManager.Object);
             sut.Handle(message);
 
             userManager.Verify(x => x.GetUserId(message.User), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void InvokeGetUserWithTheCorrectUserId_WhenEventIsNotNullAndEventsCampaignIsUnlocked()
         {
+            const string userId = "1";
+            var message = new ShowEventQuery { User = new ClaimsPrincipal() };
+            
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetEvent(It.IsAny<int>())).Returns(new Models.Event { Campaign = new Campaign { Locked = false }});
+            dataAccess.Setup(x => x.GetUser(It.IsAny<string>())).Returns(new ApplicationUser());
+
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+
+            var sut = new ShowEventQueryHandler(dataAccess.Object, userManager.Object);
+            sut.Handle(message);
+
+            dataAccess.Verify(x => x.GetUser(userId), Times.Once);
         }
 
-        //TODO: tests for this line: eventViewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
         [Fact(Skip = "NotImplemented")]
-        public void AssignUserSkillsToNull_WhenEventIsNotNullAndEventsCampaignIsUnlocked()
+        public void SetUserSkillsToNull_WhenAppUserIsNull_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
-            //var userManager = CreateUserManagerMock();
-            //userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Failed()));
-            //userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
-            //userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void AssignUserSkillsToAppUsersAssociatedSkills_WhenAppUserIsNotNull_AndEventIsNotNullAndEventsCampaignIsUnlocked()
-        {
+        public void SetUserSkillsToNull_WhenAppUserIsNotNull_AndAppUserseAssociatedSkillsIsNull_AndEventIsNotNullAndEventsCampaignIsUnlocked()
+        { 
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void InvokeGetEventSignupsWithCorrectParameters_WhenEventIsNotNullAndEventsCampaignIsUnlocked()
         {
+            const string userId = "1";
+            var message = new ShowEventQuery { User = new ClaimsPrincipal() };
+            var @event = new Models.Event { Campaign = new Campaign { Locked = false }};
+
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            dataAccess.Setup(x => x.GetEvent(It.IsAny<int>())).Returns(@event);
+            dataAccess.Setup(x => x.GetUser(It.IsAny<string>())).Returns(new ApplicationUser());
+
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+
+            var sut = new ShowEventQueryHandler(dataAccess.Object, userManager.Object);
+            sut.Handle(message);
+
+            dataAccess.Verify(x => x.GetEventSignups(@event.Id, userId), Times.Once);
         }
 
-        //var assignedTasks = @event.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
+        [Fact(Skip = "NotImplemented")]
+        public void SetIsUserVolunteerdForEventToTrue_WhenThereAreEventSignupsForTheEventAndTheUser_AndEventIsNotNullAndEventsCampaignIsUnlocked()
+        {
+        }
 
-        //eventViewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
+        [Fact(Skip = "NotImplemented")]
+        public void SetIsUserVolunteerdForEventToFalse_WhenThereAreNoEventSignupsForTheEventAndTheUser_AndEventIsNotNullAndEventsCampaignIsUnlocked()
+        {
+        }
 
-        //var unassignedTasks = @event.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != userId)).ToList();
+        [Fact(Skip = "NotImplemented")]
+        public void SetUserTasksToListOfTaskViewModelForAnyTasksWhereTheUserHasVolunteeredInAscendingOrderByTaskStartDateTime_WhenThereAreNoEventSignupsForTheEventAndTheUser_AndEventIsNotNullAndEventsCampaignIsUnlocked()
+        {
+        }
 
-        //eventViewModel.Tasks = new List<TaskViewModel>(unassignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
+        [Fact(Skip = "NotImplemented")]
+        public void SetUserTasksToListOfTaskViewModelForAnyTasksWhereTheUserHasNotVolunteeredInAscendingOrderByTaskStartDateTime_WhenThereAreNoEventSignupsForTheEventAndTheUser_AndEventIsNotNullAndEventsCampaignIsUnlocked()
+        {
+        }
 
         private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock()
         {

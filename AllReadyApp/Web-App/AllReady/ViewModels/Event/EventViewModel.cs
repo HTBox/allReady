@@ -4,7 +4,6 @@ using System.Linq;
 using AllReady.Models;
 using AllReady.ViewModels.Shared;
 using AllReady.ViewModels.Task;
-using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.ViewModels.Event
 {
@@ -45,14 +44,16 @@ namespace AllReady.ViewModels.Event
 
             ImageUrl = @event.ImageUrl;
 
-            //TODO Location
             Tasks = @event.Tasks != null
                  ? new List<TaskViewModel>(@event.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
                  : new List<TaskViewModel>();
 
             SignupModel = new EventSignupViewModel();
 
-            RequiredSkills = @event.RequiredSkills?.Select(acsk => new SkillViewModel(acsk.Skill)).ToList();
+            //mgmccarthy: this check doesn't make much sense unless you explicitly set @event.RequiredSkills to null. If you look at the Event model, you'll see that RequireSkills is instaniated with
+            //a new empty list: "public List<EventSkill> RequiredSkills { get; set; } = new List<EventSkill>();". I think this can go away?
+            RequiredSkills = @event.RequiredSkills?.Select(ek => new SkillViewModel(ek.Skill)).ToList();
+
             IsLimitVolunteers = @event.IsLimitVolunteers;
             IsAllowWaitList = @event.IsAllowWaitList;
             Headline = @event.Headline;
@@ -85,11 +86,6 @@ namespace AllReady.ViewModels.Event
         public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
         public bool IsLimitVolunteers { get; set; } = true;
         public bool IsAllowWaitList { get; set; } = true;
-        public int NumberOfUsersSignedUp => UsersSignedUp.Count;
-        public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
-        public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
-
         public string Headline { get; set; }
-        public bool HasHeadline => !string.IsNullOrEmpty(Headline);
     }
 }
