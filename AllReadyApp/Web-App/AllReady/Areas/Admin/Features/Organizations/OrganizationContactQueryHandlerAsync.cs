@@ -19,10 +19,12 @@ namespace AllReady.Areas.Admin.Features.Organizations
         {
             var contactInfo = new ContactInformationModel();
 
-            var organization = await _context.Organizations.AsNoTracking()
+            var organization = await _context.Organizations
+                .AsNoTracking()
                 .Include(l => l.Location).ThenInclude(pc => pc.PostalCode)
                 .Include(oc => oc.OrganizationContacts).ThenInclude(c => c.Contact)
-               .SingleOrDefaultAsync(o => o.Id == message.OrganizationId);
+                .SingleOrDefaultAsync(o => o.Id == message.OrganizationId)
+                .ConfigureAwait(false);
 
             if (organization == null)
             {

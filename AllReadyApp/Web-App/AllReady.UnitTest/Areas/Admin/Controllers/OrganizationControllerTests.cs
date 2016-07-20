@@ -2,36 +2,28 @@
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
 using AllReady.Areas.Admin.Models.Validators;
-using AllReady.Models;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
-  public class OrganizationControllerTests : InMemoryContextTest
-  {
-    private readonly OrganizationEditModel _organizationEditModel;
-
-    private static Mock<IMediator> _mediator;
-
-    private static OrganizationController _sut;
-
-    private const int Id = 4565;
-
-    private Type IntType = typeof(int);
-
-    private const string DeleteConst = "Delete";
-
-    private const string DeleteConfirmedConst = "DeleteConfirmed";
+    public class OrganizationControllerTests
+    {
+        private readonly OrganizationEditModel _organizationEditModel;
+        private static Mock<IMediator> _mediator;
+        private static OrganizationController _sut;
+        private const int Id = 4565;
+        private readonly Type intType = typeof(int);
+        private const string DeleteConst = "Delete";
+        private const string DeleteConfirmedConst = "DeleteConfirmed";
 
     public OrganizationControllerTests()
     {
@@ -66,307 +58,296 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
     #region IndexTests
 
-    [Fact]
-    public void IndexShouldReturnTheAViewWithTheListReturnedFromTheMediator()
-    {
-      CreateSut();
+        [Fact]
+        public async Task IndexShouldSendOrganizationListQuery()
+        {
+            var mediator = new Mock<IMediator>();
+            var sut = new OrganizationController(mediator.Object, null);
+            await sut.Index();
 
-      var organizationSummaryModel = new List<OrganizationSummaryModel> { new OrganizationSummaryModel() };
+            mediator.Verify(x => x.SendAsync(It.IsAny<OrganizationListQueryAysnc>()), Times.Once);
+        }
 
-      _mediator.Setup(x => x.Send(It.IsAny<OrganizationListQuery>())).Returns(organizationSummaryModel);
+        [Fact]
+        public async Task IndexShouldReturnAViewWithTheCorrectViewModel()
+        {
+            var mediator = new Mock<IMediator>();
+            var organizationSummaryModel = new List<OrganizationSummaryModel>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationListQueryAysnc>())).ReturnsAsync(organizationSummaryModel);
 
-      var result = (ViewResult)_sut.Index();
+            var sut = new OrganizationController(mediator.Object, null);
+            var result = (ViewResult) await sut.Index();
 
-      Assert.Same(organizationSummaryModel, result.ViewData.Model);
-    }
+            Assert.IsType<ViewResult>(result);
+            Assert.Same(organizationSummaryModel, result.ViewData.Model);
+        }
 
     #endregion
 
     #region DetailsTests
 
-    [Fact]
-    public void DetailsShouldPassTheIdToTheMediator()
-    {
-      CreateSut();
+        [Fact]
+        public async Task DetailsShouldSendOrganizationDetailQueryWithTheCorrectOrganizationId()
+        {
+            CreateSut();
+            await _sut.Details(Id);
+            _mediator.Verify(x => x.SendAsync(It.Is<OrganizationDetailQueryAsync>(y => y.Id == Id)));
+        }
 
-      _sut.Details(Id);
+        [Fact]
+        public async Task DetailsShouldReturnNullWhenOrganizationIsNotFound()
+        {
+            CreateSut();
 
-      _mediator.Verify(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id)));
-    }
+            _mediator.Setup(x => x.SendAsync(It.Is<OrganizationDetailQueryAsync>(y => y.Id == Id))).ReturnsAsync(null);
 
-    [Fact]
-    public void WhenTheMediatorReturnsNullForThatIdHttpNotFoundShouldBeReturned()
-    {
-      CreateSut();
-
-      _mediator.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns<OrganizationDetailModel>(null);
-
-      var result = _sut.Details(Id);
+            var result = await _sut.Details(Id);
 
       Assert.IsType<NotFoundResult>(result);
     }
 
-    [Fact]
-    public void WhenTheMediatorReturnsAOrganizationDetailModelForThatIdAViewShouldBeReturned()
-    {
-      CreateSut();
+        [Fact]
+        public async Task DetailsShouldReturnTheCorrectViewAndViewModelWhenOrganizationIsNotNull()
+        {
+            CreateSut();
 
       var model = new OrganizationDetailModel();
 
-      _mediator.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns(model);
+            _mediator.Setup(x => x.SendAsync(It.Is<OrganizationDetailQueryAsync>(y => y.Id == Id))).ReturnsAsync(model);
 
-      var result = (ViewResult)_sut.Details(Id);
+            var result = (ViewResult) await _sut.Details(Id);
 
-      Assert.Same(model, result.ViewData.Model);
-    }
+            Assert.IsType<ViewResult>(result);
+            Assert.Same(model, result.ViewData.Model);
+        }
 
-
-    #endregion
+        #endregion
 
     #region CreateTests
 
-    [Fact]
-    public void CreateGetShouldReturnAView()
-    {
-      CreateSut();
-
-      var result = _sut.Create();
-
-      Assert.IsType<ViewResult>(result);
-    }
-
-    [Fact(Skip = "RTM Broken Tests")]
-    public void CreatePostShouldInsertOrganization()
-    {
-      // Arrange
-      CreateSut();
-      OrganizationEditModel model = AgincourtAware;
-      IRequest<int> command = new OrganizationEditCommand() { Organization = model };
-      _mediator.Setup(y => y.Send(It.IsAny<OrganizationNameUniqueQuery>())).Returns(() =>
-      {
-        return true;
-      });
-      _mediator.Setup(x => x.Send(It.IsAny<OrganizationEditCommand>())).Returns(() => {
-        IRequestHandler<OrganizationEditCommand, int> handler = new OrganizationEditCommandHandler(Context);
-        return handler.Handle((OrganizationEditCommand)command);
-      });
-
-      // Act
-      _sut.Edit(model);
-
-      // Assert
-      Assert.Single(Context.Organizations.Where(t => t.Name == model.Name));
-
-    }
-
-    [Fact]
-    public void CreateNewOrganizationWithExistingOrganizationNameReturnsEditView()
-    {
-      CreateSut();
-      var model = new OrganizationEditModel();
-      model.Name = "test";
-      model.Id = 0;
-      _mediator.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
-      var result = (ViewResult)_sut.Create();
-      Assert.Equal("Edit", result.ViewName);
-    }
-    #endregion
+        [Fact]
+        public void CreateReturnsCorrectView()
+        {
+            var sut = new OrganizationController(null, null);
+            var result = (ViewResult)sut.Create();
+            Assert.Equal("Edit", result.ViewName);         
+        }
+        #endregion
 
     #region EditTests
 
-    [Fact]
-    public void EditOrganizationShouldReturnBadResultWhenModelIsNull()
-    {
-      CreateSut();
+        [Fact]
+        public async Task EditGetSendsOrganizationEditQueryWithCorrectOrganizationId()
+        {
+            const int organizationId = 1;
+            var mediator = new Mock<IMediator>();
 
-      var result = _sut.Edit(null);
+            var sut = new OrganizationController(mediator.Object, null);
+            await sut.Edit(organizationId);
 
-      Assert.IsType<BadRequestResult>(result);
-    }
+            mediator.Verify(x => x.SendAsync(It.Is<OrganizationEditQueryAsync>(y => y.Id == organizationId)), Times.Once);
+        }
 
-    [Fact]
-    public void EditOrganizationMediatorShouldBeCalledWithAppropriateDataWhenModelStateIsValid()
-    {
-      var mockMediator = new Mock<IMediator>();
-      var controller = new OrganizationController(mockMediator.Object, SuccessValidator());
+        [Fact]
+        public async Task EditGetReturnsHttpNotFoundResult_WhenOrganizationIsNotFound()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationEditQueryAsync>())).ReturnsAsync(null);
 
-      var mockContext = MockControllerContextWithUser(SiteAdmin());
-      controller.ControllerContext = mockContext.Object;
-      mockMediator.Setup(y => y.Send(It.IsAny<OrganizationNameUniqueQuery>())).Returns(() => { return true; });
-      controller.Edit(_organizationEditModel);
+            var sut = new OrganizationController(mediator.Object, null);
+            var result = await sut.Edit(It.IsAny<int>());
 
-      mockMediator.Verify(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == _organizationEditModel)));
-    }
+            Assert.IsType<NotFoundResult>(result);
+        }
 
-    [Fact]
-    public void EditGetShouldReturnHttpNotFoundWhenMediatorReturnsNullForId()
-    {
-      CreateSut();
-
-      _mediator.Setup(x => x.Send(It.Is<OrganizationEditQuery>(y => y.Id == Id))).Returns<OrganizationEditModel>(null);
-
-      var result = _sut.Edit(Id);
-
-      Assert.IsType<NotFoundResult>(result);
-    }
-
-    [Fact]
-    public void EditGetShouldReturnEditViewWhenMediatorReturnsOrganizationEditModel()
-    {
-      CreateSut();
+        [Fact]
+        public async Task EditGetReturnsCorrectViewAndViewModel_WhenMediatorReturnsOrganizationEditModel()
+        {
+            CreateSut();
 
       var model = new OrganizationEditModel();
 
-      _mediator.Setup(x => x.Send(It.Is<OrganizationEditQuery>(y => y.Id == Id))).Returns(model);
+            _mediator.Setup(x => x.SendAsync(It.Is<OrganizationEditQueryAsync>(y => y.Id == Id))).ReturnsAsync(model);
 
-      var result = (ViewResult)_sut.Edit(Id);
+            var result = (ViewResult) await _sut.Edit(Id);
 
       Assert.Equal("Edit", result.ViewName);
       Assert.Same(model, result.ViewData.Model);
     }
 
-    [Fact]
-    public void EditPostShouldHaveValidateAntiForgeryTokenAttribute()
-    {
-      MethodShouldHaveValidateAntiForgeryTokenAttribute("Edit", typeof(OrganizationEditModel));
-    }
+        [Fact]
+        public async Task EditPostReturnsBadRequestResult_WhenModelIsNull()
+        {
+            var sut = new OrganizationController(null, null);
+            var result = await sut.Edit(null);
+            Assert.IsType<BadRequestResult>(result);
+        }
 
-    [Fact]
-    public void EditPostShouldHaveHttpPostAttribute()
-    {
-      MethodShouldHaveHttpPostAttribute("Edit", typeof(OrganizationEditModel));
-    }
+        [Fact (Skip = "NotImplemented")]
+        public void EditPostInvokesOrganizationValidatorsValidateMethodWithTheCorrectOrganizationEditModel_WhenModelIsNotNull()
+        {
+        }
 
-    [Fact]
-    public void EditPostShouldReturnTheEditViewWithTheModelPassedInIfTheModelStateIsInvalid()
-    {
-      var controller = new OrganizationController(new Mock<IMediator>().Object, SuccessValidator());
+        [Fact(Skip = "NotImplemented")]
+        public void EditPostAddsTheCorrectErrorsToModelState_WhenOrganizationValidatorHasErrors_AndModelIsNotNull()
+        {
+        }
 
-      var mockContext = MockControllerContextWithUser(SiteAdmin());
-      controller.ControllerContext = mockContext.Object;
+        [Fact]
+        public async Task EditPostReturnsTheCorrectViewAndViewModelWhenModelStateIsInvalid()
+        {
+            var model = new OrganizationEditModel();
 
-      controller.ModelState.AddModelError("foo", "bar");
+            var controller = new OrganizationController(new Mock<IMediator>().Object, SuccessValidator());
+            controller.ModelState.AddModelError("foo", "bar");
+            var result = (ViewResult)await controller.Edit(model);
 
-      var model = new OrganizationEditModel();
+            Assert.Equal("Edit", result.ViewName);
+            Assert.Same(model, result.ViewData.Model);
+        }
 
-      var result = (ViewResult)controller.Edit(model);
+        [Fact]
+        public async Task EditPostSendsOrganizationNameUniqueQueryWithCorrectParametersWhenModelStateIsValid()
+        {
+            var mediator = new Mock<IMediator>();
+            var organizationEditModel = new OrganizationEditModel { Name = "name", Id = 1 };
 
-      Assert.Equal("Edit", result.ViewName);
-      Assert.Same(model, result.ViewData.Model);
-    }
+            var controller = new OrganizationController(mediator.Object, SuccessValidator());
+            await controller.Edit(organizationEditModel);
 
-    [Fact]
-    public void EditPostShouldRedirectToDetailsWithTheIdFromTheMediatorIfModelStateIsValid()
-    {
-      var mockMediator = new Mock<IMediator>();
+            mediator.Verify(x => x.SendAsync(It.Is<OrganizationNameUniqueQueryAsync>(y => y.OrganizationName == organizationEditModel.Name && y.OrganizationId == organizationEditModel.Id)), 
+                Times.Once());
+        }
 
-      var controller = new OrganizationController(mockMediator.Object, SuccessValidator());
+        [Fact]
+        public async Task EditPostSendsOrganizationEditCommandWithCorrectOrganizationEditModelWhenModelStateIsValidAndOrganizationNameIsUnique()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(y => y.SendAsync(It.IsAny<OrganizationNameUniqueQueryAsync>())).ReturnsAsync(true);
 
-      var mockContext = MockControllerContextWithUser(SiteAdmin());
-      controller.ControllerContext = mockContext.Object;
+            var controller = new OrganizationController(mediator.Object, SuccessValidator());
+            await controller.Edit(_organizationEditModel);
 
-      var model = new OrganizationEditModel();
+            mediator.Verify(x => x.SendAsync(It.Is<EditOrganizationAsync>(y => y.Organization == _organizationEditModel)));
+        }
 
-      mockMediator.Setup(y => y.Send(It.IsAny<OrganizationNameUniqueQuery>())).Returns(() => { return true; });
-      mockMediator.Setup(x => x.Send(It.Is<OrganizationEditCommand>(y => y.Organization == model))).Returns(Id);
+        [Fact]
+        public async Task EditPostRedirectsToCorrectActionWithCorrectData_WhenModelStateIsValid_AndOrganizationNameIsUnique()
+        {
+            var model = new OrganizationEditModel();
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(y => y.SendAsync(It.IsAny<OrganizationNameUniqueQueryAsync>())).ReturnsAsync(true);
+            mockMediator.Setup(x => x.SendAsync(It.Is<EditOrganizationAsync>(y => y.Organization == model))).ReturnsAsync(Id);            
 
-      var result = (RedirectToActionResult)controller.Edit(model);
+            var controller = new OrganizationController(mockMediator.Object, SuccessValidator());
+            var result = (RedirectToActionResult) await controller.Edit(model);
 
       Assert.Equal("Details", result.ActionName);
       Assert.Equal("Admin", result.RouteValues["area"]);
       Assert.Equal(Id, result.RouteValues["id"]);
     }
 
-    #endregion
+        [Fact(Skip = "NotImplemented")]
+        public void EditPostAddsErrorToModelState_WhenModelStateIsValid_AndOrganizationNameIsNotUnique()
+        {
+        }
+
+        [Fact]
+        public void EditPostShouldHaveValidateAntiForgeryTokenAttribute()
+        {
+            MethodShouldHaveValidateAntiForgeryTokenAttribute("Edit", typeof(OrganizationEditModel));
+        }
+
+        [Fact]
+        public void EditPostShouldHaveHttpPostAttribute()
+        {
+            MethodShouldHaveHttpPostAttribute("Edit", typeof(OrganizationEditModel));
+        }
+
+        #endregion
 
     #region DeleteTests
 
-    [Fact]
-    public void DeleteGetShouldHaveActionNameAttributeOfDelete()
-    {
-      MethodShouldHaveCorrectAttribute(DeleteConst, IntType, typeof(ActionNameAttribute), DeleteConst);
-    }
+        [Fact]
+        public void DeleteGetShouldHaveActionNameAttributeOfDelete()
+        {
+            MethodShouldHaveCorrectAttribute(DeleteConst, intType, typeof(ActionNameAttribute), DeleteConst);
+        }
 
-    [Fact]
-    public void DeleteGetWhenIdIsNullItShouldReturnAHttpNotFoundResponseShouldBeReturned()
-    {
-      CreateSut();
+        [Fact]
+        public async Task DeleteGetWhenIdIsNullItShouldReturnAHttpNotFoundResponseShouldBeReturned()
+        {
+            CreateSut();
+            var result = await _sut.Delete(null);
+            Assert.IsType<NotFoundResult>(result);
+        }
 
-      var result = _sut.Delete(null);
+        [Fact]
+        public async Task DeleteGetWhenMediatorReturnsNullAHttpNotFoundResponseShouldBeReturned()
+        {
+            CreateSut();            
+            _mediator.Setup(x => x.SendAsync(It.Is<OrganizationDetailQueryAsync>(y => y.Id == Id))).ReturnsAsync(null);
 
-      Assert.IsType<NotFoundResult>(result);
-    }
-
-    [Fact]
-    public void DeleteGetWhenMediatorReturnsNullAHttpNotFoundResponseShouldBeReturned()
-    {
-      CreateSut();
-
-      _mediator.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns<OrganizationDetailModel>(null);
-
-      var result = _sut.Delete(Id);
+            var result = await _sut.Delete(Id);
 
       Assert.IsType<NotFoundResult>(result);
     }
 
-    [Fact]
-    public void DeleteGetWhenMediatorReturnsAnOrganizationAViewOfThatOrganizationShouldBeShown()
-    {
-      CreateSut();
+        [Fact]
+        public async Task DeleteGetWhenMediatorReturnsAnOrganizationAViewOfThatOrganizationShouldBeShown()
+        {
+            CreateSut();
 
       var organizationModel = new OrganizationDetailModel();
 
-      _mediator.Setup(x => x.Send(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).Returns(organizationModel);
+            _mediator.Setup(x => x.SendAsync(It.Is<OrganizationDetailQueryAsync>(y => y.Id == Id))).ReturnsAsync(organizationModel);
 
-      var result = (ViewResult)_sut.Delete(Id);
+            var result = (ViewResult) await _sut.Delete(Id);
 
       Assert.Same(organizationModel, result.ViewData.Model);
     }
 
-    [Fact]
-    public void DeletePostShouldHaveValidateAntiForgeryTokenAttribute()
-    {
-      MethodShouldHaveValidateAntiForgeryTokenAttribute(DeleteConfirmedConst, IntType);
-    }
+        [Fact]
+        public void DeletePostShouldHaveValidateAntiForgeryTokenAttribute()
+        {
+            MethodShouldHaveValidateAntiForgeryTokenAttribute(DeleteConfirmedConst, intType);
+        }
 
-    [Fact]
-    public void DeletePostShouldHaveActionNameAttributeWithDeleteAsAConstructorArguement()
-    {
-      MethodShouldHaveCorrectAttribute(DeleteConfirmedConst, IntType, typeof(ActionNameAttribute), DeleteConst);
-    }
+        [Fact]
+        public void DeletePostShouldHaveActionNameAttributeWithDeleteAsAConstructorArguement()
+        {
+            MethodShouldHaveCorrectAttribute(DeleteConfirmedConst, intType, typeof(ActionNameAttribute), DeleteConst);
+        }
 
-    [Fact]
-    public void DeletePostShouldHaveHttpPostAttribute()
-    {
-      MethodShouldHaveHttpPostAttribute(DeleteConfirmedConst, IntType);
-    }
+        [Fact]
+        public void DeletePostShouldHaveHttpPostAttribute()
+        {
+            MethodShouldHaveHttpPostAttribute(DeleteConfirmedConst, intType);
+        }
 
-    [Fact]
-    public void DeletePostShouldSendAMessageWithTheCorrectIdUsingTheMediator()
-    {
-      CreateSut();
+        [Fact]
+        public async Task DeletePostShouldSendAMessageWithTheCorrectIdUsingTheMediator()
+        {
+            CreateSut();
+            await _sut.DeleteConfirmed(Id);
+            _mediator.Verify(x => x.SendAsync(It.Is<DeleteOrganizationAsync>(y => y.Id == Id)));
+        }
 
-      _sut.DeleteConfirmed(Id);
-
-      _mediator.Verify(x => x.Send(It.Is<OrganizationDeleteCommand>(y => y.Id == Id)));
-    }
-
-    [Fact]
-    public void DeletePostShouldRedirectToTheIndex()
-    {
-      CreateSut();
-
-      var result = (RedirectToActionResult)_sut.DeleteConfirmed(Id);
-
-      Assert.Equal("Index", result.ActionName);
-    }
+        [Fact]
+        public async Task DeletePostShouldRedirectToTheIndex()
+        {
+            CreateSut();
+            var result = (RedirectToActionResult) await _sut.DeleteConfirmed(Id);
+            Assert.Equal("Index", result.ActionName);
+        }
 
     #endregion
 
+    #region HelperClasses
     private static void CreateSut()
     {
-      _mediator = new Mock<IMediator>();
-      _sut = new OrganizationController(_mediator.Object, SuccessValidator());
+        _mediator = new Mock<IMediator>();
+        _sut = new OrganizationController(_mediator.Object, SuccessValidator());
     }
 
     private static IOrganizationEditModelValidator SuccessValidator()
@@ -376,11 +357,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
       return mock.Object;
     }
 
-    #region PotentialHelperClass
-
-    private static MethodInfo GetMethodInfo(string methodName, Type paramTypePassedToMethod)
-    {
-      CreateSut();
+        private static MethodInfo GetMethodInfo(string methodName, Type paramTypePassedToMethod)
+        {
+            CreateSut();
 
       var typeOfController = _sut.GetType();
 
@@ -428,46 +407,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
       MethodShouldHaveCorrectAttribute(methodName, paramTypePassedToMethod, typeof(ValidateAntiForgeryTokenAttribute));
     }
 
-    private static void MethodShouldHaveHttpPostAttribute(string methodName, Type paramTypePassedToMethod)
-    {
-      MethodShouldHaveCorrectAttribute(methodName, paramTypePassedToMethod, typeof(HttpPostAttribute));
-    }
+        private static void MethodShouldHaveHttpPostAttribute(string methodName, Type paramTypePassedToMethod)
+        {
+            MethodShouldHaveCorrectAttribute(methodName, paramTypePassedToMethod, typeof(HttpPostAttribute));
+        }
+        #endregion
 
-    private static ClaimsPrincipal SiteAdmin()
-    {
-      return new ClaimsPrincipal(
-          new ClaimsIdentity(
-              new[]
-              {
-                        new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
-              }));
-    }
-
-    private static ClaimsPrincipal OrgAdminWithMissingOrgId()
-    {
-      return new ClaimsPrincipal(
-          new ClaimsIdentity(
-              new[]
-              {
-                        new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString())
-              }));
-    }
-
-    private static Mock<ControllerContext> MockControllerContextWithUser(ClaimsPrincipal principle)
-    {
-      var mockHttpContext = new Mock<HttpContext>();
-      mockHttpContext.Setup(mock => mock.User)
-          .Returns(() => principle);
-      var mockContext = new Mock<ControllerContext>();
-
-      mockContext.Object.HttpContext = mockHttpContext.Object;
-      return mockContext;
-    }
-
-    #endregion
     #region "Test Models"
-    public static LocationEditModel BogusAve { get { return new LocationEditModel() { Address1 = "25 Bogus Ave", City = "Agincourt", State = "Ontario", Country = "Canada", PostalCode = "M1T2T9" }; } }
-    public static OrganizationEditModel AgincourtAware { get { return new OrganizationEditModel() { Name = "Agincourt Awareness", Location = BogusAve, WebUrl = "http://www.AgincourtAwareness.ca", LogoUrl = "http://www.AgincourtAwareness.ca/assets/LogoLarge.png" }; } }
+    public static LocationEditModel BogusAve => new LocationEditModel { Address1 = "25 Bogus Ave", City = "Agincourt", State = "Ontario", Country = "Canada", PostalCode = "M1T2T9" };
+    public static OrganizationEditModel AgincourtAware => new OrganizationEditModel { Name = "Agincourt Awareness", Location = BogusAve, WebUrl = "http://www.AgincourtAwareness.ca", LogoUrl = "http://www.AgincourtAwareness.ca/assets/LogoLarge.png" };
     #endregion
-  }
+    }
 }
