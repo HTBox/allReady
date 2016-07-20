@@ -27,37 +27,37 @@ namespace AllReady.UnitTest.ViewModels.Event
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void CreateNewLocationViewModelAndAssignsToLocation_WhenEventsLocationIsNotNull()
+        public void CreateNewLocationViewModelAndAssignToLocation_WhenEventsLocationIsNotNull()
         {
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void AssignIsClosedToTrue_WhenEventsEndDateTimeIsLessThanDateTimeOffsetUtcNow()
+        public void SetIsClosedToTrue_WhenEventsEndDateTimeIsLessThanDateTimeOffsetUtcNow()
         {
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void AssignIsClosedToFalse_WhenEventsEndDateTimeIsGreaterThanDateTimeOffsetUtcNow()
+        public void SetIsClosedToFalse_WhenEventsEndDateTimeIsGreaterThanDateTimeOffsetUtcNow()
         {
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void PopulateTasksWithListOfTaskViewModelsInDescendingOrderByStartDateTime_WhenEventsTasksAreNotNull()
+        public void SetTasksWithListOfTaskViewModelsInDescendingOrderByStartDateTime_WhenEventsTasksAreNotNull()
         {
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void PopulateTasksWithEmptyListOfTaskViewModels_WhenEventsTasksAreNull()
+        public void SetTasksWithEmptyListOfTaskViewModels_WhenEventsTasksAreNull()
         {
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void PopulateRequiredSkillsWithListOfSkillViewModelsForEventsRequiredSkills_WhenEventsRequiredSkillsIsNotNull()
+        public void SetRequiredSkillsToListOfSkillViewModelsForEventsRequiredSkills_WhenEventsRequiredSkillsIsNotNull()
         {
         }
 
         [Fact]
-        public void AssignsNullToRequiredSkills_WhenEventsRequiredSkillsIsNull()
+        public void SetRequiredSkillsToNull_WhenEventsRequiredSkillsIsNull()
         {
         }
     }

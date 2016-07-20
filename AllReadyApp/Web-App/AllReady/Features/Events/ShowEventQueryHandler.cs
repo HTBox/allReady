@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Security.Claims;
 using AllReady.Models;
 using AllReady.ViewModels.Event;
 using AllReady.ViewModels.Shared;
 using AllReady.ViewModels.Task;
 using MediatR;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.Features.Event
 {
-  public class ShowEventQueryHandler : IRequestHandler<ShowEventQuery, EventViewModel>
+    public class ShowEventQueryHandler : IRequestHandler<ShowEventQuery, EventViewModel>
   {
     private readonly IAllReadyDataAccess _dataAccess;
     private SignInManager<ApplicationUser> _signInManager;
@@ -32,7 +32,7 @@ namespace AllReady.Features.Event
 
             var eventViewModel = new EventViewModel(@event);
 
-            var userId = message.User.GetUserId();
+            var userId = _userManager.GetUserId(message.User);
             var appUser = _dataAccess.GetUser(userId);
             eventViewModel.UserId = userId;
             eventViewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();

@@ -14,48 +14,48 @@ namespace AllReady.ViewModels.Event
         {
         }
 
-        public EventViewModel(Models.Event campaignEvent)
+        public EventViewModel(Models.Event @event)
         {
-            Id = campaignEvent.Id;
-            if (campaignEvent.Campaign != null)
+            Id = @event.Id;
+            if (@event.Campaign != null)
             {
-                CampaignId = campaignEvent.Campaign.Id;
-                CampaignName = campaignEvent.Campaign.Name;
-                TimeZoneId = campaignEvent.Campaign.TimeZoneId;
-                if (campaignEvent.Campaign.ManagingOrganization != null)
+                CampaignId = @event.Campaign.Id;
+                CampaignName = @event.Campaign.Name;
+                TimeZoneId = @event.Campaign.TimeZoneId;
+                if (@event.Campaign.ManagingOrganization != null)
                 {
-                    OrganizationId = campaignEvent.Campaign.ManagingOrganization.Id;
-                    OrganizationName = campaignEvent.Campaign.ManagingOrganization.Name;
-                    HasPrivacyPolicy = !string.IsNullOrEmpty(campaignEvent.Campaign.ManagingOrganization.PrivacyPolicy);
+                    OrganizationId = @event.Campaign.ManagingOrganization.Id;
+                    OrganizationName = @event.Campaign.ManagingOrganization.Name;
+                    HasPrivacyPolicy = !string.IsNullOrEmpty(@event.Campaign.ManagingOrganization.PrivacyPolicy);
                 }
             }
 
-            Title = campaignEvent.Name;
-            Description = campaignEvent.Description;
-            EventType = campaignEvent.EventType;
-            StartDateTime = campaignEvent.StartDateTime;
-            EndDateTime = campaignEvent.EndDateTime;
+            Title = @event.Name;
+            Description = @event.Description;
+            EventType = @event.EventType;
+            StartDateTime = @event.StartDateTime;
+            EndDateTime = @event.EndDateTime;
 
-            if (campaignEvent.Location != null)
+            if (@event.Location != null)
             {
-                Location = new LocationViewModel(campaignEvent.Location);
+                Location = new LocationViewModel(@event.Location);
             }
 
             IsClosed = EndDateTime.UtcDateTime < DateTimeOffset.UtcNow;
 
-            ImageUrl = campaignEvent.ImageUrl;
+            ImageUrl = @event.ImageUrl;
 
             //TODO Location
-            Tasks = campaignEvent.Tasks != null
-                 ? new List<TaskViewModel>(campaignEvent.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
+            Tasks = @event.Tasks != null
+                 ? new List<TaskViewModel>(@event.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
                  : new List<TaskViewModel>();
 
             SignupModel = new EventSignupViewModel();
 
-            RequiredSkills = campaignEvent.RequiredSkills?.Select(acsk => new SkillViewModel(acsk.Skill)).ToList();
-            IsLimitVolunteers = campaignEvent.IsLimitVolunteers;
-            IsAllowWaitList = campaignEvent.IsAllowWaitList;
-            Headline = campaignEvent.Headline;
+            RequiredSkills = @event.RequiredSkills?.Select(acsk => new SkillViewModel(acsk.Skill)).ToList();
+            IsLimitVolunteers = @event.IsLimitVolunteers;
+            IsAllowWaitList = @event.IsAllowWaitList;
+            Headline = @event.Headline;
         }
 
         public int Id { get; set; }
