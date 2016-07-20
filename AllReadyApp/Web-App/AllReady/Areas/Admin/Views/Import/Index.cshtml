@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Import Data";
+}
+
+@if (ViewBag.ImportSuccess == true)
+{
+    <div class="alert alert-success">
+        <strong>Success!</strong> Your file has been uploaded.
+    </div>
+}
+
+<h1>Import Request Data from Red Cross</h1>
+
+<p>
+    This import allows you to import request data from the American Red
+    Cross. Each row of data will become a request in the system. Requests
+    can only be imported one time; each row will be processed independently
+    and errors will be displayed on the next page. Any errant row will
+    not be imported, thus it is safe to reimport your file after updating
+    any incorrect rows.
+</p>
+<p>
+    Each line in the file must contain the following header, with the data 
+    on separate lines in CSV format:
+</p>
+
+<pre>
+    "id","name","address","city","state","zip","phone","email","date created","region"
+</pre>
+
+<form method="post" asp-action="Index" asp-controller="Import" enctype="multipart/form-data">
+    <label class="btn btn-default btn-file">
+        Browse <input type="file" name="file" style="display: none;" onchange="$('#upload-file-info').html($(this).val());">
+    </label>
+    <span class='label label-info label-lg' id="upload-file-info"></span>
+     
+    <p><input class="btn btn-success" type="submit" value="Upload" /></p>
+</form>
