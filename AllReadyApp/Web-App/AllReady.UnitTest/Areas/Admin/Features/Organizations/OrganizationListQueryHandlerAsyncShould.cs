@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
@@ -7,12 +7,12 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 {
-    public class OrganizationListQueryHandlerShould : InMemoryContextTest
+    public class OrganizationListQueryHandlerAsyncShould : InMemoryContextTest
     {
         [Fact(Skip = "RTM Broken Tests")]
-        public void ReturnAllOrganizationsAsOrganizationSummaryModels()
+        public async Task ReturnAllOrganizationsAsOrganizationSummaryModels()
         {
-            var message = new OrganizationListQuery();
+            var message = new OrganizationListQueryAysnc();
 
             var organizations = new[]
             {
@@ -24,8 +24,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
             context.Organizations.AddRange(organizations);
             context.SaveChanges();
 
-            var sut = new OrganizationListQueryHandler(context);
-            var result = sut.Handle(message).ToList();
+            var sut = new OrganizationListQueryHandlerAsync(context);
+            var result = await sut.Handle(message);
 
             Assert.IsType<List<OrganizationSummaryModel>>(result);
         }
