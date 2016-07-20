@@ -6,7 +6,6 @@ namespace AllReady.ViewModels.Shared
     {
         public LocationViewModel()
         {
-
         }
 
         public LocationViewModel(Location location)
@@ -38,6 +37,23 @@ namespace AllReady.ViewModels.Shared
 
                 return string.Empty;
             }
+        }
+    }
+
+    public static class LocationViewModelExtensions
+    {
+        public static Location ToModel(this LocationViewModel location)
+        {
+            var value = new Location
+            {
+                Address1 = location.Address1,
+                Address2 = location.Address2,
+                City = location.City,
+                PostalCode = location.PostalCode,
+                State = location.State,
+                Country = "TODO:  Put country in both objects"
+            };
+            return value;
         }
     }
 }
