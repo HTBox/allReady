@@ -112,7 +112,7 @@ namespace AllReady.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = "Account", Values = new { userId = user.Id, code = code },
+            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = "Account", Values = new { userId = user.Id, code },
                 Protocol = HttpContext.Request.Scheme });
 
             await _mediator.SendAsync(new SendConfirmAccountEmail { Email = user.Email, CallbackUrl = callbackUrl });

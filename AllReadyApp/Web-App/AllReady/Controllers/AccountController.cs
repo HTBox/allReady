@@ -5,7 +5,6 @@ using AllReady.Features.Login;
 using AllReady.Features.Manage;
 using AllReady.Models;
 using AllReady.Security;
-using AllReady.Services;
 using AllReady.ViewModels.Account;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -16,29 +15,26 @@ using Microsoft.Extensions.Options;
 
 namespace AllReady.Controllers
 {
-  [Authorize]
-  public class AccountController : Controller
-  {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly IEmailSender _emailSender;
-    private readonly IOptions<GeneralSettings> _generalSettings;
-    private readonly IMediator _mediator;
-
-    public AccountController(
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
-        IEmailSender emailSender,
-        IOptions<GeneralSettings> generalSettings,
-        IMediator mediator
-        )
+    [Authorize]
+    public class AccountController : Controller
     {
-      _emailSender = emailSender;
-      _userManager = userManager;
-      _signInManager = signInManager;
-      _generalSettings = generalSettings;
-      _mediator = mediator;
-    }
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IOptions<GeneralSettings> _generalSettings;
+        private readonly IMediator _mediator;
+
+        public AccountController(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            IOptions<GeneralSettings> generalSettings,
+            IMediator mediator
+            )
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _generalSettings = generalSettings;
+            _mediator = mediator;
+        }
 
     // GET: /Account/Login
     [HttpGet]
@@ -126,11 +122,10 @@ namespace AllReady.Controllers
           TimeZoneId = _generalSettings.Value.DefaultTimeZone
         };
 
-        var result = await _userManager.CreateAsync(user, model.Password);
-        if (result.Succeeded)
-        {
-          // Send an email with this link
-          var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
           var callbackUrl = Url.Action(new UrlActionContext
           {
@@ -141,8 +136,7 @@ namespace AllReady.Controllers
           }
           );
 
-          await _emailSender.SendEmailAsync(model.Email, "Confirm your allReady account",
-              $"Please confirm your allReady account by clicking this link: <a href=\"{callbackUrl}\">link</a>");
+                    await _mediator.SendAsync(new SendConfirmAccountEmail { Email = user.Email, CallbackUrl = callbackUrl });
 
           var changePhoneNumberToken = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
           await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = model.PhoneNumber, Token = changePhoneNumberToken });
@@ -207,31 +201,25 @@ namespace AllReady.Controllers
       return View();
     }
 
-    // POST: /Account/ForgotPassword
-    [HttpPost]
-    [AllowAnonymous]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
-    {
-      if (ModelState.IsValid)
-      {
-        var user = await _userManager.FindByNameAsync(model.Email);
-        if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+        // POST: /Account/ForgotPassword
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
-          // Don't reveal that the user does not exist or is not confirmed
-          return View("ForgotPasswordConfirmation");
-        }
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByNameAsync(model.Email);
+                if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
+                {
+                    // Don't reveal that the user does not exist or is not confirmed
+                    return View("ForgotPasswordConfirmation");
+                }
 
-        //Send an email with this link
-        var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var callbackUrl = Url.Action(new UrlActionContext
-        {
-          Action = nameof(ResetPassword),
-          Controller = "Account",
-          Values = new { userId = user.Id, code = code },
-          Protocol = HttpContext.Request.Scheme
-        });
-        await _emailSender.SendEmailAsync(model.Email, "Reset allReady Password", $"Please reset your allReady password by clicking here: <a href=\"{callbackUrl}\">link</a>");
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ResetPassword), Controller = "Account", Values = new { userId = user.Id, code },
+                    Protocol = HttpContext.Request.Scheme });
+                await _mediator.SendAsync(new SendResetPasswordEmail { Email = model.Email, CallbackUrl = callbackUrl });
 
         return View("ForgotPasswordConfirmation");
       }
@@ -340,14 +328,13 @@ namespace AllReady.Controllers
         return RedirectToAction(nameof(ManageController.Index), "Manage");
       }
 
-      if (ModelState.IsValid)
-      {
-        // Get the information about the user from the external login provider
-        var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
-        if (externalLoginInfo == null)
-        {
-          return View("ExternalLoginFailure");
-        }
+            if (ModelState.IsValid)
+            {
+                var externalLoginInfo = await _signInManager.GetExternalLoginInfoAsync();
+                if (externalLoginInfo == null)
+                {
+                    return View("ExternalLoginFailure");
+                }
 
         var user = new ApplicationUser
         {
@@ -359,16 +346,32 @@ namespace AllReady.Controllers
           PhoneNumber = model.PhoneNumber
         };
 
-        var result = await _userManager.CreateAsync(user);
-        if (result.Succeeded)
-        {
-          result = await _userManager.AddLoginAsync(user, externalLoginInfo);
-          if (result.Succeeded)
-          {
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            return RedirectToLocal(returnUrl, user);
-          }
-        }
+                var result = await _userManager.CreateAsync(user);
+                if (result.Succeeded)
+                {
+                    result = await _userManager.AddLoginAsync(user, externalLoginInfo);
+                    if (result.Succeeded)
+                    {
+                        var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        var callbackUrl = Url.Action(new UrlActionContext
+                        {
+                            Action = nameof(ConfirmEmail),
+                            Controller = "Account",
+                            Values = new { userId = user.Id, token = emailConfirmationToken },
+                            Protocol = HttpContext.Request.Scheme
+                        });
+
+                        await _mediator.SendAsync(new SendConfirmAccountEmail { Email = user.Email, CallbackUrl = callbackUrl });
+
+                        var changePhoneNumberToken = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
+                        await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = model.PhoneNumber, Token = changePhoneNumberToken });
+
+                        await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+
+                        return RedirectToLocal(returnUrl, user);
+                    }
+                }
 
         AddErrorsToModelState(result);
       }
@@ -405,18 +408,30 @@ namespace AllReady.Controllers
       return RedirectToAction(nameof(HomeController.Index), "Home");
     }
 
-    private static void RetrieveFirstAndLastNameFromExternalPrincipal(ExternalLoginInfo externalLoginInfo, out string firstName, out string lastName)
-    {
-      var name = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
+        private static void RetrieveFirstAndLastNameFromExternalPrincipal(ExternalLoginInfo externalLoginInfo, out string firstName, out string lastName)
+        {
+            firstName = string.Empty;
+            lastName = string.Empty;
 
-      firstName = string.Empty;
-      lastName = string.Empty;
-      if (string.IsNullOrEmpty(name))
-        return;
+            if (externalLoginInfo.LoginProvider == "Google")
+            {
+                firstName = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.GivenName);
+                lastName = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.Surname);
+            }
 
-      var array = name.Split(' ');
-      firstName = array[0];
-      lastName = array[1];
+            if (externalLoginInfo.LoginProvider == "Facebook" || externalLoginInfo.LoginProvider == "Microsoft")
+            {
+                var name = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
+                if (string.IsNullOrEmpty(name))
+                    return;
+
+                var array = name.Split(' ');
+                if (array.Length < 2)
+                    return;
+
+                firstName = array[0];
+                lastName = array[1];
+            }
+        }
     }
-  }
 }

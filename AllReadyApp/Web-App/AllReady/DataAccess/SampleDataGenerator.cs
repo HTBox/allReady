@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AllReady.Models;
 using AllReady.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
-namespace AllReady.Models
+namespace AllReady.DataAccess
 {
     public class SampleDataGenerator
     {
@@ -95,13 +96,20 @@ namespace AllReady.Models
 
             #region Campaign
 
-            Campaign firePrev = new Campaign()
+            // Campaign 1
+
+            var firePrev = new Campaign()
             {
                 Name = "Neighborhood Fire Prevention Days",
                 ManagingOrganization = htb,
-                TimeZoneId = "Central Standard Time"
+                TimeZoneId = "Central Standard Time",
+                StartDateTime = DateTime.UtcNow.AddMonths(-1),
+                EndDateTime = DateTime.UtcNow.AddMonths(3)
             };
             htb.Campaigns.Add(firePrev);
+
+            // Campaign 2
+
             var smokeDetImpact = new CampaignImpact
             {
                 ImpactType = ImpactType.Numeric,
@@ -111,7 +119,8 @@ namespace AllReady.Models
                 TextualImpactGoal = "Total number of smoke detectors installed."
             };
             _context.CampaignImpacts.Add(smokeDetImpact);
-            Campaign smokeDet = new Campaign()
+
+            var smokeDet = new Campaign()
             {
                 Name = "Working Smoke Detectors Save Lives",
                 ManagingOrganization = htb,
@@ -121,34 +130,55 @@ namespace AllReady.Models
                 TimeZoneId = "Central Standard Time"
             };
             htb.Campaigns.Add(smokeDet);
-            Campaign financial = new Campaign()
+
+            // Campaign 3
+
+            var financial = new Campaign()
             {
                 Name = "Everyday Financial Safety",
                 ManagingOrganization = htb,
-                TimeZoneId = "Central Standard Time"
+                TimeZoneId = "Central Standard Time",
+                StartDateTime = DateTime.Today.AddMonths(-1),
+                EndDateTime = DateTime.Today.AddMonths(1)
             };
             htb.Campaigns.Add(financial);
-            Campaign safetyKit = new Campaign()
+
+            // Campaign 4
+
+            var safetyKit = new Campaign()
             {
                 Name = "Simple Safety Kit Building",
                 ManagingOrganization = htb,
-                TimeZoneId = "Central Standard Time"
+                TimeZoneId = "Central Standard Time",
+                StartDateTime = DateTime.Today.AddMonths(-1),
+                EndDateTime = DateTime.Today.AddMonths(2)
             };
             htb.Campaigns.Add(safetyKit);
-            Campaign carSafe = new Campaign()
+
+            // Campaign 5
+
+            var carSafe = new Campaign()
             {
                 Name = "Family Safety In the Car",
                 ManagingOrganization = htb,
-                TimeZoneId = "Central Standard Time"
+                TimeZoneId = "Central Standard Time",
+                StartDateTime = DateTime.Today.AddMonths(-1),
+                EndDateTime = DateTime.Today.AddMonths(2)
             };
             htb.Campaigns.Add(carSafe);
-            Campaign escapePlan = new Campaign()
+
+            // Campaign 6
+
+            var escapePlan = new Campaign()
             {
                 Name = "Be Ready to Get Out: Have a Home Escape Plan",
                 ManagingOrganization = htb,
-                TimeZoneId = "Central Standard Time"
+                TimeZoneId = "Central Standard Time",
+                StartDateTime = DateTime.Today.AddMonths(-6),
+                EndDateTime = DateTime.Today.AddMonths(6)
             };
             htb.Campaigns.Add(escapePlan);
+
             #endregion
 
             #region Event
