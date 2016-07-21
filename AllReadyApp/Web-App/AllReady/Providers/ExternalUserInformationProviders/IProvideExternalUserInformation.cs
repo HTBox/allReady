@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
-namespace AllReady.Providers
+namespace AllReady.Providers.ExternalUserInformationProviders
 {
     public interface IProvideExternalUserInformation
     {

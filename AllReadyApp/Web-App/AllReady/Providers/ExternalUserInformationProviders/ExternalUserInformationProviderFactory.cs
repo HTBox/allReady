@@ -1,7 +1,7 @@
-﻿using AllReady.Providers.ExternalUserInformationProviders;
+﻿using AllReady.Providers.ExternalUserInformationProviders.Providers;
 using Microsoft.Extensions.Options;
 
-namespace AllReady.Providers
+namespace AllReady.Providers.ExternalUserInformationProviders
 {
     public interface IExternalUserInformationProviderFactory
     {

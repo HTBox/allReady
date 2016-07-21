@@ -4,7 +4,7 @@ using AllReady.Areas.Admin.Controllers;
 using AllReady.Features.Login;
 using AllReady.Features.Manage;
 using AllReady.Models;
-using AllReady.Providers;
+using AllReady.Providers.ExternalUserInformationProviders;
 using AllReady.Security;
 using AllReady.ViewModels.Account;
 using MediatR;
@@ -225,12 +225,12 @@ namespace AllReady.Controllers
                     Protocol = HttpContext.Request.Scheme });
                 await _mediator.SendAsync(new SendResetPasswordEmail { Email = model.Email, CallbackUrl = callbackUrl });
 
-        return View("ForgotPasswordConfirmation");
-      }
+                return View("ForgotPasswordConfirmation");
+            }
 
-      // If we got this far, something failed, redisplay form
-      return View(model);
-    }
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
 
     // GET: /Account/ResetPassword
     [HttpGet]

@@ -5,7 +5,7 @@ using AllReady.Areas.Admin.Models.Validators;
 using AllReady.Controllers;
 using AllReady.DataAccess;
 using AllReady.Models;
-using AllReady.Providers;
+using AllReady.Providers.ExternalUserInformationProviders;
 using AllReady.Security;
 using AllReady.Services;
 using Autofac;

@@ -968,20 +968,10 @@ namespace AllReady.UnitTest.Controllers
             userManager.Verify(m => m.FindByNameAsync(email), Times.Once);
         }
 
-            var sut = new AccountController(userManager.Object, null, null, null);
-            await sut.ResetPassword(vm);
-
-            var sut = new AccountController(userManager.Object, null, null, null, null);
-            var result = await sut.ResetPassword(vm) as RedirectToActionResult;
-
-            Assert.Equal("ResetPasswordConfirmation", result.ActionName);
-        }
-
         [Fact]
         public async Task ResetPasswordPostInvokesResetPasswordAsyncWithCorrectParameters_WhenUserIsNotNull_AndModelStateIsValid()
         {
             const string email = "user@domain.tld";
-
             var vm = new ResetPasswordViewModel
             {
                 Email = email,
@@ -1610,13 +1600,13 @@ namespace AllReady.UnitTest.Controllers
         private static AccountController AccountController(Microsoft.AspNetCore.Identity.SignInResult signInResult = default(Microsoft.AspNetCore.Identity.SignInResult))
         {
             var userManagerMock = CreateUserManagerMock();
-
-           
             var signInManagerMock = CreateSignInManagerMock(userManagerMock);
             signInManagerMock.Setup(mock => mock.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
-                //.ReturnsAsync(signInResult == default(SignInResult) ? SignInResult.Success : signInResult);
                 .ReturnsAsync(signInResult == default(Microsoft.AspNetCore.Identity.SignInResult) ? Microsoft.AspNetCore.Identity.SignInResult.Success : signInResult);
 
+            var urlHelperMock = new Mock<IUrlHelper>();
+            urlHelperMock.Setup(mock => mock.IsLocalUrl(It.Is<string>(x => x.StartsWith("http")))).Returns(false);
+            urlHelperMock.Setup(mock => mock.IsLocalUrl(It.Is<string>(x => !x.StartsWith("http")))).Returns(true);
             var controller = new AccountController(userManagerMock.Object, signInManagerMock.Object, Mock.Of<IOptions<GeneralSettings>>(), Mock.Of<IMediator>(), null)
             {
                 Url = urlHelperMock.Object
@@ -1625,14 +1615,10 @@ namespace AllReady.UnitTest.Controllers
             return controller;
         }
 
-        //private static Mock<UserManager<ApplicationUser>> CreateApplicationUserMock()
-        //{
-        //    return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
-        //}
-
-        private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock() =>
-            //new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null, null);
-            new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
+        private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock()
+        {
+            return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
+        }
 
         private static Mock<SignInManager<ApplicationUser>> CreateSignInManagerMock(Mock<UserManager<ApplicationUser>> userManager)
         {

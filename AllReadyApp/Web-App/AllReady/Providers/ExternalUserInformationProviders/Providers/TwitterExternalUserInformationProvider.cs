@@ -5,7 +5,7 @@ using LinqToTwitter;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
-namespace AllReady.Providers.ExternalUserInformationProviders
+namespace AllReady.Providers.ExternalUserInformationProviders.Providers
 {
     public class TwitterExternalUserInformationProvider : IProvideExternalUserInformation
     {
