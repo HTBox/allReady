@@ -1,4 +1,4 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Security;
 using AllReady.Models;
@@ -6,6 +6,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Extensions;
+using AllReady.Features.Event;
+using AllReady.Features.Manage;
 using AllReady.Features.Tasks;
 using AllReady.ViewModels.Shared;
 using AllReady.ViewModels.Task;
@@ -13,224 +15,311 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using DeleteTaskCommandAsync = AllReady.Features.Tasks.DeleteTaskCommandAsync;
 using Microsoft.AspNetCore.Identity;
+using System.Linq;
 
 namespace AllReady.Controllers
 {
-  [Route("api/task")]
-  [Produces("application/json")]
-  public class TaskApiController : Controller
-  {
-    private readonly IMediator _mediator;
-    private readonly IDetermineIfATaskIsEditable _determineIfATaskIsEditable;
-
-    public const string FAILED_SIGNUP_TASK_CLOSED = "Signup failed - Task is closed";
-    public const string FAILED_SIGNUP_EVENT_NOT_FOUND = "Signup failed - The event could not be found";
-    public const string FAILED_SIGNUP_TASK_NOT_FOUND = "Signup failed - The task could not be found";
-    public const string FAILED_SIGNUP_UNKOWN_ERROR = "Unkown error";
-    private UserManager<ApplicationUser> _userManager;
-
-    public TaskApiController(IMediator mediator, IDetermineIfATaskIsEditable determineIfATaskIsEditable, UserManager<ApplicationUser> userManager)
+    [Route("api/task")]
+    [Produces("application/json")]
+    public class TaskApiController : Controller
     {
-      _mediator = mediator;
-      _determineIfATaskIsEditable = determineIfATaskIsEditable;
-      _userManager = userManager;
-    }
+        private readonly IMediator _mediator;
+        private readonly IDetermineIfATaskIsEditable _determineIfATaskIsEditable;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Post([FromBody]TaskViewModel task)
-    {
-      var allReadyTask = task.ToModel(_mediator);
-      if (allReadyTask == null)
-      {
-        return BadRequest("Should have found a matching event Id");
-      }
+        public TaskApiController(IMediator mediator, IDetermineIfATaskIsEditable determineIfATaskIsEditable, UserManager<ApplicationUser> userManager)
+        {
+          _mediator = mediator;
+          _determineIfATaskIsEditable = determineIfATaskIsEditable;
+          _userManager = userManager;
+        }
 
-      var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask, _userManager);
-      if (!hasPermissions)
-      {
-        return Unauthorized();
-      }
+        //TODO: where is this being called from?
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Post([FromBody]TaskViewModel task)
+        {
+            var allReadyTask = ToModel(task, _mediator);
+            if (allReadyTask == null)
+            {
+                return BadRequest("Should have found a matching event Id");
+            }
 
-      if (IfTaskExists(task))
-      {
-        return BadRequest();
-      }
+            var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask, _userManager);
+            if (!hasPermissions)
+            {
+                return Unauthorized();
+            }
 
-      await _mediator.SendAsync(new AddTaskCommandAsync { AllReadyTask = allReadyTask });
+            if (IfTaskExists(task))
+            {
+                return BadRequest();
+            }
 
-      //http://stackoverflow.com/questions/1860645/create-request-with-post-which-response-codes-200-or-201-and-content
-      return Created("", allReadyTask);
-    }
+            await _mediator.SendAsync(new AddTaskCommandAsync { AllReadyTask = allReadyTask });
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody]TaskViewModel value)
-    {
-      var allReadyTask = GetTaskBy(id);
+            //http://stackoverflow.com/questions/1860645/create-request-with-post-which-response-codes-200-or-201-and-content
+            return Created("", allReadyTask);
+        }
 
-      if (allReadyTask == null)
-        return BadRequest();
+        public AllReadyTask ToModel(TaskViewModel taskViewModel, IMediator mediator)
+        {
+            var @event = mediator.Send(new EventByIdQuery { EventId = taskViewModel.EventId });
+            if (@event == null)
+            {
+                return null;
+            }
 
-      var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask, _userManager);
-      if (!hasPermissions)
-        return Unauthorized();
+            var newTask = true;
+            AllReadyTask allReadyTask;
+            if (taskViewModel.Id == 0)
+            {
+                allReadyTask = new AllReadyTask();
+            }
+            else
+            {
+                allReadyTask = mediator.Send(new TaskByTaskIdQuery { TaskId = taskViewModel.Id });
+                newTask = false;
+            }
 
+            allReadyTask.Id = taskViewModel.Id;
+            allReadyTask.Description = taskViewModel.Description;
+            allReadyTask.Event = @event;
+            allReadyTask.EndDateTime = taskViewModel.EndDateTime.UtcDateTime;
+            allReadyTask.StartDateTime = taskViewModel.StartDateTime.UtcDateTime;
+            allReadyTask.Name = taskViewModel.Name;
+            allReadyTask.RequiredSkills = allReadyTask.RequiredSkills ?? new List<TaskSkill>();
+            taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();
+            ////Remove old skills
+            //dbtask.RequiredSkills.RemoveAll(ts => !taskViewModel.RequiredSkills.Any(s => ts.SkillId == s));
+            ////Add new skills
+            //dbtask.RequiredSkills.AddRange(taskViewModel.RequiredSkills
+            //    .Where(rs => !dbtask.RequiredSkills.Any(ts => ts.SkillId == rs))
+            //    .Select(rs => new TaskSkill() { SkillId = rs, TaskId = taskViewModel.Id }));
+
+            // Workaround:  POST is bringing in empty AssignedVolunteers.  Clean this up. Discussing w/ Kiran Challa.
+            // Workaround: the if statement is superflous, and should go away once we have the proper fix referenced above.
+            if (taskViewModel.AssignedVolunteers != null)
+            {
+                var bogusAssignedVolunteers = (from assignedVolunteer in taskViewModel.AssignedVolunteers
+                                               where string.IsNullOrEmpty(assignedVolunteer.UserId)
+                                               select assignedVolunteer).ToList();
+                foreach (var bogus in bogusAssignedVolunteers)
+                {
+                    taskViewModel.AssignedVolunteers.Remove(bogus);
+                }
+            }
+            // end workaround
+
+            if (taskViewModel.AssignedVolunteers != null && taskViewModel.AssignedVolunteers.Count > 0)
+            {
+                var taskUsersList = taskViewModel.AssignedVolunteers.Select(tvm => new TaskSignup
+                {
+                    Task = allReadyTask,
+                    User = mediator.Send(new UserByUserIdQuery { UserId = tvm.UserId })
+                }).ToList();
+
+                // We may be updating an existing task
+                if (newTask || allReadyTask.AssignedVolunteers.Count == 0)
+                {
+                    allReadyTask.AssignedVolunteers = taskUsersList;
+                }
+                else
+                {
+                    // Can probably rewrite this more efficiently.
+                    foreach (var taskUsers in taskUsersList)
+                    {
+                        if (!(from entry in allReadyTask.AssignedVolunteers
+                              where entry.User.Id == taskUsers.User.Id
+                              select entry).Any())
+                        {
+                            allReadyTask.AssignedVolunteers.Add(taskUsers);
+                        }
+                    }
+                }
+            }
+            return allReadyTask;
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody]TaskViewModel value)
+        {
+            var allReadyTask = GetTaskBy(id);
+            if (allReadyTask == null)
+            {
+                return BadRequest();
+            }
+            
+            var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask, _userManager);
+            if (!hasPermissions)
+            {
+                return Unauthorized();
+            }
+            
             // Changing all the potential properties that the VM could have modified.
             allReadyTask.Name = value.Name;
             allReadyTask.Description = value.Description;
             allReadyTask.StartDateTime = value.StartDateTime.UtcDateTime;
             allReadyTask.EndDateTime = value.EndDateTime.UtcDateTime;
 
-      await _mediator.SendAsync(new UpdateTaskCommandAsync { AllReadyTask = allReadyTask });
+            await _mediator.SendAsync(new UpdateTaskCommandAsync { AllReadyTask = allReadyTask });
 
-      //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
-      return NoContent();
+            //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var allReadyTask = GetTaskBy(id);
+            if (allReadyTask == null)
+            {
+                return BadRequest();
+            }
+            
+            var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask, _userManager);
+            if (!hasPermissions)
+            {
+                return Unauthorized();
+            }
+            
+            await _mediator.SendAsync(new DeleteTaskCommandAsync { TaskId = allReadyTask.Id });
+
+            //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
+            return Ok();
+        }
+
+        //called from AllReady\wwwroot\js\event.js
+        [ValidateAntiForgeryToken]
+        [HttpPost("signup")]
+        [Authorize]
+        [Produces("application/json")]
+        public async Task<ActionResult> RegisterTask(EventSignupViewModel signupModel)
+        {
+            if (signupModel == null)
+            {
+                return BadRequest();
+            }
+            
+            if (!ModelState.IsValid)
+            {
+                // this condition should never be hit because client side validation is being performed
+                // but just to cover the bases, if this does happen send the erros to the client
+                return Json(new { errors = ModelState.GetErrorMessages() });
+            }
+
+            var result = await _mediator.SendAsync(new TaskSignupCommandAsync { TaskSignupModel = signupModel });
+
+            switch (result.Status)
+            {
+            case TaskSignupResult.SUCCESS:
+              return Json(new
+              {
+                isSuccess = true,
+                task = result.Task == null ? null : new TaskViewModel(result.Task, signupModel.UserId)
+              });
+
+            case TaskSignupResult.FAILURE_CLOSEDTASK:
+              return Json(new
+              {
+                isSuccess = false,
+                errors = new[] { "Signup failed - Task is closed" },
+              });
+
+            case TaskSignupResult.FAILURE_EVENTNOTFOUND:
+              return Json(new
+              {
+                isSuccess = false,
+                errors = new[] { "Signup failed - The event could not be found" },
+              });
+
+            case TaskSignupResult.FAILURE_TASKNOTFOUND:
+              return Json(new
+              {
+                isSuccess = false,
+                errors = new[] { "Signup failed - The task could not be found" },
+              });
+
+            default:
+              return Json(new
+              {
+                isSuccess = false,
+                errors = new[] { "Unkown error" },
+              });
+            }
+        }
+
+        //called from AllReady\wwwroot\js\event.js
+        [HttpDelete("{id}/signup")]
+        [Authorize]
+        public async Task<JsonResult> UnregisterTask(int id)
+        {
+            var userId = _userManager.GetUserId(User);
+
+            var result = await _mediator.SendAsync(new TaskUnenrollCommand { TaskId = id, UserId = userId });
+
+            return Json(new
+            {
+                result.Status,
+                Task = result.Task == null ? null : new TaskViewModel(result.Task, userId)
+            });
+        }
+
+        //called from AllReady\wwwroot\js\event.js
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("changestatus")]
+        [Authorize]
+        public async Task<JsonResult> ChangeStatus(TaskChangeModel model)
+        {
+            var result = await _mediator.SendAsync(new TaskStatusChangeCommandAsync { TaskStatus = model.Status, TaskId = model.TaskId, UserId = model.UserId, TaskStatusDescription = model.StatusDescription });
+            return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, model.UserId) });
+        }
+
+        private bool IfTaskExists(TaskViewModel task)
+        {
+            return GetTaskBy(task.Id) != null;
+        }
+
+        private AllReadyTask GetTaskBy(int taskId)
+        {
+            return _mediator.Send(new TaskByTaskIdQuery { TaskId = taskId });
+        }
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public interface IDetermineIfATaskIsEditable
     {
-      var allReadyTask = GetTaskBy(id);
-
-      if (allReadyTask == null)
-        return BadRequest();
-
-      var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask, _userManager);
-      if (!hasPermissions)
-        return Unauthorized();
-
-      await _mediator.SendAsync(new DeleteTaskCommandAsync { TaskId = allReadyTask.Id });
-
-      //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
-      return Ok();
+        bool For(ClaimsPrincipal user, AllReadyTask task, UserManager<ApplicationUser> userManager);
     }
 
-    [ValidateAntiForgeryToken]
-    [HttpPost("signup")]
-    [Authorize]
-    [Produces("application/json")]
-    public async Task<ActionResult> RegisterTask(EventSignupViewModel signupModel)
+    public class DetermineIfATaskIsEditable : IDetermineIfATaskIsEditable
     {
-      if (signupModel == null)
-        return BadRequest();
+        public bool For(ClaimsPrincipal user, AllReadyTask task, UserManager<ApplicationUser> userManager)
+        {
+            var userId = userManager.GetUserId(user);
 
-      if (!ModelState.IsValid)
-      {
-        // this condition should never be hit because client side validation is being performed
-        // but just to cover the bases, if this does happen send the erros to the client
-        return Json(new { errors = ModelState.GetErrorMessages() });
-      }
+            if (user.IsUserType(UserType.SiteAdmin))
+            {
+                return true;
+            }
 
-      var result = await _mediator.SendAsync(new TaskSignupCommandAsync { TaskSignupModel = signupModel });
+            if (user.IsUserType(UserType.OrgAdmin))
+            {
+                //TODO: Modify to check that user is organization admin for organization of task
+                return true;
+            }
 
-      switch (result.Status)
-      {
-        case TaskSignupResult.SUCCESS:
-          return Json(new
-          {
-            isSuccess = true,
-            task = result.Task == null ? null : new TaskViewModel(result.Task, signupModel.UserId)
-          });
+            if (task.Event?.Organizer != null && task.Event.Organizer.Id == userId)
+            {
+                return true;
+            }
 
-        case TaskSignupResult.FAILURE_CLOSEDTASK:
-          return Json(new
-          {
-            isSuccess = false,
-            errors = new string[] { FAILED_SIGNUP_TASK_CLOSED },
-          });
+            if (task.Event?.Campaign?.Organizer != null && task.Event.Campaign.Organizer.Id == userId)
+            {
+                return true;
+            }
 
-        case TaskSignupResult.FAILURE_EVENTNOTFOUND:
-          return Json(new
-          {
-            isSuccess = false,
-            errors = new string[] { FAILED_SIGNUP_EVENT_NOT_FOUND },
-          });
-
-        case TaskSignupResult.FAILURE_TASKNOTFOUND:
-          return Json(new
-          {
-            isSuccess = false,
-            errors = new string[] { FAILED_SIGNUP_TASK_NOT_FOUND },
-          });
-
-        default:
-          return Json(new
-          {
-            isSuccess = false,
-            errors = new string[] { FAILED_SIGNUP_UNKOWN_ERROR },
-          });
-      }
+            return false;
+        }
     }
-
-    [HttpDelete("{id}/signup")]
-    [Authorize]
-    public async Task<JsonResult> UnregisterTask(int id)
-    {
-      var userId = _userManager.GetUserId(User);
-
-      var result = await _mediator.SendAsync(new TaskUnenrollCommand { TaskId = id, UserId = userId });
-
-      return Json(new
-      {
-        result.Status,
-        Task = result.Task == null ? null : new TaskViewModel(result.Task, userId)
-      });
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Route("changestatus")]
-    [Authorize]
-    public async Task<JsonResult> ChangeStatus(TaskChangeModel model)
-    {
-      var result = await _mediator.SendAsync(new TaskStatusChangeCommandAsync { TaskStatus = model.Status, TaskId = model.TaskId, UserId = model.UserId, TaskStatusDescription = model.StatusDescription });
-      return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, model.UserId) });
-    }
-
-    private bool IfTaskExists(TaskViewModel task)
-    {
-      return GetTaskBy(task.Id) != null;
-    }
-
-    private AllReadyTask GetTaskBy(int taskId)
-    {
-      return _mediator.Send(new TaskByTaskIdQuery { TaskId = taskId });
-    }
-  }
-
-  public interface IDetermineIfATaskIsEditable
-  {
-    bool For(ClaimsPrincipal user, AllReadyTask task, UserManager<ApplicationUser> userManager);
-  }
-
-  public class DetermineIfATaskIsEditable : IDetermineIfATaskIsEditable
-  {
-    public bool For(ClaimsPrincipal user, AllReadyTask task, UserManager<ApplicationUser> userManager)
-    {
-      var userId = userManager.GetUserId(user);
-
-      if (user.IsUserType(UserType.SiteAdmin))
-      {
-        return true;
-      }
-
-      if (user.IsUserType(UserType.OrgAdmin))
-      {
-        //TODO: Modify to check that user is organization admin for organization of task
-        return true;
-      }
-
-      if (task.Event?.Organizer != null && task.Event.Organizer.Id == userId)
-      {
-        return true;
-      }
-
-      if (task.Event?.Campaign?.Organizer != null && task.Event.Campaign.Organizer.Id == userId)
-      {
-        return true;
-      }
-
-      return false;
-    }
-  }
 }
