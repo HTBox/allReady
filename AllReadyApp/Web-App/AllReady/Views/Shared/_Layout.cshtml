@@ -153,11 +153,17 @@
                 showClose: false,
                 toolbarPlacement: 'bottom'
             });
+            $(".datepicker").each(function (index, element) {
+                $(element).data("DateTimePicker").date(moment($(element).attr("value")));
+            });
             $(".datetimepicker").datetimepicker({
                 format: 'L LT',
                 showClose: false,
                 sideBySide: true,
                 toolbarPlacement: 'bottom'
+            });
+            $(".datetimepicker").each(function (index, element) {
+                $(element).data("DateTimePicker").date(moment($(element).attr("value")));
             });
             tinymce.init({
                 selector: '.wysiwyg',
