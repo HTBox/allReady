@@ -17,11 +17,16 @@ namespace AllReady.Controllers
 
         public async Task<IActionResult> Index()
         {
-            //todo: per #691 the model may need to be updated as we no longer require the list of campaigns
+            //var model = new Index
+            //{
+            //    FeaturedCampaign = await mediator.SendAsync(new FeaturedCampaignQueryAsync()),
+            //    Campaigns = mediator.Send(new CampaignQuery()),
+            //};
+
             var model = new HomePageViewModel
             {
-                Campaigns = mediator.Send(new CampaignQuery()),
-                FeaturedCampaign = await mediator.SendAsync(new FeaturedCampaignQueryAsync())
+                FeaturedCampaign = await mediator.SendAsync(new FeaturedCampaignQueryAsync()),
+                Campaigns = mediator.Send(new CampaignQuery())
             };
 
             return View(model);
