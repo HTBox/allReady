@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using AllReady.Features.Home;
 using AllReady.ViewModels.Home;
 
 namespace AllReady.Controllers
@@ -17,16 +18,10 @@ namespace AllReady.Controllers
 
         public async Task<IActionResult> Index()
         {
-            //var model = new Index
-            //{
-            //    FeaturedCampaign = await mediator.SendAsync(new FeaturedCampaignQueryAsync()),
-            //    Campaigns = mediator.Send(new CampaignQuery()),
-            //};
-
-            var model = new HomePageViewModel
+            var model = new Index
             {
                 FeaturedCampaign = await mediator.SendAsync(new FeaturedCampaignQueryAsync()),
-                Campaigns = mediator.Send(new CampaignQuery())
+                ActiveOrUpcomingCampaigns = await mediator.SendAsync(new ActiveOrUpcomingCampaignsQueryAsync())
             };
 
             return View(model);

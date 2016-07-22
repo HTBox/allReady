@@ -1,5 +1,5 @@
 ﻿@using AllReady.ViewModels.Home
-@model HomePageViewModel
+@model Index
 @{
     ViewData["Title"] = "Home Page";
     Layout = "_LayoutMainPage";
@@ -59,7 +59,7 @@ else
     </div>
 
     <div class="row">
-        @if (Model.Campaigns.Count == 0)
+        @if (Model.ActiveOrUpcomingCampaigns.Count == 0)
         {
             <div class="text-center">
                 <div class="alert alert-warning" role="alert">
@@ -78,14 +78,14 @@ else
                             <th><span title="Description of the campaign">Description</span></th>
                             <th><span title="Date of the campaign">Dates</span></th>
                         </tr>
-                        @foreach (var campaign in Model.Campaigns)
+                        @foreach (var campaign in Model.ActiveOrUpcomingCampaigns)
                         {
                             <tr>
                                 <td>
                                     <img src="@campaign.ImageUrl" class="img-responsive" />
                                 </td>
                                 <td>
-                                    @Html.ActionLink(campaign.Name, "Details", "Campaign", new { Id = campaign.Id })
+                                    @Html.ActionLink(campaign.Name, "Details", "Campaign", new { campaign.Id })
                                 </td>
                                 <td>
                                     <span>@campaign.Description</span>
