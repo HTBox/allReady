@@ -1,5 +1,5 @@
 ﻿@using AllReady.ViewModels.Home
-@model AllReady.ViewModels.Home.HomePageViewModel
+@model HomePageViewModel
 @{
     ViewData["Title"] = "Home Page";
     Layout = "_LayoutMainPage";
@@ -17,8 +17,8 @@
                 </div>
                 <div class="row">
                     <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.FeaturedCampaign.Id">
-                        @if (!String.IsNullOrEmpty(Model.FeaturedCampaign.ImageUrl))
-                {
+                        @if (!string.IsNullOrEmpty(Model.FeaturedCampaign.ImageUrl))
+                        {
                             <div class="col-md-3">
                                 <img src="@Model.FeaturedCampaign.ImageUrl" class="img-responsive" />
                             </div>
@@ -50,7 +50,6 @@
         </div>
     </div>
 }
-
 else
 {
     <div class="row">
@@ -60,52 +59,51 @@ else
     </div>
 
     <div class="row">
-        <div class="hide text-center" data-bind="css: { hide: campaigns().length }">
-            <div class="alert alert-warning" role="alert">
-                <strong>No matching campaigns.</strong>
+        @if (Model.Campaigns.Count == 0)
+        {
+            <div class="text-center">
+                <div class="alert alert-warning" role="alert">
+                    <strong>No matching campaigns.</strong>
+                </div>
             </div>
-        </div>
-        <div class="col-md-12">
-            <div id="campaignGrid" class="table-responsive">
-                <table class="table" data-bind="css: { hide: !campaigns().length }">
-                    <tr>
-                        <th></th>
-                        <th><span title="Name of the campaign">Title</span></th>
-                        <th><span title="Description of the campaign">Description</span></th>
-                        <th><span title="Date of the campaign">Dates</span></th>
-                    </tr>
-                    <!-- ko foreach: campaigns -->
-                    <tr>
-                        <td>
-                            <img data-bind="attr: { src: ImageUrl }" class="img-responsive" />
-                        </td>
-                        <td>
-                            <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
-                        </td>
-                        <td>
-                            <span data-bind="text: Description"></span>
-                        </td>
-                        <td>
-                            <span data-bind="text: displayDate()"></span>
-                        </td>
-                    </tr>
-                    <!-- /ko -->
-                </table>
+        }
+        else
+        {
+            <div class="col-md-12">
+                <div id="campaignGrid" class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <th></th>
+                            <th><span title="Name of the campaign">Title</span></th>
+                            <th><span title="Description of the campaign">Description</span></th>
+                            <th><span title="Date of the campaign">Dates</span></th>
+                        </tr>
+                        @foreach (var campaign in Model.Campaigns)
+                        {
+                            <tr>
+                                <td>
+                                    <img src="@campaign.ImageUrl" class="img-responsive" />
+                                </td>
+                                <td>
+                                    @Html.ActionLink(campaign.Name, "Details", "Campaign", new { Id = campaign.Id })
+                                </td>
+                                <td>
+                                    <span>@campaign.Description</span>
+                                </td>
+                                <td>
+                                    <span><time value=@campaign.StartDate></time> - <time value=@campaign.EndDate></time></span>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
             </div>
-        </div>
+        }
     </div>
 }
-
 
 <div class="container">
     <div class="row">
         <a class="btn btn-success" asp-controller="campaign" asp-action="index">View All Campaigns</a>
     </div>    
 </div>
-
-@section scripts {
-    <script>
-        var modelCampaigns = @Json.Serialize(Model.Campaigns);
-    </script>
-    <script src="~/js/index.js"></script>
-}
