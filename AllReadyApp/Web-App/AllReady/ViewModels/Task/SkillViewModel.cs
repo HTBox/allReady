@@ -8,10 +8,10 @@ namespace AllReady.ViewModels.Task
 
         public SkillViewModel(Skill skill)
         {
-            this.Id = skill.Id;
-            this.Name = skill.Name;
-            this.Description = skill.Description;
-            this.HierarchicalName = skill.HierarchicalName;
+            Id = skill.Id;
+            Name = skill.Name;
+            Description = skill.Description;
+            HierarchicalName = skill.HierarchicalName;
         }
 
         public int Id { get; set; }
