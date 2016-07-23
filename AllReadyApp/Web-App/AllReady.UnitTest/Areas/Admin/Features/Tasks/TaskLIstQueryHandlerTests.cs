@@ -10,6 +10,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
     public class TaskListQueryHandlerTests : InMemoryContextTest
     {
         private readonly TaskListQueryHandler handler;
+        private AllReadyTask _task;
         public TaskListQueryHandlerTests()
         {
             handler = new TaskListQueryHandler(Context);
@@ -19,11 +20,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             return new AllReadyTask
             {
-                Id = 1,
-                Event = new Event
-                {
-                    Id = 1
-                },
+                Event = new Event(),
                 Name = "TestTask",
                 StartDateTime = new DateTimeOffset(DateTime.Today),
                 EndDateTime = new DateTimeOffset(DateTime.Today.AddDays(1)),
@@ -34,9 +31,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         protected override void LoadTestData()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-
-            var task = GenerateTask();
-            context.Tasks.Add(task);
+            _task = GenerateTask();
+            context.Tasks.Add(_task);
             context.SaveChanges();
         }
 
@@ -45,7 +41,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var taskListQuery = new TaskListQuery
             {
-                EventId = 1
+                EventId = _task.Id
             };
             var result = handler.Handle(taskListQuery).ToList();
             Assert.NotNull(result);
@@ -53,12 +49,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Assert.Equal(result.Count, 1);
 
             var task = result.First();
-            var expectedTask = GenerateTask();
-            Assert.Equal(task.Id, expectedTask.Id);
-            Assert.Equal(task.Name, expectedTask.Name);
-            Assert.Equal(task.StartDateTime, expectedTask.StartDateTime);
-            Assert.Equal(task.EndDateTime, expectedTask.EndDateTime);
-            Assert.Equal(task.NumberOfVolunteersRequired, expectedTask.NumberOfVolunteersRequired);
+            Assert.Equal(task.Id, _task.Id);
+            Assert.Equal(task.Name, _task.Name);
+            Assert.Equal(task.StartDateTime, _task.StartDateTime);
+            Assert.Equal(task.EndDateTime, _task.EndDateTime);
+            Assert.Equal(task.NumberOfVolunteersRequired, _task.NumberOfVolunteersRequired);
             Assert.False(task.IsUserSignedUpForTask);
         }
     }
