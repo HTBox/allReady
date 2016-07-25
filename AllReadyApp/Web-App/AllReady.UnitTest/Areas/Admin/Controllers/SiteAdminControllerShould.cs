@@ -1,8 +1,10 @@
 ﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Features.Users;
 using AllReady.Areas.Admin.Models;
 using AllReady.Features.Manage;
 using AllReady.Models;
+using AllReady.Security;
 using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -156,14 +158,34 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             }
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void EditUserGetReturnsCorrectViewModelWhenOrganizationIdIsNotNull()
         {
+            var mediator = new Mock<IMediator>();
+            var user = new ApplicationUser();
+            int orgId = 99;
+            string orgName = "Test Org";
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)))
+                            .Returns(user);
+
+            mediator.Setup(x => x.Send(It.Is<OrganizationByIdQuery>(q => q.OrganizationId == orgId)))
+                            .Returns(org);
+
+            var controller = new SiteController(null, null, mediator.Object);
+
+            var result = controller.EditUser(userId);
+            var model = ((ViewResult)result).ViewData.Model as EditUserModel;
+
+            Assert.NotNull(model.Organization);
+            Assert.IsType<EditUserModel>(model);
+            Assert.Equal(model.Organization.Id, orgId);
+            Assert.Equal(model.Organization.Name, orgName);
         }
 
         [Fact(Skip = "NotImplemented")]
         public void EditUserPostReturnsSameViewAndViewModelWhenModelStateIsInvalid()
         {
+
         }
 
         [Fact(Skip = "NotImplemented")]
