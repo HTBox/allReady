@@ -7,7 +7,7 @@ using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 
 namespace AllReady.Features.Notifications
 {

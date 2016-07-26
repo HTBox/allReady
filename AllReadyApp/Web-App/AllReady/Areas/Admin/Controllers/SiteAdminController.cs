@@ -11,11 +11,11 @@ using AllReady.Features.Manage;
 using AllReady.Models;
 using AllReady.Security;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Mvc.Routing;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 
 namespace AllReady.Areas.Admin.Controllers
@@ -153,9 +153,9 @@ namespace AllReady.Areas.Admin.Controllers
                 }
 
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                //mgmccarthy: there is no ResetPassword action methd on the AdminController. Not too sure what to do here.
+                //TODO: mgmccarthy: there is no ResetPassword action methd on the AdminController. Not too sure what to do here. Waiting for feeback via Issue #659
                 var callbackUrl = Url.Action(new UrlActionContext { Action = "ResetPassword", Controller = "Admin", Values = new { userId = user.Id, code = code }, Protocol = HttpContext.Request.Scheme });
-                await _mediator.SendAsync(new SendResetPasswordEmail { Email = user.Email, CallbackUrl = callbackUrl });
+                await _mediator.SendAsync(new Features.Site.SendResetPasswordEmail { Email = user.Email, CallbackUrl = callbackUrl });
 
                 ViewBag.SuccessMessage = $"Sent password reset email for {user.UserName}.";
 
@@ -215,7 +215,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
             else
             {
-                return HttpBadRequest("Can't manage keys for a user without the API role.");
+                return BadRequest("Can't manage keys for a user without the API role.");
             }
 
         }

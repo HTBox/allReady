@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using AllReady.Models;
 using AllReady.ViewModels.Shared;
 using AllReady.ViewModels.Task;
@@ -14,48 +13,50 @@ namespace AllReady.ViewModels.Event
         {
         }
 
-        public EventViewModel(Models.Event campaignEvent)
+        public EventViewModel(Models.Event @event)
         {
-            Id = campaignEvent.Id;
-            if (campaignEvent.Campaign != null)
+            Id = @event.Id;
+            if (@event.Campaign != null)
             {
-                CampaignId = campaignEvent.Campaign.Id;
-                CampaignName = campaignEvent.Campaign.Name;
-                TimeZoneId = campaignEvent.Campaign.TimeZoneId;
-                if (campaignEvent.Campaign.ManagingOrganization != null)
+                CampaignId = @event.Campaign.Id;
+                CampaignName = @event.Campaign.Name;
+                TimeZoneId = @event.Campaign.TimeZoneId;
+                if (@event.Campaign.ManagingOrganization != null)
                 {
-                    OrganizationId = campaignEvent.Campaign.ManagingOrganization.Id;
-                    OrganizationName = campaignEvent.Campaign.ManagingOrganization.Name;
-                    HasPrivacyPolicy = !string.IsNullOrEmpty(campaignEvent.Campaign.ManagingOrganization.PrivacyPolicy);
+                    OrganizationId = @event.Campaign.ManagingOrganization.Id;
+                    OrganizationName = @event.Campaign.ManagingOrganization.Name;
+                    HasPrivacyPolicy = !string.IsNullOrEmpty(@event.Campaign.ManagingOrganization.PrivacyPolicy);
                 }
             }
 
-            Title = campaignEvent.Name;
-            Description = campaignEvent.Description;
-            EventType = campaignEvent.EventType;
-            StartDateTime = campaignEvent.StartDateTime;
-            EndDateTime = campaignEvent.EndDateTime;
+            Title = @event.Name;
+            Description = @event.Description;
+            EventType = @event.EventType;
+            StartDateTime = @event.StartDateTime;
+            EndDateTime = @event.EndDateTime;
 
-            if (campaignEvent.Location != null)
+            if (@event.Location != null)
             {
-                Location = new LocationViewModel(campaignEvent.Location);
+                Location = new LocationViewModel(@event.Location);
             }
 
             IsClosed = EndDateTime.UtcDateTime < DateTimeOffset.UtcNow;
 
-            ImageUrl = campaignEvent.ImageUrl;
+            ImageUrl = @event.ImageUrl;
 
-            //TODO Location
-            Tasks = campaignEvent.Tasks != null
-                 ? new List<TaskViewModel>(campaignEvent.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
+            Tasks = @event.Tasks != null
+                 ? new List<TaskViewModel>(@event.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
                  : new List<TaskViewModel>();
 
             SignupModel = new EventSignupViewModel();
 
-            RequiredSkills = campaignEvent.RequiredSkills?.Select(acsk => new SkillViewModel(acsk.Skill)).ToList();
-            IsLimitVolunteers = campaignEvent.IsLimitVolunteers;
-            IsAllowWaitList = campaignEvent.IsAllowWaitList;
-            Headline = campaignEvent.Headline;
+            //mgmccarthy: this check doesn't make much sense unless you explicitly set @event.RequiredSkills to null. If you look at the Event model, you'll see that RequireSkills is instaniated with
+            //a new empty list: "public List<EventSkill> RequiredSkills { get; set; } = new List<EventSkill>();". I think this can go away?
+            RequiredSkills = @event.RequiredSkills?.Select(ek => new SkillViewModel(ek.Skill)).ToList();
+
+            IsLimitVolunteers = @event.IsLimitVolunteers;
+            IsAllowWaitList = @event.IsAllowWaitList;
+            Headline = @event.Headline;
         }
 
         public int Id { get; set; }
@@ -85,73 +86,6 @@ namespace AllReady.ViewModels.Event
         public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
         public bool IsLimitVolunteers { get; set; } = true;
         public bool IsAllowWaitList { get; set; } = true;
-        public int NumberOfUsersSignedUp => UsersSignedUp.Count;
-        public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
-        public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
-
         public string Headline { get; set; }
-        public bool HasHeadline => !string.IsNullOrEmpty(Headline);
-    }
-
-    public static class EventViewModelExtension
-    {
-        public static LocationViewModel ToViewModel(this Location location)
-        {
-            var value = new LocationViewModel
-            {
-                Address1 = location.Address1,
-                Address2 = location.Address2,
-                City = location.City,
-                PostalCode = location.PostalCode,
-                State = location.State
-            };
-            return value;
-        }
-        public static Location ToModel(this LocationViewModel location)
-        {
-            var value = new Location
-            {
-                Address1 = location.Address1,
-                Address2 = location.Address2,
-                City = location.City,
-                PostalCode = location.PostalCode,
-                State = location.State,
-                Country = "TODO:  Put country in both objects"
-            };
-            return value;
-        }
-        public static IEnumerable<EventViewModel> ToViewModel(this IEnumerable<Models.Event> campaignEvents)
-        {
-            return campaignEvents.Select(campaignEvent => new EventViewModel(campaignEvent));
-        }
-
-        public static EventViewModel WithUserInfo(this EventViewModel viewModel, Models.Event campaignEvent, ClaimsPrincipal user, IAllReadyDataAccess dataAccess)
-        {
-            if (user.IsSignedIn())
-            {
-                var userId = user.GetUserId();
-                var appUser = dataAccess.GetUser(userId);
-                viewModel.UserId = userId;
-                viewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
-                viewModel.IsUserVolunteeredForEvent = dataAccess.GetEventSignups(viewModel.Id, userId).Any();
-                var assignedTasks = campaignEvent.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
-                viewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
-                var unassignedTasks = campaignEvent.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != userId)).ToList();
-                viewModel.Tasks = new List<TaskViewModel>(unassignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
-                viewModel.SignupModel = new EventSignupViewModel()
-                {
-                    EventId = viewModel.Id,
-                    UserId = userId,
-                    Name = appUser.Name,
-                    PreferredEmail = appUser.Email,
-                    PreferredPhoneNumber = appUser.PhoneNumber
-                };
-            }
-            else
-            {
-                viewModel.UserTasks = new List<TaskViewModel>();
-            }
-            return viewModel;
-        }
     }
 }

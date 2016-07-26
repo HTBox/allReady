@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Microsoft.AspNet.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Linq;
 
 namespace AllReady.Extensions

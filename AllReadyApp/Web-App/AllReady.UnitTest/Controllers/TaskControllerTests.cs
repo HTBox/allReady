@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Models;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using AllReady.UnitTest.Extensions;
 using AllReady.Areas.Admin.Models;
 using MediatR;
-using Microsoft.AspNet.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using AllReady.Areas.Admin.Features.Tasks;
 using System.Threading.Tasks;
 using AllReady.Features.Event;
@@ -40,7 +40,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskController(Mock.Of<IMediator>(), Mock.Of<ITaskSummaryModelValidator>());
             var result = sut.Create(It.IsAny<int>());
 
-            Assert.IsType<HttpUnauthorizedResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace AllReady.UnitTest.Controllers
 
             var result = sut.Create(It.IsAny<int>());
 
-            Assert.IsType<HttpUnauthorizedResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]
@@ -210,7 +210,7 @@ namespace AllReady.UnitTest.Controllers
 
             var result = await sut.Create(It.IsAny<int>(), model);
 
-            Assert.IsType<HttpUnauthorizedResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]
@@ -312,7 +312,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskController(Mock.Of<IMediator>(), Mock.Of<ITaskSummaryModelValidator>());
             var result = await sut.Edit(It.IsAny<int>());
 
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -325,7 +325,7 @@ namespace AllReady.UnitTest.Controllers
             sut.SetDefaultHttpContext();
             var result = await sut.Edit(It.IsAny<int>());
 
-            Assert.IsType<HttpUnauthorizedResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]
@@ -443,7 +443,7 @@ namespace AllReady.UnitTest.Controllers
 
             var result = await sut.Edit(model);
 
-            Assert.IsType<HttpUnauthorizedResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]
@@ -541,7 +541,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var sut = new TaskController(Mock.Of<IMediator>(), Mock.Of<ITaskSummaryModelValidator>());
             var result = await sut.Delete(It.IsAny<int>());
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -554,7 +554,7 @@ namespace AllReady.UnitTest.Controllers
             sut.SetDefaultHttpContext();
             var result = await sut.Delete(It.IsAny<int>());
 
-            Assert.IsType<HttpUnauthorizedResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]
@@ -593,7 +593,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var sut = new TaskController(Mock.Of<IMediator>(), Mock.Of<ITaskSummaryModelValidator>());
             var result = await sut.Details(It.IsAny<int>());
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -646,7 +646,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var sut = new TaskController(Mock.Of<IMediator>(), Mock.Of<ITaskSummaryModelValidator>());
             var result = await sut.DeleteConfirmed(It.IsAny<int>());
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -660,7 +660,7 @@ namespace AllReady.UnitTest.Controllers
 
             var result = await sut.DeleteConfirmed(It.IsAny<int>());
 
-            Assert.IsType<HttpUnauthorizedResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]
@@ -754,7 +754,7 @@ namespace AllReady.UnitTest.Controllers
             sut.SetDefaultHttpContext();
             var result = await sut.Assign(1, null);
 
-            Assert.IsType<HttpUnauthorizedResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]
@@ -843,7 +843,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
             var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersModel());
 
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -856,7 +856,7 @@ namespace AllReady.UnitTest.Controllers
             sut.SetDefaultHttpContext();
             var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersModel());
 
-            Assert.IsType<HttpUnauthorizedResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]
@@ -887,7 +887,7 @@ namespace AllReady.UnitTest.Controllers
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersModel());
 
-            Assert.IsType<HttpOkResult>(result);
+            Assert.IsType<OkResult>(result);
         }
 
         [Fact]
@@ -937,7 +937,7 @@ namespace AllReady.UnitTest.Controllers
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(orgAdminClaims));
             httpContext.Setup(x => x.User).Returns(claimsPrincipal);
 
-            controller.ActionContext.HttpContext = httpContext.Object;
+            controller.ControllerContext.HttpContext = httpContext.Object;
         }
     }
 }

@@ -1,10 +1,8 @@
-:: @if "%SCM_TRACE_LEVEL%" NEQ "4" @echo off
-
-:: Turn this on to debug @echo on
+@if "%SCM_TRACE_LEVEL%" NEQ "4" @echo off
 
 :: ----------------------
 :: KUDU Deployment Script
-:: Version: 1.0.3
+:: Version: 1.0.7
 :: ----------------------
 
 :: Prerequisites
@@ -25,10 +23,8 @@ setlocal enabledelayedexpansion
 SET ARTIFACTS=%~dp0%..\artifacts
 
 IF NOT DEFINED DEPLOYMENT_SOURCE (
-  SET DEPLOYMENT_SOURCE=%~dp0%
+  SET DEPLOYMENT_SOURCE=%~dp0%.
 )
-
-SET DEPLOYMENT_SOURCE=%DEPLOYMENT_SOURCE%\AllReadyApp
 
 IF NOT DEFINED DEPLOYMENT_TARGET (
   SET DEPLOYMENT_TARGET=%ARTIFACTS%\wwwroot
@@ -68,71 +64,51 @@ SET MSBUILD_PATH=%ProgramFiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe
 :: Deployment
 :: ----------
 
-echo Custom Deployment script for combined csproj and xproj deployment.
+echo Handling ASP.NET Core Web Application deployment.
 
-:: Remove wwwroot if deploying to default location
-IF "%DEPLOYMENT_TARGET%" == "%WEBROOT_PATH%" (
-    FOR /F %%i IN ("%DEPLOYMENT_TARGET%") DO IF "%%~nxi"=="wwwroot" (
-    SET DEPLOYMENT_TARGET=%%~dpi
-    )
-)
-
-:: Remove trailing slash if present
-IF "%DEPLOYMENT_TARGET:~-1%"=="\" (
-    SET DEPLOYMENT_TARGET=%DEPLOYMENT_TARGET:~0,-1%
-)
-
-
-:: 1. Set DNX Path
-set DNVM_CMD_PATH_FILE="%USERPROFILE%\.dnx\temp-set-envvars.cmd"
-set DNX_RUNTIME="%USERPROFILE%\.dnx\runtimes\dnx-clr-win-x86.1.0.0-rc1-final"
-
-:: 2. Install DNX
-call :ExecuteCmd PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "[System.Threading.Thread]::CurrentThread.CurrentCulture = ''; [System.Threading.Thread]::CurrentThread.CurrentUICulture = '';$CmdPathFile='%DNVM_CMD_PATH_FILE%';& '%SCM_DNVM_PS_PATH%' " install 1.0.0-rc1-final -arch x86 -r clr %SCM_DNVM_INSTALL_OPTIONS%
+:: 1. Restore nuget packages
+echo Restoring nuget packages for csproj projects (NotificationsProcessor)
+call :ExecuteCmd nuget.exe restore "%DEPLOYMENT_SOURCE%\AllReadyApp\NotificationsProcessor\packages.config" -SolutionDirectory "%DEPLOYMENT_SOURCE%\AllReadyApp" -source https://www.nuget.org/api/v2/
 IF !ERRORLEVEL! NEQ 0 goto error
 
-
-:: 3. Run DNU Restore, Nuget restore for specific projects
-call %DNX_RUNTIME%\bin\dnu restore "%DEPLOYMENT_SOURCE%" %SCM_DNU_RESTORE_OPTIONS%
-IF !ERRORLEVEL! NEQ 0 goto error
-call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\NotificationsProcessor\packages.config" -SolutionDirectory "%DEPLOYMENT_SOURCE%" -source https://www.nuget.org/api/v2/
+echo Restoring nuget packages for all project.json projects
+call :ExecuteCmd nuget.exe restore -packagesavemode nuspec
 IF !ERRORLEVEL! NEQ 0 goto error
 
-:: 4. Run Our Custom build steps:
+:: 2a. Build
+echo Storing Git Version Info for Runtime Display
 call :ExecuteCmd PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "(Get-Content AllReadyApp\Web-App\AllReady\version.json).replace('GITVERSION', (git rev-parse --short HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json"
-call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\AllReady.Models\AllReady.Models.csproj"
-IF !ERRORLEVEL! NEQ 0 goto error
-call %DNX_RUNTIME%\bin\dnu build "%DEPLOYMENT_SOURCE%\wrap\AllReady.Models\project.json"
-IF !ERRORLEVEL! NEQ 0 goto error
-call %DNX_RUNTIME%\bin\dnu build "%DEPLOYMENT_SOURCE%\Web-App\AllReady\project.json"
-IF !ERRORLEVEL! NEQ 0 goto error
-call %DNX_RUNTIME%\bin\dnu build "%DEPLOYMENT_SOURCE%\Web-App\AllReady.UnitTest\project.json"
-IF !ERRORLEVEL! NEQ 0 goto error
-call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\NotificationsProcessor\NotificationsProcessor.csproj"
 
-:: 4.1. Publish the site:
-call %DNX_RUNTIME%\bin\dnu publish "%DEPLOYMENT_SOURCE%\Web-App\AllReady\project.json" --runtime %DNX_RUNTIME% --out "%DEPLOYMENT_TEMP%" %SCM_DNU_PUBLISH_OPTIONS%
+echo Building AllReady.Models Project (csproj)
+call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\AllReadyApp\AllReady.Models\AllReady.Models.csproj" /p:Configuration=Debug
 IF !ERRORLEVEL! NEQ 0 goto error
 
-:: 4.2 Xcopy the webjobs:
-:: Note this uses debug, and I can't find how to read the
-:: build config.
-
-mkdir "%DEPLOYMENT_TEMP%\wwwroot\app_data\jobs\continuous\notificationsprocessor\"
-
-call xcopy /S "%DEPLOYMENT_SOURCE%\NotificationsProcessor\bin\debug" "%DEPLOYMENT_TEMP%\wwwroot\app_data\jobs\continuous\notificationsprocessor\"
-
-:: 5. KuduSync
-call %KUDU_SYNC_CMD% -v 50 -f "%DEPLOYMENT_TEMP%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
+echo Building AllReady.Models Project (project.json)
+call :ExecuteCmd dotnet build "%DEPLOYMENT_SOURCE%\AllReadyApp\wrap\AllReady.Models\project.json" --configuration Debug
 IF !ERRORLEVEL! NEQ 0 goto error
-)
+
+echo Not Building AllReady Project (it gets built with publish command)
+
+echo Building NotificationsProcessor Project (csproj)
+call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj" /p:Configuration=Debug
+IF !ERRORLEVEL! NEQ 0 goto error
+
+:: 2b. Publish AllReady
+echo Publishing Allready Project (project.json) which includes building it
+call :ExecuteCmd dotnet publish "%DEPLOYMENT_SOURCE%\AllReadyApp\Web-App\AllReady" --output "%DEPLOYMENT_TEMP%" --configuration Debug
+IF !ERRORLEVEL! NEQ 0 goto error
+
+:: 2c. Publish WebJobs (NotificationsProcessor)
+echo Publishing NotificationsProcessor WebJob
+call :ExecuteCmd mkdir "%DEPLOYMENT_TEMP%\app_data\jobs\continuous\notificationsprocessor\"
+call :ExecuteCmd xcopy /S "%DEPLOYMENT_SOURCE%\AllReadyApp\NotificationsProcessor\bin\debug" "%DEPLOYMENT_TEMP%\app_data\jobs\continuous\notificationsprocessor\"
+
+
+:: 3. KuduSync
+call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_TEMP%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
+IF !ERRORLEVEL! NEQ 0 goto error
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-:: Post deployment stub
-IF DEFINED POST_DEPLOYMENT_ACTION call "%POST_DEPLOYMENT_ACTION%"
-IF !ERRORLEVEL! NEQ 0 goto error
-
 goto end
 
 :: Execute command routine that will echo out when error

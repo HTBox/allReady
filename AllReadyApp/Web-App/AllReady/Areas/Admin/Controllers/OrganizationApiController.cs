@@ -3,8 +3,8 @@ using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
-using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Areas.Admin.Controllers
 {

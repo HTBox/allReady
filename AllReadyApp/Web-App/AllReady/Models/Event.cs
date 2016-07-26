@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using AllReady.ViewModels.Event;
 
 namespace AllReady.Models
 {
@@ -20,8 +21,8 @@ namespace AllReady.Models
         public string Description { get; set; }
 
         [Display(Name = "Event Type")]
-        public EventType EventType { get; set; }    
-        
+        public EventType EventType { get; set; }
+
         public int NumberOfVolunteersRequired { get; set; }
 
         [Display(Name = "Start date")]
@@ -61,7 +62,7 @@ namespace AllReady.Models
         public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
 
         [NotMapped]
-        public bool IsAllowSignups => !IsLimitVolunteers || !IsFull  || IsAllowWaitList;
+        public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
 
         public bool IsUserInAnyTask(string userId)
         {
@@ -70,5 +71,13 @@ namespace AllReady.Models
 
         public ICollection<Request> Requests { get; set; }
         public ICollection<Itinerary> Itineraries { get; set; }
+    }
+
+    public static class EventExtensions
+    {
+        public static IEnumerable<EventViewModel> ToViewModel(this IEnumerable<Models.Event> campaignEvents)
+        {
+            return campaignEvents.Select(campaignEvent => new EventViewModel(campaignEvent));
+        }
     }
 }

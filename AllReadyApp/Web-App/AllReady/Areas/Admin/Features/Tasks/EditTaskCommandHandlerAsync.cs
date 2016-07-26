@@ -3,7 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
+using AllReady.Extensions;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
@@ -19,8 +20,11 @@ namespace AllReady.Areas.Admin.Features.Tasks
         public async Task<int> Handle(EditTaskCommandAsync message)
         {
             var task = await _context.Tasks.Include(t => t.RequiredSkills).SingleOrDefaultAsync(t => t.Id == message.Task.Id);
+
             if (task == null)
+            { 
                 task = new AllReadyTask();
+            }
 
             task.Name = message.Task.Name;
             task.Description = message.Task.Description;
@@ -50,7 +54,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             if (message.Task.RequiredSkills != null)
                 task.RequiredSkills.AddRange(message.Task.RequiredSkills.Where(mt => !task.RequiredSkills.Any(ts => ts.SkillId == mt.SkillId)));
 
-            _context.Update(task);
+            _context.AddOrUpdate(task); // We can safely call AddOrUpdate here since we trust that it will either be detached (and new - Add) or attached and required properties marked as modified (Update)
 
             await _context.SaveChangesAsync();
 

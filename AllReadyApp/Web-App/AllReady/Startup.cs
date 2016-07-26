@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using AllReady.Areas.Admin.Models.Validators;
 using AllReady.Controllers;
+using AllReady.DataAccess;
 using AllReady.Models;
 using AllReady.Security;
 using AllReady.Services;
@@ -10,12 +11,11 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Autofac.Features.Variance;
 using MediatR;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Localization;
-using Microsoft.Data.Entity;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,11 +26,11 @@ namespace AllReady
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env, IApplicationEnvironment appEnv)
+        public Startup(IHostingEnvironment env)
         {
             // Setup configuration sources.
             var builder = new ConfigurationBuilder()
-                .SetBasePath(appEnv.ApplicationBasePath)
+                .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("version.json")
                 .AddJsonFile("config.json")
                 .AddJsonFile($"config.{env.EnvironmentName}.json", optional: true)
@@ -38,17 +38,17 @@ namespace AllReady
 
             if (env.IsDevelopment())
             {
-                // This reads the configuration keys from the secret store.
-                // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
-                builder.AddUserSecrets();
+            // This reads the configuration keys from the secret store.
+            // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
+            builder.AddUserSecrets();
 
-                // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-                builder.AddApplicationInsightsSettings(developerMode: true);
-
+            // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
+            builder.AddApplicationInsightsSettings(developerMode: true);
             }
 
             Configuration = builder.Build();
-            Configuration["version"] = appEnv.ApplicationVersion; // version in project.json
+
+            Configuration["version"] = new ApplicationEnvironment().ApplicationVersion; // version in project.json
         }
 
         public IConfiguration Configuration { get; set; }
@@ -60,9 +60,7 @@ namespace AllReady
             services.AddApplicationInsightsTelemetry(Configuration);
 
             // Add Entity Framework services to the services container.
-            var ef = services.AddEntityFramework()
-                .AddSqlServer()
-                .AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+            var ef = services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
 
             services.Configure<AzureStorageSettings>(Configuration.GetSection("Data:Storage"));
             services.Configure<DatabaseSettings>(Configuration.GetSection("Data:DefaultConnection"));
@@ -73,24 +71,25 @@ namespace AllReady
             // Add CORS support
             services.AddCors(options =>
             {
-                options.AddPolicy("allReady",
-              builder => builder.AllowAnyOrigin()
-                          .AllowAnyHeader()
-                          .AllowAnyMethod()
-                          .AllowCredentials()
-              );
+            options.AddPolicy("allReady",
+                builder => builder.AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials()
+                );
             });
 
             // Add Identity services to the services container.
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-                    {
-                        options.Password.RequiredLength = 10;
-                        options.Password.RequireNonLetterOrDigit = false;
-                        options.Password.RequireDigit = true;
-                        options.Password.RequireUppercase = false;
-                    })
-                     .AddEntityFrameworkStores<AllReadyContext>()
-                     .AddDefaultTokenProviders();
+            {
+                options.Password.RequiredLength = 10;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireDigit = true;
+                options.Password.RequireUppercase = false;
+                options.Cookies.ApplicationCookie.AccessDeniedPath = new PathString("/Home/AccessDenied");
+            })
+            .AddEntityFrameworkStores<AllReadyContext>()
+            .AddDefaultTokenProviders();
 
             // Add Authorization rules for the app
             services.AddAuthorization(options =>
@@ -105,7 +104,6 @@ namespace AllReady
             // configure IoC support
             var container = CreateIoCContainer(services);
             return container.Resolve<IServiceProvider>();
-
         }
 
         private IContainer CreateIoCContainer(IServiceCollection services)
@@ -138,15 +136,15 @@ namespace AllReady
             }
 
             var containerBuilder = new ContainerBuilder();
-            
+
             containerBuilder.RegisterSource(new ContravariantRegistrationSource());
             containerBuilder.RegisterAssemblyTypes(typeof(IMediator).Assembly).AsImplementedInterfaces();
             containerBuilder.RegisterAssemblyTypes(typeof(Startup).Assembly).AsImplementedInterfaces();
             containerBuilder.Register<SingleInstanceFactory>(ctx =>
-          {
-              var c = ctx.Resolve<IComponentContext>();
-              return t => c.Resolve(t);
-          });
+            {
+                var c = ctx.Resolve<IComponentContext>();
+                return t => c.Resolve(t);
+            });
 
             containerBuilder.Register<MultiInstanceFactory>(ctx =>
             {
@@ -162,15 +160,9 @@ namespace AllReady
         }
 
         // Configure is called after ConfigureServices is called.
-        public async void Configure(IApplicationBuilder app,
-          IHostingEnvironment env,
-          ILoggerFactory loggerFactory,
-          SampleDataGenerator sampleData,
-          AllReadyContext context,
-          IConfiguration configuration)
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context, 
+            IConfiguration configuration)
         {
-            loggerFactory.MinimumLevel = LogLevel.Verbose;
-
             // todo: in RC update we can read from a logging.json config file
             loggerFactory.AddConsole((category, level) =>
             {
@@ -198,13 +190,12 @@ namespace AllReady
             app.UseCors("allReady");
 
             // Configure the HTTP request pipeline.
-
             var usCultureInfo = new CultureInfo("en-US");
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
                 SupportedCultures = new List<CultureInfo>(new[] { usCultureInfo }),
                 SupportedUICultures = new List<CultureInfo>(new[] { usCultureInfo })
-            }, new RequestCulture(usCultureInfo));
+            });
 
             // Add Application Insights to the request pipeline to track HTTP request telemetry data.
             app.UseApplicationInsightsRequestTelemetry();
@@ -223,12 +214,6 @@ namespace AllReady
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            // Setup Cookie Authentication
-            app.UseCookieAuthentication(options =>
-            {
-                options.AccessDeniedPath = new PathString("/Home/AccessDenied");
-            });
-            
             // Track data about exceptions from the application. Should be configured after all error handling middleware in the request pipeline.
             app.UseApplicationInsightsExceptionTelemetry();
 
@@ -249,48 +234,57 @@ namespace AllReady
             // For more information see http://go.microsoft.com/fwlink/?LinkID=532715
             if (Configuration["Authentication:Facebook:AppId"] != null)
             {
-                app.UseFacebookAuthentication(options =>
+                var options = new FacebookOptions
                 {
-                    options.AppId = Configuration["Authentication:Facebook:AppId"];
-                    options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-                    options.Scope.Add("email");
-                    options.BackchannelHttpHandler = new FacebookBackChannelHandler();
-                    options.UserInformationEndpoint = "https://graph.facebook.com/v2.5/me?fields=id,name,email,first_name,last_name";
-                });
+                    AppId = Configuration["Authentication:Facebook:AppId"],
+                    AppSecret = Configuration["Authentication:Facebook:AppSecret"],
+                    BackchannelHttpHandler = new FacebookBackChannelHandler(),
+                    UserInformationEndpoint = "https://graph.facebook.com/v2.5/me?fields=id,name,email,first_name,last_name"
+                };
+                options.Scope.Add("email");
+
+                app.UseFacebookAuthentication(options);
             }
-            // app.UseGoogleAuthentication();
 
             if (Configuration["Authentication:MicrosoftAccount:ClientId"] != null)
             {
-                app.UseMicrosoftAccountAuthentication(options =>
+                var options = new MicrosoftAccountOptions
                 {
-                    options.ClientId = Configuration["Authentication:MicrosoftAccount:ClientId"];
-                    options.ClientSecret = Configuration["Authentication:MicrosoftAccount:ClientSecret"];
-                    options.Scope.Add("wl.basic");
-                    options.Scope.Add("wl.signin");
-                });
+                    ClientId = Configuration["Authentication:MicrosoftAccount:ClientId"],
+                    ClientSecret = Configuration["Authentication:MicrosoftAccount:ClientSecret"]
+                };
+
+                app.UseMicrosoftAccountAuthentication(options);
             }
 
             if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
             {
-                app.UseTwitterAuthentication(options =>
+                var options = new TwitterOptions
                 {
-                    options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
-                    options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
-                });
+                    ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"],
+                    ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"]
+                };
+
+                app.UseTwitterAuthentication(options);
             }
+
+            if (Configuration["Authentication:Google:ClientId"] != null)
+            {
+                var options = new GoogleOptions
+                {
+                    ClientId = Configuration["Authentication:Google:ClientId"],
+                    ClientSecret = Configuration["Authentication:Google:ClientSecret"]
+                };
+
+                app.UseGoogleAuthentication(options);
+            }
+
             // Add MVC to the request pipeline.
             app.UseMvc(routes =>
             {
-                routes.MapRoute(
-                     name: "areaRoute",
-                     template: "{area:exists}/{controller}/{action=Index}/{id?}");
-
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute(name: "areaRoute", template: "{area:exists}/{controller}/{action=Index}/{id?}");
+                routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
             });
-
 
             // Add sample data and test admin accounts if specified in Config.Json.
             // for production applications, this should either be set to false or deleted.
@@ -298,17 +292,16 @@ namespace AllReady
             {
                 context.Database.Migrate();
             }
+
             if (Configuration["SampleData:InsertSampleData"] == "true")
             {
                 sampleData.InsertTestData();
             }
+
             if (Configuration["SampleData:InsertTestUsers"] == "true")
             {
                 await sampleData.CreateAdminUser();
             }
-
         }
-
-        public static void Main(string[] args) => WebApplication.Run<Startup>(args);
     }
 }

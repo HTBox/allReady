@@ -3,8 +3,8 @@
 
 @if (User.IsUserType(UserType.SiteAdmin) || User.IsUserType(UserType.OrgAdmin))
 {
-    var descriptor = (Microsoft.AspNet.Mvc.Controllers.ControllerActionDescriptor)ViewContext.ActionDescriptor;
-    var areaName = descriptor.RouteConstraints[0].RouteValue; // there must be a better way to get the area name!
+    var descriptor = (Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)ViewContext.ActionDescriptor;
+    var areaName = descriptor.RouteValues["area"]; // there must be a better way to get the area name!
     var controllerName = descriptor.ControllerName;
     var isAdmin = areaName == "Admin";
     <li class="dropdown dropdown-admin @(isAdmin? "active":"")">
@@ -21,6 +21,8 @@
             @if (User.IsUserType(UserType.SiteAdmin))
             {
                 <li @(isAdmin && controllerName == "Site" ? " class=active" : "")><a asp-route-area="Admin" asp-route-controller="Site" asp-route-action="Index">Site Admin</a></li>
+                <li class="divider"></li>
+                <li @(isAdmin && controllerName == "Import" ? " class=active" : "")><a asp-route-area="Admin" asp-route-controller="Import" asp-route-action="Index">Import Data</a></li>
             }
         </ul>
     </li>

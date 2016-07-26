@@ -6,8 +6,8 @@ using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels;
 using AllReady.ViewModels.Campaign;
 using MediatR;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
 using Xunit;
 using CampaignController = AllReady.Controllers.CampaignController;
@@ -55,7 +55,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignController(Mock.Of<IMediator>());
             var result = sut.Details(It.IsAny<int>());
 
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignController(mockedMediator.Object);
             var result = sut.Details(It.IsAny<int>());
 
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -90,7 +90,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void DetailsCallsUrlActionWithTheCorrectUrlActionContextValues()
+        public void DetailsCallsUrlActionWithTheCorrectUrlControllerContextValues()
         {
             const string requestScheme = "requestScheme";
 
@@ -162,7 +162,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var sut = new CampaignController(Mock.Of<IMediator>());
             var result = sut.LocationMap(It.IsAny<int>());
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -233,7 +233,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignController(Mock.Of<IMediator>());
             var result = sut.Get(It.IsAny<int>());
 
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -245,7 +245,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignController(mockedMediator.Object);
             var result = sut.Get(It.IsAny<int>());
 
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]

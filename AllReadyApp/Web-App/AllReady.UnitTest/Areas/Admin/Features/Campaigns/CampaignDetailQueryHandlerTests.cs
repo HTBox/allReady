@@ -23,7 +23,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             var firePrev = new Campaign
             {
                 Id = 1,
-                Name = "Neighborhood Fire Prevention Days", 
+                Name = "Neighborhood Fire Prevention Days",
                 ManagingOrganization = htb
             };
             htb.Campaigns.Add(firePrev);

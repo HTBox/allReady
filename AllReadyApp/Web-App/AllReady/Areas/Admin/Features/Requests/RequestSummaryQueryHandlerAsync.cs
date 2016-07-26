@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using AllReady.Areas.Admin.Models.RequestModels;
 
 namespace AllReady.Areas.Admin.Features.Requests

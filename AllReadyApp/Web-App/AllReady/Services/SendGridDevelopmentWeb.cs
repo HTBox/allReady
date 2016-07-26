@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using SendGrid;
 
 namespace AllReady.Services

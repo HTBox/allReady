@@ -3,15 +3,15 @@ using Xunit;
 using Moq;
 using MediatR;
 using AllReady.Areas.Admin.Features.Skills;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
 using System.Collections.Generic;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using AllReady.Models;
 using AllReady.Areas.Admin.Features.Organizations;
-using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
@@ -30,8 +30,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillListQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(SiteAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(SiteAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var result = await controller.Index();
@@ -53,8 +53,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillListQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(OrgAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(OrgAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var result = await controller.Index() as ViewResult;
@@ -81,14 +81,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillListQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(OrgAdminWithMissingOrgId());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(OrgAdminWithMissingOrgId());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var result = await controller.Index();
 
             // Assert
-            Assert.IsType<HttpUnauthorizedResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>()), Times.Never);
         }
 
@@ -108,14 +108,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillCreateQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(OrgAdminWithMissingOrgId());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(OrgAdminWithMissingOrgId());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var result = await controller.Create();
 
             // Assert
-            Assert.IsType<HttpUnauthorizedResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>()), Times.Never);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQueryAsync>()), Times.Never);
         }
@@ -127,8 +127,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillCreateQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(SiteAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(SiteAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var result = await controller.Create() as ViewResult;
@@ -151,8 +151,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillCreateQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(OrgAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(OrgAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var result = await controller.Create() as ViewResult;
@@ -180,8 +180,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillCreateQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(SiteAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(SiteAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var model = CreateSkillModel();
@@ -201,8 +201,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillCreateQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(OrgAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(OrgAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var model = CreateSkillModel();
@@ -223,8 +223,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillCreateQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(SiteAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(SiteAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             controller.ModelState.AddModelError("test", "test");
 
@@ -250,8 +250,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillCreateQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(OrgAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(OrgAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             controller.ModelState.AddModelError("test", "test");
 
@@ -305,7 +305,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await controller.Edit(skillId);
 
             // Assert
-            Assert.IsType<HttpNotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(result);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillEditQueryAsync>()), Times.Once);
         }
 
@@ -317,14 +317,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillEditQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(OrgAdminWithMissingOrgId());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(OrgAdminWithMissingOrgId());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var result = await controller.Edit(skillId);
 
             // Assert
-            Assert.IsType<HttpUnauthorizedResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>()), Times.Never);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQueryAsync>()), Times.Never);
         }
@@ -337,8 +337,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillEditQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(SiteAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(SiteAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var result = await controller.Edit(skillId) as ViewResult;
@@ -362,8 +362,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillEditQuery(out controller, new SkillEditModel { Id = 1, Name = "Name", Description = "Description", OwningOrganizationId = _orgAdminOrgId });
 
-            var mockContext = MockActionContextWithUser(OrgAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(OrgAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var result = await controller.Edit(skillId) as ViewResult;
@@ -387,11 +387,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillEditQuery(out controller, new SkillEditModel { Id = 1, Name = "Name", Description = "Description", OwningOrganizationId = 2 });
 
-            var mockContext = MockActionContextWithUser(OrgAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(OrgAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
-            var result = await controller.Edit(skillId) as HttpUnauthorizedResult;
+            var result = await controller.Edit(skillId) as UnauthorizedResult;
 
             // Assert
             Assert.NotNull(result);
@@ -413,8 +413,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillEditQuery(out controller, model);
 
-            var mockContext = MockActionContextWithUser(SiteAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(SiteAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var result = await controller.Edit(model) as RedirectToActionResult;
@@ -434,8 +434,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillEditQuery(out controller, model);
 
-            var mockContext = MockActionContextWithUser(OrgAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(OrgAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             // Act            
             var result = await controller.Edit(model) as RedirectToActionResult;
@@ -465,8 +465,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillEditQuery(out controller, model);
 
-            var mockContext = MockActionContextWithUser(SiteAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(SiteAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             controller.ModelState.AddModelError("test", "test");
 
@@ -492,8 +492,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillEditQuery(out controller, model);
 
-            var mockContext = MockActionContextWithUser(OrgAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(OrgAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             controller.ModelState.AddModelError("test", "test");
 
@@ -534,7 +534,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = MockMediatorSkillDeleteQueryNullModel(out controller);
 
             // Act
-            var result = await controller.Delete(skillId) as HttpNotFoundResult;
+            var result = await controller.Delete(skillId) as NotFoundResult;
 
             // Assert
             Assert.NotNull(result);
@@ -549,14 +549,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             MockMediatorSkillDeleteQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(OrgAdminWithMissingOrgId());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(OrgAdminWithMissingOrgId());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var result = await controller.Delete(skillId);
 
             // Assert
-            Assert.IsType<HttpUnauthorizedResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]
@@ -567,8 +567,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             MockMediatorSkillDeleteQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(SiteAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(SiteAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var result = await controller.Delete(skillId) as ViewResult;
@@ -586,8 +586,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             MockMediatorSkillDeleteQuery(out controller, new SkillDeleteModel { HierarchicalName = "A Name", OwningOrganizationId = _orgAdminOrgId });
 
-            var mockContext = MockActionContextWithUser(OrgAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(OrgAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var result = await controller.Delete(skillId) as ViewResult;
@@ -611,7 +611,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = MockMediatorSkillDeleteQueryNullModel(out controller);
 
             // Act
-            var result = await controller.DeleteConfirmed(skillId) as HttpNotFoundResult;
+            var result = await controller.DeleteConfirmed(skillId) as NotFoundResult;
 
             // Assert
             Assert.NotNull(result);
@@ -625,8 +625,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             var mockMediator = MockMediatorSkillDeleteQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(SiteAdmin());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(SiteAdmin());
+            controller.ControllerContext = mockContext.Object;
 
             // Act            
             var result = await controller.DeleteConfirmed(1) as RedirectToActionResult;
@@ -646,14 +646,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             SkillController controller;
             MockMediatorSkillDeleteQuery(out controller);
 
-            var mockContext = MockActionContextWithUser(OrgAdminWithMissingOrgId());
-            controller.ActionContext = mockContext.Object;
+            var mockContext = MockControllerContextWithUser(OrgAdminWithMissingOrgId());
+            controller.ControllerContext = mockContext.Object;
 
             // Act
             var result = await controller.DeleteConfirmed(skillId);
 
             // Assert
-            Assert.IsType<HttpUnauthorizedResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -750,11 +750,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             };
         }
 
-        private static Mock<ActionContext> MockActionContextWithUser(ClaimsPrincipal principle)
+        private static Mock<ControllerContext> MockControllerContextWithUser(ClaimsPrincipal principle)
         {
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(mock => mock.User).Returns(() => principle);
-            var mockContext = new Mock<ActionContext>();
+            var mockContext = new Mock<ControllerContext>();
 
             mockContext.Object.HttpContext = mockHttpContext.Object;
             return mockContext;

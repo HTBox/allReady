@@ -2,9 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
+using AllReady.Extensions;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Events
 {
@@ -65,12 +66,12 @@ namespace AllReady.Areas.Admin.Features.Events
             if (message.Event.Location != null)
             {
                 campaignEvent.Location = campaignEvent.Location.UpdateModel(message.Event.Location);
-                _context.Update(campaignEvent.Location);
+                _context.AddOrUpdate(campaignEvent.Location);
             }
 
             campaignEvent.Headline = message.Event.Headline;
 
-            _context.Update(campaignEvent);
+            _context.AddOrUpdate(campaignEvent);
             await _context.SaveChangesAsync().ConfigureAwait(false);
 
             return campaignEvent.Id;

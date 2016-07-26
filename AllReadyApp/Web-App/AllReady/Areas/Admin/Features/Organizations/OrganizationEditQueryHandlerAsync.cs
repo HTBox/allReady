@@ -1,29 +1,31 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationEditQueryHandler : IRequestHandler<OrganizationEditQuery, OrganizationEditModel>
+    public class OrganizationEditQueryHandlerAsync : IAsyncRequestHandler<OrganizationEditQueryAsync, OrganizationEditModel>
     {
         private readonly AllReadyContext _context;
 
-        public OrganizationEditQueryHandler(AllReadyContext context)
+        public OrganizationEditQueryHandlerAsync(AllReadyContext context)
         {
             _context = context;
         }
 
-        public OrganizationEditModel Handle(OrganizationEditQuery message)
+        public async Task<OrganizationEditModel> Handle(OrganizationEditQueryAsync message)
         {
-            var org = _context.Organizations
+            var org = await _context.Organizations
                 .AsNoTracking()
                 .Include(c => c.Campaigns)
                 .Include(l => l.Location)
                 .Include(u => u.Users).Include(tc => tc.OrganizationContacts)
                 .ThenInclude(c => c.Contact)
-                .SingleOrDefault(ten => ten.Id == message.Id);
+                .SingleOrDefaultAsync(ten => ten.Id == message.Id)
+                .ConfigureAwait(false);
 
             if (org == null)
             {

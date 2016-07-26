@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AllReady.Extensions;
+using System.Threading.Tasks;
 using AllReady.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Models
 {
@@ -71,12 +74,13 @@ namespace AllReady.Areas.Admin.Models
             return campaign;
         }
 
-        public static Organization UpdateOrganizationContact(this Organization organization, IPrimaryContactModel contactModel, AllReadyContext _context)
+        public static async Task<Organization> UpdateOrganizationContact(this Organization organization, IPrimaryContactModel contactModel, AllReadyContext _context)
         {
             if (organization.OrganizationContacts == null)
             {
                 organization.OrganizationContacts = new List<OrganizationContact>();
             }
+
             var primaryCampaignContact = organization.OrganizationContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
             var contactId = primaryCampaignContact?.ContactId;
             Contact primaryContact;
@@ -88,15 +92,15 @@ namespace AllReady.Areas.Admin.Models
             }
             else
             {
-                primaryContact = _context.Contacts.Single(c => c.Id == contactId);
+                primaryContact = await _context.Contacts.SingleAsync(c => c.Id == contactId).ConfigureAwait(false);
             }
+
             if (string.IsNullOrWhiteSpace(contactInfo) && primaryCampaignContact != null)
             {
                 //Delete
                 _context.OrganizationContacts.Remove(primaryCampaignContact);
                 _context.Remove(primaryCampaignContact);//Not Needed?
                 _context.Remove(primaryCampaignContact.Contact);
-
             }
             else
             {
@@ -104,7 +108,7 @@ namespace AllReady.Areas.Admin.Models
                 primaryContact.FirstName = contactModel.PrimaryContactFirstName;
                 primaryContact.LastName = contactModel.PrimaryContactLastName;
                 primaryContact.PhoneNumber = contactModel.PrimaryContactPhoneNumber;
-                _context.Update(primaryContact);
+                _context.AddOrUpdate(primaryContact);
 
                 if (primaryCampaignContact == null)
                 {
@@ -115,7 +119,7 @@ namespace AllReady.Areas.Admin.Models
                         ContactType = (int)ContactTypes.Primary
                     };
                     organization.OrganizationContacts.Add(primaryCampaignContact);
-                    _context.Update(primaryCampaignContact);
+                    _context.AddOrUpdate(primaryCampaignContact);
                 }
             }
 

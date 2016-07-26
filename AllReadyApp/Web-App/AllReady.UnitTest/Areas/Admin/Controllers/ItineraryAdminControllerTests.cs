@@ -1,28 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Features.Events;
+using AllReady.Areas.Admin.Features.Itineraries;
+using AllReady.Areas.Admin.Features.Organizations;
+using AllReady.Areas.Admin.Features.TaskSignups;
+using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.Models.ItineraryModels;
+using AllReady.Areas.Admin.Models.TaskSignupModels;
+using AllReady.Areas.Admin.Models.Validators;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using MediatR;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
-using System.Linq;
-using AllReady.Areas.Admin.Features.Events;
-using Microsoft.AspNet.Authorization;
-using AllReady.Areas.Admin.Features.Itineraries;
-using AllReady.Areas.Admin.Models;
-using AllReady.Areas.Admin.Models.ItineraryModels;
-using AllReady.Areas.Admin.Models.Validators;
-using AllReady.Areas.Admin.Features.Organizations;
-using AllReady.Areas.Admin.Features.TaskSignups;
-using AllReady.Areas.Admin.Models.TaskSignupModels;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
-    public class ItineraryAdminControllerTests
+  public class ItineraryAdminControllerTests
     {
         [Fact]
         public void ControllerHasAreaAtttributeWithTheCorrectAreaName()
@@ -76,14 +76,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             ItineraryController controller;
             MockMediatorItineraryDetailQuery(out controller);
-            Assert.IsType<HttpNotFoundResult>(await controller.Details(It.IsAny<int>()));
+            Assert.IsType<NotFoundResult>(await controller.Details(It.IsAny<int>()));
         }
 
         [Fact]
         public async Task DetailsReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
             var sut = GetItineraryControllerWithDetailsQuery(UserType.OrgAdmin.ToString(), It.IsAny<int>());
-            Assert.IsType<HttpUnauthorizedResult>(await sut.Details(It.IsAny<int>()));
+            Assert.IsType<UnauthorizedResult>(await sut.Details(It.IsAny<int>()));
         }
 
         [Fact]
@@ -177,7 +177,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             };
 
             var sut = GetItineraryControllerWithEventSummaryQuery(UserType.OrgAdmin.ToString(), 5);
-            Assert.IsType<HttpUnauthorizedResult>(await sut.Create(model));
+            Assert.IsType<UnauthorizedResult>(await sut.Create(model));
         }
 
         [Fact]
@@ -191,7 +191,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             };
 
             var sut = GetItineraryControllerWithEventSummaryQuery(UserType.OrgAdmin.ToString(), 1);
-            Assert.IsType<HttpOkObjectResult>(await sut.Create(model));
+            Assert.IsType<OkObjectResult>(await sut.Create(model));
         }
 
         [Fact]
@@ -205,7 +205,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             };
 
             var sut = GetItineraryControllerWithEventSummaryQuery(UserType.SiteAdmin.ToString(), 0);
-            Assert.IsType<HttpOkObjectResult>(await sut.Create(model));
+            Assert.IsType<OkObjectResult>(await sut.Create(model));
         }
 
         [Fact]
@@ -544,7 +544,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
 
-            Assert.IsType<HttpUnauthorizedResult>(await sut.AddRequests(itineraryId, selectedRequests));
+            Assert.IsType<UnauthorizedResult>(await sut.AddRequests(itineraryId, selectedRequests));
         }
 
         [Fact]
@@ -562,7 +562,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.BasicUser.ToString())
             });
 
-            Assert.IsType<HttpUnauthorizedResult>(await sut.AddRequests(itineraryId, selectedRequests));
+            Assert.IsType<UnauthorizedResult>(await sut.AddRequests(itineraryId, selectedRequests));
         }
 
         [Fact]
@@ -660,7 +660,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
 
-            Assert.IsType<HttpUnauthorizedResult>(await sut.ConfirmRemoveTeamMember(itineraryId, taskSignupId));
+            Assert.IsType<UnauthorizedResult>(await sut.ConfirmRemoveTeamMember(itineraryId, taskSignupId));
         }
 
         [Fact]
@@ -678,7 +678,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.BasicUser.ToString())
             });
 
-            Assert.IsType<HttpUnauthorizedResult>(await sut.ConfirmRemoveTeamMember(itineraryId, taskSignupId));
+            Assert.IsType<UnauthorizedResult>(await sut.ConfirmRemoveTeamMember(itineraryId, taskSignupId));
         }
 
         [Fact]
@@ -719,7 +719,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 new Claim(AllReady.Security.ClaimTypes.Organization, "1")
             });
 
-            Assert.IsType<HttpNotFoundResult>(await sut.ConfirmRemoveTeamMember(itineraryId, taskSignupId));
+            Assert.IsType<NotFoundResult>(await sut.ConfirmRemoveTeamMember(itineraryId, taskSignupId));
         }
 
         [Fact]
@@ -788,7 +788,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
 
-            Assert.IsType<HttpUnauthorizedResult>(await sut.RemoveTeamMember(itineraryId, taskSignupId));
+            Assert.IsType<UnauthorizedResult>(await sut.RemoveTeamMember(itineraryId, taskSignupId));
         }
 
         [Fact]
@@ -806,7 +806,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.BasicUser.ToString())
             });
 
-            Assert.IsType<HttpUnauthorizedResult>(await sut.RemoveTeamMember(itineraryId, taskSignupId));
+            Assert.IsType<UnauthorizedResult>(await sut.RemoveTeamMember(itineraryId, taskSignupId));
         }
 
         [Fact]
