@@ -1,4 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using AllReady.Controllers;
+using AllReady.UnitTest.Extensions;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace AllReady.UnitTest.Controllers
@@ -82,14 +86,22 @@ namespace AllReady.UnitTest.Controllers
         {
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void IndexReturnsTheCorrectView()
         {
+            var sut = CreateWithNoInjectedDependencies();
+            var result = sut.Index();
+            Assert.IsType<ViewResult>(result);
+
+
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void IndexHasHttpGetAttribute()
         {
+            var sut = CreateWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.Index()).OfType<HttpGetAttribute>().FirstOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -194,5 +206,8 @@ namespace AllReady.UnitTest.Controllers
         public void ChangeStatusHasAuthorizeAttribute()
         {
         }
+
+        private static EventController CreateWithNoInjectedDependencies() => new EventController(null, null);
+
     }
 }
