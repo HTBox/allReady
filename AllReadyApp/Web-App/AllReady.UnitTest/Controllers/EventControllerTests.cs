@@ -89,7 +89,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void IndexReturnsTheCorrectView()
         {
-            var sut = CreateWithNoInjectedDependencies();
+            var sut = EventControllerBuilder.Instance().Build();
             var result = sut.Index();
             Assert.IsType<ViewResult>(result);
 
@@ -99,7 +99,8 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void IndexHasHttpGetAttribute()
         {
-            var sut = CreateWithNoInjectedDependencies();
+            var sut = EventControllerBuilder.Instance().Build();
+            
             var attribute = sut.GetAttributesOn(x => x.Index()).OfType<HttpGetAttribute>().FirstOrDefault();
             Assert.NotNull(attribute);
         }
@@ -207,7 +208,25 @@ namespace AllReady.UnitTest.Controllers
         {
         }
 
-        private static EventController CreateWithNoInjectedDependencies() => new EventController(null, null);
+        private class EventControllerBuilder
+        {
+            private readonly EventController _controller;
 
+            private EventControllerBuilder()
+            {
+                _controller = new EventController(null,null);
+            }
+
+            public static EventControllerBuilder Instance()
+            {
+                return new EventControllerBuilder();
+            }
+
+            public EventController Build()
+            {
+                return _controller;
+            }
+        }
+        
     }
 }
