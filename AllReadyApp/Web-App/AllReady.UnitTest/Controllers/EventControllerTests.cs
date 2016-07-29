@@ -32,59 +32,7 @@ namespace AllReady.UnitTest.Controllers
         {
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public void GetMyTasksSendsGetMyTasksQueryWithTheCorrectData()
-        {
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public void GetMyTasksReturnsCorrectJsonView()
-        {
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public void GetMyTasksHasRouteAttributeWithCorrectRoute()
-        {
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public void GetMyTasksHasAuthorizeAttribute()
-        {
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public async Task UpdateMyTasksSendsUpdateMyTasksCommandAsyncWithCorrectData()
-        {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public async Task UpdateMyTasksReturnsJsonResultWithTheCorrectData()
-        {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public void UpdateMyTasksHasHttpPostAttribute()
-        {
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public void UpdateMyTasksHasAuthorizeAttribute()
-        {
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public void UpdateMyTasksHasValidateAntiForgeryTokenAttribute()
-        {
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public void UpdateMyTasksHasRouteAttributeWithCorrectRoute()
-        {
-        }
+        
 
         [Fact]
         public void IndexReturnsTheCorrectView()
