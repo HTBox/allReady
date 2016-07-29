@@ -16,25 +16,14 @@ namespace AllReady.UnitTest.Controllers
     {
         //delete this line when all unit tests using it have been completed
         private readonly Task taskFromResultZero = Task.FromResult(0);
-
-        [Fact(Skip = "NotImplemented")]
-        public void GetMyEventsSendsGetMyEventsQueryWithTheCorrectUserId()
-        {
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public void GetMyEventsReturnsTheCorrectViewAndViewModel()
-        {
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public void GetMyEventsHasRouteAttributeWithTheCorrectRoute()
-        {
-        }
-
-        [Fact(Skip = "NotImplemented")]
+        
+        [Fact]
         public void GetMyEventsHasAuthorizeAttribute()
         {
+            var sut = EventControllerBuilder.Instance().Build();
+
+            var attribute = sut.GetAttributesOn(x => x.Index()).OfType<AuthorizeAttribute>().FirstOrDefault();
+            Assert.NotNull(attribute);
         }
 
 
