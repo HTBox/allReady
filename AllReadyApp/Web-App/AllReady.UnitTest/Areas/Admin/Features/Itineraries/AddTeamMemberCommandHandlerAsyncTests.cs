@@ -11,22 +11,9 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
 {
-    [Collection("Context Collection")]
-    public class AddTeamMemberCommandHandlerAsyncTests : IDisposable
+    public class AddTeamMemberCommandHandlerAsyncTests : InMemoryContextTest
     {
-        private ContextFixture Fixture;
-        private AllReadyContext Context;
-        public AddTeamMemberCommandHandlerAsyncTests(ContextFixture fixture)
-        {
-            this.Fixture = fixture;
-            Context = Fixture.Context;
-            LoadTestData();
-        }
-        public void Dispose()
-        {
-            Fixture.EmptyDatabase();
-        }
-        protected void LoadTestData()
+        protected override void LoadTestData()
         {
             var htb = new Organization
             {
@@ -145,6 +132,5 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
 
             mockMediator.Verify(x => x.PublishAsync(It.Is<IntineraryVolunteerListUpdated>(y => y.TaskSignupId == query.TaskSignupId && y.ItineraryId == query.ItineraryId && y.UpdateType == UpdateType.VolunteerAssigned)), Times.Once);
         }
-
     }
 }
