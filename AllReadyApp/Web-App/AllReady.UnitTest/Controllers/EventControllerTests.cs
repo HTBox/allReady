@@ -16,15 +16,7 @@ namespace AllReady.UnitTest.Controllers
     {
         //delete this line when all unit tests using it have been completed
         private readonly Task taskFromResultZero = Task.FromResult(0);
-        
-        [Fact]
-        public void GetMyEventsHasAuthorizeAttribute()
-        {
-            var sut = EventControllerBuilder.Instance().Build();
-
-            var attribute = sut.GetAttributesOn(x => x.Index()).OfType<AuthorizeAttribute>().FirstOrDefault();
-            Assert.NotNull(attribute);
-        }
+       
 
 
 
@@ -47,10 +39,10 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ShowEventSendsShowEventQueryWithCorrectData()
         {
-
+            
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -63,9 +55,10 @@ namespace AllReady.UnitTest.Controllers
         {
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ShowEventHasRouteAttributeWithCorrectRoute()
         {
+      
         }
 
         [Fact(Skip = "NotImplemented")]
