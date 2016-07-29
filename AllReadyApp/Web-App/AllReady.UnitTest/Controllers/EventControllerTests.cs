@@ -1,9 +1,13 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Controllers;
+using AllReady.Features.Event;
 using AllReady.UnitTest.Extensions;
+using AllReady.ViewModels.Shared;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 using Xunit;
 
 namespace AllReady.UnitTest.Controllers
@@ -33,7 +37,7 @@ namespace AllReady.UnitTest.Controllers
         {
         }
 
-        
+
 
         [Fact]
         public void IndexReturnsTheCorrectView()
@@ -49,7 +53,7 @@ namespace AllReady.UnitTest.Controllers
         public void IndexHasHttpGetAttribute()
         {
             var sut = EventControllerBuilder.Instance().Build();
-            
+
             var attribute = sut.GetAttributesOn(x => x.Index()).OfType<HttpGetAttribute>().FirstOrDefault();
             Assert.NotNull(attribute);
         }
@@ -89,18 +93,26 @@ namespace AllReady.UnitTest.Controllers
 
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task SignupSendsAsyncEventSignupCommandWithCorrrectDataWhenViewModelIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var builder = EventControllerBuilder.Instance();
+            var sut = builder.WithMediator().Build();
+            await sut.Signup(new EventSignupViewModel());
+
+            builder.MediatorMock.Verify(x => x.SendAsync(It.IsAny<EventSignupCommand>()));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task SignupRedirectsToCorrectActionWithCorrectRouteValuesWhenViewModelIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var sut = EventControllerBuilder.Instance().WithMediator().Build();
+
+            var result = await sut.Signup(new EventSignupViewModel()) as RedirectToActionResult;
+
+            Assert.Equal(nameof(EventController.ShowEvent), result.ActionName);
+            Assert.Equal(1, result.RouteValues.Count);
+            Assert.Equal(0, result.RouteValues["id"]);
         }
 
         [Fact]
@@ -112,7 +124,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void SignupHasAuthorizeAttribute()
         {
             var sut = EventControllerBuilder.Instance().Build();
@@ -121,7 +133,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void SignupHasValidateAntiForgeryTokenAttribute()
         {
             var sut = EventControllerBuilder.Instance().Build();
@@ -130,7 +142,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void SignupHasRouteAttributeWithCorrectRoute()
         {
             var sut = EventControllerBuilder.Instance().Build();
@@ -177,11 +189,11 @@ namespace AllReady.UnitTest.Controllers
 
         private class EventControllerBuilder
         {
-            private readonly EventController _controller;
-
+            private IMediator _mediator;
             private EventControllerBuilder()
             {
-                _controller = new EventController(null,null);
+                MediatorMock = new Mock<IMediator>();
+                _mediator = null;
             }
 
             public static EventControllerBuilder Instance()
@@ -191,9 +203,19 @@ namespace AllReady.UnitTest.Controllers
 
             public EventController Build()
             {
-                return _controller;
+
+                return new EventController(_mediator, null);
             }
+
+            public Mock<IMediator> MediatorMock { get; }
+            public EventControllerBuilder WithMediator()
+            {
+
+                _mediator = MediatorMock.Object;
+                return this;
+            }
+
         }
-        
+
     }
 }
