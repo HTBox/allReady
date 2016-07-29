@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.UnitTest.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
@@ -79,11 +80,13 @@ namespace AllReady.UnitTest.Controllers
         {
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task SignupReturnsBadRequestResultWhenViewModelIsNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var sut = EventControllerBuilder.Instance().Build();
+            var result = await sut.Signup(null);
+            Assert.IsType<BadRequestResult>(result);
+
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -100,24 +103,40 @@ namespace AllReady.UnitTest.Controllers
             await taskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void SignupHasHttpPostAttribute()
         {
+            var sut = EventControllerBuilder.Instance().Build();
+
+            var attribute = sut.GetAttributesOn(x => x.Signup(null)).OfType<HttpPostAttribute>().FirstOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
         public void SignupHasAuthorizeAttribute()
         {
+            var sut = EventControllerBuilder.Instance().Build();
+
+            var attribute = sut.GetAttributesOn(x => x.Signup(null)).OfType<AuthorizeAttribute>().FirstOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
         public void SignupHasValidateAntiForgeryTokenAttribute()
         {
+            var sut = EventControllerBuilder.Instance().Build();
+
+            var attribute = sut.GetAttributesOn(x => x.Signup(null)).OfType<ValidateAntiForgeryTokenAttribute>().FirstOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
         public void SignupHasRouteAttributeWithCorrectRoute()
         {
+            var sut = EventControllerBuilder.Instance().Build();
+
+            var attribute = sut.GetAttributesOn(x => x.Signup(null)).OfType<RouteAttribute>().FirstOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
