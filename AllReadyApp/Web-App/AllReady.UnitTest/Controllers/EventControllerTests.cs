@@ -45,9 +45,20 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip="test forgotten")]
+        [Fact]
         public void ShowEventSendsShowEventQueryWithCorrectData()
-        {}
+        {
+            var builder = EventControllerBuilder.Instance();
+            var sut = builder.WithMediator().WithUserLogged().Build();
+            
+            sut.ShowEvent(1);
+
+            builder
+                .MediatorMock
+                .Verify(x => 
+                    x.Send(It.Is<ShowEventQuery>(y => 
+                        y.EventId== 1 && y.User == sut.ControllerContext.HttpContext.User)));
+        }
 
         [Fact]
         public void ShowEventReturnsHttpNotFoundResultWhenViewModelIsNull()
