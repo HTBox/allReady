@@ -23,9 +23,6 @@ namespace AllReady.UnitTest.Controllers
 {
     public class EventControllerTests
     {
-        //delete this line when all unit tests using it have been completed
-        private readonly Task taskFromResultZero = Task.FromResult(0);
-
         [Fact]
         public void IndexReturnsTheCorrectView()
         {
@@ -48,11 +45,9 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact]
+        [Fact(Skip="test forgotten")]
         public void ShowEventSendsShowEventQueryWithCorrectData()
-        {
-
-        }
+        {}
 
         [Fact]
         public void ShowEventReturnsHttpNotFoundResultWhenViewModelIsNull()
@@ -129,11 +124,12 @@ namespace AllReady.UnitTest.Controllers
             var builder = EventControllerBuilder.Instance();
             var sut = builder.WithMediator().Build();
 
-            await sut.Signup(new EventSignupViewModel());
+            var model = new EventSignupViewModel();
+            await sut.Signup(model);
 
             builder
                 .MediatorMock
-                .Verify(x => x.SendAsync(It.IsAny<EventSignupCommand>()));
+                .Verify(x => x.SendAsync(It.Is<EventSignupCommand>(y => y.EventSignup == model)));
         }
 
         [Fact]
