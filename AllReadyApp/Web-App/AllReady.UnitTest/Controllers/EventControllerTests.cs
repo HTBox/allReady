@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Controllers;
 using AllReady.Features.Event;
 using AllReady.Models;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
+using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -194,40 +196,80 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ChangeStatusReturnsBadRequestResultWhenUserIdIsNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var sut = EventControllerBuilder.Instance().Build();
+
+            var result = await sut.ChangeStatus(0, 0, null, TaskStatus.Completed, string.Empty);
+
+            Assert.IsType<BadRequestResult>(result);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ChangeStatusSendsTaskStatusChangeCommandAsyncWithCorrectData()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var builder = EventControllerBuilder.Instance();
+            var sut = builder.WithMediator().Build();
+
+            await sut.ChangeStatus(0, 1, "userId", TaskStatus.Completed, "statusDesc");
+
+            builder
+                .MediatorMock
+                .Verify(x => 
+                    x.SendAsync(It.Is<TaskStatusChangeCommandAsync>(y => 
+                        y.TaskId == 1 && y.TaskStatus == TaskStatus.Completed && 
+                            y.UserId == "userId" && y.TaskStatusDescription == "statusDesc")));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ChangeStatusRedirectsToCorrectActionWithCorrectRouteValues()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var builder = EventControllerBuilder.Instance();
+            var sut = builder.WithMediator().Build();
+
+            var result = await sut.ChangeStatus(1, 0, string.Empty, TaskStatus.Completed, string.Empty) as RedirectToActionResult;
+
+            Assert.Equal(nameof(EventController.ShowEvent), result.ActionName);
+            Assert.Equal(1, result.RouteValues.Count);
+            Assert.Equal(1, result.RouteValues["id"]);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ChangeStatusHasHttpGetAttribute()
         {
+            var sut = EventControllerBuilder.Instance().Build();
+
+            var attribute = sut
+                            .GetAttributesOn(x => x.ChangeStatus(0, 0, string.Empty, TaskStatus.Completed, string.Empty))
+                            .OfType<HttpGetAttribute>().FirstOrDefault();
+
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ChangeStatusHasRouteAttributeWithCorrectRoute()
         {
+            var sut = EventControllerBuilder.Instance().Build();
+
+            var attribute = sut
+                            .GetAttributesOn(x => x.ChangeStatus(0, 0, string.Empty, TaskStatus.Completed, string.Empty))
+                            .OfType<RouteAttribute>().FirstOrDefault();
+
+            Assert.NotNull(attribute);
+            Assert.Equal("/Event/ChangeStatus", attribute.Template);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ChangeStatusHasAuthorizeAttribute()
         {
+            var sut = EventControllerBuilder.Instance().Build();
+
+            var attribute = sut
+                            .GetAttributesOn(x => x.ChangeStatus(0, 0, string.Empty, TaskStatus.Completed, string.Empty))
+                            .OfType<AuthorizeAttribute>().FirstOrDefault();
+
+            Assert.NotNull(attribute);
         }
 
         private class EventControllerBuilder
