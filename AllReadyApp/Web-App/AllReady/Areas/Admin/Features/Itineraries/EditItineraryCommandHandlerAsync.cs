@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AllReady.Extensions;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,8 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 itinerary.Date = message.Itinerary.Date;
                 itinerary.EventId = message.Itinerary.EventId;
 
-                _context.Update(itinerary);
+                _context.AddOrUpdate(itinerary);
+                
                 await _context.SaveChangesAsync().ConfigureAwait(false);
 
                 return itinerary.Id;
