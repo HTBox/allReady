@@ -18,7 +18,7 @@ namespace AllReady.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var model = new Index
+            var model = new IndexViewModel
             {
                 FeaturedCampaign = await mediator.SendAsync(new FeaturedCampaignQueryAsync()),
                 ActiveOrUpcomingCampaigns = await mediator.SendAsync(new ActiveOrUpcomingCampaignsQueryAsync())

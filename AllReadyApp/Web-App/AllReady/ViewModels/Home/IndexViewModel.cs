@@ -2,7 +2,7 @@
 
 namespace AllReady.ViewModels.Home
 {
-    public class Index
+    public class IndexViewModel
     {
         public List<ActiveOrUpcomingCampaign> ActiveOrUpcomingCampaigns { get; set; }
         public CampaignSummaryViewModel FeaturedCampaign { get; set; }
