@@ -19,9 +19,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Shouldly;
 using Xunit;
-using AddRequestsCommand = AllReady.Areas.Admin.Features.Itineraries.AddRequestsCommand;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
