@@ -77,13 +77,13 @@ else
                     <!-- ko foreach: campaigns -->
                     <tr>
                         <td>
-                            <img data-bind="attr: { src: ImageUrl }" class="img-responsive" />
+                            <img data-bind="attr: { src: imageUrl }" class="img-responsive" />
                         </td>
                         <td>
-                            <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
+                            <a data-bind="attr: { href: '/Campaign/' + id }, text: name"></a>
                         </td>
                         <td>
-                            <span data-bind="text: Description"></span>
+                            <span data-bind="text: description"></span>
                         </td>
                         <td>
                             <span data-bind="text: displayDate()"></span>
