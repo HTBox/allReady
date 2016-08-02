@@ -588,7 +588,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             await sut.AddRequests(itineraryId, selectedRequests);
 
-            mockMediator.Verify(x => x.SendAsync(It.Is<AddRequestsCommand>(y => y.ItineraryId == itineraryId)), Times.Once);
+            mockMediator.Verify(x => x.SendAsync(It.Is<AllReady.Areas.Admin.Features.Itineraries.AddRequestsCommand>(y => y.ItineraryId == itineraryId)), Times.Once);
         }
 
         [Fact]
