@@ -64,10 +64,10 @@
                 <!-- ko foreach: campaigns.filtered -->
                 <tr>
                     <td>
-                        <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
+                        <a data-bind="attr: { href: '/Campaign/' + id }, text: name"></a>
                     </td>
                     <td>
-                        <span data-bind="text: Description"></span>
+                        <span data-bind="text: description"></span>
                     </td>
                     <td>
                         <span data-bind="text: displayDate()"></span>

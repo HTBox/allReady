@@ -6,18 +6,13 @@
         for (var prop in item) {
             this[prop] = item[prop];
         }
-        //this.displayDate = function () {
-        //    var start = this.StartDate.split('T')[0];
-        //    var end = this.EndDate.split('T')[0];
-        //    return start + ' : ' + end;
-        //}
         return this;
     }
 
     function OrganizationsViewModel(organizations) {
-        var list = organizations.map(function (item) { return new Orgainzation(item); })
+        var list = organizations.map(function(item) { return new Orgainzation(item); });
 
-        this.organizations = ko.observableArray(organizations).textFilter(["Name", "Description"]);
+        this.organizations = ko.observableArray(organizations).textFilter(["name", "description"]);
         this.total = organizations.length;
     }
 
