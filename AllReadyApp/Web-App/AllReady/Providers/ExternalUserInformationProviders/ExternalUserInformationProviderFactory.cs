@@ -3,11 +3,6 @@ using Microsoft.Extensions.Options;
 
 namespace AllReady.Providers.ExternalUserInformationProviders
 {
-    public interface IExternalUserInformationProviderFactory
-    {
-        IProvideExternalUserInformation GetExternalUserInformationProvider(string loginProvider);
-    }
-
     public class ExternalUserInformationProviderFactory : IExternalUserInformationProviderFactory
     {
         private readonly IOptions<TwitterAuthenticationSettings> twitterAuthenticationSettings;
