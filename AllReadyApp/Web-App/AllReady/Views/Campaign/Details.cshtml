@@ -128,13 +128,13 @@
                 <!-- ko foreach: events.filtered -->
                 <tr>
                     <td>
-                        <a data-bind="attr: { href: '/Event/' + Id }, text: Name"></a>
+                        <a data-bind="attr: { href: '/Event/' + id }, text: name"></a>
                     </td>
                     <td>
-                        <span data-bind="text: Description"></span>
+                        <span data-bind="text: description"></span>
                     </td>
                     <td>
-                        <span data-bind="text: Location ? Location.Summary : '' "></span>
+                        <span data-bind="text: location ? location.summary : '' "></span>
                     </td>
                     <td>
                         <span data-bind="text: displayDate()"></span>
@@ -154,7 +154,7 @@
     <div class="col-md-12 text-center" data-bind="if: resources && resources.length > 0">
         <div class="event-results">
             <div class="event-wrapper" data-bind="foreach: resources">
-                <p><label data-bind="text: Name"></label></p>
+                <p><label data-bind="text: name"></label></p>
             </div>
         </div>
     </div>

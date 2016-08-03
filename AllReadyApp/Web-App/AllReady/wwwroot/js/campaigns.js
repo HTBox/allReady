@@ -7,8 +7,8 @@
             this[prop] = item[prop];
         }
         this.displayDate = function () {
-            var start = moment(this.StartDate).utcOffset(this.StartDate).format("dddd, MMMM Do YYYY");
-            var end = moment(this.EndDate).utcOffset(this.EndDate).format("dddd, MMMM Do YYYY");
+            var start = moment(this.startDate).utcOffset(this.startDate).format("dddd, MMMM Do YYYY");
+            var end = moment(this.endDate).utcOffset(this.endDate).format("dddd, MMMM Do YYYY");
             return start + ' to ' + end;
         }
         return this;
@@ -40,7 +40,7 @@
 
         var list = campaigns.map(function (item) { return new Campaign(item); })
 
-        this.campaigns = ko.observableArray(list).filterBeforeDate("EndDate").textFilter(["Name", "Description"]);
+        this.campaigns = ko.observableArray(list).filterBeforeDate("endDate").textFilter(["name", "description"]);
         this.total = list.length;
     }
     ko.applyBindings(new CampaignsViewModel(campaigns));

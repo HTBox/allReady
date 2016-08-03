@@ -34,10 +34,10 @@ function ResourcesViewModel(category)
         for (var prop in item) {
             this[prop] = item[prop];
         }
-        this.Name = this.Title;
+        this.name = this.title;
         this.displayDate = function () {
-            var start = moment(this.StartDateTime).utcOffset(this.StartDateTime).format("dddd, MMMM Do YYYY");
-            var end = moment(this.EndDateTime).utcOffset(this.EndDateTime).format("dddd, MMMM Do YYYY");
+            var start = moment(this.startDateTime).utcOffset(this.startDateTime).format("dddd, MMMM Do YYYY");
+            var end = moment(this.endDateTime).utcOffset(this.endDateTime).format("dddd, MMMM Do YYYY");
             return start + ' - ' + end;
         };
         
@@ -46,7 +46,7 @@ function ResourcesViewModel(category)
     function CampaignViewModel(events) {
         var list = events.map(function (item) { return new Event(item); })
 
-        this.events = ko.observableArray(list).filterBeforeDate("EndDateTime").textFilter(["Title", "Description"]);
+        this.events = ko.observableArray(list).filterBeforeDate("endDateTime").textFilter(["title", "description"]);
         this.resources = ko.observableArray([]);
 
         this.total = list.length;

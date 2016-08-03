@@ -4,8 +4,8 @@
             this[prop] = item[prop];
         }
         this.displayDate = function () {
-            var start = moment(this.StartDate).utcOffset(this.StartDate).format("dddd, MMMM Do YYYY");
-            var end = moment(this.EndDate).utcOffset(this.EndDate).format("dddd, MMMM Do YYYY");
+            var start = moment(this.startDate).utcOffset(this.startDate).format("dddd, MMMM Do YYYY");
+            var end = moment(this.endDate).utcOffset(this.endDate).format("dddd, MMMM Do YYYY");
             return start + ' - ' + end;
         }
         return this;

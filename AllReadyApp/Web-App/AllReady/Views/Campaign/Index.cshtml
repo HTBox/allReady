@@ -12,7 +12,7 @@
         <div class="event-results" data-bind="if: loadingDone">
             <h3>Campaigns near <span data-bind="text: searchTerm"></span></h3>
             <div class="event-wrapper" data-bind="foreach: campaignsNearZip">
-                <p><a data-bind="attr: { href: '/Campaign/' + CampaignId }, text: Title"></a></p>
+                <p><a data-bind="attr: { href: '/Campaign/' + campaignId }, text: title"></a></p>
             </div>
             <a data-bind="attr: { href: '/Campaign'}">See more campaigns</a>
         </div>
@@ -68,15 +68,15 @@
                 <!-- ko foreach: campaigns.filtered -->
                 <tr>
                     <td>
-                        <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
-                        <i data-bind="visible: Featured" class="fa fa-star star-highlight" aria-hidden="true"></i>
+                        <a data-bind="attr: { href: '/Campaign/' + id }, text: name"></a>
+                        <i data-bind="visible: featured" class="fa fa-star star-highlight" aria-hidden="true"></i>
                     </td>
                     <td>
-                        <span data-bind="text: ManagingOrganizationName"></span>
-                        <div data-bind="visible:ManagingOrganizationLogo != '' || ManagingOrganizationLogo != null"><br/><img width="250" data-bind="attr:{src: ManagingOrganizationLogo}" /></div>
+                        <span data-bind="text: managingOrganizationName"></span>
+                        <div data-bind="visible: managingOrganizationLogo != '' || managingOrganizationLogo != null"><br/><img width="250" data-bind="attr:{src: managingOrganizationLogo}" /></div>
                     </td>
                     <td>
-                        <span data-bind="text: Description"></span>
+                        <span data-bind="text: description"></span>
                     </td>
                     <td>
                         <span data-bind="text: displayDate()"></span>
