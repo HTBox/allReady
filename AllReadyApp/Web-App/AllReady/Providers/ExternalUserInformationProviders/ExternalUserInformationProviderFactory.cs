@@ -1,15 +1,15 @@
 ﻿using AllReady.Providers.ExternalUserInformationProviders.Providers;
-using Microsoft.Extensions.Options;
+using Autofac;
 
 namespace AllReady.Providers.ExternalUserInformationProviders
 {
     public class ExternalUserInformationProviderFactory : IExternalUserInformationProviderFactory
     {
-        private readonly IOptions<TwitterAuthenticationSettings> twitterAuthenticationSettings;
+        private readonly IComponentContext autofacContainer;
 
-        public ExternalUserInformationProviderFactory(IOptions<TwitterAuthenticationSettings> twitterAuthenticationSettings)
+        public ExternalUserInformationProviderFactory(IComponentContext autofacContainer)
         {
-            this.twitterAuthenticationSettings = twitterAuthenticationSettings;
+            this.autofacContainer = autofacContainer;
         }
 
         public IProvideExternalUserInformation GetExternalUserInformationProvider(string loginProvider)
@@ -17,13 +17,13 @@ namespace AllReady.Providers.ExternalUserInformationProviders
             switch (loginProvider)
             {
                 case "Facebook":
-                    return new MicrosoftAndFacebookExternalUserInformationProvider();
+                    return autofacContainer.Resolve<MicrosoftAndFacebookExternalUserInformationProvider>();
                 case "Microsoft":
-                    return new MicrosoftAndFacebookExternalUserInformationProvider();
+                    return autofacContainer.Resolve<MicrosoftAndFacebookExternalUserInformationProvider>(); ;
                 case "Google":
-                    return new GoogleExternalUserInformationProvider();
+                    return autofacContainer.Resolve<GoogleExternalUserInformationProvider>();
                 case "Twitter":
-                    return new TwitterExternalUserInformationProvider(twitterAuthenticationSettings);
+                    return autofacContainer.Resolve<TwitterExternalUserInformationProvider>();
             }
             return null;
         }

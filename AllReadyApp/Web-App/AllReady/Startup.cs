@@ -6,6 +6,7 @@ using AllReady.Controllers;
 using AllReady.DataAccess;
 using AllReady.Models;
 using AllReady.Providers.ExternalUserInformationProviders;
+using AllReady.Providers.ExternalUserInformationProviders.Providers;
 using AllReady.Security;
 using AllReady.Services;
 using Autofac;
@@ -131,7 +132,6 @@ namespace AllReady
         services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
         services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
         services.AddSingleton<IImageService, ImageService>();
-        services.AddSingleton<IExternalUserInformationProviderFactory, ExternalUserInformationProviderFactory>();
         //services.AddSingleton<GeoService>();
         services.AddTransient<SampleDataGenerator>();
 
@@ -150,6 +150,12 @@ namespace AllReady
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterSource(new ContravariantRegistrationSource());
             containerBuilder.RegisterAssemblyTypes(typeof(Startup).Assembly).AsImplementedInterfaces();
+
+            //ExternalUserInformationProviderFactory registration
+            containerBuilder.Register<IExternalUserInformationProviderFactory>(c => new ExternalUserInformationProviderFactory(c.Resolve<IComponentContext>()));
+            containerBuilder.RegisterType<TwitterExternalUserInformationProvider>();
+            containerBuilder.RegisterType<GoogleExternalUserInformationProvider>();
+            containerBuilder.RegisterType<MicrosoftAndFacebookExternalUserInformationProvider>();
 
             //Populate the container with services that were previously registered
             containerBuilder.Populate(services);
