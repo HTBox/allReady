@@ -25,7 +25,7 @@
                 }
                 <div class="@(string.IsNullOrEmpty(Model.ImageUrl) ? "col-sm-12" : "col-sm-10" )">
                     <h2>@Model.Title</h2>
-                    @if (Model.HasHeadline)
+                    @if (!string.IsNullOrEmpty(Model.Headline))
                     {
                         <h3>@Model.Headline</h3>
                     }
@@ -118,19 +118,19 @@
                                                     <span class="fa fa-caret-down accordion-icon-direction" data-toggle-accordion></span>
                                                 </div>
                                                 <div data-toggle-accordion>
-                                                    <span class="task-name" data-bind="text: Name, css: { isFull: IsFull }"></span>
-                                                    <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                                                    <span class="task-name" data-bind="text: name, css: { isFull: isFull }"></span>
+                                                    <span class="fa fa-question-circle" data-bind="visible: description, tooltip: { title: description, placement: 'top' }" aria-hidden="true"></span>
                                                     <div style="display: inline">
                                                         <span class="label label-success" data-bind="visible: hasAllMatchingSkills, tooltip: { title: 'You have all of the required skills needed for this task!', placement: 'top' }">Match</span>
                                                         <span class="label label-warning" data-bind="visible: !hasAllMatchingSkills() && hasAtLeastOneMatchingSkill(), tooltip: { title: 'You have at least one of the required skills needed for this task!', placement: 'top' }">Match</span>
-                                                        <span class="label label-info" data-bind="visible: AssignedVolunteers[0].Status === 'Assigned', tooltip: { title: 'Assigned' }"><span class="fa fa-arrow-right"></span></span>
-                                                        <span class="label label-primary" data-bind="visible: AssignedVolunteers[0].Status === 'Accepted', tooltip: { title: 'Accepted' }"><span class="fa fa-thumbs-o-up"></span></span>
-                                                        <span class="label label-warning" data-bind="visible: AssignedVolunteers[0].Status === 'Rejected', tooltip: { title: 'Rejected' }"><span class="fa fa-thumbs-o-down"></span></span>
-                                                        <span class="label label-success" data-bind="visible: AssignedVolunteers[0].Status === 'Completed', tooltip: { title: 'Completed' }"><span class="fa fa-check"></span></span>
-                                                        <span class="label label-danger" data-bind="visible: AssignedVolunteers[0].Status === 'CanNotComplete', tooltip: { title: 'Unable to complete (' + AssignedVolunteers[0].StatusDescription + ')' }"><span class="fa fa-times"></span></span>
+                                                        <span class="label label-info" data-bind="visible: assignedVolunteers[0].status === 'Assigned', tooltip: { title: 'Assigned' }"><span class="fa fa-arrow-right"></span></span>
+                                                        <span class="label label-primary" data-bind="visible: assignedVolunteers[0].status === 'Accepted', tooltip: { title: 'Accepted' }"><span class="fa fa-thumbs-o-up"></span></span>
+                                                        <span class="label label-warning" data-bind="visible: assignedVolunteers[0].status === 'Rejected', tooltip: { title: 'Rejected' }"><span class="fa fa-thumbs-o-down"></span></span>
+                                                        <span class="label label-success" data-bind="visible: assignedVolunteers[0].status === 'Completed', tooltip: { title: 'Completed' }"><span class="fa fa-check"></span></span>
+                                                        <span class="label label-danger" data-bind="visible: assignedVolunteers[0].status === 'CanNotComplete', tooltip: { title: 'Unable to complete (' + assignedVolunteers[0].statusDescription + ')' }"><span class="fa fa-times"></span></span>
                                                         <br />
                                                     </div>
-                                                    <span class="task-datetime" data-bind="html: DisplayDateTime"></span><br />
+                                                    <span class="task-datetime" data-bind="html: displayDateTime"></span><br />
                                                 </div>
 
                                                 <div class="btn-group" data-bind="visible: currentStatus !== 'Completed' && currentStatus !== 'CanNotComplete'">
@@ -171,17 +171,17 @@
                                         </div>
                                         <div data-bind="attr: {id: 'Task-'+Id}" class="panel-collapse collapse" role="tabpanel">
                                             <div class="panel-body">
-                                                <p data-bind="text: Description"></p>
-                                                <p data-bind="visible: IsLimitVolunteers, text: VolunteerLimitDisplay"></p>
+                                                <p data-bind="text: description"></p>
+                                                <p data-bind="visible: isLimitVolunteers, text: VolunteerLimitDisplay"></p>
 
                                                 <div class="row task-skills-container" data-bind="visible: skillsWithIsUser().length" style="display: none">
                                                     <div class="col-sm-12">
                                                         <h5>Needed Skills:</h5>
                                                         <ul data-bind="foreach: skillsWithIsUser">
                                                             <li>
-                                                                <span data-bind="text: HierarchicalName"></span>
-                                                                <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
-                                                                <span class="label label-success" data-bind="visible: IsUserSkill, tooltip: { title: 'You have this skill!', placement: 'top' }">
+                                                                <span data-bind="text: hierarchicalName"></span>
+                                                                <span class="fa fa-question-circle" data-bind="visible: description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                                                                <span class="label label-success" data-bind="visible: isUserSkill, tooltip: { title: 'You have this skill!', placement: 'top' }">
                                                                     <span class="fa fa-check" aria-hidden="true"></span>
                                                                     Match
                                                                 </span>
@@ -234,34 +234,34 @@
                                             <span class="fa fa-caret-down accordion-icon-direction" data-toggle-accordion></span>
                                         </div>
                                         <div data-toggle-accordion>
-                                            <span class="task-name" data-bind="text: Name, css: { isFull: IsLimitVolunteers && IsFull }"></span>
-                                            <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                                            <span class="task-name" data-bind="text: name, css: { isFull: isLimitVolunteers && isFull }"></span>
+                                            <span class="fa fa-question-circle" data-bind="visible: description, tooltip: { title: description, placement: 'top' }" aria-hidden="true"></span>
                                             <span class="label label-success" data-bind="visible: hasAllMatchingSkills, tooltip: { title: 'You have all of the required skills needed for this task!', placement: 'top' }">Match</span>
                                             <span class="label label-warning" data-bind="visible: !hasAllMatchingSkills() && hasAtLeastOneMatchingSkill(), tooltip: { title: 'You have at least one of the required skills needed for this task!', placement: 'top' }">Match</span>
                                             <br/>
-                                            <span data-bind="text: VolunteersRequiredText"></span>
+                                            <span data-bind="text: volunteersRequiredText"></span>
                                             <br/>
-                                            <span class="task-datetime" data-bind="html: DisplayDateTime"></span><br />
+                                            <span class="task-datetime" data-bind="html: displayDateTime"></span><br />
                                         </div>
                                         <div class="btn-group">
-                                            <button class="btn btn-default" data-bind="visible: !IsClosed && IsAllowSignups && $root.isSignedIn, click: $root.signupForTask , attr: { href: '#signup' }">Volunteer</button>
-                                            <button class="btn btn-default" data-bind="visible: !IsClosed && IsAllowSignups && !$root.isSignedIn, click: $root.confirmGoToLogin , attr: { href: '#signup' }">Volunteer</button>
+                                            <button class="btn btn-default" data-bind="visible: !isClosed && isAllowSignups && $root.isSignedIn, click: $root.signupForTask , attr: { href: '#signup' }">Volunteer</button>
+                                            <button class="btn btn-default" data-bind="visible: !isClosed && isAllowSignups && !$root.isSignedIn, click: $root.confirmGoToLogin , attr: { href: '#signup' }">Volunteer</button>
                                         </div>
                                     </div>
                                 </div>
-                                <div data-bind="attr: {id: 'Task-'+Id}" class="panel-collapse collapse" role="tabpanel">
+                                <div data-bind="attr: {id: 'Task-'+id}" class="panel-collapse collapse" role="tabpanel">
                                     <div class="panel-body">
-                                        <p data-bind="text: Description"></p>
-                                        <p data-bind="visible: IsLimitVolunteers, text: VolunteerLimitDisplay"></p>
+                                        <p data-bind="text: description"></p>
+                                        <p data-bind="visible: isLimitVolunteers, text: volunteerLimitDisplay"></p>
 
                                         <div class="row task-skills-container" data-bind="visible: skillsWithIsUser().length" style="display: none">
                                             <div class="col-sm-12">
                                                 <h5>Needed Skills:</h5>
                                                 <ul data-bind="foreach: skillsWithIsUser">
                                                     <li>
-                                                        <span data-bind="text: HierarchicalName"></span>
-                                                        <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
-                                                        <span class="label label-success" data-bind="visible: IsUserSkill, tooltip: { title: 'You have this skill!', placement: 'top' }">
+                                                        <span data-bind="text: hierarchicalName"></span>
+                                                        <span class="fa fa-question-circle" data-bind="visible: description, tooltip: { title: description, placement: 'top' }" aria-hidden="true"></span>
+                                                        <span class="label label-success" data-bind="visible: isUserSkill, tooltip: { title: 'You have this skill!', placement: 'top' }">
                                                             <span class="fa fa-check" aria-hidden="true"></span>
                                                             Match
                                                         </span>
@@ -298,13 +298,13 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <h4 class="modal-title" id="cantCompleteLabel">
-                        Mark <span data-bind="text: Name"></span> as Unable to Complete?
+                        Mark <span data-bind="text: name"></span> as Unable to Complete?
                     </h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
                         <label data-bind="attr: { 'for': 'notCompleteReason' }">Reason</label>
-                        <input type="text" class="form-control" id="notCompleteReason" data-bind="textInput: NotCompleteReason">
+                        <input type="text" class="form-control" id="notCompleteReason" data-bind="textInput: notCompleteReason">
                     </div>
                 </div>
                 <div class="modal-footer">

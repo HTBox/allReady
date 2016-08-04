@@ -6,7 +6,7 @@
     {
         var obj = ko.utils.extend({}, skill);
         obj.IsUserSkill = ko.observable(userSkills && userSkills.length && userSkills.some(function (userSkill) {
-            return obj.Id === userSkill.Id;
+            return obj.Id === userSkill.id;
         }));
         return obj;
     }
@@ -26,7 +26,7 @@
 
         self.tasks = ko.observableArray(tasks);
         self.filteredTasks = ko.computed(function() {
-            return self.tasks.filterBeforeDate("EndDateTime").textFilter(["Name", "Description"]);
+            return self.tasks.filterBeforeDate("endDateTime").textFilter(["name", "description"]);
         });
 
         self.userTasks = ko.observableArray(userTasks.map(function(task) {
@@ -34,7 +34,7 @@
             return task;
         }));
         self.filteredUserTasks = ko.computed(function() {
-            return self.userTasks.filterBeforeDate("EndDateTime").textFilter(["Name", "Description"]);
+            return self.userTasks.filterBeforeDate("endDateTime").textFilter(["name", "description"]);
         });
 
         self.tasks().forEach(function(task) {
@@ -46,7 +46,7 @@
         });
 
         function initializeTask(task) {
-            task.skillsWithIsUser = ko.observableArray(task.RequiredSkillObjects.map(withIsUserSkill.bind(null, userSkills)));
+            task.skillsWithIsUser = ko.observableArray(task.requiredSkillObjects.map(withIsUserSkill.bind(null, userSkills)));
             task.unassociatedSkills = ko.computed(function() {
                 return task.skillsWithIsUser().filter(function(skill) {
                     return !skill.IsUserSkill();
@@ -59,8 +59,8 @@
                 return (task.unassociatedSkills().length) === 0;
             });
             task.isExpanded = ko.observable(false);
-            if (task.AssignedVolunteers[0]) {
-                task.currentStatus = task.AssignedVolunteers[0].Status;
+            if (task.assignedVolunteers[0]) {
+                task.currentStatus = task.assignedVolunteers[0].status;
             }
         }
 
@@ -105,7 +105,7 @@
 
         self.signupForTask = function (task) {
             hideAlert();
-            var vm = new SignupViewModel(signupModel, task.unassociatedSkills, task.Name, true, task);
+            var vm = new SignupViewModel(signupModel, task.unassociatedSkills, task.name, true, task);
             vm.modal = HTBox.showModal({ viewModel: vm, modalId: "VolunteerModal" })
                 .onClose(taskSignupSuccess);
         };
@@ -135,7 +135,7 @@
             hideAlert();
             self.errorUnenrolling(false);
             $("#enrollUnenrollSpinner").show();
-            var viewModel = new TaskStatusChangeViewModel(task.Id, task.AssignedVolunteers[0].UserId, newStatus, statusDescription);
+            var viewModel = new TaskStatusChangeViewModel(task.id, task.assignedVolunteers[0].userId, newStatus, statusDescription);
             viewModel.__RequestVerificationToken = $('input[name=__RequestVerificationToken]').val();
             $.ajax({
                 type: "POST",
@@ -147,7 +147,7 @@
                 initializeTask(result.Task);
                 self.userTasks.push(result.Task);
                 $("#enrollUnenrollSpinner").hide();
-                showalert("<strong>Your request to change the status of task: '" + task.Name + "' has been successfully processed.</strong>", "alert-success", 10);
+                showalert("<strong>Your request to change the status of task: '" + task.name + "' has been successfully processed.</strong>", "alert-success", 10);
             }).fail(function(fail) {
                 self.errorUnenrolling(true);
                 console.log(fail);
@@ -159,7 +159,7 @@
             hideAlert();
             var taskSave = task;
             var title = "Confirm";
-            var body = "Please confirm that you want to unenroll from the task:<br><strong>" + task.Name + "</strong>";
+            var body = "Please confirm that you want to unenroll from the task:<br><strong>" + task.name + "</strong>";
             var vm = new ConfirmViewModel(title, body);
             vm.modal = HTBox.showModal({ viewModel: vm, modalId: "ConfirmModal" })
                 .onClose(function(vm) {
@@ -173,7 +173,7 @@
             $("#enrollUnenrollSpinner").show();
             $.ajax({
                 type: "DELETE",
-                url: '/api/task/' + task.Id + '/signup',
+                url: '/api/task/' + task.id + '/signup',
                 contentType: "application/json"
             }).then(function(result) {
                 initializeTask(result.Task);
@@ -238,7 +238,7 @@
         self.validationErrors = ko.observableArray([]);
 
         if (task) {
-            self.TaskId = task.Id;
+            self.TaskId = task.id;
             self.Task = task;
         }
 
@@ -317,7 +317,7 @@
  
    CannotCompleteViewModel = function (task) {
         var self = this;
-        self.Name = task.Name;
+        self.Name = task.name;
         self.NotCompleteReason = ko.observable("");
 
         self.submit = function () {
