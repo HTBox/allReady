@@ -20,22 +20,20 @@ namespace AllReady.Providers.ExternalUserInformationProviders.Providers
             var userId = externalLoginInfo.Principal.FindFirstValue("urn:twitter:userid");
             var screenName = externalLoginInfo.Principal.FindFirstValue("urn:twitter:screenname");
 
-            var account = await twitterRepository.GetTwitterAccount(userId, screenName);
-            if (account != null && account.User != null)
-            {
-                var twitterUser = account.User;
-                if (twitterUser != null)
-                {
-                    externalUserInformation.Email = twitterUser.Email;
+            var twitterAccount = await twitterRepository.GetTwitterAccount(userId, screenName);
 
-                    if (!string.IsNullOrEmpty(twitterUser.Name))
+            if (twitterAccount != null && twitterAccount.User != null)
+            {
+                var twitterUser = twitterAccount.User;
+                externalUserInformation.Email = twitterUser.Email;
+
+                if (!string.IsNullOrEmpty(twitterUser.Name))
+                {
+                    var array = twitterUser.Name.Split(' ');
+                    if (array.Length > 1)
                     {
-                        var array = twitterUser.Name.Split(' ');
-                        if (array.Length > 1)
-                        {
-                            externalUserInformation.FirstName = array[0];
-                            externalUserInformation.LastName = array[1];
-                        }
+                        externalUserInformation.FirstName = array[0];
+                        externalUserInformation.LastName = array[1];
                     }
                 }
             }
