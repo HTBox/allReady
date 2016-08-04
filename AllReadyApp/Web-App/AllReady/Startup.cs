@@ -102,7 +102,6 @@ namespace AllReady
             // Add MVC services to the services container.
             services.AddMvc().AddJsonOptions(options => 
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver());
-
             // configure IoC support
             var container = CreateIoCContainer(services);
             return container.Resolve<IServiceProvider>();
