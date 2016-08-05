@@ -1,5 +1,4 @@
 ﻿using AllReady.Models;
-using AllReady.ViewModels;
 using MediatR;
 using System.Linq;
 using System.Threading.Tasks;
