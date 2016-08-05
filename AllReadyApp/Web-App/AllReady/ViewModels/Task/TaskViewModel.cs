@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using AllReady.Features.Event;
-using AllReady.Features.Manage;
-using AllReady.Features.Tasks;
 using AllReady.Models;
 using AllReady.ViewModels.Event;
-using MediatR;
 
 namespace AllReady.ViewModels.Task
 {
@@ -44,6 +40,7 @@ namespace AllReady.ViewModels.Task
             }
 
             IsUserSignedUpForTask = false;
+
             if (task.AssignedVolunteers != null)
             {
                 if (!string.IsNullOrWhiteSpace(userId))
@@ -150,104 +147,6 @@ namespace AllReady.ViewModels.Task
             : this(task)
         {
             IsUserSignedUpForTask = isUserSignedupForTask;
-        }
-    }
-
-    public static class TaskViewModelExtensions
-    {
-        public static TaskViewModel ToViewModel(this AllReadyTask task)
-        {
-            return new TaskViewModel(task);
-        }
-
-        public static IEnumerable<TaskViewModel> ToViewModel(this IEnumerable<AllReadyTask> tasks)
-        {
-            return tasks.Select(task => task.ToViewModel());
-        }
-
-        public static AllReadyTask ToModel(this TaskViewModel taskViewModel, IMediator mediator)
-        {
-            var campaignEvent = mediator.Send(new EventByIdQuery { EventId = taskViewModel.EventId });
-            if (campaignEvent == null)
-            {
-                return null;
-            }
-
-            var newTask = true;
-            AllReadyTask dbtask;
-            if (taskViewModel.Id == 0)
-            {
-                dbtask = new AllReadyTask();
-            }
-            else
-            {
-                dbtask = mediator.Send(new TaskByTaskIdQuery { TaskId = taskViewModel.Id });
-                newTask = false;
-            }
-
-            dbtask.Id = taskViewModel.Id;
-            dbtask.Description = taskViewModel.Description;
-            dbtask.Event = campaignEvent;
-            dbtask.EndDateTime = taskViewModel.EndDateTime.UtcDateTime;
-            dbtask.StartDateTime = taskViewModel.StartDateTime.UtcDateTime;
-            dbtask.Name = taskViewModel.Name;
-            dbtask.RequiredSkills = dbtask.RequiredSkills ?? new List<TaskSkill>();
-            taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();
-            ////Remove old skills
-            //dbtask.RequiredSkills.RemoveAll(ts => !taskViewModel.RequiredSkills.Any(s => ts.SkillId == s));
-            ////Add new skills
-            //dbtask.RequiredSkills.AddRange(taskViewModel.RequiredSkills
-            //    .Where(rs => !dbtask.RequiredSkills.Any(ts => ts.SkillId == rs))
-            //    .Select(rs => new TaskSkill() { SkillId = rs, TaskId = taskViewModel.Id }));
-
-            // Workaround:  POST is bringing in empty AssignedVolunteers.  Clean this up. Discussing w/ Kiran Challa.
-            // Workaround: the if statement is superflous, and should go away once we have the proper fix referenced above.
-            if (taskViewModel.AssignedVolunteers != null)
-            {
-                var bogusAssignedVolunteers = (from assignedVolunteer in taskViewModel.AssignedVolunteers
-                                               where string.IsNullOrEmpty(assignedVolunteer.UserId)
-                                               select assignedVolunteer).ToList();
-                foreach (var bogus in bogusAssignedVolunteers)
-                {
-                    taskViewModel.AssignedVolunteers.Remove(bogus);
-                }
-            }
-            // end workaround
-
-            if (taskViewModel.AssignedVolunteers != null && taskViewModel.AssignedVolunteers.Count > 0)
-            {
-                var taskUsersList = taskViewModel.AssignedVolunteers.Select(tvm => new TaskSignup
-                {
-                    Task = dbtask,
-                    User = mediator.Send(new UserByUserIdQuery { UserId = tvm.UserId })
-                }).ToList();
-
-                // We may be updating an existing task
-                if (newTask || dbtask.AssignedVolunteers.Count == 0)
-                {
-                    dbtask.AssignedVolunteers = taskUsersList;
-                }
-                else
-                {
-                    // Can probably rewrite this more efficiently.
-                    foreach (var taskUsers in taskUsersList)
-                    {
-                        if (!(from entry in dbtask.AssignedVolunteers
-                              where entry.User.Id == taskUsers.User.Id
-                              select entry).Any())
-                        {
-                            dbtask.AssignedVolunteers.Add(taskUsers);
-                        }
-                    }
-                }
-            }
-
-            return dbtask;
-        }
-
-        public static IEnumerable<AllReadyTask> ToModel(this IEnumerable<TaskViewModel> tasks, IMediator mediator)
-        {
-            return tasks.Select(task => task.ToModel(mediator));
         }
     }
 }

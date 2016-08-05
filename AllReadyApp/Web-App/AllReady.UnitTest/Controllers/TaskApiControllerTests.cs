@@ -9,7 +9,6 @@ using AllReady.Features.Event;
 using AllReady.Features.Tasks;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
-using AllReady.ViewModels;
 using AllReady.ViewModels.Shared;
 using AllReady.ViewModels.Task;
 using MediatR;
@@ -379,7 +378,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.False(successStatus);
             Assert.NotNull(errors);
             Assert.Equal(1, errors.Count());
-            Assert.Equal(TaskApiController.FAILED_SIGNUP_EVENT_NOT_FOUND, errors[0]);
+            Assert.Equal("Signup failed - The event could not be found", errors[0]);
         }
 
         [Fact]
@@ -405,7 +404,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.False(successStatus);
             Assert.NotNull(errors);
             Assert.Equal(1, errors.Count());
-            Assert.Equal(TaskApiController.FAILED_SIGNUP_TASK_NOT_FOUND, errors[0]);
+            Assert.Equal("Signup failed - The task could not be found", errors[0]);
         }
 
         [Fact]
@@ -431,7 +430,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.False(successStatus);
             Assert.NotNull(errors);
             Assert.Equal(1, errors.Count());
-            Assert.Equal(TaskApiController.FAILED_SIGNUP_TASK_CLOSED, errors[0]);
+            Assert.Equal("Signup failed - Task is closed", errors[0]);
         }
 
         [Fact]
