@@ -10,7 +10,10 @@ namespace AllReady.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public virtual Organization Organization { get; set; }
+
+        public int EventId { get; set; }
         public virtual Event Event { get; set; }
+
         public int NumberOfVolunteersRequired { get; set; }
         public DateTimeOffset StartDateTime { get; set; }
         public DateTimeOffset EndDateTime { get; set; }
