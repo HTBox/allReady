@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using AllReady.Areas.Admin.Controllers;
 using System;
 using AllReady.Features.Manage;
-using AllReady.Providers;
 using AllReady.ViewModels.Account;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
@@ -1103,7 +1102,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void ExternalLoginReturnsChallengeResultWithCorrectParameters()
+        public void ExternalLoginReturnsChallengeResult()
         {
         }
 
@@ -1174,7 +1173,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackRedirectsToLocalWithCorrectUrl_WhenExternalLoginIsSuccessful_AndExternalLoginInfoIsNotNull()
+        public async Task ExternalLoginCallbackInvokesRedirectsToLocalWithCorrectParameters_WhenExternalLoginIsSuccessful_AndExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
@@ -1232,6 +1231,13 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "RTM Broken Tests")]
+        public async Task ExternalLoginConfirmationInvokesIsSignedInWithCorrectUser()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        [Fact(Skip = "RTM Broken Tests")]
         public async Task ExternalLoginConfirmationRedirectsToCorrectActionIfUserIsSignedIn()
         {
             var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "test") }, new IdentityCookieOptions().ApplicationCookieAuthenticationScheme);
@@ -1261,7 +1267,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "RTM Broken Tests")]
-        public async Task ExternalLoginConfirmationReturnsExternalLoginFailureViewUserIsNull()
+        public async Task ExternalLoginConfirmationReturnsExternalLoginFailureView_WhenUserIsNull_AndModelStateIsValid()
         {
             var userManager = CreateUserManagerMock();
             var signInManager = CreateSignInManagerMock(userManager);
@@ -1283,9 +1289,8 @@ namespace AllReady.UnitTest.Controllers
             var signInManager = CreateSignInManagerMock(userManager);
             SetupSignInManagerWithTestExternalLoginValue(signInManager);
             var viewModel = CreateExternalLoginConfirmationViewModel();
-            var generalSettings = CreateGeneralSettingsMockObject();
 
-            var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, null);
+            var sut = new AccountController(userManager.Object, signInManager.Object, CreateGeneralSettingsMockObject().Object, null, null);
             sut.SetFakeUser("userId");
 
             await sut.ExternalLoginConfirmation(viewModel);
@@ -1294,7 +1299,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "RTM Broken Tests")]
-        public async Task ExternalLoginConfirmationInvokesAddLoginAsyncWithCorrectParameters_WhenUserIsCreatedSuccessfully()
+        public async Task ExternalLoginConfirmationInvokesAddLoginAsyncWithCorrectParameters_WhenUserIsCreatedSuccessfully_AndExternalLoginInfoIsSuccessful_AndModelStateIsValid()
         {
             const string loginProvider = "test";
             const string providerKey = "test";
