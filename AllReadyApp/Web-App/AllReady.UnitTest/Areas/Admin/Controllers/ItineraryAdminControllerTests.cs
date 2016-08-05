@@ -7,6 +7,7 @@ using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Itineraries;
 using AllReady.Areas.Admin.Features.Organizations;
+using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.Features.TaskSignups;
 using AllReady.Areas.Admin.Models;
 using AllReady.Areas.Admin.Models.ItineraryModels;
@@ -583,7 +584,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             await sut.AddRequests(itineraryId, selectedRequests);
 
-            mockMediator.Verify(x => x.SendAsync(It.Is<AddRequestsCommand>(y => y.ItineraryId == itineraryId)), Times.Once);
+            mockMediator.Verify(x => x.SendAsync(It.Is<AllReady.Areas.Admin.Features.Itineraries.AddRequestsCommand>(y => y.ItineraryId == itineraryId)), Times.Once);
         }
 
         [Fact]
@@ -875,6 +876,134 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}");
         }
+
+        #region MarkComplete Action
+
+        [Fact]
+        public void MarkCompleteHasHttpPostAttribute()
+        {
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var attribute = sut.GetAttributesOn(x => x.MarkComplete(It.IsAny<int>(), It.IsAny<Guid>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void MarkCompleteHasRouteAttributeWithCorrectRoute()
+        {
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var routeAttribute = sut.GetAttributesOn(x => x.MarkComplete(It.IsAny<int>(), It.IsAny<Guid>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
+            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{requestId}");
+        }
+
+        [Fact]
+        public async Task MarkCompleteSendsOrganizationIdQueryWithCorrectIntineraryId()
+        {
+            var itineraryId = It.IsAny<int>();
+            var mockMediator = new Mock<IMediator>();
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+
+            await sut.MarkComplete(itineraryId, It.IsAny<Guid>());
+
+            mockMediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == itineraryId)), Times.Once);
+        }
+
+        [Fact]
+        public async Task MarkCompleteReturnsHttpUnauthorizedWhenOrganizationIdIsZero()
+        {
+            var itineraryId = It.IsAny<int>();
+            var requestId = It.IsAny<Guid>();
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+
+            Assert.IsType<UnauthorizedResult>(await sut.MarkComplete(itineraryId, requestId));
+        }
+
+        [Fact]
+        public async Task MarkCompleteReturnsHttpUnauthorizedWhenUserIsNotOrgAdmin()
+        {
+            var itineraryId = It.IsAny<int>();
+            var requestId = It.IsAny<Guid>();
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.BasicUser.ToString())
+            });
+
+            Assert.IsType<UnauthorizedResult>(await sut.MarkComplete(itineraryId, requestId));
+        }
+
+        [Fact]
+        public async Task MarkCompleteSendsRequestStatusChangeCommandWithCorrectTaskSignupIdWhenOrganizationIsNotZero_AndUserIsOrgAdmin()
+        {
+            var itineraryId = It.IsAny<int>();
+            var requestId = It.IsAny<Guid>();
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            await sut.MarkComplete(itineraryId, requestId);
+
+            mockMediator.Verify(x => x.SendAsync(It.Is<RequestStatusChangeCommand>(y => y.RequestId == requestId)), Times.Once);
+        }
+
+        [Fact]
+        public async Task MarkCompleteReturnsRedirectToActionWhenOrganizationIsNotZero_AndUserIsOrgAdmin()
+        {
+            var itineraryId = It.IsAny<int>();
+            var requestId = It.IsAny<Guid>();
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            var result = await sut.MarkComplete(itineraryId, requestId);
+            Assert.IsType<RedirectToActionResult>(result);
+        }
+
+        [Fact]
+        public async Task MarkCompleteReturnsRedirectToAction_WithActionName_Details()
+        {
+            var itineraryId = It.IsAny<int>();
+            var requestId = It.IsAny<Guid>();
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            var result = await sut.MarkComplete(itineraryId, requestId);
+            var actionResult = (RedirectToActionResult)result;
+            Assert.Equal("Details", actionResult.ActionName);
+        }
+
+        #endregion
 
         #region Helper Methods
 
