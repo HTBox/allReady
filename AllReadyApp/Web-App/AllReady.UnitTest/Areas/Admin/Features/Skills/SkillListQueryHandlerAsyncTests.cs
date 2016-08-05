@@ -9,7 +9,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
 {
     public class SkillListQueryHandlerAsyncTests : InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task AllSkillsReturnedWhenNoIdInMessage()
         {
             var handler = new SkillListQueryHandlerAsync(Context);
@@ -18,7 +18,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
             Assert.Equal(7, result.Count());
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task CorrectSkillsReturnedWhenIdInMessage()
         {
             var handler = new SkillListQueryHandlerAsync(Context);

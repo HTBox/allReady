@@ -66,7 +66,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task SendMessageToAssignedVolunteers()
         {
             var command = new MessageEventVolunteersCommand

@@ -10,7 +10,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
 {
     public class SkillDeleteQueryHandlerAsyncTests : InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task CorrectSkillReturnedWhenIdInMessage()
         {
             var handler = new SkillDeleteQueryHandlerAsync(Context);
@@ -21,7 +21,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
             Assert.Equal(2, result.ChildrenNames.Count());
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task NullReturnedWhenSkillIdDoesNotExists()
         {
             var handler = new SkillDeleteQueryHandlerAsync(Context);
@@ -30,7 +30,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
             Assert.Null(result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task NullReturnedWhenSkillIdNotInMessage()
         {
             var handler = new SkillDeleteQueryHandlerAsync(Context);

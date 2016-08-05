@@ -8,7 +8,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
 {
     public class LockUnlockCampaignCommandHandlerTests : InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task LockedCampaignIsUnlocked()
         {
             // Arrange
@@ -23,7 +23,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Assert.False(result.Locked); // Campaign should now be unlocked
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task UnlockedCampaignIsLocked()
         {
             // Arrange

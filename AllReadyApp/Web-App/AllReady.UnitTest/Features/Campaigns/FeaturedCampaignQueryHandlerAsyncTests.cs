@@ -21,7 +21,7 @@ namespace AllReady.UnitTest.Features.Campaigns
             Assert.Equal("This is featured", result.Title);            
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task FeaturedCampaignIncludesOrg()
         {
             // Arrange

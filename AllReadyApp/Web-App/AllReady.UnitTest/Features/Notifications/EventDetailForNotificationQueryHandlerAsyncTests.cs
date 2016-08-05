@@ -115,7 +115,7 @@ namespace AllReady.UnitTest.Features.Notifications
             context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ModelCanBeCreatedFomExistingEvent()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
@@ -131,7 +131,7 @@ namespace AllReady.UnitTest.Features.Notifications
             Assert.True(_firePrev.CampaignContacts.Count == result.CampaignContacts.Count, "Count of campaign contacts does not match");
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task EventDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();

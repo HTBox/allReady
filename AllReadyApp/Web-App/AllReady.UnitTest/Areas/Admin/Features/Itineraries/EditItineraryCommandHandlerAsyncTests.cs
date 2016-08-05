@@ -74,7 +74,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Assert.True(data == 1);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task UpdatesItineraryWhenItExists()
         {
             var query = new EditItineraryCommand

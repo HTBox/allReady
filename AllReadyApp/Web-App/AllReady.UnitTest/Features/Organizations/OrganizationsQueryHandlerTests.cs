@@ -23,7 +23,7 @@ namespace AllReady.UnitTest.Features.Organizations
             context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void HandleReturnsAllOrganizations()
         {
             var message = new OrganizationsQuery();
@@ -37,7 +37,7 @@ namespace AllReady.UnitTest.Features.Organizations
             Assert.Equal(resultList[1].Id, organizations[1].Id);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void HandleReturnsListOfOrganizationViewModels()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();

@@ -28,9 +28,9 @@ namespace AllReady.UnitTest
         var services = new ServiceCollection();
 
         // set up empty in-memory test db
-        services.AddEntityFramework()
+        services
           .AddEntityFrameworkInMemoryDatabase()
-          .AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase());
+          .AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase().UseInternalServiceProvider(services.BuildServiceProvider()));
 
         // add identity service
         services.AddIdentity<ApplicationUser, IdentityRole>()

@@ -53,7 +53,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.True(data == 1);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ExistingEvent()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
@@ -134,7 +134,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(-6, data.EndDateTime.Offset.TotalHours);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ExistingEventUpdateLocation()
         {
             var seattlePostalCode = "98117";

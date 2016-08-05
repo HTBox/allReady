@@ -9,7 +9,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
 {
     public class SkillEditCommandHandlerAsyncTests : InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task UpdatingExistingSkill()
         {
             // Arrange
@@ -26,7 +26,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
             Assert.Equal("New", savedSkill.Name);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task AddNewSkill()
         {
             // Arrange

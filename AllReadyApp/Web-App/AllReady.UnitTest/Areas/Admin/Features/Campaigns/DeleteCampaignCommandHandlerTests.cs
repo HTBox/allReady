@@ -34,7 +34,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ExistingCampaign()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
@@ -46,7 +46,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Assert.Equal(0, data);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task CampaignDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
@@ -55,7 +55,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             await handler.Handle(command);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task CampaignIsDeleted()
         {
             const int campaignId = 1;
@@ -65,7 +65,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Assert.False(Context.Events.Any(t => t.Id == campaignId));
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task NonExistantTaskDoesNotCauseException()
         {
             const int campaignId = 1;

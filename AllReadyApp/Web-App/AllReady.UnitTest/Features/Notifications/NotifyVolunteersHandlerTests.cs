@@ -62,7 +62,7 @@ namespace AllReady.UnitTest.Features.Notifications
             context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void SendMessageToAssignedVolunteers()
         {
             var command = new NotifyVolunteersCommand

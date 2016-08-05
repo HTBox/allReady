@@ -16,7 +16,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void TaskIsDeleted()
         {
             var sut = new DeleteTaskCommandHandlerAsync(Context);
@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Assert.False(Context.Tasks.Any(t=>t.Id == TaskId));
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void NonExistantTaskDoesNotCauseException()
         {
             var sut = new DeleteTaskCommandHandlerAsync(Context);
