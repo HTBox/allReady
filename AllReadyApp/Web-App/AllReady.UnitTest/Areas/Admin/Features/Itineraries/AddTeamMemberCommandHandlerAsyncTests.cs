@@ -64,7 +64,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         {
             var query = new AddTeamMemberCommand
             {
-                ItineraryId = 0, 
+                ItineraryId = 0,
                 TaskSignupId = 1
             };
 

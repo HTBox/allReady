@@ -13,8 +13,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
     {
         protected override void LoadTestData()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
-
             var htb = new Organization
             {
                 Name = "Humanitarian Toolbox",
@@ -30,28 +28,26 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
                 ManagingOrganization = htb
             };
             htb.Campaigns.Add(firePrev);
-            context.Organizations.Add(htb);
-            context.SaveChanges();
+            Context.Organizations.Add(htb);
+            Context.SaveChanges();
         }
 
         [Fact]
         public async Task ExistingCampaign()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
             var command = new DeleteCampaignCommand { CampaignId = 1 };
-            var handler = new DeleteCampaignCommandHandler(context);
+            var handler = new DeleteCampaignCommandHandler(Context);
             await handler.Handle(command);
 
-            var data = context.Campaigns.Count(_ => _.Id == 1);
+            var data = Context.Campaigns.Count(_ => _.Id == 1);
             Assert.Equal(0, data);
         }
 
         [Fact]
         public async Task CampaignDoesNotExist()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
             var command = new DeleteCampaignCommand { CampaignId = 0 };
-            var handler = new DeleteCampaignCommandHandler(context);
+            var handler = new DeleteCampaignCommandHandler(Context);
             await handler.Handle(command);
         }
 

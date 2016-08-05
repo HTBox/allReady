@@ -14,8 +14,6 @@ namespace AllReady.UnitTest.Features.Notifications
     {
         protected override void LoadTestData()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
-
             var htb = new Organization()
             {
                 Name = "Humanitarian Toolbox",
@@ -46,20 +44,20 @@ namespace AllReady.UnitTest.Features.Notifications
             var username2 = $"blah@2.com";
 
             var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true };
-            context.Users.Add(user1);
+            Context.Users.Add(user1);
             var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true };
-            context.Users.Add(user2);
+            Context.Users.Add(user2);
 
             htb.Campaigns.Add(firePrev);
-            context.Organizations.Add(htb);
-            context.Events.Add(queenAnne);
+            Context.Organizations.Add(htb);
+            Context.Events.Add(queenAnne);
 
             var eventSignups = new List<EventSignup>();
             eventSignups.Add(new EventSignup { Event = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow });
             eventSignups.Add(new EventSignup { Event = queenAnne, User = user2, SignupDateTime = DateTime.UtcNow });
 
-            context.EventSignup.AddRange(eventSignups);
-            context.SaveChanges();
+            Context.EventSignup.AddRange(eventSignups);
+            Context.SaveChanges();
         }
 
         [Fact]

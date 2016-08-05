@@ -16,7 +16,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
     {
         protected override void LoadTestData()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
             var htb = new Organization
             {
                 Name = "Humanitarian Toolbox",
@@ -47,12 +46,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             var username2 = $"blah@2.com";
 
             var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true };
-            context.Users.Add(user1);
+            Context.Users.Add(user1);
             var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true };
-            context.Users.Add(user2);
+            Context.Users.Add(user2);
 
             htb.Campaigns.Add(firePrev);            
-            context.Organizations.Add(htb);
+            Context.Organizations.Add(htb);
             
             var task = new AllReadyTask
             {
@@ -63,16 +62,16 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 StartDateTime = DateTime.Now.AddDays(-3)
             };
             queenAnne.Tasks.Add(task);
-            context.Events.Add(queenAnne);
+            Context.Events.Add(queenAnne);
 
             var taskSignups = new List<TaskSignup>
             {
                 new TaskSignup { Task = task, User = user1 },
                 new TaskSignup { Task = task, User = user2 }
             };
-            context.TaskSignups.AddRange(taskSignups);
+            Context.TaskSignups.AddRange(taskSignups);
 
-            context.SaveChanges();
+            Context.SaveChanges();
         }
 
         [Fact]
