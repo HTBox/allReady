@@ -8,9 +8,9 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-route-area="Admin">@Model.EventName</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="Admin">@Model.EventName</a></li>
             <li>@Model.Name</li>
         </ol>
     </div>
@@ -87,7 +87,7 @@
                 <h3>All Volunteers</h3>
                 @if (Model.AllVolunteers.Count > 0)
                 {
-                    <form asp-controller="Task" asp-action="Assign" asp-route-area="Admin" method="post">
+                    <form asp-controller="Task" asp-action="Assign" asp-area="Admin" method="post">
 
                         <input type="hidden" asp-for="Id" />
                         <table class="table">

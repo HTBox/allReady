@@ -7,9 +7,9 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-route-area="Admin" asp-route-id="@Model.EventId">@Model.EventName</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-area="Admin" asp-route-id="@Model.EventId">@Model.EventName</a></li>
             <li>@Model.Name</li>
         </ol>
     </div>
@@ -84,7 +84,7 @@ else
                             <p>@teamMember.TaskName</p>
                         </td>
                         <td>
-                            <a data-toggle="tooltip" data-placement="top" title="Remove" asp-action="ConfirmRemoveTeamMember" asp-controller="Itinerary" asp-route-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-taskSignupId="@teamMember.TaskSignupId" class="btn btn-danger"><span class="fa fa-remove"></span></a>
+                            <a data-toggle="tooltip" data-placement="top" title="Remove" asp-action="ConfirmRemoveTeamMember" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-taskSignupId="@teamMember.TaskSignupId" class="btn btn-danger"><span class="fa fa-remove"></span></a>
                         </td>
                     </tr>
                 }
@@ -108,7 +108,7 @@ else
 </div>
 <div class="row">
     <div class="col-md-12">
-        <a asp-action="SelectRequests" asp-controller="Itinerary" asp-route-area="Admin" class="btn btn-default">Add Requests</a>
+        <a asp-action="SelectRequests" asp-controller="Itinerary" asp-area="Admin" class="btn btn-default">Add Requests</a>
     </div>
 </div>
 <div class="row">
@@ -148,7 +148,7 @@ else
                                                                                           }><span class="fa fa-arrow-down"></span></button>
                             </form>
 
-                            <a data-toggle="tooltip" data-placement="top" title="Remove" asp-action="ConfirmRemoveRequest" asp-controller="Itinerary" asp-route-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="btn btn-danger right-action-btn"><span class="fa fa-trash"></span></a>
+                            <a data-toggle="tooltip" data-placement="top" title="Remove" asp-action="ConfirmRemoveRequest" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="btn btn-danger right-action-btn"><span class="fa fa-trash"></span></a>
                         </td>
                         <td>
                          @request.Status

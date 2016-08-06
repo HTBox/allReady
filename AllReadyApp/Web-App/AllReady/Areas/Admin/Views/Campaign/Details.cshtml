@@ -6,7 +6,7 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
             <li>@Model.Name</li>
         </ol>
     </div>
@@ -21,11 +21,11 @@
                 }
                 @Model.Name
             </h2>
-            <a asp-controller="Campaign" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Edit"><i class="fa fa-edit"></i></a>
-            <a asp-controller="Campaign" asp-action="Delete" asp-route-area="Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form"><i class="glyphicon glyphicon-trash"></i></a>
+            <a asp-controller="Campaign" asp-action="Edit" asp-area="Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Edit"><i class="fa fa-edit"></i></a>
+            <a asp-controller="Campaign" asp-action="Delete" asp-area="Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form"><i class="glyphicon glyphicon-trash"></i></a>
             @if (User.IsUserType(UserType.SiteAdmin))
             {
-                <form asp-controller="Campaign" asp-route-area="Admin" asp-action="LockUnlock" class="inline-form">
+                <form asp-controller="Campaign" asp-area="Admin" asp-action="LockUnlock" class="inline-form">
                     <input asp-for="Id" type="hidden" />
                     @if (Model.Locked)
                     {

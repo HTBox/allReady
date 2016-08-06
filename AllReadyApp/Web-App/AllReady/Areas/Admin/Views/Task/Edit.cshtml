@@ -17,16 +17,16 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-route-area="Admin">@Model.EventName</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="Admin">@Model.EventName</a></li>
             @if (Model.Id == 0)
             {
                 <li>Create New Task</li>
             }
             else
             {
-                <li><a asp-controller="Task" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Name</a></li>
+                <li><a asp-controller="Task" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.Name</a></li>
                 <li>Edit</li>
             }
 
