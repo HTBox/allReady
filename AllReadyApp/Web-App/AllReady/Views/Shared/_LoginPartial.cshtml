@@ -5,7 +5,7 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-    <form asp-area="" asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm"> 
+    <form asp-area="" asp-controller="Account" asp-action="LogOff" method="post">
         <ul class="nav navbar-nav navbar-right login-status">
             <li>
                 <a asp-area="" asp-controller="Volunteer" asp-action="Dashboard" title="Dashboard">
@@ -13,14 +13,20 @@
                 </a>
             </li>
             <li>
-                <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage">Hello @User.GetDisplayName(userManager) 
-                @if(User.IsUserProfileIncomplete() )
-                {
-                    <i class="fa fa-exclamation-circle user-profile-warning" title="Click here to add more details to your profile"></i>
-                } 
-                </a>                
+                <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage">
+                    Hello @User.GetDisplayName(userManager)
+                    @if (User.IsUserProfileIncomplete())
+                    {
+                        <i class="fa fa-exclamation-circle user-profile-warning" title="Click here to add more details to your profile"></i>
+                    }
+                </a>
             </li>
-            <li><a href="javascript:document.getElementById('logoutForm').submit()" class="log-out"><i class="fa fa-sign-out"></i>&nbsp;Log off</a></li>
+            <li>
+                <button type="submit" class="btn btn-link navbar-btn log-out">
+                    <i class="fa fa-sign-out"></i>
+                    Log off
+                </button>
+            </li>
         </ul>
     </form>
 }
