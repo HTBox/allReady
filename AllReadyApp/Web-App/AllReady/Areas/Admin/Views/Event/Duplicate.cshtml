@@ -8,9 +8,9 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Name</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.Name</a></li>
             <li>Duplicate</li>
         </ol>
     </div>
@@ -18,7 +18,7 @@
 
 <h2>@ViewBag.Title</h2>
 
-<form asp-controller="Event" asp-route-area="Admin" method="post" enctype="multipart/form-data">
+<form asp-controller="Event" asp-area="Admin" method="post" enctype="multipart/form-data">
 
     <div class="form-horizontal">
         <hr />
@@ -62,7 +62,7 @@
     <div class="row">
         <div class="col-md-12">
             <button type="submit" value="Save" class="btn btn-default submit-form" data-bind="enable: requiredSkills.isValid">Save</button>
-            <a asp-controller="Event" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin" class="btn btn-default">Cancel</a>
+            <a asp-controller="Event" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin" class="btn btn-default">Cancel</a>
         </div>
     </div>
 </form>

@@ -5,15 +5,15 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-    <form asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm"> 
+    <form asp-area="" asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm"> 
         <ul class="nav navbar-nav navbar-right login-status">
             <li>
-                <a asp-controller="Volunteer" asp-action="Dashboard" title="Dashboard">
+                <a asp-area="" asp-controller="Volunteer" asp-action="Dashboard" title="Dashboard">
                     Dashboard
                 </a>
             </li>
             <li>
-                <a asp-controller="Manage" asp-action="Index" title="Manage">Hello @User.GetDisplayName(userManager) 
+                <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage">Hello @User.GetDisplayName(userManager) 
                 @if(User.IsUserProfileIncomplete() )
                 {
                     <i class="fa fa-exclamation-circle user-profile-warning" title="Click here to add more details to your profile"></i>
@@ -27,6 +27,6 @@
 else
 {
     <ul class="nav navbar-nav navbar-right login-status">
-        <li><a asp-controller="Account" asp-action="Login" class="log-in">Log in</a></li>
+        <li><a asp-area="" asp-controller="Account" asp-action="Login" class="log-in">Log in</a></li>
     </ul>
 }

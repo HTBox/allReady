@@ -21,11 +21,11 @@
             Status: @Html.DisplayFor(model => model.Status)
         </p>
 
-        <form asp-controller="Itinerary" asp-action="RemoveRequest" asp-route-itineraryId="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" asp-route-requestId="@Model.Id">
+        <form asp-area="Admin" asp-controller="Itinerary" asp-action="RemoveRequest" asp-route-itineraryId="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" asp-route-requestId="@Model.Id">
             <input type="hidden" asp-for="@Model.Id" />
             <div class="form-actions no-color">
                 <button type="submit" class="btn btn-primary">Delete</button>
-                <a asp-controller="Itinerary" asp-action="Details" asp-route-area="Admin" asp-route-id="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" class="btn btn-default">Cancel</a>
+                <a asp-controller="Itinerary" asp-action="Details" asp-area="Admin" asp-route-id="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" class="btn btn-default">Cancel</a>
             </div>
         </form>
     </div>
