@@ -1,4 +1,7 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Security.Claims;
 using AllReady.Features.Event;
 using AllReady.Models;
 using Microsoft.AspNetCore.Identity;
@@ -11,9 +14,32 @@ namespace AllReady.UnitTest.Features.Event
     public class ShowEventQueryHandlerShould
     {
         //happy path test. set up data to get all possible properties populated when EventViewModel is returned from handler
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void SetsEventSignupViewModel_WithTheCorrectData()
         {
+            var appUser = new ApplicationUser()
+            {
+                Id = "asdfasasdfaf",
+                Email = "foo@bar.com",
+                FirstName = "Foo",
+                LastName = "Bar",
+                PhoneNumber = "555-555-5555",
+            };
+            var message = new ShowEventQuery() { EventId = 1, User = new ClaimsPrincipal() };
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(message.User)).Returns(appUser.Id);
+            dataAccess.Setup(x => x.GetUser(appUser.Id)).Returns(appUser);
+            dataAccess.Setup(x => x.GetEvent(message.EventId)).Returns(CreateAllReadyEventWithTasks(message.EventId, appUser));
+
+            var sut = new ShowEventQueryHandler(dataAccess.Object, userManager.Object);
+            var eventViewModel = sut.Handle(message);
+
+            Assert.Equal(message.EventId, eventViewModel.SignupModel.EventId);
+            Assert.Equal(appUser.Id, eventViewModel.SignupModel.UserId);
+            Assert.Equal($"{appUser.FirstName} {appUser.LastName}", eventViewModel.SignupModel.Name);
+            Assert.Equal(appUser.Email, eventViewModel.SignupModel.PreferredEmail);
+            Assert.Equal(appUser.PhoneNumber, eventViewModel.SignupModel.PreferredPhoneNumber);
         }
 
         [Fact]
@@ -88,14 +114,41 @@ namespace AllReady.UnitTest.Features.Event
             dataAccess.Verify(x => x.GetUser(userId), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void SetUserSkillsToNull_WhenAppUserIsNull_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
+            var appUser = new ApplicationUser() { Id = "asdfasdf" };
+            var message = new ShowEventQuery() { EventId = 1, User = new ClaimsPrincipal() };
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(message.User)).Returns("adfasdfaf");
+            dataAccess.Setup(x => x.GetEvent(message.EventId)).Returns(CreateAllReadyEventWithTasks(message.EventId, appUser));
+
+            var sut = new ShowEventQueryHandler(dataAccess.Object, userManager.Object);
+            var eventViewModel = sut.Handle(message);
+
+            Assert.Null(eventViewModel.UserSkills);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void SetUserSkillsToNull_WhenAppUserIsNotNull_AndAppUserseAssociatedSkillsIsNull_AndEventIsNotNullAndEventsCampaignIsUnlocked()
-        { 
+        {
+            var appUser = new ApplicationUser()
+            {
+                Id = "asdfasfd",
+                AssociatedSkills = null
+            };
+            var message = new ShowEventQuery() { EventId = 1, User = new ClaimsPrincipal() };
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(message.User)).Returns(appUser.Id);
+            dataAccess.Setup(x => x.GetUser(appUser.Id)).Returns(appUser);
+            dataAccess.Setup(x => x.GetEvent(message.EventId)).Returns(CreateAllReadyEventWithTasks(message.EventId, appUser));
+
+            var sut = new ShowEventQueryHandler(dataAccess.Object, userManager.Object);
+            var eventViewModel = sut.Handle(message);
+
+            Assert.Null(eventViewModel.UserSkills);
         }
 
         [Fact]
@@ -118,29 +171,114 @@ namespace AllReady.UnitTest.Features.Event
             dataAccess.Verify(x => x.GetEventSignups(@event.Id, userId), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void SetIsUserVolunteerdForEventToTrue_WhenThereAreEventSignupsForTheEventAndTheUser_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
+            var appUser = new ApplicationUser(){ Id = "asdfasfd" };
+            var message = new ShowEventQuery() { EventId = 1, User = new ClaimsPrincipal() };
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(message.User)).Returns(appUser.Id);
+            dataAccess.Setup(x => x.GetUser(appUser.Id)).Returns(appUser);
+            dataAccess.Setup(x => x.GetEvent(message.EventId)).Returns(CreateAllReadyEventWithTasks(message.EventId, appUser));
+            dataAccess.Setup(x => x.GetEventSignups(message.EventId, appUser.Id)).Returns(new List<EventSignup>() { new EventSignup() });
+
+            var sut = new ShowEventQueryHandler(dataAccess.Object, userManager.Object);
+            var eventViewModel = sut.Handle(message);
+
+            Assert.True(eventViewModel.IsUserVolunteeredForEvent);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void SetIsUserVolunteerdForEventToFalse_WhenThereAreNoEventSignupsForTheEventAndTheUser_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
+            var appUser = new ApplicationUser() { Id = "asdfasfd" };
+            var message = new ShowEventQuery() { EventId = 1, User = new ClaimsPrincipal() };
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(message.User)).Returns(appUser.Id);
+            dataAccess.Setup(x => x.GetUser(appUser.Id)).Returns(appUser);
+            dataAccess.Setup(x => x.GetEvent(message.EventId)).Returns(CreateAllReadyEventWithTasks(message.EventId, appUser));
+
+            var sut = new ShowEventQueryHandler(dataAccess.Object, userManager.Object);
+            var eventViewModel = sut.Handle(message);
+
+            Assert.False(eventViewModel.IsUserVolunteeredForEvent);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void SetUserTasksToListOfTaskViewModelForAnyTasksWhereTheUserHasVolunteeredInAscendingOrderByTaskStartDateTime_WhenThereAreNoEventSignupsForTheEventAndTheUser_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
+            var appUser = new ApplicationUser() { Id = "asdfasfd" };
+            var message = new ShowEventQuery() { EventId = 1, User = new ClaimsPrincipal() };
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(message.User)).Returns(appUser.Id);
+            dataAccess.Setup(x => x.GetUser(appUser.Id)).Returns(appUser);
+            var allReadyEvent = CreateAllReadyEventWithTasks(message.EventId, appUser);
+            dataAccess.Setup(x => x.GetEvent(message.EventId)).Returns(allReadyEvent);
+            dataAccess.Setup(x => x.GetEventSignups(message.EventId, appUser.Id)).Returns(new List<EventSignup>());
+
+            var sut = new ShowEventQueryHandler(dataAccess.Object, userManager.Object);
+            var eventViewModel = sut.Handle(message);
+
+            Assert.Equal(allReadyEvent.Tasks.Where(x => x.AssignedVolunteers.Any(y => y.User.Id.Equals(appUser.Id))).Count(), 
+                         eventViewModel.UserTasks.Count);
+            var previousDateTime = DateTimeOffset.MinValue;
+            foreach(var userTask in eventViewModel.UserTasks)
+            {
+                Assert.True(userTask.StartDateTime > previousDateTime);
+                previousDateTime = userTask.StartDateTime;
+            }
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public void SetUserTasksToListOfTaskViewModelForAnyTasksWhereTheUserHasNotVolunteeredInAscendingOrderByTaskStartDateTime_WhenThereAreNoEventSignupsForTheEventAndTheUser_AndEventIsNotNullAndEventsCampaignIsUnlocked()
+        [Fact]
+        public void SetTasksToListOfTaskViewModelForAnyTasksWhereTheUserHasNotVolunteeredInAscendingOrderByTaskStartDateTime_WhenThereAreNoEventSignupsForTheEventAndTheUser_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
+            var appUser = new ApplicationUser() { Id = "asdfasfd" };
+            var message = new ShowEventQuery() { EventId = 1, User = new ClaimsPrincipal() };
+            var dataAccess = new Mock<IAllReadyDataAccess>();
+            var userManager = CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(message.User)).Returns(appUser.Id);
+            dataAccess.Setup(x => x.GetUser(appUser.Id)).Returns(appUser);
+            var allReadyEvent = CreateAllReadyEventWithTasks(message.EventId, appUser);
+            dataAccess.Setup(x => x.GetEvent(message.EventId)).Returns(allReadyEvent);
+            dataAccess.Setup(x => x.GetEventSignups(message.EventId, appUser.Id)).Returns(new List<EventSignup>());
+
+            var sut = new ShowEventQueryHandler(dataAccess.Object, userManager.Object);
+            var eventViewModel = sut.Handle(message);
+
+            Assert.Equal(allReadyEvent.Tasks.Where(x => !x.AssignedVolunteers.Any(v => v.User.Id.Equals(appUser.Id))).Count(), 
+                         eventViewModel.Tasks.Count);
+            var previousDateTime = DateTimeOffset.MinValue;
+            foreach (var userTask in eventViewModel.Tasks)
+            {
+                Assert.True(userTask.StartDateTime > previousDateTime);
+                previousDateTime = userTask.StartDateTime;
+            }
         }
 
         private static Mock<UserManager<ApplicationUser>> CreateUserManagerMock()
         {
             return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
+        }
+
+        private static Models.Event CreateAllReadyEventWithTasks(int eventId, ApplicationUser appUser)
+        {
+            return new Models.Event()
+            {
+                Id = eventId,
+                Campaign = new Campaign() { Locked = false },
+                Tasks = new List<AllReadyTask>()
+                {
+                    new AllReadyTask() { StartDateTime = new DateTimeOffset(2015, 8, 6, 12, 58, 05, new TimeSpan()), AssignedVolunteers = new List<TaskSignup>() { new TaskSignup() { User = appUser } } },
+                    new AllReadyTask() { StartDateTime = new DateTimeOffset(2016, 7, 31, 1, 15, 28, new TimeSpan()), AssignedVolunteers = new List<TaskSignup>() { new TaskSignup() { User = appUser } }},
+                    new AllReadyTask() { StartDateTime = new DateTimeOffset(2014, 2, 1, 5, 18, 27, new TimeSpan()), AssignedVolunteers = new List<TaskSignup>() { new TaskSignup() { User = appUser } }},
+                    new AllReadyTask() { StartDateTime = new DateTimeOffset(2014, 12, 15, 17, 2, 18, new TimeSpan())},
+                    new AllReadyTask() { StartDateTime = new DateTimeOffset(2016, 12, 15, 17, 2, 18, new TimeSpan())},
+                    new AllReadyTask() { StartDateTime = new DateTimeOffset(2013, 12, 15, 17, 2, 18, new TimeSpan())},
+                }
+            };
         }
     }
 }
