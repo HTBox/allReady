@@ -1,0 +1,79 @@
+﻿using System;
+using AllReady.Attributes;
+using Microsoft.AspNetCore.Mvc;
+using AllReady.Models;
+using MediatR;
+using Microsoft.AspNetCore.Identity;
+using AllReady.Features.Requests;
+using AllReady.ViewModels.Requests;
+
+namespace AllReady.Controllers
+{
+    [Route("api/request")]
+    [Produces("application/json")]
+    public class RequestApiController : Controller
+    {
+        private readonly IMediator _mediator;
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public RequestApiController( IMediator mediator, UserManager<ApplicationUser> userManager )
+        {
+            _mediator = mediator;
+            _userManager = userManager;
+        }
+
+        [HttpPost]
+        [ExternalEndpoint]
+        public IActionResult Post( [FromBody]RequestViewModel request )
+        {
+            var allReadyRequest = ToModel(request, _mediator);
+
+            AddRequestError error = _mediator.Send(new AddRequestCommand { Request = allReadyRequest });
+
+            if (error != null)
+            {
+                return MapError(error);
+            }
+            return Created(string.Empty, allReadyRequest);
+        }
+
+        private IActionResult MapError( AddRequestError error )
+        {
+            if (error.IsInternal)
+            {
+                return StatusCode(500, error);
+            }
+            else
+            {
+                return BadRequest(error);
+            }
+        }
+
+        public Request ToModel( RequestViewModel requestViewModel, IMediator mediator )
+        {
+            var request = new Request
+            {
+                ProviderId = requestViewModel.ProviderId,
+                ProviderData = requestViewModel.ProviderData,
+                Address = requestViewModel.Address,
+                City = requestViewModel.City,
+                DateAdded = DateTime.UtcNow,
+                Email = requestViewModel.Email,
+                Name = requestViewModel.Name,
+                Phone = requestViewModel.Phone,
+                State = requestViewModel.State,
+                Zip = requestViewModel.Zip,
+                Status = RequestStatus.UnAssigned
+            };
+
+            RequestStatus status;
+            if (RequestStatus.TryParse(requestViewModel.Status, out status))
+            {
+                request.Status = status;
+            }
+
+            return request;
+        }
+
+    }
+}
