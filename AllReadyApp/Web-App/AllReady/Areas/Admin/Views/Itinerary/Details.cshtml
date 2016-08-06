@@ -19,8 +19,8 @@
     <div class="col-md-12">
         <h2>
             @Model.Name
-            @*<a asp-controller="Itinerary" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
-            <a asp-controller="Itinerary" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>*@
+            @*<a asp-area="Admin" asp-controller="Itinerary" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
+            <a asp-area="Admin" asp-controller="Itinerary" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>*@
         </h2>
         <p>Scheduled for @Model.DisplayDate</p>
     </div>
@@ -39,7 +39,7 @@
 {
     <div class="row">
         <div class="col-md-12">
-            <form asp-controller="Itinerary" asp-action="AddTeamMember" method="post">
+            <form asp-area="Admin" asp-controller="Itinerary" asp-action="AddTeamMember" method="post">
                 <input type="hidden" asp-for="Id" />
                 Add team member:
                 <select asp-for="SelectedTeamMember"
@@ -136,12 +136,12 @@ else
                             <p>@request.City</p>
                         </td>
                         <td>
-                            <form asp-action="MoveRequestUp" asp-controller="Itinerary" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn"><button type="submit" class="btn btn-default submit-form" @if (@request.IsFirst)
+                            <form asp-action="MoveRequestUp" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn"><button type="submit" class="btn btn-default submit-form" @if (@request.IsFirst)
                                                                                                                                                                                                                                                {
                                                                                                                                                                                                                                                    <text>disabled</text>
                                                                                                                                                                                                                                                }><span class="fa fa-arrow-up"></span></button>
                             </form>
-                            <form asp-action="MoveRequestDown" asp-controller="Itinerary" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
+                            <form asp-action="MoveRequestDown" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
                                 <button type="submit" class="btn btn-default submit-form" @if (@request.IsLast)
                                                                                           {
                                                                                               <text>disabled</text>
@@ -154,13 +154,13 @@ else
                          @request.Status
                             @if(request.Status == RequestStatus.Assigned)
                             { 
-                                <form asp-action="MarkComplete" asp-controller="Itinerary" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
+                                <form asp-action="MarkComplete" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
                                     <button type="submit" class="btn btn-success submit-form" title="Mark this request as complete"><span class="fa fa-check"></span></button>
                                 </form>
                             }
                             else
                             {
-                                <form asp-action="MarkIncomplete" asp-controller="Itinerary" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
+                                <form asp-action="MarkIncomplete" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
                                     <button type="submit" class="btn btn-warning submit-form" title="Reset this request to incomplete"><span class="fa fa-ban"></span></button>
                                 </form>
                             }

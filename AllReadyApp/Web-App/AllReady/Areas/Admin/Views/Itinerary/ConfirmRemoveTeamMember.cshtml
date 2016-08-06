@@ -20,7 +20,7 @@
             </dd>
         </dl>
 
-        <form asp-controller="Itinerary" asp-action="RemoveTeamMember" asp-route-itineraryId="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" asp-route-taskSignupId="@Model.TaskSignupId">
+        <form asp-area="Admin" asp-controller="Itinerary" asp-action="RemoveTeamMember" asp-route-itineraryId="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" asp-route-taskSignupId="@Model.TaskSignupId">
             <input type="hidden" asp-for="@Model.TaskSignupId" />
             <div class="form-actions no-color">
                 <button type="submit" class="btn btn-primary">Delete</button>

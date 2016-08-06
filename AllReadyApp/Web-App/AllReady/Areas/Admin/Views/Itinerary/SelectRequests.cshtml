@@ -31,14 +31,14 @@
     <div class="col-md-12 request-filter-section">
         <h3>Filter results</h3>
         <p>Please enter a keyword on which to filter the requests.</p>
-        <form asp-action="SelectRequests" asp-controller="Itinerary">
+        <form asp-action="SelectRequests" asp-controller="Itinerary" asp-area="Admin">
             <input asp-for="KeywordsFilter"/>
             <button type="submit" class="btn btn-default submit-form">Filter</button>
         </form>
     </div>
 </div>
 
-<form asp-controller="Itinerary" asp-action="AddRequests">
+<form asp-area="Admin" asp-controller="Itinerary" asp-action="AddRequests">
 
     <div class="row">
         <div class="col-12">
