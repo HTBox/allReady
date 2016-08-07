@@ -1,4 +1,5 @@
 ﻿using AllReady.Models;
+using Geocoding;
 using Geocoding.Google;
 using MediatR;
 using System;
@@ -11,16 +12,17 @@ namespace AllReady.Areas.Admin.Features.Requests
     public class ImportRequestsCommandHandler : IRequestHandler<ImportRequestsCommand, IEnumerable<ImportRequestError>>
     {
         private readonly AllReadyContext _context;
+        private readonly IGeocoder _geocoder;
 
-        public ImportRequestsCommandHandler(AllReadyContext context)
+        public ImportRequestsCommandHandler(AllReadyContext context, IGeocoder geocoder)
         {
             _context = context;
+            _geocoder = geocoder;
         }
 
         public IEnumerable<ImportRequestError> Handle(ImportRequestsCommand message)
         {
             var errors = new List<ImportRequestError>();
-            var geocoder = new GoogleGeocoder();
 
             foreach (var request in message.Requests)
             {
@@ -31,12 +33,8 @@ namespace AllReady.Areas.Admin.Features.Requests
                     if (request.Latitude == 0 && request.Longitude == 0)
                     {
                         //Assume the first returned address is correct
-                        var address = geocoder.Geocode(string.Format("{0} {1} {2} {3}",
-                            request.Address,
-                            request.City,
-                            request.State,
-                            request.Zip
-                        )).FirstOrDefault();
+                        var address = _geocoder.Geocode(request.Address, request.City, request.State, request.Zip, string.Empty)
+                            .FirstOrDefault();
                         request.Latitude = address?.Coordinates.Latitude ?? 0;
                         request.Longitude = address?.Coordinates.Longitude ?? 0;
                     }
