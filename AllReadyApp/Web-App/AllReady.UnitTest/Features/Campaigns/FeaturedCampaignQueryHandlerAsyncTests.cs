@@ -31,8 +31,8 @@ namespace AllReady.UnitTest.Features.Campaigns
             var result = await handler.Handle(new FeaturedCampaignQueryAsync());
 
             // Assert
-            Assert.NotNull(result.Organization);
-            Assert.Equal("Some Organization", result.Organization.Name);
+            Assert.NotNull(result.OrganizationName);
+            Assert.Equal("Some Organization", result.OrganizationName);
         }
 
         [Fact]
