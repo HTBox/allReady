@@ -30,7 +30,7 @@ namespace AllReady.UnitTest.Controllers
 
             mediator.Setup(x => x.SendAsync(It.IsAny<AddRequestCommand>())).ReturnsAsync(error);
 
-            var sut = new RequestApiController(mediator.Object);
+            var sut = new RequestApiController(mediator.Object, null);
             var result = await sut.Post(new RequestViewModel()) as BadRequestObjectResult;
 
             Assert.NotNull(result);
@@ -43,7 +43,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task PostSendsAddRequestCommandWithCorrectData()
+        public async Task PostSendsAddRequestCommandAsyncWithCorrectData()
         {
             var mediator = new Mock<IMediator>();
             var sut = new RequestApiController(mediator.Object);
