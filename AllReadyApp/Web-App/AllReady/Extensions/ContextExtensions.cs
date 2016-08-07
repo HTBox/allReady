@@ -22,6 +22,13 @@ namespace AllReady.Extensions
                 case EntityState.Modified:
                     ctx.Update(entity);
                     break;
+                case EntityState.Added:
+                    ctx.Add(entity);
+                    break;
+                case EntityState.Unchanged:
+                    //item already in db no need to do anyth
+                    break;
+                    
                 default:
                     throw new ArgumentOutOfRangeException();
             }
