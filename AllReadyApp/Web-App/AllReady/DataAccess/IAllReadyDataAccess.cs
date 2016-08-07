@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AllReady.Models
@@ -8,21 +9,21 @@ namespace AllReady.Models
 
         #region Event CRUD
         IEnumerable<Event> Events { get; }
-        Event GetEvent(int eventId);
-        int GetManagingOrganizationId(int eventId);
-        IEnumerable<EventSignup> GetEventSignups(string userId);
-        IEnumerable<EventSignup> GetEventSignups(int eventId, string userId);
-        Task UpdateEvent(Event value);
-        IEnumerable<Event> EventsByPostalCode(string postalCode, int distance);
-        IEnumerable<Event> EventsByGeography(double latitude, double longitude, int distance);
-        IEnumerable<Resource> GetResourcesByCategory(string category);
+        Event GetEvent( int eventId );
+        int GetManagingOrganizationId( int eventId );
+        IEnumerable<EventSignup> GetEventSignups( string userId );
+        IEnumerable<EventSignup> GetEventSignups( int eventId, string userId );
+        Task UpdateEvent( Event value );
+        IEnumerable<Event> EventsByPostalCode( string postalCode, int distance );
+        IEnumerable<Event> EventsByGeography( double latitude, double longitude, int distance );
+        IEnumerable<Resource> GetResourcesByCategory( string category );
 
         #endregion
 
         #region Campaign CRUD
 
         IEnumerable<Campaign> Campaigns { get; }
-        Campaign GetCampaign(int campaignId);
+        Campaign GetCampaign( int campaignId );
 
         #endregion
 
@@ -30,9 +31,9 @@ namespace AllReady.Models
 
         IEnumerable<ApplicationUser> Users { get; }
 
-        ApplicationUser GetUser(string userId);
+        ApplicationUser GetUser( string userId );
 
-        Task UpdateUser(ApplicationUser value);
+        Task UpdateUser( ApplicationUser value );
 
         #endregion
 
@@ -40,40 +41,49 @@ namespace AllReady.Models
 
         IEnumerable<EventSignup> EventSignups { get; }
 
-        EventSignup GetEventSignup(int eventId, string userId);
+        EventSignup GetEventSignup( int eventId, string userId );
 
-        Task AddEventSignupAsync(EventSignup userSignup);
+        Task AddEventSignupAsync( EventSignup userSignup );
 
-        Task DeleteEventAndTaskSignupsAsync(int eventSignupId);
+        Task DeleteEventAndTaskSignupsAsync( int eventSignupId );
 
         #endregion
 
         #region TaskSignup CRUD
         IEnumerable<TaskSignup> TaskSignups { get; }
 
-        Task UpdateTaskSignupAsync(TaskSignup value);
+        Task UpdateTaskSignupAsync( TaskSignup value );
         #endregion
 
         #region AllReadyTask CRUD
         IEnumerable<AllReadyTask> Tasks { get; }
 
-        AllReadyTask GetTask(int taskId);
+        AllReadyTask GetTask( int taskId );
 
-        Task AddTaskAsync(AllReadyTask task);
+        Task AddTaskAsync( AllReadyTask task );
 
-        Task DeleteTaskAsync(int taskId);
+        Task DeleteTaskAsync( int taskId );
 
-        Task UpdateTaskAsync(AllReadyTask value);
+        Task UpdateTaskAsync( AllReadyTask value );
 
-        IEnumerable<TaskSignup> GetTasksAssignedToUser(int eventId, string userId);
+        IEnumerable<TaskSignup> GetTasksAssignedToUser( int eventId, string userId );
 
         #endregion
 
         #region Request CRUD
         Task<Request> GetRequestByProviderIdAsync( string providerId );
 
-        Task AddRequestAsync( Request request ); 
+        Task AddRequestAsync( Request request );
         #endregion
+
+        #region Itinerary CRUD
+        IAsyncEnumerable<Request> Requests { get; }
+        IAsyncEnumerable<ItineraryRequest> ItineraryRequests { get; }
+
+        Task<Itinerary> GetItineraryByIdAsync( int itineraryId );
+        Task AddItineraryRequests( IEnumerable<ItineraryRequest> itineraryRequestsToAdd );
+        #endregion
+
 
     }
 }
