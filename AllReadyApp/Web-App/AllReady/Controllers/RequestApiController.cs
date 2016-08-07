@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using AllReady.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Models;
@@ -24,11 +25,11 @@ namespace AllReady.Controllers
 
         [HttpPost]
         [ExternalEndpoint]
-        public IActionResult Post( [FromBody]RequestViewModel request )
+        public async Task<IActionResult> Post( [FromBody]RequestViewModel request )
         {
             var allReadyRequest = ToModel(request, _mediator);
 
-            AddRequestError error = _mediator.Send(new AddRequestCommand { Request = allReadyRequest });
+            AddRequestError error = await _mediator.SendAsync(new AddRequestCommand { Request = allReadyRequest });
 
             if (error != null)
             {

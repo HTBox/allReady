@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Features.Requests;
 using AllReady.Models;
@@ -15,7 +16,7 @@ namespace AllReady.UnitTest.Controllers
     {
         #region Post
         [Fact]
-        public void PostReturnsBadRequestResultWhenAnErrorIsNotInternal()
+        public async Task PostReturnsBadRequestResultWhenAnErrorIsNotInternal()
         {
             var mediator = new Mock<IMediator>();
             var outReason = "anythingReally";
@@ -27,10 +28,10 @@ namespace AllReady.UnitTest.Controllers
                 Reason = outReason
             };
 
-            mediator.Setup(x => x.Send(It.IsAny<AddRequestCommand>())).Returns(error);
+            mediator.Setup(x => x.SendAsync(It.IsAny<AddRequestCommand>())).ReturnsAsync(error);
 
             var sut = new RequestApiController(mediator.Object, null);
-            var result = sut.Post(new RequestViewModel()) as BadRequestObjectResult;
+            var result = await sut.Post(new RequestViewModel()) as BadRequestObjectResult;
 
             Assert.NotNull(result);
 
@@ -42,7 +43,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void PostSendsAddRequestCommandAsyncWithCorrectData()
+        public async Task PostSendsAddRequestCommandAsyncWithCorrectData()
         {
             var mediator = new Mock<IMediator>();
             var sut = new RequestApiController(mediator.Object, null);
@@ -60,9 +61,9 @@ namespace AllReady.UnitTest.Controllers
                 Status = RequestStatus.Assigned.ToString()
             };
 
-            sut.Post(ourViewModel);
+            await sut.Post(ourViewModel);
 
-            mediator.Verify(x => x.Send(It.Is<AddRequestCommand>(y => y.Request.ProviderId == ourViewModel.ProviderId
+            mediator.Verify(x => x.SendAsync(It.Is<AddRequestCommand>(y => y.Request.ProviderId == ourViewModel.ProviderId
             && y.Request.Status == RequestStatus.Assigned
             && y.Request.ProviderData == ourViewModel.ProviderData
             && y.Request.State == ourViewModel.State
@@ -76,12 +77,12 @@ namespace AllReady.UnitTest.Controllers
 
 
         [Fact]
-        public void PostReturnsHttpStatusCodeResultOf201()
+        public async Task PostReturnsHttpStatusCodeResultOf201()
         {
             var mediator = new Mock<IMediator>();
             var sut = new RequestApiController(mediator.Object, null);
 
-            var result = sut.Post(new RequestViewModel()) as CreatedResult;
+            var result = await sut.Post(new RequestViewModel()) as CreatedResult;
 
             Assert.NotNull(result);
             Assert.Equal(result.StatusCode, 201);
