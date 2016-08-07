@@ -15,21 +15,19 @@ namespace AllReady.Controllers
     public class RequestApiController : Controller
     {
         private readonly IMediator _mediator;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public RequestApiController( IMediator mediator, UserManager<ApplicationUser> userManager )
+        public RequestApiController(IMediator mediator)
         {
             _mediator = mediator;
-            _userManager = userManager;
         }
 
         [HttpPost]
         [ExternalEndpoint]
-        public async Task<IActionResult> Post( [FromBody]RequestViewModel request )
+        public async Task<IActionResult> Post([FromBody]RequestViewModel request)
         {
             var allReadyRequest = ToModel(request, _mediator);
 
-            AddRequestError error = await _mediator.SendAsync(new AddRequestCommand { Request = allReadyRequest });
+            AddRequestError error = await _mediator.SendAsync(new AddRequestCommandAsync { Request = allReadyRequest });
 
             if (error != null)
             {
@@ -38,7 +36,7 @@ namespace AllReady.Controllers
             return Created(string.Empty, allReadyRequest);
         }
 
-        private IActionResult MapError( AddRequestError error )
+        private IActionResult MapError(AddRequestError error)
         {
             if (error.IsInternal)
             {
@@ -50,7 +48,7 @@ namespace AllReady.Controllers
             }
         }
 
-        public Request ToModel( RequestViewModel requestViewModel, IMediator mediator )
+        public Request ToModel(RequestViewModel requestViewModel, IMediator mediator)
         {
             var request = new Request
             {

@@ -12,23 +12,25 @@ namespace AllReady.Areas.Admin.Models.RequestModels
         public RedCrossRequestMap()
         {
             // columns from Red Cross CSV
-            // "id","name","address","city","state","zip","phone","email","date created","region"
+            // "id","name","address","city","state","zip","phone","email","date created","region","latitude","longitude"
 
             // set defaults
-            Map(m => m.RequestId).Default(Guid.NewGuid());
-            Map(m => m.Status).Default(RequestStatus.UnAssigned);
+            Map(r => r.RequestId).Default(Guid.NewGuid());
+            Map(r => r.Status).Default(RequestStatus.UnAssigned);
 
             // map from Red Cross data
-            Map(m => m.Name).Name("name");
-            Map(m => m.Address).Name("address");
-            Map(m => m.City).Name("city");
-            Map(m => m.State).Name("state");
-            Map(m => m.Zip).Name("zip");
-            Map(m => m.Phone).Name("phone");
-            Map(m => m.Email).Name("email");
-            Map(m => m.DateAdded).Name("date created");
-            Map(m => m.ProviderData).Name("region");
-            Map(m => m.ProviderId).Name("id");
+            Map(r => r.Name).Name("name");
+            Map(r => r.Address).Name("address");
+            Map(r => r.City).Name("city");
+            Map(r => r.State).Name("state");
+            Map(r => r.Zip).Name("zip");
+            Map(r => r.Phone).Name("phone");
+            Map(r => r.Email).Name("email");
+            Map(r => r.DateAdded).Name("date created").Default(DateTime.UtcNow);
+            Map(r => r.ProviderData).Name("region");
+            Map(r => r.ProviderId).Name("id");
+            Map(r => r.Latitude).Name("latitude").Default(0);
+            Map(r => r.Longitude).Name("longitude").Default(0);
         }
 
     }

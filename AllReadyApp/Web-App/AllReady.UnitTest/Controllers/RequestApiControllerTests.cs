@@ -28,9 +28,9 @@ namespace AllReady.UnitTest.Controllers
                 Reason = outReason
             };
 
-            mediator.Setup(x => x.SendAsync(It.IsAny<AddRequestCommand>())).ReturnsAsync(error);
+            mediator.Setup(x => x.SendAsync(It.IsAny<AddRequestCommandAsync>())).ReturnsAsync(error);
 
-            var sut = new RequestApiController(mediator.Object, null);
+            var sut = new RequestApiController(mediator.Object);
             var result = await sut.Post(new RequestViewModel()) as BadRequestObjectResult;
 
             Assert.NotNull(result);
@@ -46,7 +46,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task PostSendsAddRequestCommandAsyncWithCorrectData()
         {
             var mediator = new Mock<IMediator>();
-            var sut = new RequestApiController(mediator.Object, null);
+            var sut = new RequestApiController(mediator.Object);
             var ourViewModel = new RequestViewModel
             {
                 ProviderId = "Crazy-Eights",
@@ -63,7 +63,7 @@ namespace AllReady.UnitTest.Controllers
 
             await sut.Post(ourViewModel);
 
-            mediator.Verify(x => x.SendAsync(It.Is<AddRequestCommand>(y => y.Request.ProviderId == ourViewModel.ProviderId
+            mediator.Verify(x => x.SendAsync(It.Is<AddRequestCommandAsync>(y => y.Request.ProviderId == ourViewModel.ProviderId
             && y.Request.Status == RequestStatus.Assigned
             && y.Request.ProviderData == ourViewModel.ProviderData
             && y.Request.State == ourViewModel.State
@@ -80,7 +80,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task PostReturnsHttpStatusCodeResultOf201()
         {
             var mediator = new Mock<IMediator>();
-            var sut = new RequestApiController(mediator.Object, null);
+            var sut = new RequestApiController(mediator.Object);
 
             var result = await sut.Post(new RequestViewModel()) as CreatedResult;
 
@@ -91,7 +91,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void PostHasHttpPostAttribute()
         {
-            var sut = new RequestApiController(null, null);
+            var sut = new RequestApiController(null);
             var attribute = sut.GetAttributesOn(x => x.Post(It.IsAny<RequestViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -101,7 +101,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ControllerHasRouteAtttributeWithTheCorrectRoute()
         {
-            var sut = new RequestApiController(null, null);
+            var sut = new RequestApiController(null);
             var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "api/request");
@@ -110,7 +110,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ControllerHasProducesAtttributeWithTheCorrectContentType()
         {
-            var sut = new RequestApiController(null, null);
+            var sut = new RequestApiController(null);
             var attribute = sut.GetAttributes().OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
