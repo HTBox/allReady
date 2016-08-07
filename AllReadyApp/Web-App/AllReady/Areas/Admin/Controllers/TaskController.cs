@@ -39,7 +39,9 @@ namespace AllReady.Areas.Admin.Controllers
             var viewModel = new TaskSummaryModel
             {
                 EventId = campaignEvent.Id,
-                EventName = campaignEvent.Name,                
+                EventName = campaignEvent.Name,
+                EventStartDateTime = campaignEvent.StartDateTime,
+                EventEndDateTime = campaignEvent.EndDateTime,
                 CampaignId = campaignEvent.CampaignId,
                 CampaignName = campaignEvent.Campaign.Name,
                 OrganizationId = campaignEvent.Campaign.ManagingOrganizationId,
