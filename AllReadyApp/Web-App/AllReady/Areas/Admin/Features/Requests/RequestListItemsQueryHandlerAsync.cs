@@ -59,6 +59,8 @@ namespace AllReady.Areas.Admin.Features.Requests
                 Id = r.RequestId,
                 Name = r.Name,
                 Address = r.Address,
+                Latitude = r.Latitude,
+                Longitude = r.Longitude,
                 City = r.City,
                 Postcode = r.Zip,
                 Status = r.Status,
