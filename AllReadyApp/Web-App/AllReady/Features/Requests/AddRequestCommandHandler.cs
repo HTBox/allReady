@@ -39,7 +39,7 @@ namespace AllReady.Features.Requests
                     entity.Status = request.Status;
                 }
 
-                await _dataAccess.AddRequestAsync(entity);
+                await _dataAccess.AddRequestAsync(entity ?? request);
             }
             catch (Exception)
             {
