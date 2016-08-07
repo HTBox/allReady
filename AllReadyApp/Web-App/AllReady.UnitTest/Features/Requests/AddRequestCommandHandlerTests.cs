@@ -4,6 +4,8 @@ using AllReady.Features.Requests;
 using AllReady.Models;
 using Moq;
 using Xunit;
+using Geocoding;
+using System.Collections.Generic;
 
 namespace AllReady.UnitTest.Features.Requests
 {
@@ -11,11 +13,13 @@ namespace AllReady.UnitTest.Features.Requests
     {
         private AddRequestCommandHandlerAsync _sut;
         private Mock<IAllReadyDataAccess> _dataAccess;
+        private Mock<IGeocoder> _geocoder;
 
         public AddRequestCommandHandlerTests()
         {
             _dataAccess = new Mock<IAllReadyDataAccess>();
-            _sut = new AddRequestCommandHandlerAsync(_dataAccess.Object);
+            _geocoder = new Mock<IGeocoder>();
+            _sut = new AddRequestCommandHandlerAsync(_dataAccess.Object, _geocoder.Object);
         }
 
         [Fact]
@@ -51,7 +55,7 @@ namespace AllReady.UnitTest.Features.Requests
         }
 
         [Fact]
-        public async Task WhenProviderIdIsProvidedAndIsValid_TheStatusIsTheSameAsTheRequestAndIdIsTheSame()
+        public async Task WhenProviderIdIsProvidedAndIsValid_TheStatusOfTheExistingRequestIsUpdated()
         {
             string pid = "someId";
             Guid rid = Guid.NewGuid();
@@ -75,8 +79,95 @@ namespace AllReady.UnitTest.Features.Requests
 
             await _sut.Handle(command);
 
-            Assert.Equal(rid, returnedRequest.RequestId);
             Assert.Equal(RequestStatus.Assigned, returnedRequest.Status);
+            _dataAccess.Verify(x => x.AddRequestAsync(returnedRequest));
+
+        }
+
+        [Fact]
+        public async Task WhenLatitudeAndLogitudeAreNotProvided_SetsThemWithGeocodingAPI()
+        {
+            var request = new Request
+            {
+                ProviderId = "someId",
+                Address = "1 Happy Street",
+                City = "Happytown",
+                State = "HP",
+                Zip = "12345",
+                Status = RequestStatus.UnAssigned
+            };
+
+            var address = new Geocoding.Google.GoogleAddress(
+                Geocoding.Google.GoogleAddressType.Premise,
+                "formatted address",
+                new[] { new Geocoding.Google.GoogleAddressComponent(
+                    new [] { Geocoding.Google.GoogleAddressType.Country },
+                    "",
+                    "")},
+                new Geocoding.Location(42, 24), //This is the only part that matters: the coordinates
+                null,
+                false,
+                Geocoding.Google.GoogleLocationType.Rooftop);
+
+            _geocoder.Setup(g => g.Geocode(request.Address, request.City, request.State, request.Zip, string.Empty))
+                .Returns(new[] { address });
+
+            await _sut.Handle(new AddRequestCommandAsync { Request = request });
+
+            Assert.Equal(42, request.Latitude);
+            Assert.Equal(24, request.Longitude);
+        }
+
+        [Fact]
+        public async Task WhenEitherLatitudeOrLogitudeAreProvided_DoNotChangeThem()
+        {
+            var request = new Request
+            {
+                ProviderId = "someId",
+                Address = "1 Happy Street",
+                City = "Happytown",
+                State = "HP",
+                Zip = "12345",
+                Latitude = 13,
+                Longitude = 14,
+                Status = RequestStatus.UnAssigned
+            };
+
+            var address = new Geocoding.Google.GoogleAddress(
+                Geocoding.Google.GoogleAddressType.Premise,
+                "formatted address",
+                new[] { new Geocoding.Google.GoogleAddressComponent(
+                    new [] { Geocoding.Google.GoogleAddressType.Country },
+                    "",
+                    "")},
+                new Geocoding.Location(42, 24), //This is the only part that matters: the coordinates
+                null,
+                false,
+                Geocoding.Google.GoogleLocationType.Rooftop);
+
+            _geocoder.Setup(g => g.Geocode(request.Address, request.City, request.State, request.Zip, string.Empty))
+                .Returns(new[] { address });
+
+            await _sut.Handle(new AddRequestCommandAsync { Request = request });
+
+            Assert.Equal(13, request.Latitude);
+            Assert.Equal(14, request.Longitude);
+
+            //Clear latitude and re-test
+            request.Latitude = 0;
+            request.Longitude = 14;
+            await _sut.Handle(new AddRequestCommandAsync { Request = request });
+
+            Assert.Equal(0, request.Latitude);
+            Assert.Equal(14, request.Longitude);
+
+            //Clear longitude and re-test
+            request.Latitude = 13;
+            request.Longitude = 0;
+            await _sut.Handle(new AddRequestCommandAsync { Request = request });
+
+            Assert.Equal(13, request.Latitude);
+            Assert.Equal(0, request.Longitude);
 
         }
     }
