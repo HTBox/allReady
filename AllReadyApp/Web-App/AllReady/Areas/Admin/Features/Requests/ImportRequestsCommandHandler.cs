@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {
-    public class AddRequestsCommandHandler : IRequestHandler<AddRequestsCommand, IEnumerable<RequestImportError>>
+    public class ImportRequestsCommandHandler : IRequestHandler<ImportRequestsCommand, IEnumerable<ImportRequestError>>
     {
         private readonly AllReadyContext _context;
 
-        public AddRequestsCommandHandler(AllReadyContext context)
+        public ImportRequestsCommandHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public IEnumerable<RequestImportError> Handle(AddRequestsCommand message)
+        public IEnumerable<ImportRequestError> Handle(ImportRequestsCommand message)
         {
-            var errors = new List<RequestImportError>();
+            var errors = new List<ImportRequestError>();
 
             foreach (var request in message.Requests)
             {

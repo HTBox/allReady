@@ -46,7 +46,7 @@ namespace AllReady.Areas.Admin.Controllers
                     csvReader.Configuration.RegisterClassMap<RedCrossRequestMap>();
                     var requests = csvReader.GetRecords<Request>().ToList();
 
-                    var errors = _mediator.Send(new AddRequestsCommand { Requests = requests });
+                    var errors = _mediator.Send(new ImportRequestsCommand { Requests = requests });
 
                 }
             }
