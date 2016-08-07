@@ -1,10 +1,6 @@
-﻿<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title></title>
-    <style>
-        .bgimage         
+﻿@section styles 
+{    <style>
+        .errbackimage         
         { 
                 background:  url("/images/404.png");
                 background-repeat:no-repeat;
@@ -13,8 +9,8 @@
                 width:99%;
                 height:800px;
                 padding:0;        
-               }
-        .errortext
+        }
+        .errtxt
         {
             font-size:xx-large;
             font-weight: 600;
@@ -22,7 +18,7 @@
             margin-left: 2%;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
         }
-         .errortextbig
+         .errtxtbg
         {
             font-size: 48pt;
             text-align:left;
@@ -31,16 +27,18 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif        
         }
     </style>
-</head>
-<body>
-    <div class="bgimage">
-        <p class="errortextbig">
+    }
+    @{
+    ViewBag.Title = "404! We went off the rails...";
+    }
+
+    <div class="errbackimage">
+        <p class="errtxtbig">
             404 :(
            </p> 
-    <p class="errortext">
+    <p class="errtxt">
          We went off the rails and couldn’t find your page! <br /> Don’t worry. We’ll get back on track.
         </p>
         <br />
     </div>
-</body>
-</html>
+

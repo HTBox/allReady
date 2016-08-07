@@ -24,7 +24,9 @@
         <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     </environment>
     @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
+    @RenderSection("styles", required: false)
 
+    
     <script type="text/javascript">
         var htbox = htbox || {};
         htbox.allReady = htbox.allReady || {};
