@@ -9,19 +9,19 @@ namespace AllReady.UnitTest.Features.Requests
 {
     public class AddRequestCommandHandlerTests : InMemoryContextTest
     {
-        private AddRequestCommandHandler _sut;
+        private AddRequestCommandHandlerAsync _sut;
         private Mock<IAllReadyDataAccess> _dataAccess;
 
         public AddRequestCommandHandlerTests()
         {
             _dataAccess = new Mock<IAllReadyDataAccess>();
-            _sut = new AddRequestCommandHandler(_dataAccess.Object);
+            _sut = new AddRequestCommandHandlerAsync(_dataAccess.Object);
         }
 
         [Fact]
         public async Task HandleReturnsNullWhenNoErrorsOccur()
         {
-            var command = new AddRequestCommand
+            var command = new AddRequestCommandAsync
             {
                 Request = new Request
                 {
@@ -38,7 +38,7 @@ namespace AllReady.UnitTest.Features.Requests
         public async Task WhenNoProviderIdIsProvided_TheStatusIsUnassignedAndIdIsNotNull()
         {
             var request = new Request();
-            var command = new AddRequestCommand
+            var command = new AddRequestCommandAsync
             {
                 Request = request
             };
@@ -60,7 +60,7 @@ namespace AllReady.UnitTest.Features.Requests
                 ProviderId = pid,
                 Status = RequestStatus.Assigned
             };
-            var command = new AddRequestCommand
+            var command = new AddRequestCommandAsync
             {
                 Request = request
             };
