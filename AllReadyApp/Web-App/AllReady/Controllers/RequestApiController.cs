@@ -64,7 +64,9 @@ namespace AllReady.Controllers
                 Phone = requestViewModel.Phone,
                 State = requestViewModel.State,
                 Zip = requestViewModel.Zip,
-                Status = RequestStatus.UnAssigned
+                Status = RequestStatus.UnAssigned,
+                Latitude = requestViewModel.Latitude,
+                Longitude = requestViewModel.Longitude
             };
 
             RequestStatus status;
