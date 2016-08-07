@@ -15,6 +15,11 @@ using Xunit;
 using System.Linq;
 using AllReady.Areas.Admin.Models.Validators;
 using Microsoft.AspNetCore.Authorization;
+using AllReady.Areas.Admin.Features.Events;
+using Microsoft.AspNetCore.Http;
+using System.Reflection;
+using AllReady.Features.Event;
+using AllReady.ViewModels.Event;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -42,18 +47,34 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<NotFoundResult>(result);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DetailsReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, It.IsAny<int>().ToString())
+            });
+            Assert.IsType<UnauthorizedResult>(await sut.Details(It.IsAny<int>()));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DetailsReturnsHttpUnauthorizedResultWhenEventIsNotNullAndUserIsNotAnOrgAdmin()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, It.IsAny<int>().ToString())
+            });
+            Assert.IsType<UnauthorizedResult>(await sut.Details(It.IsAny<int>()));
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -87,18 +108,29 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await TaskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task CreateGetReturnsHttpUnauthorizedResultWhenCampaignIsNull()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            var sut = new EventController(null, mediator.Object, null);
+
+            Assert.IsType<UnauthorizedResult>(await sut.Create(It.IsAny<int>()));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task CreateGetReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, It.IsAny<int>().ToString())
+            });
+
+            Assert.IsType<UnauthorizedResult>(await sut.Create(It.IsAny<int>()));
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -108,9 +140,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await TaskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void CreateGetHasRouteAttributeWithCorrectRoute()
         {
+            var sut = new EventController(null, null, null);
+            var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
+            Assert.Equal(routeAttribute.Template, "Admin/Event/Create/{campaignId}");
         }
 
         [Fact]
@@ -177,46 +213,75 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         //    Assert.Equal("Edit", result.ViewName);
         //}
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void CreatePostHasHttpPostAttribute()
         {
+            var sut = new EventController(null, null, null);
+            var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<EventEditModel>(), It.IsAny<IFormFile>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void CreatePostHasValidateAntiForgeryTokenAttrbiute()
         {
+            var sut = new EventController(null, Mock.Of<IMediator>(), null);
+            var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<EventEditModel>(), It.IsAny<IFormFile>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void CreatePostHasRouteAttrbiuteWithCorrectRoute()
         {
+            var sut = new EventController(null, Mock.Of<IMediator>(), null);
+            var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<EventEditModel>(), It.IsAny<IFormFile>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
+            Assert.Equal(routeAttribute.Template, "Admin/Event/Create/{campaignId}");
         }
 
         [Fact(Skip = "NotImplemented")]
-        public void EditGetSendsEventDetailQueryAsyncWithCorrectEventId()
-        {
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public void EditGetReturnsHttpNotFoundResultWhenEventIsNull()
-        {
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public void EditGetReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
-        {
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public void EditGetReturnsCorrectViewModel()
-        {
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public async Task EditPostReturnsBadRequestResultWhenEventIsNull()
+        public async void EditGetSendsEventDetailQueryAsyncWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async void EditGetReturnsHttpNotFoundResultWhenEventIsNull()
+        {
+            var mediator = new Mock<IMediator>();
+            var sut = new EventController(null, mediator.Object, null);
+            var result = await sut.Edit(It.IsAny<int>());
+
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async void EditGetReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventEditQuery>())).ReturnsAsync(new EventEditModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, It.IsAny<int>().ToString())
+            });
+            Assert.IsType<UnauthorizedResult>(await sut.Edit(It.IsAny<int>()));
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async void EditGetReturnsCorrectViewModel()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async Task EditPostReturnsBadRequestResultWhenEventIsNull()
+        {
+            var sut = new EventController(null, Mock.Of<IMediator>(), null);
+            Assert.IsType<BadRequestResult>(await sut.Edit(It.IsAny<EventEditModel>(), It.IsAny<IFormFile>()).ConfigureAwait(false));
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -296,14 +361,20 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await TaskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void EditPostHasHttpPostAttribute()
         {
+            var sut = new EventController(null, null, null);
+            var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<EventEditModel>(), It.IsAny<IFormFile>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void EditPostHasValidateAntiForgeryTokenAttribute()
         {
+            var sut = new EventController(null, Mock.Of<IMediator>(), null);
+            var routeAttribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<EventEditModel>(), It.IsAny<IFormFile>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -313,30 +384,53 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await TaskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DeleteReturnsHttpNotFoundResultWhenEventIsNull()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var sut = new EventController(null, Mock.Of<IMediator>(), null);
+            Assert.IsType<NotFoundResult>(await sut.Delete(It.IsAny<int>()).ConfigureAwait(false));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DeleteReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, It.IsAny<int>().ToString())
+            });
+
+            Assert.IsType<UnauthorizedResult>(await sut.Delete(It.IsAny<int>()).ConfigureAwait(false));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DeleteReturnsCorrectViewModel()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, It.IsAny<int>().ToString())
+            });
+
+            var result = (ViewResult) await sut.Delete(It.IsAny<int>()).ConfigureAwait(false);
+            var resultModel = result.ViewData.Model;
+
+            Assert.IsType<EventDetailModel>(resultModel);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void DeleteHasActionNameAttributeWithCorrectName()
         {
+            ActionNameAttribute attr = (ActionNameAttribute)typeof(EventController).GetMethod(nameof(EventController.Delete), new Type[] { typeof(int) }).GetCustomAttribute(typeof(ActionNameAttribute));
+            Assert.Equal(attr.Name, "Delete");
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -346,18 +440,27 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await TaskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DeleteConfirmedReturnsHttpNotFoundResultWhenEventIsNull()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var sut = new EventController(null, Mock.Of<IMediator>(), null);
+            Assert.IsType<NotFoundResult>(await sut.DeleteConfirmed(It.IsAny<int>()).ConfigureAwait(false));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DeleteConfirmedReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, It.IsAny<int>().ToString())
+            });
+
+            Assert.IsType<UnauthorizedResult>(await sut.DeleteConfirmed(It.IsAny<int>()).ConfigureAwait(false));
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -374,19 +477,27 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await TaskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void DeleteConfirmedHasHttpPostAttribute()
         {
+            var sut = new EventController(null, null, null);
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void DeleteConfirmedHasActionNameAttributeWithCorrectName()
         {
+            ActionNameAttribute attr = (ActionNameAttribute)typeof(EventController).GetMethod(nameof(EventController.DeleteConfirmed), new Type[] { typeof(int) }).GetCustomAttribute(typeof(ActionNameAttribute));
+            Assert.Equal(attr.Name, "Delete");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void DeleteConfirmedHasValidateAntiForgeryTokenAttribute()
         {
+            var sut = new EventController(null, Mock.Of<IMediator>(), null);
+            var routeAttribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -394,24 +505,54 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void AssignReturnsHttpNotFoundResultWhenEventIsNull()
         {
+            var sut = new EventController(null, Mock.Of<IMediator>(), null);
+            Assert.IsType<NotFoundResult>(sut.Assign(It.IsAny<int>()));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void AssignReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { CampaignId = 1, Campaign = new Campaign { ManagingOrganizationId = 1 } });
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.BasicUser.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            Assert.IsType<UnauthorizedResult>(sut.Assign(It.IsAny<int>()));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void AssignReturnsCorrectViewModel()
         {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { CampaignId = 1, Campaign = new Campaign { ManagingOrganizationId = 1 } });
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            var result = (ViewResult) sut.Assign(It.IsAny<int>());
+            var resultModel = result.ViewData.Model;
+
+            Assert.IsType<EventViewModel>(resultModel);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void AssignHasHttpGetAttribute()
         {
+            var sut = new EventController(null, null, null);
+            var attribute = sut.GetAttributesOn(x => x.Assign(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -456,14 +597,20 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await TaskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void MessageAllVolunteersHasHttpPostAttribute()
         {
+            var sut = new EventController(null, null, null);
+            var attribute = sut.GetAttributesOn(x => x.MessageAllVolunteers(It.IsAny<MessageEventVolunteersModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void MessageAllVolunteersHasValidateAntiForgeryTokenAttribute()
         {
+            var sut = new EventController(null, Mock.Of<IMediator>(), null);
+            var routeAttribute = sut.GetAttributesOn(x => x.MessageAllVolunteers(It.IsAny<MessageEventVolunteersModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -487,14 +634,20 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await TaskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void PostEventFileHasHttpPostAttribute()
         {
+            var sut = new EventController(null, null, null);
+            var attribute = sut.GetAttributesOn(x => x.PostEventFile(It.IsAny<int>(), It.IsAny<IFormFile>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void PostEventFileHasValidateAntiForgeryTokenAttribute()
         {
+            var sut = new EventController(null, Mock.Of<IMediator>(), null);
+            var routeAttribute = sut.GetAttributesOn(x => x.PostEventFile(It.IsAny<int>(), It.IsAny<IFormFile>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
         }
 
         [Fact]
