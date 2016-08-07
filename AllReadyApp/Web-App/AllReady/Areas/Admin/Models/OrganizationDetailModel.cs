@@ -8,7 +8,9 @@ namespace AllReady.Areas.Admin.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        [Display(Name = "Logo URL")]
         public string LogoUrl { get; set; }
+        [Display(Name = "Website URL")]
         public string WebUrl { get; set; }
 
         /// <summary>
