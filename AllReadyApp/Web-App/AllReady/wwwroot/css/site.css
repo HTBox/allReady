@@ -68,6 +68,7 @@ footer {
 .btn {
     border-radius: 6px;
 }
+
     .btn.btn-primary, a.btn.btn-primary {
         border-radius: 6px;
         border-width: 0;
@@ -116,10 +117,12 @@ footer {
     font-size: 20.51px;
 }
 
-.navbar-nav a {
+.navbar-nav a, .navbar-nav button.btn-link {
     color: #FFFFFF;
 }
 
+ul.nav button.btn-link:hover,
+ul.nav button.btn-link:focus,
 ul.nav a:hover,
 ul.nav a:focus {
     background-color: transparent !important;
@@ -168,7 +171,11 @@ Navigation
 .navbar-default .navbar-nav > li > a,
 .navbar-default .navbar-nav > li > a:active,
 .navbar-default .navbar-nav > li > a:visited,
-.navbar-default .navbar-nav > li > a:focus {
+.navbar-default .navbar-nav > li > a:focus,
+.navbar-default .navbar-nav > li > button.btn-link,
+.navbar-default .navbar-nav > li > button.btn-link:active,
+.navbar-default .navbar-nav > li > button.btn-link:visited,
+.navbar-default .navbar-nav > li > button.btn-link:focus {
     color: #fff;
 }
 
@@ -179,6 +186,7 @@ Navigation
 }
 
 .navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > button.btn-link:hover,
 .navbar-default .navbar-nav > .active > a,
 .navbar-default .navbar-nav > .active > a:hover,
 .navbar-default .navbar-nav > .active > a:focus {
@@ -261,11 +269,12 @@ Navigation
         background-color: #d58033;
     }
 /* Login status */
-.navbar .login-status > li > a {
+.navbar .login-status > li > a,
+.navbar .login-status > li > button {
     font-size: 1.1em;
 }
 
-.navbar #logoutForm .user-profile-warning {
+.navbar .login-status .user-profile-warning {
     float: right;
     line-height: 20px;
     font-size: 1.1em;
@@ -547,10 +556,11 @@ a:hover .myevents-block {
     margin-bottom: 25px;
 }
 
-.request-filter-section input { 
-    width: 300px;
-    margin-right: 14px;
-}
+    .request-filter-section input {
+        width: 300px;
+        margin-right: 14px;
+    }
+
 .org-tile {
     height: 220px;
     border: 1px solid #ab6627;

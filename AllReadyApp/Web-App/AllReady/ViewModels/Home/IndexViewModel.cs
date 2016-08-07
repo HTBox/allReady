@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using AllReady.ViewModels.Campaign;
 
 namespace AllReady.ViewModels.Home
 {
-    public class HomePageViewModel
+    public class IndexViewModel
     {
-        public List<CampaignViewModel> Campaigns { get; set; }
+        public List<ActiveOrUpcomingCampaign> ActiveOrUpcomingCampaigns { get; set; }
         public CampaignSummaryViewModel FeaturedCampaign { get; set; }
         public bool HasFeaturedCampaign => FeaturedCampaign != null;
     }

@@ -21,7 +21,7 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
             @if (isEdit)
             {
                 <li><a href="@cancelUrl">@Model.Name</a></li>
@@ -39,7 +39,7 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-controller="Campaign" asp-route-area="Admin" asp-action="Edit" method="post" enctype="multipart/form-data">
+<form asp-controller="Campaign" asp-area="Admin" asp-action="Edit" method="post" enctype="multipart/form-data">
 
     <button type="button"
             id="btnGetContactInfo"

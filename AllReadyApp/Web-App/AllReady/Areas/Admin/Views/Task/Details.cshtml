@@ -8,9 +8,9 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-route-area="Admin">@Model.EventName</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="Admin">@Model.EventName</a></li>
             <li>@Model.Name</li>
         </ol>
     </div>
@@ -18,7 +18,7 @@
 
 <div class="row">
     <div class="col-md-10">
-        <h2>@Model.Name <a asp-controller="Task" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-controller="Task" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
+        <h2>@Model.Name <a asp-area="Admin" asp-controller="Task" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-area="Admin" asp-controller="Task" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
         <p>@Model.Description</p>
         <p>
             <time value="Model.StartDateTime"></time> - <time value="Model.EndDateTime"></time>
@@ -87,7 +87,7 @@
                 <h3>All Volunteers</h3>
                 @if (Model.AllVolunteers.Count > 0)
                 {
-                    <form asp-controller="Task" asp-action="Assign" asp-route-area="Admin" method="post">
+                    <form asp-controller="Task" asp-action="Assign" asp-area="Admin" method="post">
 
                         <input type="hidden" asp-for="Id" />
                         <table class="table">
@@ -127,7 +127,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="messageVolunteersLabel">Message All Volunteers</h4>
             </div>
-            <form asp-controller="Task" asp-action="MessageAllVolunteers" method="post">
+            <form asp-area="Admin" asp-controller="Task" asp-action="MessageAllVolunteers" method="post">
                 <div class="modal-body">
                     <input type="hidden" value="@Model.Id" name="taskId" id="message-taskId">
                     <div class="form-group">

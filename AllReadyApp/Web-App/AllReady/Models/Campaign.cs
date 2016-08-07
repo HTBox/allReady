@@ -7,11 +7,13 @@ namespace AllReady.Models
     public class Campaign
     {
         public int Id { get; set; }
+
         public string Name { get; set; }
         /// <summary>
         /// Short synopsis of this campaign, displayed within grids.
         /// </summary>
         public string Description { get; set; }
+
         [Display(Name = "Full Description")]
         public string FullDescription { get; set; }
 
@@ -30,8 +32,10 @@ namespace AllReady.Models
 
         [Display(Name = "Managing Organization")]
         public int ManagingOrganizationId { get; set; }
+
         public Organization ManagingOrganization { get; set; }
         [Display(Name = "Image URL")]
+
         public string ImageUrl { get; set; }
 
         /// <summary>
@@ -62,6 +66,7 @@ namespace AllReady.Models
         public ApplicationUser Organizer { get; set; }
 
         public int? CampaignImpactId { get; set; }
+
         public CampaignImpact CampaignImpact { get; set; }
 
         public Location Location { get; set; }

@@ -27,7 +27,7 @@ namespace AllReady.Features.Campaigns
                     Title = c.Name,
                     Description = c.Description,
                     ImageUrl = c.ImageUrl,
-                    Organization = c.ManagingOrganization,
+                    OrganizationName = c.ManagingOrganization.Name,
                     Headline = c.Headline
                 })
                 .OrderBy(c => c.Id)

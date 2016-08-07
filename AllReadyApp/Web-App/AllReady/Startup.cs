@@ -201,6 +201,11 @@ namespace AllReady
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
+            else if (env.IsStaging())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
+            }
             else
             {
                 // Add Error handling middleware which catches all application specific errors and

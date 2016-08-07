@@ -14,15 +14,15 @@
         <ul class="dropdown-menu">
             @if (User.IsUserType(UserType.SiteAdmin))
             {
-                <li @(isAdmin && controllerName == "Organization" ? " class=active" : "")><a asp-route-area="Admin" asp-route-controller="Organization" asp-route-action="Index">Organizations</a></li>
+                <li @(isAdmin && controllerName == "Organization" ? " class=active" : "")><a asp-area="Admin" asp-controller="Organization" asp-action="Index">Organizations</a></li>
             }
-            <li @(isAdmin && controllerName == "Campaign" ? " class=active" : "")><a asp-route-area="Admin" asp-route-controller="Campaign" asp-route-action="Index">Campaigns</a></li>
-            <li @(isAdmin && controllerName == "Skill" ? " class=active" : "")><a asp-route-area="Admin" asp-route-controller="Skill" asp-route-action="Index">Skills</a></li>
+            <li @(isAdmin && controllerName == "Campaign" ? " class=active" : "")><a asp-area="Admin" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
+            <li @(isAdmin && controllerName == "Skill" ? " class=active" : "")><a asp-area="Admin" asp-controller="Skill" asp-action="Index">Skills</a></li>
             @if (User.IsUserType(UserType.SiteAdmin))
             {
-                <li @(isAdmin && controllerName == "Site" ? " class=active" : "")><a asp-route-area="Admin" asp-route-controller="Site" asp-route-action="Index">Site Admin</a></li>
+                <li @(isAdmin && controllerName == "Site" ? " class=active" : "")><a asp-area="Admin" asp-controller="Site" asp-action="Index">Site Admin</a></li>
                 <li class="divider"></li>
-                <li @(isAdmin && controllerName == "Import" ? " class=active" : "")><a asp-route-area="Admin" asp-route-controller="Import" asp-route-action="Index">Import Data</a></li>
+                <li @(isAdmin && controllerName == "Import" ? " class=active" : "")><a asp-area="Admin" asp-controller="Import" asp-action="Index">Import Data</a></li>
             }
         </ul>
     </li>
