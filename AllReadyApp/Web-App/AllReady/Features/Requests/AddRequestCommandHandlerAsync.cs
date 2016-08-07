@@ -53,7 +53,7 @@ namespace AllReady.Features.Requests
                     entity.Status = request.Status;
                 }
 
-                await _dataAccess.AddRequestAsync(entity ?? request); //Test calling with existing request
+                await _dataAccess.AddRequestAsync(entity ?? request);
             }
             catch (Exception)
             {

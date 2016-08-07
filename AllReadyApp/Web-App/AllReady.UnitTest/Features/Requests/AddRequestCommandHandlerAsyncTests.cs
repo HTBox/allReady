@@ -9,13 +9,13 @@ using System.Collections.Generic;
 
 namespace AllReady.UnitTest.Features.Requests
 {
-    public class AddRequestCommandHandlerTests : InMemoryContextTest
+    public class AddRequestCommandHandlerAsyncTests : InMemoryContextTest
     {
         private AddRequestCommandHandlerAsync _sut;
         private Mock<IAllReadyDataAccess> _dataAccess;
         private Mock<IGeocoder> _geocoder;
 
-        public AddRequestCommandHandlerTests()
+        public AddRequestCommandHandlerAsyncTests()
         {
             _dataAccess = new Mock<IAllReadyDataAccess>();
             _geocoder = new Mock<IGeocoder>();
