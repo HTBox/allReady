@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using AllReady.Attributes;
 using Xunit;
 
 namespace AllReady.UnitTest.Controllers
@@ -23,6 +24,7 @@ namespace AllReady.UnitTest.Controllers
             var failingActions = allControllerActions
                 .Where(method =>
                     Attribute.GetCustomAttribute(method, typeof(HttpPostAttribute)) != null)
+                .Where(method => Attribute.GetCustomAttribute(method, typeof(ExternalEndpointAttribute)) == null)
                 .Where(method =>
                     Attribute.GetCustomAttribute(method, typeof(ValidateAntiForgeryTokenAttribute)) == null)
                 .ToList();
