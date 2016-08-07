@@ -19,69 +19,92 @@
         </ol>
     </div>
 </div>
-
 <div class="row">
-    <div class="col-md-12">
-        <h2>Select Requests</h2>
-        <p>Please choose the requests you would like to add to your itinerary.</p>
+    <div class="col-xs-12 col-md-6">
+        <div>
+            <h2>Select Requests</h2>
+            <p>Please choose the requests you would like to add to your itinerary.</p>
+        </div>
+        <div class="request-filter-section">
+            <h3>Filter results</h3>
+            <p>Please enter a keyword on which to filter the requests.</p>
+            <form asp-action="SelectRequests" asp-controller="Itinerary" asp-area="Admin">
+                <input asp-for="KeywordsFilter" />
+                <button type="submit" class="btn btn-default submit-form">Filter</button>
+            </form>
+        </div>
+        <div>
+            <form asp-area="Admin" asp-controller="Itinerary" asp-action="AddRequests">
+                <div class="row">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary submit-form">Add Selected Requests</button>
+                        <a asp-action="Details" asp-controller="Itinerary" asp-area="Admin" class="btn btn-default">Cancel</a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        @if (Model.Requests.Count > 0)
+                        {
+                            <table class="table">
+                                <tr>
+                                    <th></th>
+                                    <th>Request Name</th>
+                                    <th>Address</th>
+                                    <th>City</th>
+                                    <th>Postcode</th>
+                                    <th>Date Added</th>
+                                </tr>
+                                @foreach (var req in Model.Requests)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" name="selectedRequests" value="@req.Id" @Html.Raw(req.IsSelected) ? "checked" : "" ) />
+                                        </td>
+                                        <td>@req.Name</td>
+                                        <td>@req.Address</td>
+                                        <td>@req.City</td>
+                                        <td>@req.Postcode</td>
+                                        <td>@req.DateAdded</td>
+                                    </tr>
+                                }
+                            </table>
+                        }
+                        else
+                        {
+                            <br />
+                            <p>There are no new requests which can be added</p>
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        <h3>Map</h3>
+        <div id="bingMap"></div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-12 request-filter-section">
-        <h3>Filter results</h3>
-        <p>Please enter a keyword on which to filter the requests.</p>
-        <form asp-action="SelectRequests" asp-controller="Itinerary" asp-area="Admin">
-            <input asp-for="KeywordsFilter"/>
-            <button type="submit" class="btn btn-default submit-form">Filter</button>
-        </form>
-    </div>
-</div>
+@section scripts {
+    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+    <script type="text/javascript">
+        ///<reference path="~/wwwroot/js/site.js" />
+        $(document).ready(function () {
+            setBingMapHeight();
+            renderBingMap("bingMap", getLocationsFromModelRequests());
+        });
 
-<form asp-area="Admin" asp-controller="Itinerary" asp-action="AddRequests">
+        function setBingMapHeight(){
+            $("#bingMap").height(($(window).height() * 0.6));
+        }
 
-    <div class="row">
-        <div class="col-12">
-            <button type="submit" class="btn btn-primary submit-form">Add Selected Requests</button>
-            <a asp-action="Details" asp-controller="Itinerary" asp-area="Admin" class="btn btn-default">Cancel</a>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            @if (Model.Requests.Count > 0)
-            {
-                <table class="table">
-                    <tr>
-                        <th></th>
-                        <th>Request Name</th>
-                        <th>Address</th>
-                        <th>City</th>
-                        <th>Postcode</th>
-                        <th>Date Added</th>
-                    </tr>
-                    @foreach (var req in Model.Requests)
-                {
-                        <tr>
-                            <td>
-                                <input type="checkbox" name="selectedRequests" value="@req.Id" @Html.Raw(req.IsSelected) ? "checked" : "" ) />
-                            </td>
-                            <td>@req.Name</td>
-                            <td>@req.Address</td>
-                            <td>@req.City</td>
-                            <td>@req.Postcode</td>
-                            <td>@req.DateAdded</td>
-                        </tr>
-                    }
-                </table>
+        function getLocationsFromModelRequests() {
+            var locations = [];
+            @foreach (var request in Model.Requests){
+                @:locations.push({ latitude: @request.Latitude, longitude: @request.Longitude });
             }
-            else
-            {
-                <br />
-                        <p>There are no new requests which can be added</p>
-            }
-
-        </div>
-    </div>
-
-</form>
+            return locations;
+        }
+    </script>
+}

@@ -9,22 +9,10 @@
 var BingMapKey = "ArclGe51CDYUCjW2tcjeuCSxXDg0z4_NFRCmVMpnpMY0qGUvPBazQIp9AjDgm2kv";
 
 var renderBingMap = function (divIdForMap, positionCoordsList) {
-    var bingMap = new Microsoft.Maps.Map(
-                    document.getElementById(divIdForMap),
-                    {
-                        credentials: BingMapKey
-                    });
-    if (positionCoordsList != undefined && positionCoordsList != null) {
-        $.each(positionCoordsList, function (index, LocationData) {
-            var pushpin = new Microsoft.Maps.Pushpin(bingMap.getCenter(), null);
-            pushpin.setLocation(new Microsoft.Maps.Location(
-                LocationData.latitude,
-                LocationData.longitude));
-            bingMap.entities.push(pushpin);
-            bingMap.setView({
-                zoom: 10, center: new Microsoft.Maps.Location(LocationData.latitude, LocationData.longitude)
-            });
-        });
+    if (positionCoordsList) {
+        var bingMap = createBingMap(divIdForMap);
+        var microsoftMapsLocations = createMapLocationsAndAddPushPinsToMap(bingMap, positionCoordsList);
+        setMapCenterAndZoom(bingMap, microsoftMapsLocations);
     }
 }
 
@@ -58,4 +46,35 @@ var getGeoCoordinates = function (address1, address2, city, state, postalCode, c
             alert(e.statusText);
         }
     });
+}
+
+function createBingMap(divIdForMap) {
+    return new Microsoft.Maps.Map(
+        document.getElementById(divIdForMap), {
+        credentials: BingMapKey
+    });
+}
+
+function createMapLocationsAndAddPushPinsToMap(bingMap, positionCoordsList) {
+    var microsoftMapsLocations = [];
+    $.each(positionCoordsList, function (index, LocationData) {
+        var microsoftMapsLocation = new Microsoft.Maps.Location(LocationData.latitude, LocationData.longitude);
+        microsoftMapsLocations.push(microsoftMapsLocation);
+        var pushpin = new Microsoft.Maps.Pushpin();
+        pushpin.setLocation(microsoftMapsLocation);
+        bingMap.entities.push(pushpin);
+    });
+    return microsoftMapsLocations;
+}
+
+function setMapCenterAndZoom(bingMap, microsoftMapsLocations) {
+    var options = bingMap.getOptions();
+    options.zoom = 10;
+    if (microsoftMapsLocations.length === 1) {
+        options.center = microsoftMapsLocations[0];
+    } else {
+        options.bounds = Microsoft.Maps.LocationRect.fromLocations(microsoftMapsLocations);
+        options.padding = 50;
+    }
+    bingMap.setView(options);
 }
