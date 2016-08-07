@@ -26,11 +26,11 @@ namespace AllReady.Areas.Admin.Models.RequestModels
             Map(r => r.Zip).Name("zip");
             Map(r => r.Phone).Name("phone");
             Map(r => r.Email).Name("email");
-            Map(r => r.DateAdded).Name("date created");
+            Map(r => r.DateAdded).Name("date created").Default(DateTime.UtcNow);
             Map(r => r.ProviderData).Name("region");
             Map(r => r.ProviderId).Name("id");
-            Map(r => r.Latitude).Name("latitude");
-            Map(r => r.Longitude).Name("longitude");
+            Map(r => r.Latitude).Name("latitude").Default(0);
+            Map(r => r.Longitude).Name("longitude").Default(0);
         }
 
     }
