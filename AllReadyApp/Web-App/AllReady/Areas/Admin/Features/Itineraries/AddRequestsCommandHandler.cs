@@ -4,30 +4,25 @@ using MediatR;
 using System.Linq;
 using System;
 using System.Collections.Generic;
+using AllReady.Areas.Admin.Features.Requests;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Itineraries
 {
     public class AddRequestsCommandHandler : IAsyncRequestHandler<AddRequestsCommand, bool>
     {
-        private readonly AllReadyContext _context;
+        private readonly IAllReadyDataAccess _data;
         private readonly IMediator _mediator;
 
         public AddRequestsCommandHandler(AllReadyContext context, IMediator mediator)
         {
-            _context = context;
+            _data = data;
             _mediator = mediator;
         }
 
-        public async Task<bool> Handle(AddRequestsCommand message)
+        public async Task<bool> Handle( AddRequestsCommand message )
         {
-            var itinerary = await _context.Itineraries
-              .Where(x => x.Id == message.ItineraryId)
-              .Select(x => new
-              {
-                  Id = x.Id,
-                  Name = x.Name
-              }).SingleOrDefaultAsync();
+            Itinerary itinerary = await _data.GetItineraryByIdAsync(message.ItineraryId);
 
             if (itinerary == null)
             {
@@ -35,15 +30,15 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 return false;
             }
 
-            var requestsToUpdate = await _context.Requests
+            var requestsToUpdate = await _data.Requests
                 .Where(r => message.RequestIdsToAdd.Contains(r.RequestId.ToString()))
-                .ToListAsync();
+                .ToList();
 
             HashSet<string> foundRequests = new HashSet<string>(requestsToUpdate.Select(s => s.RequestId.ToString()));
 
             var notFound = message.RequestIdsToAdd.Where(m => !foundRequests.Contains(m));
 
-            if (notFound.Count() > 0)
+            if (notFound.Any())
             {
                 // Something went wrong as some of the ids passed in where not matched in the database
                 // todo: sgordon: we should enhance the returned object to include a message so that the controller can provide better feedback to the user
@@ -52,11 +47,13 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
             if (requestsToUpdate.Count > 0)
             {
-                var orderIndex = await _context.ItineraryRequests.AsNoTracking()
+                var orderIndex = await _data.ItineraryRequests
                     .Where(i => i.ItineraryId == itinerary.Id)
                     .OrderByDescending(i => i.OrderIndex)
                     .Select(i => i.OrderIndex)
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefault();
+
+                var itineraryRequestsToAdd = new List<ItineraryRequest>();
 
                 foreach (var request in requestsToUpdate)
                 {
@@ -66,7 +63,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     {
                         request.Status = RequestStatus.Assigned;
 
-                        _context.ItineraryRequests.Add(new ItineraryRequest
+                        itineraryRequestsToAdd.Add(new ItineraryRequest
                         {
                             ItineraryId = itinerary.Id,
                             Request = request,
@@ -74,12 +71,24 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                             DateAssigned = DateTime.UtcNow // Note, we're storing system event dates as UTC time.
                         });
 
+
                         // todo: sgordon: Add a history record here and include the assigned date in the ItineraryRequest
                     }
                 }
 
-                await _context.SaveChangesAsync();
-            }        
+                await _data.AddItineraryRequests(itineraryRequestsToAdd);
+
+
+                //On Successful addition of request
+                Func<Request, Itinerary, string> getNotificationMessage = ( r, i ) => String.Format(ItinerariesMessages.RequestAddedInitialNotificationFormat, i.Date);
+
+                await _mediator.SendAsync(new NotifyRequestorsCommand
+                {
+                    Requests = requestsToUpdate,
+                    Itinerary = itinerary,
+                    NotificationMessageBuilder = getNotificationMessage
+                });
+            }
 
             return true;
         }
