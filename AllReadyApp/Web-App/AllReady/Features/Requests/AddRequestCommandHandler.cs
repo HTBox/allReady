@@ -57,6 +57,7 @@ namespace AllReady.Features.Requests
                 }
 
                 await _dataContext.SaveChangesAsync();
+                await _dataAccess.AddRequestAsync(entity ?? request);
             }
             catch (Exception)
             {
