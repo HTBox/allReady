@@ -1,31 +1,26 @@
-﻿using AllReady.Providers.ExternalUserInformationProviders.Providers;
-using Autofac;
+﻿using System;
+using AllReady.Providers.ExternalUserInformationProviders.Providers;
+using Autofac.Features.Indexed;
 
 namespace AllReady.Providers.ExternalUserInformationProviders
 {
     public class ExternalUserInformationProviderFactory : IExternalUserInformationProviderFactory
     {
-        private readonly IComponentContext autofacContainer;
+        private readonly IIndex<string, IProvideExternalUserInformation> providers;
 
-        public ExternalUserInformationProviderFactory(IComponentContext autofacContainer)
+        public ExternalUserInformationProviderFactory(IIndex<string, IProvideExternalUserInformation> providers)
         {
-            this.autofacContainer = autofacContainer;
+            this.providers = providers;
         }
 
         public IProvideExternalUserInformation GetExternalUserInformationProvider(string loginProvider)
         {
-            switch (loginProvider)
+            IProvideExternalUserInformation provider;
+            if (!providers.TryGetValue(loginProvider, out provider))
             {
-                case "Facebook":
-                    return autofacContainer.Resolve<MicrosoftAndFacebookExternalUserInformationProvider>();
-                case "Microsoft":
-                    return autofacContainer.Resolve<MicrosoftAndFacebookExternalUserInformationProvider>(); ;
-                case "Google":
-                    return autofacContainer.Resolve<GoogleExternalUserInformationProvider>();
-                case "Twitter":
-                    return autofacContainer.Resolve<TwitterExternalUserInformationProvider>();
+                throw new ApplicationException($"could not find external user information provider for login provider: {loginProvider}");
             }
-            return null;
+            return provider;
         }
     }
 }

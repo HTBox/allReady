@@ -152,10 +152,11 @@ namespace AllReady
             containerBuilder.RegisterAssemblyTypes(typeof(Startup).Assembly).AsImplementedInterfaces();
 
             //ExternalUserInformationProviderFactory registration
-            containerBuilder.Register<IExternalUserInformationProviderFactory>(c => new ExternalUserInformationProviderFactory(c.Resolve<IComponentContext>()));
-            containerBuilder.RegisterType<TwitterExternalUserInformationProvider>();
-            containerBuilder.RegisterType<GoogleExternalUserInformationProvider>();
-            containerBuilder.RegisterType<MicrosoftAndFacebookExternalUserInformationProvider>();
+            containerBuilder.RegisterType<TwitterExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Twitter");
+            containerBuilder.RegisterType<GoogleExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Google");
+            containerBuilder.RegisterType<MicrosoftAndFacebookExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Microsoft");
+            containerBuilder.RegisterType<MicrosoftAndFacebookExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Facebook");
+            containerBuilder.RegisterType<ExternalUserInformationProviderFactory>().As<IExternalUserInformationProviderFactory>();
 
             //Populate the container with services that were previously registered
             containerBuilder.Populate(services);
