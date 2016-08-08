@@ -41,6 +41,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     ExternalUrlText = campaign.ExternalUrlText,
                     OrganizationId = campaign.ManagingOrganizationId,
                     OrganizationName = campaign.ManagingOrganization.Name,
+                    FullDescription = campaign.FullDescription,
                     ImageUrl = campaign.ImageUrl,
                     TimeZoneId = campaign.TimeZoneId,
                     StartDate = campaign.StartDateTime,
