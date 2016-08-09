@@ -170,7 +170,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             foreach (var request in requests)
             {
-                var selectItem = new RequestSelectModel
+                var selectItem = new RequestSelectViewModel
                 {
                     Id = request.Id,
                     Name = request.Name,

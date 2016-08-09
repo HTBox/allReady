@@ -16,6 +16,6 @@ namespace AllReady.Areas.Admin.ViewModels.Itinerary
         public string KeywordsFilter { get; set; }
 
         public RequestSearchCriteria Criteria { get; set; }
-        public List<RequestSelectModel> Requests { get; set; } = new List<RequestSelectModel>();
+        public List<RequestSelectViewModel> Requests { get; set; } = new List<RequestSelectViewModel>();
     }
 }
