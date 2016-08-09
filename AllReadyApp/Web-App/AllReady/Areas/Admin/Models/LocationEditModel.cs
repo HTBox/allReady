@@ -5,7 +5,6 @@ namespace AllReady.Areas.Admin.Models
     public class LocationEditModel
     {
         public int? Id { get; set; }
-        [Required]
         public string Address1 { get; set; }
         public string Address2 { get; set; }
         [Required]
