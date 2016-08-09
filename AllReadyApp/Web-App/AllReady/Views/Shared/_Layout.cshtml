@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AllReady</title>
+    <title>@ViewData["Title"] - allReady</title>
 
     <environment names="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -24,7 +24,9 @@
         <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     </environment>
     @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
+    @RenderSection("styles", required: false)
 
+    
     <script type="text/javascript">
         var htbox = htbox || {};
         htbox.allReady = htbox.allReady || {};

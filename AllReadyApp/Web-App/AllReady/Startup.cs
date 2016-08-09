@@ -22,6 +22,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using AllReady.Security.Middleware;
 using Newtonsoft.Json.Serialization;
+using Geocoding;
+using Geocoding.Google;
 
 namespace AllReady
 {
@@ -127,7 +129,7 @@ namespace AllReady
             services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
             services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
             services.AddSingleton<IImageService, ImageService>();
-            //services.AddSingleton<GeoService>();
+            services.AddSingleton<IGeocoder, GoogleGeocoder>();
             services.AddTransient<SampleDataGenerator>();
 
             if (Configuration["Data:Storage:EnableAzureQueueService"] == "true")

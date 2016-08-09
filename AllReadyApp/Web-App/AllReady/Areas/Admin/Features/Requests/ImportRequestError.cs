@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {
-    public class RequestImportError
+    public class ImportRequestError
     {
         public string ProviderId { get; set; }
         public string Reason { get; set; }

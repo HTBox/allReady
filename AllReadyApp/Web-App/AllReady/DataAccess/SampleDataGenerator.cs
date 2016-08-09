@@ -76,9 +76,9 @@ namespace AllReady.DataAccess
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
                 WebUrl = "http://www.htbox.org",
                 Location = locations.FirstOrDefault(),
-                Campaigns = new List<Campaign>(), 
+                Campaigns = new List<Campaign>(),
                 OrganizationContacts = new List<OrganizationContact>(),
-                
+
             };
 
             #endregion
@@ -519,23 +519,21 @@ namespace AllReady.DataAccess
 
         private List<Location> GetLocations()
         {
-            var geoService = new GeoService();
-
             var ret = new List<Location>()
-      {
-        CreateLocation("1 Microsoft Way", "Redmond", "WA", "98052"),
-        CreateLocation("15563 Ne 31st St", "Redmond", "WA", "98052"),
-        CreateLocation("700 Bellevue Way Ne", "Bellevue", "WA", "98004"),
-        CreateLocation("1702 Alki Ave SW", "Seattle", "WA", "98116"),
-        CreateLocation("8498 Seaview Pl NW", "Seattle", "WA", "98117"),
-        CreateLocation("6046 W Lake Sammamish Pkwy Ne", "Redmond", "WA", "98052"),
-        CreateLocation("7031 148th Ave Ne", "Redmond", "WA", "98052"),
-        CreateLocation("2430 148th Ave SE", "Bellevue", "WA", "98007"),
-        CreateLocation("2000 NW Sammamish Rd", "Issaquah", "WA", "98027"),
-        CreateLocation("9703 Ne Juanita Dr", "Kirkland", "WA", "98034"),
-        CreateLocation("25 Lakeshore Plaza Dr", "Kirkland", "Washington", "98033"),
-        CreateLocation("633 Waverly Way", "Kirkland", "WA", "98033"),
-    };
+            {
+                CreateLocation("1 Microsoft Way", "Redmond", "WA", "98052"),
+                CreateLocation("15563 Ne 31st St", "Redmond", "WA", "98052"),
+                CreateLocation("700 Bellevue Way Ne", "Bellevue", "WA", "98004"),
+                CreateLocation("1702 Alki Ave SW", "Seattle", "WA", "98116"),
+                CreateLocation("8498 Seaview Pl NW", "Seattle", "WA", "98117"),
+                CreateLocation("6046 W Lake Sammamish Pkwy Ne", "Redmond", "WA", "98052"),
+                CreateLocation("7031 148th Ave Ne", "Redmond", "WA", "98052"),
+                CreateLocation("2430 148th Ave SE", "Bellevue", "WA", "98007"),
+                CreateLocation("2000 NW Sammamish Rd", "Issaquah", "WA", "98027"),
+                CreateLocation("9703 Ne Juanita Dr", "Kirkland", "WA", "98034"),
+                CreateLocation("25 Lakeshore Plaza Dr", "Kirkland", "Washington", "98033"),
+                CreateLocation("633 Waverly Way", "Kirkland", "WA", "98033")
+            };
 
             return ret;
         }
@@ -553,14 +551,20 @@ namespace AllReady.DataAccess
             {
                 user = new ApplicationUser
                 {
-                    UserName = _settings.DefaultAdminUsername, Email = _settings.DefaultAdminUsername, TimeZoneId = _generalSettings.DefaultTimeZone, EmailConfirmed = true
+                    UserName = _settings.DefaultAdminUsername,
+                    Email = _settings.DefaultAdminUsername,
+                    TimeZoneId = _generalSettings.DefaultTimeZone,
+                    EmailConfirmed = true
                 };
                 _userManager.CreateAsync(user, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
                 _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, "SiteAdmin")).GetAwaiter().GetResult();
 
                 var user2 = new ApplicationUser
                 {
-                    UserName = _settings.DefaultOrganizationUsername, Email = _settings.DefaultOrganizationUsername, TimeZoneId = _generalSettings.DefaultTimeZone, EmailConfirmed = true
+                    UserName = _settings.DefaultOrganizationUsername,
+                    Email = _settings.DefaultOrganizationUsername,
+                    TimeZoneId = _generalSettings.DefaultTimeZone,
+                    EmailConfirmed = true
                 };
                 // For the sake of being able to exercise Organization-specific stuff, we need to associate a organization.
                 await _userManager.CreateAsync(user2, _settings.DefaultAdminPassword);
@@ -569,7 +573,10 @@ namespace AllReady.DataAccess
 
                 var user3 = new ApplicationUser
                 {
-                    UserName = _settings.DefaultUsername, Email = _settings.DefaultUsername, TimeZoneId = _generalSettings.DefaultTimeZone, EmailConfirmed = true
+                    UserName = _settings.DefaultUsername,
+                    Email = _settings.DefaultUsername,
+                    TimeZoneId = _generalSettings.DefaultTimeZone,
+                    EmailConfirmed = true
                 };
                 await _userManager.CreateAsync(user3, _settings.DefaultAdminPassword);
             }

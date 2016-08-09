@@ -7,8 +7,9 @@ namespace AllReady.Areas.Admin.Models
         public int Id { get; set; }
 
         [Required]
-        public string Name { get; set; }        
+        public string Name { get; set; }
 
+        [Display(Name = "Logo URL")]
         public string LogoUrl { get; set; }
 
         [Display(Name = "Website URL")]
@@ -39,7 +40,7 @@ namespace AllReady.Areas.Admin.Models
         public string Summary { get; set; }
 
         [Url]
-        [Display(Name = "Privacy Policy Url")]
+        [Display(Name = "Privacy Policy URL")]
         public string PrivacyPolicyUrl { get; set; }
 
         [Display(Name = "Privacy Policy")]

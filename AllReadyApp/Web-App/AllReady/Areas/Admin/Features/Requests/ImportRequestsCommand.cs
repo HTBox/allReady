@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {
-    public class AddRequestsCommand : IRequest<IEnumerable<RequestImportError>>
+    public class ImportRequestsCommand : IRequest<IEnumerable<ImportRequestError>>
     {
         public List<Request> Requests { get; set; }
     }

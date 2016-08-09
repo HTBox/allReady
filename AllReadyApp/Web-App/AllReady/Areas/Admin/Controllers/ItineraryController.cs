@@ -177,6 +177,8 @@ namespace AllReady.Areas.Admin.Controllers
                     DateAdded = request.DateAdded,
                     City = request.City,
                     Address = request.Address,
+                    Latitude = request.Latitude,
+                    Longitude = request.Longitude,
                     Postcode = request.Postcode
                 };
 
