@@ -1,4 +1,4 @@
-﻿namespace AllReady.Areas.Admin.ViewModels.TaskSignup
+﻿namespace AllReady.Areas.Admin.ViewModels.Itinerary
 {
     public class TaskSignupSummaryViewModel
     {

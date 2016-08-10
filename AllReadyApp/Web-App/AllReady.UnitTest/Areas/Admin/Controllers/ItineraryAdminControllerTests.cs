@@ -11,7 +11,6 @@ using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.Features.TaskSignups;
 using AllReady.Areas.Admin.ViewModels.Itinerary;
 using AllReady.Areas.Admin.ViewModels.Shared;
-using AllReady.Areas.Admin.ViewModels.TaskSignup;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;

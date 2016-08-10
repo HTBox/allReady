@@ -1,5 +1,5 @@
 @using System.Threading.Tasks
-@model  AllReady.Areas.Admin.Models.DuplicateEventModel
+@model  AllReady.Areas.Admin.ViewModels.Event.DuplicateEventViewModel
 @{
     ViewBag.Title = $"Duplicate Event";
     string cancelUrl = Url.Action("Details", "Event", new { id = Model.Id, area = "Admin" });

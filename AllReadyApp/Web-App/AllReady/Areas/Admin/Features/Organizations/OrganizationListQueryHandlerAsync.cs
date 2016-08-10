@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.ViewModels.OrganizationApi;
+using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AllReady.Areas.Admin.ViewModels.OrganizationApi
+namespace AllReady.Areas.Admin.ViewModels.Organization
 {
     public class OrganizationSummaryViewModel
     {
