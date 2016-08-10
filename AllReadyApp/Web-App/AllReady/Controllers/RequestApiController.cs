@@ -4,7 +4,6 @@ using AllReady.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Models;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using AllReady.Features.Requests;
 using AllReady.ViewModels.Requests;
 
@@ -62,13 +61,13 @@ namespace AllReady.Controllers
                 Phone = requestViewModel.Phone,
                 State = requestViewModel.State,
                 Zip = requestViewModel.Zip,
-                Status = RequestStatus.UnAssigned,
+                Status = RequestStatus.Unassigned,
                 Latitude = requestViewModel.Latitude,
                 Longitude = requestViewModel.Longitude
             };
 
             RequestStatus status;
-            if (RequestStatus.TryParse(requestViewModel.Status, out status))
+            if (Enum.TryParse(requestViewModel.Status, out status))
             {
                 request.Status = status;
             }
