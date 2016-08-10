@@ -1,4 +1,5 @@
 ﻿using System;
+using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models.RequestModels
 {
@@ -10,5 +11,6 @@ namespace AllReady.Areas.Admin.Models.RequestModels
         public int? EventId { get; set; }
 
         public string Keywords { get; set; }
+        public RequestStatus? Status { get; set; }
     }
 }

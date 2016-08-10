@@ -62,7 +62,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 {
                     orderIndex++;
 
-                    if (request.Status == RequestStatus.UnAssigned)
+                    if (request.Status == RequestStatus.Unassigned)
                     {
                         request.Status = RequestStatus.Assigned;
 

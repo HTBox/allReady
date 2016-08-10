@@ -136,7 +136,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var model = await BuildSelectItineraryRequestsModel(id, new RequestSearchCriteria());
+            var model = await BuildSelectItineraryRequestsModel(id, new RequestSearchCriteria { Status = RequestStatus.Unassigned });
 
             return View("SelectRequests", model);
         }
@@ -146,7 +146,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SelectRequests(int id, SelectItineraryRequestsModel model)
         {
-            var newModel = await BuildSelectItineraryRequestsModel(id, new RequestSearchCriteria { Keywords = model.KeywordsFilter });
+            var newModel = await BuildSelectItineraryRequestsModel(id, new RequestSearchCriteria { Status = RequestStatus.Unassigned, Keywords = model.KeywordsFilter });
 
             return View("SelectRequests", newModel);
         }

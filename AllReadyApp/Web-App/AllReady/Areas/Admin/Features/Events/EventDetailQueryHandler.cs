@@ -75,6 +75,36 @@ namespace AllReady.Areas.Admin.Features.Events
 
                 result.NewItinerary.EventId = result.Id;
                 result.NewItinerary.Date = result.StartDateTime.DateTime;
+
+                var requests = await _context.Requests
+                    .AsNoTracking()
+                    .Where(rec => rec.EventId == message.EventId)
+                    .GroupBy(rec => rec.Status)
+                    .Select(g => new { Status = g.Key, Count = g.Count() })
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+
+                foreach (var req in requests)
+                {
+                    switch (req.Status)
+                    {
+                        case RequestStatus.Completed:
+                            result.CompletedRequests = req.Count;
+                            break;
+                        case RequestStatus.Assigned:
+                            result.AssignedRequests = req.Count;
+                            break;
+                        case RequestStatus.Canceled:
+                            result.CanceledRequests = req.Count;
+                            break;
+                        case RequestStatus.Unassigned:
+                            result.UnassignedRequests = req.Count;
+                            break;
+                    }
+                }
+
+                result.TotalRequests = result.CompletedRequests + result.CanceledRequests + result.AssignedRequests +
+                                       result.UnassignedRequests;
             }
 
             return result;
