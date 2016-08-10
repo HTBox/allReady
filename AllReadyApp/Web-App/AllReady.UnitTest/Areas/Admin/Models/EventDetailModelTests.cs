@@ -11,7 +11,7 @@ namespace AllReady.UnitTest.ModelTests
             var sut = new EventDetailModel();
             sut.EventType = AllReady.Models.EventType.Itinerary;
 
-            Assert.True(sut.DisplayItineraries);
+            Assert.True(sut.IsItineraryEvent);
         }
 
         [Fact]
@@ -20,7 +20,7 @@ namespace AllReady.UnitTest.ModelTests
             var sut = new EventDetailModel();
             sut.EventType = AllReady.Models.EventType.Rally;
 
-            Assert.False(sut.DisplayItineraries);
+            Assert.False(sut.IsItineraryEvent);
         }
     }
 }

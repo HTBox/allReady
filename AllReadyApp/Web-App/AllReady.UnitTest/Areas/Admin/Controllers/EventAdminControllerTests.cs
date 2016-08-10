@@ -13,7 +13,12 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 using System.Linq;
+using AllReady.Areas.Admin.Features.Events;
+using AllReady.Areas.Admin.Features.Requests;
+using AllReady.Areas.Admin.Models.EventViewModels;
+using AllReady.Areas.Admin.Models.ItineraryModels;
 using AllReady.Areas.Admin.Models.Validators;
+using AllReady.Features.Event;
 using Microsoft.AspNetCore.Authorization;
 using AllReady.Areas.Admin.Features.Events;
 using Microsoft.AspNetCore.Http;
@@ -666,6 +671,186 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var attribute = sut.GetAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Policy, "OrgAdmin");
+        }
+
+        [Fact]
+        public void RequestsHasHttpGetAttribute()
+        {
+            var sut = new EventController(Mock.Of<IImageService>(), Mock.Of<IMediator>(), Mock.Of<IValidateEventDetailModels>());
+            var attribute = sut.GetAttributesOn(x => x.Requests(It.IsAny<int>(), null)).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void RequestsHasRouteAttributeWithCorrectRoute()
+        {
+            var sut = new EventController(Mock.Of<IImageService>(), Mock.Of<IMediator>(), Mock.Of<IValidateEventDetailModels>());
+            var routeAttribute = sut.GetAttributesOn(x => x.Requests(It.IsAny<int>(), null)).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
+            Assert.Equal(routeAttribute.Template, "Admin/Event/[action]/{id}/{status?}");
+        }
+
+        [Fact]
+        public async Task RequestsSendsEventByIdQuery()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(It.IsAny<Event>()).Verifiable();
+
+            var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventDetailModels>());
+            await sut.Requests(1, null);
+
+            mockMediator.Verify(x => x.Send(It.IsAny<EventByIdQuery>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task RequestsReturnsHttpNotFoundResultWhenEventIsNull()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns((Event)null).Verifiable();
+
+            var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventDetailModels>());
+
+            Assert.IsType<NotFoundResult>(await sut.Requests(It.IsAny<int>(), null));
+        }
+
+        [Fact]
+        public async Task RequestsReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1000 } }).Verifiable();
+            
+            var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventDetailModels>());
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            Assert.IsType<UnauthorizedResult>(await sut.Requests(It.IsAny<int>(), null));
+        }
+
+        [Fact]
+        public async Task RequestsReturnsRedirectWhenStatusDoesNotMatchEnumOptions()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } }).Verifiable();
+
+            var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventDetailModels>());
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            Assert.IsType<RedirectToActionResult>(await sut.Requests(It.IsAny<int>(), "MadeUp"));
+        }
+
+        [Fact]
+        public async Task RequestsSendsEventRequestsQueryWhenNoStatusRouteParamPassedAndUserIsOrgAdmin()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventRequestsQuery>())).ReturnsAsync(new EventRequestsViewModel()).Verifiable();
+
+            var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventDetailModels>());
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            await sut.Requests(1, null);
+
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<EventRequestsQuery>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task RequestsSendsEventRequestListItemsQueryWhenNoStatusRouteParamPassedAndUserIsOrgAdmin()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventRequestsQuery>())).ReturnsAsync(new EventRequestsViewModel()).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<RequestListItemsQuery>())).ReturnsAsync(new List<RequestListModel>()).Verifiable();
+
+            var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventDetailModels>());
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            await sut.Requests(1, null);
+
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<RequestListItemsQuery>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task RequestsSendsEventRequestsQueryWhenValidStatusRouteParamPassedAndUserIsOrgAdmin()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventRequestsQuery>())).ReturnsAsync(new EventRequestsViewModel()).Verifiable();
+
+            var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventDetailModels>());
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            await sut.Requests(1, "Assigned");
+
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<EventRequestsQuery>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task RequestsSetsCorrectPageTitleOnModelWhenStatusParamIsNotSet()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventRequestsQuery>())).ReturnsAsync(new EventRequestsViewModel()).Verifiable();
+
+            var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventDetailModels>());
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            var result = await sut.Requests(1, null) as ViewResult;
+
+            result.ShouldNotBeNull();
+
+            var castModel = result.Model as EventRequestsViewModel;
+
+            castModel.ShouldNotBeNull();
+
+            castModel.PageTitle.ShouldBe("All Requests");
+        }
+
+        [Fact]
+        public async Task RequestsSetsCorrectPageTitleOnModelWhenStatusParamIsSet()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventRequestsQuery>())).ReturnsAsync(new EventRequestsViewModel()).Verifiable();
+
+            var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventDetailModels>());
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
+            });
+
+            var result = await sut.Requests(1, "Assigned") as ViewResult;
+
+            result.ShouldNotBeNull();
+
+            var castModel = result.Model as EventRequestsViewModel;
+
+            castModel.ShouldNotBeNull();
+
+            castModel.PageTitle.ShouldBe("Assigned Requests");
         }
 
         private static EventController GetEventController()
