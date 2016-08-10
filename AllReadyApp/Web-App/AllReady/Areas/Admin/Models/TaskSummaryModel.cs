@@ -12,6 +12,8 @@ namespace AllReady.Areas.Admin.Models
         public int EventId { get; set; }
         [Display(Name = "Event")]
         public string EventName { get; set; }
+        public DateTimeOffset EventStartDateTime { get; set; }
+        public DateTimeOffset EventEndDateTime { set; get; }
         public int CampaignId { get; set; }
         [Display(Name = "Campaign")]
         public string CampaignName { get; set; }

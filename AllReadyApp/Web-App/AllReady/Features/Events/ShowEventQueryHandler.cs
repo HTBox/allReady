@@ -47,9 +47,9 @@ namespace AllReady.Features.Event
             {
                 EventId = eventViewModel.Id,
                 UserId = userId,
-                Name = appUser.Name,
-                PreferredEmail = appUser.Email,
-                PreferredPhoneNumber = appUser.PhoneNumber
+                Name = appUser?.Name,
+                PreferredEmail = appUser?.Email,
+                PreferredPhoneNumber = appUser?.PhoneNumber
             };
 
             return eventViewModel;

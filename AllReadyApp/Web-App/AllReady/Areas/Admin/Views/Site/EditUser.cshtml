@@ -59,7 +59,7 @@
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn btn-default" data-bind="enable: associatedSkills.isValid">Save</button>
                 <span class="label label-danger" data-bind="visible: !associatedSkills.isValid()">"@Html.DisplayNameFor(m => m.AssociatedSkills)" must be unique</span>
-                <a asp-controller="Site" asp-action="Index" class="btn btn-default">Back to List</a>
+                <a asp-area="Admin" asp-controller="Site" asp-action="Index" class="btn btn-default">Back to List</a>
             </div>
         </div>
     </div>

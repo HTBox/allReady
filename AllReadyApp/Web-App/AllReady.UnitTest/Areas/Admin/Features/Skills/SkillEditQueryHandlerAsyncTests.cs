@@ -7,7 +7,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
 {
     public class SkillEditQueryHandlerAsyncTests : InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task CorrectSkillReturnedWhenIdInMessage()
         {
             var handler = new SkillEditQueryHandlerAsync(Context);
@@ -17,7 +17,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
             Assert.Equal("Skill 4", result.Name);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task NullReturnedWhenSkillIdDoesNotExists()
         {
             var handler = new SkillEditQueryHandlerAsync(Context);
@@ -26,7 +26,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
             Assert.Null(result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task NullReturnedWhenSkillIdNotInMessage()
         {
             var handler = new SkillEditQueryHandlerAsync(Context);

@@ -58,7 +58,9 @@
     "Microsoft.VisualStudio.Web.CodeGeneration.Tools": {
       "version": "1.0.0-preview2-final",
       "type": "build"
-    }
+    },
+    "MediatR.Extensions.Microsoft.DependencyInjection": "1.0.0",
+    "Geocoding.net": "3.4.0"
   },
 
   "tools": {

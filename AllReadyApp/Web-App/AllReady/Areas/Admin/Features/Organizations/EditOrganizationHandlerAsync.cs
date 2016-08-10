@@ -17,11 +17,10 @@ namespace AllReady.Areas.Admin.Features.Organizations
 
         public async Task<int> Handle(EditOrganizationAsync message)
         {
-            var org = await _context
-                .Organizations
+            var org = await _context.Organizations
                 .Include(l => l.Location)
                 .Include(tc => tc.OrganizationContacts)
-                .SingleOrDefaultAsync(t => t.Id == message.Organization.Id).ConfigureAwait(false) ?? new Organization();
+                .SingleOrDefaultAsync(t => t.Id == message.Organization.Id).ConfigureAwait(false) ?? _context.Add(new Organization()).Entity;
 
             org.Name = message.Organization.Name;
             org.LogoUrl = message.Organization.LogoUrl;
@@ -38,7 +37,6 @@ namespace AllReady.Areas.Admin.Features.Organizations
             org.PrivacyPolicy = message.Organization.PrivacyPolicy;
             org.PrivacyPolicyUrl = message.Organization.PrivacyPolicyUrl;
 
-            _context.Update(org);
             await _context.SaveChangesAsync();
 
             return org.Id;

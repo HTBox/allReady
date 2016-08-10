@@ -24,7 +24,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 .Include(x => x.Task).ThenInclude(x => x.Event)
                 .Include(x => x.User)
                 .Include(x => x.Itinerary)
-                .Where(x => x.Task.Event.Id == message.EventId)
+                .Where(x => x.Task.EventId == message.EventId)
                 .Where(x => x.Status == Tasks.TaskStatus.Accepted.ToString())
                 .Where(x => x.Itinerary == null)
                 .Where(x => x.Task.StartDateTime.Date == message.Date)

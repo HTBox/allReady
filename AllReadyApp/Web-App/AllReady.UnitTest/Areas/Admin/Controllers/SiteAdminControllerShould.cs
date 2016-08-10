@@ -1,17 +1,22 @@
 ﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Features.Organizations;
+using AllReady.Areas.Admin.Features.Site;
 using AllReady.Areas.Admin.Features.Users;
 using AllReady.Areas.Admin.Models;
 using AllReady.Features.Manage;
 using AllReady.Models;
+using AllReady.Security;
 using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -156,42 +161,125 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             }
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public void EditUserGetReturnsCorrectViewModelWhenOrganizationIdIsNotNull()
+        [Fact]
+        public void EditUserGetReturnsCorrectValueForOrganiztionOnViewModelWhenOrganizationIdIsNotNull()
         {
+            var mediator = new Mock<IMediator>();
+            var user = new ApplicationUser();
+            int orgId = 99;
+            string orgName = "Test Org";
+            var org = new Organization() { Id = orgId, Name = orgName };
+            string userId = It.IsAny<string>();
+            user.Claims.Add(new Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<string>()
+            {
+                ClaimType = AllReady.Security.ClaimTypes.Organization,
+                ClaimValue = orgId.ToString()
+            });
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == userId)))
+                            .Returns(user);
+
+            mediator.Setup(x => x.Send(It.Is<OrganizationByIdQuery>(q => q.OrganizationId == orgId)))
+                            .Returns(org);
+
+            var controller = new SiteController(null, null, mediator.Object);
+
+            var result = controller.EditUser(userId);
+            var model = ((ViewResult)result).ViewData.Model as EditUserModel;
+
+            Assert.NotNull(model.Organization);
+            Assert.IsType<EditUserModel>(model);
         }
 
         [Fact(Skip = "NotImplemented")]
         public void EditUserPostReturnsSameViewAndViewModelWhenModelStateIsInvalid()
         {
+
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditUserPostSendsUserByUserIdQueryWithCorrectUserId()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            EditUserModel model = new EditUserModel()
+            {
+                UserId = "1234",
+            };
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId)))
+                .Returns(new ApplicationUser());
+            var controller = new SiteController(null, null, mediator.Object);
+
+            await controller.EditUser(model);
+            mediator.Verify(m => m.Send(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditUserPostSendsUpdateUserWithCorrectUserWhenUsersAssociatedSkillsAreNotNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            EditUserModel model = new EditUserModel()
+            {
+                UserId = It.IsAny<string>(),
+                AssociatedSkills = new List<UserSkill>() { new UserSkill() {Skill = It.IsAny<Skill>() } }
+            };
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId)))
+                .Returns(new ApplicationUser());
+            var controller = new SiteController(null, null, mediator.Object);
+
+            await controller.EditUser(model);
+            mediator.Verify(m => m.SendAsync(It.Is<UpdateUser>(q => q.User.AssociatedSkills[0].Skill == model.AssociatedSkills[0].Skill)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditUserPostInvokesUpdateUserWithCorrectUserWhenUsersAssociatedSkillsAreNotNullAndThereIsAtLeastOneAssociatedSkillForTheUser()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            EditUserModel model = new EditUserModel()
+            {
+                UserId = It.IsAny<string>(),
+                AssociatedSkills = new List<UserSkill>() { new UserSkill() { SkillId = 1, Skill = new Skill() { Id = 1 } } }
+            };
+            var user = new ApplicationUser()
+            {
+                Id = model.UserId,
+                AssociatedSkills = new List<UserSkill>() { new UserSkill() { SkillId = 2, Skill = new Skill() { Id = 2 } } }
+            };
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId)))
+                .Returns(user);
+
+            var controller = new SiteController(null, null, mediator.Object);
+
+            await controller.EditUser(model);
+            mediator.Verify(m => m.SendAsync(It.Is<UpdateUser>(q => q.User.AssociatedSkills[0] == model.AssociatedSkills[0])), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditUserPostInvokesAddClaimAsyncWhenModelsIsOrganizationAdminIsTrue()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            var userManager = CreateApplicationUserMock();
+            EditUserModel model = new EditUserModel()
+            {
+                IsOrganizationAdmin = true,
+                UserId = It.IsAny<string>()
+                
+            };
+            var user = new ApplicationUser()
+            {
+                Id = model.UserId,
+                Email = "test@testy.com"
+            };
+
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId)))
+                .Returns(user);
+            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>()))
+                .Returns(() => Task.FromResult(IdentityResult.Success));
+
+            var controller = new SiteController(userManager.Object, null, mediator.Object);
+            controller.SetDefaultHttpContext();
+            controller.Url = GetMockUrlHelper("any");
+            await controller.EditUser(model);
+
+            userManager.Verify(x => x.AddClaimAsync(user, It.Is<Claim>(c => c.Value == "OrgAdmin")), Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -201,11 +289,36 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await TaskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditUserPostSendsSendAccountApprovalEmailWithCorrectDataWhenModelsIsOrganizationAdminIsTrueAndOrganizationAdminClaimWasAddedSuccessfully()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            var userManager = CreateApplicationUserMock();
+            EditUserModel model = new EditUserModel()
+            {
+                IsOrganizationAdmin = true,
+                UserId = It.IsAny<string>()
+
+            };
+            var user = new ApplicationUser()
+            {
+                Id = model.UserId,
+                Email = "test@testy.com"
+            };
+
+            mediator.Setup(x => x.Send(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId)))
+                .Returns(user);
+            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>()))
+                .Returns(() => Task.FromResult(IdentityResult.Success));
+
+            var controller = new SiteController(userManager.Object, null, mediator.Object);
+            controller.SetDefaultHttpContext();
+            var expectedUrl = String.Format("Login/Admin?Email={0}", user.Email);
+            controller.Url = GetMockUrlHelper(expectedUrl);
+            await controller.EditUser(model);
+
+            mediator.Verify(m => m.SendAsync(It.Is<SendAccountApprovalEmail>(q => q.Email == user.Email && q.CallbackUrl == expectedUrl ))
+                            , Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -686,6 +799,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static Mock<UserManager<ApplicationUser>> CreateApplicationUserMock()
         {
             return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null,null);
-        }    
+        }
+
+        private static IUrlHelper GetMockUrlHelper(string returnValue)
+        {
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(o => o.Action(It.IsAny<UrlActionContext>())).Returns(returnValue);
+            return urlHelper.Object;
+        }
+
     }
 }

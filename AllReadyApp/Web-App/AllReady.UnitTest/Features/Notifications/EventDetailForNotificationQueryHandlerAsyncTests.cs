@@ -19,8 +19,6 @@ namespace AllReady.UnitTest.Features.Notifications
 
         protected override void LoadTestData()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
-
             _user1 = new ApplicationUser
             {
                 UserName = "johndoe@example.com",
@@ -108,19 +106,18 @@ namespace AllReady.UnitTest.Features.Notifications
             };
 
             _queenAnne.Tasks.Add(_task1);
-            context.Users.Add(_user1);
-            context.Contacts.Add(_contact1);
-            context.Organizations.Add(_htb);
-            context.Events.Add(_queenAnne);
-            context.SaveChanges();
+            Context.Users.Add(_user1);
+            Context.Contacts.Add(_contact1);
+            Context.Organizations.Add(_htb);
+            Context.Events.Add(_queenAnne);
+            Context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ModelCanBeCreatedFomExistingEvent()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
             var query = new EventDetailForNotificationQueryAsync { EventId = 1, UserId = _user1.Id };
-            var handler = new EventDetailForNotificationQueryHandlerAsync(context);
+            var handler = new EventDetailForNotificationQueryHandlerAsync(Context);
 
             var result = await handler.Handle(query);
 
@@ -131,12 +128,11 @@ namespace AllReady.UnitTest.Features.Notifications
             Assert.True(_firePrev.CampaignContacts.Count == result.CampaignContacts.Count, "Count of campaign contacts does not match");
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task EventDoesNotExist()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
             var query = new EventDetailForNotificationQueryAsync { EventId = 999, UserId = _user1.Id };
-            var handler = new EventDetailForNotificationQueryHandlerAsync(context);
+            var handler = new EventDetailForNotificationQueryHandlerAsync(Context);
 
             var result = await handler.Handle(query);
 

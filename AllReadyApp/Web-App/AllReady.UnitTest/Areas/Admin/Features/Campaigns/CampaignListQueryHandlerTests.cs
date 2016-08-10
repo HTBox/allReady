@@ -47,46 +47,42 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         }
         protected override void LoadTestData()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
-
             var htb = Htb();
             var other = Other();
             var firePrev = FirePrev();
             var otherCampaign = OtherCampaign();
 
-            context.Organizations.Add(htb);
-            context.Organizations.Add(other);
-            context.SaveChanges();
+            Context.Organizations.Add(htb);
+            Context.Organizations.Add(other);
+            Context.SaveChanges();
             htb_id = htb.Id;
             other_id = other.Id;
             firePrev.ManagingOrganization = htb;
             otherCampaign.ManagingOrganization = other;
-            context.Campaigns.Add(firePrev);
-            context.Campaigns.Add(otherCampaign);
-            context.SaveChanges();
+            Context.Campaigns.Add(firePrev);
+            Context.Campaigns.Add(otherCampaign);
+            Context.SaveChanges();
             firePrev_id = firePrev.Id;
             otherCampaign_id = otherCampaign.Id;
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void GetCampaignsWithoutOrgIdSet()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
             var query = new CampaignListQuery();
-            var handler = new CampaignListQueryHandler(context);
+            var handler = new CampaignListQueryHandler(Context);
             var result = handler.Handle(query);
             Assert.Equal(2, result.Count());
             Assert.Equal(1, result.Count(c => c.Id == firePrev_id));
             Assert.Equal(1, result.Count(c => c.Id == otherCampaign_id));
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void GetCampaignsWithOrgIdSet()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
             var query = new CampaignListQuery();
             query.OrganizationId = firePrev_id;
-            var handler = new CampaignListQueryHandler(context);
+            var handler = new CampaignListQueryHandler(Context);
             var result = handler.Handle(query);
             Assert.Equal(1, result.Count());
             Assert.Equal(1, result.Count(c => c.Id == firePrev_id));

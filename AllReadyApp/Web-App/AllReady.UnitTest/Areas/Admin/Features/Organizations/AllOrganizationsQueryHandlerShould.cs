@@ -18,16 +18,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 
         protected override void LoadTestData()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
-            context.Organizations.AddRange(organizations);
-            context.SaveChanges();
+            Context.Organizations.AddRange(organizations);
+            Context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void InvokeOrganizations()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
-            var sut = new AllOrganizationsQueryHandler(context);
+            var sut = new AllOrganizationsQueryHandler(Context);
             var results = sut.Handle(new AllOrganizationsQuery());
 
             Assert.NotNull(results);

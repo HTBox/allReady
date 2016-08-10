@@ -8,7 +8,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
 {
     public class SkillDeleteCommandHandlerAsyncTests : InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task DeleteCommandRemovesSkill()
         {
             // Arrange

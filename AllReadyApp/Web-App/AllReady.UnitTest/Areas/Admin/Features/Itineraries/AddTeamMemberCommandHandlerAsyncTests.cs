@@ -59,12 +59,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task AddTeamMemberCommandHandlerAsyncReturnsFalseWhenItineraryDoesNotExist()
         {
             var query = new AddTeamMemberCommand
             {
-                ItineraryId = 0, 
+                ItineraryId = 0,
                 TaskSignupId = 1
             };
 
@@ -74,7 +74,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Assert.Equal(false, result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task AddTeamMemberCommandHandlerAsyncReturnsTrueWhenItineraryExists()
         {
             var query = new AddTeamMemberCommand
@@ -89,7 +89,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Assert.Equal(true, result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task AddTeamMemberCommandHandlerAsyncSendsPotentialItineraryTeamMemberQueryWithCorrectEventId()
         {
             var query = new AddTeamMemberCommand

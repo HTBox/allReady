@@ -207,7 +207,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<Event>(result.ViewData.Model);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void GetCheckinReturnsTheCorrectView()
         {
             var mediator = new Mock<IMediator>();
@@ -219,7 +219,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal("NoUserCheckin", result.ViewName);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void GetCheckinHasHttpGetAttributeWithCorrectTemplate()
         {
             var sut = new EventApiController(null, null);
@@ -228,7 +228,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(attribute.Template, "{id}/checkin");
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task PutCheckinReturnsHttpNotFoundWhenUnableToFindEventByEventId()
         {
             var sut = new EventApiController(Mock.Of<IMediator>(), null);
@@ -237,7 +237,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<NotFoundResult>(result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task PutCheckinSendsEventByEventIdQueryWithCorrectEventId()
         {
             const int eventId = 1;

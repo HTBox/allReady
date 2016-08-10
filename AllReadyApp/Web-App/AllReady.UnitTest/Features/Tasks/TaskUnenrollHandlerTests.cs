@@ -11,7 +11,7 @@ namespace AllReady.UnitTest.Features.Tasks
 {
     public class TaskUnenrollHandlerTests : InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task Result_ShouldBe_Success_IfTaskSignupExists()
         {
             var mockMediator = new Mock<IMediator>();
@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Features.Tasks
             Assert.NotNull(result.Task);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task Result_ShouldBe_Failure_IfTaskIdDoesNotExist()
         {
             var mockMediator = new Mock<IMediator>();
@@ -36,7 +36,7 @@ namespace AllReady.UnitTest.Features.Tasks
             Assert.Equal("failure", result.Status);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task TaskSignUp_ShouldBe_Deleted()
         {
             var mockMediator = new Mock<IMediator>();
@@ -48,7 +48,7 @@ namespace AllReady.UnitTest.Features.Tasks
             Assert.Equal(0, Context.TaskSignups.Count());
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task EventSignUp_ShouldBe_Deleted_IfLastSignupForTheUser()
         {
             var mockMediator = new Mock<IMediator>();
@@ -60,7 +60,7 @@ namespace AllReady.UnitTest.Features.Tasks
             Assert.Equal(0, Context.EventSignup.Count());
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task EventSignUp_ShouldNotBe_Deleted_IfNotLastSignupForTheUser()
         {
             var secondTask = new AllReadyTask { Id = 2, Name = "Some Task 2", EndDateTime = DateTime.UtcNow.AddDays(100), Event = Context.Events.First() };
