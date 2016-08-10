@@ -548,10 +548,12 @@ a:hover .myevents-block {
 }
 
 .request-filter-section {
+    width: 100%;
     padding-left: 20px;
     padding-right: 20px;
     padding-bottom: 15px;
     border: 1px solid #ab6627;
+    background: rgba(171, 102, 39, 0.14);
     margin-top: 10px;
     margin-bottom: 25px;
 }
@@ -580,3 +582,114 @@ a:hover .myevents-block {
         margin-bottom: 25px;
         font-size: 20px;
     }
+
+.col-xs-5ths,
+.col-sm-5ths,
+.col-md-5ths,
+.col-lg-5ths {
+    position: relative;
+    min-height: 1px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.col-xs-5ths {
+    width: 20%;
+    float: left;
+}
+
+@media (min-width: 768px) {
+    .col-sm-5ths {
+        width: 20%;
+        float: left;
+    }
+}
+
+@media (min-width: 992px) {
+    .col-md-5ths {
+        width: 20%;
+        float: left;
+    }
+}
+
+@media (min-width: 1200px) {
+    .col-lg-5ths {
+        width: 20%;
+        float: left;
+    }
+}
+
+.dashboard-block {
+    background: #d58033; /* Old browsers */
+    background-image: -moz-linear-gradient(-45deg, #d58033 0%, #d58033 20%, #e5bc55 100%);
+    background-image: -webkit-linear-gradient(-45deg, #d58033 0%,#d58033 20%,#e5bc55 100%);
+    background-image: linear-gradient(135deg, #d58033 0%,#d58033 20%,#e5bc55 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#d58033', endColorstr='#e5bc55', GradientType=1);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* <- here it is */
+    width: 100%;
+    height: 170px;
+    text-align: center;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    align-items: center;
+    z-index: 1;
+    position: relative;
+    text-transform: uppercase;
+    color: #fff;
+    transition: 0.3s ease;
+    margin-bottom: 14px;
+}
+
+    .dashboard-block:before {
+        display: block;
+        content: " ";
+        position: absolute;
+        z-index: -1;
+        background: #000;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0;
+        transition: 0.3s ease;
+    }
+
+    .dashboard-block:hover:before {
+        opacity: 0.2;
+    }
+
+    .dashboard-block .dashboard-block-main {
+        font-family: Roboto, sans-serif;
+        margin-top: -10px;
+    }
+
+        .dashboard-block .dashboard-block-main .dashboard-block-main-text {
+            font-size: 5.6rem;
+            font-weight: 100;
+            text-align: left;
+        }
+
+        .dashboard-block .dashboard-block-main .dashboard-block-main-suffix {
+            font-size: 2.0rem;
+            font-weight: 100;
+            text-align: left;
+            text-transform: initial;
+        }
+
+    .dashboard-block .dashboard-block-subtext {
+        font-size: 1.3rem;
+        font-weight: 300;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+.dashboard-block-link:hover {
+    text-decoration: none;
+}
