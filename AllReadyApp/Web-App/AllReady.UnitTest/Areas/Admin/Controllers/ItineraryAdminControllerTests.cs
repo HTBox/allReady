@@ -24,7 +24,7 @@ using Xunit;
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
   public class ItineraryAdminControllerTests
-    {
+  {
         [Fact]
         public void ControllerHasAreaAtttributeWithTheCorrectAreaName()
         {
@@ -518,6 +518,77 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var routeAttribute = sut.GetAttributesOn(x => x.SelectRequests(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{id}/[Action]");
+        }
+
+        [Fact]
+        public async Task SelectRequestsWithSingleParameterSetsSelectItineraryRequestsModelWithTheCorrectData()
+        {
+            var organizationId = 4;
+            var itineraryRequestsModel = new SelectItineraryRequestsModel();
+            var itinerary = GetItineraryForSelectRequestHappyPathTests();
+            var returnedRequests = GetRequestsForSelectRequestHappyPathTests();
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.Is<ItineraryDetailQuery>(y => y.ItineraryId == itinerary.Id)))
+                    .ReturnsAsync(itinerary);
+            mediator.Setup(x => x.SendAsync(It.IsAny<RequestListItemsQuery>()))
+                    .ReturnsAsync(returnedRequests);
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>()))
+                    .ReturnsAsync(organizationId);
+            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object);
+            sut.SetClaims(new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId.ToString())
+            });
+
+            var view = await sut.SelectRequests(itinerary.Id, itineraryRequestsModel);
+
+            RunSelectRequestsHappyPathTests(view, itinerary, returnedRequests);
+        }
+
+        [Fact]
+        public async Task SelectRequestsWithTwoParametersSetsSelectItineraryRequestsModelWithTheCorrectData()
+        {
+            var itineraryRequestsModel = new SelectItineraryRequestsModel() { KeywordsFilter = "These are keywords" };
+            var itinerary = GetItineraryForSelectRequestHappyPathTests();
+            var returnedRequests = GetRequestsForSelectRequestHappyPathTests();
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.Is<ItineraryDetailQuery>(y => y.ItineraryId == itinerary.Id)))
+                    .ReturnsAsync(itinerary);
+            mediator.Setup(x => x.SendAsync(It.Is<RequestListItemsQuery>(y => y.Criteria.Keywords.Equals(itineraryRequestsModel.KeywordsFilter) &&
+                                                                              y.Criteria.EventId == itinerary.EventId)))
+                    .ReturnsAsync(returnedRequests);
+            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object);
+
+            var view = await sut.SelectRequests(itinerary.Id, itineraryRequestsModel);
+
+            RunSelectRequestsHappyPathTests(view, itinerary, returnedRequests);
+        }
+
+        private void RunSelectRequestsHappyPathTests(IActionResult view, ItineraryDetailsModel itinerary, IList<RequestListModel> returnedRequests)
+        {
+            Assert.IsType<ViewResult>(view);
+            var result = (ViewResult)view;
+            Assert.IsType<SelectItineraryRequestsModel>(result.Model);
+            var model = (SelectItineraryRequestsModel)result.Model;
+            Assert.Equal(itinerary.CampaignId, model.CampaignId);
+            Assert.Equal(itinerary.CampaignName, model.CampaignName);
+            Assert.Equal(itinerary.EventId, model.EventId);
+            Assert.Equal(itinerary.EventName, model.EventName);
+            Assert.Equal(itinerary.Name, model.ItineraryName);
+
+            Assert.Equal(returnedRequests.Count(), model.Requests.Count());
+            foreach (var request in returnedRequests)
+            {
+                var requestModel = model.Requests.FirstOrDefault(x => x.Id == request.Id);
+                Assert.Equal(request.Name, requestModel.Name);
+                Assert.Equal(request.DateAdded, requestModel.DateAdded);
+                Assert.Equal(request.City, requestModel.City);
+                Assert.Equal(request.Address, requestModel.Address);
+                Assert.Equal(request.Latitude, requestModel.Latitude);
+                Assert.Equal(request.Longitude, requestModel.Longitude);
+                Assert.Equal(request.Postcode, requestModel.Postcode);
+            }
         }
 
         [Fact]
@@ -1059,6 +1130,46 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             return sut;
         }
 
+        private ItineraryDetailsModel GetItineraryForSelectRequestHappyPathTests()
+        {
+            return new ItineraryDetailsModel()
+            {
+                Id = 14,
+                CampaignId = 123,
+                CampaignName = "Campaign 1",
+                EventId = 5412,
+                Name = "Itinerary 3"
+            };
+        }
+
+        private List<RequestListModel> GetRequestsForSelectRequestHappyPathTests()
+        {
+            return new List<RequestListModel>()
+            {
+                new RequestListModel()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "asdfasf",
+                    DateAdded = new DateTime(2016, 8, 7, 16, 9, 30),
+                    City = "Wisconsin Dells",
+                    Address = "123 Main St",
+                    Latitude = 123.123123,
+                    Longitude = -125.234,
+                    Postcode = "53741"
+                },
+                new RequestListModel()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "asdfasf",
+                    DateAdded = new DateTime(2015, 8, 7, 16, 9, 30),
+                    City = "Springfield",
+                    Address = "123 Main St",
+                    Latitude = 38.123,
+                    Longitude = -38.124,
+                    Postcode = "12345"
+                },
+            };
+        }
         #endregion
     }
 }
