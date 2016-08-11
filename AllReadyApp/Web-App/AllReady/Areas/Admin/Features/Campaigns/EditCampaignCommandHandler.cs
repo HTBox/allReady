@@ -53,16 +53,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.Featured = message.Campaign.Featured;
             campaign.Headline = message.Campaign.Headline;
 
-            if (campaign.CampaignImpact.Id != 0 )
-            {
-                _context.AddOrUpdate(campaign.CampaignImpact);
-            }
-
-            if (campaign.Location != null)
-            {
-                _context.AddOrUpdate(campaign.Location);
-            }
-
             _context.AddOrUpdate(campaign);
 
             await _context.SaveChangesAsync().ConfigureAwait(false);
@@ -113,7 +103,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
                 if (campaign.CampaignContacts == null) campaign.CampaignContacts = new List<CampaignContact>();
                 campaign.CampaignContacts.Add(campaignContact);
-                _context.Add(campaignContact);
             }
         }
     }
