@@ -105,9 +105,11 @@ This section will help you get up-and-running with the allReady solution.
 
 You will need the following to be able to run the allReady solution locally:
 
-+ Visual Studio 2015, the tools for Apache Cordova (which are included in the latest Visual Studio release) and optionally the [emulator](https://www.visualstudio.com/en-us/features/msft-android-emulator-vs.aspx) for Android apps. All of the needed tools are supported by all versions of Visual Studio 2015 including the free Community Edition.  [Download Visual Studio 2015.](https://www.visualstudio.com/downloads/download-visual-studio-vs)
++ Visual Studio 2015 with Update 3
 
-+ To use ASP.NET 5 beta8 with Visual Studio 2015, you will need to [download](http://www.microsoft.com/en-us/download/details.aspx?id=49442) and install the beta8 version of ASP.NET and Web Tools 2015.
++ The tools for Apache Cordova (which are included in the latest Visual Studio release) and optionally the [emulator](https://www.visualstudio.com/en-us/features/msft-android-emulator-vs.aspx) for Android apps. All of the needed tools are supported by all versions of Visual Studio 2015 including the free Community Edition.  [Download Visual Studio 2015.](https://www.visualstudio.com/downloads/download-visual-studio-vs)
+
++ To run ASP.NET Core with Visual Studio 2015, you will need to [download](https://go.microsoft.com/fwlink/?LinkId=817245) and install .NET Core 1.0 with VS 2015 Tooling Preview.
 
 You will need the following to be able to run the allReady solution in Azure:
 + An active Microsoft Azure account to deploy the web app. You can sign-up for a free trial of Azure [here](https://azure.microsoft.com/en-us/pricing/free-trial/).
