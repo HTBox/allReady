@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Models.Validators
 {
@@ -21,6 +22,11 @@ namespace AllReady.Areas.Admin.Models.Validators
             if (model.EndDateTime > parentCampaign.EndDate)
             {
                 result.Add(new KeyValuePair<string, string>(nameof(model.EndDateTime), "End date cannot be later than the campaign end date " + parentCampaign.EndDate.ToString("d")));
+            }
+
+            if ( model.EventType == EventType.Rally && string.IsNullOrEmpty(model.Location.Address1) )
+            {
+                result.Add(new KeyValuePair<string, string>(nameof(model.Location.Address1), "Address1 field is required. "));
             }
 
             return result;
