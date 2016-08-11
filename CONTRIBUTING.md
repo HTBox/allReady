@@ -41,11 +41,11 @@ Thank you for considering supporting this open source project for humanitarian s
 
 ##Solution architecture
 
-The allReady application is implemented as a Visual Studio 2015 solution that contains two projects: an ASP.NET 5 project that serves the web site and admin portal, and a cross-platform Cordova app project. The web application also exposes REST APIs used by the mobile app to access data.
+The allReady application is implemented as a Visual Studio 2015 solution that contains two projects: an ASP.NET Core project that serves the web site and admin portal, and a cross-platform Cordova app project. The web application also exposes REST APIs used by the mobile app to access data.
 
 ###Web Application
 
-An [ASP.NET 5](http://www.asp.net/vnext) web application provides the front-end web experience for volunteers accessing the allReady web site and the portal used by administrators. The site is powered by ASP.NET MVC 6 using .NET 4.6 and a dependency on .NET 4.5.1. Here's the landing page for the web site: 
+An [ASP.NET Core](http://www.asp.net/core) web application provides the front-end web experience for volunteers accessing the allReady web site and the portal used by administrators. The site is powered by ASP.NET Core using .NET 4.6 and a dependency on .NET 4.5.1. Here's the landing page for the web site: 
 
 ![allReady web portal](./docs/media/all-ready-web-app-homepage.jpg)
 
@@ -59,7 +59,7 @@ The web site relies on the following frameworks:
 
 ####REST APIs
 
-The same ASP.NET 5 project also exposes a set of Web APIs, which are part of the MVC 6 framework. These REST APIs are used by both the web site and by the Cordova mobile app. 
+The same ASP.NET Core project also exposes a set of Web APIs, which are part of the same framework. These REST APIs are used by both the web site and by the Cordova mobile app. 
 
 ####Data layer
 
@@ -105,16 +105,18 @@ This section will help you get up-and-running with the allReady solution.
 
 You will need the following to be able to run the allReady solution locally:
 
-+ Visual Studio 2015, the tools for Apache Cordova (which are included in the latest Visual Studio release) and optionally the [emulator](https://www.visualstudio.com/en-us/features/msft-android-emulator-vs.aspx) for Android apps. All of the needed tools are supported by all versions of Visual Studio 2015 including the free Community Edition.  [Download Visual Studio 2015.](https://www.visualstudio.com/downloads/download-visual-studio-vs)
++ Visual Studio 2015 with Update 3
 
-+ To use ASP.NET 5 beta8 with Visual Studio 2015, you will need to [download](http://www.microsoft.com/en-us/download/details.aspx?id=49442) and install the beta8 version of ASP.NET and Web Tools 2015.
++ The tools for Apache Cordova (which are included in the latest Visual Studio release) and optionally the [emulator](https://www.visualstudio.com/en-us/features/msft-android-emulator-vs.aspx) for Android apps. All of the needed tools are supported by all versions of Visual Studio 2015 including the free Community Edition.  [Download Visual Studio 2015.](https://www.visualstudio.com/downloads/download-visual-studio-vs)
+
++ To run ASP.NET Core with Visual Studio 2015, you will need to [download](https://go.microsoft.com/fwlink/?LinkId=817245) and install .NET Core 1.0 with VS 2015 Tooling Preview.
 
 You will need the following to be able to run the allReady solution in Azure:
 + An active Microsoft Azure account to deploy the web app. You can sign-up for a free trial of Azure [here](https://azure.microsoft.com/en-us/pricing/free-trial/).
 
 ###Configure the web project
 
-The AllReady project relies on configuration settings at runtime, such as whether to use a local database or a Azure SQL Database for data storage, whether to load sample data, default accounts information, and credentials for connecting to other services. Though these settings can be stored in the project's config.json file, doing so makes it easier to accidentally expose secrets. ASP.NET 5 includes a secrets manager tool, which should be used to locally store settings in your user account. When you publish the project to Azure Web Apps, you will need to set these same values as app settings in your web app.
+The AllReady project relies on configuration settings at runtime, such as whether to use a local database or a Azure SQL Database for data storage, whether to load sample data, default accounts information, and credentials for connecting to other services. Though these settings can be stored in the project's config.json file, doing so makes it easier to accidentally expose secrets. ASP.NET Core includes a secrets manager tool, which should be used to locally store settings in your user account. When you publish the project to Azure Web Apps, you will need to set these same values as app settings in your web app.
 
 **Note:** currently the codebase does not include any 'secret' values in configuration.  Since we deploy both a dev and live site for this project via HTBox, we will configure 'production' values for testing and production environments.  Additionally, we are working on how to best support open development with identity providers listed below for all contributors and will update this information when a full solution is found.
 
