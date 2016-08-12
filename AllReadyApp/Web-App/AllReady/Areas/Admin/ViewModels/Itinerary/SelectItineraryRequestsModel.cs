@@ -1,8 +1,8 @@
-﻿using AllReady.Areas.Admin.Models.RequestModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using AllReady.Areas.Admin.ViewModels.Request;
 
-namespace AllReady.Areas.Admin.Models.ItineraryModels
+namespace AllReady.Areas.Admin.ViewModels.Itinerary
 {
     public class SelectItineraryRequestsModel
     {

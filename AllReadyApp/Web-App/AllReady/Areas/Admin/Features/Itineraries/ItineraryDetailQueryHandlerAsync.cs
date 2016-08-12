@@ -1,9 +1,9 @@
-﻿using AllReady.Areas.Admin.Models.ItineraryModels;
-using AllReady.Models;
+﻿using AllReady.Models;
 using AllReady.Services;
 using MediatR;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.ViewModels.Itinerary;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Itineraries

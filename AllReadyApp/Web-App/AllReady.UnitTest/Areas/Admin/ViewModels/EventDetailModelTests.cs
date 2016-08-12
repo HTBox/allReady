@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Models;
+﻿using AllReady.Areas.Admin.ViewModels.Event;
 using Xunit;
 
 namespace AllReady.UnitTest.ModelTests
@@ -9,7 +9,7 @@ namespace AllReady.UnitTest.ModelTests
         public void DisplayItineraries_ReturnsTrue_WhenEventIsItineraryManaged()
         {
             var sut = new EventDetailModel();
-            sut.EventType = AllReady.Models.EventType.Itinerary;
+            sut.EventType = Models.EventType.Itinerary;
 
             Assert.True(sut.IsItineraryEvent);
         }
@@ -18,7 +18,7 @@ namespace AllReady.UnitTest.ModelTests
         public void DisplayItineraries_ReturnsFalse_WhenEventIsNotItineraryManaged()
         {
             var sut = new EventDetailModel();
-            sut.EventType = AllReady.Models.EventType.Rally;
+            sut.EventType = Models.EventType.Rally;
 
             Assert.False(sut.IsItineraryEvent);
         }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Models;
 
 namespace AllReady.Features.Notifications

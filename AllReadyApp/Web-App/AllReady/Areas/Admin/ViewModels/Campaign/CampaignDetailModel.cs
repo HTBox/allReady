@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using AllReady.Areas.Admin.ViewModels.Organization;
+using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Models;
 
-namespace AllReady.Areas.Admin.Models
+namespace AllReady.Areas.Admin.ViewModels.Campaign
 {
     public class CampaignDetailModel: IPrimaryContactModel
     {

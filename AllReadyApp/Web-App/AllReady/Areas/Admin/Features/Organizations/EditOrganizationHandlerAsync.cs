@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.Extensions;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

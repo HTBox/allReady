@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Campaigns;
-using AllReady.Areas.Admin.Models;
 using AllReady.Extensions;
 using AllReady.Models;
 using AllReady.Security;
@@ -10,7 +9,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using AllReady.Areas.Admin.Models.Validators;
+using AllReady.Areas.Admin.ViewModels.Campaign;
 
 namespace AllReady.Areas.Admin.Controllers
 {

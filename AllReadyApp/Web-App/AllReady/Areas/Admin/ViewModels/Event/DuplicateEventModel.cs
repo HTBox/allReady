@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace AllReady.Areas.Admin.Models
+namespace AllReady.Areas.Admin.ViewModels.Event
 {
     public class DuplicateEventModel
     {

@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
-using AllReady.Areas.Admin.Models;
-using AllReady.Areas.Admin.Models.Validators;
+using AllReady.Areas.Admin.ViewModels.Task;
+using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Features.Event;
 using AllReady.Models;
 using AllReady.Security;

@@ -5,7 +5,6 @@ using MediatR;
 using AllReady.Areas.Admin.Features.Skills;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
@@ -13,6 +12,7 @@ using AllReady.Models;
 using AllReady.Areas.Admin.Features.Organizations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
+using AllReady.Areas.Admin.ViewModels.Skill;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Itineraries;
-using AllReady.Areas.Admin.Models.ItineraryModels;
+using AllReady.Areas.Admin.ViewModels.Itinerary;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries

@@ -1,9 +1,9 @@
 ﻿using AllReady.Areas.Admin.Features.Campaigns;
-using AllReady.Areas.Admin.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.UnitTest.Features.Campaigns;
+using AllReady.Areas.Admin.ViewModels.Campaign;
+using AllReady.Areas.Admin.ViewModels.Shared;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns

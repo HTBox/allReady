@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AllReady.Areas.Admin.Models
+namespace AllReady.Areas.Admin.ViewModels.Shared
 {
     public class LocationDisplayModel
     {

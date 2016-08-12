@@ -1,10 +1,10 @@
-﻿using AllReady.Areas.Admin.Models;
-using AllReady.Areas.Admin.Models.Validators;
-using AllReady.Features.Event;
+﻿using AllReady.Features.Event;
 using AllReady.Models;
 using MediatR;
 using Moq;
 using System;
+using AllReady.Areas.Admin.ViewModels.Task;
+using AllReady.Areas.Admin.ViewModels.Validators;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Models.Validators

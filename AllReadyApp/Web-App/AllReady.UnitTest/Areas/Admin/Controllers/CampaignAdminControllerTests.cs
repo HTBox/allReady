@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Campaigns;
-using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using AllReady.Services;
 using AllReady.UnitTest.Extensions;
@@ -17,6 +16,9 @@ using System;
 using AllReady.Extensions;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using AllReady.Areas.Admin.ViewModels.Campaign;
+using AllReady.Areas.Admin.ViewModels.Organization;
+using AllReady.Areas.Admin.ViewModels.Shared;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {

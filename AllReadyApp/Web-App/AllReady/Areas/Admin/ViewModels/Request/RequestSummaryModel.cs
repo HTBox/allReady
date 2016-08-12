@@ -1,6 +1,6 @@
-﻿using AllReady.Areas.Admin.Models.ItineraryModels;
+﻿using AllReady.Areas.Admin.ViewModels.Itinerary;
 
-namespace AllReady.Areas.Admin.Models.RequestModels
+namespace AllReady.Areas.Admin.ViewModels.Request
 {
     public class RequestSummaryModel : RequestListModel
     {

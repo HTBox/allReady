@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AllReady.Extensions;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.ViewModels.Organization;
+using AllReady.Extensions;
 using AllReady.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace AllReady.Areas.Admin.Models
+namespace AllReady.Areas.Admin.Extensions
 {
     public static class ContactExtensions
     {       

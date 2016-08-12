@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Organizations;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.OrganizationApi;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using MediatR;

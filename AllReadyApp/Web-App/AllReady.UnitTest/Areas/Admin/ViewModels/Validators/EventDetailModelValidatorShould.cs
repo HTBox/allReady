@@ -1,6 +1,7 @@
 ﻿using System;
-using AllReady.Areas.Admin.Models;
-using AllReady.Areas.Admin.Models.Validators;
+using AllReady.Areas.Admin.ViewModels.Campaign;
+using AllReady.Areas.Admin.ViewModels.Event;
+using AllReady.Areas.Admin.ViewModels.Validators;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Models.Validators

@@ -1,8 +1,7 @@
 ﻿using AllReady.Areas.Admin.Features.Skills;
-using AllReady.Areas.Admin.Models;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.UnitTest.Features.Campaigns;
+using AllReady.Areas.Admin.ViewModels.Skill;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Skills

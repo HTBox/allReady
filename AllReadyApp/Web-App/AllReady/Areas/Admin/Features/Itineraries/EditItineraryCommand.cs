@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Models.ItineraryModels;
+﻿using AllReady.Areas.Admin.ViewModels.Itinerary;
 using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Itineraries

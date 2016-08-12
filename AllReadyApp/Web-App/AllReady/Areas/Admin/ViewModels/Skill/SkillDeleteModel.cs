@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace AllReady.Areas.Admin.Models
+namespace AllReady.Areas.Admin.ViewModels.Skill
 {
     public class SkillDeleteModel
     {

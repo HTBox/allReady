@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Models;
 
-namespace AllReady.Areas.Admin.Models
+namespace AllReady.Areas.Admin.ViewModels.Organization
 {
     public class OrganizationDetailModel : IPrimaryContactModel
     {
@@ -16,7 +17,7 @@ namespace AllReady.Areas.Admin.Models
         /// <summary>
         /// Collection of the campaigns directly managed by this Organization
         /// </summary>
-        public List<Campaign> Campaigns { get; set; }
+        public List<AllReady.Models.Campaign> Campaigns { get; set; }
 
         /// <summary>
         /// Application users which are members of this Organization.

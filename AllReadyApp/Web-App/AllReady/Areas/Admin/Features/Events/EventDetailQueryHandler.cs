@@ -1,10 +1,12 @@
-﻿using AllReady.Areas.Admin.Models;
-using AllReady.Models;
+﻿using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models.ItineraryModels;
+using AllReady.Areas.Admin.ViewModels.Event;
+using AllReady.Areas.Admin.ViewModels.Itinerary;
+using AllReady.Areas.Admin.ViewModels.Shared;
+using AllReady.Areas.Admin.ViewModels.Task;
 
 namespace AllReady.Areas.Admin.Features.Events
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Campaigns;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Campaign;
 using AllReady.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;

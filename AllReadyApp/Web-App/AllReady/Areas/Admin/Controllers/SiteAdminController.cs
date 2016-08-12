@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Features.Site;
 using AllReady.Areas.Admin.Features.Users;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Site;
 using AllReady.Extensions;
 using AllReady.Features.Manage;
 using AllReady.Models;

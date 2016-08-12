@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Models.TaskSignupModels;
+﻿using AllReady.Areas.Admin.ViewModels.TaskSignup;
 using MediatR;
 
 namespace AllReady.Areas.Admin.Features.TaskSignups

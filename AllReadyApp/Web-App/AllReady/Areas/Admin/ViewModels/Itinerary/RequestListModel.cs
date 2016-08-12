@@ -1,7 +1,7 @@
-﻿using AllReady.Models;
-using System;
+﻿using System;
+using AllReady.Models;
 
-namespace AllReady.Areas.Admin.Models.ItineraryModels
+namespace AllReady.Areas.Admin.ViewModels.Itinerary
 {
     public class RequestListModel
     {

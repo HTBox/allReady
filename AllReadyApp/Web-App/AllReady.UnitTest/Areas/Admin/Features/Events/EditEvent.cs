@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Events;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;

@@ -1,7 +1,7 @@
-﻿using AllReady.Areas.Admin.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using AllReady.Areas.Admin.ViewModels.Task;
 using Xunit;
 
 namespace AllReady.UnitTest.ViewModels

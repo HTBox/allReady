@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Site;
 using AllReady.Models;
 using AllReady.Security;
 using MediatR;

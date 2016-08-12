@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.Extensions;
+using AllReady.Areas.Admin.ViewModels.Campaign;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

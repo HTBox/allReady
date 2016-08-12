@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Models;
 
-namespace AllReady.Areas.Admin.Models
+namespace AllReady.Areas.Admin.ViewModels.Event
 {
     public class EventEditModel : EventSummaryModel
     {

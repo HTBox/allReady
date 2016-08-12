@@ -2,10 +2,8 @@
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Features.Site;
 using AllReady.Areas.Admin.Features.Users;
-using AllReady.Areas.Admin.Models;
 using AllReady.Features.Manage;
 using AllReady.Models;
-using AllReady.Security;
 using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.ViewModels.Site;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers

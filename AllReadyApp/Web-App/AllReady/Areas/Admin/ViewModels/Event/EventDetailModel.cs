@@ -1,9 +1,13 @@
-﻿using AllReady.Areas.Admin.Models.ItineraryModels;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using AllReady.Areas.Admin.ViewModels.Itinerary;
+using AllReady.Areas.Admin.ViewModels.Shared;
+using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace AllReady.Areas.Admin.Models
+namespace AllReady.Areas.Admin.ViewModels.Event
 {
     /// <summary>
     /// Defines data used by the admin event details page

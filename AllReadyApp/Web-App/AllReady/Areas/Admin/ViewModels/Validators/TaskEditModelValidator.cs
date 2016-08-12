@@ -1,10 +1,11 @@
-﻿using AllReady.Features.Event;
+﻿using System;
+using System.Collections.Generic;
+using AllReady.Areas.Admin.ViewModels.Task;
+using AllReady.Features.Event;
 using AllReady.Models;
 using MediatR;
-using System;
-using System.Collections.Generic;
 
-namespace AllReady.Areas.Admin.Models.Validators
+namespace AllReady.Areas.Admin.ViewModels.Validators
 {
     public class TaskSummaryModelValidator : ITaskSummaryModelValidator
     {

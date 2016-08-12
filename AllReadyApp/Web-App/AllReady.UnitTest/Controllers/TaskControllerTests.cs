@@ -9,14 +9,14 @@ using Xunit;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using AllReady.UnitTest.Extensions;
-using AllReady.Areas.Admin.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using AllReady.Areas.Admin.Features.Tasks;
 using System.Threading.Tasks;
 using AllReady.Features.Event;
 using AllReady.Extensions;
-using AllReady.Areas.Admin.Models.Validators;
+using AllReady.Areas.Admin.ViewModels.Task;
+using AllReady.Areas.Admin.ViewModels.Validators;
 
 namespace AllReady.UnitTest.Controllers
 {

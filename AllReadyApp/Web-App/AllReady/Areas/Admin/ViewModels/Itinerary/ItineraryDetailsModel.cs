@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace AllReady.Areas.Admin.Models.ItineraryModels
+namespace AllReady.Areas.Admin.ViewModels.Itinerary
 {
     /// <summary>
     /// Defines data used by the admin itinerary details page

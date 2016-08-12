@@ -1,7 +1,7 @@
-﻿using AllReady.Areas.Admin.Models.ItineraryModels;
-using AllReady.Areas.Admin.Models.RequestModels;
-using MediatR;
+﻿using MediatR;
 using System.Collections.Generic;
+using AllReady.Areas.Admin.ViewModels.Itinerary;
+using AllReady.Areas.Admin.ViewModels.Request;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {

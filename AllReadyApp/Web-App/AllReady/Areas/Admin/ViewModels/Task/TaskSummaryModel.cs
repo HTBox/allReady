@@ -1,10 +1,11 @@
-﻿using AllReady.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using AllReady.Areas.Admin.ViewModels.Shared;
+using AllReady.Models;
 
-namespace AllReady.Areas.Admin.Models
+namespace AllReady.Areas.Admin.ViewModels.Task
 {  
     public class TaskSummaryModel
     {

@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using AllReady.Areas.Admin.Models.ItineraryModels;
+using AllReady.Areas.Admin.ViewModels.Itinerary;
+using AllReady.Areas.Admin.ViewModels.Shared;
 
-namespace AllReady.Areas.Admin.Models.Validators
+namespace AllReady.Areas.Admin.ViewModels.Validators
 {
     public class ItineraryEditModelValidator : IItineraryEditModelValidator
     {

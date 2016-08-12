@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using AllReady.Areas.Admin.ViewModels.Campaign;
+using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Models;
 
-namespace AllReady.Areas.Admin.Models.Validators
+namespace AllReady.Areas.Admin.ViewModels.Validators
 {
     public class EventEditModelValidator : IValidateEventDetailModels
     {

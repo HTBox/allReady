@@ -1,9 +1,10 @@
 ﻿using AllReady.Areas.Admin.Features.Organizations;
-using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using System.Linq;
 using Xunit;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.Extensions;
+using AllReady.Areas.Admin.ViewModels.Organization;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 {

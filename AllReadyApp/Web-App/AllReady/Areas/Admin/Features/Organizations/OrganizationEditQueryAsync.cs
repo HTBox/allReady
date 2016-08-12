@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Models;
+﻿using AllReady.Areas.Admin.ViewModels.Organization;
 using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Organizations

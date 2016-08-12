@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AllReady.Areas.Admin.Models.ItineraryModels
+namespace AllReady.Areas.Admin.ViewModels.Itinerary
 {
     public class ItineraryListModel
     {

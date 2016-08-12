@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Events;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Features.Notifications;
 using AllReady.Models;
-using AllReady.UnitTest.Features.Campaigns;
 using MediatR;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 

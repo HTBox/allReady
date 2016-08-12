@@ -1,13 +1,10 @@
-﻿using AllReady.Models;
+﻿using System;
+using AllReady.Models;
 using CsvHelper.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace AllReady.Areas.Admin.Models.RequestModels
+namespace AllReady.Areas.Admin.ViewModels.Request
 {
-    public class RedCrossRequestMap : CsvClassMap<Request>
+    public class RedCrossRequestMap : CsvClassMap<AllReady.Models.Request>
     {
         public RedCrossRequestMap()
         {

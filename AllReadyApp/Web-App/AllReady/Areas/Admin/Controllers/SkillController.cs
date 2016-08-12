@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Skills;
 using AllReady.Areas.Admin.Features.Organizations;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Skill;
 using AllReady.Models;
 using AllReady.Security;
 using MediatR;

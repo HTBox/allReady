@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using AllReady.Areas.Admin.ViewModels.Shared;
 
-namespace AllReady.Areas.Admin.Models
+namespace AllReady.Areas.Admin.ViewModels.Organization
 {
     public class OrganizationEditModel : IPrimaryContactModel
     {        

@@ -1,7 +1,7 @@
-﻿using AllReady.Areas.Admin.Models;
-using AllReady.Models;
+﻿using AllReady.Models;
 using MediatR;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.ViewModels.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Events

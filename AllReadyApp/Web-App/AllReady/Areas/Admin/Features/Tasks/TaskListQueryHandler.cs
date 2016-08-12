@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Models;
 using MediatR;
 

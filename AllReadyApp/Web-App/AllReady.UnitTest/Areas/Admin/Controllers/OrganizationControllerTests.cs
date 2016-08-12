@@ -1,7 +1,5 @@
 ﻿using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Organizations;
-using AllReady.Areas.Admin.Models;
-using AllReady.Areas.Admin.Models.Validators;
 using MediatR;
 using Moq;
 using System;
@@ -9,6 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.ViewModels.Organization;
+using AllReady.Areas.Admin.ViewModels.OrganizationApi;
+using AllReady.Areas.Admin.ViewModels.Shared;
+using AllReady.Areas.Admin.ViewModels.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;

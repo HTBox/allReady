@@ -1,7 +1,7 @@
 ﻿using System;
 using AllReady.Models;
 
-namespace AllReady.Areas.Admin.Models.RequestModels
+namespace AllReady.Areas.Admin.ViewModels.Request
 {
     public class RequestSearchCriteria
     {

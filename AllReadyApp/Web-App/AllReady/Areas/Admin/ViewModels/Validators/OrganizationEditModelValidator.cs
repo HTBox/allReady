@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using AllReady.Areas.Admin.ViewModels.Organization;
 
-namespace AllReady.Areas.Admin.Models.Validators
+namespace AllReady.Areas.Admin.ViewModels.Validators
 {
     public class OrganizationEditModelValidator : IOrganizationEditModelValidator
     {

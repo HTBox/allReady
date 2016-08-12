@@ -1,7 +1,7 @@
 ﻿using System;
-using AllReady.Areas.Admin.Models;
-using AllReady.Areas.Admin.Models.ItineraryModels;
-using AllReady.Areas.Admin.Models.Validators;
+using AllReady.Areas.Admin.ViewModels.Itinerary;
+using AllReady.Areas.Admin.ViewModels.Shared;
+using AllReady.Areas.Admin.ViewModels.Validators;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Models.Validators

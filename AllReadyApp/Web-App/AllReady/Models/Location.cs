@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Models;
+﻿using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.ViewModels.Shared;
 
 namespace AllReady.Models
