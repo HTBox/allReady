@@ -20,11 +20,10 @@ using AllReady.Areas.Admin.Models.ItineraryModels;
 using AllReady.Areas.Admin.Models.Validators;
 using AllReady.Features.Event;
 using Microsoft.AspNetCore.Authorization;
-using AllReady.Areas.Admin.Features.Events;
 using Microsoft.AspNetCore.Http;
 using System.Reflection;
-using AllReady.Features.Event;
 using AllReady.ViewModels.Event;
+using Shouldly;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
