@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Models.EventViewModels;
+﻿using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
