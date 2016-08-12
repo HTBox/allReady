@@ -6,12 +6,12 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Login
 {
-    public class ApplicationUserQueryTests : InMemoryContextTest
+    public class ApplicationUserQueryAsyncTests : InMemoryContextTest
     {
         protected override void LoadTestData()
         {
-            var username1 = $"bobloblaw@randomdomain.com";
-            var username2 = $"someonelse@otherdomain.com";
+            const string username1 = "bobloblaw@randomdomain.com";
+            const string username2 = "someonelse@otherdomain.com";
 
             var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true, NormalizedUserName =  username1.ToUpperInvariant() };
             var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true, NormalizedUserName = username2.ToUpperInvariant() };
@@ -23,8 +23,8 @@ namespace AllReady.UnitTest.Features.Login
         [Fact]
         public async Task QueryUserThatExists()
         {
-            var queryHandler = new ApplicationUserQueryHandler(Context);
-            var user = await queryHandler.Handle(new ApplicationUserQuery { UserName = "bObLoBlAw@RandomDomain.COM" });
+            var queryHandler = new ApplicationUserQueryHandlerAsync(Context);
+            var user = await queryHandler.Handle(new ApplicationUserQueryAsync { UserName = "bObLoBlAw@RandomDomain.COM" });
 
             Assert.NotNull(user);
             Assert.Equal("bobloblaw@randomdomain.com", user.UserName);
@@ -33,8 +33,8 @@ namespace AllReady.UnitTest.Features.Login
         [Fact]
         public async Task QueryUserThatDoesNotExists()
         {
-            var queryHandler = new ApplicationUserQueryHandler(Context);
-            var user = await queryHandler.Handle(new ApplicationUserQuery { UserName = "nothere@oursite.com" });
+            var queryHandler = new ApplicationUserQueryHandlerAsync(Context);
+            var user = await queryHandler.Handle(new ApplicationUserQueryAsync { UserName = "nothere@oursite.com" });
 
             Assert.Null(user);            
         }

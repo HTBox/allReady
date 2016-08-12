@@ -20,5 +20,9 @@ namespace AllReady.ViewModels.Account
         [Phone]
         [Display(Name="Phone Number")]
         public string PhoneNumber { get; set; }
+
+        public string ReturnUrl { get; set; }
+
+        public string LoginProvider { get; set; }
     }
 }

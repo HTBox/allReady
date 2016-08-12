@@ -60,6 +60,7 @@
       "type": "build"
     },
     "MediatR.Extensions.Microsoft.DependencyInjection": "1.0.0",
+    "linqtotwitter": "4.1.0",
     "Geocoding.net": "3.4.0"
   },
 
