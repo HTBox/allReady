@@ -1166,49 +1166,65 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackSendsApplicationUserQueryAsyncWithCorrectUsername_WhenExternalLoginIsSuccessful_AndExternalLoginInfoIsNotNull()
+        public async Task ExternalLoginCallbackSendsApplicationUserQueryAsyncWithCorrectUsername_WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackInvokesRedirectsToLocalWithCorrectParameters_WhenExternalLoginIsSuccessful_AndExternalLoginInfoIsNotNull()
+        public async Task ExternalLoginCallbackRedirectsToLocalWithCorrectParameters_WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+
+        #region tests for the different conditionals in AccountController's prviate RedirectToLocal method
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndController_WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull_AndUrlIsALocalUrl()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndController_WhenUserIsASiteAdmin()
+        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndController_WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull_AndUserIsASiteAdmin()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndControllerWithCorrerctRouteValues_WhenUserIsAnOrgAdmin()
+        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndControllerWithCorrerctRouteValues__WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull_AndUserIsAnOrgAdmin()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndController_WhenUrlIsNotALocalUrl_AndUserTypeIsNotASiteAdminOrAnOrgAdmin()
+        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndController_WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull_AndUrlIsNotALocalUrl_AndUserTypeIsNotASiteAdminOrAnOrgAdmin()
+        {
+            //delete this line when starting work on this unit test
+            await taskFromResultZero;
+        }
+        #endregion
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task ExternalLoginCallbackAddsCorrectDataToViewData_WhenEmailIsProvidedByExternalUserInfomration_AndExternalLoginSignInAsyncResultIsUnsuccessfulAndExternalLoginInfoIsNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackAddsCorrectDataToViewData_When_WhenExternalLoginIsUnsuccessfulOrExternalLoginInfoIsNull()
+        public async Task ExternalLoginCallbackAddsCorrectDataToViewData_WhenEmailIsNotProvidedByExternalUserInfomration_AndExternalLoginSignInAsyncResultIsUnsuccessfulAndExternalLoginInfoIsNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackReturnsExternalLoginConfirmationViewAndCorrectViewModel_When_WhenExternalLoginIsUnsuccessfulOrExternalLoginInfoIsNull()
+        public async Task ExternalLoginCallbackReturnsCorrectViewAndViewModel_WhenExternalLoginSignInAsyncResultIsUnsuccessfulAndExternalLoginInfoIsNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;

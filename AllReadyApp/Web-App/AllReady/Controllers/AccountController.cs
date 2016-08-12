@@ -318,7 +318,8 @@ namespace AllReady.Controllers
                 FirstName = externalUserInformation.FirstName,
                 LastName = externalUserInformation.LastName,
                 ReturnUrl = returnUrl,
-                LoginProvider = externalLoginInfo.LoginProvider
+                LoginProvider = externalLoginInfo.LoginProvider,
+                EmailIsVerifiedByExternalLoginProvider = !string.IsNullOrEmpty(externalUserInformation.Email)
             });
         }
 
@@ -399,6 +400,7 @@ namespace AllReady.Controllers
             }
         }
 
+        //TODO: either extract this into a provider pattern or somehow decide which of these conditionals are invoked by which caller and get rid of this method.
         private IActionResult RedirectToLocal(string returnUrl, ApplicationUser user)
         {
             if (Url.IsLocalUrl(returnUrl))
@@ -416,33 +418,7 @@ namespace AllReady.Controllers
                 return RedirectToAction(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = "Admin" });
             }
 
-      return RedirectToAction(nameof(HomeController.Index), "Home");
-    }
-
-        private static void RetrieveFirstAndLastNameFromExternalPrincipal(ExternalLoginInfo externalLoginInfo, out string firstName, out string lastName)
-        {
-            firstName = string.Empty;
-            lastName = string.Empty;
-
-            if (externalLoginInfo.LoginProvider == "Google")
-            {
-                firstName = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.GivenName);
-                lastName = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.Surname);
-            }
-
-            if (externalLoginInfo.LoginProvider == "Facebook" || externalLoginInfo.LoginProvider == "Microsoft")
-            {
-                var name = externalLoginInfo.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.Name);
-                if (string.IsNullOrEmpty(name))
-                    return;
-
-                var array = name.Split(' ');
-                if (array.Length < 2)
-                    return;
-
-                firstName = array[0];
-                lastName = array[1];
-            }
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
     }
 }
