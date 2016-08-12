@@ -31,7 +31,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             }
 
             // Update the request status
-            requestToRemove.Request.Status = RequestStatus.UnAssigned;        
+            requestToRemove.Request.Status = RequestStatus.Unassigned;        
 
             // remove the request to itinerary assignment
             _context.ItineraryRequests.Remove(requestToRemove);

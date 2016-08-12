@@ -19,8 +19,7 @@ namespace AllReady.Areas.Admin.Features.Requests
 
         public async Task<List<RequestListModel>> Handle(RequestListItemsQuery message)
         {
-            var results = _context.Requests.AsNoTracking()
-                .Where(r => r.Status == RequestStatus.UnAssigned);
+            var results = _context.Requests.AsNoTracking();
 
             // Apply filtering based on criteria
             if (message.Criteria.RequestId.HasValue)
@@ -41,6 +40,11 @@ namespace AllReady.Areas.Admin.Features.Requests
             if (message.Criteria.EventId.HasValue)
             {
                 results = results.Where(r => r.EventId == message.Criteria.EventId.Value);
+            }
+
+            if (message.Criteria.Status.HasValue)
+            {
+                results = results.Where(r => r.Status == message.Criteria.Status); ;
             }
 
             if (!string.IsNullOrEmpty(message.Criteria.Keywords))

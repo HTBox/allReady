@@ -50,7 +50,7 @@ namespace AllReady.UnitTest.Features.Requests
             var result = await _sut.Handle(command);
 
             Assert.NotNull(request.RequestId);
-            Assert.Equal(RequestStatus.UnAssigned, request.Status);
+            Assert.Equal(RequestStatus.Unassigned, request.Status);
 
         }
 
@@ -73,7 +73,7 @@ namespace AllReady.UnitTest.Features.Requests
             {
                 ProviderId = pid,
                 RequestId = rid,
-                Status = RequestStatus.UnAssigned
+                Status = RequestStatus.Unassigned
             };
             _dataAccess.Setup(x => x.GetRequestByProviderIdAsync(pid)).ReturnsAsync(returnedRequest);
 
@@ -94,7 +94,7 @@ namespace AllReady.UnitTest.Features.Requests
                 City = "Happytown",
                 State = "HP",
                 Zip = "12345",
-                Status = RequestStatus.UnAssigned
+                Status = RequestStatus.Unassigned
             };
 
             var address = new Geocoding.Google.GoogleAddress(
@@ -130,7 +130,7 @@ namespace AllReady.UnitTest.Features.Requests
                 Zip = "12345",
                 Latitude = 13,
                 Longitude = 14,
-                Status = RequestStatus.UnAssigned
+                Status = RequestStatus.Unassigned
             };
 
             var address = new Geocoding.Google.GoogleAddress(
@@ -168,7 +168,6 @@ namespace AllReady.UnitTest.Features.Requests
 
             Assert.Equal(13, request.Latitude);
             Assert.Equal(0, request.Longitude);
-
         }
     }
 }

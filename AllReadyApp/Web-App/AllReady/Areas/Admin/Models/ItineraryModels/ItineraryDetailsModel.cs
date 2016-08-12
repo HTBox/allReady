@@ -4,9 +4,19 @@ using System.Collections.Generic;
 
 namespace AllReady.Areas.Admin.Models.ItineraryModels
 {
+    /// <summary>
+    /// Defines data used by the admin itinerary details page
+    /// </summary>
     public class ItineraryDetailsModel
     {
+        /// <summary>
+        /// The ID of the itinerary being displayed
+        /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// The name of the itinerary being displayed
+        /// </summary>
         public string Name { get; set; }
         public DateTime Date { get; set; }
         public int OrganizationId { get; set; }
