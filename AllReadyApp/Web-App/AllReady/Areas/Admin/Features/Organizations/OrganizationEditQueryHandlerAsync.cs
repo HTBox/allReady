@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationEditQueryHandlerAsync : IAsyncRequestHandler<OrganizationEditQueryAsync, OrganizationEditModel>
+    public class OrganizationEditQueryHandlerAsync : IAsyncRequestHandler<OrganizationEditQueryAsync, OrganizationEditViewModel>
     {
         private readonly AllReadyContext _context;
 
@@ -17,7 +17,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
             _context = context;
         }
 
-        public async Task<OrganizationEditModel> Handle(OrganizationEditQueryAsync message)
+        public async Task<OrganizationEditViewModel> Handle(OrganizationEditQueryAsync message)
         {
             var org = await _context.Organizations
                 .AsNoTracking()
@@ -33,7 +33,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
                 return null;
             }
 
-            var organization = new OrganizationEditModel
+            var organization = new OrganizationEditViewModel
             {
                 Id = org.Id,
                 Name = org.Name,
@@ -48,7 +48,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
 
             if (org.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
             {
-                organization = (OrganizationEditModel)org.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(organization);
+                organization = (OrganizationEditViewModel)org.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(organization);
             }
             
             return organization;

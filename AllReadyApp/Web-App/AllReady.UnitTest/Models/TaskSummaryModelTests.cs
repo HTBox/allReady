@@ -11,7 +11,7 @@ namespace AllReady.UnitTest.ViewModels
         [Fact]
         public void ValidationShouldFail_IfNoNameIsSupplied()
         {
-            var model = new TaskSummaryModel();
+            var model = new TaskSummaryViewModel();
             var result = ValidateModel(model);
 
             var nameError = result.Where(r => r.ErrorMessage == "The Name field is required.").FirstOrDefault();

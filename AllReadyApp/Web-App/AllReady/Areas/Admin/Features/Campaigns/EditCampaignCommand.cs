@@ -5,6 +5,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 {
     public class EditCampaignCommand : IAsyncRequest<int>
     {
-        public CampaignSummaryModel Campaign {get; set;}
+        public CampaignSummaryViewModel Campaign {get; set;}
     }
 }

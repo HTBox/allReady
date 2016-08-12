@@ -21,7 +21,7 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
             _mediator = mediator;
         }
 
-        public List<KeyValuePair<string, string>> Validate(TaskSummaryModel model)
+        public List<KeyValuePair<string, string>> Validate(TaskSummaryViewModel model)
         {
             var result = new List<KeyValuePair<string, string>>();
 
@@ -71,6 +71,6 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
 
     public interface ITaskSummaryModelValidator
     {
-        List<KeyValuePair<string, string>> Validate(TaskSummaryModel model);
+        List<KeyValuePair<string, string>> Validate(TaskSummaryViewModel model);
     }
 }

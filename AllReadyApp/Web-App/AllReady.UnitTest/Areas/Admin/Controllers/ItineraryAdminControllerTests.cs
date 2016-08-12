@@ -95,7 +95,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(result.ViewName, "Details");
 
             var resultViewModel = result.ViewData.Model;
-            Assert.IsType<ItineraryDetailsModel>(resultViewModel);
+            Assert.IsType<ItineraryDetailsViewModel>(resultViewModel);
         }
 
         [Fact]
@@ -109,7 +109,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CreateHasHttpPostAttribute()
         {
             var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
-            var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<ItineraryEditModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<ItineraryEditViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -117,7 +117,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CreateHasRouteAttributeWithCorrectRoute()
         {
             var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
-            var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<ItineraryEditModel>())).OfType<RouteAttribute>().SingleOrDefault();
+            var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<ItineraryEditViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/Create");
         }
@@ -126,7 +126,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CreateHasValidateAntiForgeryAttribute()
         {
             var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
-            var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<ItineraryEditModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<ItineraryEditViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
         }
 
@@ -140,7 +140,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task CreateSendsEventSummaryQueryWithCorrectEventId()
         {
-            var model = new ItineraryEditModel
+            var model = new ItineraryEditViewModel
             {
                 EventId = 1,
                 Name = "Test",
@@ -149,7 +149,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>()))
-                .ReturnsAsync(It.IsAny<EventSummaryModel>()).Verifiable();
+                .ReturnsAsync(It.IsAny<EventSummaryViewModel>()).Verifiable();
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
             await sut.Create(model);
@@ -164,13 +164,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(null);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
-            Assert.IsType<BadRequestResult>(await sut.Create(It.IsAny<ItineraryEditModel>()).ConfigureAwait(false));
+            Assert.IsType<BadRequestResult>(await sut.Create(It.IsAny<ItineraryEditViewModel>()).ConfigureAwait(false));
         }
 
         [Fact]
         public async Task CreateReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdminForEventOrg()
         {
-            var model = new ItineraryEditModel
+            var model = new ItineraryEditViewModel
             {
                 EventId = 1,
                 Name = "Test",
@@ -184,7 +184,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task CreateReturnsOkResultWhenUserIsOrgAdmin()
         {
-            var model = new ItineraryEditModel
+            var model = new ItineraryEditViewModel
             {
                 EventId = 1,
                 Name = "Test",
@@ -198,7 +198,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task CreateReturnsOkResultWhenUserIsSiteAdmin_AndModelIsValid_AndSuccessfulAdd()
         {
-            var model = new ItineraryEditModel
+            var model = new ItineraryEditViewModel
             {
                 EventId = 1,
                 Name = "Test",
@@ -212,7 +212,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task CreateReturnsHttpBadRequestResultWhenModelStateHasError()
         {
-            var model = new ItineraryEditModel
+            var model = new ItineraryEditViewModel
             {
                 EventId = 1,
                 Date = new DateTime(2016, 06, 01)
@@ -230,7 +230,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task CreateCallsValidatorWithCorrectItineraryEditModelAndEventSummaryModel()
         {
-            var model = new ItineraryEditModel
+            var model = new ItineraryEditViewModel
             {
                 EventId = 1,
                 Name = "Test",
@@ -239,7 +239,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
 
-            var eventSummaryModel = new EventSummaryModel
+            var eventSummaryModel = new EventSummaryViewModel
             {
                 Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31))
             };
@@ -264,7 +264,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task CreateReturnsHttpBadRequestResultWhenValidatonFails()
         {
-            var model = new ItineraryEditModel
+            var model = new ItineraryEditViewModel
             {
                 EventId = 1,
                 Name = "Test",
@@ -273,7 +273,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
 
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryModel { Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31)) });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31)) });
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryCommand>())).ReturnsAsync(1);
 
             var validatorError = new List<KeyValuePair<string, string>>
@@ -282,7 +282,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             };
 
             var mockValidator = new Mock<IItineraryEditModelValidator>();
-            mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditModel>(), It.IsAny<EventSummaryModel>())).Returns(validatorError).Verifiable();
+            mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditViewModel>(), It.IsAny<EventSummaryViewModel>())).Returns(validatorError).Verifiable();
 
             var sut = new ItineraryController(mediator.Object, mockValidator.Object);
             sut.SetClaims(new List<Claim>
@@ -299,7 +299,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task CreateSendsEditItineraryCommandWithCorrectItineraryEditModel()
         {
-            var model = new ItineraryEditModel
+            var model = new ItineraryEditViewModel
             {
                 EventId = 1,
                 Name = "Test",
@@ -308,11 +308,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
 
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryModel { Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31)) });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31)) });
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryCommand>())).ReturnsAsync(0).Verifiable();
 
             var mockValidator = new Mock<IItineraryEditModelValidator>();
-            mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditModel>(), It.IsAny<EventSummaryModel>())).Returns(new List<KeyValuePair<string, string>>()).Verifiable();
+            mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditViewModel>(), It.IsAny<EventSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>()).Verifiable();
 
             var sut = new ItineraryController(mediator.Object, mockValidator.Object);
             sut.SetClaims(new List<Claim>
@@ -329,7 +329,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task CreateReturnsHttpBadRequestResultWhenEditItineraryReturnsZero()
         {
-            var model = new ItineraryEditModel
+            var model = new ItineraryEditViewModel
             {
                 EventId = 1,
                 Name = "Test",
@@ -338,11 +338,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
 
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryModel { Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31)) });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31)) });
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryCommand>())).ReturnsAsync(0);
 
             var mockValidator = new Mock<IItineraryEditModelValidator>();
-            mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditModel>(), It.IsAny<EventSummaryModel>())).Returns(new List<KeyValuePair<string, string>>()).Verifiable();
+            mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditViewModel>(), It.IsAny<EventSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>()).Verifiable();
 
             var sut = new ItineraryController(mediator.Object, mockValidator.Object);
             sut.SetClaims(new List<Claim>
@@ -524,7 +524,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task SelectRequestsWithSingleParameterSetsSelectItineraryRequestsModelWithTheCorrectData()
         {
             var organizationId = 4;
-            var itineraryRequestsModel = new SelectItineraryRequestsModel();
+            var itineraryRequestsModel = new SelectItineraryRequestsViewModel();
             var itinerary = GetItineraryForSelectRequestHappyPathTests();
             var returnedRequests = GetRequestsForSelectRequestHappyPathTests();
             var mediator = new Mock<IMediator>();
@@ -549,7 +549,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task SelectRequestsWithTwoParametersSetsSelectItineraryRequestsModelWithTheCorrectData()
         {
-            var itineraryRequestsModel = new SelectItineraryRequestsModel() { KeywordsFilter = "These are keywords" };
+            var itineraryRequestsModel = new SelectItineraryRequestsViewModel() { KeywordsFilter = "These are keywords" };
             var itinerary = GetItineraryForSelectRequestHappyPathTests();
             var returnedRequests = GetRequestsForSelectRequestHappyPathTests();
             var mediator = new Mock<IMediator>();
@@ -565,12 +565,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             RunSelectRequestsHappyPathTests(view, itinerary, returnedRequests);
         }
 
-        private void RunSelectRequestsHappyPathTests(IActionResult view, ItineraryDetailsModel itinerary, IList<RequestListModel> returnedRequests)
+        private void RunSelectRequestsHappyPathTests(IActionResult view, ItineraryDetailsViewModel itinerary, IList<RequestListViewModel> returnedRequests)
         {
             Assert.IsType<ViewResult>(view);
             var result = (ViewResult)view;
-            Assert.IsType<SelectItineraryRequestsModel>(result.Model);
-            var model = (SelectItineraryRequestsModel)result.Model;
+            Assert.IsType<SelectItineraryRequestsViewModel>(result.Model);
+            var model = (SelectItineraryRequestsViewModel)result.Model;
             Assert.Equal(itinerary.CampaignId, model.CampaignId);
             Assert.Equal(itinerary.CampaignName, model.CampaignName);
             Assert.Equal(itinerary.EventId, model.EventId);
@@ -802,7 +802,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<TaskSignupSummaryQuery>())).ReturnsAsync(new TaskSignupSummaryModel { TaskSignupId = taskSignupId, VolunteerEmail = "user@domain.tld", VolunteerName = "Test McTesterson"});
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<TaskSignupSummaryQuery>())).ReturnsAsync(new TaskSignupSummaryViewModel { TaskSignupId = taskSignupId, VolunteerEmail = "user@domain.tld", VolunteerName = "Test McTesterson"});
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
             sut.SetClaims(new List<Claim>
@@ -816,7 +816,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(result.ViewName, "ConfirmRemoveTeamMember");
 
             var resultViewModel = result.ViewData.Model;
-            Assert.IsType<TaskSignupSummaryModel>(resultViewModel);
+            Assert.IsType<TaskSignupSummaryViewModel>(resultViewModel);
         }
 
         [Fact]
@@ -1092,7 +1092,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mockValidator = new Mock<IItineraryEditModelValidator>();
 
-            mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditModel>(), It.IsAny<EventSummaryModel>())).Returns(new List<KeyValuePair<string, string>>()).Verifiable();
+            mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditViewModel>(), It.IsAny<EventSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>()).Verifiable();
 
            return mockValidator;
         }
@@ -1101,7 +1101,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
 
-            mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(new ItineraryDetailsModel { Id = 1, Name = "Itinerary", EventId = 1, EventName = "Event Name", OrganizationId = 1, Date = new DateTime(2016, 07, 01) });
+            mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(new ItineraryDetailsViewModel { Id = 1, Name = "Itinerary", EventId = 1, EventName = "Event Name", OrganizationId = 1, Date = new DateTime(2016, 07, 01) });
 
             var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object);
             sut.SetClaims(new List<Claim>
@@ -1117,7 +1117,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
 
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryModel { Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31)) });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31)) });
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryCommand>())).ReturnsAsync(1);
 
             var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object);
@@ -1130,9 +1130,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             return sut;
         }
 
-        private ItineraryDetailsModel GetItineraryForSelectRequestHappyPathTests()
+        private ItineraryDetailsViewModel GetItineraryForSelectRequestHappyPathTests()
         {
-            return new ItineraryDetailsModel()
+            return new ItineraryDetailsViewModel()
             {
                 Id = 14,
                 CampaignId = 123,
@@ -1142,11 +1142,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             };
         }
 
-        private List<RequestListModel> GetRequestsForSelectRequestHappyPathTests()
+        private List<RequestListViewModel> GetRequestsForSelectRequestHappyPathTests()
         {
-            return new List<RequestListModel>()
+            return new List<RequestListViewModel>()
             {
-                new RequestListModel()
+                new RequestListViewModel()
                 {
                     Id = Guid.NewGuid(),
                     Name = "asdfasf",
@@ -1157,7 +1157,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     Longitude = -125.234,
                     Postcode = "53741"
                 },
-                new RequestListModel()
+                new RequestListViewModel()
                 {
                     Id = Guid.NewGuid(),
                     Name = "asdfasf",

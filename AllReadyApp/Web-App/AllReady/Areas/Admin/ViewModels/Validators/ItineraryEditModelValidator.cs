@@ -6,7 +6,7 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
 {
     public class ItineraryEditModelValidator : IItineraryEditModelValidator
     {
-        public List<KeyValuePair<string, string>> Validate(ItineraryEditModel model, EventSummaryModel eventSummary)
+        public List<KeyValuePair<string, string>> Validate(ItineraryEditViewModel model, EventSummaryViewModel eventSummary)
         {
             var result = new List<KeyValuePair<string, string>>();
 
@@ -26,6 +26,6 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
 
     public interface IItineraryEditModelValidator
     {
-        List<KeyValuePair<string, string>> Validate(ItineraryEditModel model, EventSummaryModel eventSummary);
+        List<KeyValuePair<string, string>> Validate(ItineraryEditViewModel model, EventSummaryViewModel eventSummary);
     }
 }

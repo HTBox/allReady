@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationContactQueryAsync : IAsyncRequest<ContactInformationModel>
+    public class OrganizationContactQueryAsync : IAsyncRequest<ContactInformationViewModel>
     {
         public int OrganizationId { get; set; }
         public ContactTypes ContactType { get; set; } = ContactTypes.Primary;

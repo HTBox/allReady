@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class TaskQueryHandlerAsync : IAsyncRequestHandler<TaskQueryAsync, TaskSummaryModel>
+    public class TaskQueryHandlerAsync : IAsyncRequestHandler<TaskQueryAsync, TaskSummaryViewModel>
     {
         private readonly AllReadyContext _context;
 
@@ -17,11 +17,11 @@ namespace AllReady.Areas.Admin.Features.Tasks
             _context = context;
         }
 
-        public async Task<TaskSummaryModel> Handle(TaskQueryAsync message)
+        public async Task<TaskSummaryViewModel> Handle(TaskQueryAsync message)
         {
             var task = await GetTask(message);
 
-            var taskModel = new TaskSummaryModel()
+            var taskModel = new TaskSummaryViewModel()
             {
                 Id = task.Id,
                 EventId = task.Event.Id,
@@ -36,8 +36,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 EndDateTime = task.EndDateTime,
                 NumberOfVolunteersRequired = task.NumberOfVolunteersRequired,
                 RequiredSkills = task.RequiredSkills,
-                AssignedVolunteers = task.AssignedVolunteers.Select(av => new VolunteerModel { UserId = av.User.Id, UserName = av.User.UserName, HasVolunteered = true }).ToList(),
-                AllVolunteers = task.Event.UsersSignedUp.Select(v => new VolunteerModel { UserId = v.User.Id, UserName = v.User.UserName, HasVolunteered = false }).ToList()
+                AssignedVolunteers = task.AssignedVolunteers.Select(av => new VolunteerViewModel { UserId = av.User.Id, UserName = av.User.UserName, HasVolunteered = true }).ToList(),
+                AllVolunteers = task.Event.UsersSignedUp.Select(v => new VolunteerViewModel { UserId = v.User.Id, UserName = v.User.UserName, HasVolunteered = false }).ToList()
             };
 
             foreach (var assignedVolunteer in taskModel.AssignedVolunteers)

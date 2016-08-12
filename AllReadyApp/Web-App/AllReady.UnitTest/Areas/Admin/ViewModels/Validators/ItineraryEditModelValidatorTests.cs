@@ -16,7 +16,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             var sut = new ItineraryEditModelValidator();
 
-            var model = new ItineraryEditModel
+            var model = new ItineraryEditViewModel
             {
                 EventId = 1,
                 Date = eventStartDate.AddDays(-1).DateTime
@@ -33,7 +33,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             var sut = new ItineraryEditModelValidator();
 
-            var model = new ItineraryEditModel
+            var model = new ItineraryEditViewModel
             {
                 EventId = 1,
                 Date = eventEndDate.AddDays(1).DateTime
@@ -50,7 +50,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             var sut = new ItineraryEditModelValidator();
 
-            var model = new ItineraryEditModel
+            var model = new ItineraryEditViewModel
             {
                 EventId = 1,
                 Date = eventStartDate.AddDays(1).DateTime
@@ -61,7 +61,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
             Assert.True(errors.Count == 0);
         }
 
-        private EventSummaryModel TestEvent => new EventSummaryModel
+        private EventSummaryViewModel TestEvent => new EventSummaryViewModel
         {
             Id = 1,
             StartDateTime = eventStartDate,

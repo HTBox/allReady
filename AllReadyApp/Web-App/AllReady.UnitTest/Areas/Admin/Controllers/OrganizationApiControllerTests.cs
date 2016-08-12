@@ -31,12 +31,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task GetContactReturnsCorrectModel()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationContactQueryAsync>())).ReturnsAsync(new ContactInformationModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationContactQueryAsync>())).ReturnsAsync(new ContactInformationViewModel());
 
             var sut = new OrganizationApiController(mediator.Object);
             var result = await sut.GetContact(It.IsAny<int>());
 
-            Assert.IsType<ContactInformationModel>(result);
+            Assert.IsType<ContactInformationViewModel>(result);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new OrganizationApiController(null);
             var attribute = sut.GetAttributesOn(x => x.GetContact(It.IsAny<int>())).OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Type, typeof (ContactInformationModel));
+            Assert.Equal(attribute.Type, typeof (ContactInformationViewModel));
             Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
         }
 

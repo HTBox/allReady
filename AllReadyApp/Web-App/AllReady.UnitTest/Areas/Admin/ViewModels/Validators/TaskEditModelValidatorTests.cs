@@ -23,7 +23,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
 
             var validator = new TaskSummaryModelValidator(mockMediator.Object);
 
-            var model = new TaskSummaryModel
+            var model = new TaskSummaryViewModel
             {
                 StartDateTime = new DateTimeOffset(new DateTime(2000, 1, 1)),
                 EndDateTime = new DateTimeOffset(new DateTime(1999, 1, 1))
@@ -40,7 +40,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             var validator = GetValidator();
 
-            var model = new TaskSummaryModel
+            var model = new TaskSummaryViewModel
             {
                 StartDateTime = eventStartDate.AddDays(-10),
                 EndDateTime = eventEndDate.AddDays(-1)
@@ -57,7 +57,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             var validator = GetValidator();
 
-            var model = new TaskSummaryModel
+            var model = new TaskSummaryViewModel
             {
                 StartDateTime = eventStartDate.AddDays(1),
                 EndDateTime = eventEndDate.AddDays(10)
@@ -74,7 +74,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             var validator = GetValidator();
 
-            var model = new TaskSummaryModel
+            var model = new TaskSummaryViewModel
             {
                 StartDateTime = new DateTimeOffset(new DateTime(1999, 12, 1)),
                 EndDateTime = new DateTimeOffset(new DateTime(2000, 12, 1))
@@ -105,7 +105,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
 
             var validator = new TaskSummaryModelValidator(mockMediator.Object);
 
-            var model = new TaskSummaryModel
+            var model = new TaskSummaryViewModel
             {
                 StartDateTime = eventStartDate.AddDays(1),
                 EndDateTime = eventEndDate.AddDays(-1)
@@ -121,7 +121,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             var validator = GetValidator();
 
-            var model = new TaskSummaryModel
+            var model = new TaskSummaryViewModel
             {
                 StartDateTime = eventStartDate.AddDays(1),
                 EndDateTime = eventStartDate.AddDays(1).AddHours(2),

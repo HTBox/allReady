@@ -5,6 +5,6 @@ namespace AllReady.Areas.Admin.Features.Events
 {
     public class MessageEventVolunteersCommand : IAsyncRequest
     {
-        public MessageEventVolunteersModel Model {get; set;}
+        public MessageEventVolunteersViewModel ViewModel {get; set;}
     }
 }

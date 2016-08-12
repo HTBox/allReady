@@ -5,6 +5,6 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 {
     public class EditItineraryCommand : IAsyncRequest<int>
     {
-        public ItineraryEditModel Itinerary { get; set; }
+        public ItineraryEditViewModel Itinerary { get; set; }
     }
 }

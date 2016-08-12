@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Skills
 {
-    public class SkillListQueryHandlerAsync : IAsyncRequestHandler<SkillListQueryAsync, IEnumerable<SkillSummaryModel>>
+    public class SkillListQueryHandlerAsync : IAsyncRequestHandler<SkillListQueryAsync, IEnumerable<SkillSummaryViewModel>>
     {
         private AllReadyContext _context;
         public SkillListQueryHandlerAsync(AllReadyContext context)
@@ -16,7 +16,7 @@ namespace AllReady.Areas.Admin.Features.Skills
             _context = context;
         }
 
-        public async Task<IEnumerable<SkillSummaryModel>> Handle(SkillListQueryAsync message)
+        public async Task<IEnumerable<SkillSummaryViewModel>> Handle(SkillListQueryAsync message)
         {
             List<Skill> skills = new List<Skill>();
             if(message.OrganizationId != null)
@@ -35,10 +35,10 @@ namespace AllReady.Areas.Admin.Features.Skills
                     .ToListAsync();
             }          
 
-            List<SkillSummaryModel> results = new List<SkillSummaryModel>();
+            List<SkillSummaryViewModel> results = new List<SkillSummaryViewModel>();
             foreach(var skill in skills)
             {
-                results.Add(new SkillSummaryModel
+                results.Add(new SkillSummaryViewModel
                 {
                     Id = skill.Id,
                     HierarchicalName = skill.HierarchicalName,

@@ -42,9 +42,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
         /// <param name="organization">An Organization that will be supply the initial values for editing.</param>
         /// <returns>An OrganizationEditModel that can be used to capture the fields for an Organization
         /// and it's location and primary contact built from values from the supplied organization. </returns>
-        public static OrganizationEditModel ToEditModel_Organization(Organization organization)
+        public static OrganizationEditViewModel ToEditModel_Organization(Organization organization)
         {
-            var ret = new OrganizationEditModel
+            var ret = new OrganizationEditViewModel
             {
                 Id = organization.Id,
                 Name = organization.Name,
@@ -56,7 +56,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 
             if (organization.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
             {
-                ret = (OrganizationEditModel)organization.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(ret);
+                ret = (OrganizationEditViewModel)organization.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(ret);
             }
 
             return ret;

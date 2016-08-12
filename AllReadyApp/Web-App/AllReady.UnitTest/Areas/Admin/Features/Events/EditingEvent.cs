@@ -20,7 +20,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         public async Task ModelIsCreated()
         {
             var sut = new EditEventCommandHandler(Context);
-            var actual = await sut.Handle(new EditEventCommand {Event = new EventEditModel { CampaignId = 1, Id = 1, TimeZoneId = "Central Standard Time"}});
+            var actual = await sut.Handle(new EditEventCommand {Event = new EventEditViewModel { CampaignId = 1, Id = 1, TimeZoneId = "Central Standard Time"}});
             Assert.Equal(1, actual);
         }
     }

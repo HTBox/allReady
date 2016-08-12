@@ -36,7 +36,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
             
-            var viewModel = new TaskSummaryModel
+            var viewModel = new TaskSummaryViewModel
             {
                 EventId = campaignEvent.Id,
                 EventName = campaignEvent.Name,
@@ -56,7 +56,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Task/Create/{eventId}")]
-        public async Task<IActionResult> Create(int eventId, TaskSummaryModel model)
+        public async Task<IActionResult> Create(int eventId, TaskSummaryViewModel model)
         {
             var errors = _taskDetailModelValidator.Validate(model);
 
@@ -80,7 +80,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(TaskSummaryModel model)
+        public async Task<IActionResult> Edit(TaskSummaryViewModel model)
         {
             var errors = _taskDetailModelValidator.Validate(model);
 
@@ -189,7 +189,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MessageAllVolunteers(MessageTaskVolunteersModel model)
+        public async Task<IActionResult> MessageAllVolunteers(MessageTaskVolunteersViewModel model)
         {
             //TODO: Query only for the organization Id rather than the whole event detail
             if (!ModelState.IsValid)

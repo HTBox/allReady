@@ -5,6 +5,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class MessageTaskVolunteersCommandAsync : IAsyncRequest
     {
-        public MessageTaskVolunteersModel Model {get; set;}
+        public MessageTaskVolunteersViewModel Model {get; set;}
     }
 }

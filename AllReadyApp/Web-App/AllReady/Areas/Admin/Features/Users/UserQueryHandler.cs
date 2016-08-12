@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Users
 {
-    public class UserQueryHandler : IAsyncRequestHandler<UserQuery, EditUserModel>
+    public class UserQueryHandler : IAsyncRequestHandler<UserQuery, EditUserViewModel>
     {
         private readonly AllReadyContext _context;
 
@@ -17,7 +17,7 @@ namespace AllReady.Areas.Admin.Features.Users
             _context = context;
         }
 
-        public async Task<EditUserModel> Handle(UserQuery message)
+        public async Task<EditUserViewModel> Handle(UserQuery message)
         {
             var user = await _context.Users
                 .Where(u => u.Id == message.UserId)
@@ -28,7 +28,7 @@ namespace AllReady.Areas.Admin.Features.Users
 
             var organizationId = user.GetOrganizationId();
 
-            var viewModel = new EditUserModel
+            var viewModel = new EditUserViewModel
             {
                 UserId = message.UserId,
                 UserName = user.UserName,

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.TaskSignups
 {
-    public class TaskSignupSummaryQueryHandlerAsync : IAsyncRequestHandler<TaskSignupSummaryQuery, TaskSignupSummaryModel>
+    public class TaskSignupSummaryQueryHandlerAsync : IAsyncRequestHandler<TaskSignupSummaryQuery, TaskSignupSummaryViewModel>
     {
         private readonly AllReadyContext _context;
 
@@ -16,14 +16,14 @@ namespace AllReady.Areas.Admin.Features.TaskSignups
             _context = context;
         }
 
-        public async Task<TaskSignupSummaryModel> Handle(TaskSignupSummaryQuery message)
+        public async Task<TaskSignupSummaryViewModel> Handle(TaskSignupSummaryQuery message)
         {
             return await _context.TaskSignups.AsNoTracking()
                 .Include(x => x.User)
                 .Where(x => x.Id == message.TaskSignupId)
                 .Select(
                     x =>
-                        new TaskSignupSummaryModel
+                        new TaskSignupSummaryViewModel
                         {
                             TaskSignupId = x.Id,
                             VolunteerName = x.User.Name,

@@ -68,7 +68,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         {
             var command = new MessageEventVolunteersCommand
             {
-                Model = new MessageEventVolunteersModel
+                ViewModel = new MessageEventVolunteersViewModel
                 {
                     EventId = 1,
                     Message = "This is my message",

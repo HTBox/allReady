@@ -7,7 +7,7 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
 {
     public class EventEditModelValidator : IValidateEventDetailModels
     {
-        public List<KeyValuePair<string, string>> Validate(EventEditModel model, CampaignSummaryModel parentCampaign)
+        public List<KeyValuePair<string, string>> Validate(EventEditViewModel model, CampaignSummaryViewModel parentCampaign)
         {
             var result = new List<KeyValuePair<string, string>>();
 
@@ -37,6 +37,6 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
 
     public interface IValidateEventDetailModels
     {
-        List<KeyValuePair<string, string>> Validate(EventEditModel model, CampaignSummaryModel parentCampaign);
+        List<KeyValuePair<string, string>> Validate(EventEditViewModel model, CampaignSummaryViewModel parentCampaign);
     }
 }

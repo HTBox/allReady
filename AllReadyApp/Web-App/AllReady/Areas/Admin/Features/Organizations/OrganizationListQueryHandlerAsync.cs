@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class OrganizationListQueryHandlerAsync : IAsyncRequestHandler<OrganizationListQueryAysnc, List<OrganizationSummaryModel>>
+    public class OrganizationListQueryHandlerAsync : IAsyncRequestHandler<OrganizationListQueryAysnc, List<OrganizationSummaryViewModel>>
     {
         private AllReadyContext _context;
         public OrganizationListQueryHandlerAsync(AllReadyContext context)
@@ -16,9 +16,9 @@ namespace AllReady.Areas.Admin.Features.Organizations
             _context = context;
         }
 
-        public async Task<List<OrganizationSummaryModel>> Handle(OrganizationListQueryAysnc message)
+        public async Task<List<OrganizationSummaryViewModel>> Handle(OrganizationListQueryAysnc message)
         {
-            return await _context.Organizations.Select(t => new OrganizationSummaryModel
+            return await _context.Organizations.Select(t => new OrganizationSummaryViewModel
             {
                 Id = t.Id,
                 LogoUrl = t.LogoUrl,

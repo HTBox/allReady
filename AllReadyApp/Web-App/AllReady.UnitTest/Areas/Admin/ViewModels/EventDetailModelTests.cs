@@ -8,7 +8,7 @@ namespace AllReady.UnitTest.ModelTests
         [Fact]
         public void DisplayItineraries_ReturnsTrue_WhenEventIsItineraryManaged()
         {
-            var sut = new EventDetailModel();
+            var sut = new EventDetailViewModel();
             sut.EventType = Models.EventType.Itinerary;
 
             Assert.True(sut.IsItineraryEvent);
@@ -17,7 +17,7 @@ namespace AllReady.UnitTest.ModelTests
         [Fact]
         public void DisplayItineraries_ReturnsFalse_WhenEventIsNotItineraryManaged()
         {
-            var sut = new EventDetailModel();
+            var sut = new EventDetailViewModel();
             sut.EventType = Models.EventType.Rally;
 
             Assert.False(sut.IsItineraryEvent);

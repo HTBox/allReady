@@ -56,7 +56,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         [Fact(Skip = "RTM Broken Tests")]
         public async Task AddsNewItineraryWhenItDoesNotExist()
         {
-            var query = new EditItineraryCommand {  Itinerary = new ItineraryEditModel
+            var query = new EditItineraryCommand {  Itinerary = new ItineraryEditViewModel
             {
                 EventId = 1,
                 Name = "New",
@@ -79,7 +79,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         {
             var query = new EditItineraryCommand
             {
-                Itinerary = new ItineraryEditModel
+                Itinerary = new ItineraryEditViewModel
                 {
                     Id = 1,
                     EventId = 1,

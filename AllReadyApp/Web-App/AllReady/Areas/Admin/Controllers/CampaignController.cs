@@ -60,7 +60,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Campaign/Create
         public IActionResult Create()
         {
-            return View("Edit", new CampaignSummaryModel
+            return View("Edit", new CampaignSummaryViewModel
             {
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddMonths(1)
@@ -87,7 +87,7 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Campaign/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(CampaignSummaryModel campaign, IFormFile fileUpload)
+        public async Task<IActionResult> Edit(CampaignSummaryViewModel campaign, IFormFile fileUpload)
         {
             if (campaign == null)
             {

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Events
 {
-    public class EventSummaryQuery : IAsyncRequest<EventSummaryModel>
+    public class EventSummaryQuery : IAsyncRequest<EventSummaryViewModel>
     {
         public int EventId { get; set; }
     }

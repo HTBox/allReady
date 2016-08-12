@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class CampaignDetailQueryHandler : IAsyncRequestHandler<CampaignDetailQuery, CampaignDetailModel>
+    public class CampaignDetailQueryHandler : IAsyncRequestHandler<CampaignDetailQuery, CampaignDetailViewModel>
     {
         private AllReadyContext _context;
 
@@ -18,7 +18,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             _context = context;
         }
 
-        public async Task<CampaignDetailModel> Handle(CampaignDetailQuery message)
+        public async Task<CampaignDetailViewModel> Handle(CampaignDetailQuery message)
         {
             var campaign = await _context.Campaigns
                 .AsNoTracking()
@@ -30,11 +30,11 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                 .SingleOrDefaultAsync(c => c.Id == message.CampaignId)
                 .ConfigureAwait(false);
 
-            CampaignDetailModel result = null;
+            CampaignDetailViewModel result = null;
 
             if (campaign != null)
             {
-                result = new CampaignDetailModel
+                result = new CampaignDetailViewModel
                 {
                     Id = campaign.Id,
                     Name = campaign.Name,
@@ -52,7 +52,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Location = campaign.Location.ToModel(),
                     Locked = campaign.Locked,
                     Featured = campaign.Featured,
-                    Events = campaign.Events.Select(a => new EventSummaryModel
+                    Events = campaign.Events.Select(a => new EventSummaryViewModel
                     {
                         Id = a.Id,
                         Name = a.Name,
@@ -78,7 +78,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
                 if (campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
                 {
-                    result = (CampaignDetailModel)campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(result);
+                    result = (CampaignDetailViewModel)campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(result);
                 }
             }
 

@@ -27,7 +27,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
             var sut = new OrganizationListQueryHandlerAsync(context);
             var result = await sut.Handle(message);
 
-            Assert.IsType<List<OrganizationSummaryModel>>(result);
+            Assert.IsType<List<OrganizationSummaryViewModel>>(result);
         }
     }
 }

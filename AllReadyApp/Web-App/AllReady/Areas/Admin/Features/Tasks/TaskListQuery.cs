@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class TaskListQuery : IRequest<IEnumerable<TaskSummaryModel>>
+    public class TaskListQuery : IRequest<IEnumerable<TaskSummaryViewModel>>
     {
         public int EventId { get; set; }
     }

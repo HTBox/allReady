@@ -5,7 +5,7 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
 {
     public class OrganizationEditModelValidator : IOrganizationEditModelValidator
     {
-        public List<KeyValuePair<string, string>> Validate(OrganizationEditModel model)
+        public List<KeyValuePair<string, string>> Validate(OrganizationEditViewModel model)
         {
             var result = new List<KeyValuePair<string, string>>();
 
@@ -20,6 +20,6 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
 
     public interface IOrganizationEditModelValidator
     {
-        List<KeyValuePair<string, string>> Validate(OrganizationEditModel model);
+        List<KeyValuePair<string, string>> Validate(OrganizationEditViewModel model);
     }
 }

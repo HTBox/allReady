@@ -5,6 +5,6 @@ namespace AllReady.Areas.Admin.Features.Skills
 {
     public class SkillEditCommandAsync : IAsyncRequest<int>
     {
-        public SkillEditModel Skill { get; set; }
+        public SkillEditViewModel Skill { get; set; }
     }
 }

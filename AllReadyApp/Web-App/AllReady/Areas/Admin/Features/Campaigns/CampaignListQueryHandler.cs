@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class CampaignListQueryHandler : IRequestHandler<CampaignListQuery, IEnumerable<CampaignSummaryModel>>
+    public class CampaignListQueryHandler : IRequestHandler<CampaignListQuery, IEnumerable<CampaignSummaryViewModel>>
     {
         private AllReadyContext _context;
 
@@ -16,7 +16,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             _context = context;
         }
 
-        public IEnumerable<CampaignSummaryModel> Handle(CampaignListQuery message)
+        public IEnumerable<CampaignSummaryViewModel> Handle(CampaignListQuery message)
         {
             var campaignsQuery = _context.Campaigns.Include(c => c.ManagingOrganization).AsNoTracking();
 
@@ -26,7 +26,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             }
 
             var campaigns = campaignsQuery.Select(c =>
-                    new CampaignSummaryModel
+                    new CampaignSummaryViewModel
                     {
                         Id = c.Id,
                         Name = c.Name,

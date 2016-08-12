@@ -15,7 +15,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         {
             // Arrange
             var handler = new EditCampaignCommandHandler(Context);
-            var newCampaign = new CampaignSummaryModel { Name = "New", Description = "Desc", TimeZoneId ="UTC" };
+            var newCampaign = new CampaignSummaryViewModel { Name = "New", Description = "Desc", TimeZoneId ="UTC" };
 
             // Act
             var result = await handler.Handle(new EditCampaignCommand { Campaign = newCampaign });
@@ -42,7 +42,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             var org = 2;
             
             var handler = new EditCampaignCommandHandler(Context);
-            var updatedCampaign = new CampaignSummaryModel {
+            var updatedCampaign = new CampaignSummaryViewModel {
                 Id = 2,
                 Name = name,
                 Description = desc,
@@ -85,14 +85,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             var country = "USA";
 
             var handler = new EditCampaignCommandHandler(Context);
-            var updatedCampaign = new CampaignSummaryModel
+            var updatedCampaign = new CampaignSummaryViewModel
             {
                 Id = 2,
                 Name = name,
                 Description = desc,
                 OrganizationId = org,
                 TimeZoneId = "GMT Standard Time",
-                Location = new LocationEditModel {  Address1 = address1, Address2 = address2, City = city, State = state, PostalCode = postcode }
+                Location = new LocationEditViewModel {  Address1 = address1, Address2 = address2, City = city, State = state, PostalCode = postcode }
             };
 
             // Act
@@ -120,7 +120,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             var telephone = "01323 111111";
 
             var handler = new EditCampaignCommandHandler(Context);
-            var updatedCampaign = new CampaignSummaryModel
+            var updatedCampaign = new CampaignSummaryViewModel
             {
                 Id = 2,
                 Name = name,

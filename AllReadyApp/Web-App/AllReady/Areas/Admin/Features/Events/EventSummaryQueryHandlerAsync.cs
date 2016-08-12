@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Events
 {
-    public class EventSummaryQueryHandlerAsync : IAsyncRequestHandler<EventSummaryQuery, EventSummaryModel>
+    public class EventSummaryQueryHandlerAsync : IAsyncRequestHandler<EventSummaryQuery, EventSummaryViewModel>
     {
         private readonly AllReadyContext _context;
 
@@ -15,15 +15,15 @@ namespace AllReady.Areas.Admin.Features.Events
             _context = context;
         }
 
-        public async Task<EventSummaryModel> Handle(EventSummaryQuery message)
+        public async Task<EventSummaryViewModel> Handle(EventSummaryQuery message)
         {
-            EventSummaryModel result = null;
+            EventSummaryViewModel result = null;
 
             var campaignEvent = await GetEvent(message);
 
             if (campaignEvent != null)
             {
-                result = new EventSummaryModel
+                result = new EventSummaryViewModel
                 {
                     Id = campaignEvent.Id,
                     EventType = campaignEvent.EventType,

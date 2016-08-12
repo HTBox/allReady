@@ -80,7 +80,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             const string expectedSubject = "This is my subject";
             var command = new MessageTaskVolunteersCommandAsync
             {
-                Model = new MessageTaskVolunteersModel
+                Model = new MessageTaskVolunteersViewModel
                 {
                     TaskId = 1,
                     Message = expectedMessage,

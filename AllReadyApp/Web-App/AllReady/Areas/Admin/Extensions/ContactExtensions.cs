@@ -10,7 +10,7 @@ namespace AllReady.Areas.Admin.Extensions
 {
     public static class ContactExtensions
     {       
-        public static IPrimaryContactModel ToEditModel(this Contact contact, IPrimaryContactModel contactModel)
+        public static IPrimaryContactViewModel ToEditModel(this Contact contact, IPrimaryContactViewModel contactModel)
         {
             if (contact != null)
             {
@@ -23,7 +23,7 @@ namespace AllReady.Areas.Admin.Extensions
             return contactModel;
         }
 
-        public static async Task<Organization> UpdateOrganizationContact(this Organization organization, IPrimaryContactModel contactModel, AllReadyContext _context)
+        public static async Task<Organization> UpdateOrganizationContact(this Organization organization, IPrimaryContactViewModel contactModel, AllReadyContext _context)
         {
             if (organization.OrganizationContacts == null)
             {

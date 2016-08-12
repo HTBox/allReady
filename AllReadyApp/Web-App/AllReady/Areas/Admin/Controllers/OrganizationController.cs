@@ -62,7 +62,7 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Organization/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(OrganizationEditModel organization)
+        public async Task<IActionResult> Edit(OrganizationEditViewModel organization)
         {
             if (organization == null)
             {

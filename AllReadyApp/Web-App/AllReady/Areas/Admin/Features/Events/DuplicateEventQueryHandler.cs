@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Events
 {
-    public class DupicateEventQueryHandler : IAsyncRequestHandler<DuplicateEventQuery, DuplicateEventModel>
+    public class DupicateEventQueryHandler : IAsyncRequestHandler<DuplicateEventQuery, DuplicateEventViewModel>
     {
         private readonly AllReadyContext _context;
 
@@ -15,15 +15,15 @@ namespace AllReady.Areas.Admin.Features.Events
             _context = context;
         }
 
-        public async Task<DuplicateEventModel> Handle(DuplicateEventQuery message)
+        public async Task<DuplicateEventViewModel> Handle(DuplicateEventQuery message)
         {
-            DuplicateEventModel result = null;
+            DuplicateEventViewModel result = null;
 
             var campaignEvent = await GetEvent(message);
 
             if (campaignEvent != null)
             {
-                result = new DuplicateEventModel
+                result = new DuplicateEventViewModel
                 {
                     Id = campaignEvent.Id,
                     CampaignName = campaignEvent.Campaign.Name,

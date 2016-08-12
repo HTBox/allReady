@@ -38,7 +38,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             context.Organizations.Add(htb);
             context.SaveChanges();
 
-            var vm = new EventEditModel
+            var vm = new EventEditViewModel
             {
                 CampaignId = 1,
                 TimeZoneId = "Central Standard Time"
@@ -95,7 +95,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
 
             var startDateTime = new DateTime(2015, 7, 12, 4, 15, 0);
             var endDateTime = new DateTime(2015, 12, 7, 15, 10, 0);
-            var vm = new EventEditModel
+            var vm = new EventEditViewModel
             {
                 CampaignId = queenAnne.CampaignId,
                 CampaignName = queenAnne.Campaign.Name,
@@ -200,7 +200,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 PhoneNumber = "New number"
             });
 
-            var locationEdit = new EventEditModel
+            var locationEdit = new EventEditViewModel
             {
                 CampaignId = queenAnne.CampaignId,
                 CampaignName = queenAnne.Campaign.Name,

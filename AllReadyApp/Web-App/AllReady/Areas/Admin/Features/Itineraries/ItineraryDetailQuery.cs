@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Itineraries
 {
-    public class ItineraryDetailQuery : IAsyncRequest<ItineraryDetailsModel>
+    public class ItineraryDetailQuery : IAsyncRequest<ItineraryDetailsViewModel>
     {
         public int ItineraryId { get; set; }
     }
