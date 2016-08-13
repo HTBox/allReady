@@ -4,6 +4,16 @@ using System.Threading.Tasks;
 
 namespace AllReady.Models
 {
+    /// <summary>
+    /// We are moving away from the use of IAllReadyDataAccess and to the command/query/handler
+    /// pattern. For a sample implemenation, look in ~/Admin/Features or ~/Features for 
+    /// reference classes you can use. If you are able to reduce usage of any method here to a 
+    /// count of 1 (meaning it would only exist in the implemenation) it is safe to remove the 
+    /// interface signature and the concrete implementation from the corresponding 
+    /// AllReadyDataAccess partial class.
+    /// </summary>
+
+
     [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
     public interface IAllReadyDataAccess
     {
