@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Campaigns;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Campaign;
 using AllReady.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -17,7 +17,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
             var sut = new EditCampaignCommandHandler(context);
-            var actual = await sut.Handle(new EditCampaignCommand { Campaign = new CampaignSummaryModel { TimeZoneId = "Eastern Standard Time" } });
+            var actual = await sut.Handle(new EditCampaignCommand { Campaign = new CampaignSummaryViewModel { TimeZoneId = "Eastern Standard Time" } });
             Assert.NotEqual(0, actual);
         }
 
@@ -25,7 +25,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         public async Task CampaignDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var vm = new CampaignSummaryModel
+            var vm = new CampaignSummaryViewModel
             {
                 TimeZoneId = "Eastern Standard Time"
             };
@@ -65,7 +65,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
 
             var startDate = new DateTime(2014, 12, 10);
             var endDate = new DateTime(2015, 7, 3);
-            var vm = new CampaignSummaryModel
+            var vm = new CampaignSummaryViewModel
             {
                 Description = firePrev.Description,
                 EndDate = endDate,

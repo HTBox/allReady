@@ -1,14 +1,16 @@
-﻿using AllReady.Areas.Admin.Models;
-using AllReady.Models;
+﻿using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models.ItineraryModels;
+using AllReady.Areas.Admin.ViewModels.Event;
+using AllReady.Areas.Admin.ViewModels.Itinerary;
+using AllReady.Areas.Admin.ViewModels.Shared;
+using AllReady.Areas.Admin.ViewModels.Task;
 
 namespace AllReady.Areas.Admin.Features.Events
 {
-    public class EventDetailQueryHandler : IAsyncRequestHandler<EventDetailQuery, EventDetailModel>
+    public class EventDetailQueryHandler : IAsyncRequestHandler<EventDetailQuery, EventDetailViewModel>
     {
         private readonly AllReadyContext _context;
 
@@ -17,15 +19,15 @@ namespace AllReady.Areas.Admin.Features.Events
             _context = context;
         }
 
-        public async Task<EventDetailModel> Handle(EventDetailQuery message)
+        public async Task<EventDetailViewModel> Handle(EventDetailQuery message)
         {
-            EventDetailModel result = null;
+            EventDetailViewModel result = null;
 
             var campaignEvent = await GetEvent(message);
 
             if (campaignEvent != null)
             {
-                result = new EventDetailModel
+                result = new EventDetailViewModel
                 {
                     Id = campaignEvent.Id,
                     EventType = campaignEvent.EventType,
@@ -45,14 +47,14 @@ namespace AllReady.Areas.Admin.Features.Events
                     Location = campaignEvent.Location.ToEditModel(),
                     RequiredSkills = campaignEvent.RequiredSkills,
                     ImageUrl = campaignEvent.ImageUrl,
-                    Tasks = campaignEvent.Tasks.Select(t => new TaskSummaryModel
+                    Tasks = campaignEvent.Tasks.Select(t => new TaskSummaryViewModel
                     {
                         Id = t.Id,
                         Name = t.Name,
                         StartDateTime = t.StartDateTime,
                         EndDateTime = t.EndDateTime,
                         NumberOfVolunteersRequired = t.NumberOfVolunteersRequired,
-                        AssignedVolunteers = t.AssignedVolunteers?.Select(assignedVolunteer => new VolunteerModel
+                        AssignedVolunteers = t.AssignedVolunteers?.Select(assignedVolunteer => new VolunteerViewModel
                         {
                             UserId = assignedVolunteer.User.Id,
                             UserName = assignedVolunteer.User.UserName,
@@ -63,7 +65,7 @@ namespace AllReady.Areas.Admin.Features.Events
                             AdditionalInfo = assignedVolunteer.AdditionalInfo
                         }).ToList()
                     }).OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList(),
-                    Itineraries = campaignEvent.Itineraries.Select(i => new ItineraryListModel
+                    Itineraries = campaignEvent.Itineraries.Select(i => new ItineraryListViewModel
                     {
                         Id = i.Id,
                         Name = i.Name,

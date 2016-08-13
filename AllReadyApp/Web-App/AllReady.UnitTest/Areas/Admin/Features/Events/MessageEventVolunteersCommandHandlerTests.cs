@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Events;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Features.Notifications;
 using AllReady.Models;
-using AllReady.UnitTest.Features.Campaigns;
 using MediatR;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
@@ -70,7 +68,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         {
             var command = new MessageEventVolunteersCommand
             {
-                Model = new MessageEventVolunteersModel
+                ViewModel = new MessageEventVolunteersViewModel
                 {
                     EventId = 1,
                     Message = "This is my message",

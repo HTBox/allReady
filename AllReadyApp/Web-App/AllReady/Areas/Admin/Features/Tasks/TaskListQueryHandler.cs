@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Models;
 using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class TaskListQueryHandler : IRequestHandler<TaskListQuery, IEnumerable<TaskSummaryModel>>
+    public class TaskListQueryHandler : IRequestHandler<TaskListQuery, IEnumerable<TaskSummaryViewModel>>
     {
         private AllReadyContext _context;
 
@@ -15,11 +15,11 @@ namespace AllReady.Areas.Admin.Features.Tasks
             _context = context;
 
         }
-        public IEnumerable<TaskSummaryModel> Handle(TaskListQuery message)
+        public IEnumerable<TaskSummaryViewModel> Handle(TaskListQuery message)
         {
             var tasks = _context.Tasks
                 .Where(t => t.Event.Id == message.EventId)
-                .Select(t => new TaskSummaryModel()
+                .Select(t => new TaskSummaryViewModel()
                 {
                     Id = t.Id,
                     Name = t.Name,

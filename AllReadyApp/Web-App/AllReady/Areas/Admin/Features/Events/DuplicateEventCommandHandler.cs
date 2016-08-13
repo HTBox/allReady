@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -99,13 +99,13 @@ namespace AllReady.Areas.Admin.Features.Events
             return task.RequiredSkills.Select(taskSkill => new TaskSkill { SkillId = taskSkill.SkillId });
         }
 
-        void ApplyUpdates(Event @event, DuplicateEventModel updateModel)
+        void ApplyUpdates(Event @event, DuplicateEventViewModel updateModel)
         {
             UpdateTasks(@event, updateModel);
             UpdateEvent(@event, updateModel);
         }
 
-        void UpdateTasks(Event @event, DuplicateEventModel updateModel)
+        void UpdateTasks(Event @event, DuplicateEventViewModel updateModel)
         {
             foreach (var task in @event.Tasks)
             {
@@ -117,7 +117,7 @@ namespace AllReady.Areas.Admin.Features.Events
             }
         }
 
-        void UpdateEvent(Event newEvent, DuplicateEventModel model)
+        void UpdateEvent(Event newEvent, DuplicateEventViewModel model)
         {
             newEvent.Name = model.Name;
             newEvent.Description = model.Description;

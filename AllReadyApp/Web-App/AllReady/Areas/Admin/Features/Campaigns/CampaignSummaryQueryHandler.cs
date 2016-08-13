@@ -1,13 +1,14 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.Extensions;
+using AllReady.Areas.Admin.ViewModels.Campaign;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class CampaignSummaryQueryHandler : IAsyncRequestHandler<CampaignSummaryQuery, CampaignSummaryModel>
+    public class CampaignSummaryQueryHandler : IAsyncRequestHandler<CampaignSummaryQuery, CampaignSummaryViewModel>
     {
         private AllReadyContext _context;
 
@@ -17,9 +18,9 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
         }
 
-        public async Task<CampaignSummaryModel> Handle(CampaignSummaryQuery message)
+        public async Task<CampaignSummaryViewModel> Handle(CampaignSummaryQuery message)
         {
-            CampaignSummaryModel result = null;
+            CampaignSummaryViewModel result = null;
 
             var campaign = await _context.Campaigns
                 .AsNoTracking()
@@ -32,7 +33,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
             if (campaign != null)
             {
-                result = new CampaignSummaryModel
+                result = new CampaignSummaryViewModel
                 {
                     Id = campaign.Id,
                     Name = campaign.Name,
@@ -59,7 +60,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
                 if (campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
                 {
-                    result = (CampaignSummaryModel)campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(result);
+                    result = (CampaignSummaryViewModel)campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(result);
                 }
             }
 

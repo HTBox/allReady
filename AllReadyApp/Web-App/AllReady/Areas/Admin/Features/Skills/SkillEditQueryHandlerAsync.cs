@@ -1,19 +1,19 @@
 ﻿using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Skill;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Skills
 {
-    public class SkillEditQueryHandlerAsync : IAsyncRequestHandler<SkillEditQueryAsync, SkillEditModel>
+    public class SkillEditQueryHandlerAsync : IAsyncRequestHandler<SkillEditQueryAsync, SkillEditViewModel>
     {
         private AllReadyContext _context;
         public SkillEditQueryHandlerAsync(AllReadyContext context)
         {
             _context = context;
         }
-        public async Task<SkillEditModel> Handle(SkillEditQueryAsync message)
+        public async Task<SkillEditViewModel> Handle(SkillEditQueryAsync message)
         {
             var skill = await _context.Skills.AsNoTracking()
                 .Include(s => s.ParentSkill)
@@ -22,7 +22,7 @@ namespace AllReady.Areas.Admin.Features.Skills
 
             if (skill == null) return null;
 
-            return new SkillEditModel
+            return new SkillEditViewModel
             {
                 Id = skill.Id,
                 Name = skill.Name,

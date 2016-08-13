@@ -24,7 +24,7 @@ namespace AllReady.Areas.Admin.Features.Events
             var users =
                 _context.EventSignup.AsNoTracking()
                 .Include(a => a.User)
-                .Where(a => a.Event.Id == message.Model.EventId).ToList();
+                .Where(a => a.Event.Id == message.ViewModel.EventId).ToList();
 
 
             // send all notifications to the queue
@@ -41,12 +41,12 @@ namespace AllReady.Areas.Admin.Features.Events
                 // todo: what about non-English volunteers?
                 ViewModel = new NotifyVolunteersViewModel
                 {
-                    SmsMessage = message.Model.Message,
+                    SmsMessage = message.ViewModel.Message,
                     SmsRecipients = smsRecipients,
-                    EmailMessage = message.Model.Message,
-                    HtmlMessage = message.Model.Message,
+                    EmailMessage = message.ViewModel.Message,
+                    HtmlMessage = message.ViewModel.Message,
                     EmailRecipients = emailRecipients,
-                    Subject = message.Model.Subject
+                    Subject = message.ViewModel.Subject
                 }
             };
 

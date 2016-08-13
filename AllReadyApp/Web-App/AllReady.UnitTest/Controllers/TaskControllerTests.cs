@@ -9,14 +9,14 @@ using Xunit;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using AllReady.UnitTest.Extensions;
-using AllReady.Areas.Admin.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using AllReady.Areas.Admin.Features.Tasks;
 using System.Threading.Tasks;
 using AllReady.Features.Event;
 using AllReady.Extensions;
-using AllReady.Areas.Admin.Models.Validators;
+using AllReady.Areas.Admin.ViewModels.Task;
+using AllReady.Areas.Admin.ViewModels.Validators;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -88,7 +88,7 @@ namespace AllReady.UnitTest.Controllers
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             var result = sut.Create(It.IsAny<int>()) as ViewResult;
-            var modelResult = result.ViewData.Model as TaskSummaryModel;
+            var modelResult = result.ViewData.Model as TaskSummaryViewModel;
 
             Assert.Equal(modelResult.EventId, campaignEvent.Id);
             Assert.Equal(modelResult.EventName, campaignEvent.Name);
@@ -140,14 +140,14 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
             var validator = new Mock<ITaskSummaryModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryModel>())).Returns(new List<KeyValuePair<string, string>>());
+            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
             sut.SetFakeUserType(UserType.OrgAdmin);
 
-            await sut.Create(It.IsAny<int>(), new TaskSummaryModel { OrganizationId = 1 });
+            await sut.Create(It.IsAny<int>(), new TaskSummaryViewModel { OrganizationId = 1 });
 
-            validator.Verify(x => x.Validate(It.IsAny<TaskSummaryModel>()), Times.Once);
+            validator.Verify(x => x.Validate(It.IsAny<TaskSummaryViewModel>()), Times.Once);
         }
 
         [Fact]
@@ -159,29 +159,29 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
             var validator = new Mock<ITaskSummaryModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryModel>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(nameof(TaskSummaryModel.EndDateTime), "Ending time cannot be earlier than the starting time") });
+            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(nameof(TaskSummaryViewModel.EndDateTime), "Ending time cannot be earlier than the starting time") });
 
             var sut = new TaskController(mediator.Object, validator.Object);
-            await sut.Create(It.IsAny<int>(), new TaskSummaryModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1) });
+            await sut.Create(It.IsAny<int>(), new TaskSummaryViewModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1) });
 
-            var modelStateErrorCollection = sut.ModelState.GetErrorMessagesByKey(nameof(TaskSummaryModel.EndDateTime));
+            var modelStateErrorCollection = sut.ModelState.GetErrorMessagesByKey(nameof(TaskSummaryViewModel.EndDateTime));
             Assert.Equal(modelStateErrorCollection.Single().ErrorMessage, "Ending time cannot be earlier than the starting time");
         }
 
         [Fact]
         public async Task CreatePostReturnsCorrectViewAndViewModelWhenValidatorReturnsError()
         {
-            var model = new TaskSummaryModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1) };
+            var model = new TaskSummaryViewModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1) };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
             var validator = new Mock<ITaskSummaryModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryModel>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(nameof(TaskSummaryModel.EndDateTime), "Ending time cannot be earlier than the starting time") });
+            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(nameof(TaskSummaryViewModel.EndDateTime), "Ending time cannot be earlier than the starting time") });
 
             var sut = new TaskController(mediator.Object, validator.Object);
             var result = await sut.Create(It.IsAny<int>(), model) as ViewResult;
-            var modelResult = result.ViewData.Model as TaskSummaryModel;
+            var modelResult = result.ViewData.Model as TaskSummaryViewModel;
 
             Assert.IsType<ViewResult>(result);
             Assert.Equal(modelResult, model);
@@ -192,7 +192,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var startDateTime = DateTimeOffset.Now.AddDays(-1);
             var endDateTime = DateTimeOffset.Now.AddDays(1);
-            var model = new TaskSummaryModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = 1 };
+            var model = new TaskSummaryViewModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = 1 };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
@@ -203,7 +203,7 @@ namespace AllReady.UnitTest.Controllers
             });
 
             var validator = new Mock<ITaskSummaryModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryModel>())).Returns(new List<KeyValuePair<string, string>>());
+            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
             sut.SetDefaultHttpContext();
@@ -217,11 +217,11 @@ namespace AllReady.UnitTest.Controllers
         public async Task CreatePostSendsEditTaskCommandAsyncWhenModelStateIsValidAndUserIsOrganizationAdmin()
         {
             const int organizationId = 1;
-            var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId };
+            var taskSummaryModel = new TaskSummaryViewModel { OrganizationId = organizationId };
             var startDateTime = DateTimeOffset.Now.AddDays(-1);
             var endDateTime = DateTimeOffset.Now.AddDays(1);
 
-            var model = new TaskSummaryModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
+            var model = new TaskSummaryViewModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
@@ -233,7 +233,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
             var validator = new Mock<ITaskSummaryModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryModel>())).Returns(new List<KeyValuePair<string, string>>());
+            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
@@ -247,11 +247,11 @@ namespace AllReady.UnitTest.Controllers
         public async Task CreatePostRedirectsToCorrectAction()
         {
             const int organizationId = 1;
-            var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId };
+            var taskSummaryModel = new TaskSummaryViewModel { OrganizationId = organizationId };
             var startDateTime = DateTimeOffset.Now.AddDays(-1);
             var endDateTime = DateTimeOffset.Now.AddDays(1);
             const int TaskSummaryModelId = 1;
-            var model = new TaskSummaryModel { Id = TaskSummaryModelId, StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
+            var model = new TaskSummaryViewModel { Id = TaskSummaryModelId, StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
@@ -265,7 +265,7 @@ namespace AllReady.UnitTest.Controllers
             var routeValues = new Dictionary<string, object> { ["id"] = model.Id };
 
             var validator = new Mock<ITaskSummaryModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryModel>())).Returns(new List<KeyValuePair<string, string>>());
+            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
@@ -281,7 +281,7 @@ namespace AllReady.UnitTest.Controllers
         public void CreatePostHasHttpGetAttribute()
         {
             var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
-            var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<TaskSummaryModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<TaskSummaryViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -289,7 +289,7 @@ namespace AllReady.UnitTest.Controllers
         public void CreatePostHasRouteAttributeWithCorrectTemplate()
         {
             var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
-            var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<TaskSummaryModel>())).OfType<RouteAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<TaskSummaryViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "Admin/Task/Create/{eventId}");
         }
@@ -319,7 +319,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task EditGetReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<EditTaskQueryAsync>())).ReturnsAsync(new TaskSummaryModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<EditTaskQueryAsync>())).ReturnsAsync(new TaskSummaryViewModel());
 
             var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
             sut.SetDefaultHttpContext();
@@ -332,7 +332,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task EditGetReturnsCorrectViewModelAndView()
         {
             const int organizationId = 1;
-            var TaskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId };
+            var TaskSummaryModel = new TaskSummaryViewModel { OrganizationId = organizationId };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EditTaskQueryAsync>())).ReturnsAsync(TaskSummaryModel);
@@ -341,10 +341,10 @@ namespace AllReady.UnitTest.Controllers
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             var result = await sut.Edit(It.IsAny<int>()) as ViewResult;
-            var modelResult = result.ViewData.Model as TaskSummaryModel;
+            var modelResult = result.ViewData.Model as TaskSummaryViewModel;
 
             Assert.IsType<ViewResult>(result);
-            Assert.IsType<TaskSummaryModel>(modelResult);
+            Assert.IsType<TaskSummaryViewModel>(modelResult);
             Assert.Equal(modelResult, TaskSummaryModel);
         }
 
@@ -372,49 +372,49 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
             var validator = new Mock<ITaskSummaryModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryModel>())).Returns(new List<KeyValuePair<string, string>>());
+            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
             sut.SetFakeUserType(UserType.OrgAdmin);
 
-            await sut.Edit(new TaskSummaryModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1), OrganizationId = 1 });
+            await sut.Edit(new TaskSummaryViewModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1), OrganizationId = 1 });
 
-            validator.Verify(x => x.Validate(It.IsAny<TaskSummaryModel>()), Times.Once);
+            validator.Verify(x => x.Validate(It.IsAny<TaskSummaryViewModel>()), Times.Once);
         }
 
         [Fact]
         public async Task EditPostAddsCorrectModelStateErrorWhenValidatorReturnsError()
         {
-            var model = new TaskSummaryModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1) };
+            var model = new TaskSummaryViewModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1) };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
             var validator = new Mock<ITaskSummaryModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryModel>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(nameof(TaskSummaryModel.EndDateTime), "Ending time cannot be earlier than the starting time") });
+            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(nameof(TaskSummaryViewModel.EndDateTime), "Ending time cannot be earlier than the starting time") });
 
             var sut = new TaskController(mediator.Object, validator.Object);
             var result = await sut.Edit(model) as ViewResult;
-            var modelResult = result.ViewData.Model as TaskSummaryModel;
+            var modelResult = result.ViewData.Model as TaskSummaryViewModel;
 
-            var modelStateErrorCollection = sut.ModelState.GetErrorMessagesByKey(nameof(TaskSummaryModel.EndDateTime));
+            var modelStateErrorCollection = sut.ModelState.GetErrorMessagesByKey(nameof(TaskSummaryViewModel.EndDateTime));
             Assert.Equal(modelStateErrorCollection.Single().ErrorMessage, "Ending time cannot be earlier than the starting time");
         }
 
         [Fact]
         public async Task EditPostReturnsCorrectViewAndViewModelWhenValidatorReturnsError()
         {
-            var model = new TaskSummaryModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1) };
+            var model = new TaskSummaryViewModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1) };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
             var validator = new Mock<ITaskSummaryModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryModel>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(nameof(TaskSummaryModel.EndDateTime), "Ending time cannot be earlier than the starting time") });
+            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(nameof(TaskSummaryViewModel.EndDateTime), "Ending time cannot be earlier than the starting time") });
 
             var sut = new TaskController(mediator.Object, validator.Object);
             var result = await sut.Edit(model) as ViewResult;
-            var modelResult = result.ViewData.Model as TaskSummaryModel;
+            var modelResult = result.ViewData.Model as TaskSummaryViewModel;
 
             Assert.IsType<ViewResult>(result);
             Assert.Equal(modelResult, model);
@@ -425,7 +425,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var startDateTime = DateTimeOffset.Now.AddDays(-1);
             var endDateTime = DateTimeOffset.Now.AddDays(1);
-            var model = new TaskSummaryModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = 1 };
+            var model = new TaskSummaryViewModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = 1 };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
@@ -436,7 +436,7 @@ namespace AllReady.UnitTest.Controllers
             });
 
             var validator = new Mock<ITaskSummaryModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryModel>())).Returns(new List<KeyValuePair<string, string>>());
+            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
             sut.SetDefaultHttpContext();
@@ -450,11 +450,11 @@ namespace AllReady.UnitTest.Controllers
         public async Task EditPostSendsEditTaskCommandAsyncWhenModelStateIsValidAndUserIsOrganizationAdmin()
         {
             const int organizationId = 1;
-            var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId };
+            var taskSummaryModel = new TaskSummaryViewModel { OrganizationId = organizationId };
             var startDateTime = DateTimeOffset.Now.AddDays(-1);
             var endDateTime = DateTimeOffset.Now.AddDays(1);
 
-            var model = new TaskSummaryModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
+            var model = new TaskSummaryViewModel { StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
@@ -466,7 +466,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
             var validator = new Mock<ITaskSummaryModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryModel>())).Returns(new List<KeyValuePair<string, string>>());
+            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
@@ -480,10 +480,10 @@ namespace AllReady.UnitTest.Controllers
         public async Task EditPostRedirectsToCorrectAction()
         {
             const int organizationId = 1;
-            var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId };
+            var taskSummaryModel = new TaskSummaryViewModel { OrganizationId = organizationId };
             var startDateTime = DateTimeOffset.Now.AddDays(-1);
             var endDateTime = DateTimeOffset.Now.AddDays(1);
-            var model = new TaskSummaryModel { Id = 1, StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
+            var model = new TaskSummaryViewModel { Id = 1, StartDateTime = startDateTime, EndDateTime = endDateTime, OrganizationId = organizationId };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
@@ -495,7 +495,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
             var validator = new Mock<ITaskSummaryModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryModel>())).Returns(new List<KeyValuePair<string, string>>());
+            validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
@@ -513,7 +513,7 @@ namespace AllReady.UnitTest.Controllers
         public void EditPostHasHttpPostAttribute()
         {
             var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
-            var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<TaskSummaryModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<TaskSummaryViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -521,7 +521,7 @@ namespace AllReady.UnitTest.Controllers
         public void EditPostHasValidateAntiForgeryTokenAttribute()
         {
             var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
-            var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<TaskSummaryModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<TaskSummaryViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -548,7 +548,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task DeleteReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryViewModel());
 
             var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
             sut.SetDefaultHttpContext();
@@ -561,7 +561,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task DeleteReturnsCorrectViewModelAndView()
         {
             const int organizationId = 1;
-            var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId };
+            var taskSummaryModel = new TaskSummaryViewModel { OrganizationId = organizationId };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
@@ -570,10 +570,10 @@ namespace AllReady.UnitTest.Controllers
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             var result = await sut.Delete(It.IsAny<int>()) as ViewResult;
-            var modelResult = result.ViewData.Model as TaskSummaryModel;
+            var modelResult = result.ViewData.Model as TaskSummaryViewModel;
 
             Assert.IsType<ViewResult>(result);
-            Assert.IsType<TaskSummaryModel>(modelResult);
+            Assert.IsType<TaskSummaryViewModel>(modelResult);
             Assert.Equal(modelResult, taskSummaryModel);
         }
 
@@ -599,17 +599,17 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task DetailsReturnsCorrectViewModelAndView()
         {
-            var taskSummaryModel = new TaskSummaryModel();
+            var taskSummaryModel = new TaskSummaryViewModel();
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
             var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
             var result = await sut.Details(It.IsAny<int>()) as ViewResult;
-            var modelResult = result.ViewData.Model as TaskSummaryModel;
+            var modelResult = result.ViewData.Model as TaskSummaryViewModel;
 
             Assert.IsType<ViewResult>(result);
-            Assert.IsType<TaskSummaryModel>(modelResult);
+            Assert.IsType<TaskSummaryViewModel>(modelResult);
             Assert.Equal(modelResult, taskSummaryModel);
         }
 
@@ -653,7 +653,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task DeleteConfirmedReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryViewModel());
 
             var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
             sut.SetDefaultHttpContext();
@@ -670,7 +670,7 @@ namespace AllReady.UnitTest.Controllers
             const int taskId = 1;
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryModel { OrganizationId = 1 });
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryViewModel { OrganizationId = 1 });
 
             var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
@@ -684,7 +684,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const int organizationId = 1;
             const int taskId = 1;
-            var taskSummaryModel = new TaskSummaryModel { OrganizationId = organizationId, EventId = 1 };
+            var taskSummaryModel = new TaskSummaryViewModel { OrganizationId = organizationId, EventId = 1 };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
@@ -728,7 +728,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task AssignSendsTaskQueryAsyncWithCorrectTaskId()
         {
             const int taskId = 1;
-            var taskModelSummary = new TaskSummaryModel { EventId = 1 };
+            var taskModelSummary = new TaskSummaryViewModel { EventId = 1 };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } });
@@ -744,7 +744,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task AssignReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
-            var taskModelSummary = new TaskSummaryModel { EventId = 1 };
+            var taskModelSummary = new TaskSummaryViewModel { EventId = 1 };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskModelSummary);
@@ -762,7 +762,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const int organizationId = 1;
             const int taskId = 1;
-            var taskModelSummary = new TaskSummaryModel { EventId = 1 };
+            var taskModelSummary = new TaskSummaryViewModel { EventId = 1 };
             var userIds = new List<string> { "1", "2" };
 
             var mediator = new Mock<IMediator>();
@@ -781,7 +781,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const int organizationId = 1;
             const int taskId = 1;
-            var taskModelSummary = new TaskSummaryModel { EventId = 1 };
+            var taskModelSummary = new TaskSummaryViewModel { EventId = 1 };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskModelSummary);
@@ -819,14 +819,14 @@ namespace AllReady.UnitTest.Controllers
         {
             var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
             sut.AddModelStateError();
-            var result = await sut.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersModel>());
+            var result = await sut.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersViewModel>());
             Assert.IsType<BadRequestObjectResult>(result);
         }
 
         [Fact]
         public async Task MessageAllVounteersSendsTaskQueryAsyncWithCorrectTaskId()
         {
-            var model = new MessageTaskVolunteersModel { TaskId = 1 };
+            var model = new MessageTaskVolunteersViewModel { TaskId = 1 };
             var mediator = new Mock<IMediator>();
 
             var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
@@ -841,7 +841,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
 
             var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
-            var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersModel());
+            var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersViewModel());
 
             Assert.IsType<NotFoundResult>(result);
         }
@@ -850,11 +850,11 @@ namespace AllReady.UnitTest.Controllers
         public async Task MessageAllVolunttersReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryViewModel());
 
             var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
             sut.SetDefaultHttpContext();
-            var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersModel());
+            var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersViewModel());
 
             Assert.IsType<UnauthorizedResult>(result);
         }
@@ -863,10 +863,10 @@ namespace AllReady.UnitTest.Controllers
         public async Task MessageAllVolunteersSendsMessageTaskVolunteersCommandAsyncWithCorrectData()
         {
             const int organizationId = 1;
-            var model = new MessageTaskVolunteersModel();
+            var model = new MessageTaskVolunteersViewModel();
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryModel { OrganizationId = organizationId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryViewModel { OrganizationId = organizationId });
 
             var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
@@ -881,11 +881,11 @@ namespace AllReady.UnitTest.Controllers
             const int organizationId = 1;
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryModel { OrganizationId = organizationId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryViewModel { OrganizationId = organizationId });
 
             var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
-            var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersModel());
+            var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersViewModel());
 
             Assert.IsType<OkResult>(result);
         }
@@ -894,7 +894,7 @@ namespace AllReady.UnitTest.Controllers
         public void MessageAllVolunteersHasHttpPostAttribute()
         {
             var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
-            var attribute = sut.GetAttributesOn(x => x.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -902,7 +902,7 @@ namespace AllReady.UnitTest.Controllers
         public void MessageAllVolunteersHasValidateAntiForgeryTokenAttribute()
         {
             var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
-            var attribute = sut.GetAttributesOn(x => x.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 

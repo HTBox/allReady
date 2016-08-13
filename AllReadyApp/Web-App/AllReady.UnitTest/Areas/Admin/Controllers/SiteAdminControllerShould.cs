@@ -2,10 +2,8 @@
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Features.Site;
 using AllReady.Areas.Admin.Features.Users;
-using AllReady.Areas.Admin.Models;
 using AllReady.Features.Manage;
 using AllReady.Models;
-using AllReady.Security;
 using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.ViewModels.Site;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
@@ -44,10 +43,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var controller = new SiteController(null, null, mediator.Object);
             var result = controller.Index();
-            var model = ((ViewResult)result).ViewData.Model as SiteAdminModel;
+            var model = ((ViewResult)result).ViewData.Model as SiteAdminViewModel;
             
             Assert.Equal(model.Users.Count(), users.Count());
-            Assert.IsType<SiteAdminModel>(model);
+            Assert.IsType<SiteAdminViewModel>(model);
         }
 
         [Fact]
@@ -56,7 +55,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             
             const string userId = "foo_id";
-            mediator.Setup(x => x.SendAsync(It.Is<UserQuery>(q => q.UserId == userId))).ReturnsAsync(new EditUserModel());
+            mediator.Setup(x => x.SendAsync(It.Is<UserQuery>(q => q.UserId == userId))).ReturnsAsync(new EditUserViewModel());
             var controller = new SiteController(null, null, mediator.Object);
 
             await controller.DeleteUser(userId);
@@ -68,14 +67,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             const string userId = "foo_id";
-            mediator.Setup(x => x.SendAsync(It.IsAny<UserQuery>())).ReturnsAsync(new EditUserModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<UserQuery>())).ReturnsAsync(new EditUserViewModel());
             var controller = new SiteController(null, null, mediator.Object);            
 
             var result = await controller.DeleteUser(userId);
-            var model = ((ViewResult)result).ViewData.Model as DeleteUserModel;
+            var model = ((ViewResult)result).ViewData.Model as DeleteUserViewModel;
 
             Assert.Equal(model.UserId, userId);
-            Assert.IsType<DeleteUserModel>(model);
+            Assert.IsType<DeleteUserViewModel>(model);
         }
 
         [Fact]
@@ -154,10 +153,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 var controller = new SiteController(null, null, mediator.Object);
 
                 var result = controller.EditUser(userId);
-                var model = ((ViewResult)result).ViewData.Model as EditUserModel;
+                var model = ((ViewResult)result).ViewData.Model as EditUserViewModel;
 
                 Assert.Equal(model.Organization, null);
-                Assert.IsType<EditUserModel>(model);
+                Assert.IsType<EditUserViewModel>(model);
             }
         }
 
@@ -184,10 +183,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var controller = new SiteController(null, null, mediator.Object);
 
             var result = controller.EditUser(userId);
-            var model = ((ViewResult)result).ViewData.Model as EditUserModel;
+            var model = ((ViewResult)result).ViewData.Model as EditUserViewModel;
 
             Assert.NotNull(model.Organization);
-            Assert.IsType<EditUserModel>(model);
+            Assert.IsType<EditUserViewModel>(model);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -200,7 +199,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditUserPostSendsUserByUserIdQueryWithCorrectUserId()
         {
             var mediator = new Mock<IMediator>();
-            EditUserModel model = new EditUserModel()
+            EditUserViewModel model = new EditUserViewModel()
             {
                 UserId = "1234",
             };
@@ -216,7 +215,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditUserPostSendsUpdateUserWithCorrectUserWhenUsersAssociatedSkillsAreNotNull()
         {
             var mediator = new Mock<IMediator>();
-            EditUserModel model = new EditUserModel()
+            EditUserViewModel model = new EditUserViewModel()
             {
                 UserId = It.IsAny<string>(),
                 AssociatedSkills = new List<UserSkill>() { new UserSkill() {Skill = It.IsAny<Skill>() } }
@@ -233,7 +232,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditUserPostInvokesUpdateUserWithCorrectUserWhenUsersAssociatedSkillsAreNotNullAndThereIsAtLeastOneAssociatedSkillForTheUser()
         {
             var mediator = new Mock<IMediator>();
-            EditUserModel model = new EditUserModel()
+            EditUserViewModel model = new EditUserViewModel()
             {
                 UserId = It.IsAny<string>(),
                 AssociatedSkills = new List<UserSkill>() { new UserSkill() { SkillId = 1, Skill = new Skill() { Id = 1 } } }
@@ -257,7 +256,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             var userManager = CreateApplicationUserMock();
-            EditUserModel model = new EditUserModel()
+            EditUserViewModel model = new EditUserViewModel()
             {
                 IsOrganizationAdmin = true,
                 UserId = It.IsAny<string>()
@@ -294,7 +293,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             var userManager = CreateApplicationUserMock();
-            EditUserModel model = new EditUserModel()
+            EditUserViewModel model = new EditUserViewModel()
             {
                 IsOrganizationAdmin = true,
                 UserId = It.IsAny<string>()
@@ -353,7 +352,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void EditUserPostHasHttpPostAttribute()
         {
             var controller = new SiteController(null, null, null);
-            var attribute = controller.GetAttributesOn(x => x.EditUser(It.IsAny<EditUserModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = controller.GetAttributesOn(x => x.EditUser(It.IsAny<EditUserViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -361,7 +360,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void EditUserPostHasValidateAntiForgeryTokenAttribute()
         {
             var controller = new SiteController(null, null, null);
-            var attribute = controller.GetAttributesOn(x => x.EditUser(It.IsAny<EditUserModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var attribute = controller.GetAttributesOn(x => x.EditUser(It.IsAny<EditUserViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -650,7 +649,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             var controller = new SiteController(null, null, mediator.Object);
 
-            var model = new AssignOrganizationAdminModel { UserId = It.IsAny<string>(), OrganizationId = It.IsAny<int>() };
+            var model = new AssignOrganizationAdminViewModel { UserId = It.IsAny<string>(), OrganizationId = It.IsAny<int>() };
 
             var attribute = controller.GetAttributesOn(x => x.AssignOrganizationAdmin(model)).OfType<HttpPostAttribute>().SingleOrDefault();
 
@@ -661,7 +660,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void AssignOrganizationAdminPostHasValidateAntiForgeryTokenAttribute()
         {
             var controller = new SiteController(null, null, null);
-            var attribute = controller.GetAttributesOn(x => x.AssignOrganizationAdmin(It.IsAny<AssignOrganizationAdminModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var attribute = controller.GetAttributesOn(x => x.AssignOrganizationAdmin(It.IsAny<AssignOrganizationAdminViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 

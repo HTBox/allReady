@@ -1,9 +1,9 @@
-﻿using AllReady.Areas.Admin.Models.TaskSignupModels;
+﻿using AllReady.Areas.Admin.ViewModels.Itinerary;
 using MediatR;
 
 namespace AllReady.Areas.Admin.Features.TaskSignups
 {
-    public class TaskSignupSummaryQuery : IAsyncRequest<TaskSignupSummaryModel>
+    public class TaskSignupSummaryQuery : IAsyncRequest<TaskSignupSummaryViewModel>
     {
         public int TaskSignupId { get; set; }
     }

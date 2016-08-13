@@ -1,10 +1,10 @@
-﻿using AllReady.Areas.Admin.Models;
+﻿using AllReady.Areas.Admin.ViewModels.Event;
 using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Events
 {
     public class EditEventCommand : IAsyncRequest<int>
     {
-        public EventEditModel Event {get; set;}
+        public EventEditViewModel Event {get; set;}
     }
 }

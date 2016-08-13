@@ -1,14 +1,14 @@
-﻿using AllReady.Areas.Admin.Models.ItineraryModels;
-using AllReady.Models;
+﻿using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.ViewModels.Itinerary;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {
-    public class RequestListItemsQueryHandlerAsync : IAsyncRequestHandler<RequestListItemsQuery, List<RequestListModel>>
+    public class RequestListItemsQueryHandlerAsync : IAsyncRequestHandler<RequestListItemsQuery, List<RequestListViewModel>>
     {
         private readonly AllReadyContext _context;
 
@@ -17,7 +17,7 @@ namespace AllReady.Areas.Admin.Features.Requests
             _context = context;
         }
 
-        public async Task<List<RequestListModel>> Handle(RequestListItemsQuery message)
+        public async Task<List<RequestListViewModel>> Handle(RequestListItemsQuery message)
         {
             var results = _context.Requests.AsNoTracking();
 
@@ -58,7 +58,7 @@ namespace AllReady.Areas.Admin.Features.Requests
 
             // todo: sgordon: date added filtering
 
-            return await results.Select(r => new RequestListModel
+            return await results.Select(r => new RequestListViewModel
             {
                 Id = r.RequestId,
                 Name = r.Name,

@@ -5,7 +5,6 @@ using MediatR;
 using AllReady.Areas.Admin.Features.Skills;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
@@ -13,6 +12,7 @@ using AllReady.Models;
 using AllReady.Areas.Admin.Features.Organizations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
+using AllReady.Areas.Admin.ViewModels.Skill;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -71,7 +71,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<OrganizationNameQueryAsync>()), Times.Once);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>()), Times.Once);
 
-            Assert.Equal(2, (result.ViewData.Model as IEnumerable<SkillSummaryModel>).ToList().Count());
+            Assert.Equal(2, (result.ViewData.Model as IEnumerable<SkillSummaryViewModel>).ToList().Count());
         }
 
         [Fact]
@@ -140,8 +140,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>()), Times.Once);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQueryAsync>()), Times.Once);
 
-            Assert.Equal(1, (result.ViewData.Model as SkillEditModel).OrganizationSelection.ToList().Count());
-            Assert.Equal(2, (result.ViewData.Model as SkillEditModel).ParentSelection.ToList().Count());
+            Assert.Equal(1, (result.ViewData.Model as SkillEditViewModel).OrganizationSelection.ToList().Count());
+            Assert.Equal(2, (result.ViewData.Model as SkillEditViewModel).ParentSelection.ToList().Count());
         }
 
         [Fact]
@@ -164,8 +164,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>()), Times.Once);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQueryAsync>()), Times.Never);
 
-            Assert.Null((result.ViewData.Model as SkillEditModel).OrganizationSelection);
-            Assert.Equal(2, (result.ViewData.Model as SkillEditModel).ParentSelection.ToList().Count());
+            Assert.Null((result.ViewData.Model as SkillEditViewModel).OrganizationSelection);
+            Assert.Equal(2, (result.ViewData.Model as SkillEditViewModel).ParentSelection.ToList().Count());
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -239,8 +239,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>()), Times.Once);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQueryAsync>()), Times.Once);
 
-            Assert.Equal(1, (result.ViewData.Model as SkillEditModel).OrganizationSelection.ToList().Count());
-            Assert.Equal(2, (result.ViewData.Model as SkillEditModel).ParentSelection.ToList().Count());
+            Assert.Equal(1, (result.ViewData.Model as SkillEditViewModel).OrganizationSelection.ToList().Count());
+            Assert.Equal(2, (result.ViewData.Model as SkillEditViewModel).ParentSelection.ToList().Count());
         }
 
         [Fact]
@@ -266,8 +266,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>()), Times.Once);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQueryAsync>()), Times.Never);
 
-            Assert.Null((result.ViewData.Model as SkillEditModel).OrganizationSelection);
-            Assert.Equal(2, (result.ViewData.Model as SkillEditModel).ParentSelection.ToList().Count());
+            Assert.Null((result.ViewData.Model as SkillEditViewModel).OrganizationSelection);
+            Assert.Equal(2, (result.ViewData.Model as SkillEditViewModel).ParentSelection.ToList().Count());
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -280,9 +280,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
         }
 
-        private static SkillEditModel CreateSkillModel()
+        private static SkillEditViewModel CreateSkillModel()
         {
-            return new SkillEditModel
+            return new SkillEditViewModel
             {
                 Name = "Some Name",
                 Description = "Some Description"
@@ -350,8 +350,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>()), Times.Once);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQueryAsync>()), Times.Once);
 
-            Assert.Equal(1, (result.ViewData.Model as SkillEditModel).OrganizationSelection.ToList().Count());
-            Assert.Equal(1, (result.ViewData.Model as SkillEditModel).ParentSelection.ToList().Count()); // We expect 1 since we should have removed self from the list at this point
+            Assert.Equal(1, (result.ViewData.Model as SkillEditViewModel).OrganizationSelection.ToList().Count());
+            Assert.Equal(1, (result.ViewData.Model as SkillEditViewModel).ParentSelection.ToList().Count()); // We expect 1 since we should have removed self from the list at this point
         }
 
         [Fact]
@@ -360,7 +360,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Arrange
             const int skillId = 1;
             SkillController controller;
-            var mockMediator = MockMediatorSkillEditQuery(out controller, new SkillEditModel { Id = 1, Name = "Name", Description = "Description", OwningOrganizationId = _orgAdminOrgId });
+            var mockMediator = MockMediatorSkillEditQuery(out controller, new SkillEditViewModel { Id = 1, Name = "Name", Description = "Description", OwningOrganizationId = _orgAdminOrgId });
 
             var mockContext = MockControllerContextWithUser(OrgAdmin());
             controller.ControllerContext = mockContext.Object;
@@ -375,8 +375,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>()), Times.Once);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQueryAsync>()), Times.Never);
 
-            Assert.Null((result.ViewData.Model as SkillEditModel).OrganizationSelection);
-            Assert.Equal(1, (result.ViewData.Model as SkillEditModel).ParentSelection.ToList().Count()); // We expect 1 since we should have removed self from the list at this point
+            Assert.Null((result.ViewData.Model as SkillEditViewModel).OrganizationSelection);
+            Assert.Equal(1, (result.ViewData.Model as SkillEditViewModel).ParentSelection.ToList().Count()); // We expect 1 since we should have removed self from the list at this point
         }
 
         [Fact]
@@ -385,7 +385,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Arrange
             const int skillId = 1;
             SkillController controller;
-            var mockMediator = MockMediatorSkillEditQuery(out controller, new SkillEditModel { Id = 1, Name = "Name", Description = "Description", OwningOrganizationId = 2 });
+            var mockMediator = MockMediatorSkillEditQuery(out controller, new SkillEditViewModel { Id = 1, Name = "Name", Description = "Description", OwningOrganizationId = 2 });
 
             var mockContext = MockControllerContextWithUser(OrgAdmin());
             controller.ControllerContext = mockContext.Object;
@@ -480,8 +480,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>()), Times.Once);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQueryAsync>()), Times.Once);
 
-            Assert.Equal(1, (result.ViewData.Model as SkillEditModel).OrganizationSelection.ToList().Count());
-            Assert.Equal(2, (result.ViewData.Model as SkillEditModel).ParentSelection.ToList().Count());
+            Assert.Equal(1, (result.ViewData.Model as SkillEditViewModel).OrganizationSelection.ToList().Count());
+            Assert.Equal(2, (result.ViewData.Model as SkillEditViewModel).ParentSelection.ToList().Count());
         }
 
         [Fact]
@@ -507,13 +507,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>()), Times.Once);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQueryAsync>()), Times.Never);
 
-            Assert.Null((result.ViewData.Model as SkillEditModel).OrganizationSelection);
-            Assert.Equal(2, (result.ViewData.Model as SkillEditModel).ParentSelection.ToList().Count());
+            Assert.Null((result.ViewData.Model as SkillEditViewModel).OrganizationSelection);
+            Assert.Equal(2, (result.ViewData.Model as SkillEditViewModel).ParentSelection.ToList().Count());
         }
 
-        private static SkillEditModel EditSkillModel()
+        private static SkillEditViewModel EditSkillModel()
         {
-            return new SkillEditModel
+            return new SkillEditViewModel
             {
                 Name = "Some Name",
                 Description = "Some Description",
@@ -584,7 +584,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Arrange
             const int skillId = 1;
             SkillController controller;
-            MockMediatorSkillDeleteQuery(out controller, new SkillDeleteModel { HierarchicalName = "A Name", OwningOrganizationId = _orgAdminOrgId });
+            MockMediatorSkillDeleteQuery(out controller, new SkillDeleteViewModel { HierarchicalName = "A Name", OwningOrganizationId = _orgAdminOrgId });
 
             var mockContext = MockControllerContextWithUser(OrgAdmin());
             controller.ControllerContext = mockContext.Object;
@@ -700,9 +700,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             return mockMediator;
         }
 
-        private static Mock<IMediator> MockMediatorSkillEditQuery(out SkillController controller, SkillEditModel model = null)
+        private static Mock<IMediator> MockMediatorSkillEditQuery(out SkillController controller, SkillEditViewModel model = null)
         {
-            if (model == null) model = new SkillEditModel { Id = 1, Name = "Name", Description = "Description" };
+            if (model == null) model = new SkillEditViewModel { Id = 1, Name = "Name", Description = "Description" };
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillEditQueryAsync>())).Returns(() => Task.FromResult(model)).Verifiable();
@@ -718,14 +718,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static Mock<IMediator> MockMediatorSkillEditQueryNullModel(out SkillController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillEditQueryAsync>())).Returns(() => Task.FromResult<SkillEditModel>(null)).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillEditQueryAsync>())).Returns(() => Task.FromResult<SkillEditViewModel>(null)).Verifiable();
             controller = new SkillController(mockMediator.Object);
             return mockMediator;
         }
 
-        private static Mock<IMediator> MockMediatorSkillDeleteQuery(out SkillController controller, SkillDeleteModel model = null)
+        private static Mock<IMediator> MockMediatorSkillDeleteQuery(out SkillController controller, SkillDeleteViewModel model = null)
         {
-            if (model == null) model = new SkillDeleteModel {  HierarchicalName = "Name" };
+            if (model == null) model = new SkillDeleteViewModel {  HierarchicalName = "Name" };
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillDeleteQueryAsync>())).Returns(() => Task.FromResult(model)).Verifiable();
@@ -736,17 +736,17 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static Mock<IMediator> MockMediatorSkillDeleteQueryNullModel(out SkillController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillDeleteQueryAsync>())).Returns(() => Task.FromResult<SkillDeleteModel>(null)).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillDeleteQueryAsync>())).Returns(() => Task.FromResult<SkillDeleteViewModel>(null)).Verifiable();
             controller = new SkillController(mockMediator.Object);
             return mockMediator;
         }
 
-        private static IEnumerable<SkillSummaryModel> SummaryListItems()
+        private static IEnumerable<SkillSummaryViewModel> SummaryListItems()
         {
-            return new List<SkillSummaryModel>
+            return new List<SkillSummaryViewModel>
             {
-                new SkillSummaryModel { Id = 1, HierarchicalName = "Name", OwningOrganizationName = "Org" },
-                new SkillSummaryModel { Id = 2, HierarchicalName = "Name 2", OwningOrganizationName = "Org" }
+                new SkillSummaryViewModel { Id = 1, HierarchicalName = "Name", OwningOrganizationName = "Org" },
+                new SkillSummaryViewModel { Id = 2, HierarchicalName = "Name 2", OwningOrganizationName = "Org" }
             };
         }
 

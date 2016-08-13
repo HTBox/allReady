@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Models;
+﻿using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.ViewModels.Shared;
 
 namespace AllReady.Models
@@ -18,14 +18,14 @@ namespace AllReady.Models
 
     public static class LocationExtensions
     {
-        public static LocationDisplayModel ToModel(this Location location)
+        public static LocationDisplayViewModel ToModel(this Location location)
         {
             if (location == null)
             {
-                return new LocationDisplayModel();
+                return new LocationDisplayViewModel();
             }
 
-            return new LocationDisplayModel
+            return new LocationDisplayViewModel
             {
                 Id = location.Id,
                 Address1 = location.Address1,
@@ -39,15 +39,15 @@ namespace AllReady.Models
             };
         }
 
-        public static LocationEditModel ToEditModel(this Location location)
+        public static LocationEditViewModel ToEditModel(this Location location)
         {
             //TODO: Do I want to keep LocationEditModel and LocationDisplayModel ??
             if (location == null)
             {
-                return new LocationEditModel();
+                return new LocationEditViewModel();
             }
 
-            return new LocationEditModel
+            return new LocationEditViewModel
             {
                 Id = location.Id,
                 Address1 = location.Address1,
@@ -61,7 +61,7 @@ namespace AllReady.Models
             };
         }
 
-        public static Location UpdateModel(this Location location, LocationEditModel locationEditModel)
+        public static Location UpdateModel(this Location location, LocationEditViewModel locationEditModel)
         {
             if (locationEditModel != null)
             {

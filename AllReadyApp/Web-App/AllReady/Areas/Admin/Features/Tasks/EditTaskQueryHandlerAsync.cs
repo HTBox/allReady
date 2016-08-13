@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class EditTaskQueryHandlerAsync : IAsyncRequestHandler<EditTaskQueryAsync, TaskSummaryModel>
+    public class EditTaskQueryHandlerAsync : IAsyncRequestHandler<EditTaskQueryAsync, TaskSummaryViewModel>
     {
         private AllReadyContext _context;
 
@@ -15,14 +15,14 @@ namespace AllReady.Areas.Admin.Features.Tasks
             _context = context;
         }
 
-        public async Task<TaskSummaryModel> Handle(EditTaskQueryAsync message)
+        public async Task<TaskSummaryViewModel> Handle(EditTaskQueryAsync message)
         {
             var task = await _context.Tasks.AsNoTracking()
                 .Include(t => t.Event).ThenInclude(a => a.Campaign)
                 .Include(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
                 .SingleOrDefaultAsync(t => t.Id == message.TaskId);
 
-            var viewModel = new TaskSummaryModel
+            var viewModel = new TaskSummaryViewModel
             {
                 Id = task.Id,
                 EventId = task.Event.Id,

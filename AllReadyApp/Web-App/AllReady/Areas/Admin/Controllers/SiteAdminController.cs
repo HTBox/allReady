@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Features.Site;
 using AllReady.Areas.Admin.Features.Users;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Site;
 using AllReady.Extensions;
 using AllReady.Features.Manage;
 using AllReady.Models;
@@ -37,7 +37,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            var viewModel = new SiteAdminModel
+            var viewModel = new SiteAdminViewModel
             {
                 Users = _mediator.Send(new AllUsersQuery()).OrderBy(u => u.UserName).ToList()
             };
@@ -48,7 +48,7 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteUser(string userId)
         {
             var user = await _mediator.SendAsync(new UserQuery { UserId = userId });
-            var viewModel = new DeleteUserModel
+            var viewModel = new DeleteUserViewModel
             {
                 UserId = userId,
                 UserName = user.UserName,
@@ -72,7 +72,7 @@ namespace AllReady.Areas.Admin.Controllers
             var user = GetUser(userId);
             var organizationId = user.GetOrganizationId();
 
-            var viewModel = new EditUserModel
+            var viewModel = new EditUserViewModel
             {
                 UserId = userId,
                 UserName = user.UserName,
@@ -87,7 +87,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditUser(EditUserModel viewModel)
+        public async Task<IActionResult> EditUser(EditUserViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -256,12 +256,12 @@ namespace AllReady.Areas.Admin.Controllers
             ViewBag.Organizations = new [] { new SelectListItem { Selected = true, Text = "<Select One>", Value = "0" }}
                 .Union(organizations);
 
-            return View(new AssignOrganizationAdminModel { UserId = userId });
+            return View(new AssignOrganizationAdminViewModel { UserId = userId });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AssignOrganizationAdmin(AssignOrganizationAdminModel model)
+        public async Task<IActionResult> AssignOrganizationAdmin(AssignOrganizationAdminViewModel model)
         {
             var user = GetUser(model.UserId);
             if (user == null)
@@ -271,7 +271,7 @@ namespace AllReady.Areas.Admin.Controllers
             
             if (model.OrganizationId == 0)
             {
-                ModelState.AddModelError(nameof(AssignOrganizationAdminModel.OrganizationId), "You must pick a valid organization.");
+                ModelState.AddModelError(nameof(AssignOrganizationAdminViewModel.OrganizationId), "You must pick a valid organization.");
             }
 
             if (ModelState.IsValid)
@@ -283,7 +283,7 @@ namespace AllReady.Areas.Admin.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                ModelState.AddModelError(nameof(AssignOrganizationAdminModel.OrganizationId), "Invalid Organization. Please contact support.");
+                ModelState.AddModelError(nameof(AssignOrganizationAdminViewModel.OrganizationId), "Invalid Organization. Please contact support.");
             }
 
             return View();
