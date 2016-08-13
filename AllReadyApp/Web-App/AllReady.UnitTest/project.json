@@ -4,7 +4,8 @@
   "authors": [ "mattgal" ],
 
   "buildOptions": {
-    "warningsAsErrors": true
+    "warningsAsErrors": true,
+    "nowarn": [ "0618" ]
   },
 
   "dependencies": {
