@@ -4,8 +4,6 @@ using AllReady.Areas.Admin.ViewModels.Itinerary;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Models;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.Areas.Admin.ViewModels.Event
 {
