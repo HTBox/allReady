@@ -694,3 +694,34 @@ a:hover .myevents-block {
     text-decoration: none;
 }
 
+.tabbed-nav {
+    position: relative;
+    padding-top: 20px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.tabbed-nav nav {
+    position: relative;
+    top: 1px;
+    margin-top: -5px;
+}
+
+.tabbed-nav a {
+    padding: 14px 24px;
+    font-size: 14px;
+    line-height: 1.5;
+    display: inline-block;
+    box-sizing: border-box;
+    white-space: nowrap;
+    border: solid transparent;
+    border-width: 3px 1px 1px;
+}
+
+.tabbed-nav .current {
+    border: solid transparent;
+    border-width: 3px 1px 1px;
+    background: #fff;
+    border-color: #d58033 #e5e5e5 #fff;
+}
+
