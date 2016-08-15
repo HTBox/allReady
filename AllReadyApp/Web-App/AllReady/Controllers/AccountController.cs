@@ -25,13 +25,15 @@ namespace AllReady.Controllers
         private readonly IOptions<GeneralSettings> _generalSettings;
         private readonly IMediator _mediator;
         private readonly IExternalUserInformationProviderFactory _externalUserInformationProviderFactory;
+        private readonly IRedirectAccountControllerRequests _redirectAccountControllerRequests;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IOptions<GeneralSettings> generalSettings,
             IMediator mediator,
-            IExternalUserInformationProviderFactory externalUserInformationProviderFactory
+            IExternalUserInformationProviderFactory externalUserInformationProviderFactory,
+            IRedirectAccountControllerRequests redirectAccountControllerRequests
             )
         {
             _userManager = userManager;
@@ -39,6 +41,7 @@ namespace AllReady.Controllers
             _generalSettings = generalSettings;
             _mediator = mediator;
             _externalUserInformationProviderFactory = externalUserInformationProviderFactory;
+            _redirectAccountControllerRequests = redirectAccountControllerRequests;
         }
 
         // GET: /Account/Login
@@ -79,12 +82,12 @@ namespace AllReady.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    return RedirectToLocal(returnUrl, user);
+                    return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user, Url);
                 }
 
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToAction(nameof(AdminController.SendCode), "Admin", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    return RedirectToAction(nameof(AdminController.SendCode), "Admin", new { ReturnUrl = returnUrl, model.RememberMe });
                 }
 
                 if (result.IsLockedOut)
@@ -97,8 +100,8 @@ namespace AllReady.Controllers
                 return View(model);
             }
 
-          // If we got this far, something failed, redisplay form
-          return View(model);
+            // If we got this far, something failed, redisplay form
+            return View(model);
         }
 
         // GET: /Account/Register
@@ -308,7 +311,7 @@ namespace AllReady.Controllers
             if (externalLoginSignInAsyncResult.Succeeded)
             {
                 var user = await _mediator.SendAsync(new ApplicationUserQueryAsync { UserName = externalUserInformation.Email });
-                return RedirectToLocal(returnUrl, user);
+                return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user, Url);
             }
             
             // If the user does not have an account, then ask the user to create an account.
@@ -381,7 +384,7 @@ namespace AllReady.Controllers
                         await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
                         await _signInManager.SignInAsync(user, isPersistent: false);
 
-                        return RedirectToLocal(returnUrl, user);
+                        return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user, Url);
                     }
                 }
 
@@ -399,26 +402,33 @@ namespace AllReady.Controllers
                 ModelState.AddModelError(string.Empty, error.Description);
             }
         }
+    }
 
-        //TODO: either extract this into a provider pattern or somehow decide which of these conditionals are invoked by which caller and get rid of this method.
-        private IActionResult RedirectToLocal(string returnUrl, ApplicationUser user)
+    public interface IRedirectAccountControllerRequests
+    {
+        IActionResult RedirectToLocal(string returnUrl, ApplicationUser user, IUrlHelper urlHelper);
+    }
+
+    public class RedirectAccountControllerRequests : IRedirectAccountControllerRequests
+    {
+        public IActionResult RedirectToLocal(string returnUrl, ApplicationUser user, IUrlHelper urlHelper)
         {
-            if (Url.IsLocalUrl(returnUrl))
+            if (urlHelper.IsLocalUrl(returnUrl))
             {
-                return Redirect(returnUrl);
+                return new RedirectResult(returnUrl);
             }
 
             if (user.IsUserType(UserType.SiteAdmin))
             {
-                return RedirectToAction(nameof(SiteController.Index), "Site", new { area = "Admin" });
+                return new RedirectToActionResult(nameof(SiteController.Index), "Site", new { area = "Admin" });
             }
 
             if (user.IsUserType(UserType.OrgAdmin))
             {
-                return RedirectToAction(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = "Admin" });
+                return new RedirectToActionResult(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = "Admin" });
             }
 
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return new RedirectToActionResult(nameof(HomeController.Index), "Home", null);
         }
     }
 }
