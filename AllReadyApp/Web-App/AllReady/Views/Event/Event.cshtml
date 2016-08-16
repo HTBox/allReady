@@ -28,7 +28,7 @@
                 }
                 <div class="@(string.IsNullOrEmpty(Model.ImageUrl) ? "col-sm-12" : "col-sm-10" )">
                     <h2>@Model.Title</h2>
-                    @if (Model.HasHeadline)
+                    @if (!string.IsNullOrEmpty(Model.Headline))
                     {
                         <h3>@Model.Headline</h3>
                     }
@@ -78,7 +78,7 @@
 
             <div class="row">
                 <div class="col-sm-12">
-                    @if (!User.IsSignedIn())
+                    @if (!User.Identity.IsAuthenticated)
                     {
                         if (Model.IsClosed)
                         {
@@ -125,7 +125,7 @@
     </div>
 </div>
 
-@if (User.IsSignedIn())
+@if (User.Identity.IsAuthenticated)
 {
     @Html.Partial("_VolunteerModal", Model)
 }

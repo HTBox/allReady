@@ -98,7 +98,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ItineraryExists_ReturnsItinerary()
         {           
             var query = new ItineraryDetailQuery { ItineraryId = 1 };
@@ -107,7 +107,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Assert.NotNull(result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ItineraryDoesNotExist_ReturnsNull()
         {        
             var query = new ItineraryDetailQuery();
@@ -116,7 +116,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Assert.Null(result);
         }
         
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ItineraryQueryLoadsItineraryDetails()
         {
             var query = new ItineraryDetailQuery { ItineraryId = 1 };
@@ -127,7 +127,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Assert.Equal(new DateTime(2016, 07, 01), result.Date);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ItineraryQueryLoadsEventDetails()
         {
             var query = new ItineraryDetailQuery { ItineraryId = 1 };
@@ -136,7 +136,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Assert.Equal("Queen Anne Fire Prevention Day", result.EventName);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ItineraryQueryLoadsOrganizationId()
         {
             var query = new ItineraryDetailQuery { ItineraryId = 1 };
@@ -145,7 +145,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Assert.Equal(1, result.OrganizationId);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ItineraryQueryLoadsCampaignName()
         {
             var query = new ItineraryDetailQuery { ItineraryId = 1 };
@@ -154,7 +154,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Assert.Equal("Neighborhood Fire Prevention Days", result.CampaignName);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ItineraryQueryLoadsTeamMembers()
         {
             var query = new ItineraryDetailQuery { ItineraryId = 1 };
@@ -164,7 +164,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Assert.Equal("text@example.com", result.TeamMembers[0].VolunteerEmail);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ItineraryQueryLoadsRequests()
         {
             var query = new ItineraryDetailQuery { ItineraryId = 1 };

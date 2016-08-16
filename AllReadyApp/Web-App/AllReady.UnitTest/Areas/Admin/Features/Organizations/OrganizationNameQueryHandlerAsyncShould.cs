@@ -7,7 +7,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 {
     public class OrganizationNameQueryHandlerAsyncShould : InMemoryContextTestBase
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ReturnNullWhenThereIsNoMatchingOrganizationId()
         {
             var context = Context;
@@ -18,7 +18,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
             Assert.Null(result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ReturnOrganziationNameWhenThereIsAMatchingOrganizationId()
         {
             var organization = new Organization { Id = 1, Name = "OrganizationName" };

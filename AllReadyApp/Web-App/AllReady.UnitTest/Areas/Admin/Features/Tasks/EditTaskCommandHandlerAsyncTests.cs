@@ -18,7 +18,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
         protected override void LoadTestData()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
             _htb = new Organization()
             {
                 Name = "Humanitarian Toolbox",
@@ -47,8 +46,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 RequiredSkills = new List<EventSkill>(),
                 Tasks = new List<AllReadyTask>()
             };
-            context.Events.Add(_queenAnne);
-            context.SaveChanges();
+            Context.Events.Add(_queenAnne);
+            Context.SaveChanges();
         }
 
         [Fact(Skip = "RTM Broken Tests")]

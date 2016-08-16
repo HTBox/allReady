@@ -21,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using AllReady.Security.Middleware;
+using Newtonsoft.Json.Serialization;
 
 namespace AllReady
 {
@@ -99,7 +100,13 @@ namespace AllReady
             });
 
             // Add MVC services to the services container.
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(options =>
+                options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+
+
+            //register MediatR
+            //https://lostechies.com/jimmybogard/2016/07/19/mediatr-extensions-for-microsoft-dependency-injection-released/
+            services.AddMediatR(typeof(Startup));
 
             // configure IoC support
             var container = CreateIoCContainer(services);
@@ -136,21 +143,8 @@ namespace AllReady
             }
 
             var containerBuilder = new ContainerBuilder();
-
             containerBuilder.RegisterSource(new ContravariantRegistrationSource());
-            containerBuilder.RegisterAssemblyTypes(typeof(IMediator).Assembly).AsImplementedInterfaces();
             containerBuilder.RegisterAssemblyTypes(typeof(Startup).Assembly).AsImplementedInterfaces();
-            containerBuilder.Register<SingleInstanceFactory>(ctx =>
-            {
-                var c = ctx.Resolve<IComponentContext>();
-                return t => c.Resolve(t);
-            });
-
-            containerBuilder.Register<MultiInstanceFactory>(ctx =>
-            {
-                var c = ctx.Resolve<IComponentContext>();
-                return t => (IEnumerable<object>)c.Resolve(typeof(IEnumerable<>).MakeGenericType(t));
-            });
 
             //Populate the container with services that were previously registered
             containerBuilder.Populate(services);

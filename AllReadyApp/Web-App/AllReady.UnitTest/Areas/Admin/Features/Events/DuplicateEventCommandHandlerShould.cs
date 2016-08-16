@@ -12,7 +12,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
 {
     public class DuplicateEventCommandHandlerShould : InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task CreateANewEventEntity()
         {
             var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
@@ -21,7 +21,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(2, sut.Id);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task CopyEventPropertyValuesToTheNewEvent()
         {
             var duplicateEventModel = new DuplicateEventModel()
@@ -50,7 +50,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(true, sut.IsAllowWaitList);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task CreateANewLocationEntity()
         {
             var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
@@ -59,7 +59,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(2, sut.Location.Id);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task CopyLocationPropertyValuesToTheNewLocation()
         {
             var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
@@ -77,7 +77,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         }
 
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task CreateNewTaskEntities()
         {
             var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
@@ -89,7 +89,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(4, sut[1].Id);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task MaintainOffsetBetweenTaskStartTimeAndEventStartTimeInNewTask()
         {
             var duplicateEventModel = new DuplicateEventModel()
@@ -109,7 +109,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(new DateTimeOffset(2016, 2, 2, 10, 0, 0, new TimeSpan()), sut[1].StartDateTime);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task MaintainTaskDurationInNewTask()
         {
             var duplicateEventModel = new DuplicateEventModel()
@@ -129,7 +129,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(new TimeSpan(6, 0, 0), sut[1].EndDateTime - sut[1].StartDateTime);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task CreateNewTasksWithoutCopyingAssignedVolunteers()
         {
             var duplicateEventModel = new DuplicateEventModel()
@@ -149,7 +149,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(0, sut[1].AssignedVolunteers.Count());
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task CreateNewTasksWithTheSameRequiredSkills()
         {
             var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
@@ -162,7 +162,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(0, sut[1].RequiredSkills.Count());
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task CreateNewEventWithoutCopyingUsersSignedUp()
         {
             var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
@@ -171,7 +171,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(0, sut.UsersSignedUp.Count());
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task CreateNewEventWithTheSameRequiredSkills()
         {
             var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });

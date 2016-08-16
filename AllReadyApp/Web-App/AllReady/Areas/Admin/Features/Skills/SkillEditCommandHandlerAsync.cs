@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using AllReady.Extensions;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +7,7 @@ namespace AllReady.Areas.Admin.Features.Skills
 {
     public class SkillEditCommandHandlerAsync : IAsyncRequestHandler<SkillEditCommandAsync, int>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
 
         public SkillEditCommandHandlerAsync(AllReadyContext context)
         {
@@ -19,19 +18,14 @@ namespace AllReady.Areas.Admin.Features.Skills
         {
             var msgSkill = message.Skill;
 
-            Skill skill = new Skill();
-
-            if(msgSkill.Id > 0)
-            {
-                skill = await _context.Skills.SingleOrDefaultAsync(s => s.Id == msgSkill.Id);
-            }
+            var skill = await _context.Skills.SingleOrDefaultAsync(s => s.Id == msgSkill.Id) ??
+                        _context.Add(new Skill()).Entity;
 
             skill.OwningOrganizationId = msgSkill.OwningOrganizationId;
             skill.Name = msgSkill.Name;
             skill.ParentSkillId = msgSkill.ParentSkillId;
             skill.Description = msgSkill.Description;
 
-            _context.AddOrUpdate(skill);
             await _context.SaveChangesAsync();
 
             return skill.Id;

@@ -10,9 +10,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
 {
     public class CampaignDetailQueryHandlerTests : InMemoryContextTest
     {
-    private int _campaignId;
+        private int _campaignId;
 
-    protected override void LoadTestData()
+        protected override void LoadTestData()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
 
@@ -21,7 +21,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
                 WebUrl = "http://www.htbox.org",
-                Campaigns = new List<Campaign>(),                
+                Campaigns = new List<Campaign>(),
             };
 
             var firePrev = new Campaign

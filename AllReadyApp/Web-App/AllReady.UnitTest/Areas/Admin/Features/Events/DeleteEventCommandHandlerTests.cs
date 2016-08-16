@@ -13,8 +13,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
     {
         protected override void LoadTestData()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
-
             var htb = new Organization
             {
                 Name = "Humanitarian Toolbox",
@@ -42,34 +40,32 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 RequiredSkills = new List<EventSkill>()
             };
 
-            context.Organizations.Add(htb);
-            context.Events.Add(queenAnne);
-            context.SaveChanges();
+            Context.Organizations.Add(htb);
+            Context.Events.Add(queenAnne);
+            Context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void ExistingEvent()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
             var command = new DeleteEventCommand { EventId = 1 };
-            var handler = new DeleteEventCommandHandler(context);
+            var handler = new DeleteEventCommandHandler(Context);
             handler.Handle(command);
 
-            var data = context.Events.Count(_ => _.Id == 1);
+            var data = Context.Events.Count(_ => _.Id == 1);
             Assert.Equal(0, data);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void EventDoesNotExist()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
             var command = new DeleteEventCommand { EventId = 0 };
-            var handler = new DeleteEventCommandHandler(context);
+            var handler = new DeleteEventCommandHandler(Context);
             handler.Handle(command);
             //TODO: this test needs to be completed to actually test something
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void EventIsDeleted()
         {
             const int eventId = 1;

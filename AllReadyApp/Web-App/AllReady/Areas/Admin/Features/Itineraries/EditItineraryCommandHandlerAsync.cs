@@ -19,13 +19,12 @@ namespace AllReady.Areas.Admin.Features.Itineraries
         {
             try
             {
-                var itinerary = await GetItinerary(message) ?? new Itinerary();
+                var itinerary = await GetItinerary(message) ?? _context.Add(new Itinerary()).Entity;
 
                 itinerary.Name = message.Itinerary.Name;
                 itinerary.Date = message.Itinerary.Date;
                 itinerary.EventId = message.Itinerary.EventId;
-
-                _context.Update(itinerary);
+                
                 await _context.SaveChangesAsync().ConfigureAwait(false);
 
                 return itinerary.Id;

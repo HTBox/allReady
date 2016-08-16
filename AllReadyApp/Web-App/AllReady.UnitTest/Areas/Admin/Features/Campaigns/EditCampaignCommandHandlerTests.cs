@@ -108,7 +108,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Assert.Equal(country, savedCampaign.Location.Country);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
         public async Task UpdatingExistingCampaignWithNoPriorContactAddsContactWithAllProperties()
         {
             // Arrange

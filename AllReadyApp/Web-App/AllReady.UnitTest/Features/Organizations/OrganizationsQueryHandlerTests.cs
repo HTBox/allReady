@@ -18,18 +18,16 @@ namespace AllReady.UnitTest.Features.Organizations
         };
 
         protected override void LoadTestData() {
-            var context = ServiceProvider.GetService<AllReadyContext>();
-            context.Organizations.AddRange(organizations);
-            context.SaveChanges();
+            Context.Organizations.AddRange(organizations);
+            Context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void HandleReturnsAllOrganizations()
         {
             var message = new OrganizationsQuery();
 
-            var context = ServiceProvider.GetService<AllReadyContext>();
-            var sut = new OrganizationsQueryHandler(context);
+            var sut = new OrganizationsQueryHandler(Context);
             var results = sut.Handle(message);
             var resultList = results.OrderBy(s => s.Id).ToList();
 
@@ -37,12 +35,11 @@ namespace AllReady.UnitTest.Features.Organizations
             Assert.Equal(resultList[1].Id, organizations[1].Id);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void HandleReturnsListOfOrganizationViewModels()
         {
-            var context = ServiceProvider.GetService<AllReadyContext>();
             var message = new OrganizationsQuery();
-            var sut = new OrganizationsQueryHandler(context);
+            var sut = new OrganizationsQueryHandler(Context);
             var results = sut.Handle(message);
 
             Assert.IsType<List<OrganizationViewModel>>(results);
