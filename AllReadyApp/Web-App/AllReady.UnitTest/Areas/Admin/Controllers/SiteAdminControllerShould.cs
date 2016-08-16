@@ -192,7 +192,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task EditUserPostReturnsSameViewAndViewModelWhenModelStateIsInvalid()
         {
-            EditUserModel model = new EditUserModel()
+            EditUserViewModel model = new EditUserViewModel()
             {
                 UserId = "1234",
             };
@@ -294,7 +294,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const string requestScheme = "requestScheme";
             var mediator = new Mock<IMediator>();
             var userManager = CreateApplicationUserMock();
-            EditUserModel model = new EditUserModel()
+            EditUserViewModel model = new EditUserViewModel()
             {
                 IsOrganizationAdmin = true,
                 UserId = It.IsAny<string>()
@@ -361,7 +361,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             var userManager = CreateApplicationUserMock();
-            EditUserModel model = new EditUserModel()
+            EditUserViewModel model = new EditUserViewModel()
             {
                 IsOrganizationAdmin = true,
                 UserId = It.IsAny<string>()
@@ -390,7 +390,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             var userManager = CreateApplicationUserMock();
-            EditUserModel model = new EditUserModel()
+            EditUserViewModel model = new EditUserViewModel()
             {
                 IsOrganizationAdmin = false,
                 UserId = It.IsAny<string>()
@@ -422,7 +422,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             var userManager = CreateApplicationUserMock();
-            EditUserModel model = new EditUserModel()
+            EditUserViewModel model = new EditUserViewModel()
             {
                 IsOrganizationAdmin = false,
                 UserId = It.IsAny<string>()
@@ -460,7 +460,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                             .Returns(new ApplicationUser());
             var controller = new SiteController(null, null, mediator.Object);
 
-            var result = await controller.EditUser(new EditUserModel());
+            var result = await controller.EditUser(new EditUserViewModel());
 
             Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", ((RedirectToActionResult)result).ActionName);
@@ -964,7 +964,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var controller = new SiteController(null, null, mediator.Object);
             var result = (ViewResult)controller.AssignOrganizationAdmin(user.Id);
 
-            Assert.IsType<AssignOrganizationAdminModel>(result.Model);
+            Assert.IsType<AssignOrganizationAdminViewModel>(result.Model);
         }
 
         [Fact]
@@ -979,7 +979,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task AssignOrganizationAdminPostSendsUserByUserIdQueryWithCorrectUserId()
         {
             var mediator = new Mock<IMediator>();
-            AssignOrganizationAdminModel model = new AssignOrganizationAdminModel()
+            AssignOrganizationAdminViewModel model = new AssignOrganizationAdminViewModel()
             {
                 UserId = "1234"
             };
@@ -994,7 +994,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task AssignOrganizationAdminPostRedirectsToCorrectActionIsUserIsNull()
         {
             var mediator = new Mock<IMediator>();
-            AssignOrganizationAdminModel model = new AssignOrganizationAdminModel()
+            AssignOrganizationAdminViewModel model = new AssignOrganizationAdminViewModel()
             {
                 UserId = "1234"
             };
@@ -1010,7 +1010,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task AssignOrganizationAdminPostAddsCorrectKeyAndErrorMessageToModelStateWhenOrganizationIdIsZero()
         {
             var mediator = new Mock<IMediator>();
-            AssignOrganizationAdminModel model = new AssignOrganizationAdminModel()
+            AssignOrganizationAdminViewModel model = new AssignOrganizationAdminViewModel()
             {
                 UserId = "1234"
             };
@@ -1028,7 +1028,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task AssignOrganizationAdminPostSendsAllOrganizationsQueryWhenModelStateIsValid()
         {
             var mediator = new Mock<IMediator>();
-            AssignOrganizationAdminModel model = new AssignOrganizationAdminModel()
+            AssignOrganizationAdminViewModel model = new AssignOrganizationAdminViewModel()
             {
                 UserId = "1234",
                 OrganizationId = 5678
@@ -1046,7 +1046,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             var userManager = CreateApplicationUserMock();
-            AssignOrganizationAdminModel model = new AssignOrganizationAdminModel()
+            AssignOrganizationAdminViewModel model = new AssignOrganizationAdminViewModel()
             {
                 UserId = "1234",
                 OrganizationId = 5678
@@ -1073,7 +1073,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             var userManager = CreateApplicationUserMock();
-            AssignOrganizationAdminModel model = new AssignOrganizationAdminModel()
+            AssignOrganizationAdminViewModel model = new AssignOrganizationAdminViewModel()
             {
                 UserId = "1234",
                 OrganizationId = 5678
@@ -1095,7 +1095,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             var userManager = CreateApplicationUserMock();
-            AssignOrganizationAdminModel model = new AssignOrganizationAdminModel()
+            AssignOrganizationAdminViewModel model = new AssignOrganizationAdminViewModel()
             {
                 UserId = "1234",
                 OrganizationId = 5678
@@ -1118,7 +1118,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task AssignOrganizationAdminPostReturnsAView()
         {
             var mediator = new Mock<IMediator>();
-            AssignOrganizationAdminModel model = new AssignOrganizationAdminModel()
+            AssignOrganizationAdminViewModel model = new AssignOrganizationAdminViewModel()
             {
                 UserId = "1234",
                 OrganizationId = 0
