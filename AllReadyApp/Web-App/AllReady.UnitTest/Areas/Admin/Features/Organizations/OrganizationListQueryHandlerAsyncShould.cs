@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Organizations;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Models;
 using Xunit;
 
@@ -27,7 +27,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
             var sut = new OrganizationListQueryHandlerAsync(context);
             var result = await sut.Handle(message);
 
-            Assert.IsType<List<OrganizationSummaryModel>>(result);
+            Assert.IsType<List<OrganizationSummaryViewModel>>(result);
         }
     }
 }

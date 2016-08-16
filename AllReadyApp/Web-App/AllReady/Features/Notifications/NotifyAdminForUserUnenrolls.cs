@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -40,10 +40,10 @@ namespace AllReady.Features.Notifications
                     return;
                 }
 
-                TaskSummaryModel taskModel = null;
+                TaskSummaryViewModel taskModel = null;
                 string remainingRequiredVolunteersPhrase;
 
-                    taskModel = notificationModel.Tasks.FirstOrDefault(t => t.Id == notification.TaskIds[0]) ?? new TaskSummaryModel();
+                    taskModel = notificationModel.Tasks.FirstOrDefault(t => t.Id == notification.TaskIds[0]) ?? new TaskSummaryViewModel();
                     remainingRequiredVolunteersPhrase = $"{taskModel.NumberOfVolunteersSignedUp}/{taskModel.NumberOfVolunteersRequired}";
 
                 var eventLink = $"View event: {_options.Value.SiteBaseUrl}Admin/Event/Details/{notificationModel.EventId}";

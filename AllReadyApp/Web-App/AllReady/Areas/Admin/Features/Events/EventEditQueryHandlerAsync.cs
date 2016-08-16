@@ -1,12 +1,12 @@
-﻿using AllReady.Areas.Admin.Models;
-using AllReady.Models;
+﻿using AllReady.Models;
 using MediatR;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.ViewModels.Event;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Events
 {
-    public class EventEditQueryHandlerAsync : IAsyncRequestHandler<EventEditQuery, EventEditModel>
+    public class EventEditQueryHandlerAsync : IAsyncRequestHandler<EventEditQuery, EventEditViewModel>
     {
         private readonly AllReadyContext _context;
 
@@ -15,15 +15,15 @@ namespace AllReady.Areas.Admin.Features.Events
             _context = context;
         }
 
-        public async Task<EventEditModel> Handle(EventEditQuery message)
+        public async Task<EventEditViewModel> Handle(EventEditQuery message)
         {
-            EventEditModel result = null;
+            EventEditViewModel result = null;
 
             var campaignEvent = await GetEvent(message);
 
             if (campaignEvent != null)
             {
-                result = new EventEditModel
+                result = new EventEditViewModel
                 {
                     Id = campaignEvent.Id,
                     EventType = campaignEvent.EventType,

@@ -1,4 +1,4 @@
-﻿@model AllReady.Areas.Admin.Models.TaskSignupModels.TaskSignupSummaryModel
+﻿@model AllReady.Areas.Admin.ViewModels.Itinerary.TaskSignupSummaryViewModel
 
 @{  ViewData["Title"] = "Remove team member:  " + Model.VolunteerName; }
 
@@ -20,11 +20,11 @@
             </dd>
         </dl>
 
-        <form asp-controller="Itinerary" asp-action="RemoveTeamMember" asp-route-itineraryId="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" asp-route-taskSignupId="@Model.TaskSignupId">
+        <form asp-area="Admin" asp-controller="Itinerary" asp-action="RemoveTeamMember" asp-route-itineraryId="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" asp-route-taskSignupId="@Model.TaskSignupId">
             <input type="hidden" asp-for="@Model.TaskSignupId" />
             <div class="form-actions no-color">
                 <button type="submit" class="btn btn-primary">Delete</button>
-                <a asp-controller="Itinerary" asp-action="Details" asp-route-area="Admin" asp-route-id="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" class="btn btn-default">Cancel</a>
+                <a asp-controller="Itinerary" asp-action="Details" asp-area="Admin" asp-route-id="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" class="btn btn-default">Cancel</a>
             </div>
         </form>
     </div>

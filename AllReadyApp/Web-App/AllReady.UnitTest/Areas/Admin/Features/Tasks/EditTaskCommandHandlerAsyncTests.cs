@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Models;
-using AllReady.UnitTest.Features.Campaigns;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
@@ -54,7 +52,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         public async Task ModelIsCreated()
         {
             var sut = new EditTaskCommandHandlerAsync(Context);
-            var actual = await sut.Handle(new EditTaskCommandAsync { Task = new TaskSummaryModel { EventId = _queenAnne.Id, TimeZoneId = "Eastern Standard Time" } });
+            var actual = await sut.Handle(new EditTaskCommandAsync { Task = new TaskSummaryViewModel { EventId = _queenAnne.Id, TimeZoneId = "Eastern Standard Time" } });
             Assert.Equal(1, actual);
         }
     }

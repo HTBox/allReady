@@ -1,7 +1,5 @@
 ﻿using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Organizations;
-using AllReady.Areas.Admin.Models;
-using AllReady.Areas.Admin.Models.Validators;
 using MediatR;
 using Moq;
 using System;
@@ -9,6 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.ViewModels.Organization;
+using AllReady.Areas.Admin.ViewModels.OrganizationApi;
+using AllReady.Areas.Admin.ViewModels.Shared;
+using AllReady.Areas.Admin.ViewModels.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
@@ -17,7 +19,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
     public class OrganizationControllerTests
     {
-        private readonly OrganizationEditModel _organizationEditModel;
+        private readonly OrganizationEditViewModel _organizationEditModel;
         private static Mock<IMediator> _mediator;
         private static OrganizationController _sut;
         private const int Id = 4565;
@@ -27,7 +29,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
     public OrganizationControllerTests()
     {
-      _organizationEditModel = new OrganizationEditModel
+      _organizationEditModel = new OrganizationEditViewModel
       {
         Id = 0,
         LogoUrl = "http://www.example.com/image.jpg",
@@ -72,7 +74,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task IndexShouldReturnAViewWithTheCorrectViewModel()
         {
             var mediator = new Mock<IMediator>();
-            var organizationSummaryModel = new List<OrganizationSummaryModel>();
+            var organizationSummaryModel = new List<OrganizationSummaryViewModel>();
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationListQueryAysnc>())).ReturnsAsync(organizationSummaryModel);
 
             var sut = new OrganizationController(mediator.Object, null);
@@ -111,7 +113,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             CreateSut();
 
-      var model = new OrganizationDetailModel();
+      var model = new OrganizationDetailViewModel();
 
             _mediator.Setup(x => x.SendAsync(It.Is<OrganizationDetailQueryAsync>(y => y.Id == Id))).ReturnsAsync(model);
 
@@ -165,7 +167,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             CreateSut();
 
-      var model = new OrganizationEditModel();
+      var model = new OrganizationEditViewModel();
 
             _mediator.Setup(x => x.SendAsync(It.Is<OrganizationEditQueryAsync>(y => y.Id == Id))).ReturnsAsync(model);
 
@@ -196,7 +198,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task EditPostReturnsTheCorrectViewAndViewModelWhenModelStateIsInvalid()
         {
-            var model = new OrganizationEditModel();
+            var model = new OrganizationEditViewModel();
 
             var controller = new OrganizationController(new Mock<IMediator>().Object, SuccessValidator());
             controller.ModelState.AddModelError("foo", "bar");
@@ -210,7 +212,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditPostSendsOrganizationNameUniqueQueryWithCorrectParametersWhenModelStateIsValid()
         {
             var mediator = new Mock<IMediator>();
-            var organizationEditModel = new OrganizationEditModel { Name = "name", Id = 1 };
+            var organizationEditModel = new OrganizationEditViewModel { Name = "name", Id = 1 };
 
             var controller = new OrganizationController(mediator.Object, SuccessValidator());
             await controller.Edit(organizationEditModel);
@@ -234,7 +236,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task EditPostRedirectsToCorrectActionWithCorrectData_WhenModelStateIsValid_AndOrganizationNameIsUnique()
         {
-            var model = new OrganizationEditModel();
+            var model = new OrganizationEditViewModel();
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(y => y.SendAsync(It.IsAny<OrganizationNameUniqueQueryAsync>())).ReturnsAsync(true);
             mockMediator.Setup(x => x.SendAsync(It.Is<EditOrganizationAsync>(y => y.Organization == model))).ReturnsAsync(Id);            
@@ -255,13 +257,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void EditPostShouldHaveValidateAntiForgeryTokenAttribute()
         {
-            MethodShouldHaveValidateAntiForgeryTokenAttribute("Edit", typeof(OrganizationEditModel));
+            MethodShouldHaveValidateAntiForgeryTokenAttribute("Edit", typeof(OrganizationEditViewModel));
         }
 
         [Fact]
         public void EditPostShouldHaveHttpPostAttribute()
         {
-            MethodShouldHaveHttpPostAttribute("Edit", typeof(OrganizationEditModel));
+            MethodShouldHaveHttpPostAttribute("Edit", typeof(OrganizationEditViewModel));
         }
 
         #endregion
@@ -298,7 +300,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             CreateSut();
 
-      var organizationModel = new OrganizationDetailModel();
+      var organizationModel = new OrganizationDetailViewModel();
 
             _mediator.Setup(x => x.SendAsync(It.Is<OrganizationDetailQueryAsync>(y => y.Id == Id))).ReturnsAsync(organizationModel);
 
@@ -353,7 +355,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
     private static IOrganizationEditModelValidator SuccessValidator()
     {
       var mock = new Mock<IOrganizationEditModelValidator>();
-      mock.Setup(v => v.Validate(It.IsAny<OrganizationEditModel>())).Returns(new List<KeyValuePair<string, string>>());
+      mock.Setup(v => v.Validate(It.IsAny<OrganizationEditViewModel>())).Returns(new List<KeyValuePair<string, string>>());
       return mock.Object;
     }
 
@@ -414,8 +416,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         #endregion
 
     #region "Test Models"
-    public static LocationEditModel BogusAve => new LocationEditModel { Address1 = "25 Bogus Ave", City = "Agincourt", State = "Ontario", Country = "Canada", PostalCode = "M1T2T9" };
-    public static OrganizationEditModel AgincourtAware => new OrganizationEditModel { Name = "Agincourt Awareness", Location = BogusAve, WebUrl = "http://www.AgincourtAwareness.ca", LogoUrl = "http://www.AgincourtAwareness.ca/assets/LogoLarge.png" };
+    public static LocationEditViewModel BogusAve => new LocationEditViewModel { Address1 = "25 Bogus Ave", City = "Agincourt", State = "Ontario", Country = "Canada", PostalCode = "M1T2T9" };
+    public static OrganizationEditViewModel AgincourtAware => new OrganizationEditViewModel { Name = "Agincourt Awareness", Location = BogusAve, WebUrl = "http://www.AgincourtAwareness.ca", LogoUrl = "http://www.AgincourtAwareness.ca/assets/LogoLarge.png" };
     #endregion
     }
 }

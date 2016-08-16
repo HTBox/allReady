@@ -12,3 +12,14 @@
             asp-fallback-test="window.jquery && window.jquery.validator && window.jquery.validator.unobtrusive">
     </script>
 </environment>
+
+<script>
+
+    // decorate the email validation rule to trim spaces in the view value before validation 
+    var originalRule = $.validator.methods.email;
+    $.validator.methods.email = function (value, element) {
+        value = value.trim();
+        element.value = value;
+        return originalRule(value, element);
+    };
+</script>

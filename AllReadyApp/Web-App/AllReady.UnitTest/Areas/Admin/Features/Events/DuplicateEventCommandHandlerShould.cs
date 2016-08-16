@@ -1,11 +1,11 @@
 ﻿using AllReady.Areas.Admin.Features.Events;
-using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.ViewModels.Event;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Events
@@ -15,7 +15,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task CreateANewEventEntity()
         {
-            var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
+            var eventId = await DuplicateEvent(new DuplicateEventViewModel() { Id = EVENT_TO_DUPLICATE_ID });
             var sut = await GetEvent(eventId);
 
             Assert.Equal(2, sut.Id);
@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task CopyEventPropertyValuesToTheNewEvent()
         {
-            var duplicateEventModel = new DuplicateEventModel()
+            var duplicateEventModel = new DuplicateEventViewModel()
             {
                 Id = EVENT_TO_DUPLICATE_ID,
                 Name = "Name",
@@ -53,7 +53,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task CreateANewLocationEntity()
         {
-            var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
+            var eventId = await DuplicateEvent(new DuplicateEventViewModel() { Id = EVENT_TO_DUPLICATE_ID });
             var sut = await GetEvent(eventId);
 
             Assert.Equal(2, sut.Location.Id);
@@ -62,7 +62,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task CopyLocationPropertyValuesToTheNewLocation()
         {
-            var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
+            var eventId = await DuplicateEvent(new DuplicateEventViewModel() { Id = EVENT_TO_DUPLICATE_ID });
             var @event = await GetEvent(eventId);
             var sut = @event.Location;
 
@@ -80,7 +80,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task CreateNewTaskEntities()
         {
-            var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
+            var eventId = await DuplicateEvent(new DuplicateEventViewModel() { Id = EVENT_TO_DUPLICATE_ID });
             var @event = await GetEvent(eventId);
             var sut = @event.Tasks.OrderBy(t => t.Id).ToList();
 
@@ -92,7 +92,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task MaintainOffsetBetweenTaskStartTimeAndEventStartTimeInNewTask()
         {
-            var duplicateEventModel = new DuplicateEventModel()
+            var duplicateEventModel = new DuplicateEventViewModel()
             {
                 Id = EVENT_TO_DUPLICATE_ID,
                 Name = "Name",
@@ -112,7 +112,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task MaintainTaskDurationInNewTask()
         {
-            var duplicateEventModel = new DuplicateEventModel()
+            var duplicateEventModel = new DuplicateEventViewModel()
             {
                 Id = EVENT_TO_DUPLICATE_ID,
                 Name = "Name",
@@ -132,7 +132,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task CreateNewTasksWithoutCopyingAssignedVolunteers()
         {
-            var duplicateEventModel = new DuplicateEventModel()
+            var duplicateEventModel = new DuplicateEventViewModel()
             {
                 Id = EVENT_TO_DUPLICATE_ID,
                 Name = "Name",
@@ -152,7 +152,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task CreateNewTasksWithTheSameRequiredSkills()
         {
-            var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
+            var eventId = await DuplicateEvent(new DuplicateEventViewModel() { Id = EVENT_TO_DUPLICATE_ID });
             var @event = await GetEvent(eventId);
             var sut = @event.Tasks.OrderBy(t => t.StartDateTime).ToList();
 
@@ -165,7 +165,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task CreateNewEventWithoutCopyingUsersSignedUp()
         {
-            var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
+            var eventId = await DuplicateEvent(new DuplicateEventViewModel() { Id = EVENT_TO_DUPLICATE_ID });
             var sut = await GetEvent(eventId);
 
             Assert.Equal(0, sut.UsersSignedUp.Count());
@@ -174,7 +174,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task CreateNewEventWithTheSameRequiredSkills()
         {
-            var eventId = await DuplicateEvent(new DuplicateEventModel() { Id = EVENT_TO_DUPLICATE_ID });
+            var eventId = await DuplicateEvent(new DuplicateEventViewModel() { Id = EVENT_TO_DUPLICATE_ID });
             var @event = await GetEvent(eventId);
             var sut = @event.RequiredSkills.OrderBy(es => es.Skill.Name).ToList();
 
@@ -198,7 +198,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 .SingleAsync(e => e.Id == eventId);
         }
 
-        async Task<int> DuplicateEvent(DuplicateEventModel duplicateEventModel)
+        async Task<int> DuplicateEvent(DuplicateEventViewModel duplicateEventModel)
         {
             var command = new DuplicateEventCommand() { DuplicateEventModel = duplicateEventModel };
             var handler = new DuplicateEventCommandHandler(Context);

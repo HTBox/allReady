@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Shared;
+using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -36,14 +37,14 @@ namespace AllReady.Features.Notifications
                     Description = campaignEvent.Description,
                     UsersSignedUp = campaignEvent.UsersSignedUp,
                     NumberOfVolunteersRequired = campaignEvent.NumberOfVolunteersRequired,
-                    Tasks = campaignEvent.Tasks.Select(t => new TaskSummaryModel
+                    Tasks = campaignEvent.Tasks.Select(t => new TaskSummaryViewModel
                     {
                         Id = t.Id,
                         Name = t.Name,
                         StartDateTime = t.StartDateTime,
                         EndDateTime = t.EndDateTime,
                         NumberOfVolunteersRequired = t.NumberOfVolunteersRequired,
-                        AssignedVolunteers = t.AssignedVolunteers.Select(assignedVolunteer => new VolunteerModel
+                        AssignedVolunteers = t.AssignedVolunteers.Select(assignedVolunteer => new VolunteerViewModel
                         {
                             UserId = assignedVolunteer.User.Id,
                             UserName = assignedVolunteer.User.UserName,

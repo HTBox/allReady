@@ -25,10 +25,10 @@
 </p>
 
 <pre>
-    "id","name","address","city","state","zip","phone","email","date created","region"
+    "id","name","address","city","state","zip","phone","email","date created","region","latitude","longitude"
 </pre>
 
-<form method="post" asp-action="Index" asp-controller="Import" enctype="multipart/form-data">
+<form method="post" asp-action="Index" asp-controller="Import" asp-area="Admin" enctype="multipart/form-data">
     <label class="btn btn-default btn-file">
         Browse <input type="file" name="file" style="display: none;" onchange="$('#upload-file-info').html($(this).val());">
     </label>

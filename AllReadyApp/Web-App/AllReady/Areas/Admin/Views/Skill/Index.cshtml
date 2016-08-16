@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SkillSummaryModel>
+﻿@model IEnumerable<AllReady.Areas.Admin.ViewModels.Skill.SkillSummaryViewModel>
 @using AllReady.Security;
 
 <div class="row">
@@ -31,7 +31,7 @@
                 <tr>
                     <td>
                         <div class="btn-group btn-group-sm row-btn-margin">
-                            <a data-toggle="tooltip" data-placement="top" title="Edit" asp-route-area="Admin" asp-controller="Skill" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success"><span class="fa fa-edit"></span></a>
+                            <a data-toggle="tooltip" data-placement="top" title="Edit" asp-area="Admin" asp-controller="Skill" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success"><span class="fa fa-edit"></span></a>
                         </div>
                     </td>
                     <td>
@@ -48,7 +48,7 @@
                     }
                     <td>
                         <div class="btn-group btn-group-sm row-btn-margin pull-right">
-                            <a data-toggle="tooltip" data-placement="top" title="Delete" asp-route-area="Admin" asp-controller="Skill" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger"><span class="fa fa-remove"></span></a>
+                            <a data-toggle="tooltip" data-placement="top" title="Delete" asp-area="Admin" asp-controller="Skill" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger"><span class="fa fa-remove"></span></a>
                         </div>
                     </td>
                 </tr>
@@ -59,7 +59,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="btn-group btn-group-sm row-btn-margin">
-            <a data-toggle="tooltip" data-placement="top" title="Create New" asp-route-area="Admin" asp-controller="Skill" asp-action="Create" class="btn btn-success"><span class="fa fa-plus"></span></a>
+            <a data-toggle="tooltip" data-placement="top" title="Create New" asp-area="Admin" asp-controller="Skill" asp-action="Create" class="btn btn-success"><span class="fa fa-plus"></span></a>
         </div>
     </div>
 </div>

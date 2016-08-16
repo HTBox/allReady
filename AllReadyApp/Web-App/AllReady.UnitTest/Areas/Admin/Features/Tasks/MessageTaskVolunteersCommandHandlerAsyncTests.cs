@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
@@ -81,7 +80,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             const string expectedSubject = "This is my subject";
             var command = new MessageTaskVolunteersCommandAsync
             {
-                Model = new MessageTaskVolunteersModel
+                Model = new MessageTaskVolunteersViewModel
                 {
                     TaskId = 1,
                     Message = expectedMessage,

@@ -69,5 +69,11 @@ namespace AllReady.Models
 
         #endregion
 
+        #region Request CRUD
+        Task<Request> GetRequestByProviderIdAsync( string providerId );
+
+        Task AddRequestAsync( Request request ); 
+        #endregion
+
     }
 }

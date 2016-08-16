@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using AllReady.Areas.Admin.Models.RequestModels;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {
-    public class RequestSummaryQueryHandlerAsync : IAsyncRequestHandler<RequestSummaryQuery, RequestSummaryModel>
+    public class RequestSummaryQueryHandlerAsync : IAsyncRequestHandler<RequestSummaryQuery, RequestSummaryViewModel>
     {
         private readonly AllReadyContext _context;
 
@@ -16,13 +16,13 @@ namespace AllReady.Areas.Admin.Features.Requests
             _context = context;
         }
 
-        public async Task<RequestSummaryModel> Handle(RequestSummaryQuery message)
+        public async Task<RequestSummaryViewModel> Handle(RequestSummaryQuery message)
         {
             return await _context.Requests.AsNoTracking()
                 .Where(x => x.RequestId == message.RequestId)
                 .Select(
                     x =>
-                        new RequestSummaryModel
+                        new RequestSummaryViewModel
                         {
                             Id = x.RequestId,
                             Name = x.Name,

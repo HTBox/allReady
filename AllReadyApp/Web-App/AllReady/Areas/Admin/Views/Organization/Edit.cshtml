@@ -1,4 +1,4 @@
-@model AllReady.Areas.Admin.Models.OrganizationEditModel
+@model AllReady.Areas.Admin.ViewModels.Organization.OrganizationEditViewModel
 
 @{
     var isEdit = Model != null && Model.Id > 0;
@@ -21,7 +21,7 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Organization" asp-action="Index" asp-route-area="Admin">Organizations</a></li>
+            <li><a asp-controller="Organization" asp-action="Index" asp-area="Admin">Organizations</a></li>
             @if (isEdit)
             {
                 <li><a href="@cancelUrl">@Model.Name</a></li>
@@ -43,7 +43,7 @@
     </div>
 </div>
 
-<form asp-controller="Organization" asp-route-area="Admin" asp-action="Edit" method="post">
+<form asp-controller="Organization" asp-area="Admin" asp-action="Edit" method="post">
     <div class="form-horizontal">
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -94,7 +94,11 @@
             </div>
         </div>
 
+        <h3>Location</h3>
+
         @Html.EditorFor(m => m.Location)
+
+        <h3>Primary Contact</h3>
 
         <div class="form-group">
             <label asp-for="PrimaryContactFirstName" class="col-md-2 control-label"></label>

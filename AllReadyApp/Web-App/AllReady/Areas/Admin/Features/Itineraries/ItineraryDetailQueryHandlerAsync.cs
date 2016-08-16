@@ -1,14 +1,14 @@
-﻿using AllReady.Areas.Admin.Models.ItineraryModels;
-using AllReady.Models;
+﻿using AllReady.Models;
 using AllReady.Services;
 using MediatR;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.ViewModels.Itinerary;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Itineraries
 {
-    public class ItineraryDetailQueryHandlerAsync : IAsyncRequestHandler<ItineraryDetailQuery, ItineraryDetailsModel>
+    public class ItineraryDetailQueryHandlerAsync : IAsyncRequestHandler<ItineraryDetailQuery, ItineraryDetailsViewModel>
     {
         private readonly AllReadyContext _context;
         private readonly IMediator _mediator;
@@ -19,7 +19,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             _mediator = mediator;
         }
 
-        public async Task<ItineraryDetailsModel> Handle(ItineraryDetailQuery message)
+        public async Task<ItineraryDetailsViewModel> Handle(ItineraryDetailQuery message)
         {
             var itineraryDetails = await _context.Itineraries
                 .AsNoTracking()
@@ -28,7 +28,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 .Include(x => x.TeamMembers).ThenInclude(x => x.Task)
                 .Include(x => x.Requests).ThenInclude(x => x.Request)
                 .Where(a => a.Id == message.ItineraryId)
-                .Select(i => new ItineraryDetailsModel
+                .Select(i => new ItineraryDetailsViewModel
                 {
                     Id = i.Id,
                     Name = i.Name,
@@ -38,14 +38,14 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     CampaignId = i.Event.Campaign.Id,
                     CampaignName = i.Event.Campaign.Name,
                     OrganizationId = i.Event.Campaign.ManagingOrganizationId,
-                    TeamMembers = i.TeamMembers.Select(tm => new TeamListModel
+                    TeamMembers = i.TeamMembers.Select(tm => new TeamListViewModel
                     {
                         TaskSignupId = tm.Id,
                         VolunteerEmail = tm.User.Email,
                         TaskName = tm.Task.Name,
                         FullName = tm.User.Name
                     }).ToList(),
-                    Requests = i.Requests.OrderBy(r => r.OrderIndex).Select(r => new RequestListModel
+                    Requests = i.Requests.OrderBy(r => r.OrderIndex).Select(r => new RequestListViewModel
                     {
                         Id = r.Request.RequestId,
                         Name = r.Request.Name,

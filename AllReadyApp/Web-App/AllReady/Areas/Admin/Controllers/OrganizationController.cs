@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using AllReady.Areas.Admin.Features.Organizations;
-using AllReady.Areas.Admin.Models;
-using AllReady.Areas.Admin.Models.Validators;
 using MediatR;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.ViewModels.Organization;
+using AllReady.Areas.Admin.ViewModels.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -62,7 +62,7 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Organization/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(OrganizationEditModel organization)
+        public async Task<IActionResult> Edit(OrganizationEditViewModel organization)
         {
             if (organization == null)
             {

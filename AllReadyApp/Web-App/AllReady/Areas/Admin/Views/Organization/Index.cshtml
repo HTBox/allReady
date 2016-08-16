@@ -1,4 +1,4 @@
-@model IEnumerable<AllReady.Areas.Admin.Models.OrganizationSummaryModel>
+@model IEnumerable<AllReady.Areas.Admin.ViewModels.Organization.OrganizationSummaryViewModel>
 
 @{
     ViewData["Title"] = "Currently active organizations";
@@ -38,7 +38,7 @@
                         <a href="@Url.Action("Details", "Organization", new { id = item.Id })">@item.Name</a>
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.WebUrl)
+                        <a href=@item.WebUrl target="_blank">@item.WebUrl</a>
                     </td>
                     <td>
                         <div class="btn-group btn-group-sm row-btn-margin pull-right">

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Skills;
 using AllReady.Areas.Admin.Features.Organizations;
-using AllReady.Areas.Admin.Models;
+using AllReady.Areas.Admin.ViewModels.Skill;
 using AllReady.Models;
 using AllReady.Security;
 using MediatR;
@@ -62,7 +62,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return new UnauthorizedResult(); // Edge case of user having Org Admin claim but not Org Id claim
             }
             
-            var model = new SkillEditModel();
+            var model = new SkillEditViewModel();
 
             if (User.IsUserType(UserType.SiteAdmin))
             {
@@ -80,7 +80,7 @@ namespace AllReady.Areas.Admin.Controllers
         // POST /Admin/Skill/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SkillEditModel model)
+        public async Task<IActionResult> Create(SkillEditViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -149,7 +149,7 @@ namespace AllReady.Areas.Admin.Controllers
         // POST /Admin/Skill/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(SkillEditModel model)
+        public async Task<IActionResult> Edit(SkillEditViewModel model)
         {
             if (ModelState.IsValid)
             {

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 using AllReady.Models.Notifications;
 using Microsoft.Azure.WebJobs;
@@ -34,7 +31,6 @@ namespace NotificationsProcessor
             {
                 log.WriteLine($"Error sending message: {smsMessage.RestException.Message}");
             }
-
         }
 
         public static async Task ProcessEmailQueueMessage([QueueTrigger("email-pending-deliveries")] string message, TextWriter log)

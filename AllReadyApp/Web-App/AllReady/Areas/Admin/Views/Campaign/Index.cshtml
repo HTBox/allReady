@@ -1,4 +1,4 @@
-@model IEnumerable<AllReady.Areas.Admin.Models.CampaignSummaryModel>
+@model IEnumerable<AllReady.Areas.Admin.ViewModels.Campaign.CampaignSummaryViewModel>
 @{ ViewData["Title"] = "Campaigns - Admin"; }
 
 @*
@@ -34,11 +34,11 @@
                 <tr>
                     <td>
                         <div class="btn-group btn-group-sm row-btn-margin">
-                            <a data-toggle="tooltip" data-placement="top" title="Edit" asp-controller="Campaign" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success"><span class="fa fa-edit"></span></a>
+                            <a data-toggle="tooltip" data-placement="top" title="Edit" asp-controller="Campaign" asp-action="Edit" asp-area="Admin" asp-route-id="@item.Id" class="btn btn-success"><span class="fa fa-edit"></span></a>
                         </div>
                     </td>
                     <td>
-                        <a asp-controller="Campaign" asp-action="Details" asp-route-area="Admin" asp-route-id="@item.Id">@item.Name</a>
+                        <a asp-controller="Campaign" asp-action="Details" asp-area="Admin" asp-route-id="@item.Id">@item.Name</a>
                         @if (item.Featured)
                         {
                             <i class="fa fa-star star-highlight" aria-hidden="true"></i>
@@ -67,7 +67,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="btn-group btn-group-sm row-btn-margin">
-            <a data-toggle="tooltip" data-placement="top" title="Create New" asp-controller="Campaign" asp-action="Create" asp-route-area="Admin" class="btn btn-success"><span class="fa fa-plus"></span></a>
+            <a data-toggle="tooltip" data-placement="top" title="Create New" asp-controller="Campaign" asp-action="Create" asp-area="Admin" class="btn btn-success"><span class="fa fa-plus"></span></a>
         </div>
     </div>
 </div>

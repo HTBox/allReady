@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Campaigns;
-using AllReady.Areas.Admin.Models;
 using AllReady.Models;
 using AllReady.Services;
 using AllReady.UnitTest.Extensions;
@@ -17,6 +16,9 @@ using System;
 using AllReady.Extensions;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using AllReady.Areas.Admin.ViewModels.Campaign;
+using AllReady.Areas.Admin.ViewModels.Organization;
+using AllReady.Areas.Admin.ViewModels.Shared;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -69,8 +71,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.Send(It.Is<CampaignListQuery>(c => c.OrganizationId == OrganizationId)))
                 .Returns((CampaignListQuery q) => {
-                    List<CampaignSummaryModel> ret = new List<CampaignSummaryModel>();
-                    ret.Add(new CampaignSummaryModel { OrganizationId = OrganizationId });
+                    List<CampaignSummaryViewModel> ret = new List<CampaignSummaryViewModel>();
+                    ret.Add(new CampaignSummaryViewModel { OrganizationId = OrganizationId });
                     return ret;
                 }
             );
@@ -87,7 +89,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.Send(It.Is<CampaignListQuery>(c => c.OrganizationId == OrganizationId)));
 
             // Org admin should only see own campaigns
-            IEnumerable<CampaignSummaryModel> viewModel = (IEnumerable<CampaignSummaryModel>)view.ViewData.Model;
+            IEnumerable<CampaignSummaryViewModel> viewModel = (IEnumerable<CampaignSummaryViewModel>)view.ViewData.Model;
             Assert.NotNull(viewModel);
             Assert.Equal(viewModel.Count(), 1);
             Assert.Equal(viewModel.First().OrganizationId, OrganizationId);
@@ -100,9 +102,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.Send(It.Is<CampaignListQuery>(c => c.OrganizationId == null)))
                 .Returns((CampaignListQuery q) => {
                     // return some models 
-                    List<CampaignSummaryModel> ret = new List<CampaignSummaryModel>();
-                    ret.Add(new CampaignSummaryModel { OrganizationId = OrganizationId });
-                    ret.Add(new CampaignSummaryModel { OrganizationId = OrganizationId + 1 });
+                    List<CampaignSummaryViewModel> ret = new List<CampaignSummaryViewModel>();
+                    ret.Add(new CampaignSummaryViewModel { OrganizationId = OrganizationId });
+                    ret.Add(new CampaignSummaryViewModel { OrganizationId = OrganizationId + 1 });
                     return ret;
                 }
             );
@@ -121,7 +123,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.Send(It.Is<CampaignListQuery>(c => c.OrganizationId == null)));
 
             // Site admin should only see all campaigns
-            IEnumerable<CampaignSummaryModel> viewModel = (IEnumerable<CampaignSummaryModel>)view.ViewData.Model;
+            IEnumerable<CampaignSummaryViewModel> viewModel = (IEnumerable<CampaignSummaryViewModel>)view.ViewData.Model;
             Assert.NotNull(viewModel);
             Assert.Equal(viewModel.Count(), 2);
         }
@@ -134,7 +136,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
 
             // model is not null
-            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignDetailQuery>(c => c.CampaignId == CAMPAIGN_ID))).ReturnsAsync(new CampaignDetailModel { OrganizationId = ORGANIZATION_ID, Id = CAMPAIGN_ID }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignDetailQuery>(c => c.CampaignId == CAMPAIGN_ID))).ReturnsAsync(new CampaignDetailViewModel { OrganizationId = ORGANIZATION_ID, Id = CAMPAIGN_ID }).Verifiable();
 
             CampaignController controller = new CampaignController(mockMediator.Object, null);
             controller.SetClaims(new List<Claim>()); // create a User for the controller
@@ -172,7 +174,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
 
             // model is not null
-            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignDetailQuery>(c=>c.CampaignId == CAMPAIGN_ID))).ReturnsAsync(new CampaignDetailModel { OrganizationId = ORGANIZATION_ID, Id = CAMPAIGN_ID }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignDetailQuery>(c=>c.CampaignId == CAMPAIGN_ID))).ReturnsAsync(new CampaignDetailViewModel { OrganizationId = ORGANIZATION_ID, Id = CAMPAIGN_ID }).Verifiable();
 
             // user is org admin
             CampaignController controller = new CampaignController(mockMediator.Object, null);
@@ -183,7 +185,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             });
 
             ViewResult view = (ViewResult)(await controller.Details(CAMPAIGN_ID));
-            CampaignDetailModel viewModel = (CampaignDetailModel)view.ViewData.Model;
+            CampaignDetailViewModel viewModel = (CampaignDetailViewModel)view.ViewData.Model;
             Assert.Equal(viewModel.Id, CAMPAIGN_ID);
             Assert.Equal(viewModel.OrganizationId, ORGANIZATION_ID);
         }
@@ -194,7 +196,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             CampaignController controller = new CampaignController(mockMediator.Object, null);
             ViewResult view = (ViewResult) controller.Create();
-            CampaignSummaryModel viewModel = (CampaignSummaryModel)view.ViewData.Model;
+            CampaignSummaryViewModel viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
             Assert.Equal(view.ViewName, "Edit");
             Assert.NotNull(viewModel);
         }
@@ -206,7 +208,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
 
             // model is not null
-            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(c => c.CampaignId == CAMPAIGN_ID))).ReturnsAsync(new CampaignSummaryModel { Id = CAMPAIGN_ID });
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(c => c.CampaignId == CAMPAIGN_ID))).ReturnsAsync(new CampaignSummaryViewModel { Id = CAMPAIGN_ID });
 
             CampaignController controller = new CampaignController(mockMediator.Object, null);
             controller.SetClaims(new List<Claim>()); // create a User for the controller
@@ -247,7 +249,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task EditPostAddsCorrectKeyAndErrorMessageToModelStateWhenCampaignEndDateIsLessThanCampainStartDate()
         {
-            var campaignSummaryModel = new CampaignSummaryModel { OrganizationId = 1, StartDate = DateTime.Now.AddDays(1), EndDate = DateTime.Now.AddDays(-1)};
+            var campaignSummaryModel = new CampaignSummaryViewModel { OrganizationId = 1, StartDate = DateTime.Now.AddDays(1), EndDate = DateTime.Now.AddDays(-1)};
 
             var sut = new CampaignController(null, null);
             sut.SetClaims(new List<Claim>
@@ -257,7 +259,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             });
 
             await sut.Edit(campaignSummaryModel, null);
-            var modelStateErrorCollection = sut.ModelState.GetErrorMessagesByKey(nameof(CampaignSummaryModel.EndDate));
+            var modelStateErrorCollection = sut.ModelState.GetErrorMessagesByKey(nameof(CampaignSummaryViewModel.EndDate));
 
             Assert.Equal(modelStateErrorCollection.Single().ErrorMessage, "The end date must fall on or after the start date.");
         }
@@ -305,7 +307,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditPostReturnsHttpUnauthorizedResultWhenUserIsNotAnOrgAdmin()
         {
             var controller = CampaignControllerWithSummaryQuery(UserType.BasicUser.ToString(), It.IsAny<int>());
-            var result = await controller.Edit(new CampaignSummaryModel { OrganizationId = It.IsAny<int>() }, null);
+            var result = await controller.Edit(new CampaignSummaryViewModel { OrganizationId = It.IsAny<int>() }, null);
             Assert.IsType<UnauthorizedResult>(result);
         }
 
@@ -313,7 +315,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditPostRedirectsToCorrectActionWithCorrectRouteValuesWhenModelStateIsValid()
         {
             var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), It.IsAny<int>());
-            var result = await controller.Edit(new CampaignSummaryModel { Name = "Foo", OrganizationId = It.IsAny<int>() }, null);
+            var result = await controller.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = It.IsAny<int>() }, null);
 
             //TODO: test result for correct Action name and Route values
             Assert.IsType<RedirectToActionResult>(result);
@@ -325,7 +327,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var controller = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), It.IsAny<int>());
             var file = FormFile("");
 
-            await controller.Edit(new CampaignSummaryModel { Name = "Foo", OrganizationId = It.IsAny<int>() }, file);
+            await controller.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = It.IsAny<int>() }, file);
 
             Assert.False(controller.ModelState.IsValid);
             Assert.True(controller.ModelState.ContainsKey("ImageUrl"));
@@ -347,11 +349,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             });
 
             var file = FormFile("audio/mpeg3");
-            CampaignSummaryModel model = MassiveTrafficLightOutage_model;
+            CampaignSummaryViewModel model = MassiveTrafficLightOutage_model;
             model.OrganizationId = ORGANIZATION_ID;
 
             ViewResult view = (ViewResult)(await sut.Edit(model, file));
-            CampaignSummaryModel viewModel = (CampaignSummaryModel)view.ViewData.Model;
+            CampaignSummaryViewModel viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
             Assert.True(Object.ReferenceEquals(model, viewModel));
         }
 
@@ -373,7 +375,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var file = FormFile("image/jpeg");
 
-            await sut.Edit(new CampaignSummaryModel { Name = "Foo", OrganizationId = organizationId, Id = campaignId}, file);
+            await sut.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = organizationId, Id = campaignId}, file);
 
             mockImageService.Verify(mock => mock.UploadCampaignImageAsync(
                         It.Is<int>(i => i == organizationId),
@@ -384,14 +386,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void EditPostHasHttpPostAttribute()
         {
-            HttpPostAttribute attr = (HttpPostAttribute)typeof(CampaignController).GetMethod(nameof(CampaignController.Edit), new Type[] { typeof(CampaignSummaryModel), typeof(IFormFile) }).GetCustomAttribute(typeof(HttpPostAttribute));
+            HttpPostAttribute attr = (HttpPostAttribute)typeof(CampaignController).GetMethod(nameof(CampaignController.Edit), new Type[] { typeof(CampaignSummaryViewModel), typeof(IFormFile) }).GetCustomAttribute(typeof(HttpPostAttribute));
             Assert.NotNull(attr);
         }
 
         [Fact]
         public void EditPostHasValidateAntiForgeryTokenttribute()
         {
-            ValidateAntiForgeryTokenAttribute attr = (ValidateAntiForgeryTokenAttribute)typeof(CampaignController).GetMethod(nameof(CampaignController.Edit), new Type[] { typeof(CampaignSummaryModel), typeof(IFormFile) }).GetCustomAttribute(typeof(ValidateAntiForgeryTokenAttribute));
+            ValidateAntiForgeryTokenAttribute attr = (ValidateAntiForgeryTokenAttribute)typeof(CampaignController).GetMethod(nameof(CampaignController.Edit), new Type[] { typeof(CampaignSummaryViewModel), typeof(IFormFile) }).GetCustomAttribute(typeof(ValidateAntiForgeryTokenAttribute));
             Assert.NotNull(attr);
         }
 
@@ -401,7 +403,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             int ORGANIZATION_ID = 99;
             int CAMPAIGN_ID = 100;
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(c => c.CampaignId == CAMPAIGN_ID))).ReturnsAsync(new CampaignSummaryModel { Id = CAMPAIGN_ID, OrganizationId = ORGANIZATION_ID });
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(c => c.CampaignId == CAMPAIGN_ID))).ReturnsAsync(new CampaignSummaryViewModel { Id = CAMPAIGN_ID, OrganizationId = ORGANIZATION_ID });
             CampaignController controller = new CampaignController(mockMediator.Object, null);
             controller.SetClaims(new List<Claim>
             {
@@ -440,7 +442,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             int ORGANIZATION_ID = 99;
             int CAMPAIGN_ID = 100;
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(c => c.CampaignId == CAMPAIGN_ID))).ReturnsAsync(new CampaignSummaryModel { Id = CAMPAIGN_ID, OrganizationId = ORGANIZATION_ID });
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(c => c.CampaignId == CAMPAIGN_ID))).ReturnsAsync(new CampaignSummaryViewModel { Id = CAMPAIGN_ID, OrganizationId = ORGANIZATION_ID });
             CampaignController controller = new CampaignController(mockMediator.Object, null);
             controller.SetClaims(new List<Claim>
             {
@@ -448,7 +450,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 new Claim(AllReady.Security.ClaimTypes.Organization, ORGANIZATION_ID.ToString())
             });
             ViewResult view = (ViewResult)(await controller.Delete(CAMPAIGN_ID));
-            CampaignSummaryModel viewModel = (CampaignSummaryModel)view.ViewData.Model;
+            CampaignSummaryViewModel viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
             Assert.Equal(viewModel.Id, CAMPAIGN_ID);
         }
 
@@ -477,7 +479,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int campaignId = 100;
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel { OrganizationId = organizationId });
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel { OrganizationId = organizationId });
 
             var sut = new CampaignController(mockMediator.Object, null);
             sut.SetClaims(new List<Claim>
@@ -498,7 +500,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int campaignId = 100;
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryModel { OrganizationId = organizationId });
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel { OrganizationId = organizationId });
 
             var sut = new CampaignController(mockMediator.Object, null);
             sut.SetClaims(new List<Claim>
@@ -616,7 +618,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static CampaignController CampaignControllerWithDetailQuery(string userType, int organizationId)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignDetailQuery>())).ReturnsAsync(new CampaignDetailModel { OrganizationId = organizationId }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignDetailQuery>())).ReturnsAsync(new CampaignDetailViewModel { OrganizationId = organizationId }).Verifiable();
 
             var controller = new CampaignController(mockMediator.Object, null);
             controller.SetClaims(new List<Claim>
@@ -632,7 +634,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>()))
-                .ReturnsAsync(new CampaignSummaryModel { OrganizationId = organizationId, Location = new LocationEditModel() }).Verifiable();
+                .ReturnsAsync(new CampaignSummaryViewModel { OrganizationId = organizationId, Location = new LocationEditViewModel() }).Verifiable();
 
             var mockImageService = new Mock<IImageService>();
 
@@ -655,9 +657,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         #endregion
 
         #region "Test Models"
-        public static LocationEditModel BogusAve_model {
+        public static LocationEditViewModel BogusAve_model {
             get {
-                return new LocationEditModel() {
+                return new LocationEditViewModel() {
                     Address1 = "25 Bogus Ave",
                     City = "Agincourt",
                     State = "Ontario",
@@ -666,18 +668,18 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 };
             }
         }
-        public static OrganizationEditModel AgincourtAware_model {
+        public static OrganizationEditViewModel AgincourtAware_model {
             get {
-                return new OrganizationEditModel() {
+                return new OrganizationEditViewModel() {
                     Name = "Agincourt Awareness",
                     Location = BogusAve_model,
                     WebUrl = "http://www.AgincourtAwareness.ca",
                     LogoUrl = "http://www.AgincourtAwareness.ca/assets/LogoLarge.png" };
             }
         }
-        public static CampaignSummaryModel MassiveTrafficLightOutage_model {
+        public static CampaignSummaryViewModel MassiveTrafficLightOutage_model {
             get {
-                return new CampaignSummaryModel() {
+                return new CampaignSummaryViewModel() {
                     Description = "Preparations to be ready to deal with a wide-area traffic outage.",
                     EndDate = DateTime.Today.AddMonths(1),
                     ExternalUrl = "http://agincourtaware.trafficlightoutage.com",

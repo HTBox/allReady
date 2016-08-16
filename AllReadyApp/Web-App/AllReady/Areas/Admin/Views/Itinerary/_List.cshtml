@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AllReady.Areas.Admin.Models.ItineraryModels.ItineraryListModel>
+﻿@model IEnumerable<AllReady.Areas.Admin.ViewModels.Itinerary.ItineraryListViewModel>
 
 <div class="row">
     <div class="col-md-12">
@@ -23,7 +23,7 @@
                 {
                     <tr>
                         <td>
-                            <a asp-controller="Itinerary" asp-action="Details" asp-route-area="Admin" asp-route-id="@itinerary.Id">@itinerary.Name</a>                           
+                            <a asp-controller="Itinerary" asp-action="Details" asp-area="Admin" asp-route-id="@itinerary.Id">@itinerary.Name</a>                           
                         </td>
                         <td>
                             <p>@itinerary.DisplayDate</p>

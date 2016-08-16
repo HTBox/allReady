@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AllReady.Areas.Admin.Models.TaskSummaryModel>
+﻿@model IEnumerable<AllReady.Areas.Admin.ViewModels.Task.TaskSummaryViewModel>
 
 <div class="row">
     <div class="col-md-12">
@@ -25,7 +25,7 @@
             {
                 <tr>
                     <td>
-                        <a asp-controller="Task" asp-action="Details" asp-route-area="Admin" asp-route-id="@item.Id">@item.Name</a>
+                        <a asp-controller="Task" asp-action="Details" asp-area="Admin" asp-route-id="@item.Id">@item.Name</a>
                     </td>
                     @if (item.AssignedVolunteers == null || item.AssignedVolunteers.Count == 0)
                     {
@@ -39,7 +39,7 @@
                     }
                     else
                     {
-                        <td><a asp-controller="Task" asp-action="Details" asp-route-area="Admin" asp-route-eventId="@item.EventId" asp-route-id="@item.Id">Multiple Volunteers</a></td>
+                        <td><a asp-controller="Task" asp-action="Details" asp-area="Admin" asp-route-eventId="@item.EventId" asp-route-id="@item.Id">Multiple Volunteers</a></td>
                         <td>@item.AcceptedVolunteerCount / @item.AssignedVolunteers.Count Accepted</td>
                     }
 

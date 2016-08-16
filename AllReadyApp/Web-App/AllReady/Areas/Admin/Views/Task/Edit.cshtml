@@ -1,4 +1,4 @@
-﻿@model TaskSummaryModel
+﻿@model AllReady.Areas.Admin.ViewModels.Task.TaskSummaryViewModel
 @inject AllReady.Services.ISelectListService SelectListService
 
 @{
@@ -17,16 +17,16 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-route-area="Admin">@Model.EventName</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="Admin">@Model.EventName</a></li>
             @if (Model.Id == 0)
             {
                 <li>Create New Task</li>
             }
             else
             {
-                <li><a asp-controller="Task" asp-action="Details" asp-route-id="@Model.Id" asp-route-area="Admin">@Model.Name</a></li>
+                <li><a asp-controller="Task" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.Name</a></li>
                 <li>Edit</li>
             }
 
@@ -83,7 +83,7 @@
         <div class="form-group">
             <label asp-for="StartDateTime" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="StartDateTime" class="form-control datetimepicker" />
+                <input asp-for="StartDateTime" class="form-control datetimepicker" min="@Model.EventStartDateTime" max="@Model.EventEndDateTime" />
                 <time-zone-name time-zone-id="@Model.TimeZoneId" class="text-muted"></time-zone-name>
                 <span asp-validation-for="StartDateTime" class="text-danger"></span>
             </div>
@@ -91,7 +91,7 @@
         <div class="form-group">
             <label asp-for="EndDateTime" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="EndDateTime" class="form-control datetimepicker" />
+                <input asp-for="EndDateTime" class="form-control datetimepicker" min="@Model.EventStartDateTime" max="@Model.EventEndDateTime" />
                 <time-zone-name time-zone-id="@Model.TimeZoneId" class="text-muted"></time-zone-name>
                 <span asp-validation-for="EndDateTime" class="text-danger"></span>
             </div>

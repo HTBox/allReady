@@ -1,8 +1,7 @@
 ﻿using AllReady.Areas.Admin.Features.Skills;
-using AllReady.Areas.Admin.Models;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.UnitTest.Features.Campaigns;
+using AllReady.Areas.Admin.ViewModels.Skill;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Skills
@@ -14,7 +13,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
         {
             // Arrange
             var handler = new SkillEditCommandHandlerAsync(Context);
-            var newSkill = new SkillEditModel { Id = 2, Name = "New", Description = "Desc", OwningOrganizationId = 1 };
+            var newSkill = new SkillEditViewModel { Id = 2, Name = "New", Description = "Desc", OwningOrganizationId = 1 };
 
             // Act
             var result = await handler.Handle(new SkillEditCommandAsync { Skill = newSkill });
@@ -31,7 +30,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
         {
             // Arrange
             var handler = new SkillEditCommandHandlerAsync(Context);
-            var newSkill = new SkillEditModel { Name = "New", Description = "Desc" };
+            var newSkill = new SkillEditViewModel { Name = "New", Description = "Desc" };
 
             // Act
             var result = await handler.Handle(new SkillEditCommandAsync { Skill = newSkill });

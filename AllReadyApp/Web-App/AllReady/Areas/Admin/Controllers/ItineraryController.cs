@@ -6,9 +6,9 @@ using AllReady.Areas.Admin.Features.Itineraries;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.Features.TaskSignups;
-using AllReady.Areas.Admin.Models.ItineraryModels;
-using AllReady.Areas.Admin.Models.RequestModels;
-using AllReady.Areas.Admin.Models.Validators;
+using AllReady.Areas.Admin.ViewModels.Itinerary;
+using AllReady.Areas.Admin.ViewModels.Request;
+using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Models;
 using AllReady.Security;
 using MediatR;
@@ -62,7 +62,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [Route("Admin/Itinerary/Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ItineraryEditModel model)
+        public async Task<IActionResult> Create(ItineraryEditViewModel model)
         {
             if (model == null)
             {
@@ -136,7 +136,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var model = await BuildSelectItineraryRequestsModel(id, new RequestSearchCriteria());
+            var model = await BuildSelectItineraryRequestsModel(id, new RequestSearchCriteria { Status = RequestStatus.Unassigned });
 
             return View("SelectRequests", model);
         }
@@ -144,17 +144,17 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [Route("Admin/Itinerary/{id}/[Action]")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SelectRequests(int id, SelectItineraryRequestsModel model)
+        public async Task<IActionResult> SelectRequests(int id, SelectItineraryRequestsViewModel model)
         {
-            var newModel = await BuildSelectItineraryRequestsModel(id, new RequestSearchCriteria { Keywords = model.KeywordsFilter });
+            var newModel = await BuildSelectItineraryRequestsModel(id, new RequestSearchCriteria { Status = RequestStatus.Unassigned, Keywords = model.KeywordsFilter });
 
             return View("SelectRequests", newModel);
         }
 
-        private async Task<SelectItineraryRequestsModel> BuildSelectItineraryRequestsModel(int itineraryId,
+        private async Task<SelectItineraryRequestsViewModel> BuildSelectItineraryRequestsModel(int itineraryId,
             RequestSearchCriteria criteria)
         {
-            var model = new SelectItineraryRequestsModel();
+            var model = new SelectItineraryRequestsViewModel();
 
             var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = itineraryId });
 
@@ -170,13 +170,15 @@ namespace AllReady.Areas.Admin.Controllers
 
             foreach (var request in requests)
             {
-                var selectItem = new RequestSelectModel
+                var selectItem = new RequestSelectViewModel
                 {
                     Id = request.Id,
                     Name = request.Name,
                     DateAdded = request.DateAdded,
                     City = request.City,
                     Address = request.Address,
+                    Latitude = request.Latitude,
+                    Longitude = request.Longitude,
                     Postcode = request.Postcode
                 };
 

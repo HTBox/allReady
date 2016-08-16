@@ -1,5 +1,4 @@
 ﻿using AllReady.Areas.Admin.Features.Requests;
-using AllReady.Areas.Admin.Models.RequestModels;
 using AllReady.Models;
 using CsvHelper;
 using MediatR;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Linq;
+using AllReady.Areas.Admin.ViewModels.Request;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -46,7 +46,7 @@ namespace AllReady.Areas.Admin.Controllers
                     csvReader.Configuration.RegisterClassMap<RedCrossRequestMap>();
                     var requests = csvReader.GetRecords<Request>().ToList();
 
-                    var errors = _mediator.Send(new AddRequestsCommand { Requests = requests });
+                    var errors = _mediator.Send(new ImportRequestsCommand { Requests = requests });
 
                 }
             }
