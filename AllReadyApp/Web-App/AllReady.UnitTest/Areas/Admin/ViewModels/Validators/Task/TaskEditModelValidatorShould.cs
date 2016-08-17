@@ -1,29 +1,28 @@
-﻿using AllReady.Features.Event;
+﻿using System;
+using AllReady.Areas.Admin.ViewModels.Task;
+using AllReady.Areas.Admin.ViewModels.Validators;
+using AllReady.Features.Event;
 using AllReady.Models;
 using MediatR;
 using Moq;
-using System;
-using AllReady.Areas.Admin.ViewModels.Task;
-using AllReady.Areas.Admin.ViewModels.Validators;
 using Xunit;
 
-namespace AllReady.UnitTest.Areas.Admin.Models.Validators
+namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
 {
-    public class TaskSummaryModelValidatorTests
+    public class TaskEditViewModelValidatorShould
     {
         private readonly DateTimeOffset eventStartDate = new DateTimeOffset(new DateTime(2016, 1, 1));
         private readonly DateTimeOffset eventEndDate = new DateTimeOffset(new DateTime(2020, 12, 31));
 
         [Fact]
-        public void ReturnsCorrectErrorWhenEndDateTimeIsLessThanStartDateTime()
+        public void ReturnCorrectErrorWhenEndDateTimeIsLessThanStartDateTime()
         {
             var mockMediator = new Mock<IMediator>();
-
-            mockMediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Id = 1, Campaign = new Campaign { TimeZoneId = "UTC" } });
+            mockMediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new AllReady.Models.Event { Id = 1, Campaign = new Campaign { TimeZoneId = "UTC" } });
 
             var validator = new TaskEditViewModelValidator(mockMediator.Object);
 
-            var model = new TaskSummaryViewModel
+            var model = new EditViewModel
             {
                 StartDateTime = new DateTimeOffset(new DateTime(2000, 1, 1)),
                 EndDateTime = new DateTimeOffset(new DateTime(1999, 1, 1))
@@ -40,7 +39,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             var validator = GetValidator();
 
-            var model = new TaskSummaryViewModel
+            var model = new EditViewModel
             {
                 StartDateTime = eventStartDate.AddDays(-10),
                 EndDateTime = eventEndDate.AddDays(-1)
@@ -57,7 +56,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             var validator = GetValidator();
 
-            var model = new TaskSummaryViewModel
+            var model = new EditViewModel
             {
                 StartDateTime = eventStartDate.AddDays(1),
                 EndDateTime = eventEndDate.AddDays(10)
@@ -74,7 +73,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             var validator = GetValidator();
 
-            var model = new TaskSummaryViewModel
+            var model = new EditViewModel
             {
                 StartDateTime = new DateTimeOffset(new DateTime(1999, 12, 1)),
                 EndDateTime = new DateTimeOffset(new DateTime(2000, 12, 1))
@@ -91,7 +90,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             var mockMediator = new Mock<IMediator>();
 
-            mockMediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
+            mockMediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new AllReady.Models.Event
             {
                 Id = 1,
                 Campaign = new Campaign
@@ -105,7 +104,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
 
             var validator = new TaskEditViewModelValidator(mockMediator.Object);
 
-            var model = new TaskSummaryViewModel
+            var model = new EditViewModel
             {
                 StartDateTime = eventStartDate.AddDays(1),
                 EndDateTime = eventEndDate.AddDays(-1)
@@ -121,7 +120,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             var validator = GetValidator();
 
-            var model = new TaskSummaryViewModel
+            var model = new EditViewModel
             {
                 StartDateTime = eventStartDate.AddDays(1),
                 EndDateTime = eventStartDate.AddDays(1).AddHours(2),
@@ -136,7 +135,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
         {
             var mockMediator = new Mock<IMediator>();
 
-            mockMediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
+            mockMediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new AllReady.Models.Event
             {
                 Id = 1,
                 Campaign = new Campaign
