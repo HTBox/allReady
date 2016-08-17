@@ -128,7 +128,7 @@ namespace AllReady
         services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
         services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
         services.AddTransient<IValidateEventDetailModels, EventEditModelValidator>();
-        services.AddTransient<ITaskSummaryModelValidator, TaskSummaryModelValidator>();
+        services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
         services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
         services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
         services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();

@@ -19,9 +19,9 @@ namespace AllReady.Areas.Admin.Controllers
     public class TaskController : Controller
     {
         private readonly IMediator _mediator;
-        private readonly ITaskSummaryModelValidator _taskDetailModelValidator;
+        private readonly ITaskEditViewModelValidator _taskDetailModelValidator;
 
-        public TaskController(IMediator mediator, ITaskSummaryModelValidator taskDetailModelValidator)
+        public TaskController(IMediator mediator, ITaskEditViewModelValidator taskDetailModelValidator)
         {
             _mediator = mediator;
             _taskDetailModelValidator = taskDetailModelValidator;
@@ -100,10 +100,9 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(TaskSummaryViewModel model)
+        public async Task<IActionResult> Edit(EditViewModel model)
         {
             var errors = _taskDetailModelValidator.Validate(model);
-
             errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)
@@ -112,10 +111,12 @@ namespace AllReady.Areas.Admin.Controllers
                 {
                     return Unauthorized();
                 }
-                
-                await _mediator.SendAsync(new EditTaskCommandAsync { Task = model });
 
-                return RedirectToAction(nameof(Details), "Task", new { id = model.Id });
+                var taskId = await _mediator.SendAsync(new EditTaskCommandAsync { Task = model });
+
+                return model.Id == 0 ?
+                    RedirectToAction(nameof(EventController.Details), "Event", new { id = model.EventId }) :
+                    RedirectToAction(nameof(Details), "Task", new { id = taskId });
             }
 
             return View(model);

@@ -21,7 +21,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
 
             mockMediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Id = 1, Campaign = new Campaign { TimeZoneId = "UTC" } });
 
-            var validator = new TaskSummaryModelValidator(mockMediator.Object);
+            var validator = new TaskEditViewModelValidator(mockMediator.Object);
 
             var model = new TaskSummaryViewModel
             {
@@ -103,7 +103,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
                 EventType = EventType.Rally
             });
 
-            var validator = new TaskSummaryModelValidator(mockMediator.Object);
+            var validator = new TaskEditViewModelValidator(mockMediator.Object);
 
             var model = new TaskSummaryViewModel
             {
@@ -132,7 +132,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
             Assert.True(errors.Count == 0);
         }
 
-        private TaskSummaryModelValidator GetValidator()
+        private TaskEditViewModelValidator GetValidator()
         {
             var mockMediator = new Mock<IMediator>();
 
@@ -148,7 +148,7 @@ namespace AllReady.UnitTest.Areas.Admin.Models.Validators
                 EventType = EventType.Itinerary
             });
 
-            return new TaskSummaryModelValidator(mockMediator.Object);
+            return new TaskEditViewModelValidator(mockMediator.Object);
         }
     }
 }

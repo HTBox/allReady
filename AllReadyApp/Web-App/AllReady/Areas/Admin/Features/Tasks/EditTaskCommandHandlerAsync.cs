@@ -10,7 +10,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class EditTaskCommandHandlerAsync : IAsyncRequestHandler<EditTaskCommandAsync, int>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
 
         public EditTaskCommandHandlerAsync(AllReadyContext context)
         {
@@ -19,12 +19,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<int> Handle(EditTaskCommandAsync message)
         {
-            var task = await _context.Tasks.Include(t => t.RequiredSkills).SingleOrDefaultAsync(t => t.Id == message.Task.Id);
-
-            if (task == null)
-            { 
-                task = new AllReadyTask();
-            }
+            var task = await _context.Tasks.Include(t => t.RequiredSkills).SingleOrDefaultAsync(t => t.Id == message.Task.Id).ConfigureAwait(false) ?? new AllReadyTask();
 
             task.Name = message.Task.Name;
             task.Description = message.Task.Description;
@@ -32,13 +27,12 @@ namespace AllReady.Areas.Admin.Features.Tasks
             task.Organization = _context.Organizations.SingleOrDefault(t => t.Id == message.Task.OrganizationId);
 
             var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(message.Task.TimeZoneId);
+
             var startDateValue = message.Task.StartDateTime;
-            var startDateTimeOffset = timeZoneInfo.GetUtcOffset(startDateValue);
-            task.StartDateTime = new DateTimeOffset(startDateValue.Year, startDateValue.Month, startDateValue.Day, startDateValue.Hour, startDateValue.Minute, 0, startDateTimeOffset);
+            task.StartDateTime = new DateTimeOffset(startDateValue.Year, startDateValue.Month, startDateValue.Day, startDateValue.Hour, startDateValue.Minute, 0, timeZoneInfo.GetUtcOffset(startDateValue));
 
             var endDateValue = message.Task.EndDateTime;
-            var endDateTimeOffset = timeZoneInfo.GetUtcOffset(endDateValue);
-            task.EndDateTime = new DateTimeOffset(endDateValue.Year, endDateValue.Month, endDateValue.Day, endDateValue.Hour, endDateValue.Minute, 0, endDateTimeOffset);
+            task.EndDateTime = new DateTimeOffset(endDateValue.Year, endDateValue.Month, endDateValue.Day, endDateValue.Hour, endDateValue.Minute, 0, timeZoneInfo.GetUtcOffset(endDateValue));
 
             task.NumberOfVolunteersRequired = message.Task.NumberOfVolunteersRequired;
             task.IsLimitVolunteers = task.Event.IsLimitVolunteers;
@@ -46,17 +40,18 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             if (task.Id > 0)
             {
-                var tsToRemove = _context.TaskSkills
-                    .Where(ts => ts.TaskId == task.Id && (message.Task.RequiredSkills == null || !message.Task.RequiredSkills.Any(ts1 => ts1.SkillId == ts.SkillId)));
-                _context.TaskSkills.RemoveRange(tsToRemove);
+                var taskSkillsToRemove = _context.TaskSkills.Where(ts => ts.TaskId == task.Id && (message.Task.RequiredSkills == null || message.Task.RequiredSkills.All(ts1 => ts1.SkillId != ts.SkillId)));
+                _context.TaskSkills.RemoveRange(taskSkillsToRemove);
             }
 
             if (message.Task.RequiredSkills != null)
-                task.RequiredSkills.AddRange(message.Task.RequiredSkills.Where(mt => !task.RequiredSkills.Any(ts => ts.SkillId == mt.SkillId)));
+            {
+                task.RequiredSkills.AddRange(message.Task.RequiredSkills.Where(mt => task.RequiredSkills.All(ts => ts.SkillId != mt.SkillId)));
+            }
 
-            _context.AddOrUpdate(task); // We can safely call AddOrUpdate here since we trust that it will either be detached (and new - Add) or attached and required properties marked as modified (Update)
+            _context.AddOrUpdate(task);
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync().ConfigureAwait(false);
 
             return task.Id;
         }

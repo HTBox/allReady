@@ -27,7 +27,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const int eventId = 1;
             var mediator = new Mock<IMediator>();
-            var mockValidator = new Mock<ITaskSummaryModelValidator>();
+            var mockValidator = new Mock<ITaskEditViewModelValidator>();
             var sut = new TaskController(mediator.Object, mockValidator.Object);
             sut.Create(eventId);
 
@@ -37,7 +37,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void CreateGetReturnsHttpUnauthorizedResultWhenEventIsNull()
         {
-            var sut = new TaskController(Mock.Of<IMediator>(), Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(Mock.Of<IMediator>(), Mock.Of<ITaskEditViewModelValidator>());
             var result = sut.Create(It.IsAny<int>());
 
             Assert.IsType<UnauthorizedResult>(result);
@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } });
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             sut.SetDefaultHttpContext();
 
             var result = sut.Create(It.IsAny<int>());
@@ -84,7 +84,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(campaignEvent);
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             var result = sut.Create(It.IsAny<int>()) as ViewResult;
@@ -108,7 +108,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = organizationId } });
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             var result = sut.Create(It.IsAny<int>()) as ViewResult;
@@ -119,7 +119,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void CreateGetHasHttpGetAttribute()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -127,7 +127,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void CreateGetHasRouteAttributeWithCorrectTemplate()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "Admin/Task/Create/{eventId}");
@@ -139,7 +139,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
-            var validator = new Mock<ITaskSummaryModelValidator>();
+            var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
@@ -158,7 +158,7 @@ namespace AllReady.UnitTest.Controllers
             //http://stackoverflow.com/questions/7908343/list-of-timezone-ids-for-use-with-findtimezonebyid-in-c
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
-            var validator = new Mock<ITaskSummaryModelValidator>();
+            var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(nameof(TaskSummaryViewModel.EndDateTime), "Ending time cannot be earlier than the starting time") });
 
             var sut = new TaskController(mediator.Object, validator.Object);
@@ -176,7 +176,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
-            var validator = new Mock<ITaskSummaryModelValidator>();
+            var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(nameof(TaskSummaryViewModel.EndDateTime), "Ending time cannot be earlier than the starting time") });
 
             var sut = new TaskController(mediator.Object, validator.Object);
@@ -202,7 +202,7 @@ namespace AllReady.UnitTest.Controllers
                 EndDateTime = endDateTime.AddDays(1)
             });
 
-            var validator = new Mock<ITaskSummaryModelValidator>();
+            var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
@@ -232,7 +232,7 @@ namespace AllReady.UnitTest.Controllers
             });
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
-            var validator = new Mock<ITaskSummaryModelValidator>();
+            var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
@@ -264,7 +264,7 @@ namespace AllReady.UnitTest.Controllers
 
             var routeValues = new Dictionary<string, object> { ["id"] = model.Id };
 
-            var validator = new Mock<ITaskSummaryModelValidator>();
+            var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
@@ -280,7 +280,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void CreatePostHasHttpGetAttribute()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<TaskSummaryViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -288,7 +288,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void CreatePostHasRouteAttributeWithCorrectTemplate()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<TaskSummaryViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "Admin/Task/Create/{eventId}");
@@ -300,7 +300,7 @@ namespace AllReady.UnitTest.Controllers
             const int taskId = 1;
             var mediator = new Mock<IMediator>();
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             await sut.Edit(taskId);
 
             mediator.Verify(x => x.SendAsync(It.Is<EditTaskQueryAsync>(y => y.TaskId == taskId)), Times.Once);
@@ -309,7 +309,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task EditGetReturnsHttpNotFoundResultWhenTaskIsNull()
         {
-            var sut = new TaskController(Mock.Of<IMediator>(), Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(Mock.Of<IMediator>(), Mock.Of<ITaskEditViewModelValidator>());
             var result = await sut.Edit(It.IsAny<int>());
 
             Assert.IsType<NotFoundResult>(result);
@@ -321,7 +321,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EditTaskQueryAsync>())).ReturnsAsync(new TaskSummaryViewModel());
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             sut.SetDefaultHttpContext();
             var result = await sut.Edit(It.IsAny<int>());
 
@@ -337,7 +337,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EditTaskQueryAsync>())).ReturnsAsync(TaskSummaryModel);
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             var result = await sut.Edit(It.IsAny<int>()) as ViewResult;
@@ -351,7 +351,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void EditGetHasHttpGetAttribute()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -359,7 +359,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void EditGetHasRouteAttributeWithCorrectTemplate()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "Admin/Task/Edit/{id}");
@@ -371,7 +371,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
-            var validator = new Mock<ITaskSummaryModelValidator>();
+            var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
@@ -390,7 +390,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
-            var validator = new Mock<ITaskSummaryModelValidator>();
+            var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(nameof(TaskSummaryViewModel.EndDateTime), "Ending time cannot be earlier than the starting time") });
 
             var sut = new TaskController(mediator.Object, validator.Object);
@@ -409,7 +409,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { TimeZoneId = "Eastern Standard Time" } });
 
-            var validator = new Mock<ITaskSummaryModelValidator>();
+            var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(nameof(TaskSummaryViewModel.EndDateTime), "Ending time cannot be earlier than the starting time") });
 
             var sut = new TaskController(mediator.Object, validator.Object);
@@ -435,7 +435,7 @@ namespace AllReady.UnitTest.Controllers
                 EndDateTime = endDateTime.AddDays(1)
             });
 
-            var validator = new Mock<ITaskSummaryModelValidator>();
+            var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
@@ -465,7 +465,7 @@ namespace AllReady.UnitTest.Controllers
             });
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
-            var validator = new Mock<ITaskSummaryModelValidator>();
+            var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
@@ -494,7 +494,7 @@ namespace AllReady.UnitTest.Controllers
             });
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
-            var validator = new Mock<ITaskSummaryModelValidator>();
+            var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<TaskSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
@@ -512,7 +512,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void EditPostHasHttpPostAttribute()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<TaskSummaryViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -520,7 +520,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void EditPostHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<TaskSummaryViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -530,7 +530,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const int taskId = 1;
             var mediator = new Mock<IMediator>();
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             await sut.Delete(taskId);
 
             mediator.Verify(x => x.SendAsync(It.Is<TaskQueryAsync>(y => y.TaskId == taskId)), Times.Once);
@@ -539,7 +539,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task DeleteReturnsHttpNotFoundResultWhenTaskIsNull()
         {
-            var sut = new TaskController(Mock.Of<IMediator>(), Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(Mock.Of<IMediator>(), Mock.Of<ITaskEditViewModelValidator>());
             var result = await sut.Delete(It.IsAny<int>());
             Assert.IsType<NotFoundResult>(result);
         }
@@ -550,7 +550,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryViewModel());
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             sut.SetDefaultHttpContext();
             var result = await sut.Delete(It.IsAny<int>());
 
@@ -566,7 +566,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             var result = await sut.Delete(It.IsAny<int>()) as ViewResult;
@@ -582,7 +582,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const int taskId = 1;
             var mediator = new Mock<IMediator>();
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             await sut.Details(taskId);
 
             mediator.Verify(x => x.SendAsync(It.Is<TaskQueryAsync>(y => y.TaskId == taskId)), Times.Once);
@@ -591,7 +591,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task DetailsReturnsHttpNotFoundResultWhenTaskIsNull()
         {
-            var sut = new TaskController(Mock.Of<IMediator>(), Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(Mock.Of<IMediator>(), Mock.Of<ITaskEditViewModelValidator>());
             var result = await sut.Details(It.IsAny<int>());
             Assert.IsType<NotFoundResult>(result);
         }
@@ -604,7 +604,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             var result = await sut.Details(It.IsAny<int>()) as ViewResult;
             var modelResult = result.ViewData.Model as TaskSummaryViewModel;
 
@@ -616,7 +616,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DetailsHasHttpGetAttribute()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -624,7 +624,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DetailsHasRouteAttributeWithCorrectTemplate()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "Admin/Task/Details/{id}");
@@ -635,7 +635,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const int taskId = 1;
             var mediator = new Mock<IMediator>();
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             await sut.DeleteConfirmed(taskId);
 
             mediator.Verify(x => x.SendAsync(It.Is<TaskQueryAsync>(y => y.TaskId == taskId)), Times.Once);
@@ -644,7 +644,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task DeleteConfirmedReturnsHttpNotFoundResultWhenTaskSummaryModelIsNull()
         {
-            var sut = new TaskController(Mock.Of<IMediator>(), Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(Mock.Of<IMediator>(), Mock.Of<ITaskEditViewModelValidator>());
             var result = await sut.DeleteConfirmed(It.IsAny<int>());
             Assert.IsType<NotFoundResult>(result);
         }
@@ -655,7 +655,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryViewModel());
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             sut.SetDefaultHttpContext();
 
             var result = await sut.DeleteConfirmed(It.IsAny<int>());
@@ -672,7 +672,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryViewModel { OrganizationId = 1 });
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             await sut.DeleteConfirmed(taskId);
 
@@ -689,7 +689,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskSummaryModel);
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             var result = await sut.DeleteConfirmed(taskId) as RedirectToActionResult;
 
@@ -703,14 +703,14 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DeleteConfirmedHasHttpPostAttribute()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
         public void DeleteConfirmedHasActionNameAttributeWithCorrectActionName()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ActionNameAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Name, "Delete");
@@ -719,7 +719,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DeleteConfirmedHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -734,7 +734,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } });
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskModelSummary);
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             sut.SetDefaultHttpContext();
             await sut.Assign(taskId, null);
 
@@ -750,7 +750,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskModelSummary);
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } });
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             sut.SetDefaultHttpContext();
             var result = await sut.Assign(1, null);
 
@@ -769,7 +769,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskModelSummary);
             mediator.Setup(x => x.Send(It.Is<EventByIdQuery>(y => y.EventId == taskModelSummary.EventId))).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = organizationId } });
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             await sut.Assign(taskId, userIds);
 
@@ -787,7 +787,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(taskModelSummary);
             mediator.Setup(x => x.Send(It.Is<EventByIdQuery>(y => y.EventId == taskModelSummary.EventId))).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = organizationId } });
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
 
             var result = await sut.Assign(taskId, null) as RedirectToRouteResult;
@@ -801,7 +801,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void AssignHasHttpPostAttribute()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.Assign(It.IsAny<int>(), It.IsAny<List<string>>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -809,7 +809,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void AssignHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.Assign(It.IsAny<int>(), It.IsAny<List<string>>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -817,7 +817,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task MessageAllVolunteersReturnsBadRequestObjectResultWhenModelStateIsInvalid()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             sut.AddModelStateError();
             var result = await sut.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersViewModel>());
             Assert.IsType<BadRequestObjectResult>(result);
@@ -829,7 +829,7 @@ namespace AllReady.UnitTest.Controllers
             var model = new MessageTaskVolunteersViewModel { TaskId = 1 };
             var mediator = new Mock<IMediator>();
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             await sut.MessageAllVolunteers(model);
 
             mediator.Verify(x => x.SendAsync(It.Is<TaskQueryAsync>(y => y.TaskId == model.TaskId)), Times.Once);
@@ -840,7 +840,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var mediator = new Mock<IMediator>();
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersViewModel());
 
             Assert.IsType<NotFoundResult>(result);
@@ -852,7 +852,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryViewModel());
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             sut.SetDefaultHttpContext();
             var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersViewModel());
 
@@ -868,7 +868,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryViewModel { OrganizationId = organizationId });
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             await sut.MessageAllVolunteers(model);
 
@@ -883,7 +883,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskQueryAsync>())).ReturnsAsync(new TaskSummaryViewModel { OrganizationId = organizationId });
 
-            var sut = new TaskController(mediator.Object, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(mediator.Object, Mock.Of<ITaskEditViewModelValidator>());
             MakeUserOrganizationAdminUser(sut, organizationId.ToString());
             var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersViewModel());
 
@@ -893,7 +893,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void MessageAllVolunteersHasHttpPostAttribute()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -901,7 +901,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void MessageAllVolunteersHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributesOn(x => x.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -909,7 +909,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ControllerHasAreaAtttributeWithTheCorrectAreaName()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             sut.SetDefaultHttpContext();
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
@@ -919,7 +919,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ControllerHasAuthorizeAtttributeWithTheCorrectPolicy()
         {
-            var sut = new TaskController(null, Mock.Of<ITaskSummaryModelValidator>());
+            var sut = new TaskController(null, Mock.Of<ITaskEditViewModelValidator>());
             var attribute = sut.GetAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Policy, "OrgAdmin");
