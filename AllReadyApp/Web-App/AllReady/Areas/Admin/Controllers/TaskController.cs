@@ -27,6 +27,19 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [Route("Admin/Task/Details/{id}")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var details = await _mediator.SendAsync(new DetailsQueryAsync { TaskId = id });
+            if (details == null)
+            {
+                return NotFound();
+            }
+
+            return View(details);
+        }
+
+        [HttpGet]
         [Route("Admin/Task/Create/{eventId}")]
         public IActionResult Create(int eventId)
         {
@@ -131,19 +144,6 @@ namespace AllReady.Areas.Admin.Controllers
             if (!User.IsOrganizationAdmin(task.OrganizationId))
             {
                 return Unauthorized();
-            }
-            
-            return View(task);
-        }
-
-        [HttpGet]
-        [Route("Admin/Task/Details/{id}")]
-        public async Task<IActionResult> Details(int id)
-        {
-            var task = await _mediator.SendAsync(new TaskQueryAsync { TaskId = id });
-            if (task == null)
-            {
-                return NotFound();
             }
             
             return View(task);
