@@ -137,23 +137,16 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(DeleteViewModel model)
         {
-            var taskSummaryModel = await _mediator.SendAsync(new TaskQueryAsync { TaskId = id });
-            if (taskSummaryModel == null)
-            {
-                return NotFound();
-            }
-
-            if (!User.IsOrganizationAdmin(taskSummaryModel.OrganizationId))
+            if (!model.UserIsOrgAdmin)
             {
                 return Unauthorized();
             }
-            
-            await _mediator.SendAsync(new DeleteTaskCommandAsync { TaskId = id });
 
-            //mgmccarthy: I'm assuming this is EventController in the Admin area
-            return RedirectToAction(nameof(EventController.Details), "Event", new { id = taskSummaryModel.EventId });
+            await _mediator.SendAsync(new DeleteTaskCommandAsync { TaskId = model.Id });
+
+            return RedirectToAction(nameof(EventController.Details), "Event", new { id = model.EventId });
         }
 
         [HttpPost]
