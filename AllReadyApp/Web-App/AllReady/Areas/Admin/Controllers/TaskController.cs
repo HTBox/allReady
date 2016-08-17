@@ -57,30 +57,6 @@ namespace AllReady.Areas.Admin.Controllers
             return View("Edit", model);
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //[Route("Admin/Task/Create/{eventId}")]
-        //public async Task<IActionResult> Create(int eventId, TaskSummaryViewModel model)
-        //{
-        //    var errors = _taskDetailModelValidator.Validate(model);
-
-        //    errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        if (!User.IsOrganizationAdmin(model.OrganizationId))
-        //        {
-        //            return Unauthorized();
-        //        }
-
-        //        await _mediator.SendAsync(new EditTaskCommandAsync { Task = model });
-
-        //        return RedirectToAction(nameof(Details), "Event", new { id = eventId });
-        //    }
-
-        //    return View("Edit", model);
-        //}
-
         [HttpGet]
         [Route("Admin/Task/Edit/{id}")]
         public async Task<IActionResult> Edit(int id)
@@ -168,30 +144,20 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MessageAllVolunteers(MessageTaskVolunteersViewModel model)
         {
-            //TODO: Query only for the organization Id rather than the whole event detail
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
-            var task = await _mediator.SendAsync(new TaskQueryAsync { TaskId = model.TaskId });
-            if (task == null)
-            {
-                return NotFound();
-            }
 
-            if (!User.IsOrganizationAdmin(task.OrganizationId))
+            var tasksOrganizationId = await _mediator.SendAsync(new OrganizationIdByTaskIdQueryAsync { TaskId = model.TaskId });
+            if (!User.IsOrganizationAdmin(tasksOrganizationId))
             {
                 return Unauthorized();
             }
-            
+
             await _mediator.SendAsync(new MessageTaskVolunteersCommandAsync { Model = model });
 
             return Ok();
         }
-
-        //TODO: mgmccarthy: mediator query and handler need to be changed to async when Issue #622 is addressed
-        private Event GetEventBy(int eventId) => 
-            _mediator.Send(new EventByIdQuery { EventId = eventId });
     }
 }
