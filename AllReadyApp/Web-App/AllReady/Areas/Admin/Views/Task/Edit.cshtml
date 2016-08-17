@@ -1,25 +1,16 @@
-﻿@model AllReady.Areas.Admin.ViewModels.Task.TaskSummaryViewModel
-@inject AllReady.Services.ISelectListService SelectListService
+﻿@using System.Security.Policy
+@using AllReady.Areas.Admin.ViewModels.Task
+@using AllReady.Services
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@model EditViewModel
+@inject ISelectListService SelectListService
 
-@{
-    string cancelUrl;
-    if (Model.Id == 0)
-    {
-        ViewBag.Title = $"Create Task";
-        cancelUrl = Url.Action("Details", "Event", new { id = Model.EventId, area = "Admin" });
-    }
-    else
-    {
-        ViewBag.Title = "Edit Task";
-        cancelUrl = Url.Action("Details", "Task", new { eventId = Model.EventId, id = Model.Id, area = "Admin" });
-    }
-}
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="Admin">@Model.EventName</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-route-area="Admin">@Model.EventName</a></li>
             @if (Model.Id == 0)
             {
                 <li>Create New Task</li>
@@ -29,23 +20,18 @@
                 <li><a asp-controller="Task" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.Name</a></li>
                 <li>Edit</li>
             }
-
+            <li>Edit</li>
         </ol>
     </div>
 </div>
 <h2>@ViewBag.Title</h2>
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-
+<form asp-controller="Task" asp-action="Edit">
     <div class="form-horizontal">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="EventId" />
-        <input type="hidden" asp-for="EventName" />
         <input type="hidden" asp-for="CampaignId" />
         <input type="hidden" asp-for="TimeZoneId" />
-        <input type="hidden" asp-for="CampaignName" />
         <input type="hidden" asp-for="OrganizationId" />
         <div class="form-group">
             <label asp-for="CampaignName" class="control-label col-md-2"></label>
@@ -120,12 +106,12 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn btn-default" data-bind="enable: requiredSkills.isValid">Save</button>
-                <a class="btn btn-default" href="@cancelUrl">Cancel</a>
+                <a class="btn btn-default" href="@Model.CancelUrl">Cancel</a>
                 <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">"@Html.DisplayNameFor(m => m.RequiredSkills)" must be unique</span>
             </div>
         </div>
     </div>
-}
+</form>
 
 @section scripts {
     <script type="text/javascript">
@@ -164,4 +150,3 @@
             @Json.Serialize(SelectListService.GetSkills()));
     </script>
 }
-

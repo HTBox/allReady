@@ -10,6 +10,7 @@ using AllReady.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -41,29 +42,19 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpGet]
         [Route("Admin/Task/Create/{eventId}")]
-        public IActionResult Create(int eventId)
+        public async Task<IActionResult> Create(int eventId)
         {
-            var campaignEvent = GetEventBy(eventId);
-            if (campaignEvent == null || !User.IsOrganizationAdmin(campaignEvent.Campaign.ManagingOrganizationId))
+            var model = await _mediator.SendAsync(new CreateTaskQueryAsync { EventId = eventId });
+            if (!User.IsOrganizationAdmin(model.OrganizationId))
             {
                 return Unauthorized();
             }
-            
-            var viewModel = new TaskSummaryViewModel
-            {
-                EventId = campaignEvent.Id,
-                EventName = campaignEvent.Name,
-                EventStartDateTime = campaignEvent.StartDateTime,
-                EventEndDateTime = campaignEvent.EndDateTime,
-                CampaignId = campaignEvent.CampaignId,
-                CampaignName = campaignEvent.Campaign.Name,
-                OrganizationId = campaignEvent.Campaign.ManagingOrganizationId,
-                TimeZoneId = campaignEvent.Campaign.TimeZoneId,
-                StartDateTime = campaignEvent.StartDateTime,
-                EndDateTime = campaignEvent.EndDateTime
-            };
 
-            return View("Edit", viewModel);
+            model.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(EventController.Details), Controller = "Event", Values = new { id = model.EventId, area = "Admin" } });
+
+            ViewBag.Title = "Create Task";
+
+            return View("Edit", model);
         }
 
         [HttpPost]
