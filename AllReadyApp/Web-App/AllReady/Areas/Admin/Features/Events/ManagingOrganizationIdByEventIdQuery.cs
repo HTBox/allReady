@@ -2,7 +2,7 @@
 
 namespace AllReady.Areas.Admin.Features.Events
 {
-    public class ManagingOrganizationIdByEventIdQuery : IRequest<int>
+    public class ManagingOrganizationIdByEventIdQuery : IAsyncRequest<int>
     {
         public int EventId { get; set; }
     }

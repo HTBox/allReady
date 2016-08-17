@@ -1,20 +1,26 @@
 ﻿using AllReady.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Events
 {
-    public class ManagingOrganizationIdByEventIdQueryHandler : IRequestHandler<ManagingOrganizationIdByEventIdQuery, int>
+    public class ManagingOrganizationIdByEventIdQueryHandler : IAsyncRequestHandler<ManagingOrganizationIdByEventIdQuery, int>
     {
-        private readonly IAllReadyDataAccess dataAccess;
+        private AllReadyContext _context;
 
-        public ManagingOrganizationIdByEventIdQueryHandler(IAllReadyDataAccess dataAccess)
+        public ManagingOrganizationIdByEventIdQueryHandler(AllReadyContext context)
         {
-            this.dataAccess = dataAccess;
+            _context= context;
         }
 
-        public int Handle(ManagingOrganizationIdByEventIdQuery message)
+        public async Task<int> Handle(ManagingOrganizationIdByEventIdQuery message)
         {
-            return dataAccess.GetManagingOrganizationId(message.EventId);
+            return await _context.Events.Where(a => a.Id == message.EventId)
+                .Select(a => a.Campaign.ManagingOrganizationId)
+                .FirstOrDefaultAsync()
+                .ConfigureAwait(false);
         }
     }
 }
