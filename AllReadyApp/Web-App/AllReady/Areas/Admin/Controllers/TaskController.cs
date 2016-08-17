@@ -57,27 +57,43 @@ namespace AllReady.Areas.Admin.Controllers
             return View("Edit", model);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Route("Admin/Task/Create/{eventId}")]
-        public async Task<IActionResult> Create(int eventId, TaskSummaryViewModel model)
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //[Route("Admin/Task/Create/{eventId}")]
+        //public async Task<IActionResult> Create(int eventId, TaskSummaryViewModel model)
+        //{
+        //    var errors = _taskDetailModelValidator.Validate(model);
+
+        //    errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        if (!User.IsOrganizationAdmin(model.OrganizationId))
+        //        {
+        //            return Unauthorized();
+        //        }
+
+        //        await _mediator.SendAsync(new EditTaskCommandAsync { Task = model });
+
+        //        return RedirectToAction(nameof(Details), "Event", new { id = eventId });
+        //    }
+
+        //    return View("Edit", model);
+        //}
+
+        [HttpGet]
+        [Route("Admin/Task/Edit/{id}")]
+        public async Task<IActionResult> Edit(int id)
         {
-            var errors = _taskDetailModelValidator.Validate(model);
-
-            errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
-
-            if (ModelState.IsValid)
+            var model = await _mediator.SendAsync(new EditTaskQueryAsync { TaskId = id });
+            if (!User.IsOrganizationAdmin(model.OrganizationId))
             {
-                if (!User.IsOrganizationAdmin(model.OrganizationId))
-                {
-                    return Unauthorized();
-                }
-                
-                await _mediator.SendAsync(new EditTaskCommandAsync { Task = model });
-
-                //mgmccarthy: I'm assuming this is EventController in the Admin area
-                return RedirectToAction(nameof(Details), "Event", new { id = eventId });
+                return Unauthorized();
             }
+
+            model.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(Details), Controller = "Task", Values = new { eventId = model.EventId, id = model.Id, area = "Admin" } });
+
+            ViewBag.Title = "Edit Task";
 
             return View("Edit", model);
         }
@@ -105,25 +121,6 @@ namespace AllReady.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpGet]
-        [Route("Admin/Task/Edit/{id}")]
-        public async Task<IActionResult> Edit(int id)
-        {
-            var task = await _mediator.SendAsync(new EditTaskQueryAsync { TaskId = id });
-            if (task == null)
-            {
-                return NotFound();
-            }
-
-            if (!User.IsOrganizationAdmin(task.OrganizationId))
-            {
-                return Unauthorized();
-            }
-            
-            return View(task);
-        }
-
-        //mgmccarthy: does anyone know why there are no attributes here on this action method?
         public async Task<IActionResult> Delete(int id)
         {
             var task = await _mediator.SendAsync(new TaskQueryAsync { TaskId = id });
