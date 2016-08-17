@@ -131,6 +131,7 @@ namespace AllReady
         services.AddTransient<ITaskSummaryModelValidator, TaskSummaryModelValidator>();
         services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
         services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
+        services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
         services.AddSingleton<IImageService, ImageService>();
         //services.AddSingleton<GeoService>();
         services.AddTransient<SampleDataGenerator>();
@@ -267,7 +268,8 @@ namespace AllReady
 
                 app.UseMicrosoftAccountAuthentication(options);
             }
-
+            //TODO: mgmccarthy: working on getting email from Twitter
+            //http://www.bigbrainintelligence.com/Post/get-users-email-address-from-twitter-oauth-ap
             if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
             {
                 var options = new TwitterOptions

@@ -24,5 +24,7 @@ namespace AllReady.ViewModels.Account
         public string ReturnUrl { get; set; }
 
         public string LoginProvider { get; set; }
+
+        public bool EmailIsVerifiedByExternalLoginProvider { get; set; }
     }
 }
