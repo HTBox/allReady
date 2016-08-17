@@ -131,6 +131,7 @@ namespace AllReady
         services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
         services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
         services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
+        services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
         services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
         services.AddSingleton<IImageService, ImageService>();
         //services.AddSingleton<GeoService>();
