@@ -153,14 +153,12 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Assign(int id, List<string> userIds)
         {
-            var taskSummaryModel = await _mediator.SendAsync(new TaskQueryAsync { TaskId = id });
-
-            var campaignEvent = GetEventBy(taskSummaryModel.EventId);
-            if (!User.IsOrganizationAdmin(campaignEvent.Campaign.ManagingOrganizationId))
+            var tasksOrganizationId = await _mediator.SendAsync(new OrganizationIdByTaskIdQueryAsync { TaskId = id });
+            if (!User.IsOrganizationAdmin(tasksOrganizationId))
             {
                 return Unauthorized();
             }
-            
+
             await _mediator.SendAsync(new AssignTaskCommandAsync { TaskId = id, UserIds = userIds });
 
             return RedirectToRoute(new { controller = "Task", Area = "Admin", action = nameof(Details), id });
