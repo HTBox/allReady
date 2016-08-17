@@ -124,18 +124,15 @@ namespace AllReady.Areas.Admin.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var task = await _mediator.SendAsync(new TaskQueryAsync { TaskId = id });
-            if (task == null)
-            {
-                return NotFound();
-            }
-
-            if (!User.IsOrganizationAdmin(task.OrganizationId))
+            var model = await _mediator.SendAsync(new DeleteQueryAsync { TaskId = id });
+            if (!User.IsOrganizationAdmin(model.OrganizationId))
             {
                 return Unauthorized();
             }
-            
-            return View(task);
+
+            model.UserIsOrgAdmin = true;
+
+            return View(model);
         }
 
         [HttpPost, ActionName("Delete")]
