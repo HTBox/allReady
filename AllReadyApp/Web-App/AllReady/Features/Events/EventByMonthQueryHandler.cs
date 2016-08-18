@@ -7,7 +7,7 @@ using MediatR;
 
 namespace AllReady.Features.Event
 {
-    public class EventByMonthQueryHandler : IRequestHandler<EventByMonthQuery, IEnumerable<EventViewModel>>
+    public class EventByMonthQueryHandler : IRequestHandler<EventByDateRangeQuery, IEnumerable<EventViewModel>>
     {
         private readonly IAllReadyDataAccess dataAccess;
 
@@ -16,7 +16,7 @@ namespace AllReady.Features.Event
             this.dataAccess = dataAccess;
         }
 
-        public IEnumerable<EventViewModel> Handle(EventByMonthQuery message)
+        public IEnumerable<EventViewModel> Handle(EventByDateRangeQuery message)
         {
             var start = message.StartDate;
             var end = message.EndDate;

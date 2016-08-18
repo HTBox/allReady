@@ -59,7 +59,7 @@ namespace AllReady.Controllers
         [Produces("application/json", Type = typeof(EventViewModel))]
         public ActionResult Get(DateTimeOffset start, DateTimeOffset end)
         {
-            var events = _mediator.Send(new EventByMonthQuery { EndDate = end, StartDate = start });
+            var events = _mediator.Send(new EventByDateRangeQuery { EndDate = end, StartDate = start });
             if (events == null)
             {
                 return NoContent();
