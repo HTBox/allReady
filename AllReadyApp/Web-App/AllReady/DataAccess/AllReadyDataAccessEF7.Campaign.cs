@@ -6,18 +6,6 @@ namespace AllReady.Models
 {
     public partial class AllReadyDataAccessEF7 : IAllReadyDataAccess
     {
-        IEnumerable<Campaign> IAllReadyDataAccess.Campaigns
-        {
-            get
-            {
-                return _dbContext.Campaigns
-                   .Include(x => x.ManagingOrganization)
-                   .Include(x => x.Events)
-                   .Include(x => x.ParticipatingOrganizations)
-                   .ToList();
-            }
-        }
-
         Campaign IAllReadyDataAccess.GetCampaign(int campaignId)
         {
             return _dbContext.Campaigns
