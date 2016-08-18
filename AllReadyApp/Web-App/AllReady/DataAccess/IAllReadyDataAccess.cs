@@ -40,10 +40,6 @@ namespace AllReady.Models
 
         #endregion
 
-        #region Campaign CRUD
-        Campaign GetCampaign(int campaignId);
-        #endregion
-
         #region User CRUD
 
         [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
