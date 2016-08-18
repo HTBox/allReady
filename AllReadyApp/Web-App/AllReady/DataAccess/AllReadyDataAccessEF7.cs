@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Models
 {
@@ -10,5 +12,6 @@ namespace AllReady.Models
         {
             _dbContext = dbContext;
         }
+
     }
 }
