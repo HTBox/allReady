@@ -5,6 +5,7 @@ using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Controllers;
 using AllReady.DataAccess;
 using AllReady.Models;
+using AllReady.Providers;
 using AllReady.Providers.ExternalUserInformationProviders;
 using AllReady.Providers.ExternalUserInformationProviders.Providers;
 using AllReady.Security;
@@ -123,23 +124,25 @@ namespace AllReady
             return container.Resolve<IServiceProvider>();
         }
 
-        private IContainer CreateIoCContainer(IServiceCollection services)
-        {
-            // todo: move these to a proper autofac module
-            // Register application services.
-            services.AddSingleton((x) => Configuration);
-            services.AddTransient<IEmailSender, AuthMessageSender>();
-            services.AddTransient<ISmsSender, AuthMessageSender>();
-            services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
-            services.AddTransient<IValidateEventDetailModels, EventEditModelValidator>();
-            services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
-            services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
-            services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
-            services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
-            services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
-            services.AddSingleton<IImageService, ImageService>();
-            //services.AddSingleton<GeoService>();
-            services.AddTransient<SampleDataGenerator>();
+    private IContainer CreateIoCContainer(IServiceCollection services)
+    {
+        // todo: move these to a proper autofac module
+        // Register application services.
+        services.AddSingleton((x) => Configuration);
+        services.AddTransient<IEmailSender, AuthMessageSender>();
+        services.AddTransient<ISmsSender, AuthMessageSender>();
+        services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
+        services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
+        services.AddTransient<IValidateEventDetailModels, EventEditModelValidator>();
+        services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
+        services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
+        services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
+        services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
+        services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
+        services.AddTransient<IDateTimeOffsetProvider, DateTimeOffsetProvider>();
+        services.AddSingleton<IImageService, ImageService>();
+        //services.AddSingleton<GeoService>();
+        services.AddTransient<SampleDataGenerator>();
 
             if (Configuration["Data:Storage:EnableAzureQueueService"] == "true")
             {

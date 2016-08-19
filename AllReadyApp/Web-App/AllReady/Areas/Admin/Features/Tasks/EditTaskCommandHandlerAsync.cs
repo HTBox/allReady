@@ -1,20 +1,22 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using AllReady.Extensions;
+using AllReady.Providers;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class EditTaskCommandHandlerAsync : IAsyncRequestHandler<EditTaskCommandAsync, int>
     {
-        private readonly AllReadyContext _context;
+        private AllReadyContext _context;
+        private readonly IDateTimeOffsetProvider _dateTimeOffsetProvider;
 
-        public EditTaskCommandHandlerAsync(AllReadyContext context)
+        public EditTaskCommandHandlerAsync(AllReadyContext context, IDateTimeOffsetProvider dateTimeOffsetProvider)
         {
             _context = context;
+            _dateTimeOffsetProvider = dateTimeOffsetProvider;
         }
 
         public async Task<int> Handle(EditTaskCommandAsync message)
@@ -26,13 +28,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
             task.Event = _context.Events.SingleOrDefault(a => a.Id == message.Task.EventId);
             task.Organization = _context.Organizations.SingleOrDefault(t => t.Id == message.Task.OrganizationId);
 
-            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(message.Task.TimeZoneId);
-
-            var startDateValue = message.Task.StartDateTime;
-            task.StartDateTime = new DateTimeOffset(startDateValue.Year, startDateValue.Month, startDateValue.Day, startDateValue.Hour, startDateValue.Minute, 0, timeZoneInfo.GetUtcOffset(startDateValue));
-
-            var endDateValue = message.Task.EndDateTime;
-            task.EndDateTime = new DateTimeOffset(endDateValue.Year, endDateValue.Month, endDateValue.Day, endDateValue.Hour, endDateValue.Minute, 0, timeZoneInfo.GetUtcOffset(endDateValue));
+            task.StartDateTime = _dateTimeOffsetProvider.GetDateTimeOffsetFor(message.Task.TimeZoneId, message.Task.StartDateTime, message.Task.StartDateTime.Hour, message.Task.StartDateTime.Minute);
+            task.EndDateTime = _dateTimeOffsetProvider.GetDateTimeOffsetFor(message.Task.TimeZoneId, message.Task.EndDateTime, message.Task.EndDateTime.Hour, message.Task.EndDateTime.Minute);
 
             task.NumberOfVolunteersRequired = message.Task.NumberOfVolunteersRequired;
             task.IsLimitVolunteers = task.Event.IsLimitVolunteers;

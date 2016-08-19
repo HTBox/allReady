@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Features.Events;
 using AllReady.Models;
+using AllReady.Providers;
 using MediatR;
 
 namespace AllReady.Areas.Admin.ViewModels.Validators
@@ -10,8 +11,9 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
     public class TaskEditViewModelValidator : ITaskEditViewModelValidator
     {
         private readonly IMediator _mediator;
+        private readonly IDateTimeOffsetProvider _dateTimeOffsetProvider;
 
-        public TaskEditViewModelValidator(IMediator mediator)
+        public TaskSummaryModelValidator(IMediator mediator, IDateTimeOffsetProvider dateTimeOffsetProvider)
         {
             if (mediator == null)
             {
@@ -19,6 +21,7 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
             }
 
             _mediator = mediator;
+            _dateTimeOffsetProvider = dateTimeOffsetProvider;
         }
 
         public List<KeyValuePair<string, string>> Validate(EditViewModel model)
@@ -27,16 +30,8 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
 
             var campaignEvent = _mediator.Send(new EventByIdQuery { EventId = model.EventId });
 
-            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(campaignEvent.Campaign.TimeZoneId);
-
-            // sgordon: Date time conversion seems overly complex and may be refactored per #710
-            var startDateValue = model.StartDateTime;
-            var startDateTimeOffset = timeZoneInfo.GetUtcOffset(startDateValue);
-            var convertedStartDateTime = new DateTimeOffset(startDateValue.Year, startDateValue.Month, startDateValue.Day, startDateValue.Hour, startDateValue.Minute, 0, startDateTimeOffset);
-
-            var endDateValue = model.EndDateTime;
-            var endDateTimeOffset = timeZoneInfo.GetUtcOffset(endDateValue);
-            var convertedEndDateTime = new DateTimeOffset(endDateValue.Year, endDateValue.Month, endDateValue.Day, endDateValue.Hour, endDateValue.Minute, 0, endDateTimeOffset);
+            var convertedStartDateTime = _dateTimeOffsetProvider.GetDateTimeOffsetFor(campaignEvent.Campaign.TimeZoneId, model.StartDateTime, model.StartDateTime.Hour, model.StartDateTime.Minute);
+            var convertedEndDateTime = _dateTimeOffsetProvider.GetDateTimeOffsetFor(campaignEvent.Campaign.TimeZoneId, model.EndDateTime, model.EndDateTime.Hour, model.EndDateTime.Minute);
 
             // Rule - End date cannot be earlier than start date
             if (convertedEndDateTime < convertedStartDateTime)
