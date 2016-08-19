@@ -37,11 +37,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            var viewModel = new SiteAdminViewModel
-            {
-                Users = _mediator.Send(new AllUsersQuery()).OrderBy(u => u.UserName).ToList()
-            };
-            return View(viewModel);
+            return View(_mediator.Send(new IndexQuery());
         }
 
         [HttpGet]

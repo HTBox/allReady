@@ -39,7 +39,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     Id = It.IsAny<string>()
                 }
             };
-            mediator.Setup(x => x.Send(It.IsAny<AllUsersQuery>())).Returns(users);
+            mediator.Setup(x => x.Send(It.IsAny<IndexQuery>())).Returns(users);
 
             var controller = new SiteController(null, null, mediator.Object);
             var result = controller.Index();
