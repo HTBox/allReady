@@ -27,26 +27,20 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
     public class SiteAdminControllerShould
     {
         [Fact]
-        public void IndexReturnsCorrectViewModel()
+        public async Task IndexReturnsCorrectViewModel()
         {
+            var users = new List<ApplicationUser> { new ApplicationUser { Id = It.IsAny<string>() }, new ApplicationUser { Id = It.IsAny<string>() }};
+            var viewModel = new IndexViewModel { Users = users };
 
             var mediator = new Mock<IMediator>();
-            var users = new List<ApplicationUser>() {
-                new ApplicationUser {
-                    Id = It.IsAny<string>()
-                },
-                new ApplicationUser {
-                    Id = It.IsAny<string>()
-                }
-            };
-            mediator.Setup(x => x.Send(It.IsAny<IndexQuery>())).Returns(users);
+            mediator.Setup(x => x.SendAsync(It.IsAny<IndexQuery>())).ReturnsAsync(viewModel);
 
             var controller = new SiteController(null, null, mediator.Object);
-            var result = controller.Index();
-            var model = ((ViewResult)result).ViewData.Model as SiteAdminViewModel;
+            var result = await controller.Index() as ViewResult;
+            var model = result.ViewData.Model as IndexViewModel;
             
             Assert.Equal(model.Users.Count(), users.Count());
-            Assert.IsType<SiteAdminViewModel>(model);
+            Assert.IsType<IndexViewModel>(model);
         }
 
         [Fact]

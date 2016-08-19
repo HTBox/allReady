@@ -35,9 +35,9 @@ namespace AllReady.Areas.Admin.Controllers
             _mediator = mediator;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(_mediator.Send(new IndexQuery());
+            return View(await _mediator.SendAsync(new IndexQuery()));
         }
 
         [HttpGet]
