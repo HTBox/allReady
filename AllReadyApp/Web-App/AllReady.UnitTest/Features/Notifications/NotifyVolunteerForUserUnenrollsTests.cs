@@ -14,20 +14,20 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Notifications
 {
-    public class NotifyVolunteerForUserUnenrollsShould
+    public class NotifyVolunteerForUserUnenrollsTests : InMemoryContextTest
     {
         private readonly Mock<IMediator> _mediator;
         private readonly Mock<IOptions<GeneralSettings>> _generalSettings;
         private readonly NotifyVolunteerForUserUnenrolls _handler;
 
-        public NotifyVolunteerForUserUnenrollsShould()
+        public NotifyVolunteerForUserUnenrollsTests()
         {
             _mediator = new Mock<IMediator>();
             _generalSettings = new Mock<IOptions<GeneralSettings>>();
             _generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
             _handler = new NotifyVolunteerForUserUnenrolls(_mediator.Object, _generalSettings.Object);
         }
-
+      
         private EventDetailForNotificationModel GetEventDetailForNotificationModel()
         {
             var volunteer1 = new ApplicationUser
@@ -103,8 +103,8 @@ namespace AllReady.UnitTest.Features.Notifications
                 Tasks = new List<AllReadyTask>()
             };
 
-            var eventSignup1 = new EventSignup { Event = campaignEvent1, User = volunteer1, SignupDateTime = DateTime.UtcNow.AddDays(-7) };
-            var eventSignup2 = new EventSignup { Event = campaignEvent1, User = volunteer2, SignupDateTime = DateTime.UtcNow.AddDays(-14) };
+            var eventSignup1 = new EventSignup { Event = campaignEvent1, User = volunteer1, SignupDateTime = DateTime.UtcNow.AddDays(-7)};
+            var eventSignup2 = new EventSignup { Event = campaignEvent1, User = volunteer2, SignupDateTime = DateTime.UtcNow.AddDays(-14)};
             campaignEvent1.UsersSignedUp.AddRange(new List<EventSignup> { eventSignup1, eventSignup2 });
 
             var task1 = new AllReadyTask
@@ -184,12 +184,11 @@ namespace AllReady.UnitTest.Features.Notifications
 
             _mediator.Setup(m => m.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
             _mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-                .Returns((NotifyVolunteersCommand c) =>
-                {
+                .Returns((NotifyVolunteersCommand c) => {
                     command = c;
                     return Task.FromResult(new Unit());
                 });
-
+            
             await _handler.Handle(notification);
 
             command.ShouldNotBeNull();
@@ -220,8 +219,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             _mediator.Setup(m => m.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
             _mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-                .Returns((NotifyVolunteersCommand c) =>
-                {
+                .Returns((NotifyVolunteersCommand c) => {
                     command = c;
                     return Task.FromResult(new Unit());
                 });
@@ -255,8 +253,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             _mediator.Setup(m => m.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
             _mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-                .Returns((NotifyVolunteersCommand c) =>
-                {
+                .Returns((NotifyVolunteersCommand c) => {
                     command = c;
                     return Task.FromResult(new Unit());
                 });
@@ -290,8 +287,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             _mediator.Setup(m => m.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
             _mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-                .Returns((NotifyVolunteersCommand c) =>
-                {
+                .Returns((NotifyVolunteersCommand c) => {
                     command = c;
                     return Task.FromResult(new Unit());
                 });
@@ -325,8 +321,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             _mediator.Setup(m => m.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
             _mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-                .Returns((NotifyVolunteersCommand c) =>
-                {
+                .Returns((NotifyVolunteersCommand c) => {
                     command = c;
                     return Task.FromResult(new Unit());
                 });
@@ -349,8 +344,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             _mediator.Setup(m => m.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
             _mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-                .Returns((NotifyVolunteersCommand c) =>
-                {
+                .Returns((NotifyVolunteersCommand c) => {
                     command = c;
                     return Task.FromResult(new Unit());
                 });
@@ -373,8 +367,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             _mediator.Setup(m => m.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
             _mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-                .Returns((NotifyVolunteersCommand c) =>
-                {
+                .Returns((NotifyVolunteersCommand c) => {
                     command = c;
                     return Task.FromResult(new Unit());
                 });
@@ -383,7 +376,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             command.ShouldBeNull();
         }
-
+        
         [Fact]
         public async Task NotifyVolunteerForUserUnenrolls_NotSent_UserNotSignedUp()
         {
@@ -397,8 +390,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             _mediator.Setup(m => m.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
             _mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-                .Returns((NotifyVolunteersCommand c) =>
-                {
+                .Returns((NotifyVolunteersCommand c) => {
                     command = c;
                     return Task.FromResult(new Unit());
                 });
@@ -408,24 +400,26 @@ namespace AllReady.UnitTest.Features.Notifications
             command.ShouldBeNull();
         }
 
-        //[Fact]
-        //public void NotifyVolunteerForUserUnenrolls_NotSent_EventIsNull()
-        //{
-        //    var userId = "volunteer1@example.com";
-        //    NotifyVolunteersCommand command = null;
+        [Fact]
+        public async Task NotifyVolunteerForUserUnenrolls_NotSent_EventIsNull()
+        {
+            var userId = "volunteer1@example.com";
+            NotifyVolunteersCommand command = null;
 
-        //    var notification = GetNotification(userId);
-        //    EventDetailForNotificationModel model = null;
+            var notification = GetNotification(userId);
+            EventDetailForNotificationModel model = null;
+            
+            _mediator.Setup(m => m.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
+            _mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
+                .Returns((NotifyVolunteersCommand c) => {
+                    command = c;
+                    return Task.FromResult(new Unit());
+                });
 
-        //    _mediator.Setup(m => m.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
-        //    _mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-        //        .Returns((NotifyVolunteersCommand c) => {
-        //            command = c;
-        //            return Task.FromResult(new Unit());
-        //        });
+            await _handler.Handle(notification);
 
-        //    Should.Throw<NullReferenceException>(async() => await _handler.Handle(notification));            
-        //}
+            command.ShouldBeNull();
+        }
 
         [Fact]
         public async Task NotifyVolunteerForUserUnenrolls_NotSent_EventIsEmpty()
@@ -438,8 +432,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             _mediator.Setup(m => m.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
             _mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-                .Returns((NotifyVolunteersCommand c) =>
-                {
+                .Returns((NotifyVolunteersCommand c) => {
                     command = c;
                     return Task.FromResult(new Unit());
                 });
@@ -447,30 +440,6 @@ namespace AllReady.UnitTest.Features.Notifications
             await _handler.Handle(notification);
 
             command.ShouldBeNull();
-        }
-
-
-        [Fact]
-        public async Task SendEventDetailForNotificationQueryAsyncWithCorrectParameters()
-        {
-            var notification = new UserUnenrolls
-            {
-                UserId = "user1@example.com",
-                EventId = 111
-            };
-
-            var model = new EventDetailForNotificationModel();
-
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
-
-            var mockSettings = new Mock<IOptions<GeneralSettings>>();
-            mockSettings.Setup(x => x.Value).Returns(new GeneralSettings());
-
-            var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, mockSettings.Object);
-            await handler.Handle(notification);
-
-            mockMediator.Verify(x => x.SendAsync(It.Is<EventDetailForNotificationQueryAsync>(n => n.EventId == notification.EventId && n.UserId == notification.UserId)), Times.Once);
         }
     }
 }
