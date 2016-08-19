@@ -57,7 +57,7 @@ namespace AllReady.Controllers
         //orginial code
         [HttpGet("{start}/{end}")]
         [Produces("application/json", Type = typeof(EventViewModel))]
-        public ActionResult Get(DateTimeOffset start, DateTimeOffset end)
+        public ActionResult GetEventsByDateRange(DateTimeOffset start, DateTimeOffset end)
         {
             var events = _mediator.Send(new EventByDateRangeQuery { EndDate = end, StartDate = start });
             if (events == null)

@@ -109,7 +109,7 @@ namespace AllReady.UnitTest.Controllers
         public void GetEventsByDateRangeHasHttpGetAttributeWithCorrectTemplate()
         {
             var sut = new EventApiController(null, null);
-            var attribute = sut.GetAttributesOn(x => x.Get(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.GetEventsByDateRange(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "{start}/{end}");
         }
@@ -118,7 +118,7 @@ namespace AllReady.UnitTest.Controllers
         public void GetEventsByDateRangeHasProducesAttribute()
         {
             var sut = new EventApiController(null, null);
-            var attribute = sut.GetAttributesOn(x => x.Get(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).OfType<ProducesAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.GetEventsByDateRange(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.ContentTypes[0], "application/json");
             Assert.Equal(attribute.Type, typeof(EventViewModel));
@@ -133,7 +133,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.Send(It.IsAny<EventByDateRangeQuery>())).Returns(new List<EventViewModel>());
 
             var sut = new EventApiController(mediator.Object, null);
-            sut.Get(may, june);
+            sut.GetEventsByDateRange(may, june);
 
             mediator.Verify(x => x.Send(It.Is<EventByDateRangeQuery>(y => y.StartDate == may && y.EndDate == june)), Times.Once);
         }
@@ -148,7 +148,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.Send(It.IsAny<EventByDateRangeQuery>())).Returns((List<EventViewModel>)null);
 
             var sut = new EventApiController(mediator.Object, null);
-            var result = sut.Get(may, june);
+            var result = sut.GetEventsByDateRange(may, june);
 
             Assert.IsType<NoContentResult>(result);
         }
@@ -163,7 +163,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Setup(x => x.Send(It.IsAny<EventByDateRangeQuery>())).Returns(new List<EventViewModel>());
 
             var sut = new EventApiController(mediator.Object, null);
-            var result = sut.Get(may, june);
+            var result = sut.GetEventsByDateRange(may, june);
 
             Assert.IsType<JsonResult>(result);
         }

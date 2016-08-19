@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using AllReady.Models;
 using AllReady.ViewModels.Event;
@@ -7,11 +8,11 @@ using MediatR;
 
 namespace AllReady.Features.Event
 {
-    public class EventByMonthQueryHandler : IRequestHandler<EventByDateRangeQuery, IEnumerable<EventViewModel>>
+    public class EventByDateRangeQueryHandler : IRequestHandler<EventByDateRangeQuery, IEnumerable<EventViewModel>>
     {
         private readonly IAllReadyDataAccess dataAccess;
 
-        public EventByMonthQueryHandler(IAllReadyDataAccess dataAccess)
+        public EventByDateRangeQueryHandler(IAllReadyDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
         }
