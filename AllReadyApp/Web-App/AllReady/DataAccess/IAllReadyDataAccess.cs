@@ -69,13 +69,8 @@ namespace AllReady.Models
 
         [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
         EventSignup GetEventSignup(int eventId, string userId);
-
-        [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
-        Task AddEventSignupAsync(EventSignup userSignup);
-
         [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
         Task DeleteEventAndTaskSignupsAsync(int eventSignupId);
-
         #endregion
 
         #region TaskSignup CRUD
