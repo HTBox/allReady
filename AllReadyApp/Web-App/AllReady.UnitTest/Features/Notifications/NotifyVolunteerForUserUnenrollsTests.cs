@@ -401,7 +401,7 @@ namespace AllReady.UnitTest.Features.Notifications
         }
 
         [Fact]
-        public async Task NotifyVolunteerForUserUnenrolls_NotSent_EventIsNull()
+        public void NotifyVolunteerForUserUnenrolls_NotSent_EventIsNull()
         {
             var userId = "volunteer1@example.com";
             NotifyVolunteersCommand command = null;
@@ -416,9 +416,7 @@ namespace AllReady.UnitTest.Features.Notifications
                     return Task.FromResult(new Unit());
                 });
 
-            await _handler.Handle(notification);
-
-            command.ShouldBeNull();
+            Should.Throw<NullReferenceException>(async() => await _handler.Handle(notification));            
         }
 
         [Fact]
