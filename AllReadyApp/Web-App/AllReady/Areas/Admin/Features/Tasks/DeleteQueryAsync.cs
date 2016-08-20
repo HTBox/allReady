@@ -3,8 +3,8 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class EditTaskCommandAsync : IAsyncRequest<int>
+    public class DeleteQueryAsync : IAsyncRequest<DeleteViewModel>
     {
-        public EditViewModel Task { get; set; }
+        public int TaskId { get; set; }
     }
 }

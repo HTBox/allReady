@@ -21,7 +21,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             if (task != null)
             {
                 _context.Tasks.Remove(task);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
         }
     }
