@@ -55,7 +55,7 @@ namespace AllReady.UnitTest.Controllers
             const int eventId = 1;
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() }});
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() } });
             var sut = new EventApiController(mediator.Object, null);
 
             sut.Get(eventId);
@@ -67,7 +67,7 @@ namespace AllReady.UnitTest.Controllers
         public void GetByIdReturnsCorrectViewModel()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() }});
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() } });
             var sut = new EventApiController(mediator.Object, null);
             var result = sut.Get(It.IsAny<int>());
 
@@ -103,6 +103,69 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Type, typeof(EventViewModel));
             Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
+        }
+
+        [Fact]
+        public void GetEventsByDateRangeHasHttpGetAttributeWithCorrectTemplate()
+        {
+            var sut = new EventApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.GetEventsByDateRange(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "{start}/{end}");
+        }
+
+        [Fact]
+        public void GetEventsByDateRangeHasProducesAttribute()
+        {
+            var sut = new EventApiController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.GetEventsByDateRange(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).OfType<ProducesAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.ContentTypes[0], "application/json");
+            Assert.Equal(attribute.Type, typeof(EventViewModel));
+        }
+
+        [Fact]
+        public void GetEventsByDateRangeSendsEventByDateRangeQueryWithCorrectDates()
+        {
+            var may = new DateTimeOffset(2016, 5, 1, 0, 0, 0, new TimeSpan());
+            var june = new DateTimeOffset(2016, 6, 1, 0, 0, 0, new TimeSpan());
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<EventByDateRangeQuery>())).Returns(new List<EventViewModel>());
+
+            var sut = new EventApiController(mediator.Object, null);
+            sut.GetEventsByDateRange(may, june);
+
+            mediator.Verify(x => x.Send(It.Is<EventByDateRangeQuery>(y => y.StartDate == may && y.EndDate == june)), Times.Once);
+        }
+
+
+        [Fact]
+        public void GetEventsByDateRangeReturnsNoContentWhenEventsIsNull()
+        {
+            var may = new DateTimeOffset(2016, 5, 1, 0, 0, 0, new TimeSpan());
+            var june = new DateTimeOffset(2016, 6, 1, 0, 0, 0, new TimeSpan());
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<EventByDateRangeQuery>())).Returns((List<EventViewModel>)null);
+
+            var sut = new EventApiController(mediator.Object, null);
+            var result = sut.GetEventsByDateRange(may, june);
+
+            Assert.IsType<NoContentResult>(result);
+        }
+
+
+        [Fact]
+        public void GetEventsByDateRangeReturnsJsonWhenEventsIsNotNull()
+        {
+            var may = new DateTimeOffset(2016, 5, 1, 0, 0, 0, new TimeSpan());
+            var june = new DateTimeOffset(2016, 6, 1, 0, 0, 0, new TimeSpan());
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<EventByDateRangeQuery>())).Returns(new List<EventViewModel>());
+
+            var sut = new EventApiController(mediator.Object, null);
+            var result = sut.GetEventsByDateRange(may, june);
+
+            Assert.IsType<JsonResult>(result);
         }
 
         [Fact]
@@ -211,7 +274,7 @@ namespace AllReady.UnitTest.Controllers
         public void GetCheckinReturnsTheCorrectView()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() }});
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() } });
 
             var sut = new EventApiController(mediator.Object, null);
             var result = (ViewResult)sut.GetCheckin(It.IsAny<int>());
