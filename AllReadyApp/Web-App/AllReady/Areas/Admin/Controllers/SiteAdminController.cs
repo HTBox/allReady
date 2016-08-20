@@ -164,7 +164,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(@"Failed to reset password for {userId}", ex);
+                _logger.LogError($"Failed to reset password for {userId}", ex);
                 ViewBag.ErrorMessage = $"Failed to reset password for {userId}. Exception thrown.";
                 return View();
             }
@@ -300,8 +300,8 @@ namespace AllReady.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(@"Failed to assign site admin for {userId}", ex);
-                ViewBag.ErrorMessage = $"Failed to assign site admin for {userId}. Exception thrown.";
+                _logger.LogError($"Failed to revoke site admin for {userId}", ex);
+                ViewBag.ErrorMessage = $"Failed to revoke site admin for {userId}. Exception thrown.";
                 return View();
             }
         }
@@ -319,8 +319,8 @@ namespace AllReady.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(@"Failed to assign site admin for {userId}", ex);
-                ViewBag.ErrorMessage = $"Failed to assign site admin for {userId}. Exception thrown.";
+                _logger.LogError($"Failed to revoke organization admin for {userId}", ex);
+                ViewBag.ErrorMessage = $"Failed to revoke organization admin for {userId}. Exception thrown.";
                 return View();
             }
         }
