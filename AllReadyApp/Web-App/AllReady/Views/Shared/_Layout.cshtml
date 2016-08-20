@@ -26,7 +26,9 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     </environment>
-    @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
+    @if (TelemetryConfiguration != null && !string.IsNullOrEmpty(TelemetryConfiguration.InstrumentationKey) && !TelemetryConfiguration.InstrumentationKey.StartsWith("[")) {
+        @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
+    }
     @RenderSection("styles", required: false)
 
     
