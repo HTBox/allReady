@@ -400,24 +400,24 @@ namespace AllReady.UnitTest.Features.Notifications
             command.ShouldBeNull();
         }
 
-        [Fact]
-        public void NotifyVolunteerForUserUnenrolls_NotSent_EventIsNull()
-        {
-            var userId = "volunteer1@example.com";
-            NotifyVolunteersCommand command = null;
+        //[Fact]
+        //public void NotifyVolunteerForUserUnenrolls_NotSent_EventIsNull()
+        //{
+        //    var userId = "volunteer1@example.com";
+        //    NotifyVolunteersCommand command = null;
 
-            var notification = GetNotification(userId);
-            EventDetailForNotificationModel model = null;
+        //    var notification = GetNotification(userId);
+        //    EventDetailForNotificationModel model = null;
             
-            _mediator.Setup(m => m.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
-            _mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-                .Returns((NotifyVolunteersCommand c) => {
-                    command = c;
-                    return Task.FromResult(new Unit());
-                });
+        //    _mediator.Setup(m => m.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
+        //    _mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
+        //        .Returns((NotifyVolunteersCommand c) => {
+        //            command = c;
+        //            return Task.FromResult(new Unit());
+        //        });
 
-            Should.Throw<NullReferenceException>(async() => await _handler.Handle(notification));            
-        }
+        //    Should.Throw<NullReferenceException>(async() => await _handler.Handle(notification));            
+        //}
 
         [Fact]
         public async Task NotifyVolunteerForUserUnenrolls_NotSent_EventIsEmpty()
