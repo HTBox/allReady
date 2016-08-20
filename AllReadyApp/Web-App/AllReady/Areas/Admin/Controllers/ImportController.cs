@@ -12,9 +12,6 @@ using AllReady.Areas.Admin.ViewModels.Request;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-
-
-
     [Area("Admin")]
     [Authorize("SiteAdmin")]
     public class ImportController : Controller
@@ -37,6 +34,15 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index(IFormFile file)
         {
+            // todo: - proper view model
+            //       - more complete result type/info
+
+            if (file == null)
+            {
+                _logger.LogInformation($"User {User.Identity.Name} attempted a file upload without specifying a file.");
+                RedirectToAction("Index");
+            }
+
             using (var stream = file.OpenReadStream())
             {
                 using (var reader = new StreamReader(stream))
@@ -51,10 +57,7 @@ namespace AllReady.Areas.Admin.Controllers
                 }
             }
 
-            // todo: - add error handling logic/results view
-            //       - proper view model
-            //       - more complete result type/info
-
+            _logger.LogDebug($"{User.Identity.Name} imported file {file.Name}");
             ViewBag.ImportSuccess = true;
 
             return View();
