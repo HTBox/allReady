@@ -13,7 +13,7 @@
             <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
             <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
             <li><a asp-controller="Event" asp-action="Details" asp-route-area="Admin" asp-route-id="@Model.EventId">@Model.EventName</a></li>
-            <li>@Model.PageTitle</li>
+            <li>Requests</li>
         </ol>
     </div>
 </div>
@@ -21,8 +21,22 @@
 <div class="row">
     <div class="col-md-12">
         <h2>
-            @Model.PageTitle
+            Requests
         </h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="tabbed-nav">
+            <nav>
+                <a asp-action="Requests" asp-route-status="" class="@(@Model.CurrentPage == "All" ? "current" : "")">All Requests</a>
+                <a asp-action="Requests" asp-route-status="Unassigned" class="@(@Model.CurrentPage == "Unassigned" ? "current" : "")">Unassigned Requests</a>
+                <a asp-action="Requests" asp-route-status="Assigned" class="@(@Model.CurrentPage == "Assigned" ? "current" : "")">Assigned Requests</a>
+                <a asp-action="Requests" asp-route-status="Completed" class="@(@Model.CurrentPage == "Completed" ? "current" : "")">Completed Requests</a>
+                <a asp-action="Requests" asp-route-status="Canceled" class="@(@Model.CurrentPage == "Canceled" ? "current" : "")">Canceled Requests</a>
+            </nav>
+        </div>
     </div>
 </div>
 
