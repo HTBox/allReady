@@ -13,7 +13,7 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
         private readonly IMediator _mediator;
         private readonly IDateTimeOffsetProvider _dateTimeOffsetProvider;
 
-        public TaskSummaryModelValidator(IMediator mediator, IDateTimeOffsetProvider dateTimeOffsetProvider)
+        public TaskEditViewModelValidator(IMediator mediator, IDateTimeOffsetProvider dateTimeOffsetProvider)
         {
             if (mediator == null)
             {
@@ -24,7 +24,7 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
             _dateTimeOffsetProvider = dateTimeOffsetProvider;
         }
 
-        public List<KeyValuePair<string, string>> Validate(EditViewModel model)
+        public List<KeyValuePair<string, string>> Validate(TaskSummaryViewModel model)
         {
             var result = new List<KeyValuePair<string, string>>();
 
@@ -66,6 +66,6 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
 
     public interface ITaskEditViewModelValidator
     {
-        List<KeyValuePair<string, string>> Validate(EditViewModel model);
+        List<KeyValuePair<string, string>> Validate(TaskSummaryViewModel model);
     }
 }

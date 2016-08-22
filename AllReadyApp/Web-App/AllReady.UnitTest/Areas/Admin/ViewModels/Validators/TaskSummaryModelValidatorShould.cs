@@ -20,7 +20,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign() });
 
-            var sut = new TaskSummaryModelValidator(mediator.Object, Mock.Of<IDateTimeOffsetProvider>());
+            var sut = new TaskEditViewModelValidator(mediator.Object, Mock.Of<IDateTimeOffsetProvider>());
             sut.Validate(model);
 
             mediator.Verify(x => x.Send(It.Is<EventByIdQuery>(y => y.EventId == model.EventId)), Times.Once);
@@ -39,7 +39,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
 
             var dateTimeOffsetProvider = new Mock<IDateTimeOffsetProvider>();
 
-            var sut = new TaskSummaryModelValidator(mediator.Object, dateTimeOffsetProvider.Object);
+            var sut = new TaskEditViewModelValidator(mediator.Object, dateTimeOffsetProvider.Object);
             sut.Validate(model);
 
             dateTimeOffsetProvider.Verify(x => x.GetDateTimeOffsetFor(@event.Campaign.TimeZoneId, model.StartDateTime, model.StartDateTime.Hour,
@@ -59,7 +59,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
 
             var dateTimeOffsetProvider = new Mock<IDateTimeOffsetProvider>();
 
-            var sut = new TaskSummaryModelValidator(mediator.Object, dateTimeOffsetProvider.Object);
+            var sut = new TaskEditViewModelValidator(mediator.Object, dateTimeOffsetProvider.Object);
             sut.Validate(model);
 
             dateTimeOffsetProvider.Verify(x => x.GetDateTimeOffsetFor(@event.Campaign.TimeZoneId, model.EndDateTime, model.EndDateTime.Hour,
@@ -80,7 +80,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(@event);
 
-            var validator = new TaskSummaryModelValidator(mockMediator.Object, dateTimeOffsetProvider.Object);
+            var validator = new TaskEditViewModelValidator(mockMediator.Object, dateTimeOffsetProvider.Object);
             var errors = validator.Validate(new TaskSummaryViewModel());
 
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
@@ -101,7 +101,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
             dateTimeOffsetProvider.Setup(x => x.GetDateTimeOffsetFor(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(now);
 
-            var validator = new TaskSummaryModelValidator(mockMediator.Object, dateTimeOffsetProvider.Object);
+            var validator = new TaskEditViewModelValidator(mockMediator.Object, dateTimeOffsetProvider.Object);
             var errors = validator.Validate(new TaskSummaryViewModel());
 
             Assert.True(errors.Exists(x => x.Key.Equals("StartDateTime")));
@@ -122,7 +122,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
             dateTimeOffsetProvider.Setup(x => x.GetDateTimeOffsetFor(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(now);
 
-            var validator = new TaskSummaryModelValidator(mediator.Object, dateTimeOffsetProvider.Object);
+            var validator = new TaskEditViewModelValidator(mediator.Object, dateTimeOffsetProvider.Object);
             var errors = validator.Validate(new TaskSummaryViewModel());
 
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
@@ -143,7 +143,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
             dateTimeOffsetProvider.Setup(x => x.GetDateTimeOffsetFor(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(new Queue<DateTimeOffset>(new[] { now, now.AddDays(1) }).Dequeue);
 
-            var validator = new TaskSummaryModelValidator(mediator.Object, dateTimeOffsetProvider.Object);
+            var validator = new TaskEditViewModelValidator(mediator.Object, dateTimeOffsetProvider.Object);
             var errors = validator.Validate(new TaskSummaryViewModel());
 
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
@@ -164,7 +164,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
             dateTimeOffsetProvider.Setup(x => x.GetDateTimeOffsetFor(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(new Queue<DateTimeOffset>(new[] { now, now.AddDays(1) }).Dequeue);
 
-            var validator = new TaskSummaryModelValidator(mockMediator.Object, dateTimeOffsetProvider.Object);
+            var validator = new TaskEditViewModelValidator(mockMediator.Object, dateTimeOffsetProvider.Object);
             var errors = validator.Validate(new TaskSummaryViewModel());
 
             Assert.True(errors.Count == 0);
@@ -184,7 +184,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
             dateTimeOffsetProvider.Setup(x => x.GetDateTimeOffsetFor(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(new Queue<DateTimeOffset>(new[] { now, now }).Dequeue);
 
-            var validator = new TaskSummaryModelValidator(mockMediator.Object, dateTimeOffsetProvider.Object);
+            var validator = new TaskEditViewModelValidator(mockMediator.Object, dateTimeOffsetProvider.Object);
             var errors = validator.Validate(new TaskSummaryViewModel());
 
             Assert.True(errors.Count == 0);
