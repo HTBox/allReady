@@ -1,11 +1,13 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Site;
 using AllReady.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Site
 {
-    public class IndexQueryHandler : IRequestHandler<IndexQuery, IndexViewModel>
+    public class IndexQueryHandler : IAsyncRequestHandler<IndexQuery, IndexViewModel>
     {
         private readonly AllReadyContext _context;
 
@@ -14,13 +16,14 @@ namespace AllReady.Areas.Admin.Features.Site
             _context = context;
         }
 
-        public IndexViewModel Handle(IndexQuery message)
+        public async Task<IndexViewModel> Handle(IndexQuery message)
         {
             return new IndexViewModel
             {
-                Users = _context.Users
+                Users = await _context.Users
                     .OrderBy(u => u.UserName)
-                    .ToList()
+                    .ToListAsync()
+                    .ConfigureAwait(false)
             };
         }
     }

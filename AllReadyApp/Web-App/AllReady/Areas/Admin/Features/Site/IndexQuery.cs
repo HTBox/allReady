@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Site
 {
-    public class IndexQuery : IRequest<IndexViewModel>
+    public class IndexQuery : IAsyncRequest<IndexViewModel>
     {
     }
 }
