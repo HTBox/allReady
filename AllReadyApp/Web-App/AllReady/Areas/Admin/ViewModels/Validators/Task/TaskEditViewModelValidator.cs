@@ -6,7 +6,7 @@ using AllReady.Models;
 using AllReady.Providers;
 using MediatR;
 
-namespace AllReady.Areas.Admin.ViewModels.Validators
+namespace AllReady.Areas.Admin.ViewModels.Validators.Task
 {
     public class TaskEditViewModelValidator : ITaskEditViewModelValidator
     {
@@ -24,31 +24,31 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
             _dateTimeOffsetProvider = dateTimeOffsetProvider;
         }
 
-        public List<KeyValuePair<string, string>> Validate(TaskSummaryViewModel model)
+        public List<KeyValuePair<string, string>> Validate(EditViewModel viewModel)
         {
             var result = new List<KeyValuePair<string, string>>();
 
-            var @event = _mediator.Send(new EventByIdQuery { EventId = model.EventId });
+            var @event = _mediator.Send(new EventByIdQuery { EventId = viewModel.EventId });
 
-            var convertedStartDateTime = _dateTimeOffsetProvider.GetDateTimeOffsetFor(@event.Campaign.TimeZoneId, model.StartDateTime, model.StartDateTime.Hour, model.StartDateTime.Minute);
-            var convertedEndDateTime = _dateTimeOffsetProvider.GetDateTimeOffsetFor(@event.Campaign.TimeZoneId, model.EndDateTime, model.EndDateTime.Hour, model.EndDateTime.Minute);
+            var convertedStartDateTime = _dateTimeOffsetProvider.GetDateTimeOffsetFor(@event.Campaign.TimeZoneId, viewModel.StartDateTime, viewModel.StartDateTime.Hour, viewModel.StartDateTime.Minute);
+            var convertedEndDateTime = _dateTimeOffsetProvider.GetDateTimeOffsetFor(@event.Campaign.TimeZoneId, viewModel.EndDateTime, viewModel.EndDateTime.Hour, viewModel.EndDateTime.Minute);
 
             // Rule - End date cannot be earlier than start date
             if (convertedEndDateTime < convertedStartDateTime)
             {
-                result.Add(new KeyValuePair<string, string>(nameof(model.EndDateTime), "End date cannot be earlier than the start date"));
+                result.Add(new KeyValuePair<string, string>(nameof(viewModel.EndDateTime), "End date cannot be earlier than the start date"));
             }
 
             // Rule - Start date cannot be out of range of parent event
             if (convertedStartDateTime < @event.StartDateTime)
             {
-                result.Add(new KeyValuePair<string, string>(nameof(model.StartDateTime), "Start date cannot be earlier than the event start date " + @event.StartDateTime.ToString("d")));
+                result.Add(new KeyValuePair<string, string>(nameof(viewModel.StartDateTime), "Start date cannot be earlier than the event start date " + @event.StartDateTime.ToString("d")));
             }
 
             // Rule - End date cannot be out of range of parent event
             if (convertedEndDateTime > @event.EndDateTime)
             {
-                result.Add(new KeyValuePair<string, string>(nameof(model.EndDateTime), "End date cannot be later than the event end date " + @event.EndDateTime.ToString("d")));
+                result.Add(new KeyValuePair<string, string>(nameof(viewModel.EndDateTime), "End date cannot be later than the event end date " + @event.EndDateTime.ToString("d")));
             }
 
             // Rule - Itinerary tasks must start and end on same calendar day
@@ -56,7 +56,7 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
             {
                 if (convertedStartDateTime.Date != convertedEndDateTime.Date)
                 {
-                    result.Add(new KeyValuePair<string, string>(nameof(model.EndDateTime), "For itinerary events the task end date must occur on the same day as the start date. Tasks cannot span multiple days"));
+                    result.Add(new KeyValuePair<string, string>(nameof(viewModel.EndDateTime), "For itinerary events the task end date must occur on the same day as the start date. Tasks cannot span multiple days"));
                 }
             }
 
@@ -66,6 +66,6 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
 
     public interface ITaskEditViewModelValidator
     {
-        List<KeyValuePair<string, string>> Validate(TaskSummaryViewModel model);
+        List<KeyValuePair<string, string>> Validate(EditViewModel viewModel);
     }
 }

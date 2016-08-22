@@ -54,7 +54,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         public async Task ModelIsCreated()
         {
             var sut = new EditTaskCommandHandlerAsync(Context, Mock.Of<IDateTimeOffsetProvider>());
-            var actual = await sut.Handle(new EditTaskCommandAsync { Task = new TaskSummaryViewModel { EventId = _queenAnne.Id, TimeZoneId = "Eastern Standard Time" } });
+            var actual = await sut.Handle(new EditTaskCommandAsync { Task = new EditViewModel { EventId = _queenAnne.Id, TimeZoneId = "Eastern Standard Time" } });
             Assert.Equal(1, actual);
         }
     }

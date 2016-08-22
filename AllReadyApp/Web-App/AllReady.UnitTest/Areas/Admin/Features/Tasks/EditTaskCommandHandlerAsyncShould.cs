@@ -6,6 +6,8 @@ using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Models;
 using Xunit;
 using System.Linq;
+using AllReady.Providers;
+using Moq;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
@@ -26,8 +28,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                     EventId = @event.Id,
                     OrganizationId = organization.Id,
                     TimeZoneId = "Central Standard Time",
-                    StartDateTime = DateTimeOffset.Now,
-                    EndDateTime = DateTimeOffset.Now,
                     NumberOfVolunteersRequired = 5,
                     RequiredSkills = new List<TaskSkill> { new TaskSkill { SkillId = 3, Skill = new Skill { Id = 3, Name = "SkillName", Description = "SkillDescription" } } }
                 }
@@ -38,7 +38,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Organizations.Add(organization);
             Context.SaveChanges();
 
-            var sut = new EditTaskCommandHandlerAsync(Context);
+            var sut = new EditTaskCommandHandlerAsync(Context, Mock.Of<IDateTimeOffsetProvider>());
             var taskId = await sut.Handle(message);
             var result = Context.Tasks.Single(x => x.Id == taskId);
 
@@ -65,8 +65,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 Description = "TaskDescription",
                 Event = @event,
                 Organization = organization,
-                StartDateTime = DateTimeOffset.Now,
-                EndDateTime = DateTimeOffset.Now,
                 NumberOfVolunteersRequired = 5,
                 RequiredSkills = new List<TaskSkill> { new TaskSkill { SkillId = 5, Skill = new Skill { Id = 5, Name = "SkillName", Description = "SkillDescription" } } }
             };
@@ -94,7 +92,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 }
             };
 
-            var sut = new EditTaskCommandHandlerAsync(Context);
+            var sut = new EditTaskCommandHandlerAsync(Context, Mock.Of<IDateTimeOffsetProvider>());
             var taskId = await sut.Handle(message);
             var result = Context.Tasks.Single(x => x.Id == taskId);
 

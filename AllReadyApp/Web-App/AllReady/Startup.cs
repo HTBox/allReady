@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using AllReady.Areas.Admin.ViewModels.Validators;
+using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Controllers;
 using AllReady.DataAccess;
 using AllReady.Models;
@@ -137,7 +138,6 @@ namespace AllReady
         services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
         services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
         services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
-        services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
         services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
         services.AddTransient<IDateTimeOffsetProvider, DateTimeOffsetProvider>();
         services.AddSingleton<IImageService, ImageService>();

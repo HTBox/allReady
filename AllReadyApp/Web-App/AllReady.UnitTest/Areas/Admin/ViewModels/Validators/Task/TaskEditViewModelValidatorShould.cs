@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AllReady.Areas.Admin.ViewModels.Task;
-using AllReady.Areas.Admin.ViewModels.Validators;
+using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Features.Event;
 using AllReady.Models;
 using AllReady.Providers;
@@ -9,14 +9,14 @@ using MediatR;
 using Moq;
 using Xunit;
 
-namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
+namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
 {
-    public class TaskSummaryModelValidatorShould
+    public class TaskEditViewModelValidatorShould
     {
         [Fact]
         public void SendEventByIdQueryWithCorrectEventId()
         {
-            var model = new TaskSummaryViewModel { EventId = 1 };
+            var model = new EditViewModel { EventId = 1 };
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign() });
 
@@ -31,7 +31,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
         {
             var now = DateTimeOffset.Now;
 
-            var model = new TaskSummaryViewModel { EventId = 1, StartDateTime = now, EndDateTime = now };
+            var model = new EditViewModel { EventId = 1, StartDateTime = now, EndDateTime = now };
             var @event = new Event { Campaign = new Campaign { TimeZoneId = "UTC" }};
 
             var mediator = new Mock<IMediator>();
@@ -51,7 +51,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
         {
             var now = DateTimeOffset.Now;
 
-            var model = new TaskSummaryViewModel { EventId = 1, StartDateTime = now, EndDateTime = now };
+            var model = new EditViewModel { EventId = 1, StartDateTime = now, EndDateTime = now };
             var @event = new Event { Campaign = new Campaign { TimeZoneId = "UTC" } };
 
             var mediator = new Mock<IMediator>();
@@ -81,7 +81,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
             mockMediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(@event);
 
             var validator = new TaskEditViewModelValidator(mockMediator.Object, dateTimeOffsetProvider.Object);
-            var errors = validator.Validate(new TaskSummaryViewModel());
+            var errors = validator.Validate(new EditViewModel());
 
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
             Assert.Equal(errors.Find(x => x.Key == "EndDateTime").Value, "End date cannot be earlier than the start date");
@@ -102,7 +102,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
                 .Returns(now);
 
             var validator = new TaskEditViewModelValidator(mockMediator.Object, dateTimeOffsetProvider.Object);
-            var errors = validator.Validate(new TaskSummaryViewModel());
+            var errors = validator.Validate(new EditViewModel());
 
             Assert.True(errors.Exists(x => x.Key.Equals("StartDateTime")));
             Assert.Equal(errors.Find(x => x.Key == "StartDateTime").Value, "Start date cannot be earlier than the event start date " + @event.StartDateTime.ToString("d"));
@@ -123,7 +123,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
                 .Returns(now);
 
             var validator = new TaskEditViewModelValidator(mediator.Object, dateTimeOffsetProvider.Object);
-            var errors = validator.Validate(new TaskSummaryViewModel());
+            var errors = validator.Validate(new EditViewModel());
 
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
             Assert.Equal(errors.Find(x => x.Key == "EndDateTime").Value, "End date cannot be later than the event end date " + @event.EndDateTime.ToString("d"));
@@ -144,7 +144,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
                 .Returns(new Queue<DateTimeOffset>(new[] { now, now.AddDays(1) }).Dequeue);
 
             var validator = new TaskEditViewModelValidator(mediator.Object, dateTimeOffsetProvider.Object);
-            var errors = validator.Validate(new TaskSummaryViewModel());
+            var errors = validator.Validate(new EditViewModel());
 
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
             Assert.Equal(errors.Find(x => x.Key == "EndDateTime").Value, "For itinerary events the task end date must occur on the same day as the start date. Tasks cannot span multiple days");
@@ -165,7 +165,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
                 .Returns(new Queue<DateTimeOffset>(new[] { now, now.AddDays(1) }).Dequeue);
 
             var validator = new TaskEditViewModelValidator(mockMediator.Object, dateTimeOffsetProvider.Object);
-            var errors = validator.Validate(new TaskSummaryViewModel());
+            var errors = validator.Validate(new EditViewModel());
 
             Assert.True(errors.Count == 0);
         }
@@ -185,7 +185,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
                 .Returns(new Queue<DateTimeOffset>(new[] { now, now }).Dequeue);
 
             var validator = new TaskEditViewModelValidator(mockMediator.Object, dateTimeOffsetProvider.Object);
-            var errors = validator.Validate(new TaskSummaryViewModel());
+            var errors = validator.Validate(new EditViewModel());
 
             Assert.True(errors.Count == 0);
         }
