@@ -116,6 +116,28 @@ namespace AllReady.UnitTest.Extensions
             return Mock.Get(controller.Url);
         }
 
+        public static void MakeUserAnOrgAdmin(this Controller controller, string organizationId)
+        {
+            var orgAdminClaims = new List<Claim>
+            {
+                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
+                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId)
+            };
+
+            SetFakeHttpContextIfNotAlreadySet(controller);
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(orgAdminClaims));
+            Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
+        }
+
+        public static void MakeUserNotAnOrgAdmin(this Controller controller)
+        {
+            var claims = new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.BasicUser)) };
+
+            SetFakeHttpContextIfNotAlreadySet(controller);
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));
+            Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
+        }
+
         private static void SetFakeHttpContextIfNotAlreadySet(Controller controller)
         {
             if (controller.ControllerContext.HttpContext == null)
