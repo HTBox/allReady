@@ -58,11 +58,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, It.IsAny<int>().ToString())
-            });
+            sut.MakeUserNotAnOrgAdmin();
             Assert.IsType<UnauthorizedResult>(await sut.Details(It.IsAny<int>()));
         }
 
@@ -73,11 +69,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, It.IsAny<int>().ToString())
-            });
+            sut.MakeUserNotAnOrgAdmin();
             Assert.IsType<UnauthorizedResult>(await sut.Details(It.IsAny<int>()));
         }
 
@@ -128,11 +120,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, It.IsAny<int>().ToString())
-            });
+            sut.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<UnauthorizedResult>(await sut.Create(It.IsAny<int>()));
         }
@@ -266,11 +254,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<EventEditQuery>())).ReturnsAsync(new EventEditViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, It.IsAny<int>().ToString())
-            });
+            sut.MakeUserNotAnOrgAdmin();
             Assert.IsType<UnauthorizedResult>(await sut.Edit(It.IsAny<int>()));
         }
 
@@ -402,11 +386,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, It.IsAny<int>().ToString())
-            });
+            sut.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<UnauthorizedResult>(await sut.Delete(It.IsAny<int>()).ConfigureAwait(false));
         }
@@ -458,11 +438,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, It.IsAny<int>().ToString())
-            });
+            sut.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<UnauthorizedResult>(await sut.DeleteConfirmed(It.IsAny<int>()).ConfigureAwait(false));
         }
@@ -523,11 +499,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { CampaignId = 1, Campaign = new Campaign { ManagingOrganizationId = 1 } });
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.BasicUser.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
-            });
+            sut.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<UnauthorizedResult>(sut.Assign(It.IsAny<int>()));
         }
@@ -535,15 +507,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void AssignReturnsCorrectViewModel()
         {
+            const int orgId = 1;
+
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { CampaignId = 1, Campaign = new Campaign { ManagingOrganizationId = 1 } });
+            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { CampaignId = 1, Campaign = new Campaign { ManagingOrganizationId = orgId } });
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
-            });
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = (ViewResult) sut.Assign(It.IsAny<int>());
             var resultModel = result.ViewData.Model;
@@ -719,11 +689,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1000 } }).Verifiable();
             
             var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventDetailModels>());
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
-            });
+            sut.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<UnauthorizedResult>(await sut.Requests(It.IsAny<int>(), null));
         }
@@ -731,15 +697,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task RequestsReturnsRedirectWhenStatusDoesNotMatchEnumOptions()
         {
+            const int orgId = 1;
+
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } }).Verifiable();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = orgId } }).Verifiable();
 
             var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventDetailModels>());
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
-            });
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             Assert.IsType<RedirectToActionResult>(await sut.Requests(It.IsAny<int>(), "MadeUp"));
         }
@@ -747,17 +711,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task RequestsSendsEventRequestsQueryWhenNoStatusRouteParamPassedAndUserIsOrgAdmin()
         {
+            const int orgId = 1;
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } }).Verifiable();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventRequestsQuery>())).ReturnsAsync(new AllReady.Areas.Admin.ViewModels.Event.EventRequestsViewModel()).Verifiable();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = orgId } }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventRequestsQuery>())).ReturnsAsync(new EventRequestsViewModel()).Verifiable();
 
             var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventDetailModels>());
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
-            });
-
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+            
             await sut.Requests(1, null);
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<EventRequestsQuery>()), Times.Once);
@@ -766,17 +727,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task RequestsSendsEventRequestListItemsQueryWhenNoStatusRouteParamPassedAndUserIsOrgAdmin()
         {
+            const int orgId = 1;
+
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } }).Verifiable();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = orgId } }).Verifiable();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventRequestsQuery>())).ReturnsAsync(new EventRequestsViewModel()).Verifiable();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<RequestListItemsQuery>())).ReturnsAsync(new List<RequestListViewModel>()).Verifiable();
 
             var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventDetailModels>());
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
-            });
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             await sut.Requests(1, null);
 
@@ -786,16 +745,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task RequestsSendsEventRequestsQueryWhenValidStatusRouteParamPassedAndUserIsOrgAdmin()
         {
+            const int orgId = 1;
+
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } }).Verifiable();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = orgId }}).Verifiable();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventRequestsQuery>())).ReturnsAsync(new EventRequestsViewModel()).Verifiable();
 
             var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventDetailModels>());
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
-            });
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             await sut.Requests(1, "Assigned");
 
@@ -805,16 +762,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task RequestsSetsCorrectPageTitleOnModelWhenStatusParamIsNotSet()
         {
+            const int orgId = 1;
+
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } }).Verifiable();
+            mockMediator.Setup(mock => mock.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign { ManagingOrganizationId = orgId } }).Verifiable();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventRequestsQuery>())).ReturnsAsync(new EventRequestsViewModel()).Verifiable();
 
             var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventDetailModels>());
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
-            });
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await sut.Requests(1, null) as ViewResult;
 
