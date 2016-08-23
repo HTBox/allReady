@@ -1,6 +1,9 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Models;
+using AllReady.ViewModels.Manage;
+using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.Security
 {
@@ -9,6 +12,44 @@ namespace AllReady.Security
         public static bool IsUserType(this ApplicationUser user, UserType userType)
         {
             return user?.Claims != null && user.Claims.Any(c => c.ClaimType == ClaimTypes.UserType && c.ClaimValue == Enum.GetName(typeof(UserType), userType));
+        }
+
+        public static int? GetOrganizationId(this ApplicationUser user)
+        {
+            int? result = null;
+            var organizationIdClaim = user.Claims.FirstOrDefault(c => c.ClaimType == ClaimTypes.Organization);
+            if (organizationIdClaim != null)
+            {
+                int organizationId;
+                if (int.TryParse(organizationIdClaim.ClaimValue, out organizationId))
+                    result = organizationId;
+            }
+
+            return result;
+        }
+
+        public static async Task<IndexViewModel> ToViewModel(this ApplicationUser user, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        {
+            var profileCompletenessWarnings = user.ValidateProfileCompleteness();
+            var result = new IndexViewModel
+            {
+                HasPassword = await userManager.HasPasswordAsync(user),
+                EmailAddress = user.Email,
+                IsEmailAddressConfirmed = user.EmailConfirmed,
+                IsPhoneNumberConfirmed = user.PhoneNumberConfirmed,
+                PhoneNumber = await userManager.GetPhoneNumberAsync(user),
+                TwoFactor = await userManager.GetTwoFactorEnabledAsync(user),
+                Logins = await userManager.GetLoginsAsync(user),
+                BrowserRemembered = await signInManager.IsTwoFactorClientRememberedAsync(user),
+                AssociatedSkills = user.AssociatedSkills,
+                TimeZoneId = user.TimeZoneId,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                ProposedNewEmailAddress = user.PendingNewEmail,
+                IsProfileComplete = user.IsProfileComplete(),
+                ProfileCompletenessWarnings = profileCompletenessWarnings.Select(p => p.ErrorMessage)
+            };
+            return result;
         }
     }
 }
