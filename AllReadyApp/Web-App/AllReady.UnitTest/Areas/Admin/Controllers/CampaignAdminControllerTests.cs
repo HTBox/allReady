@@ -31,7 +31,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
 
             var controller = new CampaignController(mockMediator.Object, null);
-            controller.MakeUserOrganizationAdminUser(organizationId.ToString());
+            controller.MakeUserAnOrgAdmin(organizationId.ToString());
             controller.Index();
 
             mockMediator.Verify(mock => mock.Send(It.Is<CampaignListQuery>(q => q.OrganizationId == organizationId)));
@@ -76,7 +76,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             );
 
             var controller = new CampaignController(mockMediator.Object, null);
-            controller.MakeUserOrganizationAdminUser(organizationId.ToString());
+            controller.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var view = (ViewResult)controller.Index();
             mockMediator.Verify(mock => mock.Send(It.Is<CampaignListQuery>(c => c.OrganizationId == organizationId)));
@@ -174,7 +174,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             // user is org admin
             var controller = new CampaignController(mockMediator.Object, null);
-            controller.MakeUserOrganizationAdminUser(organizationId.ToString());
+            controller.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var view = (ViewResult)(await controller.Details(campaignId));
             var viewModel = (CampaignDetailViewModel)view.ViewData.Model;
@@ -244,7 +244,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var campaignSummaryModel = new CampaignSummaryViewModel { OrganizationId = 1, StartDate = DateTime.Now.AddDays(1), EndDate = DateTime.Now.AddDays(-1)};
 
             var sut = new CampaignController(null, null);
-            sut.MakeUserOrganizationAdminUser(campaignSummaryModel.OrganizationId.ToString());
+            sut.MakeUserAnOrgAdmin(campaignSummaryModel.OrganizationId.ToString());
 
             await sut.Edit(campaignSummaryModel, null);
             var modelStateErrorCollection = sut.ModelState.GetErrorMessagesByKey(nameof(CampaignSummaryViewModel.EndDate));
@@ -263,7 +263,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockImageService = new Mock<IImageService>();
             var controller = new CampaignController(mockMediator.Object, mockImageService.Object);
-            controller.MakeUserOrganizationAdminUser(OrganizationId.ToString());
+            controller.MakeUserAnOrgAdmin(OrganizationId.ToString());
 
             var model = MassiveTrafficLightOutage_model;
             model.OrganizationId = OrganizationId;
@@ -325,7 +325,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockImageService = new Mock<IImageService>();
 
             var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
-            sut.MakeUserOrganizationAdminUser(organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var file = FormFile("audio/mpeg3");
             var model = MassiveTrafficLightOutage_model;
@@ -346,7 +346,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockImageService = new Mock<IImageService>();
 
             var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
-            sut.MakeUserOrganizationAdminUser(organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var file = FormFile("image/jpeg");
 
@@ -421,7 +421,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(c => c.CampaignId == campaignId))).ReturnsAsync(new CampaignSummaryViewModel { Id = campaignId, OrganizationId = organizationId });
 
             var controller = new CampaignController(mockMediator.Object, null);
-            controller.MakeUserOrganizationAdminUser(organizationId.ToString());
+            controller.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var view = (ViewResult)await controller.Delete(campaignId);
             var viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
@@ -457,7 +457,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel { OrganizationId = organizationId });
 
             var sut = new CampaignController(mockMediator.Object, null);
-            sut.MakeUserOrganizationAdminUser(organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             await sut.DeleteConfirmed(campaignId);
 
@@ -474,7 +474,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel { OrganizationId = organizationId });
 
             var sut = new CampaignController(mockMediator.Object, null);
-            sut.MakeUserOrganizationAdminUser(organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var routeValues = new Dictionary<string, object> { ["area"] = "Admin" };
 
