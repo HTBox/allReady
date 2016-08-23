@@ -23,7 +23,10 @@ using Xunit;
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
     public class ItineraryAdminControllerTests
-  {
+    {
+        //delete this line when all unit tests using it have been completed
+        private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
+
         [Fact]
         public void ControllerHasAreaAtttributeWithTheCorrectAreaName()
         {
@@ -516,7 +519,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         // are unauthorized
 
         [Fact]
-        public void SelectRequestsHasHttpGetAttribute()
+        public void SelectRequestsGetHasHttpGetAttribute()
         {
             var sut = new ItineraryController(null,  null);
             var attribute = sut.GetAttributesOn(x => x.SelectRequests(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
@@ -524,7 +527,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void SelectRequestsHasRouteAttributeWithCorrectRoute()
+        public void SelectRequestsGetHasRouteAttributeWithCorrectRoute()
         {
             var sut = new ItineraryController(null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.SelectRequests(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
@@ -532,8 +535,29 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{id}/[Action]");
         }
 
+        [Fact(Skip = "NotImplemented")]
+        public async Task SelectRequestsGetSendsOrganizationIdQueryWithCorrectItineraryId()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task SelectRequestsGetReturnsUnauthorizedResult_WhenOrgIdIsZero()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact(Skip = "NotImplemented")]
+        public async Task SelectRequestsGetReturnsUnauthorizedResult_WhenUserIsNotOrgAdmin()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
         [Fact]
-        public async Task SelectRequestsWithSingleParameterSetsSelectItineraryRequestsModelWithTheCorrectData()
+        public async Task SelectRequestsPostWithSingleParameterSetsSelectItineraryRequestsModelWithTheCorrectData()
         {
             const int organizationId = 4;
 
@@ -554,7 +578,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task SelectRequestsWithTwoParametersSetsSelectItineraryRequestsModelWithTheCorrectData()
+        public async Task SelectRequestsPostWithTwoParametersSetsSelectItineraryRequestsModelWithTheCorrectData()
         {
             var itineraryRequestsModel = new SelectItineraryRequestsViewModel { KeywordsFilter = "These are keywords" };
             var itinerary = GetItineraryForSelectRequestHappyPathTests();
@@ -994,7 +1018,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static Mock<IItineraryEditModelValidator> MockSuccessValidation()
         {
             var mockValidator = new Mock<IItineraryEditModelValidator>();
-
             mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditViewModel>(), It.IsAny<EventSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>()).Verifiable();
 
            return mockValidator;

@@ -116,7 +116,6 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> SelectRequests(int id)
         {
             var orgId = await GetOrganizationIdBy(id);
-
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
                 return Unauthorized();
@@ -135,43 +134,6 @@ namespace AllReady.Areas.Admin.Controllers
             var newModel = await BuildSelectItineraryRequestsModel(id, new RequestSearchCriteria { Status = RequestStatus.Unassigned, Keywords = model.KeywordsFilter });
 
             return View("SelectRequests", newModel);
-        }
-
-        private async Task<SelectItineraryRequestsViewModel> BuildSelectItineraryRequestsModel(int itineraryId,
-            RequestSearchCriteria criteria)
-        {
-            var model = new SelectItineraryRequestsViewModel();
-
-            var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = itineraryId });
-
-            model.CampaignId = itinerary.CampaignId;
-            model.CampaignName = itinerary.CampaignName;
-            model.EventId = itinerary.EventId;
-            model.EventName = itinerary.EventName;
-            model.ItineraryName = itinerary.Name;
-
-            criteria.EventId = itinerary.EventId;
-
-            var requests = await _mediator.SendAsync(new RequestListItemsQuery { Criteria = criteria });
-
-            foreach (var request in requests)
-            {
-                var selectItem = new RequestSelectViewModel
-                {
-                    Id = request.Id,
-                    Name = request.Name,
-                    DateAdded = request.DateAdded,
-                    City = request.City,
-                    Address = request.Address,
-                    Latitude = request.Latitude,
-                    Longitude = request.Longitude,
-                    Postcode = request.Postcode
-                };
-
-                model.Requests.Add(selectItem);
-            }
-
-            return model;
         }
 
         [HttpPost]
@@ -340,6 +302,42 @@ namespace AllReady.Areas.Admin.Controllers
             await _mediator.SendAsync(new RequestStatusChangeCommand() { RequestId = requestId, NewStatus = RequestStatus.Assigned });
 
             return RedirectToAction("Details", new { id = itineraryId });
+        }
+
+        private async Task<SelectItineraryRequestsViewModel> BuildSelectItineraryRequestsModel(int itineraryId, RequestSearchCriteria criteria)
+        {
+            var model = new SelectItineraryRequestsViewModel();
+
+            var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = itineraryId });
+
+            model.CampaignId = itinerary.CampaignId;
+            model.CampaignName = itinerary.CampaignName;
+            model.EventId = itinerary.EventId;
+            model.EventName = itinerary.EventName;
+            model.ItineraryName = itinerary.Name;
+
+            criteria.EventId = itinerary.EventId;
+
+            var requests = await _mediator.SendAsync(new RequestListItemsQuery { Criteria = criteria });
+
+            foreach (var request in requests)
+            {
+                var selectItem = new RequestSelectViewModel
+                {
+                    Id = request.Id,
+                    Name = request.Name,
+                    DateAdded = request.DateAdded,
+                    City = request.City,
+                    Address = request.Address,
+                    Latitude = request.Latitude,
+                    Longitude = request.Longitude,
+                    Postcode = request.Postcode
+                };
+
+                model.Requests.Add(selectItem);
+            }
+
+            return model;
         }
 
         private async Task<int> GetOrganizationIdBy(int intinerayId)
