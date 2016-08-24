@@ -1,9 +1,7 @@
-﻿using System;
-using AllReady.Areas.Admin.Controllers;
+﻿using AllReady.Areas.Admin.Controllers;
 using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Moq;
