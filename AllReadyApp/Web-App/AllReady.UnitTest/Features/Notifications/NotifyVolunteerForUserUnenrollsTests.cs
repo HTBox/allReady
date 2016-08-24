@@ -1,4 +1,5 @@
-﻿using AllReady.Areas.Admin.Models;
+﻿using AllReady.Areas.Admin.ViewModels.Shared;
+using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
@@ -136,14 +137,14 @@ namespace AllReady.UnitTest.Features.Notifications
                 Description = campaignEvent1.Description,
                 UsersSignedUp = campaignEvent1.UsersSignedUp,
                 NumberOfVolunteersRequired = campaignEvent1.NumberOfVolunteersRequired,
-                Tasks = campaignEvent1.Tasks.Select(t => new TaskSummaryModel
+                Tasks = campaignEvent1.Tasks.Select(t => new TaskSummaryViewModel
                 {
                     Id = t.Id,
                     Name = t.Name,
                     StartDateTime = t.StartDateTime,
                     EndDateTime = t.EndDateTime,
                     NumberOfVolunteersRequired = t.NumberOfVolunteersRequired,
-                    AssignedVolunteers = t.AssignedVolunteers.Select(assignedVolunteer => new VolunteerModel
+                    AssignedVolunteers = t.AssignedVolunteers.Select(assignedVolunteer => new VolunteerViewModel
                     {
                         UserId = assignedVolunteer.User.Id,
                         UserName = assignedVolunteer.User.UserName,
