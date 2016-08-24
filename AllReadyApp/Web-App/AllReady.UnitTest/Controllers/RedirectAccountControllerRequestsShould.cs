@@ -2,6 +2,7 @@
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Controllers;
 using AllReady.Models;
+using AllReady.UnitTest.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -42,11 +43,12 @@ namespace AllReady.UnitTest.Controllers
         public void RedirectToCorrectActionResultWithCorrectRouteValues_WhenReturnUrlIsNotALocalUrl_AndUserIsSiteAdmin()
         {
             var applicationUser = new ApplicationUser();
-            applicationUser.Claims.Add(new IdentityUserClaim<string>
-            {
-                ClaimType = AllReady.Security.ClaimTypes.UserType,
-                ClaimValue = Enum.GetName(typeof(UserType), UserType.SiteAdmin)
-            });
+            applicationUser.MakeSiteAdmin();
+            //applicationUser.Claims.Add(new IdentityUserClaim<string>
+            //{
+            //    ClaimType = AllReady.Security.ClaimTypes.UserType,
+            //    ClaimValue = Enum.GetName(typeof(UserType), UserType.SiteAdmin)
+            //});
 
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns(false);
@@ -68,11 +70,12 @@ namespace AllReady.UnitTest.Controllers
         public void RedirectToCorrectActionResultWithCorrectRouteValues_WhenReturnUrlIsNotALocalUrl_AndUserIsOrgAdmin()
         {
             var applicationUser = new ApplicationUser();
-            applicationUser.Claims.Add(new IdentityUserClaim<string>
-            {
-                ClaimType = AllReady.Security.ClaimTypes.UserType,
-                ClaimValue = Enum.GetName(typeof(UserType), UserType.OrgAdmin)
-            });
+            applicationUser.MakeOrgAdmin();
+            //applicationUser.Claims.Add(new IdentityUserClaim<string>
+            //{
+            //    ClaimType = AllReady.Security.ClaimTypes.UserType,
+            //    ClaimValue = Enum.GetName(typeof(UserType), UserType.OrgAdmin)
+            //});
 
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns(false);
@@ -93,18 +96,11 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void RedirectToCorrectActionResultWithCorrectRouteValues_WhenReturnUrlIsNotALocalUrl_AndUserIsNotASiteOrAnOrgAdmin()
         {
-            var applicationUser = new ApplicationUser();
-            applicationUser.Claims.Add(new IdentityUserClaim<string>
-            {
-                ClaimType = AllReady.Security.ClaimTypes.UserType,
-                ClaimValue = Enum.GetName(typeof(UserType), UserType.BasicUser)
-            });
-
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns(false);
 
             var sut = new RedirectAccountControllerRequests();
-            var result = sut.RedirectToLocal(It.IsAny<string>(), applicationUser, urlHelper.Object) as RedirectToActionResult;
+            var result = sut.RedirectToLocal(It.IsAny<string>(), new ApplicationUser(), urlHelper.Object) as RedirectToActionResult;
 
             Assert.Equal(result.ActionName, nameof(HomeController.Index));
             Assert.Equal(result.ControllerName, "Home");
