@@ -108,11 +108,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task LoginPostReturnsErrorViewWithCorrectTextInViewData_WhenUserIsNotNull_AndUserIsAnOrgAdmin_AndUsersEmailIsNotConfirmed()
         {
             var applicationUser = new ApplicationUser();
-            applicationUser.Claims.Add(new IdentityUserClaim<string>
-            {
-                ClaimType = AllReady.Security.ClaimTypes.UserType,
-                ClaimValue = Enum.GetName(typeof(UserType), UserType.OrgAdmin)
-            });
+            applicationUser.MakeOrgAdmin();
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQueryAsync>())).ReturnsAsync(applicationUser);
@@ -134,11 +130,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task LoginPostReturnsErrorViewWithCorrectTextInViewData_WhenUserIsNotNull_AndUserIsASiteAdmin_AndUsersEmailIsNotConfirmed()
         {
             var applicationUser = new ApplicationUser();
-            applicationUser.Claims.Add(new IdentityUserClaim<string>
-            {
-                ClaimType = AllReady.Security.ClaimTypes.UserType,
-                ClaimValue = Enum.GetName(typeof(UserType), UserType.OrgAdmin)
-            });
+            applicationUser.MakeSiteAdmin();
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQueryAsync>())).ReturnsAsync(applicationUser);
