@@ -459,15 +459,10 @@ namespace AllReady.UnitTest.Features.Notifications
                 EventId = 111
             };
 
-            var model = new EventDetailForNotificationModel();
-
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(new EventDetailForNotificationModel());
 
-            var mockSettings = new Mock<IOptions<GeneralSettings>>();
-            mockSettings.Setup(x => x.Value).Returns(new GeneralSettings());
-
-            var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, mockSettings.Object);
+            var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, null);
             await handler.Handle(notification);
 
             mockMediator.Verify(x => x.SendAsync(It.Is<EventDetailForNotificationQueryAsync>(n => n.EventId == notification.EventId && n.UserId == notification.UserId)), Times.Once);
