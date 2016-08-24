@@ -40,15 +40,15 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     break;
                 case TaskStatus.Accepted:
                     if (currentStatus != TaskStatus.Assigned && currentStatus != TaskStatus.CanNotComplete && currentStatus != TaskStatus.Completed) 
-                        throw new ArgumentException($"Task must be assigned before being accepted or undoing CanNotComplete or Completed");
+                        throw new ArgumentException("Task must be assigned before being accepted or undoing CanNotComplete or Completed");
                     break;
                 case TaskStatus.Rejected:
                     if (currentStatus != TaskStatus.Assigned)
-                        throw new ArgumentException($"Task must be assigned before being rejected");
+                        throw new ArgumentException("Task must be assigned before being rejected");
                     break;
                 case TaskStatus.Completed:
                     if (currentStatus != TaskStatus.Accepted && currentStatus != TaskStatus.Assigned)
-                        throw new ArgumentException($"Task must be accepted before being completed");
+                        throw new ArgumentException("Task must be accepted before being completed");
                     break;
                 case TaskStatus.CanNotComplete:
                     if (currentStatus != TaskStatus.Accepted && currentStatus != TaskStatus.Assigned)

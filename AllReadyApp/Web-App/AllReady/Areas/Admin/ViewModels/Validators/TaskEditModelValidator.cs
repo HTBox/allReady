@@ -7,11 +7,11 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.ViewModels.Validators
 {
-    public class TaskSummaryModelValidator : ITaskSummaryModelValidator
+    public class TaskEditViewModelValidator : ITaskEditViewModelValidator
     {
         private readonly IMediator _mediator;
 
-        public TaskSummaryModelValidator(IMediator mediator)
+        public TaskEditViewModelValidator(IMediator mediator)
         {
             if (mediator == null)
             {
@@ -21,7 +21,7 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
             _mediator = mediator;
         }
 
-        public List<KeyValuePair<string, string>> Validate(TaskSummaryViewModel model)
+        public List<KeyValuePair<string, string>> Validate(EditViewModel model)
         {
             var result = new List<KeyValuePair<string, string>>();
 
@@ -69,8 +69,8 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
         }
     }
 
-    public interface ITaskSummaryModelValidator
+    public interface ITaskEditViewModelValidator
     {
-        List<KeyValuePair<string, string>> Validate(TaskSummaryViewModel model);
+        List<KeyValuePair<string, string>> Validate(EditViewModel model);
     }
 }

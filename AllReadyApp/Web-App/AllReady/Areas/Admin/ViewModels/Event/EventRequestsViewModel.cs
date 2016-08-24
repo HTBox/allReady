@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using AllReady.Areas.Admin.ViewModels.Itinerary;
+using AllReady.Models;
 
 namespace AllReady.Areas.Admin.ViewModels.Event
 {
@@ -15,5 +16,6 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         public List<RequestListViewModel> Requests { get; set; } = new List<RequestListViewModel>();
 
         public string PageTitle { get; set; }
+        public string CurrentPage { get; set; }
     }
 }

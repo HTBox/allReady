@@ -1,6 +1,8 @@
 ﻿@using System.Threading.Tasks
+@using AllReady.Areas.Admin.ViewModels.Task
 @using AllReady.Security
-@model AllReady.Areas.Admin.ViewModels.Task.TaskSummaryViewModel
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@model DetailsViewModel
 @{
     ViewData["Title"] = "Tasks Details";
     var userTimeZoneId = User.GetTimeZoneId();
@@ -22,7 +24,7 @@
         <p>@Model.Description</p>
         <p>
             <time value="Model.StartDateTime"></time> - <time value="Model.EndDateTime"></time>
-                <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
+            <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
         </p>
         @if (!string.IsNullOrEmpty(userTimeZoneId) && Model.TimeZoneId != userTimeZoneId)
         {
@@ -62,20 +64,20 @@
                 @if (Model.AssignedVolunteers.Any())
                 {
                     <button type="button" class="btn btn-primary" disabled="@(!Model.AssignedVolunteers.Any())" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button>
-                        <table class="table">
+                    <table class="table">
+                        <tr>
+                            <th>
+                                Volunteer Name
+                            </th>
+                        </tr>
+                        @foreach (var volunteer in Model.AssignedVolunteers)
+                        {
                             <tr>
-                                <th>
-                                    Volunteer Name
-                                </th>
-                            </tr>
-                            @foreach (var volunteer in Model.AssignedVolunteers)
-                            {
-                                <tr>
-                                    <td>@volunteer.UserName</td>
+                                <td>@volunteer.UserName</td>
 
-                                </tr>
-                            }
-                        </table>
+                            </tr>
+                        }
+                    </table>
                 }
                 else
                 {
@@ -152,7 +154,6 @@
         </div>
     </div>
 </div>
-
 
 @section scripts {
     <script src="~/js/taskDetails.js"></script>

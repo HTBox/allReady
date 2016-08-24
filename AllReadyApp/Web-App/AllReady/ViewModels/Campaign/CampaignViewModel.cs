@@ -29,7 +29,7 @@ namespace AllReady.ViewModels.Campaign
             ManagingOrganizationLogo = campaign.ManagingOrganization?.LogoUrl ?? string.Empty;
             TimeZoneId = campaign.TimeZoneId;
             StartDate = campaign.StartDateTime;
-            EndDate = campaign.EndDateTime;
+            EndDate = campaign.EndDateTime;            
             Events = campaign.Events != null ? campaign.Events.ToViewModel() : Enumerable.Empty<EventViewModel>();
             CampaignImpact = campaign.CampaignImpact;
             ImageUrl = campaign.ImageUrl;

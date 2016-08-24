@@ -370,6 +370,8 @@ namespace AllReady.Areas.Admin.Controllers
 
             var pageTitle = "All Requests";
 
+            var currentPage = "All";
+
             if (!string.IsNullOrEmpty(status))
             { 
                 RequestStatus requestStatus;
@@ -377,6 +379,7 @@ namespace AllReady.Areas.Admin.Controllers
                 {
                     criteria.Status = requestStatus;
                     pageTitle = $"{status} Requests";
+                    currentPage = status;
                 }
                 else
                 {
@@ -387,6 +390,7 @@ namespace AllReady.Areas.Admin.Controllers
             var model = await _mediator.SendAsync(new EventRequestsQuery { EventId = id });
 
             model.PageTitle = pageTitle;
+            model.CurrentPage = currentPage;
 
             model.Requests = await _mediator.SendAsync(new RequestListItemsQuery {Criteria = criteria});
  

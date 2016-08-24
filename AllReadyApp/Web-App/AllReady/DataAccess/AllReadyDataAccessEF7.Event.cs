@@ -15,7 +15,7 @@ namespace AllReady.Models
                                 .Include(a => a.Location)
                                 .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
                                 .Include(a => a.Tasks)
-                                .Include(a => a.RequiredSkills)
+                                .Include(a => a.RequiredSkills).ThenInclude(r => r.Skill)
                                 .Include(a => a.UsersSignedUp)
                                 .OrderBy(a => a.EndDateTime)
                                 .ToList();

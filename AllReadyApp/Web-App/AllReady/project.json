@@ -5,7 +5,8 @@
   "description": "AllReady",
   "buildOptions": {
     "emitEntryPoint": true,
-    "preserveCompilationContext": true
+    "preserveCompilationContext": true,
+    "nowarn": [ "0618" ]
   },
   "dependencies": {
     "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
