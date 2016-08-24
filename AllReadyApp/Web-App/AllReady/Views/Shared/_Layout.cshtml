@@ -26,7 +26,7 @@
     @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
     @RenderSection("styles", required: false)
 
-    
+
     <script type="text/javascript">
         var htbox = htbox || {};
         htbox.allReady = htbox.allReady || {};
@@ -52,8 +52,11 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand"><img src="~/images/Web-Logo-small.png" alt="Web Logo" /></a>
+                    <div @(descriptor.ActionName == "Index" && controllerName == "Home" ? " style=display:none;" : "")>
+                        <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand"><img  src="~/images/Web-Logo-small.png" alt="Web Logo" /></a>
+                    </div> 
                 </div>
+
                 <div class="navbar-collapse collapse">
                   
                     <ul class="nav navbar-nav">
@@ -67,9 +70,15 @@
                 <!--/.nav-collapse -->
             </div>
         </nav>
+        <div class="row logo-background" @(descriptor.ActionName == "Index" && controllerName == "Home" ?  "" : " style=display:none;" )>
+            <div class="col-md-12">
+                <div class="center"><img src="~/images/Web-Logo.png" alt="Logo image for the project" class="img-responsive center-block" /></div>
+                <h3 class="text-center sub-title">Get connected. Work together. Be prepared.</h3>
+            </div>
+        </div>
     </header>
 
-    <div class="container-fluid body-content">
+        <div class="container-fluid body-content">
         @RenderBody()
     </div>
     @await Html.PartialAsync("_Footer")
