@@ -30,8 +30,8 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
 
             var @event = _mediator.Send(new EventByIdQuery { EventId = viewModel.EventId });
 
-            var convertedStartDateTime = _dateTimeOffsetProvider.GetDateTimeOffsetFor(@event.Campaign.TimeZoneId, viewModel.StartDateTime, viewModel.StartDateTime.Hour, viewModel.StartDateTime.Minute);
-            var convertedEndDateTime = _dateTimeOffsetProvider.GetDateTimeOffsetFor(@event.Campaign.TimeZoneId, viewModel.EndDateTime, viewModel.EndDateTime.Hour, viewModel.EndDateTime.Minute);
+            var convertedStartDateTime = _dateTimeOffsetProvider.AdjustDateTimeOffsetTo(@event.Campaign.TimeZoneId, viewModel.StartDateTime, viewModel.StartDateTime.Hour, viewModel.StartDateTime.Minute);
+            var convertedEndDateTime = _dateTimeOffsetProvider.AdjustDateTimeOffsetTo(@event.Campaign.TimeZoneId, viewModel.EndDateTime, viewModel.EndDateTime.Hour, viewModel.EndDateTime.Minute);
 
             // Rule - End date cannot be earlier than start date
             if (convertedEndDateTime < convertedStartDateTime)

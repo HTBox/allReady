@@ -38,8 +38,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.ExternalUrlText = message.Campaign.ExternalUrlText;
 
             campaign.TimeZoneId = message.Campaign.TimeZoneId;
-            campaign.StartDateTime = _dateTimeOffsetProvider.GetDateTimeOffsetFor(campaign.TimeZoneId, message.Campaign.StartDate);
-            campaign.EndDateTime = _dateTimeOffsetProvider.GetDateTimeOffsetFor(campaign.TimeZoneId, message.Campaign.EndDate, 23, 59, 59);
+            campaign.StartDateTime = _dateTimeOffsetProvider.AdjustDateTimeOffsetTo(campaign.TimeZoneId, message.Campaign.StartDate);
+            campaign.EndDateTime = _dateTimeOffsetProvider.AdjustDateTimeOffsetTo(campaign.TimeZoneId, message.Campaign.EndDate, 23, 59, 59);
 
             campaign.ManagingOrganizationId = message.Campaign.OrganizationId;
             campaign.ImageUrl = message.Campaign.ImageUrl;
