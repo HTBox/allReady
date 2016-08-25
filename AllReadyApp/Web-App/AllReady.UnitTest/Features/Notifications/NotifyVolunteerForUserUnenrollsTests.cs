@@ -467,5 +467,18 @@ namespace AllReady.UnitTest.Features.Notifications
 
             mockMediator.Verify(x => x.SendAsync(It.Is<EventDetailForNotificationQueryAsync>(n => n.EventId == notification.EventId && n.UserId == notification.UserId)), Times.Once);
         }
+
+        [Fact]
+        public async Task NotSendNotifyVolunteersCommand_WhenSignupIsNull()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(new EventDetailForNotificationModel());
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>())).ReturnsAsync(new Unit());
+
+            var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, null);
+            await handler.Handle(new UserUnenrolls());
+
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
+        }
     }
 }
