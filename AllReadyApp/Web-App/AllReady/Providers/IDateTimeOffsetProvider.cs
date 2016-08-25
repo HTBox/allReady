@@ -13,25 +13,19 @@ namespace AllReady.Providers
     {
         public DateTimeOffset AdjustDateTimeOffsetTo(string timeZoneId, DateTimeOffset dateTimeOffset, int hour = 0, int minute = 0, int second = 0)
         {
-            var timeZoneInfo = FindSystemTimeZoneBy(timeZoneId);
-            return AdjustDateTimeOffsetTo(timeZoneInfo, dateTimeOffset, hour, minute, second);
+            return AdjustDateTimeOffsetTo(FindSystemTimeZoneBy(timeZoneId), dateTimeOffset, hour, minute, second);
         }
 
         public DateTimeOffset AdjustDateTimeOffsetTo(TimeZoneInfo timeZoneInfo, DateTimeOffset dateTimeOffset, int hour = 0, int minute = 0, int second = 0)
         {
-            var timeSpan = timeZoneInfo.GetUtcOffset(dateTimeOffset);
-            return new DateTimeOffset(dateTimeOffset.Year, dateTimeOffset.Month, dateTimeOffset.Day, hour, minute, second, timeSpan);
+            return new DateTimeOffset(dateTimeOffset.Year, dateTimeOffset.Month, dateTimeOffset.Day, hour, minute, second, timeZoneInfo.GetUtcOffset(dateTimeOffset));
         }
 
-        //only thing I don't like about this signature is we lose the ability to pass in the hour, minute and second optionally... if we did, the sig of this method would start to look pretty ugly
-        //OR, we put the onus on the caller to make sure the correct hour/minute/second are attached to the start/endDateTimeOffset values provided to the method
         public void AdjustDateTimeOffsetTo(string timeZoneId, DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, out DateTimeOffset convertedStartDate, out DateTimeOffset convertedEndDate)
         {
             var timeZoneInfo = FindSystemTimeZoneBy(timeZoneId);
-            var startDateTimeSpan = timeZoneInfo.GetUtcOffset(startDateTimeOffset);
-            var endDateTimeSpan = timeZoneInfo.GetUtcOffset(endDateTimeOffset);
-            convertedStartDate = new DateTimeOffset(startDateTimeOffset.Year, startDateTimeOffset.Month, startDateTimeOffset.Day, 0, 0, 0, startDateTimeSpan);
-            convertedEndDate = new DateTimeOffset(endDateTimeOffset.Year, endDateTimeOffset.Month, endDateTimeOffset.Day, 0, 0, 0, endDateTimeSpan);
+            convertedStartDate = new DateTimeOffset(startDateTimeOffset.Year, startDateTimeOffset.Month, startDateTimeOffset.Day, 0, 0, 0, timeZoneInfo.GetUtcOffset(startDateTimeOffset));
+            convertedEndDate = new DateTimeOffset(endDateTimeOffset.Year, endDateTimeOffset.Month, endDateTimeOffset.Day, 0, 0, 0, timeZoneInfo.GetUtcOffset(endDateTimeOffset);
         }
 
         private static TimeZoneInfo FindSystemTimeZoneBy(string timeZoneId)
