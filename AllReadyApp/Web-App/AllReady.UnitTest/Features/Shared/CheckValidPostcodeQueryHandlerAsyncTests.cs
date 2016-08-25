@@ -10,20 +10,20 @@ namespace AllReady.UnitTest.Features.Shared
 {
 	public class CheckValidPostcodeQueryHandlerAsyncTests : InMemoryContextTest
 	{
-		private List< PostalCodeGeo > _postalCodeGeos;
+		private List<PostalCodeGeo> _postalCodeGeos;
 
 		[Fact]
 		public async Task ValidatesToTrueForValidStoredCodes()
 		{
 			//arrange
-			var handler = new CheckValidPostcodeQueryHandlerAsync(Context);
+			var handler = new CheckValidPostcodeQueryHandlerAsync( Context );
 			var message = new CheckValidPostcodeQueryAsync()
 			{
 				Postcode = new PostalCodeGeo
 				{
-					City = _postalCodeGeos[ 0 ].City,
-					PostalCode = _postalCodeGeos[ 0 ].PostalCode,
-					State = _postalCodeGeos[ 0 ].State
+					City = _postalCodeGeos[0].City,
+					PostalCode = _postalCodeGeos[0].PostalCode,
+					State = _postalCodeGeos[0].State
 				}
 			};
 
@@ -42,8 +42,8 @@ namespace AllReady.UnitTest.Features.Shared
 		[InlineData( false, true, true )]
 		[InlineData( false, false, true )]
 		public async Task ReturnsFalseIfCityPostalCodeStateCombinationDoesNotMatch( bool cityFlag,
-		                                                                            bool postalcodeFlag,
-		                                                                            bool stateFlag )
+																					bool postalcodeFlag,
+																					bool stateFlag )
 		{
 			//arrange
 			var handler = new CheckValidPostcodeQueryHandlerAsync( Context );
@@ -51,9 +51,9 @@ namespace AllReady.UnitTest.Features.Shared
 			{
 				Postcode = new PostalCodeGeo
 				{
-					City = cityFlag ? _postalCodeGeos[ 1 ].City : "test",
-					PostalCode = postalcodeFlag ? _postalCodeGeos[ 1 ].PostalCode : "test",
-					State = stateFlag ? _postalCodeGeos[ 1 ].State : "test"
+					City = cityFlag ? _postalCodeGeos[1].City : "test",
+					PostalCode = postalcodeFlag ? _postalCodeGeos[1].PostalCode : "test",
+					State = stateFlag ? _postalCodeGeos[1].State : "test"
 				}
 			};
 
@@ -68,7 +68,7 @@ namespace AllReady.UnitTest.Features.Shared
 		{
 			var randomGenerator = new Random();
 
-			_postalCodeGeos = new List< PostalCodeGeo >();
+			_postalCodeGeos = new List<PostalCodeGeo>();
 			Enumerable.Range( 0, 5 ).ToList().ForEach( x => _postalCodeGeos.Add( new PostalCodeGeo()
 			{
 				City = $"test city{randomGenerator.Next( 1000 )}",
