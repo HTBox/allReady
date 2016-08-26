@@ -25,7 +25,7 @@ namespace AllReady.Providers
         {
             var timeZoneInfo = FindSystemTimeZoneBy(timeZoneId);
             convertedStartDate = new DateTimeOffset(startDateTimeOffset.Year, startDateTimeOffset.Month, startDateTimeOffset.Day, 0, 0, 0, timeZoneInfo.GetUtcOffset(startDateTimeOffset));
-            convertedEndDate = new DateTimeOffset(endDateTimeOffset.Year, endDateTimeOffset.Month, endDateTimeOffset.Day, 0, 0, 0, timeZoneInfo.GetUtcOffset(endDateTimeOffset);
+            convertedEndDate = new DateTimeOffset(endDateTimeOffset.Year, endDateTimeOffset.Month, endDateTimeOffset.Day, 0, 0, 0, timeZoneInfo.GetUtcOffset(endDateTimeOffset));
         }
 
         private static TimeZoneInfo FindSystemTimeZoneBy(string timeZoneId)
