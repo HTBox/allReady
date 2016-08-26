@@ -11,12 +11,12 @@ namespace AllReady.Areas.Admin.Features.Events
     public class EditEventCommandHandler : IAsyncRequestHandler<EditEventCommand, int>
     {
         private AllReadyContext _context;
-        private readonly IDateTimeOffsetProvider _dateTimeOffsetProvider;
+        private readonly IConvertDateTimeOffsets _dateTimeOffsetConverter;
 
-        public EditEventCommandHandler(AllReadyContext context, IDateTimeOffsetProvider dateTimeOffsetProvider)
+        public EditEventCommandHandler(AllReadyContext context, IConvertDateTimeOffsets dateTimeOffsetConverter)
         {
             _context = context;
-            _dateTimeOffsetProvider = dateTimeOffsetProvider;
+            _dateTimeOffsetConverter = dateTimeOffsetConverter;
         }
         public async Task<int> Handle(EditEventCommand message)
         {
@@ -26,8 +26,8 @@ namespace AllReady.Areas.Admin.Features.Events
             campaignEvent.Description = message.Event.Description;
             campaignEvent.EventType = message.Event.EventType;
 
-            campaignEvent.StartDateTime = _dateTimeOffsetProvider.AdjustDateTimeOffsetTo(message.Event.TimeZoneId, message.Event.StartDateTime, message.Event.StartDateTime.Hour, message.Event.StartDateTime.Minute);
-            campaignEvent.EndDateTime = _dateTimeOffsetProvider.AdjustDateTimeOffsetTo(message.Event.TimeZoneId, message.Event.EndDateTime, message.Event.EndDateTime.Hour, message.Event.EndDateTime.Minute);
+            campaignEvent.StartDateTime = _dateTimeOffsetConverter.ConvertDateTimeOffsetTo(message.Event.TimeZoneId, message.Event.StartDateTime, message.Event.StartDateTime.Hour, message.Event.StartDateTime.Minute);
+            campaignEvent.EndDateTime = _dateTimeOffsetConverter.ConvertDateTimeOffsetTo(message.Event.TimeZoneId, message.Event.EndDateTime, message.Event.EndDateTime.Hour, message.Event.EndDateTime.Minute);
 
             campaignEvent.CampaignId = message.Event.CampaignId;
             

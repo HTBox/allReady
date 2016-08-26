@@ -47,7 +47,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             };
 
             var query = new EditEventCommand { Event = vm };
-            var handler = new EditEventCommandHandler(context, Mock.Of<IDateTimeOffsetProvider>());
+            var handler = new EditEventCommandHandler(context, Mock.Of<IConvertDateTimeOffsets>());
             var result = await handler.Handle(query);
             Assert.True(result > 0);
 
@@ -114,7 +114,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 OrganizationName = queenAnne.Campaign.ManagingOrganization.Name,
             };
             var query = new EditEventCommand { Event = vm };
-            var handler = new EditEventCommandHandler(context, Mock.Of<IDateTimeOffsetProvider>());
+            var handler = new EditEventCommandHandler(context, Mock.Of<IConvertDateTimeOffsets>());
             var result = await handler.Handle(query);
             Assert.Equal(100, result); // should get back the event id
 
@@ -220,7 +220,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             };
 
             var query = new EditEventCommand { Event = locationEdit };
-            var handler = new EditEventCommandHandler(context, Mock.Of<IDateTimeOffsetProvider>());
+            var handler = new EditEventCommandHandler(context, Mock.Of<IConvertDateTimeOffsets>());
             var result = await handler.Handle(query);
             Assert.Equal(100, result); // should get back the event id
 

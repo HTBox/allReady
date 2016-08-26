@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
@@ -14,12 +15,12 @@ namespace AllReady.Areas.Admin.Features.Campaigns
     public class EditCampaignCommandHandler : IAsyncRequestHandler<EditCampaignCommand, int>
     {
         private readonly AllReadyContext _context;
-        private readonly IDateTimeOffsetProvider _dateTimeOffsetProvider;
+        private readonly IConvertDateTimeOffsets dateTimeOffsetsConverter;
 
-        public EditCampaignCommandHandler(AllReadyContext context, IDateTimeOffsetProvider dateTimeOffsetProvider)
+        public EditCampaignCommandHandler(AllReadyContext context, IConvertDateTimeOffsets dateTimeOffsetsConverter)
         {
             _context = context;
-            _dateTimeOffsetProvider = dateTimeOffsetProvider;
+            this.dateTimeOffsetsConverter = dateTimeOffsetsConverter;
         }
 
         public async Task<int> Handle(EditCampaignCommand message)
@@ -38,8 +39,12 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.ExternalUrlText = message.Campaign.ExternalUrlText;
 
             campaign.TimeZoneId = message.Campaign.TimeZoneId;
-            campaign.StartDateTime = _dateTimeOffsetProvider.AdjustDateTimeOffsetTo(campaign.TimeZoneId, message.Campaign.StartDate);
-            campaign.EndDateTime = _dateTimeOffsetProvider.AdjustDateTimeOffsetTo(campaign.TimeZoneId, message.Campaign.EndDate, 23, 59, 59);
+            campaign.StartDateTime = dateTimeOffsetsConverter.ConvertDateTimeOffsetTo(campaign.TimeZoneId, message.Campaign.StartDate);
+            campaign.EndDateTime = dateTimeOffsetsConverter.ConvertDateTimeOffsetTo(campaign.TimeZoneId, message.Campaign.EndDate, 23, 59, 59);
+
+            //DateTimeOffset convertedStartDateTimeOffset;
+            //DateTimeOffset convertedEndDateTimeOffset;
+            //_dateTimeOffsetConverter.AdjustDateTimeOffsetTo(campaign.TimeZoneId, message.Campaign.StartDate, message.Campaign.EndDate, out convertedStartDateTimeOffset, out convertedEndDateTimeOffset);
 
             campaign.ManagingOrganizationId = message.Campaign.OrganizationId;
             campaign.ImageUrl = message.Campaign.ImageUrl;

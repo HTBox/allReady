@@ -22,7 +22,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         public async Task AddNewCampaign()
         {
             // Arrange
-            var handler = new EditCampaignCommandHandler(Context, Mock.Of<IDateTimeOffsetProvider>());
+            var handler = new EditCampaignCommandHandler(Context, Mock.Of<IConvertDateTimeOffsets>());
             var newCampaign = new CampaignSummaryViewModel { Name = "New", Description = "Desc", TimeZoneId = "UTC" };
 
             // Act
@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             var endDate = DateTime.Now.AddDays(30);
             const int org = 2;
 
-            var handler = new EditCampaignCommandHandler(Context, Mock.Of<IDateTimeOffsetProvider>());
+            var handler = new EditCampaignCommandHandler(Context, Mock.Of<IConvertDateTimeOffsets>());
             var updatedCampaign = new CampaignSummaryViewModel
             {
                 Id = 2,
@@ -93,7 +93,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             const string postcode = "45231";
             const string country = "USA";
 
-            var handler = new EditCampaignCommandHandler(Context, Mock.Of<IDateTimeOffsetProvider>());
+            var handler = new EditCampaignCommandHandler(Context, Mock.Of<IConvertDateTimeOffsets>());
             var updatedCampaign = new CampaignSummaryViewModel
             {
                 Id = 2,
@@ -129,7 +129,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             const string lastname = "Doe";
             const string telephone = "01323 111111";
 
-            var handler = new EditCampaignCommandHandler(Context, Mock.Of<IDateTimeOffsetProvider>());
+            var handler = new EditCampaignCommandHandler(Context, Mock.Of<IConvertDateTimeOffsets>());
             var updatedCampaign = new CampaignSummaryViewModel
             {
                 Id = 2,

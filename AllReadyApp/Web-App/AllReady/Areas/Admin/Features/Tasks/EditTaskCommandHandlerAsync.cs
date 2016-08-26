@@ -10,13 +10,13 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class EditTaskCommandHandlerAsync : IAsyncRequestHandler<EditTaskCommandAsync, int>
     {
-        private AllReadyContext _context;
-        private readonly IDateTimeOffsetProvider _dateTimeOffsetProvider;
+        private readonly AllReadyContext _context;
+        private readonly IConvertDateTimeOffsets _dateTimeOffsetConverter;
 
-        public EditTaskCommandHandlerAsync(AllReadyContext context, IDateTimeOffsetProvider dateTimeOffsetProvider)
+        public EditTaskCommandHandlerAsync(AllReadyContext context, IConvertDateTimeOffsets dateTimeOffsetConverter)
         {
             _context = context;
-            _dateTimeOffsetProvider = dateTimeOffsetProvider;
+            _dateTimeOffsetConverter = dateTimeOffsetConverter;
         }
 
         public async Task<int> Handle(EditTaskCommandAsync message)
@@ -28,8 +28,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
             task.Event = _context.Events.SingleOrDefault(a => a.Id == message.Task.EventId);
             task.Organization = _context.Organizations.SingleOrDefault(t => t.Id == message.Task.OrganizationId);
 
-            task.StartDateTime = _dateTimeOffsetProvider.AdjustDateTimeOffsetTo(message.Task.TimeZoneId, message.Task.StartDateTime, message.Task.StartDateTime.Hour, message.Task.StartDateTime.Minute);
-            task.EndDateTime = _dateTimeOffsetProvider.AdjustDateTimeOffsetTo(message.Task.TimeZoneId, message.Task.EndDateTime, message.Task.EndDateTime.Hour, message.Task.EndDateTime.Minute);
+            task.StartDateTime = _dateTimeOffsetConverter.ConvertDateTimeOffsetTo(message.Task.TimeZoneId, message.Task.StartDateTime, message.Task.StartDateTime.Hour, message.Task.StartDateTime.Minute);
+            task.EndDateTime = _dateTimeOffsetConverter.ConvertDateTimeOffsetTo(message.Task.TimeZoneId, message.Task.EndDateTime, message.Task.EndDateTime.Hour, message.Task.EndDateTime.Minute);
 
             task.NumberOfVolunteersRequired = message.Task.NumberOfVolunteersRequired;
             task.IsLimitVolunteers = task.Event.IsLimitVolunteers;
