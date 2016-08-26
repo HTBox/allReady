@@ -20,7 +20,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Campaign = new Campaign() });
 
-            var sut = new TaskEditViewModelValidator(mediator.Object, Mock.Of<IConvertDateTimeOffsets>());
+            var sut = new TaskEditViewModelValidator(mediator.Object, Mock.Of<IConvertDateTimeOffset>());
             sut.Validate(model);
 
             mediator.Verify(x => x.Send(It.Is<EventByIdQuery>(y => y.EventId == model.EventId)), Times.Once);
@@ -37,7 +37,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(@event);
 
-            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffsets>();
+            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffset>();
 
             var sut = new TaskEditViewModelValidator(mediator.Object, dateTimeOffsetProvider.Object);
             sut.Validate(model);
@@ -57,7 +57,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(@event);
 
-            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffsets>();
+            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffset>();
 
             var sut = new TaskEditViewModelValidator(mediator.Object, dateTimeOffsetProvider.Object);
             sut.Validate(model);
@@ -73,7 +73,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
 
             var @event = new Event { Campaign = new Campaign { TimeZoneId = "UTC" }};
 
-            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffsets>();
+            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffset>();
             dateTimeOffsetProvider.SetupSequence(x => x.ConvertDateTimeOffsetTo(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(now.AddDays(1))
                 .Returns(now.AddDays(-1));
@@ -98,7 +98,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(@event);
 
-            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffsets>();
+            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffset>();
             dateTimeOffsetProvider.Setup(x => x.ConvertDateTimeOffsetTo(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(now);
 
@@ -119,7 +119,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(@event);
 
-            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffsets>();
+            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffset>();
             dateTimeOffsetProvider.Setup(x => x.ConvertDateTimeOffsetTo(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(now);
 
@@ -140,7 +140,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(@event);
 
-            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffsets>();
+            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffset>();
             dateTimeOffsetProvider.SetupSequence(x => x.ConvertDateTimeOffsetTo(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(now)
                 .Returns(now.AddDays(1));
@@ -162,7 +162,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(@event);
 
-            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffsets>();
+            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffset>();
             dateTimeOffsetProvider.SetupSequence(x => x.ConvertDateTimeOffsetTo(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(now)
                 .Returns(now.AddDays(1));
@@ -183,7 +183,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(@event);
 
-            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffsets>();
+            var dateTimeOffsetProvider = new Mock<IConvertDateTimeOffset>();
             dateTimeOffsetProvider.SetupSequence(x => x.ConvertDateTimeOffsetTo(It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(now)
                 .Returns(now);

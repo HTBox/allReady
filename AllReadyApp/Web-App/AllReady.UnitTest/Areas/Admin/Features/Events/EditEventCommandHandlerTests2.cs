@@ -22,7 +22,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         [Fact]
         public async Task ModelIsCreated()
         {
-            var sut = new EditEventCommandHandler(Context, Mock.Of<IConvertDateTimeOffsets>());
+            var sut = new EditEventCommandHandler(Context, Mock.Of<IConvertDateTimeOffset>());
             var actual = await sut.Handle(new EditEventCommand { Event = new EventEditViewModel { CampaignId = 1, Id = 1, TimeZoneId = "Central Standard Time" } });
             Assert.Equal(1, actual);
         }

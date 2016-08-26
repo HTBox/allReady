@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
@@ -15,9 +14,9 @@ namespace AllReady.Areas.Admin.Features.Campaigns
     public class EditCampaignCommandHandler : IAsyncRequestHandler<EditCampaignCommand, int>
     {
         private readonly AllReadyContext _context;
-        private readonly IConvertDateTimeOffsets dateTimeOffsetsConverter;
+        private readonly IConvertDateTimeOffset dateTimeOffsetsConverter;
 
-        public EditCampaignCommandHandler(AllReadyContext context, IConvertDateTimeOffsets dateTimeOffsetsConverter)
+        public EditCampaignCommandHandler(AllReadyContext context, IConvertDateTimeOffset dateTimeOffsetsConverter)
         {
             _context = context;
             this.dateTimeOffsetsConverter = dateTimeOffsetsConverter;
@@ -41,10 +40,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.TimeZoneId = message.Campaign.TimeZoneId;
             campaign.StartDateTime = dateTimeOffsetsConverter.ConvertDateTimeOffsetTo(campaign.TimeZoneId, message.Campaign.StartDate);
             campaign.EndDateTime = dateTimeOffsetsConverter.ConvertDateTimeOffsetTo(campaign.TimeZoneId, message.Campaign.EndDate, 23, 59, 59);
-
-            //DateTimeOffset convertedStartDateTimeOffset;
-            //DateTimeOffset convertedEndDateTimeOffset;
-            //_dateTimeOffsetConverter.AdjustDateTimeOffsetTo(campaign.TimeZoneId, message.Campaign.StartDate, message.Campaign.EndDate, out convertedStartDateTimeOffset, out convertedEndDateTimeOffset);
 
             campaign.ManagingOrganizationId = message.Campaign.OrganizationId;
             campaign.ImageUrl = message.Campaign.ImageUrl;

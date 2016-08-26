@@ -38,7 +38,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Organizations.Add(organization);
             Context.SaveChanges();
 
-            var sut = new EditTaskCommandHandlerAsync(Context, Mock.Of<IConvertDateTimeOffsets>());
+            var sut = new EditTaskCommandHandlerAsync(Context, Mock.Of<IConvertDateTimeOffset>());
             var taskId = await sut.Handle(message);
             var result = Context.Tasks.Single(x => x.Id == taskId);
 
@@ -92,7 +92,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 }
             };
 
-            var sut = new EditTaskCommandHandlerAsync(Context, Mock.Of<IConvertDateTimeOffsets>());
+            var sut = new EditTaskCommandHandlerAsync(Context, Mock.Of<IConvertDateTimeOffset>());
             var taskId = await sut.Handle(message);
             var result = Context.Tasks.Single(x => x.Id == taskId);
 

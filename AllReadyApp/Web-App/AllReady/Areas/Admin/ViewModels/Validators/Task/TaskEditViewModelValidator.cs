@@ -11,9 +11,9 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
     public class TaskEditViewModelValidator : ITaskEditViewModelValidator
     {
         private readonly IMediator _mediator;
-        private readonly IConvertDateTimeOffsets convertDateTimeOffsets;
+        private readonly IConvertDateTimeOffset _convertDateTimeOffsets;
 
-        public TaskEditViewModelValidator(IMediator mediator, IConvertDateTimeOffsets convertDateTimeOffsets)
+        public TaskEditViewModelValidator(IMediator mediator, IConvertDateTimeOffset convertDateTimeOffsets)
         {
             if (mediator == null)
             {
@@ -21,7 +21,7 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
             }
 
             _mediator = mediator;
-            this.convertDateTimeOffsets = convertDateTimeOffsets;
+            _convertDateTimeOffsets = convertDateTimeOffsets;
         }
 
         public List<KeyValuePair<string, string>> Validate(EditViewModel viewModel)
@@ -30,8 +30,8 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
 
             var @event = _mediator.Send(new EventByIdQuery { EventId = viewModel.EventId });
 
-            var convertedStartDateTime = convertDateTimeOffsets.ConvertDateTimeOffsetTo(@event.Campaign.TimeZoneId, viewModel.StartDateTime, viewModel.StartDateTime.Hour, viewModel.StartDateTime.Minute);
-            var convertedEndDateTime = convertDateTimeOffsets.ConvertDateTimeOffsetTo(@event.Campaign.TimeZoneId, viewModel.EndDateTime, viewModel.EndDateTime.Hour, viewModel.EndDateTime.Minute);
+            var convertedStartDateTime = _convertDateTimeOffsets.ConvertDateTimeOffsetTo(@event.Campaign.TimeZoneId, viewModel.StartDateTime, viewModel.StartDateTime.Hour, viewModel.StartDateTime.Minute);
+            var convertedEndDateTime = _convertDateTimeOffsets.ConvertDateTimeOffsetTo(@event.Campaign.TimeZoneId, viewModel.EndDateTime, viewModel.EndDateTime.Hour, viewModel.EndDateTime.Minute);
 
             // Rule - End date cannot be earlier than start date
             if (convertedEndDateTime < convertedStartDateTime)

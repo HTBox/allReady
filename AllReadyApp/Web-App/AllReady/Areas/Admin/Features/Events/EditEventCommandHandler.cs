@@ -11,9 +11,9 @@ namespace AllReady.Areas.Admin.Features.Events
     public class EditEventCommandHandler : IAsyncRequestHandler<EditEventCommand, int>
     {
         private AllReadyContext _context;
-        private readonly IConvertDateTimeOffsets _dateTimeOffsetConverter;
+        private readonly IConvertDateTimeOffset _dateTimeOffsetConverter;
 
-        public EditEventCommandHandler(AllReadyContext context, IConvertDateTimeOffsets dateTimeOffsetConverter)
+        public EditEventCommandHandler(AllReadyContext context, IConvertDateTimeOffset dateTimeOffsetConverter)
         {
             _context = context;
             _dateTimeOffsetConverter = dateTimeOffsetConverter;

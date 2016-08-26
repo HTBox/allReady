@@ -11,9 +11,9 @@ namespace AllReady.Areas.Admin.Features.Tasks
     public class EditTaskCommandHandlerAsync : IAsyncRequestHandler<EditTaskCommandAsync, int>
     {
         private readonly AllReadyContext _context;
-        private readonly IConvertDateTimeOffsets _dateTimeOffsetConverter;
+        private readonly IConvertDateTimeOffset _dateTimeOffsetConverter;
 
-        public EditTaskCommandHandlerAsync(AllReadyContext context, IConvertDateTimeOffsets dateTimeOffsetConverter)
+        public EditTaskCommandHandlerAsync(AllReadyContext context, IConvertDateTimeOffset dateTimeOffsetConverter)
         {
             _context = context;
             _dateTimeOffsetConverter = dateTimeOffsetConverter;
