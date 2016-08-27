@@ -149,6 +149,13 @@
                 toolbarPlacement: 'bottom'
             });
             $(".datetimepicker").each(function (index, element) {
+                if ($(element).attr("min")) {
+                    $(element).data("DateTimePicker").minDate($(element).attr("min"));
+                }
+                if ($(element).attr("max")) {
+                    $(element).data("DateTimePicker").maxDate($(element).attr("max"));
+                }
+               
                 $(element).data("DateTimePicker").date(moment($(element).attr("value")));
             });
             tinymce.init({
