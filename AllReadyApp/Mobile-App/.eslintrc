@@ -5,14 +5,14 @@
     //      this is special config for only certain rules;
     //      many other rules are already enabled by default
     "rules": {
-        "indent": [
-            2,
-            4
-        ],
-        "quotes": [
-            2,
-            "double"
-        ],
+        // "indent": [
+        //     2,
+        //     4
+        // ],
+        // "quotes": [
+        //     2,
+        //     "double"
+        // ],
         "semi": [
             2,
             "always"
