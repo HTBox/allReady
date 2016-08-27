@@ -95,7 +95,7 @@ namespace AllReady.UnitTest.Controllers
             var model = new LoginViewModel { Email = "email" };
             var mediator = new Mock<IMediator>();
 
-            var signInManager = CreateSignInManagerMock(CreateUserManagerMock());
+            var signInManager = MockHelper.CreateSignInManagerMock(CreateUserManagerMock());
             signInManager.Setup(x => x.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
 
             var sut = new AccountController(null, signInManager.Object, null, mediator.Object, null, null);
@@ -116,7 +116,7 @@ namespace AllReady.UnitTest.Controllers
             var userManager = CreateUserManagerMock();
             userManager.Setup(x => x.IsEmailConfirmedAsync(applicationUser)).ReturnsAsync(false).Verifiable();
 
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
             signInManager.Setup(x => x.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
 
             var sut = new AccountController(userManager.Object, signInManager.Object, null, mediator.Object, null, null);
@@ -138,7 +138,7 @@ namespace AllReady.UnitTest.Controllers
             var userManager = CreateUserManagerMock();
             userManager.Setup(x => x.IsEmailConfirmedAsync(applicationUser)).ReturnsAsync(false).Verifiable();
 
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
             signInManager.Setup(x => x.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
 
             var sut = new AccountController(userManager.Object, signInManager.Object, null, mediator.Object, null, null);
@@ -156,7 +156,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQueryAsync>())).ReturnsAsync(new ApplicationUser());
 
-            var signInManager = CreateSignInManagerMock(CreateUserManagerMock());
+            var signInManager = MockHelper.CreateSignInManagerMock(CreateUserManagerMock());
             signInManager.Setup(x => x.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
 
             var sut = new AccountController(null, signInManager.Object, null, mediator.Object, null, null);
@@ -174,7 +174,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQueryAsync>())).ReturnsAsync(applicationUser);
 
-            var signInManager = CreateSignInManagerMock(CreateUserManagerMock());
+            var signInManager = MockHelper.CreateSignInManagerMock(CreateUserManagerMock());
             signInManager.Setup(x => x.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
             var redirectAccountControllerRequests = new Mock<IRedirectAccountControllerRequests>();
@@ -199,7 +199,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQueryAsync>())).ReturnsAsync(new ApplicationUser());
 
-            var signInManager = CreateSignInManagerMock(CreateUserManagerMock());
+            var signInManager = MockHelper.CreateSignInManagerMock(CreateUserManagerMock());
             signInManager.Setup(x => x.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.TwoFactorRequired);
 
             var routeValueDictionary = new RouteValueDictionary
@@ -223,7 +223,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQueryAsync>())).ReturnsAsync(new ApplicationUser());
 
-            var signInManager = CreateSignInManagerMock(CreateUserManagerMock());
+            var signInManager = MockHelper.CreateSignInManagerMock(CreateUserManagerMock());
             signInManager.Setup(x => x.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.LockedOut);
 
             var sut = new AccountController(null, signInManager.Object, null, mediator.Object, null, null);
@@ -334,7 +334,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
             userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<string>()));
 
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
 
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, Mock.Of<IMediator>(), null, null);
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
@@ -361,7 +361,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
             userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<string>()));
 
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
 
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, Mock.Of<IMediator>(), null, null);
             sut.SetFakeHttpRequestSchemeTo(requestScheme);
@@ -391,7 +391,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
             userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<string>()));
 
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
 
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(callbackUrl);
@@ -434,7 +434,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
             userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<string>()));
 
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
 
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
@@ -465,7 +465,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
             userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<string>()));
 
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
 
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
@@ -495,7 +495,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
             userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(It.IsAny<string>()));
 
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
 
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
@@ -579,7 +579,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task LogOffInvokesSignOutAsync()
         {
-            var signInManager = CreateSignInManagerMock(CreateUserManagerMock());
+            var signInManager = MockHelper.CreateSignInManagerMock(CreateUserManagerMock());
 
             var sut = new AccountController(null, signInManager.Object, null, null, null, null);
             await sut.LogOff();
@@ -590,7 +590,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task LogOffRedirectsToCorrectActionAndController()
         {
-            var signInManager = CreateSignInManagerMock(CreateUserManagerMock());
+            var signInManager = MockHelper.CreateSignInManagerMock(CreateUserManagerMock());
             signInManager.Setup(x => x.SignOutAsync()).Returns(() => Task.FromResult(It.IsAny<Task>()));
 
             var sut = new AccountController(null, signInManager.Object, null, null, null, null);
@@ -711,7 +711,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Setup(x => x.FindByIdAsync(userId)).Returns(() => Task.FromResult(user));
             userManager.Setup(x => x.ConfirmEmailAsync(user, token)).Returns(() => Task.FromResult(IdentityResult.Success));
 
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
             signInManager.Setup(x => x.RefreshSignInAsync(user)).Returns(() => Task.FromResult(It.IsAny<Task>()));
 
             var mediator = new Mock<IMediator>();
@@ -1378,7 +1378,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task ExternalLoginConfirmationInvokesGetExternalLoginInfoAsync_WhenModelStateIsValid()
         {
             var userManager = CreateUserManagerMock();
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
             signInManager.Setup(s => s.GetExternalLoginInfoAsync(It.Is<string>(xsrf => xsrf == null))).Returns(Task.FromResult(default(ExternalLoginInfo)));
             var viewmodel = CreateExternalLoginConfirmationViewModel();
 
@@ -1393,7 +1393,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task ExternalLoginConfirmationReturnsExternalLoginFailureView_WhenUserIsNull_AndModelStateIsValid()
         {
             var userManager = CreateUserManagerMock();
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
             signInManager.Setup(s => s.GetExternalLoginInfoAsync(It.Is<string>(xsrf => xsrf == null))).Returns(Task.FromResult(default(ExternalLoginInfo)));
             var viewmodel = CreateExternalLoginConfirmationViewModel();
 
@@ -1409,7 +1409,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var userManager = CreateUserManagerMock();
             userManager.Setup(u => u.CreateAsync(It.IsAny<ApplicationUser>())).Returns(Task.FromResult(new IdentityResult()));
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
             SetupSignInManagerWithTestExternalLoginValue(signInManager);
             var viewModel = CreateExternalLoginConfirmationViewModel();
 
@@ -1429,7 +1429,7 @@ namespace AllReady.UnitTest.Controllers
             const string displayName = "testDisplayName";
 
             var userManager = CreateUserManagerMockWithSucessIdentityResult();
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
             SetupSignInManagerWithTestExternalLoginValue(signInManager, loginProvider, providerKey, displayName);
             var urlHelperMock = CreateUrlHelperMockObject();
             SetupUrlHelperMockToReturnTrueForLocalUrl(urlHelperMock);
@@ -1498,7 +1498,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task ExternalLoginConfirmationInvokesSignInAsyncWithCorrectParameters_WhenExternalLoginIsAddedSuccessfully()
         {
             var userManager = CreateUserManagerMockWithSucessIdentityResult();
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
             SetupSignInManagerWithTestExternalLoginValue(signInManager, "test", "testKey", "testDisplayName");
             SetupSignInManagerWithDefaultSignInAsync(signInManager);
             var urlHelperMock = CreateUrlHelperMockObject();
@@ -1540,7 +1540,7 @@ namespace AllReady.UnitTest.Controllers
                     new IdentityError { Code = "TestCode2", Description = "TestDescription2" }
                 )));
 
-            var signInManager = CreateSignInManagerMock(userManager);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
             SetupSignInManagerWithTestExternalLoginValue(signInManager, "test", "testKey", "testDisplayName");
             SetupSignInManagerWithDefaultSignInAsync(signInManager);
             var urlHelperMock = CreateUrlHelperMockObject();
@@ -1622,7 +1622,7 @@ namespace AllReady.UnitTest.Controllers
         private static AccountController AccountController(Microsoft.AspNetCore.Identity.SignInResult signInResult = default(Microsoft.AspNetCore.Identity.SignInResult))
         {
             var userManagerMock = CreateUserManagerMock();
-            var signInManagerMock = CreateSignInManagerMock(userManagerMock);
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
             signInManagerMock.Setup(mock => mock.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
                 .ReturnsAsync(signInResult == default(Microsoft.AspNetCore.Identity.SignInResult) ? Microsoft.AspNetCore.Identity.SignInResult.Success : signInResult);
 
@@ -1642,21 +1642,6 @@ namespace AllReady.UnitTest.Controllers
             return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
         }
 
-        private static Mock<SignInManager<ApplicationUser>> CreateSignInManagerMock(Mock<UserManager<ApplicationUser>> userManager)
-        {
-            var httpContext = new Mock<HttpContext>();
-
-            var contextAccessor = new Mock<IHttpContextAccessor>();
-            contextAccessor.Setup(mock => mock.HttpContext).Returns(() => httpContext.Object);
-            var claimsFactory = new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>();
-            var signInManager = new Mock<SignInManager<ApplicationUser>>(
-            userManager.Object,
-            contextAccessor.Object,
-            claimsFactory.Object,
-            null, null);
-
-            return signInManager;
-        }
 
         private static AccountController CreateAccountControllerWithNoInjectedDependencies() => new AccountController(null, null, null, null, null, null);
 
