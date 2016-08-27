@@ -450,6 +450,7 @@ namespace AllReady.UnitTest.Features.Notifications
         }
 
 
+
         [Fact]
         public async Task SendEventDetailForNotificationQueryAsyncWithCorrectParameters()
         {
@@ -473,10 +474,51 @@ namespace AllReady.UnitTest.Features.Notifications
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(new EventDetailForNotificationModel());
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>())).ReturnsAsync(new Unit());
 
             var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, null);
             await handler.Handle(new UserUnenrolls());
+
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task NotSendNotifyVolunteersCommand_WhenRecepientEmailIsNull()
+        {
+            var userId = "user1@example.com";
+
+            var notification = new UserUnenrolls { UserId = userId };
+
+            var model = new EventDetailForNotificationModel
+            {
+                UsersSignedUp = new List<EventSignup> { new EventSignup { User = new ApplicationUser { Id = userId } } }
+            };
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
+
+            var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, null);
+            await handler.Handle(notification);
+
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task NotSendNotifyVolunteersCommand_WhenRecepientEmailIsEmpty()
+        {
+            var userId = "user1@example.com";
+
+            var notification = new UserUnenrolls { UserId = userId };
+
+            var model = new EventDetailForNotificationModel
+            {
+                UsersSignedUp = new List<EventSignup> { new EventSignup { User = new ApplicationUser { Id = userId, Email = string.Empty } } }
+            };
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
+
+            var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, null);
+            await handler.Handle(notification);
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
         }
