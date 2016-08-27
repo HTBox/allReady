@@ -1,66 +1,108 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 using AllReady.Features.Event;
 using AllReady.Models;
 using AllReady.ViewModels.Event;
-using Moq;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Event
 {
-    public class UpdateMyTasksHandlerAsyncShould
-    {
-        [Fact]
-        public async Task InvokeGetUserWithTheCorrectUserId()
-        {
-            var message = new UpdateMyTasksCommandAsync { UserId = "1", TaskSignups = new List<TaskSignupViewModel>() };
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            var sut = new UpdateMyTasksHandlerAsync(dataAccess.Object);
-            await sut.Handle(message);
 
-            dataAccess.Verify(x => x.GetUser(message.UserId), Times.Once);
+    // FRAGILE: create lots of AllReadyContext to defeat change tracking, see https://docs.efproject.net/en/latest/miscellaneous/testing.html
+    public class UpdateMyTasksHandlerAsyncShould : InMemoryContextTestBase {
+
+
+        [Fact]
+        public async Task CanSaveZeroTasks() {
+            var options = this.CreateNewContextOptions();
+
+            const string userId = "1";
+            var user = new ApplicationUser() {Id = userId};
+
+            using (var context = new AllReadyContext(options)) {
+                context.Users.Add(user);
+                await context.SaveChangesAsync();
+            }
+
+            var message = new UpdateMyTasksCommandAsync { UserId =userId, TaskSignups = new List<TaskSignupViewModel>() };
+
+            using (var context = new AllReadyContext(options)) {
+                var sut = new UpdateMyTasksHandlerAsync(context);
+                await sut.Handle(message);
+            }
+
+            using (var context = new AllReadyContext(options)) {
+                var taskSignups = context.TaskSignups.Count();
+                Assert.Equal(taskSignups, 0);
+            }
         }
 
         [Fact]
-        public async Task InvokeUpdateTaskSignupAsyncForEachTaskSignupViewModelOnCommand()
-        {
-            var taskSignupViewModels = new List<TaskSignupViewModel> { new TaskSignupViewModel(), new TaskSignupViewModel() };
+        public async Task InvokeUpdateTaskSignupAsyncForEachTaskSignupViewModelOnCommand() {
+            var options = this.CreateNewContextOptions();
 
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.GetUser(It.IsAny<string>())).Returns(new ApplicationUser());
+            const string userId = "1";
+            const int firstId = 1;
+            const int secondId = 2;
 
-            var sut = new UpdateMyTasksHandlerAsync(dataAccess.Object) { DateTimeUtcNow = () => DateTime.UtcNow };
-            await sut.Handle(new UpdateMyTasksCommandAsync { TaskSignups = taskSignupViewModels });
+            var user = new ApplicationUser() {Id = userId};
+            var taskSignupViewModels = new List<TaskSignupViewModel> {new TaskSignupViewModel() {Id = firstId}, new TaskSignupViewModel() {Id = secondId}};
 
-            dataAccess.Verify(x => x.UpdateTaskSignupAsync(It.IsAny<TaskSignup>()), Times.Exactly(taskSignupViewModels.Count));
+            using (var context = new AllReadyContext(options)) {
+                context.Users.Add(user);
+                context.TaskSignups.Add(new TaskSignup {Id = firstId});
+                context.TaskSignups.Add(new TaskSignup {Id = secondId});
+                await context.SaveChangesAsync();
+            }
+
+            using (var context = new AllReadyContext(options)) {
+                var sut = new UpdateMyTasksHandlerAsync(context) {DateTimeUtcNow = () => DateTime.UtcNow};
+                await sut.Handle(new UpdateMyTasksCommandAsync {TaskSignups = taskSignupViewModels});
+            }
+
+            using (var context = new AllReadyContext(options)) {
+                var signup1 = context.TaskSignups.FirstOrDefault(x => x.Id == firstId);
+                Assert.Equal(signup1 != null, true);
+                var signup2 = context.TaskSignups.FirstOrDefault(x => x.Id == secondId);
+                Assert.Equal(signup2 != null, true);
+            }
         }
 
         [Fact]
         public async Task InvokeUpdateTaskSignupAsyncWithTheCorrectParametersForEachTaskSignupViewModelOnCommand()
         {
-            var user = new ApplicationUser();
+            var options = this.CreateNewContextOptions();
+
+            const string userId = "1";
+            const int taskSignupId = 1;
+            var user = new ApplicationUser() {Id = userId};
             var dateTimeUtcNow = DateTime.UtcNow;
             var taskSignupViewModels = new List<TaskSignupViewModel>
             {
-                new TaskSignupViewModel { Id = 1, StatusDescription = "statusDescription1", Status = "Status1", TaskId = 1, }
+                new TaskSignupViewModel { Id = taskSignupId, StatusDescription = "statusDescription1", Status = "Status1", TaskId = 1, }
             };
 
-            var message = new UpdateMyTasksCommandAsync { TaskSignups = taskSignupViewModels };
+            var message = new UpdateMyTasksCommandAsync { TaskSignups = taskSignupViewModels, UserId = userId};
 
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            dataAccess.Setup(x => x.GetUser(It.IsAny<string>())).Returns(user);
+            using (var context = new AllReadyContext(options)) {
+                context.Users.Add(user);
+                context.TaskSignups.Add(new TaskSignup {Id = taskSignupId});
+                context.Tasks.Add(new AllReadyTask {Id = 1});
+                await context.SaveChangesAsync();
+            }
 
-            var sut = new UpdateMyTasksHandlerAsync(dataAccess.Object) { DateTimeUtcNow = () => dateTimeUtcNow };
-            await sut.Handle(message);
+            using (var context = new AllReadyContext(options)) {
+                var sut = new UpdateMyTasksHandlerAsync(context) {DateTimeUtcNow = () => dateTimeUtcNow};
+                await sut.Handle(message);
+            }
 
-            dataAccess.Verify(x => x.UpdateTaskSignupAsync(It.Is<TaskSignup>(y =>
-                y.Id == taskSignupViewModels[0].Id &&
-                y.StatusDateTimeUtc == dateTimeUtcNow &&
-                y.StatusDescription == taskSignupViewModels[0].StatusDescription &&
-                y.Status == taskSignupViewModels[0].Status &&
-                y.Task.Id == taskSignupViewModels[0].TaskId &&
-                y.User == user)));
+            using (var context = new AllReadyContext(options)) {
+                var signup = context.TaskSignups.FirstOrDefault(x => x.Id == taskSignupId);
+                Assert.Equal(signup != null, true);
+            }
         }
     }
 }
+

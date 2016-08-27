@@ -30,23 +30,5 @@ namespace AllReady.Models
                 .SingleOrDefault(x => x.User.Id == userId);
         }
 
-        Task IAllReadyDataAccess.DeleteEventAndTaskSignupsAsync(int eventSignupId)
-        {
-            var eventSignup = _dbContext.EventSignup.SingleOrDefault(c => c.Id == eventSignupId);
-
-            if (eventSignup == null)
-            {
-                return Task.FromResult(0);
-            }
-
-            _dbContext.EventSignup.Remove(eventSignup);
-
-            _dbContext.TaskSignups.RemoveRange(_dbContext.TaskSignups
-                .Where(e => e.Task.Event.Id == eventSignup.Event.Id)
-                .Where(e => e.User.Id == eventSignup.User.Id));
-
-            return _dbContext.SaveChangesAsync();
-        }
-
     }
 }
