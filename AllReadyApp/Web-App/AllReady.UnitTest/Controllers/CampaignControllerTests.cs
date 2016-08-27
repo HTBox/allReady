@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Features.Campaigns;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
-using AllReady.ViewModels;
 using AllReady.ViewModels.Campaign;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -36,47 +36,45 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void DetailsSendsCampaignByCampaignIdQueryWithCorrectCampaignId()
+        public async Task DetailsSendsCampaignByCampaignIdQueryWithCorrectCampaignId()
         {
             const int campaignId = 1;
-
             var mockedMediator = new Mock<IMediator>();
-            mockedMediator.Setup(m => m.Send(It.Is<CampaignByCampaignIdQuery>(q => q.CampaignId == campaignId)));
 
             var sut = new CampaignController(mockedMediator.Object);
-            sut.Details(campaignId);
+            await sut.Details(campaignId);
 
-            mockedMediator.Verify(m => m.Send(It.Is<CampaignByCampaignIdQuery>(q => q.CampaignId == campaignId)), Times.Once);
+            mockedMediator.Verify(m => m.SendAsync(It.Is<CampaignByCampaignIdQuery>(q => q.CampaignId == campaignId)), Times.Once);
         }
 
         [Fact]
-        public void DetailsReturnsHttpNotFoundWhenCampaignIsNull()
+        public async Task DetailsReturnsHttpNotFoundWhenCampaignIsNull()
         {
             var sut = new CampaignController(Mock.Of<IMediator>());
-            var result = sut.Details(It.IsAny<int>());
+            var result = await sut.Details(It.IsAny<int>());
 
             Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
-        public void DetailsReturnsHttpNotFoundWhenCampaignIsLocked()
+        public async Task DetailsReturnsHttpNotFoundWhenCampaignIsLocked()
         {
             var mockedMediator = new Mock<IMediator>();
-            mockedMediator.Setup(m => m.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign { Locked = true });
+            mockedMediator.Setup(m => m.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync(new Campaign { Locked = true });
 
             var sut = new CampaignController(mockedMediator.Object);
-            var result = sut.Details(It.IsAny<int>());
+            var result = await sut.Details(It.IsAny<int>());
 
             Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
-        public void DetailsSetsViewBagAbsoluteUrlToUrlEncodedUrlAction()
+        public async Task DetailsSetsViewBagAbsoluteUrlToUrlEncodedUrlAction()
         {
             const string urlEncodedValue = "urlEncodedValue";
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign());
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync(new Campaign());
 
             var sut = new CampaignControllerForDetailsActionMethod(mockMediator.Object, urlEncodedValue)
             {
@@ -84,18 +82,18 @@ namespace AllReady.UnitTest.Controllers
             };
             sut.SetDefaultHttpContext();
 
-            sut.Details(It.IsAny<int>());
+            await sut.Details(It.IsAny<int>());
 
             Assert.Equal(urlEncodedValue, sut.ViewBag.AbsoluteUrl);
         }
 
         [Fact]
-        public void DetailsCallsUrlActionWithTheCorrectUrlControllerContextValues()
+        public async Task DetailsCallsUrlActionWithTheCorrectUrlControllerContextValues()
         {
             const string requestScheme = "requestScheme";
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign());
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync(new Campaign());
 
             var mockUrlHelper = new Mock<IUrlHelper>();
 
@@ -105,7 +103,7 @@ namespace AllReady.UnitTest.Controllers
             };
             sut.SetFakeHttpRequestSchemeTo(requestScheme);
 
-            sut.Details(It.IsAny<int>());
+            await sut.Details(It.IsAny<int>());
 
             mockUrlHelper.Verify(mock => mock.Action(It.Is<UrlActionContext>(x =>
                 x.Action == "Details" &&
@@ -115,29 +113,29 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void DetailsReturnsTheCorrectView()
+        public async Task DetailsReturnsTheCorrectView()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign());
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync(new Campaign());
 
             var sut = new CampaignControllerForDetailsActionMethod(mockMediator.Object) { Url = new Mock<IUrlHelper>().Object };
             sut.SetDefaultHttpContext();
 
-            var result = (ViewResult)sut.Details(It.IsAny<int>());
+            var result = await sut.Details(It.IsAny<int>()) as ViewResult;
 
             Assert.Equal("Details", result.ViewName);
         }
 
         [Fact]
-        public void DetailsReturnsTheCorrectModel()
+        public async Task DetailsReturnsTheCorrectModel()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign());
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync(new Campaign());
 
             var sut = new CampaignControllerForDetailsActionMethod(mockMediator.Object) { Url = new Mock<IUrlHelper>().Object };
             sut.SetDefaultHttpContext();
 
-            var result = (ViewResult)sut.Details(It.IsAny<int>());
+            var result = await sut.Details(It.IsAny<int>()) as ViewResult;
 
             Assert.IsType<CampaignViewModel>(result.ViewData.Model);
         }
@@ -158,37 +156,36 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void LocationMapReturnsHttpNotFoundWhenCampaignIsNull()
+        public async Task LocationMapReturnsHttpNotFoundWhenCampaignIsNull()
         {
             var sut = new CampaignController(Mock.Of<IMediator>());
-            var result = sut.LocationMap(It.IsAny<int>());
+            var result = await sut.LocationMap(It.IsAny<int>());
             Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
-        public void LocationMapReturnsTheCorrectViewAndCorrectModelWhenCampaignIsNotNull()
+        public async Task LocationMapReturnsTheCorrectViewAndCorrectModelWhenCampaignIsNotNull()
         {
             var mockedMediator = new Mock<IMediator>();
-            mockedMediator.Setup(m => m.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign() { ManagingOrganization = new Organization() });
+            mockedMediator.Setup(m => m.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync(new Campaign { ManagingOrganization = new Organization() });
 
             var sut = new CampaignController(mockedMediator.Object);
-            var result = (ViewResult)sut.LocationMap(It.IsAny<int>());
+            var result = await sut.LocationMap(It.IsAny<int>()) as ViewResult;
 
             Assert.Equal("Map", result.ViewName);
             Assert.IsType<CampaignViewModel>(result.ViewData.Model);
         }
 
         [Fact]
-        public void LocationSendsCampaignByCampaignIdQueryWithTheCorrectCampaignId()
+        public async Task LocationSendsCampaignByCampaignIdQueryWithTheCorrectCampaignId()
         {
             const int campaignId = 1;
             var mockedMediator = new Mock<IMediator>();
-            mockedMediator.Setup(m => m.Send(It.Is<CampaignByCampaignIdQuery>(q => q.CampaignId == campaignId)));
 
             var sut = new CampaignController(mockedMediator.Object);
-            sut.LocationMap(campaignId);
+            await sut.LocationMap(campaignId);
 
-            mockedMediator.Verify(m => m.Send(It.Is<CampaignByCampaignIdQuery>(q => q.CampaignId == campaignId)), Times.Once);
+            mockedMediator.Verify(m => m.SendAsync(It.Is<CampaignByCampaignIdQuery>(q => q.CampaignId == campaignId)), Times.Once);
         }
 
         [Fact]
@@ -215,59 +212,58 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void GetByIdSendsCampaignByCampaignIdQueryWithCorrectCampaignId()
+        public async Task GetByIdSendsCampaignByCampaignIdQueryWithCorrectCampaignId()
         {
             const int campaignId = 1;
             var mockedMediator = new Mock<IMediator>();
-            mockedMediator.Setup(m => m.Send(It.Is<CampaignByCampaignIdQuery>(q => q.CampaignId == campaignId)));
 
             var sut = new CampaignController(mockedMediator.Object);
-            sut.Get(campaignId);
+            await sut.Get(campaignId);
 
-            mockedMediator.Verify(m => m.Send(It.Is<CampaignByCampaignIdQuery>(q => q.CampaignId == campaignId)), Times.Once);
+            mockedMediator.Verify(m => m.SendAsync(It.Is<CampaignByCampaignIdQuery>(q => q.CampaignId == campaignId)), Times.Once);
         }
 
         [Fact]
-        public void GetByIdReturnsHttpNotFoundWhenCampaignIsNull()
+        public async Task GetByIdReturnsHttpNotFoundWhenCampaignIsNull()
         {
             var sut = new CampaignController(Mock.Of<IMediator>());
-            var result = sut.Get(It.IsAny<int>());
+            var result = await sut.Get(It.IsAny<int>());
 
             Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
-        public void GetByIdReturnsHttpNotFoundWhenCampaignIsLocked()
+        public async Task GetByIdReturnsHttpNotFoundWhenCampaignIsLocked()
         {
             var mockedMediator = new Mock<IMediator>();
-            mockedMediator.Setup(m => m.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign { Locked = true });
+            mockedMediator.Setup(m => m.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync(new Campaign { Locked = true });
 
             var sut = new CampaignController(mockedMediator.Object);
-            var result = sut.Get(It.IsAny<int>());
+            var result = await sut.Get(It.IsAny<int>());
 
             Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
-        public void GetByIdReturnsJsonResult()
+        public async Task GetByIdReturnsJsonResult()
         {
             var mockedMediator = new Mock<IMediator>();
-            mockedMediator.Setup(m => m.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign() { ManagingOrganization = new Organization() });
+            mockedMediator.Setup(m => m.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync(new Campaign { ManagingOrganization = new Organization() });
 
             var sut = new CampaignController(mockedMediator.Object);
-            var result = sut.Get(It.IsAny<int>());
+            var result = await sut.Get(It.IsAny<int>());
 
             Assert.IsType<JsonResult>(result);
         }
 
         [Fact]
-        public void GetByIdReturnsCorrectViewModel()
+        public async Task GetByIdReturnsCorrectViewModel()
         {
             var mockedMediator = new Mock<IMediator>();
-            mockedMediator.Setup(m => m.Send(It.IsAny<CampaignByCampaignIdQuery>())).Returns(new Campaign() { ManagingOrganization = new Organization() });
+            mockedMediator.Setup(m => m.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync(new Campaign { ManagingOrganization = new Organization() });
 
             var sut = new CampaignController(mockedMediator.Object);
-            var result = (JsonResult)sut.Get(It.IsAny<int>());
+            var result = await sut.Get(It.IsAny<int>()) as JsonResult;
 
             Assert.IsType<CampaignViewModel>(result.Value);
         }

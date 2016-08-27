@@ -34,15 +34,6 @@ namespace AllReady.Models
 
         #endregion
 
-        #region Campaign CRUD
-
-        [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
-        IEnumerable<Campaign> Campaigns { get; }
-        [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
-        Campaign GetCampaign(int campaignId);
-
-        #endregion
-
         #region User CRUD
 
         [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]

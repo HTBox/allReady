@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using AllReady.Features.Campaigns;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Models;
@@ -28,13 +29,14 @@ namespace AllReady.Controllers
 
         [HttpGet]
         [Route("~/[controller]/{id}")]
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var campaign = GetCampaign(id);
-
+            var campaign = await GetCampaign(id);
             if (campaign == null || campaign.Locked)
+            {
                 return NotFound();
-
+            }
+            
             ViewBag.AbsoluteUrl = UrlEncode(Url.Action(new UrlActionContext { Action = "Details", Controller = "Campaign", Values = null, Protocol = Request.Scheme }));
 
             return View("Details", new CampaignViewModel(campaign));
@@ -42,13 +44,14 @@ namespace AllReady.Controllers
 
         [HttpGet]
         [Route("~/[controller]/map/{id}")]
-        public IActionResult LocationMap(int id)
+        public async Task<IActionResult> LocationMap(int id)
         {
-            var campaign = GetCampaign(id);
-
+            var campaign = await GetCampaign(id);
             if (campaign == null)
+            {
                 return NotFound();
-
+            }
+            
             return View("Map", new CampaignViewModel(campaign));
         }
 
@@ -61,13 +64,14 @@ namespace AllReady.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public ActionResult Get(int id)
+        public async Task<ActionResult> Get(int id)
         {
-            var campaign = GetCampaign(id);
-
+            var campaign = await GetCampaign(id);
             if (campaign == null || campaign.Locked)
+            {
                 return NotFound();
-
+            }
+            
             return Json(campaign.ToViewModel());
         }
 
@@ -76,9 +80,9 @@ namespace AllReady.Controllers
             return _mediator.Send(new UnlockedCampaignsQuery());
         }
 
-        private Campaign GetCampaign(int campaignId)
+        private async Task<Campaign> GetCampaign(int campaignId)
         {
-            return _mediator.Send(new CampaignByCampaignIdQuery { CampaignId = campaignId });
+            return await _mediator.SendAsync(new CampaignByCampaignIdQuery { CampaignId = campaignId });
         }
 
         protected virtual string UrlEncode(string value)

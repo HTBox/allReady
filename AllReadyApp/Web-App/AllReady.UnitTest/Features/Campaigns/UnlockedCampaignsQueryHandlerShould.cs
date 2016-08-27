@@ -1,17 +1,15 @@
 ﻿using System.Collections.Generic;
 using AllReady.Features.Campaigns;
 using AllReady.Models;
-using AllReady.ViewModels;
 using AllReady.ViewModels.Campaign;
-using Moq;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Campaigns
 {
-    public class UnlockedCampaignsQueryHandlerTests
+    public class UnlockedCampaignsQueryHandlerShould : InMemoryContextTest
     {
         [Fact]
-        public void HandleReturnsOnlyUnLockedCampaigns()
+        public void ReturnTheCorrectData()
         {
             var campaigns = new List<Campaign>
             {
@@ -19,19 +17,19 @@ namespace AllReady.UnitTest.Features.Campaigns
                 new Campaign { Id = 2, Locked = true, ManagingOrganization = new Organization() }
             };
 
-            var mockedDataAccess = new Mock<IAllReadyDataAccess>();
-            mockedDataAccess.Setup(m => m.Campaigns).Returns(campaigns);
+            Context.Campaigns.AddRange(campaigns);
+            Context.SaveChanges();
 
-            var sut = new UnlockedCampaignsQueryHandler(mockedDataAccess.Object);
+            var sut = new UnlockedCampaignsQueryHandler(Context);
             var results = sut.Handle(new UnlockedCampaignsQuery());
 
             Assert.Equal(campaigns[0].Id, results[0].Id);
         }
 
         [Fact]
-        public void HandleReturnsCampaignViewModels()
+        public void ReturnTheCorrectViewModel()
         {
-            var sut = new UnlockedCampaignsQueryHandler(Mock.Of<IAllReadyDataAccess>());
+            var sut = new UnlockedCampaignsQueryHandler(Context);
             var results = sut.Handle(new UnlockedCampaignsQuery());
 
             Assert.IsType<List<CampaignViewModel>>(results);
