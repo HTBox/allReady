@@ -52,20 +52,6 @@ namespace AllReady.Models
         #endregion
 
         #region AllReadyTask CRUD
-        [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
-        IEnumerable<AllReadyTask> Tasks { get; }
-
-        [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
-        AllReadyTask GetTask(int taskId);
-
-        [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
-        Task AddTaskAsync(AllReadyTask task);
-
-        [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
-        Task DeleteTaskAsync(int taskId);
-
-        [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
-        Task UpdateTaskAsync(AllReadyTask value);
 
         [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
         IEnumerable<TaskSignup> GetTasksAssignedToUser(int eventId, string userId);

@@ -1,22 +1,31 @@
 ﻿using AllReady.Features.Tasks;
 using AllReady.Models;
-using Moq;
 using Xunit;
 
 namespace AllReady.UnitTest.Tasks
 {
-    public class TaskByTaskIdQueryHandlerTests
-    { 
+    using System.Threading.Tasks;
+
+    public class TaskByTaskIdQueryHandlerTests : InMemoryContextTest
+    {
         [Fact]
-        public void WhenHandlingTaskByTaskIdQueryGetTaskIsInvokedWithCorrectTaskId()
-        {
-            var message = new TaskByTaskIdQuery { TaskId = 1 };
+        public async Task WhenHandlingTaskByTaskIdQueryGetTaskIsInvokedWithCorrectTaskId() {
+            var options = this.CreateNewContextOptions();
 
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            var sut = new TaskByTaskIdQueryHandler(dataAccess.Object);
-            sut.Handle(message);
+            const int taskId = 1;
+            var message = new TaskByTaskIdQuery { TaskId = taskId };
 
-            dataAccess.Verify(x => x.GetTask(message.TaskId), Times.Once);
+            using (var context = new AllReadyContext(options)) {
+                context.Tasks.Add(new AllReadyTask {Id = taskId});
+                await context.SaveChangesAsync();
+            }
+
+            using (var context = new AllReadyContext(options)) {
+                var sut = new TaskByTaskIdQueryHandler(context);
+                var task = sut.Handle(message);
+
+                Assert.Equal(task.Id, taskId);
+            }
         }
     }
 }

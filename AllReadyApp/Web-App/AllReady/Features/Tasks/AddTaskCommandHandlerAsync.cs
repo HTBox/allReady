@@ -6,16 +6,17 @@ namespace AllReady.Features.Tasks
 {
     public class AddTaskCommandHandlerAsync : AsyncRequestHandler<AddTaskCommandAsync>
     {
-        private readonly IAllReadyDataAccess dataAccess;
+        private readonly AllReadyContext dataContext;
 
-        public AddTaskCommandHandlerAsync(IAllReadyDataAccess dataAccess)
+        public AddTaskCommandHandlerAsync(AllReadyContext dataContext)
         {
-            this.dataAccess = dataAccess;
+            this.dataContext = dataContext;
         }
 
         protected override async Task HandleCore(AddTaskCommandAsync message)
         {
-            await dataAccess.AddTaskAsync(message.AllReadyTask);
+            this.dataContext.Add(message.AllReadyTask);
+            this.dataContext.SaveChangesAsync();
         }
     }
 }

@@ -445,7 +445,7 @@ namespace AllReady.DataAccess
             htb.OrganizationContacts.Add(new OrganizationContact { Contact = contacts.First(), Organization = htb, ContactType = 1 /*Primary*/ });
             #endregion
 
-            #region Wrap Up DB  
+            #region Wrap Up DB
             _context.EventSignup.AddRange(eventSignups);
             _context.SaveChanges();
             #endregion
@@ -542,8 +542,6 @@ namespace AllReady.DataAccess
         /// <summary>
         /// Creates a administrative user who can manage the inventory.
         /// </summary>
-        /// <param name="serviceProvider"></param>
-        /// <returns></returns>
         public async Task CreateAdminUser()
         {
             var user = await _userManager.FindByNameAsync(_settings.DefaultAdminUsername);

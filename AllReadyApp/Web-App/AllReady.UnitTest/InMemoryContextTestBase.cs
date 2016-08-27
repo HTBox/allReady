@@ -25,7 +25,7 @@ namespace AllReady.UnitTest
     /// that make use of the in-memory test database
     /// context.
     /// </summary>
-    public class InMemoryContextTest : InMemoryContextTestBase
+    public abstract class InMemoryContextTest : InMemoryContextTestBase
     {
         protected InMemoryContextTest() : base()
         {
@@ -35,7 +35,7 @@ namespace AllReady.UnitTest
         /// <summary>
         /// Override this method to load test data
         /// into the in-memory database context prior
-        /// to any tests being executed in your 
+        /// to any tests being executed in your
         /// test class.
         /// </summary>
         protected virtual void LoadTestData()
@@ -47,7 +47,7 @@ namespace AllReady.UnitTest
     /// Inherit from this type if LoadTestData needs to await something.
     /// !!! NOTE: To avoid blocking and deadlocks LoadTestData must be run manually
     ///   It will not automatically run as part of the constructor.
-    ///   TODO: Refactor this to make the pattern more obvious, but for now just 
+    ///   TODO: Refactor this to make the pattern more obvious, but for now just
     ///     get the builds to pass.
     /// </summary>
     public abstract class InMemoryContextTestAsync : InMemoryContextTestBase
@@ -59,12 +59,12 @@ namespace AllReady.UnitTest
         /// <summary>
         /// Override this method to load test data
         /// into the in-memory database context prior
-        /// to any tests being executed in your 
+        /// to any tests being executed in your
         /// test class.
         /// </summary>
         protected virtual async Task LoadTestData()
         {
-            await Task.Delay(0); //To prevent compiler warning
+            await Task.FromResult(0); //To prevent compiler warning
         }
     }
 }
