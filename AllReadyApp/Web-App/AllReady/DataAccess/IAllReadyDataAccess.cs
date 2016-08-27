@@ -35,16 +35,11 @@ namespace AllReady.Models
         #endregion
 
         #region User CRUD
-
-        [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
-        IEnumerable<ApplicationUser> Users { get; }
-
         [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
         ApplicationUser GetUser(string userId);
 
         [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
         Task UpdateUser(ApplicationUser value);
-
         #endregion
 
         #region EventSignup CRUD
