@@ -4,8 +4,8 @@ angular
     .module("Backend") //TODO get a better name for factory and module
     .factory("Backend", ["$http", "$q", "CacheManager", function ($http, $q, CacheManager) {
         var svc = {};
-        var protocol = "https://";
-        var domainUrl = "allready-d.azurewebsites.net"; // TODO: Update when the site is deployed for real
+        var protocol = "http://";
+        var domainUrl = "localhost:48408"; // TODO: Update when the site is deployed for real
         var baseUrl = protocol + domainUrl + "/";
 
         svc.getEvents = function (forceWebQuery) {
@@ -67,29 +67,43 @@ angular
                 });
         };
 
-        svc.doLogin = function () {
-            var deferred = $q.defer();
-            var done = false;
-
-            var ref = cordova.InAppBrowser.open(baseUrl + "api/me", "_blank", "location=no");
-            ref.addEventListener("loadstop", function (e) {
-                if (e.url.toLowerCase().indexOf("api/me") != -1) {
-                    if (!done) {
-                        ref.close();
-                        done = true;
-                        deferred.resolve();
-                    }
+        svc.doLogin = function (username, password) {
+            return $http.post(baseUrl + "/api/login",
+                {
+                    "Email": username,
+                    "Password": password,
+                    "RememberMe": "true"
+                }, {
+                    //headers: {
+                    //    //'Content-Type': 'application/json; charset=UTF-8'
+                    //    //'Content-Type': 'application/x-www-form-urlencoded'
+                    //}
                 }
+            ).then(function () {
+                console.log("Logged in");
             });
+        //var deferred = $q.defer();
+        //var done = false;
 
-            ref.addEventListener("loaderror", function () {
-                if (!done) {
-                    done = true;
-                    deferred.reject();
-                }
-            });
-            return deferred.promise;
-        };
+        //var ref = cordova.InAppBrowser.open(baseUrl + "api/me", "_blank", "location=no");
+        //ref.addEventListener("loadstop", function (e) {
+        //    if (e.url.toLowerCase().indexOf("api/me") != -1) {
+        //        if (!done) {
+        //            ref.close();
+        //            done = true;
+        //            deferred.resolve();
+        //        }
+        //    }
+        //});
 
-        return svc;
-    }]);
+        //ref.addEventListener("loaderror", function () {
+        //    if (!done) {
+        //        done = true;
+        //        deferred.reject();
+        //    }
+        //});
+        //return deferred.promise;
+    };
+
+return svc;
+}]);

@@ -34,6 +34,9 @@ angular.module('allReady', ['ionic', 'allReady.controllers', 'Backend'])
           'menuContent': {
             templateUrl: "event/event-details.tpl.html",
             controller: "EventDetailsController",
+            params: {
+              id: null  
+            },
             resolve: {
               eventDetails: function (Backend, $stateParams) {
                 return Backend.getEvent($stateParams.id);

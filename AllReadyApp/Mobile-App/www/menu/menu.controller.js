@@ -1,5 +1,5 @@
 angular.module('allReady.controllers')
-  .controller('MenuController', function ($scope, $ionicModal, $timeout) {
+  .controller('MenuController', function ($scope, $ionicModal, Backend, $state) {
 
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
@@ -30,12 +30,11 @@ angular.module('allReady.controllers')
 
     // Perform the login action when the user submits the login form
     $scope.doLogin = function () {
-      console.log('Doing login', $scope.loginData);
-
-      // Simulate a login delay. Remove this and replace with your login
-      // code if using a login system
-      $timeout(function () {
-        $scope.closeLogin();
-      }, 1000);
+        console.log('Doing login', $scope.loginData);
+        Backend.doLogin($scope.loginData.username, $scope.loginData.password).then(function (result) {
+            console.log("Logged in");
+            $scope.closeLogin();
+            $state.go("app.eventlist");
+        });
     };
   });

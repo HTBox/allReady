@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "AllReadyApp", "Mobile-App\AllReadyApp.jsproj", "{60010232-B3E1-40B7-AA8E-991BD2695BDE}"
 EndProject
@@ -62,7 +62,6 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{60010232-B3E1-40B7-AA8E-991BD2695BDE}.Debug|Android.ActiveCfg = Debug|Android
-		{60010232-B3E1-40B7-AA8E-991BD2695BDE}.Debug|Android.Build.0 = Debug|Android
 		{60010232-B3E1-40B7-AA8E-991BD2695BDE}.Debug|Android.Deploy.0 = Debug|Android
 		{60010232-B3E1-40B7-AA8E-991BD2695BDE}.Debug|Any CPU.ActiveCfg = Debug|Android
 		{60010232-B3E1-40B7-AA8E-991BD2695BDE}.Debug|iOS.ActiveCfg = Debug|iOS
@@ -148,7 +147,6 @@ Global
 		{D00DE040-2254-4118-B172-F14E6FE56D44}.Release|Windows-x86.ActiveCfg = Release|Any CPU
 		{D00DE040-2254-4118-B172-F14E6FE56D44}.Release|Windows-x86.Build.0 = Release|Any CPU
 		{5A76269A-F855-40CA-A4B0-472F48DD49A5}.Debug|Android.ActiveCfg = Debug|Any CPU
-		{5A76269A-F855-40CA-A4B0-472F48DD49A5}.Debug|Android.Build.0 = Debug|Any CPU
 		{5A76269A-F855-40CA-A4B0-472F48DD49A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5A76269A-F855-40CA-A4B0-472F48DD49A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A76269A-F855-40CA-A4B0-472F48DD49A5}.Debug|iOS.ActiveCfg = Debug|Any CPU
@@ -184,7 +182,6 @@ Global
 		{5A76269A-F855-40CA-A4B0-472F48DD49A5}.Release|Windows-x86.ActiveCfg = Release|Any CPU
 		{5A76269A-F855-40CA-A4B0-472F48DD49A5}.Release|Windows-x86.Build.0 = Release|Any CPU
 		{06541497-EF62-46E7-A6FC-14C65CD24CF6}.Debug|Android.ActiveCfg = Debug|Any CPU
-		{06541497-EF62-46E7-A6FC-14C65CD24CF6}.Debug|Android.Build.0 = Debug|Any CPU
 		{06541497-EF62-46E7-A6FC-14C65CD24CF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{06541497-EF62-46E7-A6FC-14C65CD24CF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06541497-EF62-46E7-A6FC-14C65CD24CF6}.Debug|iOS.ActiveCfg = Debug|Any CPU
@@ -220,7 +217,6 @@ Global
 		{06541497-EF62-46E7-A6FC-14C65CD24CF6}.Release|Windows-x86.ActiveCfg = Release|Any CPU
 		{06541497-EF62-46E7-A6FC-14C65CD24CF6}.Release|Windows-x86.Build.0 = Release|Any CPU
 		{D4DA47B0-5E86-4ED6-BEE6-227C204AF408}.Debug|Android.ActiveCfg = Debug|Any CPU
-		{D4DA47B0-5E86-4ED6-BEE6-227C204AF408}.Debug|Android.Build.0 = Debug|Any CPU
 		{D4DA47B0-5E86-4ED6-BEE6-227C204AF408}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D4DA47B0-5E86-4ED6-BEE6-227C204AF408}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4DA47B0-5E86-4ED6-BEE6-227C204AF408}.Debug|iOS.ActiveCfg = Debug|Any CPU
