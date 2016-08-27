@@ -2,13 +2,13 @@
 
 angular
     .module("allReady.controllers")
-    .controller("EventListController", ["$scope", "$location", "Backend", function ($scope, $location, Backend) {
+    .controller("EventListController", ["$scope", "$location", "Backend", function ($scope, $state, Backend) {
         Backend.getEvents().then(function (result) {
             $scope.eventList = result;
         });
 
         $scope.onSelect = function (n) {
-            $location.url("/app/eventdetails/" + n.Id);
+            $state.go("app.eventdetails", { id: n.Id });
         };
 
         $scope.doRefresh = function () {
@@ -19,7 +19,7 @@ angular
         };
 
         $scope.doCheckin = function () {
-            $location.url("/app/checkin");
+            $state.go("app.checkin");
         };
     }]).filter("dateFilter", function ($filter) {
         return function (input) {
