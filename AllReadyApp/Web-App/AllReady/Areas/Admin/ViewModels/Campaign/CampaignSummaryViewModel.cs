@@ -8,6 +8,8 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
 {
     public class CampaignSummaryViewModel: IPrimaryContactViewModel
     {
+        private const int EVENT_DAYS_STD = 30;
+
         public CampaignSummaryViewModel()
         {
             this.CampaignImpact = new CampaignImpact();
@@ -78,5 +80,16 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         public bool Locked { get; set; }
 
         public bool Featured { get; set; }
+
+        public int DefaultEventDays
+        {
+            get
+            {
+                // At some point an enumeration could be added to allow an admin to determine the priority
+                // of the campaign which could affect this value that would translate to the initial value for
+                // an event's End Date
+                return EVENT_DAYS_STD;
+            }
+        }
     }
 }
