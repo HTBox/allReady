@@ -26,9 +26,6 @@ namespace AllReady.Models
         IEnumerable<EventSignup> GetEventSignups(string userId);
         [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
         IEnumerable<EventSignup> GetEventSignups(int eventId, string userId);
-        [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
-        Task UpdateEvent(Event value);
-        [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
         IEnumerable<Event> EventsByPostalCode(string postalCode, int distance);
         [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
         IEnumerable<Event> EventsByGeography(double latitude, double longitude, int distance);

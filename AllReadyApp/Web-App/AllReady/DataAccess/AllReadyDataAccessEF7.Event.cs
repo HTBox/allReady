@@ -22,16 +22,6 @@ namespace AllReady.Models
             }
         }
        
-        Task IAllReadyDataAccess.UpdateEvent(Event value)
-        {
-            //First remove any skills that are no longer associated with this event
-            var acsksToRemove = _dbContext.EventSkills.Where(acsk => acsk.EventId == value.Id && (value.RequiredSkills == null ||
-                !value.RequiredSkills.Any(acsk1 => acsk1.SkillId == acsk.SkillId)));
-            _dbContext.EventSkills.RemoveRange(acsksToRemove);
-            _dbContext.Events.Update(value);
-            return _dbContext.SaveChangesAsync();
-        }
-
         IEnumerable<Event> IAllReadyDataAccess.EventsByPostalCode(string postalCode, int distance)
         {
             return _dbContext.Events.FromSql("EXEC GetClosestEventsByPostalCode '{0}', {1}, {2}", postalCode, 50, distance)
