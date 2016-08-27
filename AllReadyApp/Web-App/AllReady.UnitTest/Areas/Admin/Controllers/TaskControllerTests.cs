@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Extensions;
-using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
@@ -35,7 +32,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
             var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             await sut.Create(eventId);
             mediator.Verify(x => x.SendAsync(It.Is<CreateTaskQueryAsync>(y => y.EventId == eventId)), Times.Once);
@@ -67,7 +64,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
             var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
-            MakeUserOrganizationAdminUser(sut, model.OrganizationId.ToString());
+            sut.MakeUserAnOrgAdmin(model.OrganizationId.ToString());
 
             await sut.Create(It.IsAny<int>());
 
@@ -91,7 +88,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(cancelUrl);
 
             var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
-            MakeUserOrganizationAdminUser(sut, model.OrganizationId.ToString());
+            sut.MakeUserAnOrgAdmin(model.OrganizationId.ToString());
 
             var result = await sut.Create(It.IsAny<int>()) as ViewResult;
             var modelResult = result.Model as EditViewModel;
@@ -111,7 +108,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
             var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
-            MakeUserOrganizationAdminUser(sut, model.OrganizationId.ToString());
+            sut.MakeUserAnOrgAdmin(model.OrganizationId.ToString());
 
             await sut.Create(It.IsAny<int>());
 
@@ -131,7 +128,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
             var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var result = await sut.Create(It.IsAny<int>()) as ViewResult;
             var modelResult = result.ViewData.Model as EditViewModel;
@@ -151,7 +148,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
             var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var result = await sut.Create(It.IsAny<int>()) as ViewResult;
 
@@ -188,7 +185,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
             var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
             await sut.Edit(taskId);
 
             mediator.Verify(x => x.SendAsync(It.Is<EditTaskQueryAsync>(y => y.TaskId == taskId)), Times.Once);
@@ -220,7 +217,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(cancelUrl);
 
             var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
-            MakeUserOrganizationAdminUser(sut, model.OrganizationId.ToString());
+            sut.MakeUserAnOrgAdmin(model.OrganizationId.ToString());
 
             var result = await sut.Edit(It.IsAny<int>()) as ViewResult;
             var modelResult = result.Model as EditViewModel;
@@ -240,7 +237,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
             var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
-            MakeUserOrganizationAdminUser(sut, model.OrganizationId.ToString());
+            sut.MakeUserAnOrgAdmin(model.OrganizationId.ToString());
 
             await sut.Edit(It.IsAny<int>());
 
@@ -260,7 +257,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
             var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var result = await sut.Edit(It.IsAny<int>()) as ViewResult;
             var modelResult = result.ViewData.Model as EditViewModel;
@@ -365,7 +362,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             validator.Setup(x => x.Validate(It.IsAny<EditViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             await sut.Edit(model);
 
@@ -386,7 +383,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             validator.Setup(x => x.Validate(It.IsAny<EditViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var result = await sut.Edit(model) as RedirectToActionResult;
 
@@ -411,7 +408,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             validator.Setup(x => x.Validate(It.IsAny<EditViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var result = await sut.Edit(model) as RedirectToActionResult;
 
@@ -448,7 +445,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQueryAsync>())).ReturnsAsync(new DeleteViewModel { OrganizationId = organizationId });
 
             var sut = new TaskController(mediator.Object, null);
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
             await sut.Delete(taskId);
 
             mediator.Verify(x => x.SendAsync(It.Is<DeleteQueryAsync>(y => y.TaskId == taskId)), Times.Once);
@@ -477,7 +474,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQueryAsync>())).ReturnsAsync(deleteViewModel);
 
             var sut = new TaskController(mediator.Object, null);
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var result = await sut.Delete(It.IsAny<int>()) as ViewResult;
             var modelResult = result.ViewData.Model as DeleteViewModel;
@@ -576,7 +573,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
 
             var sut = new TaskController(mediator.Object, null);
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var result = await sut.DeleteConfirmed(deleteViewModel) as RedirectToActionResult;
 
@@ -650,7 +647,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByTaskIdQueryAsync>())).ReturnsAsync(organizationId);
 
             var sut = new TaskController(mediator.Object, null);
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
             await sut.Assign(taskId, userIds);
 
             mediator.Verify(x => x.SendAsync(It.Is<AssignTaskCommandAsync>(y => y.TaskId == taskId && y.UserIds == userIds)), Times.Once);
@@ -666,7 +663,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByTaskIdQueryAsync>())).ReturnsAsync(organizationId);
 
             var sut = new TaskController(mediator.Object, null);
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var result = await sut.Assign(taskId, null) as RedirectToRouteResult;
 
@@ -711,7 +708,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByTaskIdQueryAsync>())).ReturnsAsync(organizationId);
 
             var sut = new TaskController(mediator.Object, null);
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
             await sut.MessageAllVolunteers(model);
 
             mediator.Verify(x => x.SendAsync(It.Is<OrganizationIdByTaskIdQueryAsync>(y => y.TaskId == model.TaskId)), Times.Once);
@@ -740,7 +737,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByTaskIdQueryAsync>())).ReturnsAsync(organizationId);
 
             var sut = new TaskController(mediator.Object, null);
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
             await sut.MessageAllVolunteers(model);
 
             mediator.Verify(x => x.SendAsync(It.Is<MessageTaskVolunteersCommandAsync>(y => y.Model == model)), Times.Once);
@@ -755,7 +752,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByTaskIdQueryAsync>())).ReturnsAsync(organizationId);
 
             var sut = new TaskController(mediator.Object, null);
-            MakeUserOrganizationAdminUser(sut, organizationId.ToString());
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
             var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersViewModel());
 
             Assert.IsType<OkResult>(result);
@@ -794,21 +791,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var attribute = sut.GetAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Policy, "OrgAdmin");
-        }
-
-        private static void MakeUserOrganizationAdminUser(Controller controller, string organizationId)
-        {
-            var orgAdminClaims = new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
-                new Claim(AllReady.Security.ClaimTypes.Organization, organizationId)
-            };
-
-            var httpContext = new Mock<HttpContext>();
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(orgAdminClaims));
-            httpContext.Setup(x => x.User).Returns(claimsPrincipal);
-
-            controller.ControllerContext.HttpContext = httpContext.Object;
         }
     }
 }
