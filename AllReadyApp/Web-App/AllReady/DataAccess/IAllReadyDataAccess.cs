@@ -23,9 +23,6 @@ namespace AllReady.Models
         IEnumerable<Event> Events { get; }
         [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
         Event GetEvent(int eventId);
-        [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
-        int GetManagingOrganizationId(int eventId);
-        [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
         IEnumerable<EventSignup> GetEventSignups(string userId);
         [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
         IEnumerable<EventSignup> GetEventSignups(int eventId, string userId);

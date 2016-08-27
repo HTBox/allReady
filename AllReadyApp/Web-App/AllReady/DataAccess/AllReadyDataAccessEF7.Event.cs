@@ -55,11 +55,6 @@ namespace AllReady.Models
                 .SingleOrDefault(a => a.Id == eventId);
         }
 
-        int IAllReadyDataAccess.GetManagingOrganizationId(int eventId)
-        {
-            return _dbContext.Events.Where(a => a.Id == eventId).Select(a => a.Campaign.ManagingOrganizationId).FirstOrDefault();
-        }
-
         IEnumerable<EventSignup> IAllReadyDataAccess.GetEventSignups(int eventId, string userId)
         {
             return _dbContext.EventSignup
