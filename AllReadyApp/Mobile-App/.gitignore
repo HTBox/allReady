@@ -1,3 +1,7 @@
-www/lib/*
-bower_components
-Makefile
+# Specifies intentionally untracked files to ignore when using Git
+# http://git-scm.com/docs/gitignore
+
+node_modules/
+platforms/
+plugins/
+www/lib/**
