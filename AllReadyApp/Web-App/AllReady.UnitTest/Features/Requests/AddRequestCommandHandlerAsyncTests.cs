@@ -6,34 +6,24 @@ using Moq;
 using Xunit;
 using Geocoding;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AllReady.UnitTest.Features.Requests
 {
     public class AddRequestCommandHandlerAsyncTests : InMemoryContextTest
     {
-        private AddRequestCommandHandlerAsync _sut;
-        private Mock<IAllReadyDataAccess> _dataAccess;
-        private Mock<IGeocoder> _geocoder;
-
-        public AddRequestCommandHandlerAsyncTests()
-        {
-            _dataAccess = new Mock<IAllReadyDataAccess>();
-            _geocoder = new Mock<IGeocoder>();
-            _sut = new AddRequestCommandHandlerAsync(_dataAccess.Object, _geocoder.Object);
-        }
 
         [Fact]
-        public async Task HandleReturnsNullWhenNoErrorsOccur()
-        {
-            var command = new AddRequestCommandAsync
-            {
-                Request = new Request
-                {
-                    ProviderId = "successId"
-                }
+        public async Task HandleReturnsNullWhenNoErrorsOccur() {
+
+            var command = new AddRequestCommandAsync {
+                Request = new Request {ProviderId = "successId"}
             };
 
-            var result = await _sut.Handle(command);
+            var geocoder = new Mock<IGeocoder>();
+            AddRequestCommandHandlerAsync sut = new AddRequestCommandHandlerAsync(this.Context, geocoder.Object);
+
+            var result = await sut.Handle(command);
 
             Assert.Null(result);
         }
@@ -42,12 +32,11 @@ namespace AllReady.UnitTest.Features.Requests
         public async Task WhenNoProviderIdIsProvided_TheStatusIsUnassignedAndIdIsNotNull()
         {
             var request = new Request();
-            var command = new AddRequestCommandAsync
-            {
-                Request = request
-            };
+            var command = new AddRequestCommandAsync {Request = request};
 
-            var result = await _sut.Handle(command);
+            var geocoder = new Mock<IGeocoder>();
+            AddRequestCommandHandlerAsync sut = new AddRequestCommandHandlerAsync(this.Context, geocoder.Object);
+            var result = await sut.Handle(command);
 
             Assert.NotNull(request.RequestId);
             Assert.Equal(RequestStatus.Unassigned, request.Status);
@@ -58,30 +47,35 @@ namespace AllReady.UnitTest.Features.Requests
         public async Task WhenProviderIdIsProvidedAndIsValid_TheStatusOfTheExistingRequestIsUpdated()
         {
             string pid = "someId";
-            Guid rid = Guid.NewGuid();
             var request = new Request
             {
                 ProviderId = pid,
                 Status = RequestStatus.Assigned
             };
-            var command = new AddRequestCommandAsync
-            {
-                Request = request
-            };
+            var command = new AddRequestCommandAsync{Request = request};
 
-            Request returnedRequest = new Request
-            {
-                ProviderId = pid,
-                RequestId = rid,
-                Status = RequestStatus.Unassigned
-            };
-            _dataAccess.Setup(x => x.GetRequestByProviderIdAsync(pid)).ReturnsAsync(returnedRequest);
+            var options = this.CreateNewContextOptions();
 
-            await _sut.Handle(command);
+            using (var context = new AllReadyContext(options)) {
+                context.Requests.Add(new Request {
+                    ProviderId = pid,
+                    Status = RequestStatus.Assigned
+                });
+                await context.SaveChangesAsync();
+            }
 
-            Assert.Equal(RequestStatus.Assigned, returnedRequest.Status);
-            _dataAccess.Verify(x => x.AddRequestAsync(returnedRequest));
+            using (var context = new AllReadyContext(options)) {
+                var geocoder = new Mock<IGeocoder>();
+                AddRequestCommandHandlerAsync sut = new AddRequestCommandHandlerAsync(context, geocoder.Object);
 
+
+                await sut.Handle(command);
+            }
+
+            using (var context = new AllReadyContext(options)) {
+                var entity = context.Requests.FirstOrDefault(x => x.ProviderId == pid);
+                Assert.Equal(entity.Status, RequestStatus.Assigned);
+            }
         }
 
         [Fact]
@@ -109,10 +103,13 @@ namespace AllReady.UnitTest.Features.Requests
                 false,
                 Geocoding.Google.GoogleLocationType.Rooftop);
 
-            _geocoder.Setup(g => g.Geocode(request.Address, request.City, request.State, request.Zip, string.Empty))
+            var geocoder = new Mock<IGeocoder>();
+            AddRequestCommandHandlerAsync sut = new AddRequestCommandHandlerAsync(this.Context, geocoder.Object);
+
+            geocoder.Setup(g => g.Geocode(request.Address, request.City, request.State, request.Zip, string.Empty))
                 .Returns(new[] { address });
 
-            await _sut.Handle(new AddRequestCommandAsync { Request = request });
+            await sut.Handle(new AddRequestCommandAsync { Request = request });
 
             Assert.Equal(42, request.Latitude);
             Assert.Equal(24, request.Longitude);
@@ -145,10 +142,13 @@ namespace AllReady.UnitTest.Features.Requests
                 false,
                 Geocoding.Google.GoogleLocationType.Rooftop);
 
-            _geocoder.Setup(g => g.Geocode(request.Address, request.City, request.State, request.Zip, string.Empty))
+            var geocoder = new Mock<IGeocoder>();
+            AddRequestCommandHandlerAsync sut = new AddRequestCommandHandlerAsync(this.Context, geocoder.Object);
+
+            geocoder.Setup(g => g.Geocode(request.Address, request.City, request.State, request.Zip, string.Empty))
                 .Returns(new[] { address });
 
-            await _sut.Handle(new AddRequestCommandAsync { Request = request });
+            await sut.Handle(new AddRequestCommandAsync { Request = request });
 
             Assert.Equal(13, request.Latitude);
             Assert.Equal(14, request.Longitude);
@@ -156,7 +156,7 @@ namespace AllReady.UnitTest.Features.Requests
             //Clear latitude and re-test
             request.Latitude = 0;
             request.Longitude = 14;
-            await _sut.Handle(new AddRequestCommandAsync { Request = request });
+            await sut.Handle(new AddRequestCommandAsync { Request = request });
 
             Assert.Equal(0, request.Latitude);
             Assert.Equal(14, request.Longitude);
@@ -164,7 +164,7 @@ namespace AllReady.UnitTest.Features.Requests
             //Clear longitude and re-test
             request.Latitude = 13;
             request.Longitude = 0;
-            await _sut.Handle(new AddRequestCommandAsync { Request = request });
+            await sut.Handle(new AddRequestCommandAsync { Request = request });
 
             Assert.Equal(13, request.Latitude);
             Assert.Equal(0, request.Longitude);

@@ -10,12 +10,12 @@ namespace AllReady.Features.Requests
 {
     public class AddRequestCommandHandlerAsync : IAsyncRequestHandler<AddRequestCommandAsync, AddRequestError>
     {
-        private readonly IAllReadyDataAccess _dataAccess;
+        private readonly AllReadyContext _dataContext;
         private readonly IGeocoder _geocoder;
 
-        public AddRequestCommandHandlerAsync(IAllReadyDataAccess dataAccess, IGeocoder geocoder)
+        public AddRequestCommandHandlerAsync(AllReadyContext dataContext, IGeocoder geocoder)
         {
-            _dataAccess = dataAccess;
+            _dataContext = dataContext;
             _geocoder = geocoder;
         }
 
@@ -33,7 +33,8 @@ namespace AllReady.Features.Requests
             {
                 //todo: I'm not sure if this logic is going to be correct, as this allows an update of status to existing requests.
                 //I added this because the red cross is passing in current status.
-                Request entity = await _dataAccess.GetRequestByProviderIdAsync(request?.ProviderId);
+                string providerId = request?.ProviderId;
+                Request entity = await _dataContext.Requests.FirstOrDefaultAsync(x => x.ProviderId == providerId);
 
                 if (entity == null)
                 {
@@ -47,16 +48,19 @@ namespace AllReady.Features.Requests
                         request.Latitude = address?.Coordinates.Latitude ?? 0;
                         request.Longitude = address?.Coordinates.Longitude ?? 0;
                     }
+                    entity = request;
+                    _dataContext.Requests.Add(entity);
                 }
                 else
                 {
                     entity.Status = request.Status;
                 }
 
-                await _dataAccess.AddRequestAsync(entity ?? request);
+                await _dataContext.SaveChangesAsync();
             }
             catch (Exception)
             {
+                // FRAGILE: no other Handlers trap errors, TODO: let this handler throw like the others?
                 error = new AddRequestError
                 {
                     ProviderId = request?.ProviderId ?? "No ProviderId.",

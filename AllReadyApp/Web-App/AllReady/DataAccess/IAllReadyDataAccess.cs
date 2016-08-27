@@ -58,13 +58,5 @@ namespace AllReady.Models
 
         #endregion
 
-        #region Request CRUD
-        [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
-        Task<Request> GetRequestByProviderIdAsync( string providerId );
-
-        [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
-        Task AddRequestAsync( Request request );
-        #endregion
-
     }
 }
