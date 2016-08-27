@@ -1,10 +1,9 @@
 ﻿using System.Net.Mail;
 using System.Threading.Tasks;
 using AllReady.Models.Notifications;
-using AllReady.Services;
 using Newtonsoft.Json;
 
-namespace AllReady.Controllers
+namespace AllReady.Services
 {
     //this class is intended to be used by developers who want to run a local smtp server in order to work with notifications or confirmation email and sms messages
     //for smoke testing the system. To use this class, download a local smtp server (smtp4dev is an example of one of many of these: https://smtp4dev.codeplex.com/)

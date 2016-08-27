@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - allReady</title>
 
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,100' rel='stylesheet' type='text/css' />
     <environment names="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css" />
@@ -26,18 +27,17 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     </environment>
-    @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
+    @if (TelemetryConfiguration != null && !string.IsNullOrEmpty(TelemetryConfiguration.InstrumentationKey) && !TelemetryConfiguration.InstrumentationKey.StartsWith("[")) {
+        @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
+    }
     @RenderSection("styles", required: false)
 
-    
     <script type="text/javascript">
         var htbox = htbox || {};
         htbox.allReady = htbox.allReady || {};
         htbox.allReady.map = htbox.allReady.map || {};
         htbox.allReady.init = htbox.allReady.init || {};
     </script>
-
-    <link href='https://fonts.googleapis.com/css?family=Roboto:300,100' rel='stylesheet' type='text/css'>
 </head>
 <body>
     <header>

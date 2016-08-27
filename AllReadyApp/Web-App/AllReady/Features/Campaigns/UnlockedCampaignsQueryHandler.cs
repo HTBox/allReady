@@ -3,20 +3,28 @@ using System.Linq;
 using AllReady.Models;
 using AllReady.ViewModels.Campaign;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Campaigns
 {
     public class UnlockedCampaignsQueryHandler : IRequestHandler<UnlockedCampaignsQuery, List<CampaignViewModel>>
     {
-        private readonly IAllReadyDataAccess _dataAccess;
+        private readonly AllReadyContext _context;
 
-        public UnlockedCampaignsQueryHandler(IAllReadyDataAccess dataAccess)
+        public UnlockedCampaignsQueryHandler(AllReadyContext context)
         {
-            _dataAccess = dataAccess;
+            _context = context;
         }
+
         public List<CampaignViewModel> Handle(UnlockedCampaignsQuery message)
         {
-            return _dataAccess.Campaigns.Where(c => !c.Locked).ToViewModel().ToList();
+            return _context.Campaigns
+                   .Include(x => x.ManagingOrganization)
+                   .Include(x => x.Events)
+                   .Include(x => x.ParticipatingOrganizations)
+                   .Where(c => !c.Locked)
+                   .ToViewModel()
+                   .ToList();
         }
     }
 }

@@ -35,13 +35,9 @@ namespace AllReady.Areas.Admin.Controllers
             _mediator = mediator;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var viewModel = new SiteAdminViewModel
-            {
-                Users = _mediator.Send(new AllUsersQuery()).OrderBy(u => u.UserName).ToList()
-            };
-            return View(viewModel);
+            return View(await _mediator.SendAsync(new IndexQuery()));
         }
 
         [HttpGet]

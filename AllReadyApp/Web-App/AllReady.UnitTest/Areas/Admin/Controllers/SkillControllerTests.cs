@@ -18,8 +18,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
     public class SkillControllerTests
     {
-        const string _orgName = "Org Name";
-        const int _orgAdminOrgId = 1;
+        private const string OrgName = "Org Name";
+        private const int OrgAdminOrgId = 1;
 
         #region Index Tests
 
@@ -66,7 +66,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.True(result.ViewData.ContainsKey("Title"));
 
             var title = result.ViewData["Title"];
-            Assert.Equal("Skills - " + _orgName, title);
+            Assert.Equal("Skills - " + OrgName, title);
 
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<OrganizationNameQueryAsync>()), Times.Once);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillListQueryAsync>()), Times.Once);
@@ -211,7 +211,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.Equal("Index", result.ActionName);
-            Assert.Equal(_orgAdminOrgId, model.OwningOrganizationId);
+            Assert.Equal(OrgAdminOrgId, model.OwningOrganizationId);
 
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillEditCommandAsync>()), Times.Once);
         }
@@ -360,7 +360,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Arrange
             const int skillId = 1;
             SkillController controller;
-            var mockMediator = MockMediatorSkillEditQuery(out controller, new SkillEditViewModel { Id = 1, Name = "Name", Description = "Description", OwningOrganizationId = _orgAdminOrgId });
+            var mockMediator = MockMediatorSkillEditQuery(out controller, new SkillEditViewModel { Id = 1, Name = "Name", Description = "Description", OwningOrganizationId = OrgAdminOrgId });
 
             var mockContext = MockControllerContextWithUser(OrgAdmin());
             controller.ControllerContext = mockContext.Object;
@@ -517,7 +517,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             {
                 Name = "Some Name",
                 Description = "Some Description",
-                OwningOrganizationId = _orgAdminOrgId
+                OwningOrganizationId = OrgAdminOrgId
             };
         }
 
@@ -584,7 +584,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Arrange
             const int skillId = 1;
             SkillController controller;
-            MockMediatorSkillDeleteQuery(out controller, new SkillDeleteViewModel { HierarchicalName = "A Name", OwningOrganizationId = _orgAdminOrgId });
+            MockMediatorSkillDeleteQuery(out controller, new SkillDeleteViewModel { HierarchicalName = "A Name", OwningOrganizationId = OrgAdminOrgId });
 
             var mockContext = MockControllerContextWithUser(OrgAdmin());
             controller.ControllerContext = mockContext.Object;
@@ -682,7 +682,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .Returns(() => Task.FromResult(SummaryListItems()))
                 .Verifiable();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationNameQueryAsync>()))
-                .Returns(() => Task.FromResult(_orgName))
+                .Returns(() => Task.FromResult(OrgName))
                 .Verifiable();
             controller = new SkillController(mockMediator.Object);
             return mockMediator;
@@ -773,7 +773,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             return new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, _orgAdminOrgId.ToString())
+                new Claim(AllReady.Security.ClaimTypes.Organization, OrgAdminOrgId.ToString())
             }));
         }
 
