@@ -123,6 +123,10 @@ namespace AllReady.UnitTest.Features.Notifications
             this.Context.SaveChanges();
         }
 
+        /// <summary>
+        /// Verifies that an object of type NotifyVolunteersCommand 
+        /// is sent to the mediator
+        /// </summary>
         [Fact]
         public async void PassANotifyVolunteersCommandToTheMediator()
         {
@@ -148,6 +152,14 @@ namespace AllReady.UnitTest.Features.Notifications
             mediator.VerifyAll();
         }
 
+        /// <summary>
+        /// Verifies that a non-empty subject is passed to the mediator
+        /// within the NotifyVolunteersCommand
+        /// </summary>
+        /// <remarks>We are only checking for a non-empty value here since
+        /// the actual content of the subject is not a requirement, just
+        /// that there be one.  Adding a requirement for a specific subject
+        /// line can be done, but would likely make this test more fragile</remarks>
         [Fact]
         public async void PassAnEmailSubjectToTheMediator()
         {
@@ -173,6 +185,10 @@ namespace AllReady.UnitTest.Features.Notifications
             mediator.VerifyAll();
         }
 
+        /// <summary>
+        /// Verifies that the correct admin email address is passed to 
+        /// the mediator within the NotifyVolunteersCommand
+        /// </summary>
         [Fact]
         public async void SendToTheAdminEmail()
         {
@@ -203,6 +219,13 @@ namespace AllReady.UnitTest.Features.Notifications
             mediator.VerifyAll();
         }
 
+        /// <summary>
+        /// Verifies that a log entry is written if an error occurs during 
+        /// the processing of a notification by the mediator
+        /// </summary>
+        /// <remarks>No verification of the content of the log entry is done 
+        /// here. The few requirements that there are for logging will be 
+        /// verified in other tests.</remarks>
         [Fact]
         public async void LogIfAnExceptionOccurs()
         {
@@ -229,6 +252,11 @@ namespace AllReady.UnitTest.Features.Notifications
                 It.IsAny<Func<object, Exception, string>>()), Times.AtLeastOnce);
         }
 
+        /// <summary>
+        /// Verifies that the log entry that is written when an error
+        /// occurs during notification processing is done at a LogLevel
+        /// of "Error".
+        /// </summary>
         [Fact]
         public async void LogAnErrorIfAnExceptionOccurs()
         {
@@ -257,6 +285,11 @@ namespace AllReady.UnitTest.Features.Notifications
             logger.VerifyAll();
         }
 
+        /// <summary>
+        /// Verifies that the log entry that is written when an error
+        /// occurs during notification processing receives the correct
+        /// Exception type.
+        /// </summary>
         [Fact]
         public async void LogTheExceptionIfAnExceptionOccurs()
         {
@@ -285,6 +318,10 @@ namespace AllReady.UnitTest.Features.Notifications
                 It.IsAny<Func<object, Exception, string>>()), Times.AtLeastOnce);
         }
 
+        /// <summary>
+        /// Verifies that the send method is never called if
+        /// the admin email address has not been specified
+        /// </summary>
         [Fact]
         public async void SkipNotificationIfAdminEmailIsNotSpecified()
         {
