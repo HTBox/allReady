@@ -51,6 +51,10 @@ namespace AllReady
 
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
                 builder.AddApplicationInsightsSettings(developerMode: true);
+            } else if(env.IsStaging() || env.IsProduction())
+            {
+                // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
+                builder.AddApplicationInsightsSettings(developerMode: false);
             }
 
             Configuration = builder.Build();
