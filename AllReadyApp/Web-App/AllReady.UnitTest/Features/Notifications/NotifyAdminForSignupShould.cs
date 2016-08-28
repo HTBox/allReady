@@ -109,6 +109,12 @@ namespace AllReady.UnitTest.Features.Notifications
         }
 
         [Fact(Skip = "NotImplemented")]
+        public void PassAnEmailSubjectToTheMediator()
+        {
+            // TODO: Implement test
+        }
+
+        [Fact(Skip = "NotImplemented")]
         public void SendToTheAdminEmail()
         {
             // TODO: Implement test
