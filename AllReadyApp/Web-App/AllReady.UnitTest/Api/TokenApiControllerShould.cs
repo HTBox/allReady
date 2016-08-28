@@ -8,18 +8,17 @@ namespace AllReady.UnitTest.Api
 {
     public class TokenApiControllerShould
     {
-        [Fact]
+        [Fact(Skip ="NotImplemented")]
         public void ReturnATokenGivenASetOfCredentials()
         {
-            // todo
+            // todo: Implement test
         }
 
-        [Fact]
+        [Fact(Skip = "NotImplemented")]
         public void ExpireTokensWhenExpireIsInvoked()
         {
-            // todo
+            // todo: Implement test
         }
-
 
     }
 }
