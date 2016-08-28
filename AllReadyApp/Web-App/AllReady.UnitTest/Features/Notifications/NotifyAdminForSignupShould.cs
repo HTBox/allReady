@@ -230,6 +230,34 @@ namespace AllReady.UnitTest.Features.Notifications
         }
 
         [Fact]
+        public async void LogAnErrorIfAnExceptionOccurs()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
+                .Throws(new InvalidOperationException("Test Exception"));
+
+            var logger = new Mock<ILogger<NotifyAdminForUserUnenrolls>>();
+            logger.Setup(x => x.Log(It.Is<LogLevel>(m => m == LogLevel.Error), 
+                It.IsAny<EventId>(), It.IsAny<object>(), It.IsAny<Exception>(),
+                It.IsAny<Func<object, Exception, string>>()));
+
+            var options = new TestOptions<GeneralSettings>();
+            options.Value.SiteBaseUrl = "localhost";
+
+            var notification = new VolunteerSignupNotification()
+            {
+                UserId = Context.Users.First().Id,
+                EventId = Context.Events.First().Id,
+                TaskId = Context.Tasks.First().Id
+            };
+
+            var target = new NotifyAdminForSignup(this.Context, mediator.Object, options, logger.Object);
+            await target.Handle(notification);
+
+            logger.VerifyAll();
+        }
+
+        [Fact]
         public async void SkipNotificationIfAdminEmailIsNotSpecified()
         {
             var testEvent = Context.Events.Skip(1).First();
