@@ -11,18 +11,17 @@ using UserType = AllReady.Models.UserType;
 using System.Net.Http;
 using System.Net;
 using System.Web.Http;
+using AllReady.Attributes;
 
 namespace AllReady.Controllers
 {
     //[Authorize]
+    [Route("api/me")]
     public class MeApiController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        //private readonly IOptions<GeneralSettings> _generalSettings;
         private readonly IMediator _mediator;
-        //private readonly IExternalUserInformationProviderFactory _externalUserInformationProviderFactory;
-        //private readonly IRedirectAccountControllerRequests _redirectAccountControllerRequests;
 
         public MeApiController(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
@@ -30,23 +29,12 @@ namespace AllReady.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            //_generalSettings = generalSettings;
             _mediator = mediator;
-            //_externalUserInformationProviderFactory = externalUserInformationProviderFactory;
-            //_redirectAccountControllerRequests = redirectAccountControllerRequests;
-
         }
 
-        [Route("api/me")]
-        public string Index()
-        {
-            return "Here";
-        }
-
+        [ExternalEndpoint]
         [HttpPost]
-        [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        [Route("api/login")]
+        [Route("login")]
         public async Task<string> Login([FromBody] LoginViewModel model)
         {
             if (!ModelState.IsValid)
