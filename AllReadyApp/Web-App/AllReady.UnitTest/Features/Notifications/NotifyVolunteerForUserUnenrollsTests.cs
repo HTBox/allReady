@@ -482,6 +482,36 @@ namespace AllReady.UnitTest.Features.Notifications
         }
 
         [Fact]
+        public async Task NotSendNotifyVolunteersCommand_WhenSignupNotFound()
+        {
+            var notification = new UserUnenrolls { UserId = "user1@example.com" };
+
+            var model = new EventDetailForNotificationModel
+            {
+                UsersSignedUp = new List<EventSignup> { new EventSignup { User = new ApplicationUser { Id = "differentuser1@example.com" } } }
+            };
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
+
+            var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, null);
+            await handler.Handle(notification);
+
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
+        }
+
+        [Fact]
+        public void ThrowException_WhenEventDetailForNotificationModelIsNull()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(null);
+
+            var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, null);
+
+            Should.Throw<NullReferenceException>(async () => await _handler.Handle(new UserUnenrolls()));
+        }
+
+        [Fact]
         public async Task NotSendNotifyVolunteersCommand_WhenRecepientEmailIsNull()
         {
             var userId = "user1@example.com";
@@ -521,6 +551,7 @@ namespace AllReady.UnitTest.Features.Notifications
             await handler.Handle(notification);
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
-        }
+        }       
+
     }
 }
