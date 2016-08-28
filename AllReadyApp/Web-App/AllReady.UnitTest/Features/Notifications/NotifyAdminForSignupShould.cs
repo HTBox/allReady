@@ -112,7 +112,6 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void PassAnEmailSubjectToTheMediator()
         {
-            string actual = string.Empty;
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(c => !String.IsNullOrWhiteSpace(c.ViewModel.Subject))))
                 .ReturnsAsync(new Unit());
@@ -135,10 +134,34 @@ namespace AllReady.UnitTest.Features.Notifications
             mediator.VerifyAll();
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public void SendToTheAdminEmail()
+        [Fact]
+        public async void SendToTheAdminEmail()
         {
-            // TODO: Implement test
+            var testEvent = Context.Events.First();
+            var testCampaign = testEvent.Campaign;
+            var testContact = testCampaign.CampaignContacts.First().Contact;
+            var expected = testContact.Email;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(c => c.ViewModel.EmailRecipients.ToArray()[0] == expected)))
+                .ReturnsAsync(new Unit());
+
+            var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();
+
+            var options = new TestOptions<GeneralSettings>();
+            options.Value.SiteBaseUrl = "localhost";
+
+            var notification = new VolunteerSignupNotification()
+            {
+                UserId = Context.Users.First().Id,
+                EventId = testEvent.Id,
+                TaskId = Context.Tasks.First().Id
+            };
+
+            var target = new NotifyAdminForSignup(this.Context, mediator.Object, options, logger);
+            await target.Handle(notification);
+
+            mediator.VerifyAll();
         }
 
         [Fact(Skip = "NotImplemented")]
