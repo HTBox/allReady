@@ -120,10 +120,34 @@ namespace AllReady.UnitTest.Features.Notifications
         /// <remarks>No verification of the content of the log entry is done 
         /// here. The few requirements that there are for logging will be 
         /// verified in other tests.</remarks>
-        [Fact(Skip = "NotImplemented")]
-        public void LogIfAnExceptionOccurs()
+        [Fact]
+        public async void LogIfAnExceptionOccurs()
         {
-            // TODO: Implement test
+            int testTaskId = 29;
+            int testEventId = 15;
+
+            var mediator = new Mock<IMediator>();
+
+            // Setup mock data load
+            mediator
+                .Setup(x => x.SendAsync<EventDetailForNotificationModel>(It.IsAny<EventDetailForNotificationQueryAsync>()))
+                .ReturnsAsync(GetEventDetailForNotificationModel(testTaskId, testEventId));
+
+            // Setup exception
+            mediator.Setup(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
+                .Throws(new InvalidOperationException("Test Exception"));
+
+            var logger = new Mock<ILogger<NotifyAdminForUserUnenrolls>>();
+
+            TestOptions<GeneralSettings> options = GetSettings();
+            UserUnenrolls notification = GetUserUnenrolls(testTaskId, testEventId);
+
+            var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger.Object);
+            await target.Handle(notification);
+
+            logger.Verify(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(),
+                        It.IsAny<object>(), It.IsAny<Exception>(),
+                        It.IsAny<Func<object, Exception, string>>()), Times.AtLeastOnce);
         }
 
         /// <summary>
