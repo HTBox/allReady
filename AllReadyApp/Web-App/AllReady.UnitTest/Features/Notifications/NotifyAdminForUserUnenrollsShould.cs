@@ -83,10 +83,34 @@ namespace AllReady.UnitTest.Features.Notifications
         /// Verifies that the correct admin email address is passed to 
         /// the mediator within the NotifyVolunteersCommand
         /// </summary>
-        [Fact(Skip = "NotImplemented")]
-        public void SendToTheAdminEmail()
+        [Fact]
+        public async void SendToTheAdminEmail()
         {
-            // TODO: Implement test
+            int testTaskId = 29;
+            int testEventId = 15;
+
+            var eventDetail = GetEventDetailForNotificationModel(testTaskId, testEventId);
+            var expectedEmail = eventDetail.CampaignContacts.First().Contact.Email;
+
+            var mediator = new Mock<IMediator>();
+
+            // Setup mock data load
+            mediator
+                .Setup(x => x.SendAsync<EventDetailForNotificationModel>(It.IsAny<EventDetailForNotificationQueryAsync>()))
+                .ReturnsAsync(eventDetail);
+
+            // Setup action call
+            mediator.Setup(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(n => n.ViewModel.EmailRecipients.Contains(expectedEmail))))
+                .ReturnsAsync(new Unit());
+
+            var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();
+            TestOptions<GeneralSettings> options = GetSettings();
+            UserUnenrolls notification = GetUserUnenrolls(testTaskId, testEventId);
+
+            var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger);
+            await target.Handle(notification);
+
+            mediator.VerifyAll();
         }
 
         /// <summary>
