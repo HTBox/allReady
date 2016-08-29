@@ -44,6 +44,76 @@ namespace AllReady.UnitTest.Features.Notifications
             mediator.VerifyAll();
         }
 
+        /// <summary>
+        /// Verifies that a non-empty subject is passed to the mediator
+        /// within the NotifyVolunteersCommand
+        /// </summary>
+        /// <remarks>We are only checking for a non-empty value here since
+        /// the actual content of the subject is not a requirement, just
+        /// that there be one.  Adding a requirement for a specific subject
+        /// line can be done, but would likely make this test more fragile</remarks>
+        [Fact(Skip = "NotImplemented")]
+        public void PassAnEmailSubjectToTheMediator()
+        {
+            // TODO: Implement test
+        }
+
+        /// <summary>
+        /// Verifies that the correct admin email address is passed to 
+        /// the mediator within the NotifyVolunteersCommand
+        /// </summary>
+        [Fact(Skip = "NotImplemented")]
+        public void SendToTheAdminEmail()
+        {
+            // TODO: Implement test
+        }
+
+        /// <summary>
+        /// Verifies that a log entry is written if an error occurs during 
+        /// the processing of a notification by the mediator
+        /// </summary>
+        /// <remarks>No verification of the content of the log entry is done 
+        /// here. The few requirements that there are for logging will be 
+        /// verified in other tests.</remarks>
+        [Fact(Skip = "NotImplemented")]
+        public void LogIfAnExceptionOccurs()
+        {
+            // TODO: Implement test
+        }
+
+        /// <summary>
+        /// Verifies that the log entry that is written when an error
+        /// occurs during notification processing is done at a LogLevel
+        /// of "Error".
+        /// </summary>
+        [Fact(Skip = "NotImplemented")]
+        public void LogAnErrorIfAnExceptionOccurs()
+        {
+            // TODO: Implement test
+        }
+
+        /// <summary>
+        /// Verifies that the log entry that is written when an error
+        /// occurs during notification processing receives the correct
+        /// Exception type.
+        /// </summary>
+        [Fact(Skip = "NotImplemented")]
+        public void LogTheExceptionIfAnExceptionOccurs()
+        {
+            // TODO: Implement test
+        }
+
+        /// <summary>
+        /// Verifies that the send process is never called if
+        /// the admin email address has not been specified
+        /// </summary>
+        [Fact(Skip = "NotImplemented")]
+        public void SkipNotificationIfAdminEmailIsNotSpecified()
+        {
+            // TODO: Implement test
+        }
+
+
         private static TestOptions<GeneralSettings> GetSettings()
         {
             var options = new TestOptions<GeneralSettings>();
