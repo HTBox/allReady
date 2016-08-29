@@ -1,21 +1,33 @@
 ﻿using AllReady.Features.Event;
 using AllReady.Models;
-using Moq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Event
 {
-    public class EventsByPostalCodeQueryHandlerTests
-    {
-        [Fact]
-        public void HandleCallsEventsByPostalCodeWithCorrectPostalCodeAndDistance()
-        {
-            var message = new EventsByPostalCodeQuery { PostalCode = "PostalCode", Distance = 100 };
-            var dataStore = new Mock<IAllReadyDataAccess>();
-            var sut = new EventsByPostalCodeQueryHandler(dataStore.Object);
-            sut.Handle(message);
+    using Event = AllReady.Models.Event;
 
-            dataStore.Verify(x => x.EventsByPostalCode(message.PostalCode, message.Distance), Times.Once);
+    public class EventsByPostalCodeQueryHandlerTests : InMemoryContextTest
+    {
+        [Fact(Skip = "Can't mock FromSql()")]
+        public async Task HandleCallsEventsByPostalCodeWithCorrectPostalCodeAndDistance()
+        {
+            var options = this.CreateNewContextOptions();
+
+            var message = new EventsByPostalCodeQuery { PostalCode = "PostalCode", Distance = 100 };
+
+            using (var context = new AllReadyContext(options)) {
+                context.Events.Add(new Event());
+                context.Events.Add(new Event());
+                await context.SaveChangesAsync();
+            }
+
+            using (var context = new AllReadyContext(options)) {
+                var sut = new EventsByPostalCodeQueryHandler(context);
+                var events = sut.Handle(message);
+
+                Assert.Equal(events.Count, 2);
+            }
         }
     }
 }

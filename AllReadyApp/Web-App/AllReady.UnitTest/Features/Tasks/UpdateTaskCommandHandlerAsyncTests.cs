@@ -1,15 +1,14 @@
 ﻿using System.Threading.Tasks;
 using AllReady.Features.Tasks;
 using AllReady.Models;
-using Moq;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Tasks
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.EntityFrameworkCore;
-
     public class UpdateTaskCommandHandlerAsyncTests : InMemoryContextTest
     {
         [Fact]

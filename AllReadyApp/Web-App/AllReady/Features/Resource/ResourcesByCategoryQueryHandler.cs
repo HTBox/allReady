@@ -7,16 +7,16 @@ namespace AllReady.Features.Resource
 {
     public class ResourcesByCategoryQueryHandler : IRequestHandler<ResourcesByCategoryQuery, List<Models.Resource>>
     {
-        private readonly IAllReadyDataAccess dataAccess;
+        private readonly AllReadyContext dataContext;
 
-        public ResourcesByCategoryQueryHandler(IAllReadyDataAccess dataAccess)
+        public ResourcesByCategoryQueryHandler(AllReadyContext dataContext)
         {
-            this.dataAccess = dataAccess;
+            this.dataContext = dataContext;
         }
 
         public List<Models.Resource> Handle(ResourcesByCategoryQuery message)
         {
-            return dataAccess.GetResourcesByCategory(message.Category).ToList();
+            return this.dataContext.Resources.Where(x => x.CategoryTag == message.Category).ToList();
         }
     }
 }

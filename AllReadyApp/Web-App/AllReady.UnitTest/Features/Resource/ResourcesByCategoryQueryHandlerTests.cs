@@ -1,22 +1,35 @@
 ﻿using AllReady.Features.Resource;
 using AllReady.Models;
-using Moq;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace AllReady.UnitTest.Features.Resource
 {
-    public class ResourcesByCategoryQueryHandlerTests
+    using Resource = AllReady.Models.Resource;
+
+    public class ResourcesByCategoryQueryHandlerTests : InMemoryContextTest
     {
         [Fact]
-        public void HandleInvokesGetResourcesByCategoryWithCorrectCategory()
+        public async Task HandleInvokesGetResourcesByCategoryWithCorrectCategory()
         {
-            var message = new ResourcesByCategoryQuery { Category = "category" };
-            var dataAccess = new Mock<IAllReadyDataAccess>();
+            var options = this.CreateNewContextOptions();
 
-            var sut = new ResourcesByCategoryQueryHandler(dataAccess.Object);
-            sut.Handle(message);
+            const string category = "category";
+            var message = new ResourcesByCategoryQuery { Category = category };
 
-            dataAccess.Verify(x => x.GetResourcesByCategory(message.Category));
+            using (var context = new AllReadyContext(options)) {
+                context.Resources.Add(new Resource {
+                    CategoryTag = category
+                });
+                await context.SaveChangesAsync();
+            }
+
+            using (var context = new AllReadyContext(options)) {
+                var sut = new ResourcesByCategoryQueryHandler(context);
+                var resource = sut.Handle(message);
+
+                Assert.Equal(resource.Count, 1);
+            }
         }
     }
 }

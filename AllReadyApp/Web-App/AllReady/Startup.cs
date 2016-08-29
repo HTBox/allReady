@@ -138,7 +138,6 @@ namespace AllReady
             services.AddSingleton((x) => Configuration);
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
-            services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
             services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
             services.AddTransient<IValidateEventDetailModels, EventEditModelValidator>();
             services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();

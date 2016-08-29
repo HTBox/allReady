@@ -1,26 +1,47 @@
 ﻿using System.Linq;
 using AllReady.Features.Event;
 using AllReady.Models;
-using Moq;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace AllReady.UnitTest.Features.Event
 {
-    public class GetMyTasksQueryHandlerTests
+    using Event = AllReady.Models.Event;
+
+    public class GetMyTasksQueryHandlerTests : InMemoryContextTest
     {
         [Fact]
-        public void ReturnsExpectedTasks()
+        public async Task ReturnsExpectedTasks()
         {
-            var mockDbAccess = new Mock<IAllReadyDataAccess>();
+            var options = this.CreateNewContextOptions();
 
-            var command = new GetMyTasksQuery {EventId = 1, UserId = "9D0929AC-BE6A-4A0B-A758-6C6FC31A8C47"};
-            mockDbAccess.Setup(db => db.GetTasksAssignedToUser(command.EventId, command.UserId))
-                        .Returns(new[] {new TaskSignup {Id = 1}});
+            const int eventId = 1;
+            const string userId = "9D0929AC-BE6A-4A0B-A758-6C6FC31A8C47";
+            var message = new GetMyTasksQuery { EventId = eventId, UserId = userId };
 
-            var sut = new GetMyTasksQueryHandler(mockDbAccess.Object);
-            var response = sut.Handle(command);
+            using (var context = new AllReadyContext(options)) {
+                context.TaskSignups.Add(new TaskSignup {
+                    User = new ApplicationUser {
+                        Id = userId
+                    },
+                    Task = new AllReadyTask {
+                        Event = new Event {
+                            Id = eventId,
+                            Campaign = new Campaign {
+                                Locked = false
+                            }
+                        }
+                    }
+                });
+                await context.SaveChangesAsync();
+            }
 
-            Assert.True(response.Any());
+            using (var context = new AllReadyContext(options)) {
+                var sut = new GetMyTasksQueryHandler(context);
+                var response = sut.Handle(message);
+
+                Assert.True(response.Any());
+            }
         }
     }
 }

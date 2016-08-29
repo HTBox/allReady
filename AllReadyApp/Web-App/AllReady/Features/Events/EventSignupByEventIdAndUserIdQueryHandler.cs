@@ -1,20 +1,27 @@
-﻿using AllReady.Models;
+﻿using System.Linq;
+using AllReady.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Event
 {
     public class EventSignupByEventIdAndUserIdQueryHandler : IRequestHandler<EventSignupByEventIdAndUserIdQuery, EventSignup>
     {
-        private readonly IAllReadyDataAccess dataAccess;
+        private readonly AllReadyContext dataContext;
 
-        public EventSignupByEventIdAndUserIdQueryHandler(IAllReadyDataAccess dataAccess)
+        public EventSignupByEventIdAndUserIdQueryHandler(AllReadyContext dataContext)
         {
-            this.dataAccess = dataAccess;
+            this.dataContext = dataContext;
         }
 
         public EventSignup Handle(EventSignupByEventIdAndUserIdQuery message)
         {
-            return dataAccess.GetEventSignup(message.EventId, message.UserId);
+            return this.dataContext.EventSignup
+                .Include(z => z.User)
+                .Include(x => x.Event)
+                .Include(x => x.Event.UsersSignedUp)
+                .Where(x => x.Event.Id == message.EventId)
+                .SingleOrDefault(x => x.User.Id == message.UserId);
         }
     }
 }

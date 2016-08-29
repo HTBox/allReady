@@ -11,28 +11,8 @@ using Moq;
 
 namespace AllReady.UnitTest.DataAccess
 {
-
     public class AllReadyDataAccessEF7Tests : InMemoryContextTest
     {
-
-        #region Event
-        [Fact]
-        public void GetResourcesByCategoryReturnsOnlyThoseResourcesWithMatchingCategory()
-        {
-            const string categoryToMatch = "category1";
-
-            var context = Context;
-            context.Resources.Add(new Resource { CategoryTag = categoryToMatch });
-            context.Resources.Add(new Resource { CategoryTag = "shouldNotMatchThisCategory" });
-            context.SaveChanges();
-
-            var sut = (IAllReadyDataAccess)new AllReadyDataAccessEF7(context);
-            var results = sut.GetResourcesByCategory(categoryToMatch).ToList();
-
-            Assert.Equal(results.Single().CategoryTag, categoryToMatch);
-        }
-        #endregion
-
         #region EventSignup
         [Fact]
         public async Task DeleteEventAndTaskSignupsAsyncDoesNotDeleteEventSignupsOrTaskSignupsForUnkownEventSignupId()

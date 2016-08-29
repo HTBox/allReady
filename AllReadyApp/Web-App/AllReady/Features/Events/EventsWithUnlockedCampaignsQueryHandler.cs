@@ -8,16 +8,17 @@ namespace AllReady.Features.Event
 {
     public class EventsWithUnlockedCampaignsQueryHandler : IRequestHandler<EventsWithUnlockedCampaignsQuery, List<EventViewModel>>
     {
-        private readonly IAllReadyDataAccess dataAccess;
+        private readonly AllReadyContext dataContext;
 
-        public EventsWithUnlockedCampaignsQueryHandler(IAllReadyDataAccess dataAccess)
+        public EventsWithUnlockedCampaignsQueryHandler(AllReadyContext dataContext)
         {
-            this.dataAccess = dataAccess;
+            this.dataContext = dataContext;
         }
 
         public List<EventViewModel> Handle(EventsWithUnlockedCampaignsQuery message)
         {
-            return dataAccess.Events.Where(c => !c.Campaign.Locked)
+            return dataContext.Events.Where(c => !c.Campaign.Locked)
+                .ToList() // get from SQL to C#
                 .Select(a => new EventViewModel(a))
                 .ToList();
         }
