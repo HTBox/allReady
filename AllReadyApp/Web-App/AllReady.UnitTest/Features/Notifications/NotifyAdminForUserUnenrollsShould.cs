@@ -155,10 +155,36 @@ namespace AllReady.UnitTest.Features.Notifications
         /// occurs during notification processing is done at a LogLevel
         /// of "Error".
         /// </summary>
-        [Fact(Skip = "NotImplemented")]
-        public void LogAnErrorIfAnExceptionOccurs()
+        [Fact]
+        public async void LogAnErrorIfAnExceptionOccurs()
         {
-            // TODO: Implement test
+            int testTaskId = 29;
+            int testEventId = 15;
+
+            var mediator = new Mock<IMediator>();
+
+            // Setup mock data load
+            mediator
+                .Setup(x => x.SendAsync<EventDetailForNotificationModel>(It.IsAny<EventDetailForNotificationQueryAsync>()))
+                .ReturnsAsync(GetEventDetailForNotificationModel(testTaskId, testEventId));
+
+            // Setup exception
+            mediator.Setup(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
+                .Throws(new InvalidOperationException("Test Exception"));
+
+            // Setup expected logging
+            var logger = new Mock<ILogger<NotifyAdminForUserUnenrolls>>();
+            logger.Setup(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error), 
+                It.IsAny<EventId>(), It.IsAny<object>(), It.IsAny<Exception>(),
+                        It.IsAny<Func<object, Exception, string>>()));
+
+            TestOptions<GeneralSettings> options = GetSettings();
+            UserUnenrolls notification = GetUserUnenrolls(testTaskId, testEventId);
+
+            var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger.Object);
+            await target.Handle(notification);
+
+            logger.VerifyAll();
         }
 
         /// <summary>
