@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Event
 {
-    public class AddEventSignupCommandHandlerAsyncShould : InMemoryContextTestBase
+    public class AddEventSignupCommandHandlerAsyncShould : InMemoryContextTest
     {
         [Fact]
         public async Task AddAnEventSignup()

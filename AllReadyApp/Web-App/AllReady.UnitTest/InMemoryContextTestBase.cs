@@ -5,7 +5,12 @@ using System.Threading.Tasks;
 
 namespace AllReady.UnitTest
 {
-    public abstract class InMemoryContextTestBase : TestBase
+    /// <summary>
+    /// Inherit from this type to implement tests
+    /// that make use of the in-memory test database
+    /// context.
+    /// </summary>
+    public abstract class InMemoryContextTest : TestBase
     {
         /// <summary>
         /// Gets the in-memory database context.
@@ -13,22 +18,10 @@ namespace AllReady.UnitTest
         protected AllReadyContext Context { get; private set; }
         protected UserManager<ApplicationUser> UserManager { get; }
 
-        protected InMemoryContextTestBase()
-        {
+        protected InMemoryContextTest() {
             Context = ServiceProvider.GetService<AllReadyContext>();
             UserManager = ServiceProvider.GetService<UserManager<ApplicationUser>>();
-        }
-    }
 
-    /// <summary>
-    /// Inherit from this type to implement tests
-    /// that make use of the in-memory test database
-    /// context.
-    /// </summary>
-    public abstract class InMemoryContextTest : InMemoryContextTestBase
-    {
-        protected InMemoryContextTest() : base()
-        {
             LoadTestData();
         }
 
@@ -41,30 +34,17 @@ namespace AllReady.UnitTest
         protected virtual void LoadTestData()
         {
         }
-    }
-
-    /// <summary>
-    /// Inherit from this type if LoadTestData needs to await something.
-    /// !!! NOTE: To avoid blocking and deadlocks LoadTestData must be run manually
-    ///   It will not automatically run as part of the constructor.
-    ///   TODO: Refactor this to make the pattern more obvious, but for now just
-    ///     get the builds to pass.
-    /// </summary>
-    public abstract class InMemoryContextTestAsync : InMemoryContextTestBase
-    {
-        protected InMemoryContextTestAsync() : base()
-        {
-        }
 
         /// <summary>
         /// Override this method to load test data
         /// into the in-memory database context prior
         /// to any tests being executed in your
         /// test class.
+        /// FRAGILE: this method can't be called from the constructor so you must call it manually
         /// </summary>
-        protected virtual async Task LoadTestData()
+        protected virtual async Task LoadTestDataAsync()
         {
-            await Task.FromResult(0); //To prevent compiler warning
+            await Task.Delay(0); //To prevent compiler warning
         }
     }
 }

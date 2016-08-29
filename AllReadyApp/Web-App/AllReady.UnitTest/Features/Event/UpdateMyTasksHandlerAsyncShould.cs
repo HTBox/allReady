@@ -11,7 +11,7 @@ namespace AllReady.UnitTest.Features.Event
 {
 
     // FRAGILE: create lots of AllReadyContext to defeat change tracking, see https://docs.efproject.net/en/latest/miscellaneous/testing.html
-    public class UpdateMyTasksHandlerAsyncShould : InMemoryContextTestBase {
+    public class UpdateMyTasksHandlerAsyncShould : InMemoryContextTest {
 
 
         [Fact]

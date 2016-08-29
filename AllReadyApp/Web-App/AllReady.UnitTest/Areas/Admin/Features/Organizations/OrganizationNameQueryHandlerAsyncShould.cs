@@ -5,7 +5,7 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 {
-    public class OrganizationNameQueryHandlerAsyncShould : InMemoryContextTestBase
+    public class OrganizationNameQueryHandlerAsyncShould : InMemoryContextTest
     {
         [Fact]
         public async Task ReturnNullWhenThereIsNoMatchingOrganizationId()
