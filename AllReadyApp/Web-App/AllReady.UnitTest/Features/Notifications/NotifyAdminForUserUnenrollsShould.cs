@@ -52,10 +52,31 @@ namespace AllReady.UnitTest.Features.Notifications
         /// the actual content of the subject is not a requirement, just
         /// that there be one.  Adding a requirement for a specific subject
         /// line can be done, but would likely make this test more fragile</remarks>
-        [Fact(Skip = "NotImplemented")]
-        public void PassAnEmailSubjectToTheMediator()
+        [Fact]
+        public async void PassAnEmailSubjectToTheMediator()
         {
-            // TODO: Implement test
+            int testTaskId = 29;
+            int testEventId = 15;
+
+            var mediator = new Mock<IMediator>();
+
+            // Setup mock data load
+            mediator
+                .Setup(x => x.SendAsync<EventDetailForNotificationModel>(It.IsAny<EventDetailForNotificationQueryAsync>()))
+                .ReturnsAsync(GetEventDetailForNotificationModel(testTaskId, testEventId));
+
+            // Setup action call
+            mediator.Setup(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(n => !string.IsNullOrWhiteSpace(n.ViewModel.Subject))))
+                .ReturnsAsync(new Unit());
+
+            var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();
+            TestOptions<GeneralSettings> options = GetSettings();
+            UserUnenrolls notification = GetUserUnenrolls(testTaskId, testEventId);
+
+            var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger);
+            await target.Handle(notification);
+
+            mediator.VerifyAll();
         }
 
         /// <summary>
