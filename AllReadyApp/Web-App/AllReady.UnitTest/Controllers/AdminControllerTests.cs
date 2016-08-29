@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Extensions;
 using AllReady.Features.Admin;
+using AllReady.Features.Manage;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels.Account;
@@ -150,7 +151,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task RegisterSendsSendAccountConfirmationEmailWithCorrectDataWhenUserCreationIsSuccessful()
+        public async Task RegisterSendsSendConfirmAccountEmailWithCorrectDataWhenUserCreationIsSuccessful()
         {
             const string callbackUrl = "callbackUrl";
 
@@ -174,7 +175,7 @@ namespace AllReady.UnitTest.Controllers
 
             await sut.Register(model);
 
-            mediator.Verify(x => x.SendAsync(It.Is<SendAccountConfirmationEmail>(y => y.Email == model.Email && y.CallbackUrl == callbackUrl)));
+            mediator.Verify(x => x.SendAsync(It.Is<SendConfirmAccountEmail>(y => y.Email == model.Email && y.CallbackUrl == callbackUrl)));
         }
 
         [Fact]
