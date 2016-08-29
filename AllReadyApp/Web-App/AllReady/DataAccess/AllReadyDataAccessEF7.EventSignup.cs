@@ -30,12 +30,6 @@ namespace AllReady.Models
                 .SingleOrDefault(x => x.User.Id == userId);
         }
 
-        Task IAllReadyDataAccess.AddEventSignupAsync(EventSignup userSignup)
-        {
-            _dbContext.EventSignup.Add(userSignup);
-            return _dbContext.SaveChangesAsync();
-        }
-
         Task IAllReadyDataAccess.DeleteEventAndTaskSignupsAsync(int eventSignupId)
         {
             var eventSignup = _dbContext.EventSignup.SingleOrDefault(c => c.Id == eventSignupId);

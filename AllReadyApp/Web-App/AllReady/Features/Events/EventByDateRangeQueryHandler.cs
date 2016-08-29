@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Generic;
 using System.Linq;
 using AllReady.Models;
 using AllReady.ViewModels.Event;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Event
 {
     public class EventByDateRangeQueryHandler : IRequestHandler<EventByDateRangeQuery, IEnumerable<EventViewModel>>
     {
-        private readonly IAllReadyDataAccess dataAccess;
+        private AllReadyContext _context;
 
-        public EventByDateRangeQueryHandler(IAllReadyDataAccess dataAccess)
+        public EventByDateRangeQueryHandler(AllReadyContext context)
         {
-            this.dataAccess = dataAccess;
+            _context = context;
         }
 
         public IEnumerable<EventViewModel> Handle(EventByDateRangeQuery message)
@@ -22,7 +21,7 @@ namespace AllReady.Features.Event
             var start = message.StartDate;
             var end = message.EndDate;
 
-            return dataAccess.Events
+            return _context.Events.AsNoTracking()
                 .Where(e => e.StartDateTime <= end && e.EndDateTime >= start)
                 .Select(e => new EventViewModel(e));
         }

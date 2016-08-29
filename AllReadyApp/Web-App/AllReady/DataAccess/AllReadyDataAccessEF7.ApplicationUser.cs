@@ -7,17 +7,6 @@ namespace AllReady.Models
 {
     public partial class AllReadyDataAccessEF7 : IAllReadyDataAccess
     {
-        IEnumerable<ApplicationUser> IAllReadyDataAccess.Users
-        {
-            get
-            {
-                return _dbContext.Users
-                    .Include(u => u.AssociatedSkills)
-                    .Include(u => u.Claims)
-                    .ToList();
-            }
-        }
-
         ApplicationUser IAllReadyDataAccess.GetUser(string userId)
         {
             return _dbContext.Users

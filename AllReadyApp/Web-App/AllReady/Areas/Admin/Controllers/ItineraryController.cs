@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-  [Area("Admin")]
+    [Area("Admin")]
     [Authorize("OrgAdmin")]
     public class ItineraryController : Controller
     {
@@ -26,16 +26,6 @@ namespace AllReady.Areas.Admin.Controllers
 
         public ItineraryController(IMediator mediator, IItineraryEditModelValidator itineraryValidator)
         {
-            if (mediator == null)
-            {
-                throw new ArgumentNullException(nameof(mediator));
-            }
-
-            if (itineraryValidator == null)
-            {
-                throw new ArgumentNullException(nameof(itineraryValidator));
-            }
-
             _mediator = mediator;
             _itineraryValidator = itineraryValidator;
         }
@@ -45,7 +35,6 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = id });
-
             if (itinerary == null)
             {
                 return NotFound();
@@ -70,7 +59,6 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             var campaignEvent = await _mediator.SendAsync(new EventSummaryQuery { EventId = model.EventId });
-
             if (campaignEvent == null)
             {
                 return BadRequest();
@@ -82,7 +70,6 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             var errors = _itineraryValidator.Validate(model, campaignEvent);
-
             errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (!ModelState.IsValid)
@@ -91,7 +78,6 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             var result = await _mediator.SendAsync(new EditItineraryCommand { Itinerary = model });
-
             if (result > 0)
             {
                 return Ok(result);
@@ -117,12 +103,12 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (id == 0 || selectedTeamMember == 0)
             {
-                return RedirectToAction("Details", new { id = id });
+                return RedirectToAction("Details", new { id });
             }
 
             var isSuccess = await _mediator.SendAsync(new AddTeamMemberCommand { ItineraryId = id, TaskSignupId = selectedTeamMember });
 
-            return RedirectToAction("Details", new { id = id });
+            return RedirectToAction("Details", new { id });
         }
 
         [HttpGet]
@@ -130,7 +116,6 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> SelectRequests(int id)
         {
             var orgId = await GetOrganizationIdBy(id);
-
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
                 return Unauthorized();
@@ -151,43 +136,6 @@ namespace AllReady.Areas.Admin.Controllers
             return View("SelectRequests", newModel);
         }
 
-        private async Task<SelectItineraryRequestsViewModel> BuildSelectItineraryRequestsModel(int itineraryId,
-            RequestSearchCriteria criteria)
-        {
-            var model = new SelectItineraryRequestsViewModel();
-
-            var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = itineraryId });
-
-            model.CampaignId = itinerary.CampaignId;
-            model.CampaignName = itinerary.CampaignName;
-            model.EventId = itinerary.EventId;
-            model.EventName = itinerary.EventName;
-            model.ItineraryName = itinerary.Name;
-
-            criteria.EventId = itinerary.EventId;
-
-            var requests = await _mediator.SendAsync(new RequestListItemsQuery { Criteria = criteria });
-
-            foreach (var request in requests)
-            {
-                var selectItem = new RequestSelectViewModel
-                {
-                    Id = request.Id,
-                    Name = request.Name,
-                    DateAdded = request.DateAdded,
-                    City = request.City,
-                    Address = request.Address,
-                    Latitude = request.Latitude,
-                    Longitude = request.Longitude,
-                    Postcode = request.Postcode
-                };
-
-                model.Requests.Add(selectItem);
-            }
-
-            return model;
-        }
-
         [HttpPost]
         [Route("Admin/Itinerary/{id}/[Action]")]
         [ValidateAntiForgeryToken]
@@ -195,7 +143,6 @@ namespace AllReady.Areas.Admin.Controllers
         {
             // todo - error handling
             var orgId = await GetOrganizationIdBy(id);
-
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
                 return Unauthorized();
@@ -203,10 +150,10 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (selectedRequests.Any())
             {
-                var result = await _mediator.SendAsync(new Features.Itineraries.AddRequestsCommand { ItineraryId = id, RequestIdsToAdd = selectedRequests.ToList() });
+                await _mediator.SendAsync(new AddRequestsCommand { ItineraryId = id, RequestIdsToAdd = selectedRequests.ToList() });
             }
 
-            return RedirectToAction(nameof(Details), new { id = id });
+            return RedirectToAction(nameof(Details), new { id });
         }
 
         [HttpGet]
@@ -355,6 +302,42 @@ namespace AllReady.Areas.Admin.Controllers
             await _mediator.SendAsync(new RequestStatusChangeCommand() { RequestId = requestId, NewStatus = RequestStatus.Assigned });
 
             return RedirectToAction("Details", new { id = itineraryId });
+        }
+
+        private async Task<SelectItineraryRequestsViewModel> BuildSelectItineraryRequestsModel(int itineraryId, RequestSearchCriteria criteria)
+        {
+            var model = new SelectItineraryRequestsViewModel();
+
+            var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = itineraryId });
+
+            model.CampaignId = itinerary.CampaignId;
+            model.CampaignName = itinerary.CampaignName;
+            model.EventId = itinerary.EventId;
+            model.EventName = itinerary.EventName;
+            model.ItineraryName = itinerary.Name;
+
+            criteria.EventId = itinerary.EventId;
+
+            var requests = await _mediator.SendAsync(new RequestListItemsQuery { Criteria = criteria });
+
+            foreach (var request in requests)
+            {
+                var selectItem = new RequestSelectViewModel
+                {
+                    Id = request.Id,
+                    Name = request.Name,
+                    DateAdded = request.DateAdded,
+                    City = request.City,
+                    Address = request.Address,
+                    Latitude = request.Latitude,
+                    Longitude = request.Longitude,
+                    Postcode = request.Postcode
+                };
+
+                model.Requests.Add(selectItem);
+            }
+
+            return model;
         }
 
         private async Task<int> GetOrganizationIdBy(int intinerayId)

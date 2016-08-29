@@ -1,20 +1,30 @@
-﻿using AllReady.Models;
+﻿using System.Threading.Tasks;
+using AllReady.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Campaigns
 {
-    public class CampaignByCampaignIdQueryHandler : IRequestHandler<CampaignByCampaignIdQuery, Campaign>
+    public class CampaignByCampaignIdQueryHandler : IAsyncRequestHandler<CampaignByCampaignIdQuery, Campaign>
     {
-        private readonly IAllReadyDataAccess _dataAccess;
+        private readonly AllReadyContext _context;
 
-        public CampaignByCampaignIdQueryHandler(IAllReadyDataAccess dataAccess)
+        public CampaignByCampaignIdQueryHandler(AllReadyContext context)
         {
-            _dataAccess = dataAccess;
+            _context = context;
         }
 
-        public Campaign Handle(CampaignByCampaignIdQuery message)
+        public async Task<Campaign> Handle(CampaignByCampaignIdQuery message)
         {
-            return _dataAccess.GetCampaign(message.CampaignId);
+            return await _context.Campaigns
+                .Include(x => x.ManagingOrganization)
+                .Include(x => x.CampaignImpact)
+                .Include(x => x.Events)
+                .ThenInclude(a => a.Location)
+                .Include(x => x.Location)
+                .Include(x => x.ParticipatingOrganizations)
+                .SingleOrDefaultAsync(x => x.Id == message.CampaignId)
+                .ConfigureAwait(false);
         }
     }
 }

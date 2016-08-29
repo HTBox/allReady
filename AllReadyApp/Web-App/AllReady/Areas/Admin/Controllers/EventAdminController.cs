@@ -17,7 +17,6 @@ using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Features.Event;
 using AllReady.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Request;
-using AllReady.Areas.Admin.ViewModels.Itinerary;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -74,31 +73,31 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-      var campaignEvent = new EventEditViewModel
-      {
-        CampaignId = campaign.Id,
-        CampaignName = campaign.Name,
-        TimeZoneId = campaign.TimeZoneId,
-        OrganizationId = campaign.OrganizationId,
-        OrganizationName = campaign.OrganizationName,
-        StartDateTime = DateTime.Today.Date,
-        EndDateTime = DateTime.Today.Date
-      };
+            var campaignEvent = new EventEditViewModel
+            {
+                CampaignId = campaign.Id,
+                CampaignName = campaign.Name,
+                TimeZoneId = campaign.TimeZoneId,
+                OrganizationId = campaign.OrganizationId,
+                OrganizationName = campaign.OrganizationName,
+                StartDateTime = DateTime.Today.Date,
+                EndDateTime = DateTime.Today.Date
+            };
 
             return View("Edit", campaignEvent);
         }
 
-    // POST: Event/Create
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Route("Admin/Event/Create/{campaignId}")]
-    public async Task<IActionResult> Create(int campaignId, EventEditViewModel campaignEvent, IFormFile fileUpload)
-    {
-      var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
-      if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
-      {
-        return Unauthorized();
-      }
+        // POST: Event/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Event/Create/{campaignId}")]
+        public async Task<IActionResult> Create(int campaignId, EventEditViewModel campaignEvent, IFormFile fileUpload)
+        {
+            var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
+            if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
+            {
+                return Unauthorized();
+            }
 
             var errors = _eventDetailModelValidator.Validate(campaignEvent, campaign);
             errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
@@ -152,17 +151,17 @@ namespace AllReady.Areas.Admin.Controllers
             return View(campaignEvent);
         }
 
-    // POST: Event/Edit/5
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(EventEditViewModel campaignEvent, IFormFile fileUpload)
-    {
-      if (campaignEvent == null)
-      {
-        return BadRequest();
-      }
+        // POST: Event/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EventEditViewModel campaignEvent, IFormFile fileUpload)
+        {
+            if (campaignEvent == null)
+            {
+                return BadRequest();
+            }
 
-            var organizationId = _mediator.Send(new ManagingOrganizationIdByEventIdQuery { EventId = campaignEvent.Id });
+            var organizationId = await _mediator.SendAsync(new ManagingOrganizationIdByEventIdQuery { EventId = campaignEvent.Id });
             if (!User.IsOrganizationAdmin(organizationId))
             {
                 return Unauthorized();
@@ -213,20 +212,22 @@ namespace AllReady.Areas.Admin.Controllers
             return View(campaignEvent);
         }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Duplicate(DuplicateEventViewModel model)
-    {
-      if (model == null)
-        return BadRequest();
-
-            var organizationId = _mediator.Send(new ManagingOrganizationIdByEventIdQuery { EventId = model.Id });
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Duplicate(DuplicateEventViewModel model)
+        {
+            if (model == null)
+            {
+                return BadRequest();
+            }
+        
+            var organizationId = await _mediator.SendAsync(new ManagingOrganizationIdByEventIdQuery { EventId = model.Id });
             if (!User.IsOrganizationAdmin(organizationId))
                 return Unauthorized();
 
-            var existingEvent = await _mediator.SendAsync(new EventEditQuery() { EventId = model.Id });
+            var existingEvent = await _mediator.SendAsync(new EventEditQuery { EventId = model.Id });
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = existingEvent.CampaignId });
-            var newEvent = buildNewEventDetailsModel(existingEvent, model);
+            var newEvent = BuildNewEventDetailsModel(existingEvent, model);
 
             var errors = _eventDetailModelValidator.Validate(newEvent, campaign);
             errors.ForEach(e => ModelState.AddModelError(e.Key, e.Value));
@@ -234,22 +235,10 @@ namespace AllReady.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var id = await _mediator.SendAsync(new DuplicateEventCommand { DuplicateEventModel = model });
-
-                return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
+                return RedirectToAction(nameof(Details), new { area = "Admin", id });
             }
 
             return View(model);
-        }
-
-    private EventEditViewModel buildNewEventDetailsModel(EventEditViewModel existingEvent, DuplicateEventViewModel newEventDetails)
-    {
-      existingEvent.Id = 0;
-      existingEvent.Name = newEventDetails.Name;
-      existingEvent.Description = newEventDetails.Description;
-      existingEvent.StartDateTime = newEventDetails.StartDateTime;
-      existingEvent.EndDateTime = newEventDetails.EndDateTime;
-
-            return existingEvent;
         }
 
         // GET: Event/Delete/5
@@ -313,28 +302,28 @@ namespace AllReady.Areas.Admin.Controllers
             return View(model);
         }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> MessageAllVolunteers(MessageEventVolunteersViewModel viewModel)
-    {
-      if (!ModelState.IsValid)
-      {
-        return BadRequest(ModelState);
-      }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MessageAllVolunteers(MessageEventVolunteersViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-      //TODO: Query only for the organization Id rather than the whole event detail
-      var campaignEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = viewModel.EventId });
-      if (campaignEvent == null)
-      {
-        return NotFound();
-      }
+            //TODO: Query only for the organization Id rather than the whole event detail
+            var campaignEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = viewModel.EventId });
+            if (campaignEvent == null)
+            {
+                return NotFound();
+            }
 
             if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
             {
                 return Unauthorized();
             }
 
-      await _mediator.SendAsync(new MessageEventVolunteersCommand { ViewModel = viewModel });
+            await _mediator.SendAsync(new MessageEventVolunteersCommand { ViewModel = viewModel });
 
             return Ok();
         }
@@ -401,6 +390,16 @@ namespace AllReady.Areas.Admin.Controllers
         {
             //TODO: refactor message to async when IAllReadyDataAccess read ops are made async
             return _mediator.Send(new EventByIdQuery { EventId = eventId });
+        }
+
+        private static EventEditViewModel BuildNewEventDetailsModel(EventEditViewModel existingEvent, DuplicateEventViewModel newEventDetails)
+        {
+            existingEvent.Id = 0;
+            existingEvent.Name = newEventDetails.Name;
+            existingEvent.Description = newEventDetails.Description;
+            existingEvent.StartDateTime = newEventDetails.StartDateTime;
+            existingEvent.EndDateTime = newEventDetails.EndDateTime;
+            return existingEvent;
         }
     }
 }

@@ -26,6 +26,8 @@ using AllReady.Security.Middleware;
 using Newtonsoft.Json.Serialization;
 using Geocoding;
 using Geocoding.Google;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace AllReady
 {
@@ -43,12 +45,12 @@ namespace AllReady
 
             if (env.IsDevelopment())
             {
-            // This reads the configuration keys from the secret store.
-            // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
-            builder.AddUserSecrets();
+                // This reads the configuration keys from the secret store.
+                // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
+                builder.AddUserSecrets();
 
-            // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-            builder.AddApplicationInsightsSettings(developerMode: true);
+                // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
+                builder.AddApplicationInsightsSettings(developerMode: true);
             }
 
             Configuration = builder.Build();
@@ -67,23 +69,23 @@ namespace AllReady
             // Add Entity Framework services to the services container.
             var ef = services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
 
-        services.Configure<AzureStorageSettings>(Configuration.GetSection("Data:Storage"));
-        services.Configure<DatabaseSettings>(Configuration.GetSection("Data:DefaultConnection"));
-        services.Configure<EmailSettings>(Configuration.GetSection("Email"));
-        services.Configure<SampleDataSettings>(Configuration.GetSection("SampleData"));
-        services.Configure<GeneralSettings>(Configuration.GetSection("General"));
-        services.Configure<TwitterAuthenticationSettings>(Configuration.GetSection("Authentication:Twitter"));
+            services.Configure<AzureStorageSettings>(Configuration.GetSection("Data:Storage"));
+            services.Configure<DatabaseSettings>(Configuration.GetSection("Data:DefaultConnection"));
+            services.Configure<EmailSettings>(Configuration.GetSection("Email"));
+            services.Configure<SampleDataSettings>(Configuration.GetSection("SampleData"));
+            services.Configure<GeneralSettings>(Configuration.GetSection("General"));
+            services.Configure<TwitterAuthenticationSettings>(Configuration.GetSection("Authentication:Twitter"));
 
-        // Add CORS support
-        services.AddCors(options =>
-        {
-            options.AddPolicy("allReady", builder =>  builder
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()
-            );
-        });
+            // Add CORS support
+            services.AddCors(options =>
+            {
+                options.AddPolicy("allReady", builder => builder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                );
+            });
 
             // Add Identity services to the services container.
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -105,7 +107,14 @@ namespace AllReady
             });
 
             // Add MVC services to the services container.
-            services.AddMvc().AddJsonOptions(options =>
+            // config add to get passed Angular failing on Options request when logging in.
+            services.AddMvc(config =>
+                {
+                    var policy = new AuthorizationPolicyBuilder()
+                      .RequireAuthenticatedUser()
+                      .Build();
+                    config.Filters.Add(new AuthorizeFilter(policy));
+                }).AddJsonOptions(options =>
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
 
@@ -118,36 +127,36 @@ namespace AllReady
             return container.Resolve<IServiceProvider>();
         }
 
-    private IContainer CreateIoCContainer(IServiceCollection services)
-    {
-        // todo: move these to a proper autofac module
-        // Register application services.
-        services.AddSingleton((x) => Configuration);
-        services.AddTransient<IEmailSender, AuthMessageSender>();
-        services.AddTransient<ISmsSender, AuthMessageSender>();
-        services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
-        services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
-        services.AddTransient<IValidateEventDetailModels, EventEditModelValidator>();
-        services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
-        services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
-        services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
-        services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
-        services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
-        services.AddSingleton<IImageService, ImageService>();
-        //services.AddSingleton<GeoService>();
-        services.AddTransient<SampleDataGenerator>();
+        private IContainer CreateIoCContainer(IServiceCollection services)
+        {
+            // todo: move these to a proper autofac module
+            // Register application services.
+            services.AddSingleton((x) => Configuration);
+            services.AddTransient<IEmailSender, AuthMessageSender>();
+            services.AddTransient<ISmsSender, AuthMessageSender>();
+            services.AddTransient<IAllReadyDataAccess, AllReadyDataAccessEF7>();
+            services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
+            services.AddTransient<IValidateEventDetailModels, EventEditModelValidator>();
+            services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
+            services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
+            services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
+            services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
+            services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
+            services.AddSingleton<IImageService, ImageService>();
+            //services.AddSingleton<GeoService>();
+            services.AddTransient<SampleDataGenerator>();
 
-        if (Configuration["Data:Storage:EnableAzureQueueService"] == "true")
-        {
-            // This setting is false by default. To enable queue processing you will 
-            // need to override the setting in your user secrets or env vars.
-            services.AddTransient<IQueueStorageService, QueueStorageService>();
-        }
-        else
-        {
-            // this writer service will just write to the default logger
-            services.AddTransient<IQueueStorageService, FakeQueueWriterService>();
-        }
+            if (Configuration["Data:Storage:EnableAzureQueueService"] == "true")
+            {
+                // This setting is false by default. To enable queue processing you will 
+                // need to override the setting in your user secrets or env vars.
+                services.AddTransient<IQueueStorageService, QueueStorageService>();
+            }
+            else
+            {
+                // this writer service will just write to the default logger
+                services.AddTransient<IQueueStorageService, FakeQueueWriterService>();
+            }
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterSource(new ContravariantRegistrationSource());
@@ -168,7 +177,7 @@ namespace AllReady
         }
 
         // Configure is called after ConfigureServices is called.
-        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context, 
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context,
             IConfiguration configuration)
         {
             // todo: in RC update we can read from a logging.json config file

@@ -22,16 +22,6 @@ namespace AllReady.Models
             }
         }
        
-        Task IAllReadyDataAccess.UpdateEvent(Event value)
-        {
-            //First remove any skills that are no longer associated with this event
-            var acsksToRemove = _dbContext.EventSkills.Where(acsk => acsk.EventId == value.Id && (value.RequiredSkills == null ||
-                !value.RequiredSkills.Any(acsk1 => acsk1.SkillId == acsk.SkillId)));
-            _dbContext.EventSkills.RemoveRange(acsksToRemove);
-            _dbContext.Events.Update(value);
-            return _dbContext.SaveChangesAsync();
-        }
-
         IEnumerable<Event> IAllReadyDataAccess.EventsByPostalCode(string postalCode, int distance)
         {
             return _dbContext.Events.FromSql("EXEC GetClosestEventsByPostalCode '{0}', {1}, {2}", postalCode, 50, distance)
@@ -53,11 +43,6 @@ namespace AllReady.Models
                 .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
                 .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
                 .SingleOrDefault(a => a.Id == eventId);
-        }
-
-        int IAllReadyDataAccess.GetManagingOrganizationId(int eventId)
-        {
-            return _dbContext.Events.Where(a => a.Id == eventId).Select(a => a.Campaign.ManagingOrganizationId).FirstOrDefault();
         }
 
         IEnumerable<EventSignup> IAllReadyDataAccess.GetEventSignups(int eventId, string userId)
