@@ -229,3 +229,4 @@ FakesAssemblies/
 /AllReadyApp/Web-App/AllReady/wwwroot/_references.js
 config.development.json
 *.orig
+bower_components

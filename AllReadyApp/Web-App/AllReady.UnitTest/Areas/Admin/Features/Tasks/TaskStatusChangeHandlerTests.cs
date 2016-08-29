@@ -327,7 +327,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             taskSignup.Task.Id.ShouldBe(command.TaskId);
             taskSignup.User.Id.ShouldBe(command.UserId);
             taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
-            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(3));
         }
 
         [Fact]
