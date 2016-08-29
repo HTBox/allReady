@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Extensions;
 using AllReady.Features.Admin;
+using AllReady.Features.Manage;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels.Account;
@@ -625,7 +626,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AdminController(userManager.Object, signInManager.Object, mediator.Object, null, null);
             await sut.SendCode(model);
 
-            mediator.Verify(x => x.SendAsync(It.Is<SendSecurityCodeSms>(y => y.PhoneNumber == usersPhoneNumber && y.Token == token)));
+            mediator.Verify(x => x.SendAsync(It.Is<SendAccountSecurityTokenSms>(y => y.PhoneNumber == usersPhoneNumber && y.Token == token)));
         }
 
         [Fact]

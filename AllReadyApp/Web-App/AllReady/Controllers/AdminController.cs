@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Features.Admin;
+using AllReady.Features.Manage;
 using AllReady.Models;
 using AllReady.ViewModels.Account;
 using MediatR;
@@ -169,7 +170,7 @@ namespace AllReady.Controllers
             }
             else if (model.SelectedProvider == "Phone")
             {
-                await _mediator.SendAsync(new SendSecurityCodeSms { PhoneNumber = await _userManager.GetPhoneNumberAsync(user), Token = token });
+                await _mediator.SendAsync(new SendAccountSecurityTokenSms { PhoneNumber = await _userManager.GetPhoneNumberAsync(user), Token = token });
             }
 
             return RedirectToAction(nameof(VerifyCode), new { Provider = model.SelectedProvider, model.ReturnUrl, model.RememberMe });
