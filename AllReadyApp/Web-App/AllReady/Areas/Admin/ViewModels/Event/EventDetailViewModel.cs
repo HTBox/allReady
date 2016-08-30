@@ -61,7 +61,12 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         {
             get
             {
-                var percentage = ((double)UnassignedRequests / (double)TotalRequests) * 100;
+                var percentage = 0.0;
+
+                if (TotalRequests > 0)
+                { 
+                    percentage = ((double)UnassignedRequests / (double)TotalRequests) * 100;
+                }
 
                 return percentage.ToString("0.0");
             }
@@ -71,7 +76,12 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         {
             get
             {
-                var percentage = ((double)AssignedRequests / (double)TotalRequests) * 100;
+                var percentage = 0.0;
+
+                if (TotalRequests > 0)
+                {
+                    percentage = ((double) AssignedRequests/(double) TotalRequests)*100;
+                }
 
                 return percentage.ToString("0.0");
             }
@@ -81,7 +91,12 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         {
             get
             {
-                var percentage = ((double)CompletedRequests / (double)TotalRequests) * 100;
+                var percentage = 0.0;
+
+                if (TotalRequests > 0)
+                {
+                    percentage = ((double) CompletedRequests/(double) TotalRequests)*100;
+                }
 
                 return percentage.ToString("0.0");
             }
@@ -91,7 +106,12 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         {
             get
             {
-                var percentage = ((double)CanceledRequests / (double)TotalRequests) * 100;
+                var percentage = 0.0;
+
+                if (TotalRequests > 0)
+                {
+                    percentage = ((double) CanceledRequests/(double) TotalRequests)*100;
+                }
 
                 return percentage.ToString("0.0");
             }
