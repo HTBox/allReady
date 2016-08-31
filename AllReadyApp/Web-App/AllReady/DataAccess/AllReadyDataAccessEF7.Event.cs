@@ -56,17 +56,6 @@ namespace AllReady.Models
                         .ToArray();
         }
 
-        IEnumerable<EventSignup> IAllReadyDataAccess.GetEventSignups(string userId)
-        {
-            return _dbContext.EventSignup
-                        .Include(x => x.User)
-                        .Include(x => x.Event)
-                        .Include(x => x.Event.Campaign)                        
-                        .Where(x => x.User.Id == userId)
-                        .OrderBy(x => x.Event.StartDateTime)
-                        .ToArray();
-        }
-
         IEnumerable<TaskSignup> IAllReadyDataAccess.GetTasksAssignedToUser(int eventId, string userId)
         {
             var unfilteredTasks = _dbContext.TaskSignups

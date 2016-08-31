@@ -17,13 +17,12 @@ namespace AllReady.Models
     [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
     public interface IAllReadyDataAccess
     {
-
         #region Event CRUD
         [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
         IEnumerable<Event> Events { get; }
         [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
         Event GetEvent(int eventId);
-        IEnumerable<EventSignup> GetEventSignups(string userId);
+        
         [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
         IEnumerable<EventSignup> GetEventSignups(int eventId, string userId);
         IEnumerable<Event> EventsByPostalCode(string postalCode, int distance);
@@ -31,7 +30,6 @@ namespace AllReady.Models
         IEnumerable<Event> EventsByGeography(double latitude, double longitude, int distance);
         [Obsolete("Please favor commands/queries; see https://github.com/HTBox/allReady/issues/1130", false)]
         IEnumerable<Resource> GetResourcesByCategory(string category);
-
         #endregion
 
         #region User CRUD
