@@ -16,8 +16,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         public async Task ModelIsCreated()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var sut = new EditCampaignCommandHandler(context);
-            var actual = await sut.Handle(new EditCampaignCommand { Campaign = new CampaignSummaryViewModel { TimeZoneId = "Eastern Standard Time" } });
+            var sut = new EditCampaignCommandHandlerAsync(context);
+            var actual = await sut.Handle(new EditCampaignCommandAsync { Campaign = new CampaignSummaryViewModel { TimeZoneId = "Eastern Standard Time" } });
             Assert.NotEqual(0, actual);
         }
 
@@ -29,8 +29,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             {
                 TimeZoneId = "Eastern Standard Time"
             };
-            var query = new EditCampaignCommand { Campaign = vm };
-            var handler = new EditCampaignCommandHandler(context);
+            var query = new EditCampaignCommandAsync { Campaign = vm };
+            var handler = new EditCampaignCommandHandlerAsync(context);
             var result = await handler.Handle(query);
             Assert.True(result > 0);
 
@@ -78,8 +78,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
                 OrganizationName = firePrev.ManagingOrganization.Name,
                 TimeZoneId = "Eastern Standard Time"
             };
-            var query = new EditCampaignCommand { Campaign = vm };
-            var handler = new EditCampaignCommandHandler(context);
+            var query = new EditCampaignCommandAsync { Campaign = vm };
+            var handler = new EditCampaignCommandHandlerAsync(context);
             var result = await handler.Handle(query);
             Assert.Equal(1, result); // should get back the Campaign id
 

@@ -108,6 +108,8 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 if (fileUpload != null)
                 {
+                    var existingCampaignImageUrl = campaign.ImageUrl;
+
                     if (fileUpload.IsAcceptableImageContentType())
                     {
                         campaign.ImageUrl = await _imageService.UploadCampaignImageAsync(campaign.OrganizationId, campaign.Id, fileUpload);
@@ -117,11 +119,16 @@ namespace AllReady.Areas.Admin.Controllers
                         ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
                         return View(campaign);
                     }
+
+                    if (existingCampaignImageUrl != null)
+                    {
+                        await _imageService.DeleteImageAsync(existingCampaignImageUrl);
+                    }
                 }
 
-                var id = await _mediator.SendAsync(new EditCampaignCommand { Campaign = campaign });
+                var id = await _mediator.SendAsync(new EditCampaignCommandAsync { Campaign = campaign });
 
-                return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
+                return RedirectToAction(nameof(Details), new { area = "Admin", id });
             }
 
             return View(campaign);
