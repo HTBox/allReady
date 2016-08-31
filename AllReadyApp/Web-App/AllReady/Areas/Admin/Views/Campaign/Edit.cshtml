@@ -7,7 +7,7 @@
     string cancelUrl;
     if (isEdit)
     {
-        ViewData["Title"] = $"Edit Campaign";
+        ViewData["Title"] = "Edit Campaign";
         actionTitle = "Save";
         cancelUrl = Url.Action("Details", "Campaign", new { area = "Admin", id = Model.Id });
     }
