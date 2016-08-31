@@ -56,6 +56,17 @@ namespace AllReady.Services
             return await UploadImageAsync(blobPath, image);
         }
 
+        public async Task DeleteImageAsync(string imageUrl)
+        {
+            //var blockBlob = CloudStorageAccount.Parse(_settings.AzureStorage).CreateCloudBlobClient().GetContainerReference(CONTAINER_NAME).GetBlockBlobReference(imageUrl);
+            var storageAccount = CloudStorageAccount.Parse(_settings.AzureStorage);
+            var blobClient = storageAccount.CreateCloudBlobClient();
+            var blobContainer = blobClient.GetContainerReference(CONTAINER_NAME);
+            var blockBlob = blobContainer.GetBlockBlobReference(imageUrl);
+
+            await blockBlob.DeleteAsync();
+        }
+
         private async Task<string> UploadImageAsync(string blobPath, IFormFile image)
         {
             //Get filename
