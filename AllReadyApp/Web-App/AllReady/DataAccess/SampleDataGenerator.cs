@@ -69,7 +69,7 @@ namespace AllReady.DataAccess
 
             #region Organization
 
-            var htb = new Organization
+            var organization = new Organization
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
@@ -77,7 +77,6 @@ namespace AllReady.DataAccess
                 Location = locations.FirstOrDefault(),
                 Campaigns = new List<Campaign>(),
                 OrganizationContacts = new List<OrganizationContact>(),
-
             };
 
             #endregion
@@ -88,25 +87,25 @@ namespace AllReady.DataAccess
             {
                 Name = "Code Ninja",
                 Description = "Ability to commit flawless code without review or testing",
-                OwningOrganization = htb
+                OwningOrganization = organization
             });
 
             #endregion
 
             #region Campaign
 
-            var firePrev = new Campaign
+            var firePreventionCampaign = new Campaign
             {
                 Name = "Neighborhood Fire Prevention Days",
-                ManagingOrganization = htb,
+                ManagingOrganization = organization,
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = DateTime.UtcNow.AddMonths(-1),
                 EndDateTime = DateTime.UtcNow.AddMonths(3),
-                Location = new Location { City = "City", State = "State", PostalCode = "PostalCode" }
+                Location = GetRandom(locations)
             };
-            htb.Campaigns.Add(firePrev);
+            organization.Campaigns.Add(firePreventionCampaign);
 
-            var smokeDetImpact = new CampaignImpact
+            var smokeDetectorCampaignImpact = new CampaignImpact
             {
                 ImpactType = ImpactType.Numeric,
                 NumericImpactGoal = 10000,
@@ -114,63 +113,63 @@ namespace AllReady.DataAccess
                 Display = true,
                 TextualImpactGoal = "Total number of smoke detectors installed."
             };
-            _context.CampaignImpacts.Add(smokeDetImpact);
+            _context.CampaignImpacts.Add(smokeDetectorCampaignImpact);
 
-            var smokeDet = new Campaign
+            var smokeDetectorCampaign = new Campaign
             {
                 Name = "Working Smoke Detectors Save Lives",
-                ManagingOrganization = htb,
+                ManagingOrganization = organization,
                 StartDateTime = DateTime.Today.AddMonths(-1),
                 EndDateTime = DateTime.Today.AddMonths(1),
-                CampaignImpact = smokeDetImpact,
+                CampaignImpact = smokeDetectorCampaignImpact,
                 TimeZoneId = "Central Standard Time",
-                Location = new Location { City = "City", State = "State", PostalCode = "PostalCode" }
+                Location = GetRandom(locations)
             };
-            htb.Campaigns.Add(smokeDet);
+            organization.Campaigns.Add(smokeDetectorCampaign);
 
-            var financial = new Campaign
+            var financialCampaign = new Campaign
             {
                 Name = "Everyday Financial Safety",
-                ManagingOrganization = htb,
+                ManagingOrganization = organization,
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = DateTime.Today.AddMonths(-1),
                 EndDateTime = DateTime.Today.AddMonths(1),
-                Location = new Location { City = "City", State = "State", PostalCode = "PostalCode" }
+                Location = GetRandom(locations)
             };
-            htb.Campaigns.Add(financial);
+            organization.Campaigns.Add(financialCampaign);
 
-            var safetyKit = new Campaign
+            var safetyKitCampaign = new Campaign
             {
                 Name = "Simple Safety Kit Building",
-                ManagingOrganization = htb,
+                ManagingOrganization = organization,
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = DateTime.Today.AddMonths(-1),
                 EndDateTime = DateTime.Today.AddMonths(2),
-                Location = new Location { City = "City", State = "State", PostalCode = "PostalCode" }
+                Location = GetRandom(locations)
             };
-            htb.Campaigns.Add(safetyKit);
+            organization.Campaigns.Add(safetyKitCampaign);
 
-            var carSafe = new Campaign
+            var carSafeCampaign = new Campaign
             {
                 Name = "Family Safety In the Car",
-                ManagingOrganization = htb,
+                ManagingOrganization = organization,
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = DateTime.Today.AddMonths(-1),
                 EndDateTime = DateTime.Today.AddMonths(2),
-                Location = new Location { City = "City", State = "State", PostalCode = "PostalCode" }
+                Location = GetRandom(locations)
             };
-            htb.Campaigns.Add(carSafe);
+            organization.Campaigns.Add(carSafeCampaign);
 
-            var escapePlan = new Campaign
+            var escapePlanCampaign = new Campaign
             {
                 Name = "Be Ready to Get Out: Have a Home Escape Plan",
-                ManagingOrganization = htb,
+                ManagingOrganization = organization,
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = DateTime.Today.AddMonths(-6),
                 EndDateTime = DateTime.Today.AddMonths(6),
-                Location = new Location { City = "City", State = "State", PostalCode = "PostalCode" }
+                Location = GetRandom(locations)
             };
-            htb.Campaigns.Add(escapePlan);
+            organization.Campaigns.Add(escapePlanCampaign);
 
             #endregion
 
@@ -178,12 +177,15 @@ namespace AllReady.DataAccess
             var queenAnne = new Event
             {
                 Name = "Queen Anne Fire Prevention Day",
-                StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
-                EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
+                Campaign = firePreventionCampaign,
+                StartDateTime = firePreventionCampaign.StartDateTime.AddDays(1),
+                EndDateTime = firePreventionCampaign.StartDateTime.AddMonths(2),
                 Location = GetRandom(locations),
-                RequiredSkills = new List<EventSkill>()
+                RequiredSkills = new List<EventSkill>(),
+                EventType = EventType.Itinerary,
+                NumberOfVolunteersRequired = 1
             };
-            queenAnne.Tasks = GetSomeTasks(queenAnne, htb);
+            queenAnne.Tasks = GetSomeTasks(queenAnne, organization);
             var ask = new EventSkill { Skill = surgeon, Event = queenAnne };
             queenAnne.RequiredSkills.Add(ask);
             eventSkills.Add(ask);
@@ -195,158 +197,183 @@ namespace AllReady.DataAccess
             var ballard = new Event
             {
                 Name = "Ballard Fire Prevention Day",
-                StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
-                EndDateTime = new DateTime(2015, 12, 31, 14, 0, 0).ToUniversalTime(),
+                Campaign = firePreventionCampaign,
+                StartDateTime = firePreventionCampaign.StartDateTime.AddDays(1),
+                EndDateTime = firePreventionCampaign.StartDateTime.AddMonths(2),
                 Location = GetRandom(locations),
-                Campaign = firePrev
+                EventType = EventType.Itinerary,
+                NumberOfVolunteersRequired = 1
             };
-            ballard.Tasks = GetSomeTasks(ballard, htb);
+            ballard.Tasks = GetSomeTasks(ballard, organization);
             tasks.AddRange(ballard.Tasks);
             var madrona = new Event
             {
                 Name = "Madrona Fire Prevention Day",
-                StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
-                EndDateTime = new DateTime(2015, 12, 31, 14, 0, 0).ToUniversalTime(),
+                Campaign = firePreventionCampaign,
+                StartDateTime = firePreventionCampaign.StartDateTime.AddDays(1),
+                EndDateTime = firePreventionCampaign.StartDateTime.AddMonths(2),
                 Location = GetRandom(locations),
-                Campaign = firePrev
+                EventType = EventType.Itinerary,
+                NumberOfVolunteersRequired = 1
             };
-            madrona.Tasks = GetSomeTasks(madrona, htb);
+            madrona.Tasks = GetSomeTasks(madrona, organization);
             tasks.AddRange(madrona.Tasks);
             var southLoopSmoke = new Event
             {
                 Name = "Smoke Detector Installation and Testing-South Loop",
-                StartDateTime = DateTime.Today.AddMonths(-1),
-                EndDateTime = DateTime.Today.AddMonths(1),
+                Campaign = smokeDetectorCampaign,
+                StartDateTime = smokeDetectorCampaign.StartDateTime.AddDays(1),
+                EndDateTime = smokeDetectorCampaign.EndDateTime,
                 Location = GetRandom(locations),
-                Campaign = smokeDet
+                EventType = EventType.Itinerary,
+                NumberOfVolunteersRequired = 1
             };
-            southLoopSmoke.Tasks = GetSomeTasks(southLoopSmoke, htb);
+            southLoopSmoke.Tasks = GetSomeTasks(southLoopSmoke, organization);
             tasks.AddRange(southLoopSmoke.Tasks);
             var northLoopSmoke = new Event
             {
                 Name = "Smoke Detector Installation and Testing-Near North Side",
-                StartDateTime = DateTime.Today.AddMonths(-1),
-                EndDateTime = DateTime.Today.AddMonths(1),
+                Campaign = smokeDetectorCampaign,
+                StartDateTime = smokeDetectorCampaign.StartDateTime.AddDays(1),
+                EndDateTime = smokeDetectorCampaign.EndDateTime,
                 Location = GetRandom(locations),
-                Campaign = smokeDet
+                EventType = EventType.Itinerary,
+                NumberOfVolunteersRequired = 1
             };
-            northLoopSmoke.Tasks = GetSomeTasks(northLoopSmoke, htb);
+            northLoopSmoke.Tasks = GetSomeTasks(northLoopSmoke, organization);
             tasks.AddRange(northLoopSmoke.Tasks);
+            var dateTimeToday = DateTime.Today;
             var rentersInsurance = new Event
             {
                 Name = "Renters Insurance Education Door to Door and a bag of chips",
                 Description = "description for the win",
-                StartDateTime = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
-                EndDateTime = new DateTime(2015, 7, 11, 17, 0, 0).ToUniversalTime(),
+                Campaign = financialCampaign,
+                StartDateTime = new DateTime(dateTimeToday.Year, dateTimeToday.Month, dateTimeToday.Day, 8, 0, 0),
+                EndDateTime = new DateTime(dateTimeToday.Year, dateTimeToday.Month, dateTimeToday.Day, 16, 0, 0),
                 Location = GetRandom(locations),
-                Campaign = financial
+                EventType = EventType.Rally,
+                NumberOfVolunteersRequired = 1
             };
-            rentersInsurance.Tasks = GetSomeTasks(rentersInsurance, htb);
+            rentersInsurance.Tasks = GetSomeTasks(rentersInsurance, organization);
             tasks.AddRange(rentersInsurance.Tasks);
             var rentersInsuranceEd = new Event
             {
                 Name = "Renters Insurance Education Door to Door (woop woop)",
                 Description = "another great description",
-                StartDateTime = new DateTime(2015, 7, 12, 8, 0, 0).ToUniversalTime(),
-                EndDateTime = new DateTime(2015, 12, 12, 17, 0, 0).ToUniversalTime(),
+                Campaign = financialCampaign,
+                StartDateTime = financialCampaign.StartDateTime.AddMonths(1).AddDays(1),
+                EndDateTime = financialCampaign.EndDateTime,
                 Location = GetRandom(locations),
-                Campaign = financial
+                EventType = EventType.Itinerary,
+                NumberOfVolunteersRequired = 1
             };
-            rentersInsuranceEd.Tasks = GetSomeTasks(rentersInsuranceEd, htb);
+            rentersInsuranceEd.Tasks = GetSomeTasks(rentersInsuranceEd, organization);
             tasks.AddRange(rentersInsuranceEd.Tasks);
             var safetyKitBuild = new Event
             {
                 Name = "Safety Kit Assembly Volunteer Day",
                 Description = "Full day of volunteers building kits",
-                StartDateTime = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
-                EndDateTime = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
+                Campaign = safetyKitCampaign,
+                StartDateTime = safetyKitCampaign.StartDateTime.AddDays(1),
+                EndDateTime = safetyKitCampaign.StartDateTime.AddMonths(1).AddDays(5),
                 Location = GetRandom(locations),
-                Campaign = safetyKit
+                EventType = EventType.Itinerary,
+                NumberOfVolunteersRequired = 1
             };
-            safetyKitBuild.Tasks = GetSomeTasks(safetyKitBuild, htb);
+            safetyKitBuild.Tasks = GetSomeTasks(safetyKitBuild, organization);
             tasks.AddRange(safetyKitBuild.Tasks);
 
             var safetyKitHandout = new Event
             {
                 Name = "Safety Kit Distribution Weekend",
                 Description = "Handing out kits at local fire stations",
-                StartDateTime = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
-                EndDateTime = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
+                Campaign = safetyKitCampaign,
+                StartDateTime = safetyKitCampaign.StartDateTime.AddDays(1),
+                EndDateTime = safetyKitCampaign.StartDateTime.AddMonths(1).AddDays(5),
                 Location = GetRandom(locations),
-                Campaign = safetyKit
+                EventType = EventType.Itinerary,
+                NumberOfVolunteersRequired = 1
             };
-            safetyKitHandout.Tasks = GetSomeTasks(safetyKitHandout, htb);
+            safetyKitHandout.Tasks = GetSomeTasks(safetyKitHandout, organization);
             tasks.AddRange(safetyKitHandout.Tasks);
             var carSeatTest1 = new Event
             {
                 Name = "Car Seat Testing-Naperville",
                 Description = "Checking car seats at local fire stations after last day of school year",
-                StartDateTime = new DateTime(2015, 7, 10, 9, 30, 0).ToUniversalTime(),
-                EndDateTime = new DateTime(2015, 12, 10, 15, 30, 0).ToUniversalTime(),
+                Campaign = carSafeCampaign,
+                StartDateTime = carSafeCampaign.StartDateTime.AddDays(1),
+                EndDateTime = carSafeCampaign.StartDateTime.AddMonths(1).AddDays(5),
                 Location = GetRandom(locations),
-                Campaign = carSafe
+                EventType = EventType.Itinerary,
+                NumberOfVolunteersRequired = 1
             };
-            carSeatTest1.Tasks = GetSomeTasks(carSeatTest1, htb);
+            carSeatTest1.Tasks = GetSomeTasks(carSeatTest1, organization);
             tasks.AddRange(carSeatTest1.Tasks);
             var carSeatTest2 = new Event
             {
                 Name = "Car Seat and Tire Pressure Checking Volunteer Day",
                 Description = "Checking those things all day at downtown train station parking",
-                StartDateTime = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
-                EndDateTime = new DateTime(2015, 12, 11, 19, 30, 0).ToUniversalTime(),
+                Campaign = carSafeCampaign,
+                StartDateTime = carSafeCampaign.StartDateTime.AddDays(1),
+                EndDateTime = carSafeCampaign.StartDateTime.AddMonths(1).AddDays(5),
                 Location = GetRandom(locations),
-                Campaign = carSafe
+                EventType = EventType.Itinerary,
+                NumberOfVolunteersRequired = 1
             };
-            carSeatTest2.Tasks = GetSomeTasks(carSeatTest2, htb);
+            carSeatTest2.Tasks = GetSomeTasks(carSeatTest2, organization);
             tasks.AddRange(carSeatTest2.Tasks);
             var homeFestival = new Event
             {
                 Name = "Park District Home Safety Festival",
                 Description = "At downtown park district(adjacent to pool)",
-                StartDateTime = new DateTime(2015, 7, 11, 12, 0, 0).ToUniversalTime(),
-                EndDateTime = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
+                Campaign = safetyKitCampaign,
+                StartDateTime = safetyKitCampaign.StartDateTime.AddDays(1),
+                EndDateTime = safetyKitCampaign.StartDateTime.AddMonths(1),
                 Location = GetRandom(locations),
-                Campaign = safetyKit
+                EventType = EventType.Itinerary,
+                NumberOfVolunteersRequired = 1
             };
-            homeFestival.Tasks = GetSomeTasks(homeFestival, htb);
+            homeFestival.Tasks = GetSomeTasks(homeFestival, organization);
             tasks.AddRange(homeFestival.Tasks);
             var homeEscape = new Event
             {
                 Name = "Home Escape Plan Flyer Distribution",
                 Description = "Handing out flyers door to door in several areas of town after school/ work hours.Streets / blocks will vary but number of volunteers.",
-                StartDateTime = new DateTime(2015, 7, 15, 15, 30, 0).ToUniversalTime(),
-                EndDateTime = new DateTime(2015, 12, 15, 20, 30, 0).ToUniversalTime(),
+                Campaign = escapePlanCampaign,
+                StartDateTime = escapePlanCampaign.StartDateTime.AddDays(1),
+                EndDateTime = escapePlanCampaign.StartDateTime.AddMonths(7),
                 Location = GetRandom(locations),
-                Campaign = escapePlan
+                EventType = EventType.Itinerary,
+                NumberOfVolunteersRequired = 1
             };
-            homeEscape.Tasks = GetSomeTasks(homeEscape, htb);
+            homeEscape.Tasks = GetSomeTasks(homeEscape, organization);
             tasks.AddRange(homeEscape.Tasks);
             #endregion
             #region Link campaign and event
 
-            firePrev.Events = new List<Event> { queenAnne, ballard, madrona };
-            smokeDet.Events = new List<Event> { southLoopSmoke, northLoopSmoke };
-            financial.Events = new List<Event> { rentersInsurance, rentersInsuranceEd };
-            safetyKit.Events = new List<Event> { safetyKitBuild, safetyKitHandout };
-            carSafe.Events = new List<Event> { carSeatTest1, carSeatTest2 };
-            escapePlan.Events = new List<Event> { homeFestival, homeEscape };
+            firePreventionCampaign.Events = new List<Event> { queenAnne, ballard, madrona };
+            smokeDetectorCampaign.Events = new List<Event> { southLoopSmoke, northLoopSmoke };
+            financialCampaign.Events = new List<Event> { rentersInsurance, rentersInsuranceEd };
+            safetyKitCampaign.Events = new List<Event> { safetyKitBuild, safetyKitHandout };
+            carSafeCampaign.Events = new List<Event> { carSeatTest1, carSeatTest2 };
+            escapePlanCampaign.Events = new List<Event> { homeFestival, homeEscape };
 
             #endregion
             #region Add Campaigns and Events
-            organizations.Add(htb);
-            campaigns.Add(firePrev);
-            campaigns.Add(smokeDet);
-            campaigns.Add(financial);
-            campaigns.Add(escapePlan);
-            campaigns.Add(safetyKit);
-            campaigns.Add(carSafe);
+            organizations.Add(organization);
+            campaigns.Add(firePreventionCampaign);
+            campaigns.Add(smokeDetectorCampaign);
+            campaigns.Add(financialCampaign);
+            campaigns.Add(escapePlanCampaign);
+            campaigns.Add(safetyKitCampaign);
+            campaigns.Add(carSafeCampaign);
 
-            events.AddRange(firePrev.Events);
-            events.AddRange(smokeDet.Events);
-            events.AddRange(financial.Events);
-            events.AddRange(escapePlan.Events);
-            events.AddRange(safetyKit.Events);
-            events.AddRange(carSafe.Events);
+            events.AddRange(firePreventionCampaign.Events);
+            events.AddRange(smokeDetectorCampaign.Events);
+            events.AddRange(financialCampaign.Events);
+            events.AddRange(escapePlanCampaign.Events);
+            events.AddRange(safetyKitCampaign.Events);
+            events.AddRange(carSafeCampaign.Events);
             #endregion
 
             #region Insert Resource items into Resources
@@ -424,7 +451,7 @@ namespace AllReady.DataAccess
             #endregion
 
             #region TennatContacts
-            htb.OrganizationContacts.Add(new OrganizationContact { Contact = contacts.First(), Organization = htb, ContactType = 1 /*Primary*/ });
+            organization.OrganizationContacts.Add(new OrganizationContact { Contact = contacts.First(), Organization = organization, ContactType = 1 /*Primary*/ });
             #endregion
 
             #region Wrap Up DB  
@@ -468,16 +495,18 @@ namespace AllReady.DataAccess
             return value;
         }
 
-        private Location CreateLocation(string address1, string city, string state, string postalCode)
+        private static Location CreateLocation(string address1, string city, string state, string postalCode)
         {
-            var ret = new Location();
-            ret.Address1 = address1;
-            ret.City = city;
-            ret.State = state;
-            ret.Country = "US";
-            ret.PostalCode = postalCode;
-            ret.Name = "Humanitarian Toolbox location";
-            ret.PhoneNumber = "1-425-555-1212";
+            var ret = new Location
+            {
+                Address1 = address1,
+                City = city,
+                State = state,
+                Country = "US",
+                PostalCode = postalCode,
+                Name = "Humanitarian Toolbox location",
+                PhoneNumber = "1-425-555-1212"
+            };
             return ret;
         }
 
