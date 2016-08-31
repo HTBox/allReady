@@ -114,7 +114,7 @@ namespace AllReady.ViewModels.Task
      
         public int AcceptedVolunteerCount => AssignedVolunteers?.Where(v => v.Status == "Accepted").Count() ?? 0;
         public bool IsLimitVolunteers { get; set; } = true;
-        public bool IsAllowWaitList { get; set; } = true;
+        public bool IsAllowWaitList { get; set; }
         public int NumberOfUsersSignedUp { get; set; }
         public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
         public int AmountOfVolunteersNeeded => NumberOfVolunteersRequired - NumberOfUsersSignedUp;

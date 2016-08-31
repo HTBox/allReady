@@ -11,7 +11,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 {
     public class CampaignDetailQueryHandler : IAsyncRequestHandler<CampaignDetailQuery, CampaignDetailViewModel>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
 
         public CampaignDetailQueryHandler(AllReadyContext context)
         {
@@ -65,7 +65,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                         OrganizationId = campaign.ManagingOrganizationId,
                         OrganizationName = campaign.ManagingOrganization.Name,
                         ImageUrl = a.ImageUrl,
-                        UsersSignedUp = a.UsersSignedUp,
                         IsLimitVolunteers = a.IsLimitVolunteers,
                         IsAllowWaitList = a.IsAllowWaitList
                     })

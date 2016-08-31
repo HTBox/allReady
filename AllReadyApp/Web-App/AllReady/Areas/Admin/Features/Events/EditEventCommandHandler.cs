@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models;
 using AllReady.Extensions;
 using AllReady.Models;
 using MediatR;
@@ -11,7 +10,7 @@ namespace AllReady.Areas.Admin.Features.Events
 {
     public class EditEventCommandHandler : IAsyncRequestHandler<EditEventCommand, int>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
 
         public EditEventCommandHandler(AllReadyContext context)
         {
@@ -35,7 +34,6 @@ namespace AllReady.Areas.Admin.Features.Events
             campaignEvent.CampaignId = message.Event.CampaignId;
             
             campaignEvent.ImageUrl = message.Event.ImageUrl;
-            campaignEvent.NumberOfVolunteersRequired = message.Event.NumberOfVolunteersRequired;
 
             if (campaignEvent.IsLimitVolunteers != message.Event.IsLimitVolunteers || campaignEvent.IsAllowWaitList != message.Event.IsAllowWaitList)
             {
@@ -43,7 +41,7 @@ namespace AllReady.Areas.Admin.Features.Events
                 campaignEvent.IsLimitVolunteers = message.Event.IsLimitVolunteers;
                 
                 // cascade values to all tasks associated with this event
-                foreach (var task in _context.Tasks.Where(task => task.Event.Id == campaignEvent.Id))
+                foreach (var task in campaignEvent.Tasks)
                 {
                     task.IsLimitVolunteers = campaignEvent.IsLimitVolunteers;
                     task.IsAllowWaitList = campaignEvent.IsAllowWaitList;
@@ -81,6 +79,7 @@ namespace AllReady.Areas.Admin.Features.Events
         {
             return await _context.Events
                 .Include(a => a.RequiredSkills)
+                .Include(a => a.Tasks)
                 .SingleOrDefaultAsync(c => c.Id == message.Event.Id)
                 .ConfigureAwait(false);
         }
