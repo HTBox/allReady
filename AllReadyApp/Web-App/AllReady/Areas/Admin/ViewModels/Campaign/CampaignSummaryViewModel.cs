@@ -36,6 +36,7 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         [Display(Name = "Organization")]
         public string OrganizationName { get; set; }
 
+        [Display(Name = "Existing Image")]
         public string ImageUrl { get; set; }
 
         [Display(Name = "Browse for image")]
