@@ -174,6 +174,8 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+                var existingImageUrl = campaignEvent.ImageUrl;
+
                 if (fileUpload != null)
                 {
                     if (fileUpload.IsAcceptableImageContentType())
@@ -184,6 +186,11 @@ namespace AllReady.Areas.Admin.Controllers
                     {
                         ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
                         return View(campaignEvent);
+                    }
+
+                    if (existingImageUrl != null)
+                    {
+                        await _imageService.DeleteImageAsync(existingImageUrl);
                     }
                 }
 

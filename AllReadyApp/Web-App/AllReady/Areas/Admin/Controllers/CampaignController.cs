@@ -108,7 +108,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 if (fileUpload != null)
                 {
-                    var existingCampaignImageUrl = campaign.ImageUrl;
+                    var existingImageUrl = campaign.ImageUrl;
 
                     if (fileUpload.IsAcceptableImageContentType())
                     {
@@ -120,9 +120,9 @@ namespace AllReady.Areas.Admin.Controllers
                         return View(campaign);
                     }
 
-                    if (existingCampaignImageUrl != null)
+                    if (existingImageUrl != null)
                     {
-                        await _imageService.DeleteImageAsync(existingCampaignImageUrl);
+                        await _imageService.DeleteImageAsync(existingImageUrl);
                     }
                 }
 

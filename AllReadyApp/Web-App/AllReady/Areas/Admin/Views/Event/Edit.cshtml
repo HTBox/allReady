@@ -49,6 +49,11 @@
         <hr />
         <div class="form-horizontal col-lg-6 pull-left">
             <div asp-validation-summary="All" class="text-danger"></div>
+            @if (isEdit)
+            {
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="ImageUrl" />
+            }
             <input asp-for="Id" type="hidden" />
             <input asp-for="CampaignId" type="hidden" />
             <input asp-for="CampaignName" type="hidden" />
