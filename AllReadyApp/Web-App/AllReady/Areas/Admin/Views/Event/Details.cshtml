@@ -1,11 +1,12 @@
 @using System.Threading.Tasks
-@using AllReady.Models
 @using AllReady.Security
 @model AllReady.Areas.Admin.ViewModels.Event.EventDetailViewModel
+
 @{
     ViewBag.Title = Model.Name;
     var userTimeZoneId = User.GetTimeZoneId();
 }
+
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
@@ -58,34 +59,13 @@
         </div>
     </div>
 }
-<div class="row">
-    <div class="col-md-12">
-        <h3>
-            Volunteers @if (Model.NumberOfVolunteersRequired > 0)
-            {
-                <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span>
-            } <button type="button" class="btn btn-primary" disabled="@(!Model.Volunteers.Any())" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button>
-        </h3>
-        @if (Model.Volunteers == null || Model.Volunteers.Count == 0)
-        {
-            <text>No volunteers yet. </text>
-        }
-        else
-        {
-            <ul>
-                @foreach (var volunteer in Model.Volunteers)
-                {
-                    <li><strong>@volunteer</strong></li>
-                }
-            </ul>
-        }
-    </div>
-</div>
+
 <div class="row">
     <div class="col-md-12">
         <h3>Tasks</h3>
     </div>
 </div>
+
 <div class="row">
     <div class="col-md-12">
         <a asp-area="Admin" asp-controller="Task" asp-action="Create" asp-route-eventId="@Model.Id" class="btn btn-default">Create Task</a>

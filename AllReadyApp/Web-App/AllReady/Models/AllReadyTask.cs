@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using AllReady.ViewModels.Task;
 
 namespace AllReady.Models
@@ -22,7 +21,7 @@ namespace AllReady.Models
         public List<TaskSignup> AssignedVolunteers { get; set; } = new List<TaskSignup>();
         public List<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();
         public bool IsLimitVolunteers { get; set; } = true;
-        public bool IsAllowWaitList { get; set; } = true;
+        public bool IsAllowWaitList { get; set; }
 
         [NotMapped]
         public int NumberOfUsersSignedUp => AssignedVolunteers.Count;

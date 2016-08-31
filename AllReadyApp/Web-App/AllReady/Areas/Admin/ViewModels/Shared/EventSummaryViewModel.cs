@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using AllReady.Models;
 
@@ -21,6 +20,7 @@ namespace AllReady.Areas.Admin.ViewModels.Shared
 
         [Display(Name = "Campaign")]
         public int CampaignId { get; set; }
+
         [Display(Name = "Campaign")]
         public string CampaignName { get; set; }
 
@@ -35,10 +35,6 @@ namespace AllReady.Areas.Admin.ViewModels.Shared
         [Display(Name = "Browse for image")]
         public string FileUpload { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage = "'Volunteers Required' must be greater than 0")]
-        [Display(Name = "Volunteers Required")]
-        public int NumberOfVolunteersRequired { get; set; }
-        
         public string TimeZoneId { get; set; }
 
         [MaxLength(150)]
@@ -46,17 +42,15 @@ namespace AllReady.Areas.Admin.ViewModels.Shared
 
         [Display(Name = "Start Date")]
         public DateTimeOffset StartDateTime { get; set; }
+
         [Display(Name = "End Date")]
         public DateTimeOffset EndDateTime { get; set; }
-        [Display(Name = "Enforce Volunteer Limit")]
+
+        [Display(Name = "Enforce volunteer limit on tasks")]
         public bool IsLimitVolunteers { get; set; } = true;
 
-        [Display(Name = "Allow Wait List")]
-        public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
-        public bool IsAllowWaitList { get; set; } = true;
-        public int NumberOfUsersSignedUp => UsersSignedUp.Count;
-        public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
-        public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
-
+        // NOTE: stevejgordon - 31-08-16 - Defaulting to false at part of work on #919 since the code to ensure this is working doesn't seem to be fully in place.
+        [Display(Name = "Allow waiting list for tasks")]
+        public bool IsAllowWaitList { get; set; }
     }
 }

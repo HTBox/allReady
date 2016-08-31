@@ -24,11 +24,6 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         public IList<TaskSummaryViewModel> Tasks { get; set; } = new List<TaskSummaryViewModel>();
 
         /// <summary>
-        /// A list of the volunteers currently registered for the event being displayed
-        /// </summary>
-        public IList<string> Volunteers { get; set; } = new List<string>();
-
-        /// <summary>
         /// A list of the skills required from volunteers of the event being displayed
         /// </summary>
         [Display(Name = "Required Skills")]
