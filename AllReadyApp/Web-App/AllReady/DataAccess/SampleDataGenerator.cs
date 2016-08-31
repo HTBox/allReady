@@ -408,15 +408,15 @@ namespace AllReady.DataAccess
             var username2 = $"{_settings.DefaultUsername}2.com";
             var username3 = $"{_settings.DefaultUsername}3.com";
 
-            var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
+            var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone, PhoneNumber = "111-111-1111" };
             _userManager.CreateAsync(user1, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user1);
 
-            var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
+            var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone, PhoneNumber = "222-222-2222" };
             _userManager.CreateAsync(user2, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user2);
 
-            var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone };
+            var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone, PhoneNumber = "333-333-3333" };
             _userManager.CreateAsync(user3, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user3);
             #endregion
@@ -554,7 +554,8 @@ namespace AllReady.DataAccess
                     UserName = _settings.DefaultAdminUsername,
                     Email = _settings.DefaultAdminUsername,
                     TimeZoneId = _generalSettings.DefaultTimeZone,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    PhoneNumber = "444-444-4444"
                 };
                 _userManager.CreateAsync(user, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
                 _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, "SiteAdmin")).GetAwaiter().GetResult();
@@ -564,7 +565,8 @@ namespace AllReady.DataAccess
                     UserName = _settings.DefaultOrganizationUsername,
                     Email = _settings.DefaultOrganizationUsername,
                     TimeZoneId = _generalSettings.DefaultTimeZone,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    PhoneNumber = "555-555-5555"
                 };
                 // For the sake of being able to exercise Organization-specific stuff, we need to associate a organization.
                 await _userManager.CreateAsync(user2, _settings.DefaultAdminPassword);
@@ -576,7 +578,8 @@ namespace AllReady.DataAccess
                     UserName = _settings.DefaultUsername,
                     Email = _settings.DefaultUsername,
                     TimeZoneId = _generalSettings.DefaultTimeZone,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    PhoneNumber = "666-666-6666"
                 };
                 await _userManager.CreateAsync(user3, _settings.DefaultAdminPassword);
             }

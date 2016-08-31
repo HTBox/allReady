@@ -49,49 +49,93 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         /// </summary>
         public int TotalRequests { get; set; }
 
+        /// <summary>
+        /// The number of unassigned requests for this event
+        /// </summary>
         public int UnassignedRequests { get; set; }
 
+        /// <summary>
+        /// The number of assigned requests for this event
+        /// </summary>
         public int AssignedRequests { get; set; }
 
+        /// <summary>
+        /// The number of completed requests for this event
+        /// </summary>
         public int CompletedRequests { get; set; }
 
+        /// <summary>
+        /// The number of canceled requests for this event
+        /// </summary>
         public int CanceledRequests { get; set; }
 
+        /// <summary>
+        /// The calculated percentage of requests which are in the unassigned status for this event
+        /// </summary>
         public string UnassignedPercentage
         {
             get
             {
-                var percentage = ((double)UnassignedRequests / (double)TotalRequests) * 100;
+                var percentage = 0.0;
+
+                if (TotalRequests > 0)
+                { 
+                    percentage = ((double)UnassignedRequests / (double)TotalRequests) * 100;
+                }
 
                 return percentage.ToString("0.0");
             }
         }
 
+        /// <summary>
+        /// The calculated percentage of requests which are in the assigned status for this event
+        /// </summary>
         public string AssignedPercentage
         {
             get
             {
-                var percentage = ((double)AssignedRequests / (double)TotalRequests) * 100;
+                var percentage = 0.0;
+
+                if (TotalRequests > 0)
+                {
+                    percentage = ((double) AssignedRequests/(double) TotalRequests)*100;
+                }
 
                 return percentage.ToString("0.0");
             }
         }
 
+        /// <summary>
+        /// The calculated percentage of requests which are in the completed status for this event
+        /// </summary>
         public string CompletedPercentage
         {
             get
             {
-                var percentage = ((double)CompletedRequests / (double)TotalRequests) * 100;
+                var percentage = 0.0;
+
+                if (TotalRequests > 0)
+                {
+                    percentage = ((double) CompletedRequests/(double) TotalRequests)*100;
+                }
 
                 return percentage.ToString("0.0");
             }
         }
 
+        /// <summary>
+        /// The calculated percentage of requests which are in the canceled status for this event
+        /// </summary>
         public string CanceledPercentage
         {
             get
             {
-                var percentage = ((double)CanceledRequests / (double)TotalRequests) * 100;
+                var percentage = 0.0;
+
+                if (TotalRequests > 0)
+                {
+                    percentage = ((double) CanceledRequests/(double) TotalRequests)*100;
+                }
 
                 return percentage.ToString("0.0");
             }
