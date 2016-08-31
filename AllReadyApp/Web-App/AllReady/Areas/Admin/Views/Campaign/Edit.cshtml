@@ -1,3 +1,5 @@
+@using System.Diagnostics;
+@using AllReady.Security
 @model AllReady.Areas.Admin.ViewModels.Campaign.CampaignSummaryViewModel
 @inject AllReady.Services.ISelectListService SelectListService
 
@@ -18,6 +20,7 @@
         cancelUrl = Url.Action("Index", "Campaign", new { area = "Admin" });
     }
 }
+
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
@@ -41,15 +44,16 @@
 
 <form asp-controller="Campaign" asp-area="Admin" asp-action="Edit" method="post" enctype="multipart/form-data">
 
-    <button type="button"
+  @if (User.IsUserType(UserType.OrgAdmin)){
+      <button type="button"
             id="btnGetContactInfo"
             class="btn btn-info"
             data-toggle="modal"
             data-target="#confirmContactModal"
             title="Copy Contact Information from Organization">
-        Copy Contact Info
-    </button>
-
+            Copy Contact Info
+      </button>
+  }
 
     <div class="form-horizontal">
         <hr />
@@ -195,7 +199,7 @@
                 <span asp-validation-for="PrimaryContactEmail" class="text-danger"></span>
             </div>
         </div>
-		
+
         @if (isEdit)
         {
             <input type="hidden" asp-for="CampaignImpact.Id" />
