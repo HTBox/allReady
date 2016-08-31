@@ -470,6 +470,18 @@ namespace AllReady.UnitTest.Features.Notifications
         }
 
         [Fact]
+        public async Task NotSendNotifyVolunteersCommand_WhenEventDetailForNotificationModelIsNull()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(null);
+
+            var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, null);
+            await handler.Handle(new UserUnenrolls());
+
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
+        }
+
+        [Fact]
         public async Task NotSendNotifyVolunteersCommand_WhenSignupIsNull()
         {
             var mockMediator = new Mock<IMediator>();
@@ -499,18 +511,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
         }
-
-        [Fact]
-        public void ThrowException_WhenEventDetailForNotificationModelIsNull()
-        {
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(null);
-
-            var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, null);
-
-            Should.Throw<NullReferenceException>(async () => await _handler.Handle(new UserUnenrolls()));
-        }
-
+        
         [Fact]
         public async Task NotSendNotifyVolunteersCommand_WhenRecepientEmailIsNull()
         {
