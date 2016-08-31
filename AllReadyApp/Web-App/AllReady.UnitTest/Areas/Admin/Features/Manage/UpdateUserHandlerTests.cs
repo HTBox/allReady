@@ -1,22 +1,44 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Features.Manage;
 using AllReady.Models;
-using Moq;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Manage
 {
-    public class UpdateUserHandlerTests
+    public class UpdateUserHandlerTests : InMemoryContextTest
     {
         [Fact]
         public async Task UpdateUserHandlerInvokesUpdateUserWithTheCorrectUser()
         {
-            var message = new UpdateUser { User = new ApplicationUser() };
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            var sut = new UpdateUserHandler(dataAccess.Object);
-            await sut.Handle(message);
+            var options = this.CreateNewContextOptions();
 
-            dataAccess.Verify(x => x.UpdateUser(message.User), Times.Once);
+            const string userId = "12345";
+            const string firstName = "changed";
+            var message = new UpdateUser { User = new ApplicationUser {
+                Id = userId,
+                FirstName = firstName
+            } };
+
+            using (var context = new AllReadyContext(options)) {
+                context.Users.Add(new ApplicationUser {
+                    Id = userId,
+                    FirstName = "notChanged"
+                });
+                await context.SaveChangesAsync();
+            }
+
+            using (var context = new AllReadyContext(options)) {
+                var sut = new UpdateUserHandler(context);
+                await sut.Handle(message);
+            }
+
+            using (var context = new AllReadyContext(options)) {
+                var user = context.Users.FirstOrDefault(u => u.Id == userId);
+                Assert.NotNull(user);
+                Assert.Equal(user.FirstName, firstName);
+            }
+
         }
     }
 }

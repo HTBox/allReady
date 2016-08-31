@@ -1,20 +1,26 @@
-﻿using AllReady.Models;
+﻿using System.Linq;
+using AllReady.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Manage
 {
     public class UserByUserIdQueryHandler : IRequestHandler<UserByUserIdQuery, ApplicationUser>
     {
-        private readonly IAllReadyDataAccess dataAccess;
+        private readonly AllReadyContext dataContext;
 
-        public UserByUserIdQueryHandler(IAllReadyDataAccess dataAccess)
+        public UserByUserIdQueryHandler(AllReadyContext dataContext)
         {
-            this.dataAccess = dataAccess;
+            this.dataContext = dataContext;
         }
 
         public ApplicationUser Handle(UserByUserIdQuery message)
         {
-            return dataAccess.GetUser(message.UserId);
+            return dataContext.Users
+                .Where(u => u.Id == message.UserId)
+                .Include(u => u.AssociatedSkills).ThenInclude((UserSkill us) => us.Skill)
+                .Include(u => u.Claims)
+                .SingleOrDefault();
         }
     }
 }

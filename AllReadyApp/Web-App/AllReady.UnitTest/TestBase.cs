@@ -21,6 +21,23 @@ namespace AllReady.UnitTest
   {
     protected IServiceProvider ServiceProvider { get; private set; }
 
+        // https://docs.efproject.net/en/latest/miscellaneous/testing.html
+        protected DbContextOptions<AllReadyContext> CreateNewContextOptions() {
+            // Create a fresh service provider, and therefore a fresh
+            // InMemory database instance.
+            var serviceProvider = new ServiceCollection()
+                .AddEntityFrameworkInMemoryDatabase()
+                .BuildServiceProvider();
+
+            // Create a new options instance telling the context to use an
+            // InMemory database and the new service provider.
+            var builder = new DbContextOptionsBuilder<AllReadyContext>();
+            builder.UseInMemoryDatabase()
+                   .UseInternalServiceProvider(serviceProvider);
+
+            return builder.Options;
+        }
+
     public TestBase()
     {
       if (ServiceProvider == null)

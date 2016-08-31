@@ -2,21 +2,22 @@
 using System.Linq;
 using AllReady.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Event
 {
     public class EventsByPostalCodeQueryHandler : IRequestHandler<EventsByPostalCodeQuery, List<Models.Event>>
     {
-        private readonly IAllReadyDataAccess dataAccess;
+        private readonly AllReadyContext dataContext;
 
-        public EventsByPostalCodeQueryHandler(IAllReadyDataAccess dataAccess)
+        public EventsByPostalCodeQueryHandler(AllReadyContext dataContext)
         {
-            this.dataAccess = dataAccess;
+            this.dataContext = dataContext;
         }
 
         public List<Models.Event> Handle(EventsByPostalCodeQuery message)
         {
-            return dataAccess.EventsByPostalCode(message.PostalCode, message.Distance).ToList();
+            return dataContext.Events.FromSql("EXEC GetClosestEventsByPostalCode '{0}', {1}, {2}", message.PostalCode, 50, message.Distance).Include(a => a.Campaign).ToList();
         }
     }
 }

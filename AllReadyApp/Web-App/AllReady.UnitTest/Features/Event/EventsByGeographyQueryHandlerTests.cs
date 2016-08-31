@@ -2,21 +2,33 @@
 using AllReady.Models;
 using Moq;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace AllReady.UnitTest.Features.Event
 {
-    public class EventsByGeographyQueryHandlerTests
+    using Event = AllReady.Models.Event;
+
+    public class EventsByGeographyQueryHandlerTests : InMemoryContextTest
     {
-        [Fact]
-        public void HandleCallsEventsByGeographyWithTheCorrectLatitiudeLongitudeAndMiles()
+        [Fact(Skip = "Can't mock FromSql()")]
+        public async Task HandleCallsEventsByGeographyWithTheCorrectLatitiudeLongitudeAndMiles()
         {
+            var options = this.CreateNewContextOptions();
+
             var message = new EventsByGeographyQuery() { Latitude = 1, Longitude = 2, Miles = 3 };
-            var dataAccess = new Mock<IAllReadyDataAccess>();
 
-            var sut = new EventsByGeographyQueryHandler(dataAccess.Object);
-            sut.Handle(message);
+            using (var context = new AllReadyContext(options)) {
+                context.Events.Add(new Event());
+                context.Events.Add(new Event());
+                await context.SaveChangesAsync();
+            }
 
-            dataAccess.Verify(x => x.EventsByGeography(message.Latitude, message.Longitude, message.Miles));
+            using (var context = new AllReadyContext(options)) {
+                var sut = new EventsByGeographyQueryHandler(context);
+                var events = sut.Handle(message);
+
+                Assert.Equal(events.Count, 2);
+            }
         }
     }
 }

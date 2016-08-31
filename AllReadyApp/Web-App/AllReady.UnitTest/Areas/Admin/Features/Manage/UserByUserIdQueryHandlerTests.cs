@@ -1,22 +1,33 @@
 ﻿using AllReady.Features.Manage;
 using AllReady.Models;
-using Moq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Manage
 {
-    public class UserByUserIdQueryHandlerTests
+    public class UserByUserIdQueryHandlerTests : InMemoryContextTest
     {
         [Fact]
-        public void UserByUserIdQueryHandlerInvokesGetUserWithTheCorrectUserId()
+        public async Task UserByUserIdQueryHandlerInvokesGetUserWithTheCorrectUserId()
         {
-            var message = new UserByUserIdQuery { UserId = "1" };
-            var dataAccess = new Mock<IAllReadyDataAccess>();
+            var options = this.CreateNewContextOptions();
 
-            var sut = new UserByUserIdQueryHandler(dataAccess.Object);
-            sut.Handle(message);
+            const string userId = "1";
+            var message = new UserByUserIdQuery { UserId = userId };
 
-            dataAccess.Verify(x => x.GetUser(message.UserId), Times.Once);
+            using (var context = new AllReadyContext(options)) {
+                context.Users.Add(new ApplicationUser {
+                    Id = userId
+                });
+                await context.SaveChangesAsync();
+            }
+
+            using (var context = new AllReadyContext(options)) {
+                var sut = new UserByUserIdQueryHandler(context);
+                var user = sut.Handle(message);
+
+                Assert.Equal(user.Id, userId);
+            }
         }
     }
 }

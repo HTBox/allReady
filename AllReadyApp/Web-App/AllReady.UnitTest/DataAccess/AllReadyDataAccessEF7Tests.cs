@@ -3,69 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Models;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
+using AllReady.Features.Event;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+using MediatR;
+using Moq;
 
 namespace AllReady.UnitTest.DataAccess
 {
-    public class AllReadyDataAccessEF7Tests : TestBase
+    public class AllReadyDataAccessEF7Tests : InMemoryContextTest
     {
-        private static IServiceProvider _serviceProvider;
-        private static bool populatedData;
-
-        public AllReadyDataAccessEF7Tests()
-        {
-            if (_serviceProvider == null)
-            {
-                var services = new ServiceCollection();
-
-                // Add EF (Full DB, not In-Memory)
-                services.AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase());
-
-                // Setup hosting environment
-                IHostingEnvironment hostingEnvironment = new HostingEnvironment();
-                hostingEnvironment.EnvironmentName = "Development";
-                services.AddSingleton(x => hostingEnvironment);
-                _serviceProvider = services.BuildServiceProvider();
-            }
-        }
-
-        #region Event
-        [Fact]
-        public void GetResourcesByCategoryReturnsOnlyThoseResourcesWithMatchingCategory()
-        {
-            const string categoryToMatch = "category1";
-
-            var context = _serviceProvider.GetService<AllReadyContext>();
-            context.Resources.Add(new Resource { CategoryTag = categoryToMatch });
-            context.Resources.Add(new Resource { CategoryTag = "shouldNotMatchThisCategory" });
-            context.SaveChanges();
-
-            var sut = (IAllReadyDataAccess)new AllReadyDataAccessEF7(context);
-            var results = sut.GetResourcesByCategory(categoryToMatch).ToList();
-
-            Assert.Equal(results.Single().CategoryTag, categoryToMatch);
-        }
-        #endregion
-
         #region EventSignup
         [Fact]
         public async Task DeleteEventAndTaskSignupsAsyncDoesNotDeleteEventSignupsOrTaskSignupsForUnkownEventSignupId()
         {
             const int anEventSignupIdThatDoesNotExist = 1000;
 
-            var sut = CreateSutAndPopulateTestDataForEventSignup();
+            var unregisterEventHandler = new UnregisterEventHandler(Context, new Mock<IMediator>().Object);
 
-            var countOfEventSignupsBeforeMethodInvocation = sut.EventSignups.Count();
-            var countOfTaskSignupsBeforeMethodInvocation = sut.TaskSignups.Count();
+            var dataContext = Context;
+            CreateSutAndPopulateTestDataForEventSignup(dataContext);
 
-            await sut.DeleteEventAndTaskSignupsAsync(anEventSignupIdThatDoesNotExist);
+            var countOfEventSignupsBeforeMethodInvocation = dataContext.EventSignup.Count();
+            var countOfTaskSignupsBeforeMethodInvocation = dataContext.TaskSignups.Count();
 
-            var countOfEventSignsupsAfterMethodInvocation = sut.EventSignups.Count();
-            var countOfTaskSignsupsAfterMethodInvocation = sut.TaskSignups.Count();
+            await unregisterEventHandler.DeleteEventAndTaskSignupsAsync(anEventSignupIdThatDoesNotExist);
+
+            var countOfEventSignsupsAfterMethodInvocation = dataContext.EventSignup.Count();
+            var countOfTaskSignsupsAfterMethodInvocation = dataContext.TaskSignups.Count();
 
             Assert.Equal(countOfEventSignupsBeforeMethodInvocation, countOfEventSignsupsAfterMethodInvocation);
             Assert.Equal(countOfTaskSignupsBeforeMethodInvocation, countOfTaskSignsupsAfterMethodInvocation);
@@ -76,11 +41,12 @@ namespace AllReady.UnitTest.DataAccess
         {
             const int eventSignupId = 5;
 
-            var sut = CreateSutAndPopulateTestDataForEventSignup();
-            await sut.DeleteEventAndTaskSignupsAsync(eventSignupId);
+            var unregisterEventHandler = new UnregisterEventHandler(Context, new Mock<IMediator>().Object);
 
-            var context = _serviceProvider.GetService<AllReadyContext>();
-            var numOfUsersSignedUp = context.Events.First(e => e.Id == eventSignupId).UsersSignedUp.Count;
+            CreateSutAndPopulateTestDataForEventSignup(Context);
+            await unregisterEventHandler.DeleteEventAndTaskSignupsAsync(eventSignupId);
+
+            var numOfUsersSignedUp = Context.Events.First(e => e.Id == eventSignupId).UsersSignedUp.Count;
             Assert.Equal(0, numOfUsersSignedUp);
         }
 
@@ -89,26 +55,21 @@ namespace AllReady.UnitTest.DataAccess
         {
             const int eventSignupId = 5;
 
-            var sut = CreateSutAndPopulateTestDataForEventSignup();
-            await sut.DeleteEventAndTaskSignupsAsync(eventSignupId);
+            var unregisterEventHandler = new UnregisterEventHandler(Context, new Mock<IMediator>().Object);
 
-            var context = _serviceProvider.GetService<AllReadyContext>();
-            var numOfTasksSignedUpFor = context.TaskSignups.Count(e => e.Task.Event.Id == eventSignupId);
+            CreateSutAndPopulateTestDataForEventSignup(Context);
+            await unregisterEventHandler.DeleteEventAndTaskSignupsAsync(eventSignupId);
+
+            var numOfTasksSignedUpFor = Context.TaskSignups.Count(e => e.Task.Event.Id == eventSignupId);
             Assert.Equal(0, numOfTasksSignedUpFor);
         }
 
-        public IAllReadyDataAccess CreateSutAndPopulateTestDataForEventSignup()
-        {
-            var allReadyContext = _serviceProvider.GetService<AllReadyContext>();
-            var allReadyDataAccess = new AllReadyDataAccessEF7(allReadyContext);
+        public void CreateSutAndPopulateTestDataForEventSignup(AllReadyContext allReadyContext) {
             PopulateDataForEventSignup(allReadyContext);
-            return allReadyDataAccess;
         }
 
         private static void PopulateDataForEventSignup(DbContext context)
         {
-            if (!populatedData)
-            {
                 var campaignEvents = TestEventModelProvider.GetEvents();
 
                 foreach (var campaignEvent in campaignEvents)
@@ -117,8 +78,6 @@ namespace AllReady.UnitTest.DataAccess
                     context.Add(campaignEvent.Campaign);
                 }
                 context.SaveChanges();
-                populatedData = true;
-            }
         }
 
         private static class TestEventModelProvider
@@ -201,3 +160,4 @@ namespace AllReady.UnitTest.DataAccess
         #endregion
     }
 }
+

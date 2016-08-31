@@ -1,20 +1,30 @@
-﻿using AllReady.Models;
+﻿using System.Linq;
+using AllReady.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Event
 {
     public class EventByIdQueryHandler : IRequestHandler<EventByIdQuery, Models.Event>
     {
-        private readonly IAllReadyDataAccess dataAccess;
+        private readonly AllReadyContext dataContext;
 
-        public EventByIdQueryHandler(IAllReadyDataAccess dataAccess)
+        public EventByIdQueryHandler(AllReadyContext dataContext)
         {
-            this.dataAccess = dataAccess;
+            this.dataContext = dataContext;
         }
 
         public Models.Event Handle(EventByIdQuery message)
         {
-            return dataAccess.GetEvent(message.EventId);
+            // TODO: can we leave off some of these .Include()?
+            return this.dataContext.Events
+                .Include(a => a.Location)
+                .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
+                .Include(a => a.RequiredSkills).ThenInclude(rs => rs.Skill).ThenInclude(s => s.ParentSkill)
+                .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(tu => tu.User)
+                .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
+                .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
+                .SingleOrDefault(a => a.Id == message.EventId);
         }
     }
 }

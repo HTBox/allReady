@@ -1,22 +1,29 @@
 ﻿using System.Threading.Tasks;
 using AllReady.Features.Tasks;
 using AllReady.Models;
-using Moq;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Tasks
 {
-    public class AddTaskCommandHandlerAsyncTests
+    using System.Linq;
+
+    public class AddTaskCommandHandlerAsyncTests : InMemoryContextTest
     {
         [Fact]
         public async Task HandleInvokesAddTaskAsyncWithCorrectData()
         {
-            var message = new AddTaskCommandAsync { AllReadyTask = new AllReadyTask() };
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            var sut = new AddTaskCommandHandlerAsync(dataAccess.Object);
-            await sut.Handle(message);
+            var options = this.CreateNewContextOptions();
 
-            dataAccess.Verify(x => x.AddTaskAsync(message.AllReadyTask), Times.Once);
+            using (var context = new AllReadyContext(options)) {
+                var sut = new AddTaskCommandHandlerAsync(context);
+                var message = new AddTaskCommandAsync { AllReadyTask = new AllReadyTask() };
+                await sut.Handle(message);
+            }
+
+            using (var context = new AllReadyContext(options)) {
+                var tasks = context.Tasks.Count();
+                Assert.Equal(tasks, 1);
+            }
         }
     }
 }

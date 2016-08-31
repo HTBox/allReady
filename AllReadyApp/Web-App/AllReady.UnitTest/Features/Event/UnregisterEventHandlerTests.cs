@@ -1,5 +1,6 @@
 ﻿using AllReady.Features.Event;
 using AllReady.Models;
+using System.Linq;
 using Moq;
 using System.Threading.Tasks;
 using AllReady.Features.Notifications;
@@ -8,17 +9,19 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Event
 {
-    public class UnregisterEventHandlerTests
+    public class UnregisterEventHandlerTests : InMemoryContextTestBase
     {
         [Fact]
         public async Task InvokesDeleteEventAndTaskSignupsAsyncWithCorrectEventSignupId()
         {
-            var message = new UnregisterEvent { EventSignupId = 1 };
-            var dataAccess = new Mock<IAllReadyDataAccess>();
-            var sut = new UnregisterEventHandler(dataAccess.Object, Mock.Of<IMediator>());
+            const int eventSignupId = 1;
+            var message = new UnregisterEvent { EventSignupId = eventSignupId };
+            var sut = new UnregisterEventHandler(this.Context, Mock.Of<IMediator>());
             await sut.Handle(message);
 
-            dataAccess.Verify(x => x.DeleteEventAndTaskSignupsAsync(message.EventSignupId));
+            var result = Context.EventSignup.SingleOrDefault(x => x.Id == eventSignupId);
+
+            Assert.Equal(result, null);
         }
 
         [Fact]
@@ -27,7 +30,7 @@ namespace AllReady.UnitTest.Features.Event
             var message = new UnregisterEvent { EventSignupId = 1, UserId = "1" };
             var mediator = new Mock<IMediator>();
 
-            var sut = new UnregisterEventHandler(Mock.Of<IAllReadyDataAccess>(), mediator.Object);
+            var sut = new UnregisterEventHandler(this.Context, mediator.Object);
             await sut.Handle(message);
 
             mediator.Verify(x => x.PublishAsync(It.Is<UserUnenrolls>(y => y.EventId == message.EventSignupId && y.UserId == message.UserId)), Times.Once);

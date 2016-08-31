@@ -2,21 +2,22 @@
 using System.Linq;
 using AllReady.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Event
 {
     public class EventsByGeographyQueryHandler : IRequestHandler<EventsByGeographyQuery, List<Models.Event>>
     {
-        private readonly IAllReadyDataAccess dataAccess;
+        private readonly AllReadyContext dataContext;
 
-        public EventsByGeographyQueryHandler(IAllReadyDataAccess dataAccess)
+        public EventsByGeographyQueryHandler(AllReadyContext dataContext)
         {
-            this.dataAccess = dataAccess;
+            this.dataContext = dataContext;
         }
 
         public List<Models.Event> Handle(EventsByGeographyQuery message)
         {
-            return dataAccess.EventsByGeography(message.Latitude, message.Longitude, message.Miles).ToList();
+            return this.dataContext.Events.FromSql("EXEC GetClosestEvents {0}, {1}, {2}, {3}", message.Latitude, message.Longitude, 50, message.Miles).ToList();
         }
     }
 }
