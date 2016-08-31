@@ -4,7 +4,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Models;
-using AllReady.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
@@ -46,31 +45,31 @@ namespace AllReady.DataAccess
             _context.PostalCodes.AddRange(GetPostalCodes(existingPostalCode));
             #endregion
 
-            List<Organization> organizations = new List<Organization>();
-            List<Skill> organizationSkills = new List<Skill>();
-            List<Location> locations = GetLocations();
-            List<ApplicationUser> users = new List<ApplicationUser>();
-            List<TaskSignup> taskSignups = new List<TaskSignup>();
-            List<Event> events = new List<Event>();
-            List<EventSkill> eventSkills = new List<EventSkill>();
-            List<Campaign> campaigns = new List<Campaign>();
-            List<AllReadyTask> tasks = new List<AllReadyTask>();
-            List<Resource> resources = new List<Resource>();
-            List<EventSignup> eventSignups = new List<EventSignup>();
-            List<Contact> contacts = GetContacts();
+            var organizations = new List<Organization>();
+            var organizationSkills = new List<Skill>();
+            var locations = GetLocations();
+            var users = new List<ApplicationUser>();
+            var taskSignups = new List<TaskSignup>();
+            var events = new List<Event>();
+            var eventSkills = new List<EventSkill>();
+            var campaigns = new List<Campaign>();
+            var tasks = new List<AllReadyTask>();
+            var resources = new List<Resource>();
+            var eventSignups = new List<EventSignup>();
+            var contacts = GetContacts();
             var skills = new List<Skill>();
 
             #region Skills
-            var medical = new Skill() { Name = "Medical", Description = "specific enough, right?" };
-            var cprCertified = new Skill() { Name = "CPR Certified", ParentSkill = medical, Description = "ha ha ha ha, stayin alive" };
-            var md = new Skill() { Name = "MD", ParentSkill = medical, Description = "Trust me, I'm a doctor" };
-            var surgeon = new Skill() { Name = "Surgeon", ParentSkill = md, Description = "cut open; sew shut; play 18 holes" };
+            var medical = new Skill { Name = "Medical", Description = "specific enough, right?" };
+            var cprCertified = new Skill { Name = "CPR Certified", ParentSkill = medical, Description = "ha ha ha ha, stayin alive" };
+            var md = new Skill { Name = "MD", ParentSkill = medical, Description = "Trust me, I'm a doctor" };
+            var surgeon = new Skill { Name = "Surgeon", ParentSkill = md, Description = "cut open; sew shut; play 18 holes" };
             skills.AddRange(new[] { medical, cprCertified, md, surgeon });
             #endregion
 
             #region Organization
 
-            Organization htb = new Organization()
+            var htb = new Organization
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
@@ -85,7 +84,7 @@ namespace AllReady.DataAccess
 
             #region Organization Skills
 
-            organizationSkills.Add(new Skill()
+            organizationSkills.Add(new Skill
             {
                 Name = "Code Ninja",
                 Description = "Ability to commit flawless code without review or testing",
@@ -96,19 +95,16 @@ namespace AllReady.DataAccess
 
             #region Campaign
 
-            // Campaign 1
-
-            var firePrev = new Campaign()
+            var firePrev = new Campaign
             {
                 Name = "Neighborhood Fire Prevention Days",
                 ManagingOrganization = htb,
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = DateTime.UtcNow.AddMonths(-1),
-                EndDateTime = DateTime.UtcNow.AddMonths(3)
+                EndDateTime = DateTime.UtcNow.AddMonths(3),
+                Location = new Location { City = "City", State = "State", PostalCode = "PostalCode" }
             };
             htb.Campaigns.Add(firePrev);
-
-            // Campaign 2
 
             var smokeDetImpact = new CampaignImpact
             {
@@ -120,235 +116,221 @@ namespace AllReady.DataAccess
             };
             _context.CampaignImpacts.Add(smokeDetImpact);
 
-            var smokeDet = new Campaign()
+            var smokeDet = new Campaign
             {
                 Name = "Working Smoke Detectors Save Lives",
                 ManagingOrganization = htb,
                 StartDateTime = DateTime.Today.AddMonths(-1),
                 EndDateTime = DateTime.Today.AddMonths(1),
                 CampaignImpact = smokeDetImpact,
-                TimeZoneId = "Central Standard Time"
+                TimeZoneId = "Central Standard Time",
+                Location = new Location { City = "City", State = "State", PostalCode = "PostalCode" }
             };
             htb.Campaigns.Add(smokeDet);
 
-            // Campaign 3
-
-            var financial = new Campaign()
+            var financial = new Campaign
             {
                 Name = "Everyday Financial Safety",
                 ManagingOrganization = htb,
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = DateTime.Today.AddMonths(-1),
-                EndDateTime = DateTime.Today.AddMonths(1)
+                EndDateTime = DateTime.Today.AddMonths(1),
+                Location = new Location { City = "City", State = "State", PostalCode = "PostalCode" }
             };
             htb.Campaigns.Add(financial);
 
-            // Campaign 4
-
-            var safetyKit = new Campaign()
+            var safetyKit = new Campaign
             {
                 Name = "Simple Safety Kit Building",
                 ManagingOrganization = htb,
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = DateTime.Today.AddMonths(-1),
-                EndDateTime = DateTime.Today.AddMonths(2)
+                EndDateTime = DateTime.Today.AddMonths(2),
+                Location = new Location { City = "City", State = "State", PostalCode = "PostalCode" }
             };
             htb.Campaigns.Add(safetyKit);
 
-            // Campaign 5
-
-            var carSafe = new Campaign()
+            var carSafe = new Campaign
             {
                 Name = "Family Safety In the Car",
                 ManagingOrganization = htb,
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = DateTime.Today.AddMonths(-1),
-                EndDateTime = DateTime.Today.AddMonths(2)
+                EndDateTime = DateTime.Today.AddMonths(2),
+                Location = new Location { City = "City", State = "State", PostalCode = "PostalCode" }
             };
             htb.Campaigns.Add(carSafe);
 
-            // Campaign 6
-
-            var escapePlan = new Campaign()
+            var escapePlan = new Campaign
             {
                 Name = "Be Ready to Get Out: Have a Home Escape Plan",
                 ManagingOrganization = htb,
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = DateTime.Today.AddMonths(-6),
-                EndDateTime = DateTime.Today.AddMonths(6)
+                EndDateTime = DateTime.Today.AddMonths(6),
+                Location = new Location { City = "City", State = "State", PostalCode = "PostalCode" }
             };
             htb.Campaigns.Add(escapePlan);
 
             #endregion
 
             #region Event
-            Event queenAnne = new Event()
+            var queenAnne = new Event
             {
                 Name = "Queen Anne Fire Prevention Day",
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
-                Location = GetRandom<Location>(locations),
+                Location = GetRandom(locations),
                 RequiredSkills = new List<EventSkill>()
             };
             queenAnne.Tasks = GetSomeTasks(queenAnne, htb);
-            var ask = new EventSkill() { Skill = surgeon, Event = queenAnne };
+            var ask = new EventSkill { Skill = surgeon, Event = queenAnne };
             queenAnne.RequiredSkills.Add(ask);
             eventSkills.Add(ask);
-            ask = new EventSkill() { Skill = cprCertified, Event = queenAnne };
+            ask = new EventSkill { Skill = cprCertified, Event = queenAnne };
             queenAnne.RequiredSkills.Add(ask);
             eventSkills.Add(ask);
             tasks.AddRange(queenAnne.Tasks);
 
-            Event ballard = new Event()
+            var ballard = new Event
             {
                 Name = "Ballard Fire Prevention Day",
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 14, 0, 0).ToUniversalTime(),
-                Location = GetRandom<Location>(locations),
+                Location = GetRandom(locations),
                 Campaign = firePrev
             };
             ballard.Tasks = GetSomeTasks(ballard, htb);
             tasks.AddRange(ballard.Tasks);
-            Event madrona = new Event()
+            var madrona = new Event
             {
                 Name = "Madrona Fire Prevention Day",
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 14, 0, 0).ToUniversalTime(),
-                Location = GetRandom<Location>(locations),
+                Location = GetRandom(locations),
                 Campaign = firePrev
             };
             madrona.Tasks = GetSomeTasks(madrona, htb);
             tasks.AddRange(madrona.Tasks);
-            Event southLoopSmoke = new Event()
+            var southLoopSmoke = new Event
             {
                 Name = "Smoke Detector Installation and Testing-South Loop",
                 StartDateTime = DateTime.Today.AddMonths(-1),
                 EndDateTime = DateTime.Today.AddMonths(1),
-                Location = GetRandom<Location>(locations),
+                Location = GetRandom(locations),
                 Campaign = smokeDet
             };
             southLoopSmoke.Tasks = GetSomeTasks(southLoopSmoke, htb);
             tasks.AddRange(southLoopSmoke.Tasks);
-            Event northLoopSmoke = new Event()
+            var northLoopSmoke = new Event
             {
                 Name = "Smoke Detector Installation and Testing-Near North Side",
                 StartDateTime = DateTime.Today.AddMonths(-1),
                 EndDateTime = DateTime.Today.AddMonths(1),
-                Location = GetRandom<Location>(locations),
+                Location = GetRandom(locations),
                 Campaign = smokeDet
             };
             northLoopSmoke.Tasks = GetSomeTasks(northLoopSmoke, htb);
             tasks.AddRange(northLoopSmoke.Tasks);
-            Event rentersInsurance = new Event()
+            var rentersInsurance = new Event
             {
                 Name = "Renters Insurance Education Door to Door and a bag of chips",
                 Description = "description for the win",
                 StartDateTime = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 7, 11, 17, 0, 0).ToUniversalTime(),
-                Location = GetRandom<Location>(locations),
+                Location = GetRandom(locations),
                 Campaign = financial
             };
             rentersInsurance.Tasks = GetSomeTasks(rentersInsurance, htb);
             tasks.AddRange(rentersInsurance.Tasks);
-            Event rentersInsuranceEd = new Event()
+            var rentersInsuranceEd = new Event
             {
                 Name = "Renters Insurance Education Door to Door (woop woop)",
                 Description = "another great description",
                 StartDateTime = new DateTime(2015, 7, 12, 8, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 12, 17, 0, 0).ToUniversalTime(),
-                Location = GetRandom<Location>(locations),
+                Location = GetRandom(locations),
                 Campaign = financial
             };
             rentersInsuranceEd.Tasks = GetSomeTasks(rentersInsuranceEd, htb);
             tasks.AddRange(rentersInsuranceEd.Tasks);
-            Event safetyKitBuild = new Event()
+            var safetyKitBuild = new Event
             {
                 Name = "Safety Kit Assembly Volunteer Day",
                 Description = "Full day of volunteers building kits",
                 StartDateTime = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
-                Location = GetRandom<Location>(locations),
+                Location = GetRandom(locations),
                 Campaign = safetyKit
             };
             safetyKitBuild.Tasks = GetSomeTasks(safetyKitBuild, htb);
             tasks.AddRange(safetyKitBuild.Tasks);
 
-            Event safetyKitHandout = new Event()
+            var safetyKitHandout = new Event
             {
                 Name = "Safety Kit Distribution Weekend",
                 Description = "Handing out kits at local fire stations",
                 StartDateTime = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
-                Location = GetRandom<Location>(locations),
+                Location = GetRandom(locations),
                 Campaign = safetyKit
             };
             safetyKitHandout.Tasks = GetSomeTasks(safetyKitHandout, htb);
             tasks.AddRange(safetyKitHandout.Tasks);
-            Event carSeatTest1 = new Event()
+            var carSeatTest1 = new Event
             {
                 Name = "Car Seat Testing-Naperville",
                 Description = "Checking car seats at local fire stations after last day of school year",
                 StartDateTime = new DateTime(2015, 7, 10, 9, 30, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 10, 15, 30, 0).ToUniversalTime(),
-                Location = GetRandom<Location>(locations),
+                Location = GetRandom(locations),
                 Campaign = carSafe
             };
             carSeatTest1.Tasks = GetSomeTasks(carSeatTest1, htb);
             tasks.AddRange(carSeatTest1.Tasks);
-            Event carSeatTest2 = new Event()
+            var carSeatTest2 = new Event
             {
                 Name = "Car Seat and Tire Pressure Checking Volunteer Day",
                 Description = "Checking those things all day at downtown train station parking",
                 StartDateTime = new DateTime(2015, 7, 11, 8, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 11, 19, 30, 0).ToUniversalTime(),
-                Location = GetRandom<Location>(locations),
+                Location = GetRandom(locations),
                 Campaign = carSafe
             };
             carSeatTest2.Tasks = GetSomeTasks(carSeatTest2, htb);
             tasks.AddRange(carSeatTest2.Tasks);
-            Event homeFestival = new Event()
+            var homeFestival = new Event
             {
                 Name = "Park District Home Safety Festival",
                 Description = "At downtown park district(adjacent to pool)",
                 StartDateTime = new DateTime(2015, 7, 11, 12, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 11, 16, 30, 0).ToUniversalTime(),
-                Location = GetRandom<Location>(locations),
+                Location = GetRandom(locations),
                 Campaign = safetyKit
             };
             homeFestival.Tasks = GetSomeTasks(homeFestival, htb);
             tasks.AddRange(homeFestival.Tasks);
-            Event homeEscape = new Event()
+            var homeEscape = new Event
             {
                 Name = "Home Escape Plan Flyer Distribution",
                 Description = "Handing out flyers door to door in several areas of town after school/ work hours.Streets / blocks will vary but number of volunteers.",
                 StartDateTime = new DateTime(2015, 7, 15, 15, 30, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 15, 20, 30, 0).ToUniversalTime(),
-                Location = GetRandom<Location>(locations),
+                Location = GetRandom(locations),
                 Campaign = escapePlan
             };
             homeEscape.Tasks = GetSomeTasks(homeEscape, htb);
             tasks.AddRange(homeEscape.Tasks);
             #endregion
             #region Link campaign and event
-            firePrev.Events = new List<Event>();
-            firePrev.Events.Add(queenAnne);
-            firePrev.Events.Add(ballard);
-            firePrev.Events.Add(madrona);
-            smokeDet.Events = new List<Event>();
-            smokeDet.Events.Add(southLoopSmoke);
-            smokeDet.Events.Add(northLoopSmoke);
-            financial.Events = new List<Event>();
-            financial.Events.Add(rentersInsurance);
-            financial.Events.Add(rentersInsuranceEd);
-            safetyKit.Events = new List<Event>();
-            safetyKit.Events.Add(safetyKitBuild);
-            safetyKit.Events.Add(safetyKitHandout);
-            carSafe.Events = new List<Event>();
-            carSafe.Events.Add(carSeatTest1);
-            carSafe.Events.Add(carSeatTest2);
-            escapePlan.Events = new List<Event>();
-            escapePlan.Events.Add(homeFestival);
-            escapePlan.Events.Add(homeEscape);
+
+            firePrev.Events = new List<Event> { queenAnne, ballard, madrona };
+            smokeDet.Events = new List<Event> { southLoopSmoke, northLoopSmoke };
+            financial.Events = new List<Event> { rentersInsurance, rentersInsuranceEd };
+            safetyKit.Events = new List<Event> { safetyKitBuild, safetyKitHandout };
+            carSafe.Events = new List<Event> { carSeatTest1, carSeatTest2 };
+            escapePlan.Events = new List<Event> { homeFestival, homeEscape };
+
             #endregion
             #region Add Campaigns and Events
             organizations.Add(htb);
@@ -428,12 +410,12 @@ namespace AllReady.DataAccess
             #endregion
 
             #region TaskSignups
-            int i = 0;
+            var i = 0;
             foreach (var task in tasks.Where(t => t.Event == madrona))
             {
                 for (var j = 0; j < i; j++)
                 {
-                    taskSignups.Add(new TaskSignup() { Task = task, User = users[j], Status = Areas.Admin.Features.Tasks.TaskStatus.Assigned.ToString() });
+                    taskSignups.Add(new TaskSignup { Task = task, User = users[j], Status = Areas.Admin.Features.Tasks.TaskStatus.Assigned.ToString() });
                 }
 
                 i = (i + 1) % users.Count;
@@ -463,17 +445,17 @@ namespace AllReady.DataAccess
         #region Sample Data Helper methods
         private static T GetRandom<T>(List<T> list)
         {
-            Random rand = new Random();
+            var rand = new Random();
             return list[rand.Next(list.Count)];
         }
 
         private static List<AllReadyTask> GetSomeTasks(Event campaignEvent, Organization organization)
         {
-            List<AllReadyTask> value = new List<AllReadyTask>();
-            for (int i = 0; i < 5; i++)
+            var value = new List<AllReadyTask>();
+            for (var i = 0; i < 5; i++)
             {
                 //var tempId = _taskIdProvider.NextValue();
-                value.Add(new AllReadyTask()
+                value.Add(new AllReadyTask
                 {
                     Event = campaignEvent,
                     Description = "Description of a very important task # " + i,
@@ -488,7 +470,7 @@ namespace AllReady.DataAccess
 
         private Location CreateLocation(string address1, string city, string state, string postalCode)
         {
-            Location ret = new Location();
+            var ret = new Location();
             ret.Address1 = address1;
             ret.City = city;
             ret.State = state;
@@ -502,24 +484,24 @@ namespace AllReady.DataAccess
         private List<PostalCodeGeo> GetPostalCodes(IList<PostalCodeGeo> existingPostalCode)
         {
             var postalCodes = new List<PostalCodeGeo>();
-            if (!existingPostalCode.Any(item => item.PostalCode == "98052")) postalCodes.Add(new PostalCodeGeo() { City = "Remond", State = "WA", PostalCode = "98052" });
-            if (!existingPostalCode.Any(item => item.PostalCode == "98004")) postalCodes.Add(new PostalCodeGeo() { City = "Bellevue", State = "WA", PostalCode = "98004" });
-            if (!existingPostalCode.Any(item => item.PostalCode == "98116")) postalCodes.Add(new PostalCodeGeo() { City = "Seattle", State = "WA", PostalCode = "98116" });
-            if (!existingPostalCode.Any(item => item.PostalCode == "98117")) postalCodes.Add(new PostalCodeGeo() { City = "Seattle", State = "WA", PostalCode = "98117" });
-            if (!existingPostalCode.Any(item => item.PostalCode == "98007")) postalCodes.Add(new PostalCodeGeo() { City = "Bellevue", State = "WA", PostalCode = "98007" });
-            if (!existingPostalCode.Any(item => item.PostalCode == "98027")) postalCodes.Add(new PostalCodeGeo() { City = "Issaquah", State = "WA", PostalCode = "98027" });
-            if (!existingPostalCode.Any(item => item.PostalCode == "98034")) postalCodes.Add(new PostalCodeGeo() { City = "Kirkland", State = "WA", PostalCode = "98034" });
-            if (!existingPostalCode.Any(item => item.PostalCode == "98033")) postalCodes.Add(new PostalCodeGeo() { City = "Kirkland", State = "WA", PostalCode = "98033" });
-            if (!existingPostalCode.Any(item => item.PostalCode == "60505")) postalCodes.Add(new PostalCodeGeo() { City = "Aurora", State = "IL", PostalCode = "60505" });
-            if (!existingPostalCode.Any(item => item.PostalCode == "60506")) postalCodes.Add(new PostalCodeGeo() { City = "Aurora", State = "IL", PostalCode = "60506" });
-            if (!existingPostalCode.Any(item => item.PostalCode == "45231")) postalCodes.Add(new PostalCodeGeo() { City = "Cincinnati", State = "OH", PostalCode = "45231" });
-            if (!existingPostalCode.Any(item => item.PostalCode == "45240")) postalCodes.Add(new PostalCodeGeo() { City = "Cincinnati", State = "OH", PostalCode = "45240" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98052")) postalCodes.Add(new PostalCodeGeo { City = "Remond", State = "WA", PostalCode = "98052" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98004")) postalCodes.Add(new PostalCodeGeo { City = "Bellevue", State = "WA", PostalCode = "98004" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98116")) postalCodes.Add(new PostalCodeGeo { City = "Seattle", State = "WA", PostalCode = "98116" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98117")) postalCodes.Add(new PostalCodeGeo { City = "Seattle", State = "WA", PostalCode = "98117" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98007")) postalCodes.Add(new PostalCodeGeo { City = "Bellevue", State = "WA", PostalCode = "98007" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98027")) postalCodes.Add(new PostalCodeGeo { City = "Issaquah", State = "WA", PostalCode = "98027" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98034")) postalCodes.Add(new PostalCodeGeo { City = "Kirkland", State = "WA", PostalCode = "98034" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98033")) postalCodes.Add(new PostalCodeGeo { City = "Kirkland", State = "WA", PostalCode = "98033" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "60505")) postalCodes.Add(new PostalCodeGeo { City = "Aurora", State = "IL", PostalCode = "60505" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "60506")) postalCodes.Add(new PostalCodeGeo { City = "Aurora", State = "IL", PostalCode = "60506" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "45231")) postalCodes.Add(new PostalCodeGeo { City = "Cincinnati", State = "OH", PostalCode = "45231" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "45240")) postalCodes.Add(new PostalCodeGeo { City = "Cincinnati", State = "OH", PostalCode = "45240" });
             return postalCodes;
         }
 
         private List<Location> GetLocations()
         {
-            var ret = new List<Location>()
+            var ret = new List<Location>
             {
                 CreateLocation("1 Microsoft Way", "Redmond", "WA", "98052"),
                 CreateLocation("15563 Ne 31st St", "Redmond", "WA", "98052"),
