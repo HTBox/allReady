@@ -6,9 +6,10 @@ using AllReady.Models;
 
 namespace AllReady.Areas.Admin.ViewModels.Campaign
 {
-    public class CampaignSummaryViewModel: IPrimaryContactViewModel
+    public class CampaignSummaryViewModel : IPrimaryContactViewModel
     {
         public int Id { get; set; }
+
         [Required]
         public string Name { get; set; }
 
