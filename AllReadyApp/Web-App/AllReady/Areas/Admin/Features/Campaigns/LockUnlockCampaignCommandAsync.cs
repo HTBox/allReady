@@ -2,7 +2,7 @@
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class LockUnlockCampaignCommand : IAsyncRequest
+    public class LockUnlockCampaignCommandAsync : IAsyncRequest
     {
         public int CampaignId {get; set;}
     }

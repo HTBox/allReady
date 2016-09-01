@@ -177,9 +177,9 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new LockUnlockCampaignCommand { CampaignId = id });
+            await _mediator.SendAsync(new LockUnlockCampaignCommandAsync { CampaignId = id });
 
-            return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
+            return RedirectToAction(nameof(Details), new { area = "Admin", id });
         }
     }
 }
