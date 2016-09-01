@@ -6,6 +6,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 {
     public class IndexQueryAsync : IAsyncRequest<IEnumerable<IndexViewModel>>
     {
-        public int OrganizationId { get; set; }
+        public int? OrganizationId { get; set; }
     }
 }

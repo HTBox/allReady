@@ -27,18 +27,15 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Campaign
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            //var query = new CampaignListQuery();
-            //we don't need this anymore b/c the [Authorize("OrgAdmin")] attribute on the Controller will take care of this for us
-            //if (User.IsUserType(UserType.OrgAdmin))
-            //{
-            //    query.OrganizationId = User.GetOrganizationId();
-            //}
+            var query = new IndexQueryAsync();
+            if (User.IsUserType(UserType.OrgAdmin))
+            {
+                query.OrganizationId = User.GetOrganizationId();
+            }
 
-            var campaigns = _mediator.SendAsync(new IndexQueryAsync { OrganizationId = User.GetOrganizationId() });
-
-            return View(campaigns);
+            return View(await _mediator.SendAsync(query));
         }
 
         public async Task<IActionResult> Details(int id)

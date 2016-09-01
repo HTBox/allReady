@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Campaign;
@@ -9,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class IndexQueryHandlerAsync : IAsyncRequestHandler<IndexQueryAsync, IndexViewModel>
+    public class IndexQueryHandlerAsync : IAsyncRequestHandler<IndexQueryAsync, IEnumerable<IndexViewModel>>
     {
         private readonly AllReadyContext _context;
 
@@ -18,15 +17,15 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             _context = context;
         }
 
-        public async Task<IndexViewModel> Handle(IndexQueryAsync message)
+        public async Task<IEnumerable<IndexViewModel>> Handle(IndexQueryAsync message)
         {
-            var campaignsQuery = _context.Campaigns.Include(c => c.ManagingOrganization).AsNoTracking();
+            var campaigns = _context.Campaigns.Include(c => c.ManagingOrganization).AsNoTracking();
             if (message.OrganizationId.HasValue)
             {
-                campaignsQuery = campaignsQuery.Where(c => c.ManagingOrganizationId == message.OrganizationId);
+                campaigns = campaigns.Where(c => c.ManagingOrganizationId == message.OrganizationId);
             }
 
-            var viewModel = campaignsQuery.Select(c => new IndexViewModel
+            var viewModel = campaigns.Select(c => new IndexViewModel
             {
                 Id = c.Id,
                 Name = c.Name,
@@ -38,7 +37,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                 Featured = c.Featured
             });
 
-            return viewModel;
+            return await viewModel.ToListAsync().ConfigureAwait(false);
         }
     }
 }
