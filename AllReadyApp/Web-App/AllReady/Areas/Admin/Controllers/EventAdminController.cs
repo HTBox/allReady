@@ -178,17 +178,11 @@ namespace AllReady.Areas.Admin.Controllers
                 {
                     if (fileUpload.IsAcceptableImageContentType())
                     {
-                        //var existingImageUrl = campaignEvent.ImageUrl;
-                        //campaignEvent.ImageUrl = await _imageService.UploadEventImageAsync(campaign.OrganizationId, campaignEvent.Id, fileUpload);
-                        //if (campaignEvent.ImageUrl != null && existingImageUrl != null)
-                        //{
-                        //    await _imageService.DeleteImageAsync(existingImageUrl);
-                        //}
-                        var existingImageUrl = campaign.ImageUrl;
+                        var existingImageUrl = campaignEvent.ImageUrl;
                         var newImageUrl = await _imageService.UploadEventImageAsync(campaign.OrganizationId, campaign.Id, fileUpload);
                         if (!string.IsNullOrEmpty(newImageUrl))
                         {
-                            campaign.ImageUrl = newImageUrl;
+                            campaignEvent.ImageUrl = newImageUrl;
                             if (existingImageUrl != null)
                             {
                                 await _imageService.DeleteImageAsync(existingImageUrl);
