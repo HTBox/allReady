@@ -108,21 +108,19 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 if (fileUpload != null)
                 {
-                    var existingImageUrl = campaign.ImageUrl;
-
                     if (fileUpload.IsAcceptableImageContentType())
                     {
+                        var existingImageUrl = campaign.ImageUrl;
                         campaign.ImageUrl = await _imageService.UploadCampaignImageAsync(campaign.OrganizationId, campaign.Id, fileUpload);
+                        if (campaign.ImageUrl != null && existingImageUrl != null)
+                        {
+                            await _imageService.DeleteImageAsync(existingImageUrl);
+                        }
                     }
                     else
                     {
                         ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
                         return View(campaign);
-                    }
-
-                    if (existingImageUrl != null)
-                    {
-                        await _imageService.DeleteImageAsync(existingImageUrl);
                     }
                 }
 
