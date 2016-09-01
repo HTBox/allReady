@@ -29,98 +29,98 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Task/Details/{id}")]
         public async Task<IActionResult> Details(int id)
         {
-            var details = await _mediator.SendAsync(new DetailsQueryAsync { TaskId = id });
-            if (details == null)
+            var viewModel = await _mediator.SendAsync(new DetailsQueryAsync { TaskId = id });
+            if (viewModel == null)
             {
                 return NotFound();
             }
 
-            return View(details);
+            return View(viewModel);
         }
 
         [HttpGet]
         [Route("Admin/Task/Create/{eventId}")]
         public async Task<IActionResult> Create(int eventId)
         {
-            var model = await _mediator.SendAsync(new CreateTaskQueryAsync { EventId = eventId });
-            if (!User.IsOrganizationAdmin(model.OrganizationId))
+            var viewModel = await _mediator.SendAsync(new CreateTaskQueryAsync { EventId = eventId });
+            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return Unauthorized();
             }
 
-            model.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(EventController.Details), Controller = "Event", Values = new { id = model.EventId, area = "Admin" } });
+            viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(EventController.Details), Controller = "Event", Values = new { id = viewModel.EventId, area = "Admin" } });
 
             ViewBag.Title = "Create Task";
 
-            return View("Edit", model);
+            return View("Edit", viewModel);
         }
 
         [HttpGet]
         [Route("Admin/Task/Edit/{id}")]
         public async Task<IActionResult> Edit(int id)
         {
-            var model = await _mediator.SendAsync(new EditTaskQueryAsync { TaskId = id });
-            if (!User.IsOrganizationAdmin(model.OrganizationId))
+            var viewModel = await _mediator.SendAsync(new EditTaskQueryAsync { TaskId = id });
+            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return Unauthorized();
             }
 
-            model.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(Details), Controller = "Task", Values = new { eventId = model.EventId, id = model.Id, area = "Admin" } });
-
+            viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(Details), Controller = "Task", Values = new { eventId = viewModel.EventId, id = viewModel.Id, area = "Admin" } });
             ViewBag.Title = "Edit Task";
 
-            return View("Edit", model);
+            return View("Edit", viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(EditViewModel model)
+        public async Task<IActionResult> Edit(EditViewModel viewModel)
         {
-            var errors = _taskEditViewModelValidator.Validate(model);
+            var errors = _taskDetailModelValidator.Validate(viewModel);
             errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)
             {
-                if (!User.IsOrganizationAdmin(model.OrganizationId))
+                if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
                 {
                     return Unauthorized();
                 }
 
-                var taskId = await _mediator.SendAsync(new EditTaskCommandAsync { Task = model });
+                var taskId = await _mediator.SendAsync(new EditTaskCommandAsync { Task = viewModel });
 
-                return model.Id == 0 ?
-                    RedirectToAction(nameof(EventController.Details), "Event", new { id = model.EventId }) :
+                return viewModel.Id == 0 ?
+                    RedirectToAction(nameof(EventController.Details), "Event", new { id = viewModel.EventId }) :
                     RedirectToAction(nameof(Details), "Task", new { id = taskId });
             }
 
-            return View(model);
+            return View(viewModel);
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var model = await _mediator.SendAsync(new DeleteQueryAsync { TaskId = id });
-            if (!User.IsOrganizationAdmin(model.OrganizationId))
+            var viewModel = await _mediator.SendAsync(new DeleteQueryAsync { TaskId = id });
+            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return Unauthorized();
             }
 
-            model.UserIsOrgAdmin = true;
+            viewModel.Title = $"Delete task {viewModel.Name}";
+            viewModel.UserIsOrgAdmin = true;
 
-            return View(model);
+            return View(viewModel);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(DeleteViewModel model)
+        public async Task<IActionResult> DeleteConfirmed(DeleteViewModel viewModel)
         {
-            if (!model.UserIsOrgAdmin)
+            if (!viewModel.UserIsOrgAdmin)
             {
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new DeleteTaskCommandAsync { TaskId = model.Id });
+            await _mediator.SendAsync(new DeleteTaskCommandAsync { TaskId = viewModel.Id });
 
-            return RedirectToAction(nameof(EventController.Details), "Event", new { id = model.EventId });
+            return RedirectToAction(nameof(EventController.Details), "Event", new { id = viewModel.EventId });
         }
 
         [HttpPost]
@@ -140,20 +140,20 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MessageAllVolunteers(MessageTaskVolunteersViewModel model)
+        public async Task<IActionResult> MessageAllVolunteers(MessageTaskVolunteersViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var tasksOrganizationId = await _mediator.SendAsync(new OrganizationIdByTaskIdQueryAsync { TaskId = model.TaskId });
+            var tasksOrganizationId = await _mediator.SendAsync(new OrganizationIdByTaskIdQueryAsync { TaskId = viewModel.TaskId });
             if (!User.IsOrganizationAdmin(tasksOrganizationId))
             {
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new MessageTaskVolunteersCommandAsync { Model = model });
+            await _mediator.SendAsync(new MessageTaskVolunteersCommandAsync { Model = viewModel });
 
             return Ok();
         }
