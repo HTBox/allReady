@@ -136,7 +136,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Campaign/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var viewModel = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = id });
+            var viewModel = await _mediator.SendAsync(new DeleteQueryAsync { CampaignId = id });
             if (viewModel == null)
             {
                 return NotFound();
@@ -146,6 +146,8 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return Unauthorized();
             }
+
+            viewModel.Title = $"Delete campaign {viewModel.Name}";
 
             return View(viewModel);
         }
