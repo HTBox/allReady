@@ -29,14 +29,14 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Campaign
         public IActionResult Index()
         {
-            var query = new CampaignListQuery();
+            //var query = new CampaignListQuery();
+            //we don't need this anymore b/c the [Authorize("OrgAdmin")] attribute on the Controller will take care of this for us
+            //if (User.IsUserType(UserType.OrgAdmin))
+            //{
+            //    query.OrganizationId = User.GetOrganizationId();
+            //}
 
-            if (User.IsUserType(UserType.OrgAdmin))
-            {
-                query.OrganizationId = User.GetOrganizationId();
-            }
-
-            var campaigns = _mediator.Send(query);
+            var campaigns = _mediator.SendAsync(new IndexQueryAsync { OrganizationId = User.GetOrganizationId() });
 
             return View(campaigns);
         }
