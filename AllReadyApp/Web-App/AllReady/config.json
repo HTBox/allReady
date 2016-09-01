@@ -26,7 +26,7 @@
     },
     "Storage": {
       "AzureStorage": "[storagekey]",    
-      "EnableAzureQueueService": "false"
+      "EnableAzureQueueService": "true"
     }
   },
   "Email": {
