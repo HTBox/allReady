@@ -38,11 +38,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 AssignedVolunteers = task.AssignedVolunteers.Select(ts => new VolunteerViewModel { UserId = ts.User.Id, UserName = ts.User.UserName, HasVolunteered = true }).ToList(),
             };
 
-            foreach (var assignedVolunteer in model.AssignedVolunteers)
-            {
-                var v = model.AllVolunteers.Single(vvm => vvm.UserId == assignedVolunteer.UserId);
-                v.HasVolunteered = true;
-            }
             return model;
         }
 
