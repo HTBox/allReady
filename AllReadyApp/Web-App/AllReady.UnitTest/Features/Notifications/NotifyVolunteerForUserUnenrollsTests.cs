@@ -9,6 +9,7 @@ using Shouldly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -176,74 +177,33 @@ namespace AllReady.UnitTest.Features.Notifications
                 && c.ViewModel.EmailRecipients.First() == userEmail
             )), Times.Once);
         }
-
+        
         [Fact]
-        public async Task SendNotifyVolunteersCommand_WithCorrectSiteBaseUrl()
+        public async Task SendNotifyVolunteersCommand_WithCorrectMessage()
         {
             var userId = "user1@example.com";
+
             var siteBaseUrl = $"http://www.htbox.org";
-
-            var notification = new UserUnenrolls { UserId = userId };
-
-            var model = new EventDetailForNotificationModel
-            {
-                UsersSignedUp = new List<EventSignup> { new EventSignup { User = new ApplicationUser { Id = userId , Email = userId } } }
-            };
-
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
-
-            var options = new Mock<IOptions<GeneralSettings>>();
-            options.Setup(o => o.Value).Returns(new GeneralSettings { SiteBaseUrl = siteBaseUrl });
-
-            var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, options.Object);
-            await handler.Handle(notification);
-
-            mockMediator.Verify(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(c =>
-                !string.IsNullOrEmpty(c.ViewModel.EmailMessage)
-                && c.ViewModel.EmailMessage.Contains($"View event: {siteBaseUrl}Admin/Event/Details/")
-            )), Times.Once);
-        }
-
-        [Fact]
-        public async Task SendNotifyVolunteersCommand_WithCorrectEventId()
-        {
-            var userId = "user1@example.com";
             var eventId = 111;
+            var campaignName = "Compaign1";
+            var eventName = "Event1";
+
+            var eventLink = $"View event: {siteBaseUrl}Admin/Event/Details/{eventId}";
+
+            var message = new StringBuilder();
+            message.AppendLine("This is to confirm that you have elected to un-enroll from the following event:");
+            message.AppendLine();
+            message.AppendLine($"   Campaign: {campaignName}");
+            message.AppendLine($"   Event: {eventName} ({eventLink})");
+            message.AppendLine();
+            message.AppendLine("Thanks for letting us know that you will not be participating.");
 
             var notification = new UserUnenrolls { UserId = userId };
 
             var model = new EventDetailForNotificationModel
             {
                 EventId = eventId,
-                UsersSignedUp = new List<EventSignup> { new EventSignup { User = new ApplicationUser { Id = userId, Email = userId } } }
-            };
-
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
-
-            var options = new Mock<IOptions<GeneralSettings>>();
-            options.Setup(o => o.Value).Returns(new GeneralSettings());
-
-            var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, options.Object);
-            await handler.Handle(notification);
-
-            mockMediator.Verify(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(c =>
-                !string.IsNullOrEmpty(c.ViewModel.EmailMessage)
-                && c.ViewModel.EmailMessage.Contains($"Admin/Event/Details/{eventId}")
-            )), Times.Once);
-        }
-
-        [Fact]
-        public async Task SendNotifyVolunteersCommand_WithCorrectCampaignName()
-        {
-            var userId = "user1@example.com";
-            var campaignName = "Compaign1";
-
-            var notification = new UserUnenrolls { UserId = userId };
-
-            var model = new EventDetailForNotificationModel
-            {
+                EventName = eventName,
                 CampaignName = campaignName,
                 UsersSignedUp = new List<EventSignup> { new EventSignup { User = new ApplicationUser { Id = userId, Email = userId } } }
             };
@@ -252,65 +212,6 @@ namespace AllReady.UnitTest.Features.Notifications
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
 
             var options = new Mock<IOptions<GeneralSettings>>();
-            options.Setup(o => o.Value).Returns(new GeneralSettings());
-
-            var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, options.Object);
-            await handler.Handle(notification);
-
-            mockMediator.Verify(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(c =>
-                !string.IsNullOrEmpty(c.ViewModel.EmailMessage)
-                && c.ViewModel.EmailMessage.Contains($"   Campaign: {campaignName}")
-            )), Times.Once);
-        }
-
-        [Fact]
-        public async Task SendNotifyVolunteersCommand_WithCorrectEventName()
-        {
-            var userId = "user1@example.com";
-            var eventName = "Event1";
-
-            var notification = new UserUnenrolls { UserId = userId };
-
-            var model = new EventDetailForNotificationModel
-            {
-                EventName = eventName,
-                UsersSignedUp = new List<EventSignup> { new EventSignup { User = new ApplicationUser { Id = userId, Email = userId } } }
-            };
-
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
-
-            var options = new Mock<IOptions<GeneralSettings>>();
-            options.Setup(o => o.Value).Returns(new GeneralSettings());
-
-            var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, options.Object);
-            await handler.Handle(notification);
-
-            mockMediator.Verify(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(c =>
-                !string.IsNullOrEmpty(c.ViewModel.EmailMessage)
-                && c.ViewModel.EmailMessage.Contains($"   Event: {eventName}")
-            )), Times.Once);
-        }
-
-        [Fact]
-        public async Task SendNotifyVolunteersCommand_WithCorrectEventLink()
-        {
-            var userId = "user1@example.com";
-            var siteBaseUrl = $"http://www.htbox.org";
-            var eventId = 111;
-
-            var notification = new UserUnenrolls { UserId = userId };
-
-            var model = new EventDetailForNotificationModel
-            {
-                EventId = eventId,
-                UsersSignedUp = new List<EventSignup> { new EventSignup { User = new ApplicationUser { Id = userId, Email = userId } } }
-            };
-
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventDetailForNotificationQueryAsync>())).ReturnsAsync(model);
-
-            var options = new Mock<IOptions<GeneralSettings>>();
             options.Setup(o => o.Value).Returns(new GeneralSettings { SiteBaseUrl = siteBaseUrl });
 
             var handler = new NotifyVolunteerForUserUnenrolls(mockMediator.Object, options.Object);
@@ -318,14 +219,17 @@ namespace AllReady.UnitTest.Features.Notifications
 
             mockMediator.Verify(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(c =>
                 !string.IsNullOrEmpty(c.ViewModel.EmailMessage)
-                && c.ViewModel.EmailMessage.Contains($"(View event: {siteBaseUrl}Admin/Event/Details/{eventId})")
+                && c.ViewModel.EmailMessage == message.ToString()
+                && !string.IsNullOrEmpty(c.ViewModel.HtmlMessage)
+                && c.ViewModel.HtmlMessage == message.ToString()
             )), Times.Once);
         }
 
         [Fact]
-        public async Task SendNotifyVolunteersCommand_WithHtmlMessageTheSameAsEmailMessage()
+        public async Task SendNotifyVolunteersCommand_WithCorrectSubject()
         {
             var userId = "user1@example.com";
+            var subject = "allReady Event Un-enrollment Confirmation";
 
             var notification = new UserUnenrolls { UserId = userId };
 
@@ -344,7 +248,7 @@ namespace AllReady.UnitTest.Features.Notifications
             await handler.Handle(notification);
 
             mockMediator.Verify(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(c =>
-                c.ViewModel.HtmlMessage == c.ViewModel.EmailMessage
+                c.ViewModel.Subject == subject
             )), Times.Once);
         }
     }
