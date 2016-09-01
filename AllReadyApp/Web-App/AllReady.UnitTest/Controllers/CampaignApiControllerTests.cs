@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AllReady.Controllers;
-using AllReady.Features.Event;
+using AllReady.Features.Events;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels;

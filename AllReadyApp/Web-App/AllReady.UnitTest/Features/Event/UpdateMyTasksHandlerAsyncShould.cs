@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using AllReady.Features.Event;
+using AllReady.Features.Events;
 using AllReady.Models;
 using AllReady.ViewModels.Event;
 using Xunit;

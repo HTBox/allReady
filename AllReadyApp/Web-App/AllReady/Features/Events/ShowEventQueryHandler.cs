@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using AllReady.Models;
 using AllReady.ViewModels.Event;
 using AllReady.ViewModels.Shared;
 using AllReady.ViewModels.Task;
 using MediatR;
-using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace AllReady.Features.Event
+namespace AllReady.Features.Events
 {
     public class ShowEventQueryHandler : IRequestHandler<ShowEventQuery, EventViewModel>
     {
@@ -32,7 +32,6 @@ namespace AllReady.Features.Event
                 .Include(a => a.RequiredSkills).ThenInclude(rs => rs.Skill).ThenInclude(s => s.ParentSkill)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(tu => tu.User)
                 .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
-                .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
                 .SingleOrDefault(a => a.Id == eventId);
 
             if (evt == null || evt.Campaign.Locked)
@@ -43,15 +42,10 @@ namespace AllReady.Features.Event
             var eventViewModel = new EventViewModel(evt);
 
             var userId = _userManager.GetUserId(message.User);
-            var appUser = this.dataContext.Users
-                .Where(u => u.Id == userId)
-                .SingleOrDefault();
+            var appUser = this.dataContext.Users.SingleOrDefault(u => u.Id == userId);
 
             eventViewModel.UserId = userId;
             eventViewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
-            eventViewModel.IsUserVolunteeredForEvent = this.dataContext.EventSignup
-                        .Where(x => x.Event.Id == eventId && x.User.Id == userId)
-                        .Any();
 
             var assignedTasks = evt.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
             eventViewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));

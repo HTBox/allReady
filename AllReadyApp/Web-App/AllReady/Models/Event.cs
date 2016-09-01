@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using AllReady.ViewModels.Event;
 
@@ -35,8 +34,6 @@ namespace AllReady.Models
 
         public List<AllReadyTask> Tasks { get; set; } = new List<AllReadyTask>();
 
-        public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
-
         public ApplicationUser Organizer { get; set; }
 
         [Display(Name = "Image")]
@@ -54,16 +51,7 @@ namespace AllReady.Models
         /// </summary>
         [MaxLength(150)]
         public string Headline { get; set; }
-
-        [NotMapped]
-        public int NumberOfUsersSignedUp => UsersSignedUp.Count;
-
-        [NotMapped]
-        public bool IsFull => NumberOfUsersSignedUp >= NumberOfVolunteersRequired;
-
-        [NotMapped]
-        public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
-
+        
         public bool IsUserInAnyTask(string userId)
         {
             return Tasks.Any(task => task.AssignedVolunteers.Any(av => av.User.Id == userId));

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using AllReady.Models;
-using MediatR;
 using System.Linq;
+using AllReady.Models;
 using AllReady.ViewModels.Event;
+using MediatR;
 
-namespace AllReady.Features.Event
+namespace AllReady.Features.Events
 {
     public class EventsWithUnlockedCampaignsQueryHandler : IRequestHandler<EventsWithUnlockedCampaignsQuery, List<EventViewModel>>
     {

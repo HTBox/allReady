@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Controllers;
-using AllReady.Features.Event;
+using AllReady.Features.Events;
 using AllReady.Features.Tasks;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;

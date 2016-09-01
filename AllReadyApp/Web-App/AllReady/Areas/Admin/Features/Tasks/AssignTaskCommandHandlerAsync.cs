@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
@@ -23,7 +22,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
         protected override async Task HandleCore(AssignTaskCommandAsync message)
         {
             var task = GetTask(message);
-            var campaignEvent = task.Event;
             var taskSignups = new List<TaskSignup>();
 
             if (task != null)
@@ -32,50 +30,30 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 foreach (var userId in message.UserIds)
                 {
                     var taskSignup = task.AssignedVolunteers.SingleOrDefault(a => a.User.Id == userId);
-                    if (taskSignup == null)
+
+                    if (taskSignup != null) continue;
+
+                    var user = _context.Users.Single(u => u.Id == userId);
+                    taskSignup = new TaskSignup
                     {
-                        var user = _context.Users.Single(u => u.Id == userId);
-                        taskSignup = new TaskSignup
-                        {
-                            Task = task,
-                            User = user,
-                            PreferredEmail = user.Email,
-                            PreferredPhoneNumber = user.PhoneNumber,
-                            AdditionalInfo = string.Empty,
-                            Status = TaskStatus.Assigned.ToString(),
-                            StatusDateTimeUtc = DateTime.UtcNow
-                        };
+                        Task = task,
+                        User = user,
+                        PreferredEmail = user.Email,
+                        PreferredPhoneNumber = user.PhoneNumber,
+                        AdditionalInfo = string.Empty,
+                        Status = TaskStatus.Assigned.ToString(),
+                        StatusDateTimeUtc = DateTime.UtcNow
+                    };
 
-                        task.AssignedVolunteers.Add(taskSignup);
-                        taskSignups.Add(taskSignup);
-
-                        // If the user has not already been signed up for the event, sign them up
-                        if (campaignEvent.UsersSignedUp.All(acsu => acsu.User.Id != userId))
-                        {
-                            campaignEvent.UsersSignedUp.Add(new EventSignup
-                            {
-                                Event = campaignEvent,
-                                User = user,
-                                PreferredEmail = user.Email,
-                                PreferredPhoneNumber = user.PhoneNumber,
-                                AdditionalInfo = string.Empty,
-                                SignupDateTime = DateTime.UtcNow
-                            });
-                        }
-                    }
+                    task.AssignedVolunteers.Add(taskSignup);
+                    taskSignups.Add(taskSignup);
                 }
 
                 //Remove task signups where the the user id is not included in the current list of assigned user id's
                 var taskSignupsToRemove = task.AssignedVolunteers.Where(taskSignup => message.UserIds.All(uid => uid != taskSignup.User.Id)).ToList();
                 taskSignupsToRemove.ForEach(taskSignup => task.AssignedVolunteers.Remove(taskSignup));
-
-                    // delete the event signups where the user is no longer signed up for any tasks
-                    (from taskSignup in taskSignupsToRemove
-                        where !campaignEvent.IsUserInAnyTask(taskSignup.User.Id)
-                        select campaignEvent.UsersSignedUp.FirstOrDefault(u => u.User.Id == taskSignup.User.Id))
-                        .ToList()
-                        .ForEach(signup => campaignEvent.UsersSignedUp.Remove(signup));
             }
+
             await _context.SaveChangesAsync();
 
             // send all notifications to the queue
@@ -105,8 +83,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
         private AllReadyTask GetTask(AssignTaskCommandAsync message)
         {
             var task = _context.Tasks
-                .Include(t => t.Event).ThenInclude(a => a.UsersSignedUp)
                 .SingleOrDefault(c => c.Id == message.TaskId);
+
             return task;
         }
     }

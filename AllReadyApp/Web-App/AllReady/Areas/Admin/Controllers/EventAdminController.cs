@@ -14,9 +14,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Validators;
-using AllReady.Features.Event;
 using AllReady.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Request;
+using AllReady.Features.Events;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -289,28 +289,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = "Admin", id = campaignEvent.CampaignId });
         }
-
-        [HttpGet]
-        public IActionResult Assign(int id)
-        {
-            var campaignEvent = GetEventBy(id);
-            if (campaignEvent == null)
-            {
-                return NotFound();
-            }
-
-            if (!User.IsOrganizationAdmin(campaignEvent.Campaign.ManagingOrganizationId))
-            {
-                return Unauthorized();
-            }
-
-            var model = new EventViewModel(campaignEvent);
-            model.Tasks = model.Tasks.OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList();
-            model.Volunteers = campaignEvent.UsersSignedUp.Select(u => u.User).ToList();
-
-            return View(model);
-        }
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MessageAllVolunteers(MessageEventVolunteersViewModel viewModel)

@@ -67,42 +67,6 @@
         self.enrolled = ko.observable(modelStuff.isVolunteeredForEvent);
         self.errorUnenrolling = ko.observable(false);
 
-        self.signupForEvent = function () {
-            hideAlert();
-            var vm = new SignupViewModel(signupModel, self.unassociatedSkills, modelStuff.eventTitle);
-            vm.modal = HTBox.showModal({ viewModel: vm, modalId: "VolunteerModal" })
-                .onClose(eventSignupSuccess);
-        };
-
-        function eventSignupSuccess(signUpViewModel) {
-            self.eventSkillsWithIsUser().forEach(function(skill) {
-                if (signUpViewModel.AddSkillIds().indexOf(skill.Id) >= 0) {
-                    skill.IsUserSkill(true)
-                }
-            });
-            self.enrolled(true);
-            showalert("<strong>Thanks for volunteering! Your request has been processed and one of the event coordinators will be in contact with you soon.</strong>", "alert-success", 30);
-        }
-
-        self.unenrollFromEvent = function (eventId) {
-            hideAlert();
-            self.errorUnenrolling(false);
-            $("#enrollUnenrollSpinner").show();
-            $.ajax({
-                type: "DELETE",
-                url: '/api/event/' + eventId + '/signup',
-                contentType: "application/json"
-            }).then(function(data) {
-                self.enrolled(false);
-                $("#enrollUnenrollSpinner").hide();
-                showalert("<strong>Thanks for your interest. Your request has been processed and you are no longer signed up for this event. We hope to see you soon!</strong>", "alert-success", 30);
-
-            }).fail(function(fail) {
-                self.errorUnenrolling(true);
-                console.log(fail);
-            });
-        }
-
         self.signupForTask = function (task) {
             hideAlert();
             var vm = new SignupViewModel(signupModel, task.unassociatedSkills, task.Name, true, task);
@@ -153,7 +117,6 @@
                 console.log(fail);
             });
         }
-
 
         self.confirmUnenrollFromTask = function (task) {
             hideAlert();

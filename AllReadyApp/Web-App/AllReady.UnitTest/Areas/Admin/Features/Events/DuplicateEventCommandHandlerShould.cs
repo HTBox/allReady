@@ -163,15 +163,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         }
 
         [Fact]
-        public async Task CreateNewEventWithoutCopyingUsersSignedUp()
-        {
-            var eventId = await DuplicateEvent(new DuplicateEventViewModel() { Id = EVENT_TO_DUPLICATE_ID });
-            var sut = await GetEvent(eventId);
-
-            Assert.Equal(0, sut.UsersSignedUp.Count());
-        }
-
-        [Fact]
         public async Task CreateNewEventWithTheSameRequiredSkills()
         {
             var eventId = await DuplicateEvent(new DuplicateEventViewModel() { Id = EVENT_TO_DUPLICATE_ID });
@@ -260,11 +251,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                             new TaskSignup()
                         }
                     },
-                },
-                UsersSignedUp = new List<EventSignup>()
-                {
-                    new EventSignup(),
-                    new EventSignup(),
                 },
                 Organizer = new ApplicationUser() { Id = "Organizer" },
                 ImageUrl = "ImageUrl",

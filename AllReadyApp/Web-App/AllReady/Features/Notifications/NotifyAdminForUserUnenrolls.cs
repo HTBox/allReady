@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -29,33 +28,28 @@ namespace AllReady.Features.Notifications
             // don't let problem with notification keep us from continuing
             try
             {
-                var notificationModel = await _mediator.SendAsync(new EventDetailForNotificationQueryAsync { EventId = notification.EventId, UserId = notification.UserId })
+                var taskModel = await _mediator.SendAsync(new TaskDetailForNotificationQueryAsync { TaskId = notification.TaskId, UserId = notification.UserId })
                     .ConfigureAwait(false);
 
-                var campaignContact = notificationModel.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
+                var campaignContact = taskModel.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
                 var adminEmail = campaignContact?.Contact.Email;
 
                 if (string.IsNullOrWhiteSpace(adminEmail))
                 {
                     return;
                 }
+                string remainingRequiredVolunteersPhrase = $"{taskModel.NumberOfVolunteersSignedUp}/{taskModel.NumberOfVolunteersRequired}";
 
-                TaskSummaryViewModel taskModel = null;
-                string remainingRequiredVolunteersPhrase;
-
-                    taskModel = notificationModel.Tasks.FirstOrDefault(t => t.Id == notification.TaskIds[0]) ?? new TaskSummaryViewModel();
-                    remainingRequiredVolunteersPhrase = $"{taskModel.NumberOfVolunteersSignedUp}/{taskModel.NumberOfVolunteersRequired}";
-
-                var eventLink = $"View event: {_options.Value.SiteBaseUrl}Admin/Event/Details/{notificationModel.EventId}";
+                var eventLink = $"View event: {_options.Value.SiteBaseUrl}Admin/Event/Details/{taskModel.EventId}";
                 var subject = $"A volunteer has unenrolled from a task";
 
                 var message = new StringBuilder();
                 message.AppendLine($"A volunteer has unenrolled from a task.");
-                message.AppendLine($"   Volunteer: {notificationModel.Volunteer.Name} ({notificationModel.Volunteer.Email})");
-                message.AppendLine($"   Campaign: {notificationModel.CampaignName}");
-                message.AppendLine($"   Event: {notificationModel.EventName} ({eventLink})");
-                    message.AppendLine($"   Task: {taskModel.Name} ({$"View task: {_options.Value.SiteBaseUrl}Admin/Task/Details/{taskModel.Id}"})");
-                    message.AppendLine($"   Task Start Date: {taskModel.StartDateTime.Date.ToShortDateString()}");
+                message.AppendLine($"   Volunteer: {taskModel.Volunteer.Name} ({taskModel.Volunteer.Email})");
+                message.AppendLine($"   Campaign: {taskModel.CampaignName}");
+                message.AppendLine($"   Event: {taskModel.EventName} ({eventLink})");
+                message.AppendLine($"   Task: {taskModel.TaskName} (View task: {_options.Value.SiteBaseUrl}Admin/Task/Details/{taskModel.TaskId})");
+                message.AppendLine($"   Task Start Date: {taskModel.TaskStartDate.Date.ToShortDateString()}");
                 message.AppendLine($"   Remaining/Required Volunteers: {remainingRequiredVolunteersPhrase}");
                 message.AppendLine();
 

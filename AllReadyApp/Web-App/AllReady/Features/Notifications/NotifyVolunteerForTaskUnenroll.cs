@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
@@ -7,12 +6,12 @@ using Microsoft.Extensions.Options;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyVolunteerForUserUnenrolls : IAsyncNotificationHandler<UserUnenrolls>
+    public class NotifyVolunteerForTaskUnenroll : IAsyncNotificationHandler<UserUnenrolls>
     {
         private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
 
-        public NotifyVolunteerForUserUnenrolls(IMediator mediator, IOptions<GeneralSettings> options)
+        public NotifyVolunteerForTaskUnenroll(IMediator mediator, IOptions<GeneralSettings> options)
         {
             _mediator = mediator;
             _options = options;
@@ -20,35 +19,29 @@ namespace AllReady.Features.Notifications
 
         public async Task Handle(UserUnenrolls notification)
         {
-            var model = await _mediator.SendAsync(new EventDetailForNotificationQueryAsync { EventId = notification.EventId, UserId = notification.UserId })
+            var taskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQueryAsync { TaskId = notification.TaskId, UserId = notification.UserId })
                 .ConfigureAwait(false);
 
-            if (model == null)
+            if (taskInfo == null)
             {
                 return;
             }
 
-            var signup = model.UsersSignedUp?.FirstOrDefault(s => s.User.Id == notification.UserId);
-            if (signup == null)
-            {
-                return;
-            }
-            
-            var emailRecipient = !string.IsNullOrWhiteSpace(signup.PreferredEmail)
-                ? signup.PreferredEmail
-                : signup.User?.Email;
+            var emailRecipient = taskInfo?.Volunteer.Email;
+
             if (string.IsNullOrWhiteSpace(emailRecipient))
             {
                 return;
             }
-            
-            var eventLink = $"View event: {_options.Value.SiteBaseUrl}Admin/Event/Details/{model.EventId}";
+
+            var eventLink = $"View event: {_options.Value.SiteBaseUrl}Event/Details/{taskInfo.EventId}";
 
             var message = new StringBuilder();
-            message.AppendLine("This is to confirm that you have elected to un-enroll from the following event:");
+            message.AppendLine($"This is to confirm that you have elected to un-enroll from the following task:");
             message.AppendLine();
-            message.AppendLine($"   Campaign: {model.CampaignName}");
-            message.AppendLine($"   Event: {model.EventName} ({eventLink})");
+            message.AppendLine($"   Campaign: {taskInfo.CampaignName}");
+            message.AppendLine($"   Event: {taskInfo.EventName} ({eventLink})");
+            message.AppendLine($"   Task: {taskInfo.TaskName}");
             message.AppendLine();
             message.AppendLine("Thanks for letting us know that you will not be participating.");
 
@@ -59,7 +52,7 @@ namespace AllReady.Features.Notifications
                     EmailMessage = message.ToString(),
                     HtmlMessage = message.ToString(),
                     EmailRecipients = new List<string> { emailRecipient },
-                    Subject = "allReady Event Un-enrollment Confirmation"
+                    Subject = "allReady Task Un-enrollment Confirmation"
                 }
             };
 

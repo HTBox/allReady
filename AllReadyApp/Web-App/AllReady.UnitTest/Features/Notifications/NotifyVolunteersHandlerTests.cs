@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using AllReady.Services;
-using AllReady.UnitTest.Features.Campaigns;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
@@ -52,11 +50,6 @@ namespace AllReady.UnitTest.Features.Notifications
             Context.Organizations.Add(htb);
             Context.Events.Add(queenAnne);
 
-            var eventSignups = new List<EventSignup>();
-            eventSignups.Add(new EventSignup { Event = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow });
-            eventSignups.Add(new EventSignup { Event = queenAnne, User = user2, SignupDateTime = DateTime.UtcNow });
-
-            Context.EventSignup.AddRange(eventSignups);
             Context.SaveChanges();
         }
 

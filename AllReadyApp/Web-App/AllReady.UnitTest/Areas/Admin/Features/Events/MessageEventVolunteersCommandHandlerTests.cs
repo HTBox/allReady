@@ -53,13 +53,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Context.Organizations.Add(htb);
             Context.Events.Add(queenAnne);
 
-            var eventSignups = new List<EventSignup>
-            {
-                new EventSignup { Event = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow },
-                new EventSignup { Event = queenAnne, User = user2, SignupDateTime = DateTime.UtcNow }
-            };
-
-            Context.EventSignup.AddRange(eventSignups);
             Context.SaveChanges();
         }
 

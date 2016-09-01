@@ -74,16 +74,12 @@ namespace AllReady.ViewModels.Event
         public LocationViewModel Location { get; set; }
         public List<TaskViewModel> Tasks { get; set; } = new List<TaskViewModel>();
         public List<TaskViewModel> UserTasks { get; set; } = new List<TaskViewModel>();
-        public bool IsUserVolunteeredForEvent { get; set; }
-        public List<ApplicationUser> Volunteers { get; set; }
         public string UserId { get; set; }
         public List<SkillViewModel> RequiredSkills { get; set; }
         public List<SkillViewModel> UserSkills { get; set; }
-        public int NumberOfVolunteersRequired { get; set; }
         public EventSignupViewModel SignupModel { get; set; }
         public bool IsClosed { get; set; }
         public bool HasPrivacyPolicy { get; set; }
-        public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
         public bool IsLimitVolunteers { get; set; } = true;
         public bool IsAllowWaitList { get; set; } = true;
         public string Headline { get; set; }

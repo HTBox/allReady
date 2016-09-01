@@ -36,7 +36,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 TimeZoneId = task.Event.Campaign.TimeZoneId,
                 RequiredSkills = task.RequiredSkills,
                 AssignedVolunteers = task.AssignedVolunteers.Select(ts => new VolunteerViewModel { UserId = ts.User.Id, UserName = ts.User.UserName, HasVolunteered = true }).ToList(),
-                AllVolunteers = task.Event.UsersSignedUp.Select(es => new VolunteerViewModel { UserId = es.User.Id, UserName = es.User.UserName, HasVolunteered = false }).ToList()
             };
 
             foreach (var assignedVolunteer in model.AssignedVolunteers)
@@ -51,7 +50,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
         {
             return await _context.Tasks
                 .AsNoTracking()
-                .Include(t => t.Event).ThenInclude(e => e.UsersSignedUp).ThenInclude(es => es.User)
+                .Include(t => t.Event)
                 .Include(t => t.Event.Campaign)
                 .Include(t => t.AssignedVolunteers).ThenInclude(ts => ts.User)
                 .Include(t => t.RequiredSkills).ThenInclude(ts => ts.Skill).ThenInclude(s => s.ParentSkill).ThenInclude(s => s.ParentSkill)

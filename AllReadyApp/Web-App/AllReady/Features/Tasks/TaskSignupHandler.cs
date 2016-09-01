@@ -31,7 +31,6 @@ namespace AllReady.Features.Tasks
 
             var campaignEvent = await _context.Events
                 .Include(a => a.RequiredSkills)
-                .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
                 .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(s => s.Skill)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers)
                 .SingleOrDefaultAsync(a => a.Id == model.EventId).ConfigureAwait(false);
@@ -53,24 +52,8 @@ namespace AllReady.Features.Tasks
                 return new TaskSignupResult { Status = TaskSignupResult.FAILURE_CLOSEDTASK };
             }
 
-            campaignEvent.UsersSignedUp = campaignEvent.UsersSignedUp ?? new List<EventSignup>();
-
-            // If the user has not already been signed up for the event, sign them up
-            if (!campaignEvent.UsersSignedUp.Any(eventSignup => eventSignup.User.Id == user.Id))
-            {
-                campaignEvent.UsersSignedUp.Add(new EventSignup
-                {
-                    Event = campaignEvent,
-                    User = user,
-                    PreferredEmail = model.PreferredEmail,
-                    PreferredPhoneNumber = model.PreferredPhoneNumber,
-                    AdditionalInfo = model.AdditionalInfo,
-                    SignupDateTime = DateTime.UtcNow
-                });
-            }
-
             // If somehow the user has already been signed up for the task, don't sign them up again
-            if (!task.AssignedVolunteers.Any(taskSignup => taskSignup.User.Id == user.Id))
+            if (task.AssignedVolunteers.All(taskSignup => taskSignup.User.Id != user.Id))
             {
                 task.AssignedVolunteers.Add(new TaskSignup
                 {
@@ -99,7 +82,7 @@ namespace AllReady.Features.Tasks
             await _context.SaveChangesAsync().ConfigureAwait(false);
 
             //Notify admins of a new volunteer
-            await _mediator.PublishAsync(new VolunteerSignupNotification { EventId = model.EventId, UserId = model.UserId, TaskId = task.Id })
+            await _mediator.PublishAsync(new VolunteerSignupNotification { UserId = model.UserId, TaskId = task.Id })
                 .ConfigureAwait(false);
 
             return new TaskSignupResult {Status = "success", Task = task};

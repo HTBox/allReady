@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using AllReady.Models;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Notifications
 {
-    public class EventDetailForNotificationQueryHandlerAsyncTests : InMemoryContextTest
+    public class TaskDetailForNotificationQueryHandlerAsyncTests : InMemoryContextTest
     {
         private ApplicationUser _user1;
         private Organization _htb;
@@ -70,17 +69,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
                 RequiredSkills = new List<EventSkill>(),
-                Tasks = new List<AllReadyTask>(),
-                UsersSignedUp = new List<EventSignup>
-                {
-                    new EventSignup
-                    {
-                        Id = 1,
-                        PreferredEmail = "testuser@gmail.com",
-                        PreferredPhoneNumber = "(555)555-1234",
-                        User = _user1
-                    }
-                }
+                Tasks = new List<AllReadyTask>()
             };
 
             _task1 = new AllReadyTask
@@ -114,25 +103,10 @@ namespace AllReady.UnitTest.Features.Notifications
         }
 
         [Fact]
-        public async Task ModelCanBeCreatedFomExistingEvent()
-        {
-            var query = new EventDetailForNotificationQueryAsync { EventId = 1, UserId = _user1.Id };
-            var handler = new EventDetailForNotificationQueryHandlerAsync(Context);
-
-            var result = await handler.Handle(query);
-
-            Assert.NotNull(result);
-            Assert.True(_queenAnne.UsersSignedUp.Count == result.UsersSignedUp.Count, "Count of signed up users does not match");
-            Assert.True(_queenAnne.Tasks.Count == result.Tasks.Count, "Count of tasks does not match");
-            Assert.True(_queenAnne.Tasks[0].AssignedVolunteers.Count == result.Tasks[0].AssignedVolunteers.Count, "Count of volunteers assigned to tak does not match");
-            Assert.True(_firePrev.CampaignContacts.Count == result.CampaignContacts.Count, "Count of campaign contacts does not match");
-        }
-
-        [Fact]
         public async Task EventDoesNotExist()
         {
-            var query = new EventDetailForNotificationQueryAsync { EventId = 999, UserId = _user1.Id };
-            var handler = new EventDetailForNotificationQueryHandlerAsync(Context);
+            var query = new TaskDetailForNotificationQueryAsync { TaskId = 999, UserId = _user1.Id };
+            var handler = new TaskDetailForNotificationQueryHandlerAsync(Context);
 
             var result = await handler.Handle(query);
 

@@ -2,7 +2,7 @@
 using AllReady.ViewModels.Event;
 using MediatR;
 
-namespace AllReady.Features.Event
+namespace AllReady.Features.Events
 {
     public class GetMyTasksQuery : IRequest<IEnumerable<TaskSignupViewModel>>
     {

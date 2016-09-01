@@ -5,7 +5,7 @@ using AllReady.ViewModels.Event;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AllReady.Features.Event
+namespace AllReady.Features.Events
 {
     public class EventByDateRangeQueryHandler : IRequestHandler<EventByDateRangeQuery, IEnumerable<EventViewModel>>
     {

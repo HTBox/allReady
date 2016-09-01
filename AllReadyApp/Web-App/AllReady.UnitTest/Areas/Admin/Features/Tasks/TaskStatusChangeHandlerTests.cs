@@ -62,13 +62,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Organizations.Add(htb);
             Context.Events.Add(queenAnne);
 
-            var eventSignups = new List<EventSignup>
-            {
-                new EventSignup { Event = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow }
-            };
-
-            Context.EventSignup.AddRange(eventSignups);
-
             var newTask = new AllReadyTask
             {
                 Event = queenAnne,

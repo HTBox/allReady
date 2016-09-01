@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
 
-namespace AllReady.Features.Event
+namespace AllReady.Features.Events
 {
     public class UpdateMyTasksHandlerAsync : AsyncRequestHandler<UpdateMyTasksCommandAsync>
     {

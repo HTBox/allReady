@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Extensions;
-using AllReady.Features.Event;
 using AllReady.Features.Manage;
 using AllReady.Features.Tasks;
 using AllReady.ViewModels.Shared;
@@ -16,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using DeleteTaskCommandAsync = AllReady.Features.Tasks.DeleteTaskCommandAsync;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
+using AllReady.Features.Events;
 
 namespace AllReady.Controllers
 {
