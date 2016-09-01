@@ -402,7 +402,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             await sut.DeleteConfirmed(campaignId);
 
-            mockMediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == campaignId)), Times.Once);
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommandAsync>(i => i.CampaignId == campaignId)), Times.Once);
         }
 
         [Fact]

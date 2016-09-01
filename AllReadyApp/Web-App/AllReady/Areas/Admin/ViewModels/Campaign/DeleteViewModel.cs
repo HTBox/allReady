@@ -16,5 +16,7 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         public string OrganizationName { get; set; }
 
         public string Title { get; set; }
+
+        public bool UserIsOrgAdmin { get; set; }
     }
 }

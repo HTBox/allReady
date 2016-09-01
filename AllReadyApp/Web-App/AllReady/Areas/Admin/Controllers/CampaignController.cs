@@ -148,6 +148,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             viewModel.Title = $"Delete campaign {viewModel.Name}";
+            viewModel.UserIsOrgAdmin = true;
 
             return View(viewModel);
         }
@@ -155,15 +156,14 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Campaign/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(DeleteViewModel viewModel)
         {
-            var viewModel = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = id });
-            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
+            if (!viewModel.UserIsOrgAdmin)
             {
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new DeleteCampaignCommand { CampaignId = id });
+            await _mediator.SendAsync(new DeleteCampaignCommandAsync { CampaignId = viewModel.Id });
 
             return RedirectToAction(nameof(Index), new { area = "Admin" });
         }
