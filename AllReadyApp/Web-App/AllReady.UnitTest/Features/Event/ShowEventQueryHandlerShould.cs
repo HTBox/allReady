@@ -19,7 +19,7 @@ namespace AllReady.UnitTest.Features.Event
     {
         //happy path test. set up data to get all possible properties populated when EventViewModel is returned from handler
         [Fact]
-        public async Task SetsEventSignupViewModel_WithTheCorrectData()
+        public async Task SetsTaskSignupViewModel_WithTheCorrectData()
         {
             var options = this.CreateNewContextOptions();
 
@@ -185,7 +185,7 @@ namespace AllReady.UnitTest.Features.Event
         }
 
         [Fact]
-        public async Task SetUserTasksToListOfTaskViewModelForAnyTasksWhereTheUserHasVolunteeredInAscendingOrderByTaskStartDateTime_WhenThereAreNoEventSignupsForTheEventAndTheUser_AndEventIsNotNullAndEventsCampaignIsUnlocked()
+        public async Task SetUserTasksToListOfTaskViewModelForAnyTasksWhereTheUserHasVolunteeredInAscendingOrderByTaskStartDateTime_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
             var options = this.CreateNewContextOptions();
 
@@ -202,7 +202,6 @@ namespace AllReady.UnitTest.Features.Event
             using (var context = new AllReadyContext(options)) {
                 context.Users.Add(appUser);
                 context.Events.Add(allReadyEvent);
-                // no EventSignups
                 await context.SaveChangesAsync();
             }
 
@@ -222,7 +221,7 @@ namespace AllReady.UnitTest.Features.Event
         }
 
         [Fact]
-        public async Task SetTasksToListOfTaskViewModelForAnyTasksWhereTheUserHasNotVolunteeredInAscendingOrderByTaskStartDateTime_WhenThereAreNoEventSignupsForTheEventAndTheUser_AndEventIsNotNullAndEventsCampaignIsUnlocked()
+        public async Task SetTasksToListOfTaskViewModelForAnyTasksWhereTheUserHasNotVolunteeredInAscendingOrderByTaskStartDateTime_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
             var options = this.CreateNewContextOptions();
 
@@ -239,7 +238,6 @@ namespace AllReady.UnitTest.Features.Event
             using (var context = new AllReadyContext(options)) {
                 context.Users.Add(appUser);
                 context.Events.Add(allReadyEvent);
-                // no EventSignups
                 await context.SaveChangesAsync();
             }
 

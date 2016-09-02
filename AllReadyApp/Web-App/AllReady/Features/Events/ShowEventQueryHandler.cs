@@ -7,6 +7,7 @@ using AllReady.ViewModels.Task;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using TaskSignupViewModel = AllReady.ViewModels.Shared.TaskSignupViewModel;
 
 namespace AllReady.Features.Events
 {
@@ -53,7 +54,7 @@ namespace AllReady.Features.Events
             var unassignedTasks = evt.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != userId)).ToList();
             eventViewModel.Tasks = new List<TaskViewModel>(unassignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
 
-            eventViewModel.SignupModel = new EventSignupViewModel
+            eventViewModel.SignupModel = new TaskSignupViewModel
             {
                 EventId = eventViewModel.Id,
                 UserId = userId,

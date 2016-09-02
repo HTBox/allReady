@@ -310,7 +310,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(null, null, null);
             sut.AddModelStateErrorWithErrorMessage(modelStateErrorMessage);
 
-            var jsonResult = await sut.RegisterTask(new EventSignupViewModel()) as JsonResult;
+            var jsonResult = await sut.RegisterTask(new TaskSignupViewModel()) as JsonResult;
             var result = jsonResult.GetValueForProperty<List<string>>("errors");
 
             Assert.IsType<JsonResult>(jsonResult);
@@ -321,7 +321,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task RegisterTaskSendsTaskSignupCommandWithCorrectTaskSignupModel()
         {
-            var model = new EventSignupViewModel();
+            var model = new TaskSignupViewModel();
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommandAsync>(y => y.TaskSignupModel == model))).Returns(Task.FromResult(new TaskSignupResult()));
 
@@ -335,7 +335,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task Register_ReturnsCorrectJson_WhenApiResult_IsSuccess()
         {
             const string taskSignUpResultStatus = TaskSignupResult.SUCCESS;
-            var model = new EventSignupViewModel();
+            var model = new TaskSignupViewModel();
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommandAsync>(y => y.TaskSignupModel == model)))
                 .Returns(Task.FromResult(new TaskSignupResult
@@ -360,7 +360,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const string taskSignUpResultStatus = TaskSignupResult.FAILURE_EVENTNOTFOUND;
 
-            var model = new EventSignupViewModel();
+            var model = new TaskSignupViewModel();
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommandAsync>(y => y.TaskSignupModel == model)))
                 .Returns(Task.FromResult(new TaskSignupResult
@@ -386,7 +386,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const string taskSignUpResultStatus = TaskSignupResult.FAILURE_TASKNOTFOUND;
 
-            var model = new EventSignupViewModel();
+            var model = new TaskSignupViewModel();
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommandAsync>(y => y.TaskSignupModel == model)))
                 .Returns(Task.FromResult(new TaskSignupResult
@@ -412,7 +412,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const string taskSignUpResultStatus = TaskSignupResult.FAILURE_CLOSEDTASK;
 
-            var model = new EventSignupViewModel();
+            var model = new TaskSignupViewModel();
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommandAsync>(y => y.TaskSignupModel == model)))
                 .Returns(Task.FromResult(new TaskSignupResult
@@ -437,7 +437,7 @@ namespace AllReady.UnitTest.Controllers
         public void RegisterTaskHasValidateAntiForgeryTokenAttrbiute()
         {
             var sut = new TaskApiController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<EventSignupViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<TaskSignupViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -445,7 +445,7 @@ namespace AllReady.UnitTest.Controllers
         public void RegisterTaskHasHttpPostAttributeWithCorrectTemplate()
         {
             var sut = new TaskApiController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<EventSignupViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<TaskSignupViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
 
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "signup");
@@ -455,7 +455,7 @@ namespace AllReady.UnitTest.Controllers
         public void RegisterTaskHasAuthorizeAttrbiute()
         {
             var sut = new TaskApiController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<EventSignupViewModel>())).OfType<AuthorizeAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<TaskSignupViewModel>())).OfType<AuthorizeAttribute>().SingleOrDefault();
 
             Assert.NotNull(attribute);
         }
@@ -464,7 +464,7 @@ namespace AllReady.UnitTest.Controllers
         public void RegisterTaskHasHasProducesAtttributeWithTheCorrectContentType()
         {
             var sut = new TaskApiController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<EventSignupViewModel>())).OfType<ProducesAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<TaskSignupViewModel>())).OfType<ProducesAttribute>().SingleOrDefault();
 
             Assert.NotNull(attribute);
             Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");

@@ -194,7 +194,7 @@ namespace AllReady.Controllers
         [HttpPost("signup")]
         [Authorize]
         [Produces("application/json")]
-        public async Task<ActionResult> RegisterTask(EventSignupViewModel signupModel)
+        public async Task<ActionResult> RegisterTask(TaskSignupViewModel signupModel)
         {
             if (signupModel == null)
             {

@@ -276,7 +276,6 @@
             clearTimeout(alertVm.timer);
         }
     }
-
  
    CannotCompleteViewModel = function (task) {
         var self = this;
