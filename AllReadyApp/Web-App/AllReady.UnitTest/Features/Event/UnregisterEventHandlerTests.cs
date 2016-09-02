@@ -9,7 +9,7 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Event
 {
-    public class UnregisterEventHandlerTests : InMemoryContextTestBase
+    public class UnregisterEventHandlerTests : InMemoryContextTest
     {
         [Fact]
         public async Task InvokesDeleteEventAndTaskSignupsAsyncWithCorrectEventSignupId()
