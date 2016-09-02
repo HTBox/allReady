@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class EditCampaignCommand : IAsyncRequest<int>
+    public class EditCampaignCommandAsync : IAsyncRequest<int>
     {
         public CampaignSummaryViewModel Campaign {get; set;}
     }

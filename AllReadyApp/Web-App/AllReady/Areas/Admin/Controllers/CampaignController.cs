@@ -110,7 +110,16 @@ namespace AllReady.Areas.Admin.Controllers
                 {
                     if (fileUpload.IsAcceptableImageContentType())
                     {
-                        campaign.ImageUrl = await _imageService.UploadCampaignImageAsync(campaign.OrganizationId, campaign.Id, fileUpload);
+                        var existingImageUrl = campaign.ImageUrl;
+                        var newImageUrl = await _imageService.UploadCampaignImageAsync(campaign.OrganizationId, campaign.Id, fileUpload);
+                        if (!string.IsNullOrEmpty(newImageUrl))
+                        {
+                            campaign.ImageUrl = newImageUrl;
+                            if (existingImageUrl != null)
+                            {
+                                await _imageService.DeleteImageAsync(existingImageUrl);
+                            }
+                        }
                     }
                     else
                     {
@@ -119,9 +128,9 @@ namespace AllReady.Areas.Admin.Controllers
                     }
                 }
 
-                var id = await _mediator.SendAsync(new EditCampaignCommand { Campaign = campaign });
+                var id = await _mediator.SendAsync(new EditCampaignCommandAsync { Campaign = campaign });
 
-                return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
+                return RedirectToAction(nameof(Details), new { area = "Admin", id });
             }
 
             return View(campaign);

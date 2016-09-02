@@ -7,7 +7,7 @@
     string cancelUrl;
     if (isEdit)
     {
-        ViewData["Title"] = $"Edit Campaign";
+        ViewData["Title"] = "Edit Campaign";
         actionTitle = "Save";
         cancelUrl = Url.Action("Details", "Campaign", new { area = "Admin", id = Model.Id });
     }
@@ -55,7 +55,7 @@
         <hr />
         <div asp-validation-summary="All" class="text-danger"></div>
         @if (isEdit)
-            {
+        {
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="ImageUrl" />
         }
@@ -145,9 +145,9 @@
             @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
             {
                 <div class="form-group">
-                    <div class="col-md-2">&nbsp;</div>
+                    <label asp-for="ImageUrl" class="col-md-2 control-label"></label>
                     <div class="col-md-10">
-                        <img src="@Model.ImageUrl" class="img-thumbnail img-responsive col-md-4" />
+                        <img src="@Model.ImageUrl" class="img-thumbnail img-responsive col-md-4"/>
                     </div>
                 </div>
             }
@@ -262,7 +262,6 @@
             <a href="@cancelUrl" class="btn btn-default">Cancel</a>
         </div>
     </div>
-
 </form>
 
 <div class="modal fade" id="confirmContactModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">

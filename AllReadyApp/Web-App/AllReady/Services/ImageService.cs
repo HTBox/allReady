@@ -11,12 +11,12 @@ namespace AllReady.Services
 {
     public class ImageService : IImageService
     {
-        private const string CONTAINER_NAME = "images";
-        private readonly AzureStorageSettings _settings;
+        private const string ContainerName = "images";
+        private readonly AzureStorageSettings _options;
 
         public ImageService(IOptions<AzureStorageSettings> options)
         {
-            _settings = options.Value;
+            _options = options.Value;
         }
 
         /*
@@ -56,17 +56,28 @@ namespace AllReady.Services
             return await UploadImageAsync(blobPath, image);
         }
 
+        public async Task DeleteImageAsync(string imageUrl)
+        {
+            var blobContainer = CloudStorageAccount.Parse(_options.AzureStorage)
+                .CreateCloudBlobClient()
+                .GetContainerReference(ContainerName);
+
+            var blobName = imageUrl.Replace($"{blobContainer.Uri.AbsoluteUri}/", string.Empty);
+            var blockBlob = blobContainer.GetBlockBlobReference(blobName);
+
+            await blockBlob.DeleteAsync();
+        }
+
         private async Task<string> UploadImageAsync(string blobPath, IFormFile image)
         {
             //Get filename
-            var fileName = (ContentDispositionHeaderValue.Parse(image.ContentDisposition).FileName).Trim('"').ToLower();
-            Debug.WriteLine("BlobPath={0}, fileName={1}, image length={2}", blobPath, fileName, image.Length.ToString());
+            var fileName = ContentDispositionHeaderValue.Parse(image.ContentDisposition).FileName.Trim('"').ToLower();
+            Debug.WriteLine($"BlobPath={blobPath}, fileName={fileName}, image length={image.Length}");
 
-            if (fileName.EndsWith(".jpg") || fileName.EndsWith(".jpeg") || fileName.EndsWith(".png") ||
-                fileName.EndsWith(".gif"))
+            if (fileName.EndsWith(".jpg") || fileName.EndsWith(".jpeg") || fileName.EndsWith(".png") || fileName.EndsWith(".gif"))
             {
-                var account = CloudStorageAccount.Parse(_settings.AzureStorage);
-                var container = account.CreateCloudBlobClient().GetContainerReference(CONTAINER_NAME);
+                var account = CloudStorageAccount.Parse(_options.AzureStorage);
+                var container = account.CreateCloudBlobClient().GetContainerReference(ContainerName);
 
                 //Create container if it doesn't exist wiht public access
                 await container.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Container, new BlobRequestOptions(), new OperationContext());

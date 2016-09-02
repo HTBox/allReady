@@ -24,10 +24,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using AllReady.Security.Middleware;
 using Newtonsoft.Json.Serialization;
-using Geocoding;
-using Geocoding.Google;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace AllReady
