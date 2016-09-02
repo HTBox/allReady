@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Features.Admin;
+using AllReady.Features.Manage;
 using AllReady.Models;
 using AllReady.ViewModels.Account;
 using MediatR;
@@ -66,7 +67,7 @@ namespace AllReady.Controllers
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmEmail), Controller = "Admin", Values = new { userId = user.Id, token = token }, Protocol = Request.Scheme });
-                    await _mediator.SendAsync(new SendAccountConfirmationEmail { Email = model.Email, CallbackUrl = callbackUrl });
+                    await _mediator.SendAsync(new SendConfirmAccountEmail { Email = model.Email, CallbackUrl = callbackUrl });
                     return RedirectToAction(nameof(DisplayEmail), "Admin");
                 }
 
