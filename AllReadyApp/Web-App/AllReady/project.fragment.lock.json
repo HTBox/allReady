@@ -9,13 +9,6 @@
       },
       "runtime": {
         "bin/Debug/AllReady.Models.dll": {}
-      },
-      "contentFiles": {
-        "bin/Debug/AllReady.Models.pdb": {
-          "buildAction": "None",
-          "codeLanguage": "any",
-          "copyToOutput": true
-        }
       }
     }
   }

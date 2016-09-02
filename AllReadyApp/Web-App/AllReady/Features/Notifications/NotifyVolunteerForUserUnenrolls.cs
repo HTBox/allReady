@@ -23,6 +23,11 @@ namespace AllReady.Features.Notifications
             var model = await _mediator.SendAsync(new EventDetailForNotificationQueryAsync { EventId = notification.EventId, UserId = notification.UserId })
                 .ConfigureAwait(false);
 
+            if (model == null)
+            {
+                return;
+            }
+
             var signup = model.UsersSignedUp?.FirstOrDefault(s => s.User.Id == notification.UserId);
             if (signup == null)
             {
