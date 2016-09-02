@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 using AllReady.Models;
 using Microsoft.AspNetCore.Identity;
-using System.Linq;
 
 namespace AllReady.ViewModels.Manage
 {
@@ -52,32 +50,5 @@ namespace AllReady.ViewModels.Manage
         public bool IsProfileComplete { get; set; }
 
         public IEnumerable<string> ProfileCompletenessWarnings { get; set; }
-    }
-
-    public static class IndexViewModelExtensions
-    {
-        public static async Task<IndexViewModel> ToViewModel(this ApplicationUser user, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
-        {
-            var profileCompletenessWarnings = user.ValidateProfileCompleteness();
-            var result = new IndexViewModel
-            {
-                HasPassword = await userManager.HasPasswordAsync(user),
-                EmailAddress = user.Email,
-                IsEmailAddressConfirmed = user.EmailConfirmed,
-                IsPhoneNumberConfirmed = user.PhoneNumberConfirmed,
-                PhoneNumber = await userManager.GetPhoneNumberAsync(user),
-                TwoFactor = await userManager.GetTwoFactorEnabledAsync(user),
-                Logins = await userManager.GetLoginsAsync(user),
-                BrowserRemembered = await signInManager.IsTwoFactorClientRememberedAsync(user),
-                AssociatedSkills = user.AssociatedSkills,
-                TimeZoneId = user.TimeZoneId,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                ProposedNewEmailAddress = user.PendingNewEmail,
-                IsProfileComplete = user.IsProfileComplete(),
-                ProfileCompletenessWarnings = profileCompletenessWarnings.Select(p => p.ErrorMessage)
-            };
-            return result;
-        }
     }
 }

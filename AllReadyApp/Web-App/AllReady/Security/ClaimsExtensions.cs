@@ -65,19 +65,5 @@ namespace AllReady.Security
 
             return username;
         }
-
-        public static int? GetOrganizationId(this ApplicationUser user)
-        {
-            int? result = null;
-            var organizationIdClaim = user.Claims.FirstOrDefault(c => c.ClaimType == ClaimTypes.Organization);
-            if (organizationIdClaim != null)
-            {
-                int organizationId;
-                if (int.TryParse(organizationIdClaim.ClaimValue, out organizationId))
-                    result = organizationId;
-                }
-
-            return result;
-        }
     }
 }

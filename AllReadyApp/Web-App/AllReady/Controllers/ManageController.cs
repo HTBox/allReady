@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AllReady.Features.Login;
 using AllReady.Features.Manage;
 using AllReady.Models;
+using AllReady.Security;
 using AllReady.ViewModels.Manage;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
