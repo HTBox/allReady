@@ -32,7 +32,7 @@ namespace AllReady.Features.Tasks
             var campaignEvent = await _context.Events
                 .Include(a => a.RequiredSkills)
                 .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(s => s.Skill)
-                .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers)
+                .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(t => t.User)
                 .SingleOrDefaultAsync(a => a.Id == model.EventId).ConfigureAwait(false);
 
             if (campaignEvent == null)
