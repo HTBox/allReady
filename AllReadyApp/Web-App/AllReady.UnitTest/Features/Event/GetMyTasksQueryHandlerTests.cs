@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using AllReady.Features.Event;
 using AllReady.Models;
 using Xunit;
 using System.Threading.Tasks;
+using AllReady.Features.Events;
 
 namespace AllReady.UnitTest.Features.Event
 {

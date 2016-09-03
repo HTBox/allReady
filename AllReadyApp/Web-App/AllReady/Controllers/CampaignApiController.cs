@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AllReady.Features.Event;
+using AllReady.Features.Events;
 using AllReady.ViewModels.Event;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

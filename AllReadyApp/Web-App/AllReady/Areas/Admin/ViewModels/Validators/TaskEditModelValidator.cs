@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AllReady.Areas.Admin.ViewModels.Task;
-using AllReady.Features.Event;
+using AllReady.Features.Events;
 using AllReady.Models;
 using MediatR;
 

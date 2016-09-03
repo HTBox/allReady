@@ -48,7 +48,7 @@ namespace AllReady.ViewModels.Event
                  ? new List<TaskViewModel>(@event.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
                  : new List<TaskViewModel>();
 
-            SignupModel = new EventSignupViewModel();
+            SignupModel = new Shared.TaskSignupViewModel();
 
             //mgmccarthy: this check doesn't make much sense unless you explicitly set @event.RequiredSkills to null. If you look at the Event model, you'll see that RequireSkills is instaniated with
             //a new empty list: "public List<EventSkill> RequiredSkills { get; set; } = new List<EventSkill>();". I think this can go away?
@@ -74,16 +74,12 @@ namespace AllReady.ViewModels.Event
         public LocationViewModel Location { get; set; }
         public List<TaskViewModel> Tasks { get; set; } = new List<TaskViewModel>();
         public List<TaskViewModel> UserTasks { get; set; } = new List<TaskViewModel>();
-        public bool IsUserVolunteeredForEvent { get; set; }
-        public List<ApplicationUser> Volunteers { get; set; }
         public string UserId { get; set; }
         public List<SkillViewModel> RequiredSkills { get; set; }
         public List<SkillViewModel> UserSkills { get; set; }
-        public int NumberOfVolunteersRequired { get; set; }
-        public EventSignupViewModel SignupModel { get; set; }
+        public Shared.TaskSignupViewModel SignupModel { get; set; }
         public bool IsClosed { get; set; }
         public bool HasPrivacyPolicy { get; set; }
-        public List<EventSignup> UsersSignedUp { get; set; } = new List<EventSignup>();
         public bool IsLimitVolunteers { get; set; } = true;
         public bool IsAllowWaitList { get; set; } = true;
         public string Headline { get; set; }

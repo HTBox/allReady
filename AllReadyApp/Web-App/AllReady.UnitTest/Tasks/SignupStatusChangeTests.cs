@@ -2,7 +2,6 @@
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -50,13 +49,6 @@ namespace AllReady.UnitTest.Tasks
             htb.Campaigns.Add(firePrev);
             Context.Organizations.Add(htb);
             Context.Events.Add(queenAnne);
-
-            var eventSignups = new List<EventSignup>
-            {
-                new EventSignup { Event = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow }
-            };
-
-            Context.EventSignup.AddRange(eventSignups);
 
             var newTask = new AllReadyTask()
             {

@@ -3,7 +3,7 @@ using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AllReady.Features.Event
+namespace AllReady.Features.Events
 {
     public class EventByIdQueryHandler : IRequestHandler<EventByIdQuery, Models.Event>
     {
@@ -23,7 +23,6 @@ namespace AllReady.Features.Event
                 .Include(a => a.RequiredSkills).ThenInclude(rs => rs.Skill).ThenInclude(s => s.ParentSkill)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(tu => tu.User)
                 .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
-                .Include(a => a.UsersSignedUp).ThenInclude(u => u.User)
                 .SingleOrDefault(a => a.Id == message.EventId);
         }
     }

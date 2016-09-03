@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using AllReady.Features.Event;
 using AllReady.Models;
 using System.Threading.Tasks;
+using AllReady.Features.Events;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Event

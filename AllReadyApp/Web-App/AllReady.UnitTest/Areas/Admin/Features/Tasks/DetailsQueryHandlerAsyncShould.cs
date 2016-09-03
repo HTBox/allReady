@@ -29,8 +29,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                     Id = 2,
                     Name = "EventName",
                     CampaignId = 3,
-                    Campaign = new Campaign { Id = 3, Name = "CampaignName", TimeZoneId = "Central Standard Time" },
-                    UsersSignedUp = new List<EventSignup> { new EventSignup { User = new ApplicationUser { Id = "UserId", UserName = "UserName" } } }
+                    Campaign = new Campaign { Id = 3, Name = "CampaignName", TimeZoneId = "Central Standard Time" }
                 },
                 RequiredSkills = new List<TaskSkill> { new TaskSkill { SkillId = 4, TaskId = 1 } },
                 AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User = new ApplicationUser { Id = "UserId", UserName = "UserName" } } }

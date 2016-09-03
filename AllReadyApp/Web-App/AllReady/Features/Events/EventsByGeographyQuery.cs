@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using MediatR;
 
-namespace AllReady.Features.Event
+namespace AllReady.Features.Events
 {
     public class EventsByGeographyQuery : IRequest<List<Models.Event>>
     {

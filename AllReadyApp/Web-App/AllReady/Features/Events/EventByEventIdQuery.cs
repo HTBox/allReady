@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace AllReady.Features.Event
+namespace AllReady.Features.Events
 {
     public class EventByIdQuery : IRequest<Models.Event>
     {

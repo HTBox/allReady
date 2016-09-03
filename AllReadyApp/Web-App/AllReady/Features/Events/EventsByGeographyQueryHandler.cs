@@ -4,7 +4,7 @@ using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AllReady.Features.Event
+namespace AllReady.Features.Events
 {
     public class EventsByGeographyQueryHandler : IRequestHandler<EventsByGeographyQuery, List<Models.Event>>
     {

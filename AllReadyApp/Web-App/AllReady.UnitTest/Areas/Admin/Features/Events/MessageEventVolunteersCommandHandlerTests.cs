@@ -49,17 +49,26 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true };
             Context.Users.Add(user2);
 
+            var task = new AllReadyTask
+            {
+                Id = 1,
+                Name = "Task 1",
+                Event = queenAnne,
+            };
+
+            var taskSignup = new TaskSignup
+            {
+                Id = 1,
+                User = user1,
+                Task = task
+            };
+
             htb.Campaigns.Add(firePrev);            
             Context.Organizations.Add(htb);
             Context.Events.Add(queenAnne);
+            Context.Tasks.Add(task);
+            Context.TaskSignups.Add(taskSignup);
 
-            var eventSignups = new List<EventSignup>
-            {
-                new EventSignup { Event = queenAnne, User = user1, SignupDateTime = DateTime.UtcNow },
-                new EventSignup { Event = queenAnne, User = user2, SignupDateTime = DateTime.UtcNow }
-            };
-
-            Context.EventSignup.AddRange(eventSignups);
             Context.SaveChanges();
         }
 
@@ -85,9 +94,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                    notifyCommand.ViewModel != null &&
                    notifyCommand.ViewModel.EmailMessage == "This is my message" &&
                    notifyCommand.ViewModel.Subject == "This is my subject" &&
-                   notifyCommand.ViewModel.EmailRecipients.Count == 2 &&
-                   notifyCommand.ViewModel.EmailRecipients.Contains("blah@1.com") &&
-                   notifyCommand.ViewModel.EmailRecipients.Contains("blah@2.com")
+                   notifyCommand.ViewModel.EmailRecipients.Count == 1 &&
+                   notifyCommand.ViewModel.EmailRecipients.Contains("blah@1.com")
 
             )), Times.Once());
         }

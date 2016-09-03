@@ -10,8 +10,8 @@ namespace AllReady.Areas.Admin.Features.Events
 {
     public class MessageEventVolunteersCommandHandler : AsyncRequestHandler<MessageEventVolunteersCommand>
     {
-        private AllReadyContext _context;
-        private IMediator _mediator;
+        private readonly AllReadyContext _context;
+        private readonly IMediator _mediator;
 
         public MessageEventVolunteersCommandHandler(AllReadyContext context, IMediator mediator)
         {
@@ -22,10 +22,10 @@ namespace AllReady.Areas.Admin.Features.Events
         protected override async Task HandleCore(MessageEventVolunteersCommand message)
         {
             var users =
-                _context.EventSignup.AsNoTracking()
+                _context.TaskSignups.AsNoTracking()
                 .Include(a => a.User)
-                .Where(a => a.Event.Id == message.ViewModel.EventId).ToList();
-
+                .Include(a => a.Task)
+                .Where(a => a.Task.EventId == message.ViewModel.EventId).ToList();
 
             // send all notifications to the queue
             var smsRecipients = new List<string>();

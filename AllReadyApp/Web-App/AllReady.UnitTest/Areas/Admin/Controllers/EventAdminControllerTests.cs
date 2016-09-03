@@ -17,10 +17,11 @@ using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Validators;
-using AllReady.Features.Event;
 using AllReady.Areas.Admin.ViewModels.Campaign;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using System.Reflection;
+using AllReady.Features.Events;
 using AllReady.ViewModels.Event;
 using Shouldly;
 
@@ -497,54 +498,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(routeAttribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public void AssignSendsEventByEventIdQueryWithCorrectEventId()
-        {
-        }
 
-        [Fact]
-        public void AssignReturnsHttpNotFoundResult_WhenEventIsNull()
-        {
-            var sut = new EventController(null, Mock.Of<IMediator>(), null);
-            Assert.IsType<NotFoundResult>(sut.Assign(It.IsAny<int>()));
-        }
 
-        [Fact]
-        public void AssignReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
-        {
-            var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { CampaignId = 1, Campaign = new Campaign { ManagingOrganizationId = 1 } });
-
-            var sut = new EventController(null, mediator.Object, null);
-            sut.MakeUserNotAnOrgAdmin();
-
-            Assert.IsType<UnauthorizedResult>(sut.Assign(It.IsAny<int>()));
-        }
-
-        [Fact]
-        public void AssignReturnsCorrectViewModel()
-        {
-            const int orgId = 1;
-
-            var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { CampaignId = 1, Campaign = new Campaign { ManagingOrganizationId = orgId } });
-
-            var sut = new EventController(null, mediator.Object, null);
-            sut.MakeUserAnOrgAdmin(orgId.ToString());
-
-            var result = (ViewResult) sut.Assign(It.IsAny<int>());
-            var resultModel = result.ViewData.Model;
-
-            Assert.IsType<EventViewModel>(resultModel);
-        }
-
-        [Fact]
-        public void AssignHasHttpGetAttribute()
-        {
-            var sut = EventControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.Assign(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
-            Assert.NotNull(attribute);
-        }
 
         [Fact(Skip = "NotImplemented")]
         public async Task MessageAllVolunteersReturnsBadRequestObjectResult_WhenModelStateIsInvalid()

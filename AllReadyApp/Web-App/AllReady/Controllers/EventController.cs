@@ -1,28 +1,17 @@
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using AllReady.Areas.Admin.Features.Tasks;
-using AllReady.Features.Event;
-using AllReady.Models;
-using AllReady.ViewModels.Event;
-using AllReady.ViewModels.Shared;
+using AllReady.Features.Events;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.Controllers
 {
     public class EventController : Controller
     {
         private readonly IMediator _mediator;
-        private UserManager<ApplicationUser> _userManager;
 
-        public EventController(IMediator mediator, UserManager<ApplicationUser> userManager)
+        public EventController(IMediator mediator)
         {
             _mediator = mediator;
-            _userManager = userManager;
         }
 
         // note: sgordon: These are currently not used as we've simplified the my events page. Note that My Events is moved to VolunteerController and now known as dashboard.
@@ -63,43 +52,6 @@ namespace AllReady.Controllers
             }
 
             return View("EventWithTasks", viewModel);
-        }
-
-        [HttpPost]
-        [Route("/Event/Signup")]
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Signup(EventSignupViewModel signupModel)
-        {
-            if (signupModel == null)
-            {
-                return BadRequest();
-            }
-
-            if (ModelState.IsValid)
-            {
-                await _mediator.SendAsync(new EventSignupCommand { EventSignup = signupModel });
-            }
-
-            //TODO: handle invalid event signup info (phone, email) in a useful way
-            //  would be best to handle it in KO on the client side (prevent clicking Volunteer)
-
-            return RedirectToAction(nameof(ShowEvent), new { id = signupModel.EventId });
-        }
-
-        [HttpGet]
-        [Route("/Event/ChangeStatus")]
-        [Authorize]
-        public async Task<IActionResult> ChangeStatus(int eventId, int taskId, string userId, TaskStatus status, string statusDesc)
-        {
-            if (userId == null)
-            {
-                return BadRequest();
-            }
-
-            await _mediator.SendAsync(new TaskStatusChangeCommandAsync { TaskStatus = status, TaskId = taskId, UserId = userId, TaskStatusDescription = statusDesc });
-
-            return RedirectToAction(nameof(ShowEvent), new { id = eventId });
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Areas.Admin.ViewModels.Validators;
-using AllReady.Features.Event;
+using AllReady.Features.Events;
 using AllReady.Models;
 using MediatR;
 using Moq;

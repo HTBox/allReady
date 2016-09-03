@@ -1,18 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using AllReady.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using AllReady.Extensions;
-using AllReady.Features.Event;
 using AllReady.Features.Events;
 using AllReady.ViewModels.Event;
-using AllReady.ViewModels.Shared;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.Controllers
 {
@@ -22,12 +15,10 @@ namespace AllReady.Controllers
     {
         private readonly IMediator _mediator;
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
-        private UserManager<ApplicationUser> _userManager;
 
-        public EventApiController(IMediator mediator, UserManager<ApplicationUser> userManager)
+        public EventApiController(IMediator mediator)
         {
             _mediator = mediator;
-            _userManager = userManager;
         }
 
         // GET: api/values
@@ -53,6 +44,7 @@ namespace AllReady.Controllers
             NotFound();
             return null;
         }
+
         //orginial code
         [HttpGet("{start}/{end}")]
         [Produces("application/json", Type = typeof(EventViewModel))]
@@ -119,64 +111,6 @@ namespace AllReady.Controllers
             }
 
             return View("NoUserCheckin", campaignEvent);
-        }
-
-        [HttpPut("{id}/checkin")]
-        [Authorize]
-        public async Task<ActionResult> PutCheckin(int id)
-        {
-            var campaignEvent = GetEventBy(id);
-            if (campaignEvent == null)
-            {
-                return NotFound();
-            }
-
-            var userSignup = campaignEvent.UsersSignedUp.FirstOrDefault(u => u.User.Id == _userManager.GetUserId(User));
-            if (userSignup != null && userSignup.CheckinDateTime == null)
-            {
-                userSignup.CheckinDateTime = DateTimeUtcNow.Invoke();
-                await _mediator.SendAsync(new AddEventSignupCommandAsync { EventSignup = userSignup });
-                return Json(new { Event = new { campaignEvent.Name, campaignEvent.Description } });
-            }
-
-            return Json(new { NeedsSignup = true, Event = new { campaignEvent.Name, campaignEvent.Description } });
-        }
-
-        [ValidateAntiForgeryToken]
-        [HttpPost("signup")]
-        [Authorize]
-        public async Task<object> RegisterEvent(EventSignupViewModel signupModel)
-        {
-            if (signupModel == null)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                // this condition should never be hit because client side validation is being performed
-                // but just to cover the bases, if this does happen send the erros to the client
-                return Json(new { errors = ModelState.GetErrorMessages() });
-            }
-
-            await _mediator.SendAsync(new EventSignupCommand { EventSignup = signupModel });
-
-            return new { Status = "success" };
-        }
-
-        [HttpDelete("{id}/signup")]
-        [Authorize]
-        public async Task<IActionResult> UnregisterEvent(int id)
-        {
-            var eventSignup = _mediator.Send(new EventSignupByEventIdAndUserIdQuery { EventId = id, UserId = _userManager.GetUserId(User) });
-            if (eventSignup == null)
-            {
-                return NotFound();
-            }
-
-            await _mediator.SendAsync(new UnregisterEvent { EventSignupId = eventSignup.Id, UserId = eventSignup.User.Id });
-
-            return Ok();
         }
 
         private Event GetEventBy(int eventId) => _mediator.Send(new EventByIdQuery { EventId = eventId });

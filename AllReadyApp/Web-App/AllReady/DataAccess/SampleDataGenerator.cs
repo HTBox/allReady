@@ -55,7 +55,6 @@ namespace AllReady.DataAccess
             var campaigns = new List<Campaign>();
             var tasks = new List<AllReadyTask>();
             var resources = new List<Resource>();
-            var eventSignups = new List<EventSignup>();
             var contacts = GetContacts();
             var skills = new List<Skill>();
 
@@ -349,6 +348,7 @@ namespace AllReady.DataAccess
             homeEscape.Tasks = GetSomeTasks(homeEscape, organization);
             tasks.AddRange(homeEscape.Tasks);
             #endregion
+
             #region Link campaign and event
 
             firePreventionCampaign.Events = new List<Event> { queenAnne, ballard, madrona };
@@ -359,6 +359,7 @@ namespace AllReady.DataAccess
             escapePlanCampaign.Events = new List<Event> { homeFestival, homeEscape };
 
             #endregion
+
             #region Add Campaigns and Events
             organizations.Add(organization);
             campaigns.Add(firePreventionCampaign);
@@ -430,12 +431,6 @@ namespace AllReady.DataAccess
             users.Add(user3);
             #endregion
 
-            #region ActvitySignups
-            eventSignups.Add(new EventSignup { Event = madrona, User = user1, SignupDateTime = DateTime.UtcNow });
-            eventSignups.Add(new EventSignup { Event = madrona, User = user2, SignupDateTime = DateTime.UtcNow });
-            eventSignups.Add(new EventSignup { Event = madrona, User = user3, SignupDateTime = DateTime.UtcNow });
-            #endregion
-
             #region TaskSignups
             var i = 0;
             foreach (var task in tasks.Where(t => t.Event == madrona))
@@ -455,10 +450,8 @@ namespace AllReady.DataAccess
             #endregion
 
             #region Wrap Up DB
-            _context.EventSignup.AddRange(eventSignups);
             _context.SaveChanges();
             #endregion
-
         }
 
         private List<Contact> GetContacts()
