@@ -27,7 +27,7 @@ namespace AllReady.Features.Notifications
                 return;
             }
 
-            var emailRecipient = taskInfo?.Volunteer.Email;
+            var emailRecipient = taskInfo?.Volunteer?.Email;
 
             if (string.IsNullOrWhiteSpace(emailRecipient))
             {
