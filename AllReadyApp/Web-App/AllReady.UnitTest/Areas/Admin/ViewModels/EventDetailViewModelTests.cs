@@ -133,5 +133,33 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels
 
             result.ShouldBe("20.0");
         }
+
+        [Fact]
+        public void VolunteerFulfilmentPercentage_ReturnsZero_WhenVoluneersRequiredIsZero()
+        {
+            var sut = new EventDetailViewModel
+            {
+                VolunteersRequired = 0,
+                AcceptedVolunteers = 0
+            };
+
+            var result = sut.VolunteerFulfilmentPercentage;
+
+            result.ShouldBe("0.0");
+        }
+
+        [Fact]
+        public void VolunteerFulfilmentPercentage_ReturnsCorrectPercentage()
+        {
+            var sut = new EventDetailViewModel
+            {
+                VolunteersRequired = 10,
+                AcceptedVolunteers = 2
+            };
+
+            var result = sut.VolunteerFulfilmentPercentage;
+
+            result.ShouldBe("20.0");
+        }
     }
 }
