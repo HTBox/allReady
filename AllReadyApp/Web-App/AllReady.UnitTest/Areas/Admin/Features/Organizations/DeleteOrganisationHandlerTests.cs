@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 {
-    public class DeleteOrganizationHandlerAsyncTests : InMemoryContextTest
+    public class DeleteOrganizationHandlerAsyncShould : InMemoryContextTest
     {
         protected override void LoadTestData()
         {
@@ -16,7 +16,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
         }
 
         [Fact]
-        public async Task DeleteExistingOrganization()
+        public async Task DeleteOrganizationThatMatchesOrganizationIdOnCommand()
         {
             var command = new DeleteOrganizationAsync { Id = 1 };
             var handler = new DeleteOrganizationHandlerAsync(Context);
@@ -26,7 +26,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
         }
 
         [Fact]
-        public async Task DeleteNonExistantOrganization()
+        public async Task NotDeleteOrganizationsThatDoNotMatchOrganizationIdOnCommand()
         {
             var command = new DeleteOrganizationAsync { Id = 999 };
             var handler = new DeleteOrganizationHandlerAsync(Context);
