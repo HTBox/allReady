@@ -1,0 +1,124 @@
+﻿@model AllReady.Areas.Admin.ViewModels.Request.EditRequestViewModel
+
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-route-area="Admin">@Model.EventName</a></li>
+            @if (Model.Id == Guid.Empty)
+            {
+                <li>Create New Request</li>
+            }
+            else
+            {
+                <li><a asp-controller="Task" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.Name</a></li>
+                <li>Edit</li>
+            }
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <h2>@ViewBag.Title</h2>
+        <br/>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <form asp-controller="Request" asp-action="Edit" asp-area="Admin">
+            <div class="form-horizontal">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <input type="hidden" asp-for="OrganizationId" />
+                <input type="hidden" asp-for="OrganizationName" />
+                <input type="hidden" asp-for="EventId" />
+                <input type="hidden" asp-for="EventName" />
+                <input type="hidden" asp-for="CampaignId" />
+                <input type="hidden" asp-for="CampaignName" />
+
+                <div class="form-group">
+                    <label asp-for="CampaignName" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <p class="form-control-static">@Model.CampaignName</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="EventName" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <p class="form-control-static">@Model.EventName</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Address" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <input asp-for="Address" class="form-control" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="City" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <input asp-for="City" class="form-control" />
+                        <span asp-validation-for="City" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="State" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <input asp-for="State" class="form-control" />
+                        <span asp-validation-for="State" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Zip" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <input asp-for="Zip" class="form-control" />
+                        <span asp-validation-for="Zip" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Phone" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button type="submit" class="btn btn-default">Save</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
