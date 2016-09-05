@@ -14,6 +14,8 @@ namespace AllReady.Areas.Admin.Controllers
     [Route("Admin/Requests")]
     public class RequestController : Controller
     {
+        public static string CreateRequestTitle = "Create New Request";
+
         private readonly IMediator _mediator;
 
         /// <summary>
@@ -56,7 +58,7 @@ namespace AllReady.Areas.Admin.Controllers
                 EventName = campaignEvent.Name,
             };
 
-            ViewBag.Title = "Create New Request";
+            ViewBag.Title = CreateRequestTitle;
 
             return View("Edit", model);
         }
