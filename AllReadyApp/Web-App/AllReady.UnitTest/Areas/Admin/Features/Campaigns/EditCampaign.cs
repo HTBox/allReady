@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.ViewModels.Campaign;
 using AllReady.Models;
+using AllReady.Providers;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
@@ -16,7 +18,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         public async Task ModelIsCreated()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var sut = new EditCampaignCommandHandlerAsync(context);
+            var sut = new EditCampaignCommandHandlerAsync(context, Mock.Of<IConvertDateTimeOffset>());
             var actual = await sut.Handle(new EditCampaignCommandAsync { Campaign = new CampaignSummaryViewModel { TimeZoneId = "Eastern Standard Time" } });
             Assert.NotEqual(0, actual);
         }
@@ -30,7 +32,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
                 TimeZoneId = "Eastern Standard Time"
             };
             var query = new EditCampaignCommandAsync { Campaign = vm };
-            var handler = new EditCampaignCommandHandlerAsync(context);
+            var handler = new EditCampaignCommandHandlerAsync(context, Mock.Of<IConvertDateTimeOffset>());
             var result = await handler.Handle(query);
             Assert.True(result > 0);
 
@@ -79,7 +81,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
                 TimeZoneId = "Eastern Standard Time"
             };
             var query = new EditCampaignCommandAsync { Campaign = vm };
-            var handler = new EditCampaignCommandHandlerAsync(context);
+            var handler = new EditCampaignCommandHandlerAsync(context, Mock.Of<IConvertDateTimeOffset>());
             var result = await handler.Handle(query);
             Assert.Equal(1, result); // should get back the Campaign id
 

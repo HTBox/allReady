@@ -11,18 +11,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class EditCampaignCommandHandler : IAsyncRequestHandler<EditCampaignCommand, int>
+    public class EditCampaignCommandHandlerAsync : IAsyncRequestHandler<EditCampaignCommandAsync, int>
     {
         private readonly AllReadyContext _context;
         private readonly IConvertDateTimeOffset dateTimeOffsetsConverter;
 
-        public EditCampaignCommandHandler(AllReadyContext context, IConvertDateTimeOffset dateTimeOffsetsConverter)
+        public EditCampaignCommandHandlerAsync(AllReadyContext context, IConvertDateTimeOffset dateTimeOffsetsConverter)
         {
             _context = context;
             this.dateTimeOffsetsConverter = dateTimeOffsetsConverter;
         }
 
-        public async Task<int> Handle(EditCampaignCommand message)
+        public async Task<int> Handle(EditCampaignCommandAsync message)
         {
             var campaign = await _context.Campaigns
                 .Include(l => l.Location)

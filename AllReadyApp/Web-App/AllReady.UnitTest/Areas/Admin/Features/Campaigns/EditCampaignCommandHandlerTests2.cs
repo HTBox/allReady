@@ -22,11 +22,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         public async Task AddNewCampaign()
         {
             // Arrange
-            var handler = new EditCampaignCommandHandler(Context, Mock.Of<IConvertDateTimeOffset>());
+            var handler = new EditCampaignCommandHandlerAsync(Context, Mock.Of<IConvertDateTimeOffset>());
             var newCampaign = new CampaignSummaryViewModel { Name = "New", Description = "Desc", TimeZoneId = "UTC" };
 
             // Act
-            var result = await handler.Handle(new EditCampaignCommand { Campaign = newCampaign });
+            var result = await handler.Handle(new EditCampaignCommandAsync { Campaign = newCampaign });
 
             // Assert
             Assert.Equal(5, Context.Campaigns.Count());
@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             var endDate = DateTime.Now.AddDays(30);
             const int org = 2;
 
-            var handler = new EditCampaignCommandHandler(Context, Mock.Of<IConvertDateTimeOffset>());
+            var handler = new EditCampaignCommandHandlerAsync(Context, Mock.Of<IConvertDateTimeOffset>());
             var updatedCampaign = new CampaignSummaryViewModel
             {
                 Id = 2,
@@ -63,7 +63,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             };
 
             // Act
-            var result = await handler.Handle(new EditCampaignCommand { Campaign = updatedCampaign });
+            var result = await handler.Handle(new EditCampaignCommandAsync { Campaign = updatedCampaign });
             var savedCampaign = Context.Campaigns.SingleOrDefault(s => s.Id == 2);
 
             // Assert
@@ -93,7 +93,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             const string postcode = "45231";
             const string country = "USA";
 
-            var handler = new EditCampaignCommandHandler(Context, Mock.Of<IConvertDateTimeOffset>());
+            var handler = new EditCampaignCommandHandlerAsync(Context, Mock.Of<IConvertDateTimeOffset>());
             var updatedCampaign = new CampaignSummaryViewModel
             {
                 Id = 2,
@@ -105,7 +105,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             };
 
             // Act
-            await handler.Handle(new EditCampaignCommand { Campaign = updatedCampaign });
+            await handler.Handle(new EditCampaignCommandAsync { Campaign = updatedCampaign });
             var savedCampaign = Context.Campaigns.SingleOrDefault(s => s.Id == 2);
 
             // Assert
@@ -129,7 +129,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             const string lastname = "Doe";
             const string telephone = "01323 111111";
 
-            var handler = new EditCampaignCommandHandler(Context, Mock.Of<IConvertDateTimeOffset>());
+            var handler = new EditCampaignCommandHandlerAsync(Context, Mock.Of<IConvertDateTimeOffset>());
             var updatedCampaign = new CampaignSummaryViewModel
             {
                 Id = 2,
@@ -144,7 +144,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             };
 
             // Act
-            await handler.Handle(new EditCampaignCommand { Campaign = updatedCampaign });
+            await handler.Handle(new EditCampaignCommandAsync { Campaign = updatedCampaign });
             var newContact = Context.Contacts.OrderBy(c => c.Id).LastOrDefault();
 
             // Assert
