@@ -30,16 +30,16 @@ namespace AllReady.Features.Notifications
             }
 
             var eventLink = $"View event: {_options.Value.SiteBaseUrl}/Event/Details/{taskInfo.EventId}";
-            var subject = "allReady Task Enrollment Confirmation";
+            const string subject = "allReady Task Enrollment Confirmation";
 
             var message = new StringBuilder();
-            message.AppendLine($"This is to confirm that you have volunteered to participate in the following task:");
+            message.AppendLine("This is to confirm that you have volunteered to participate in the following task:");
             message.AppendLine();
             message.AppendLine($"   Campaign: {taskInfo.CampaignName}");
             message.AppendLine($"   Event: {taskInfo.EventName} ({eventLink})");
             message.AppendLine($"   Task: {taskInfo.TaskName}");
             message.AppendLine();
-            message.AppendLine($"Thanks for volunteering. Your help is appreciated.");
+            message.AppendLine("Thanks for volunteering. Your help is appreciated.");
 
             var command = new NotifyVolunteersCommand
             {

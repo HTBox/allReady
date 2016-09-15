@@ -60,8 +60,6 @@ namespace AllReady.Features.Tasks
                     User = user,
                     Status = TaskStatus.Accepted.ToString(),
                     StatusDateTimeUtc = DateTime.UtcNow,
-                    //PreferredEmail = model.PreferredEmail,
-                    //PreferredPhoneNumber = model.PreferredPhoneNumber,
                     AdditionalInfo = model.AdditionalInfo
                 });
             }
