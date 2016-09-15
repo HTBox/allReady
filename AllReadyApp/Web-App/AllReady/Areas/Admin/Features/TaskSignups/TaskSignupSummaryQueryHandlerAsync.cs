@@ -27,7 +27,7 @@ namespace AllReady.Areas.Admin.Features.TaskSignups
                         {
                             TaskSignupId = x.Id,
                             VolunteerName = x.User.Name,
-                            VolunteerEmail = x.PreferredEmail ?? x.User.Email
+                            VolunteerEmail = x.User.Email
                         })
                 .FirstOrDefaultAsync().ConfigureAwait(false);
         }

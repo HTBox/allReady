@@ -29,7 +29,7 @@ namespace AllReady.UnitTest.Features.Event
             var message = new UpdateMyTasksCommandAsync { UserId =userId, TaskSignups = new List<TaskSignupViewModel>() };
 
             using (var context = new AllReadyContext(options)) {
-                var sut = new UpdateMyTasksHandlerAsync(context);
+                var sut = new UpdateMyTasksCommandHandlerAsync(context);
                 await sut.Handle(message);
             }
 
@@ -58,7 +58,7 @@ namespace AllReady.UnitTest.Features.Event
             }
 
             using (var context = new AllReadyContext(options)) {
-                var sut = new UpdateMyTasksHandlerAsync(context) {DateTimeUtcNow = () => DateTime.UtcNow};
+                var sut = new UpdateMyTasksCommandHandlerAsync(context) {DateTimeUtcNow = () => DateTime.UtcNow};
                 await sut.Handle(new UpdateMyTasksCommandAsync {TaskSignups = taskSignupViewModels});
             }
 
@@ -94,7 +94,7 @@ namespace AllReady.UnitTest.Features.Event
             }
 
             using (var context = new AllReadyContext(options)) {
-                var sut = new UpdateMyTasksHandlerAsync(context) {DateTimeUtcNow = () => dateTimeUtcNow};
+                var sut = new UpdateMyTasksCommandHandlerAsync(context) {DateTimeUtcNow = () => dateTimeUtcNow};
                 await sut.Handle(message);
             }
 

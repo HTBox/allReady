@@ -33,11 +33,15 @@ namespace AllReady.Features.Notifications
                 .SingleAsync(x => x.Id == notification.ItineraryId)
                 .ConfigureAwait(false);
 
-            var emailAddress = !string.IsNullOrWhiteSpace(taskSignup.PreferredEmail) ? taskSignup.PreferredEmail : taskSignup.User?.Email;
-            var phoneNumber = !string.IsNullOrWhiteSpace(taskSignup.PreferredPhoneNumber) ? taskSignup.PreferredPhoneNumber : taskSignup.User?.PhoneNumber;
+            //var emailAddress = !string.IsNullOrWhiteSpace(taskSignup.PreferredEmail) ? taskSignup.PreferredEmail : taskSignup.User?.Email;
+            //var phoneNumber = !string.IsNullOrWhiteSpace(taskSignup.PreferredPhoneNumber) ? taskSignup.PreferredPhoneNumber : taskSignup.User?.PhoneNumber;
+            //var emailAddress = taskSignup.User?.Email;
+            //var phoneNumber = taskSignup.User?.PhoneNumber;
+            var emailAddress = taskSignup.User.Email;
+            var phoneNumber = taskSignup.User.PhoneNumber;
 
-            if (string.IsNullOrWhiteSpace(emailAddress) && string.IsNullOrWhiteSpace(phoneNumber))
-                return;
+            //if (string.IsNullOrWhiteSpace(emailAddress) && string.IsNullOrWhiteSpace(phoneNumber))
+            //    return;
 
             var itineraryDate = itinerary.Date;
             var volunteerDashboardLink = $"{_generalSettings.Value.SiteBaseUrl}v";

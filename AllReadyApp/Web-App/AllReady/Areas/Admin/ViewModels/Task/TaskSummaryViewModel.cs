@@ -10,18 +10,26 @@ namespace AllReady.Areas.Admin.ViewModels.Task
     public class TaskSummaryViewModel
     {
         public int Id { get; set; }
+
         public int EventId { get; set; }
+
         [Display(Name = "Event")]
         public string EventName { get; set; }
+
         public DateTimeOffset EventStartDateTime { get; set; }
+
         public DateTimeOffset EventEndDateTime { set; get; }
+
         public int CampaignId { get; set; }
+
         [Display(Name = "Campaign")]
         public string CampaignName { get; set; }
+
         public int OrganizationId { get; set; }
 
         [Required]
         public string Name { get; set; }
+
         public string Description { get; set; }
 
         public string TimeZoneId { get; set; }
@@ -43,6 +51,7 @@ namespace AllReady.Areas.Admin.ViewModels.Task
         public List<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();
 
         public int AcceptedVolunteerCount => AssignedVolunteers?.Count(v => v.HasVolunteered) ?? 0;
+
         public int NumberOfVolunteersSignedUp => AssignedVolunteers.Count;
     }
 }

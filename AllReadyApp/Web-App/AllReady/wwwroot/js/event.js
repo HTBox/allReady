@@ -207,16 +207,6 @@
 
         self.Heading = "Volunteer for " + title;
 
-        self.PreferredEmail
-            .isRequired()
-            .validateEmail()
-            .notifyChangeFromInitialValue();
-
-        self.PreferredPhoneNumber
-           .isRequired()
-           .validatePhoneNumber()
-           .notifyChangeFromInitialValue();
-
         self.isValid = ko.computed(function () {
             var allValidatablesAreValid = true;
             for (var property in self) {

@@ -34,7 +34,6 @@ namespace AllReady.Controllers
           _userManager = userManager;
         }
 
-        //TODO: where is this being called from?
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Post([FromBody]TaskViewModel task)

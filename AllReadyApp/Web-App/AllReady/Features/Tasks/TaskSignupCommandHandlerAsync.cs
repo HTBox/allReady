@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Features.Notifications;
@@ -10,12 +9,12 @@ using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskSignupHandlerAsync : IAsyncRequestHandler<TaskSignupCommandAsync, TaskSignupResult>
+    public class TaskSignupCommandHandlerAsync : IAsyncRequestHandler<TaskSignupCommandAsync, TaskSignupResult>
     {
         private readonly IMediator _mediator;
         private readonly AllReadyContext _context;
 
-        public TaskSignupHandlerAsync(IMediator mediator, AllReadyContext context)
+        public TaskSignupCommandHandlerAsync(IMediator mediator, AllReadyContext context)
         {
             _mediator = mediator;
             _context = context;
@@ -61,8 +60,8 @@ namespace AllReady.Features.Tasks
                     User = user,
                     Status = TaskStatus.Accepted.ToString(),
                     StatusDateTimeUtc = DateTime.UtcNow,
-                    PreferredEmail = model.PreferredEmail,
-                    PreferredPhoneNumber = model.PreferredPhoneNumber,
+                    //PreferredEmail = model.PreferredEmail,
+                    //PreferredPhoneNumber = model.PreferredPhoneNumber,
                     AdditionalInfo = model.AdditionalInfo
                 });
             }
