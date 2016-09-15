@@ -481,7 +481,7 @@ namespace AllReady.DataAccess
                     EndDateTime = DateTime.Today.AddHours(17).AddDays(i),
                     StartDateTime = DateTime.Today.AddHours(9).AddDays(i - 1),
                     Organization = organization,
-                    NumberOfVolunteersRequired = 1
+                    NumberOfVolunteersRequired = 5
                 });
             }
             return value;
