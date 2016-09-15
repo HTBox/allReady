@@ -182,7 +182,6 @@ namespace AllReady.DataAccess
                 Location = GetRandom(locations),
                 RequiredSkills = new List<EventSkill>(),
                 EventType = EventType.Itinerary,
-                NumberOfVolunteersRequired = 1
             };
             queenAnne.Tasks = GetSomeTasks(queenAnne, organization);
             var ask = new EventSkill { Skill = surgeon, Event = queenAnne };
@@ -201,7 +200,6 @@ namespace AllReady.DataAccess
                 EndDateTime = firePreventionCampaign.StartDateTime.AddMonths(2),
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
-                NumberOfVolunteersRequired = 1
             };
             ballard.Tasks = GetSomeTasks(ballard, organization);
             tasks.AddRange(ballard.Tasks);
@@ -213,7 +211,6 @@ namespace AllReady.DataAccess
                 EndDateTime = firePreventionCampaign.StartDateTime.AddMonths(2),
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
-                NumberOfVolunteersRequired = 1
             };
             madrona.Tasks = GetSomeTasks(madrona, organization);
             tasks.AddRange(madrona.Tasks);
@@ -225,7 +222,6 @@ namespace AllReady.DataAccess
                 EndDateTime = smokeDetectorCampaign.EndDateTime,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
-                NumberOfVolunteersRequired = 1
             };
             southLoopSmoke.Tasks = GetSomeTasks(southLoopSmoke, organization);
             tasks.AddRange(southLoopSmoke.Tasks);
@@ -237,7 +233,6 @@ namespace AllReady.DataAccess
                 EndDateTime = smokeDetectorCampaign.EndDateTime,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
-                NumberOfVolunteersRequired = 1
             };
             northLoopSmoke.Tasks = GetSomeTasks(northLoopSmoke, organization);
             tasks.AddRange(northLoopSmoke.Tasks);
@@ -251,7 +246,6 @@ namespace AllReady.DataAccess
                 EndDateTime = new DateTime(dateTimeToday.Year, dateTimeToday.Month, dateTimeToday.Day, 16, 0, 0),
                 Location = GetRandom(locations),
                 EventType = EventType.Rally,
-                NumberOfVolunteersRequired = 1
             };
             rentersInsurance.Tasks = GetSomeTasks(rentersInsurance, organization);
             tasks.AddRange(rentersInsurance.Tasks);
@@ -264,7 +258,6 @@ namespace AllReady.DataAccess
                 EndDateTime = financialCampaign.EndDateTime,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
-                NumberOfVolunteersRequired = 1
             };
             rentersInsuranceEd.Tasks = GetSomeTasks(rentersInsuranceEd, organization);
             tasks.AddRange(rentersInsuranceEd.Tasks);
@@ -277,7 +270,6 @@ namespace AllReady.DataAccess
                 EndDateTime = safetyKitCampaign.StartDateTime.AddMonths(1).AddDays(5),
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
-                NumberOfVolunteersRequired = 1
             };
             safetyKitBuild.Tasks = GetSomeTasks(safetyKitBuild, organization);
             tasks.AddRange(safetyKitBuild.Tasks);
@@ -291,7 +283,6 @@ namespace AllReady.DataAccess
                 EndDateTime = safetyKitCampaign.StartDateTime.AddMonths(1).AddDays(5),
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
-                NumberOfVolunteersRequired = 1
             };
             safetyKitHandout.Tasks = GetSomeTasks(safetyKitHandout, organization);
             tasks.AddRange(safetyKitHandout.Tasks);
@@ -304,7 +295,6 @@ namespace AllReady.DataAccess
                 EndDateTime = carSafeCampaign.StartDateTime.AddMonths(1).AddDays(5),
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
-                NumberOfVolunteersRequired = 1
             };
             carSeatTest1.Tasks = GetSomeTasks(carSeatTest1, organization);
             tasks.AddRange(carSeatTest1.Tasks);
@@ -317,7 +307,6 @@ namespace AllReady.DataAccess
                 EndDateTime = carSafeCampaign.StartDateTime.AddMonths(1).AddDays(5),
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
-                NumberOfVolunteersRequired = 1
             };
             carSeatTest2.Tasks = GetSomeTasks(carSeatTest2, organization);
             tasks.AddRange(carSeatTest2.Tasks);
@@ -330,7 +319,6 @@ namespace AllReady.DataAccess
                 EndDateTime = safetyKitCampaign.StartDateTime.AddMonths(1),
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
-                NumberOfVolunteersRequired = 1
             };
             homeFestival.Tasks = GetSomeTasks(homeFestival, organization);
             tasks.AddRange(homeFestival.Tasks);
@@ -343,7 +331,6 @@ namespace AllReady.DataAccess
                 EndDateTime = escapePlanCampaign.StartDateTime.AddMonths(7),
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
-                NumberOfVolunteersRequired = 1
             };
             homeEscape.Tasks = GetSomeTasks(homeEscape, organization);
             tasks.AddRange(homeEscape.Tasks);

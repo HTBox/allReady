@@ -21,9 +21,6 @@ namespace AllReady.Models
 
         [Display(Name = "Event Type")]
         public EventType EventType { get; set; }
-
-        public int NumberOfVolunteersRequired { get; set; }
-
         [Display(Name = "Start date")]
         public DateTimeOffset StartDateTime { get; set; }
 
@@ -63,7 +60,7 @@ namespace AllReady.Models
 
     public static class EventExtensions
     {
-        public static IEnumerable<EventViewModel> ToViewModel(this IEnumerable<Models.Event> campaignEvents)
+        public static IEnumerable<EventViewModel> ToViewModel(this IEnumerable<Event> campaignEvents)
         {
             return campaignEvents.Select(campaignEvent => new EventViewModel(campaignEvent));
         }
