@@ -23,11 +23,18 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var task = new AllReadyTask
             {
-                Id = 1
+                Id = 1,
+                AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User = new ApplicationUser { Id = "user3@abc.com" } } }
             };
 
+            var newVolunteer = new ApplicationUser {Id = "user1@abc.com" };
+            var existingVolunteer = new ApplicationUser {Id = "user2@abc.com"};
+
+            Context.Add(newVolunteer);
+            Context.Add(existingVolunteer);
             Context.Add(task);
-            var users = new List<string> {"user1@abc.com", "user2@cd.com"};
+
+            var users = new List<string> {"user2@abc.com", "user1@cd.com"};
             message = new AssignTaskCommandAsync { TaskId = task.Id, UserIds = users };
             mediator = new Mock<IMediator>();
             Context.SaveChanges();
@@ -36,7 +43,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         }
 
         [Fact]
-        public async Task AssignVolunteersToTask()
+        public async Task SignupVolunteersToTask()
         {
             await sut.Handle(message);
         }
@@ -62,15 +69,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         }
 
         [Fact]
-        public async Task DoesNotSendsNotificationToNewVolunteers()
+        public async Task DoesNotNotifyVolunteersPreviouslySignedUp()
         {
-            const string expectedMessage = "You've been assigned a task from AllReady.";
-
             await sut.Handle(message);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
-                   notifyCommand.ViewModel.EmailMessage == expectedMessage &&
-                   notifyCommand.ViewModel.Subject == expectedMessage &&
                    notifyCommand.ViewModel.EmailRecipients.Contains("user1@abc.com")
             )), Times.Once());
         }
