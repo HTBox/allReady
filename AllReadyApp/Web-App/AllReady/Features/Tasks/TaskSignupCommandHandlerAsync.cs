@@ -28,19 +28,18 @@ namespace AllReady.Features.Tasks
                 .Include(u => u.AssociatedSkills)
                 .SingleOrDefaultAsync(u => u.Id == model.UserId).ConfigureAwait(false);
 
-            var campaignEvent = await _context.Events
+            var @event = await _context.Events
                 .Include(a => a.RequiredSkills)
                 .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(s => s.Skill)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(t => t.User)
                 .SingleOrDefaultAsync(a => a.Id == model.EventId).ConfigureAwait(false);
 
-            if (campaignEvent == null)
+            if (@event == null)
             {
                 return new TaskSignupResult { Status = TaskSignupResult.FAILURE_EVENTNOTFOUND };
             }
 
-            var task = campaignEvent.Tasks.SingleOrDefault(t => t.Id == model.TaskId);
-
+            var task = @event.Tasks.SingleOrDefault(t => t.Id == model.TaskId);
             if (task == null)
             {
                 return new TaskSignupResult { Status = TaskSignupResult.FAILURE_TASKNOTFOUND };
@@ -79,7 +78,7 @@ namespace AllReady.Features.Tasks
             await _context.SaveChangesAsync().ConfigureAwait(false);
 
             //Notify admins of a new volunteer
-            await _mediator.PublishAsync(new VolunteerSignupNotification { UserId = model.UserId, TaskId = task.Id })
+            await _mediator.PublishAsync(new VolunteerSignedUpNotification { UserId = model.UserId, TaskId = task.Id })
                 .ConfigureAwait(false);
 
             return new TaskSignupResult {Status = "success", Task = task};

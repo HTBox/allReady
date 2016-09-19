@@ -13,14 +13,6 @@ namespace AllReady.ViewModels.Shared
 
         public string Name { get; set; }
 
-        //[Display(Name = "Contact email")]
-        //[EmailAddress]
-        //public string PreferredEmail { get; set; }
-
-        //[Display(Name = "Contact phone")]
-        //[Phone]
-        //public string PreferredPhoneNumber { get; set; }
-
         [Display(Name = "Comments")]
         public string AdditionalInfo { get; set; }
 

@@ -59,8 +59,6 @@ namespace AllReady.Areas.Admin.Features.Events
                             UserName = assignedVolunteer.User.UserName,
                             HasVolunteered = true,
                             Status = assignedVolunteer.Status,
-                            //PreferredEmail = assignedVolunteer.PreferredEmail,
-                            //PreferredPhoneNumber = assignedVolunteer.PreferredPhoneNumber,
                             AdditionalInfo = assignedVolunteer.AdditionalInfo
                         }).ToList()
                     }).OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList(),

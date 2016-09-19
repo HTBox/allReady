@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyVolunteerForTaskSignup : IAsyncNotificationHandler<VolunteerSignupNotification>
+    public class NotifyVolunteerForTaskSignup : IAsyncNotificationHandler<VolunteerSignedUpNotification>
     {
         private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
@@ -17,7 +17,7 @@ namespace AllReady.Features.Notifications
             _options = options;
         }
 
-        public async Task Handle(VolunteerSignupNotification notification)
+        public async Task Handle(VolunteerSignedUpNotification notification)
         {
             var taskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQueryAsync { TaskId = notification.TaskId, UserId = notification.UserId })
                 .ConfigureAwait(false);

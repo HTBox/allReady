@@ -15,10 +15,10 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
         private readonly DateTimeOffset eventEndDate = new DateTimeOffset(new DateTime(2020, 12, 31));
 
         [Fact]
-        public void ReturnCorrectErrorWhenEndDateTimeIsLessThanStartDateTime()
+        public async System.Threading.Tasks.Task ReturnCorrectErrorWhenEndDateTimeIsLessThanStartDateTime()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event { Id = 1, Campaign = new Campaign { TimeZoneId = "UTC" } });
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(new Event { Id = 1, Campaign = new Campaign { TimeZoneId = "UTC" } });
 
             var validator = new TaskEditViewModelValidator(mockMediator.Object);
 
@@ -28,14 +28,14 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
                 EndDateTime = new DateTimeOffset(new DateTime(1999, 1, 1))
             };
 
-            var errors = validator.Validate(model);
+            var errors = await validator.Validate(model);
 
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
             Assert.Equal(errors.Find(x => x.Key == "EndDateTime").Value, "End date cannot be earlier than the start date");
         }
 
         [Fact]
-        public void ReturnsCorrectErrorWhenModelsStartDateTimeIsLessThanParentEventStartDate()
+        public async System.Threading.Tasks.Task ReturnsCorrectErrorWhenModelsStartDateTimeIsLessThanParentEventStartDate()
         {
             var validator = GetValidator();
 
@@ -45,14 +45,14 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
                 EndDateTime = eventEndDate.AddDays(-1)
             };
 
-            var errors = validator.Validate(model);
+            var errors = await validator.Validate(model);
 
             Assert.True(errors.Exists(x => x.Key.Equals("StartDateTime")));
             Assert.Equal(errors.Find(x => x.Key == "StartDateTime").Value, "Start date cannot be earlier than the event start date " + eventStartDate.ToString("d"));
         }
 
         [Fact]
-        public void ReturnsCorrectErrorWhenModelsEndDateTimeIsGreaterThanParentEventStartDate()
+        public async System.Threading.Tasks.Task ReturnsCorrectErrorWhenModelsEndDateTimeIsGreaterThanParentEventStartDate()
         {
             var validator = GetValidator();
 
@@ -62,14 +62,14 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
                 EndDateTime = eventEndDate.AddDays(10)
             };
 
-            var errors = validator.Validate(model);
+            var errors = await validator.Validate(model);
 
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
             Assert.Equal(errors.Find(x => x.Key == "EndDateTime").Value, "End date cannot be later than the event end date " + eventEndDate.ToString("d"));
         }
 
         [Fact]
-        public void ReturnsCorrectErrorWhenItineraryTaskWithStartAndEndDatesNotOnSameDay()
+        public async System.Threading.Tasks.Task ReturnsCorrectErrorWhenItineraryTaskWithStartAndEndDatesNotOnSameDay()
         {
             var validator = GetValidator();
 
@@ -79,18 +79,18 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
                 EndDateTime = new DateTimeOffset(new DateTime(2000, 12, 1))
             };
 
-            var errors = validator.Validate(model);
+            var errors = await validator.Validate(model);
 
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
             Assert.Equal(errors.Find(x => x.Key == "EndDateTime").Value, "For itinerary events the task end date must occur on the same day as the start date. Tasks cannot span multiple days");
         }
 
         [Fact]
-        public void ReturnsNoErrorForNonItineraryTaskWhenModelsDatesAreValid()
+        public async System.Threading.Tasks.Task ReturnsNoErrorForNonItineraryTaskWhenModelsDatesAreValid()
         {
             var mockMediator = new Mock<IMediator>();
 
-            mockMediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(new Event
             {
                 Id = 1,
                 Campaign = new Campaign
@@ -110,13 +110,13 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
                 EndDateTime = eventEndDate.AddDays(-1)
             };
 
-            var errors = validator.Validate(model);
+            var errors = await validator.Validate(model);
 
             Assert.True(errors.Count == 0);
         }
 
         [Fact]
-        public void ReturnsNoErrorForItineraryTaskWhenModelsDatesAreValid()
+        public async System.Threading.Tasks.Task ReturnsNoErrorForItineraryTaskWhenModelsDatesAreValid()
         {
             var validator = GetValidator();
 
@@ -126,7 +126,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
                 EndDateTime = eventStartDate.AddDays(1).AddHours(2)
             };
 
-            var errors = validator.Validate(model);
+            var errors = await validator.Validate(model);
 
             Assert.True(errors.Count == 0);
         }
@@ -135,7 +135,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
         {
             var mockMediator = new Mock<IMediator>();
 
-            mockMediator.Setup(x => x.Send(It.IsAny<EventByIdQuery>())).Returns(new Event
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(new Event
             {
                 Id = 1,
                 Campaign = new Campaign

@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyAdminForSignup : IAsyncNotificationHandler<VolunteerSignupNotification>
+    public class NotifyAdminForSignup : IAsyncNotificationHandler<VolunteerSignedUpNotification>
     {
         private readonly AllReadyContext _context;
         private readonly IMediator _mediator;
@@ -27,7 +27,7 @@ namespace AllReady.Features.Notifications
             _logger = logger;
         }
 
-        public async Task Handle(VolunteerSignupNotification notification)
+        public async Task Handle(VolunteerSignedUpNotification notification)
         {
             // don't let problem with notification keep us from continuing
             try
@@ -54,8 +54,6 @@ namespace AllReady.Features.Notifications
                 var taskSignup = task.AssignedVolunteers.FirstOrDefault(t => t.User.Id == taskInfo.Volunteer.Id);
 
                 //set for task signup
-                //var volunteerEmail = !string.IsNullOrWhiteSpace(taskSignup?.PreferredEmail) ? taskSignup.PreferredEmail : taskInfo.Volunteer.Email;
-                //var volunteerPhoneNumber = !string.IsNullOrWhiteSpace(taskSignup?.PreferredPhoneNumber) ? taskSignup.PreferredPhoneNumber : taskInfo.Volunteer.PhoneNumber;
                 var volunteerEmail = taskInfo.Volunteer.Email;
                 var volunteerPhoneNumber = taskInfo.Volunteer.PhoneNumber;
                 var volunteerComments = !string.IsNullOrWhiteSpace(taskSignup?.AdditionalInfo) ? taskSignup.AdditionalInfo : string.Empty;
