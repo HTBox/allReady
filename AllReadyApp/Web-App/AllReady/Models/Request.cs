@@ -19,7 +19,7 @@ namespace AllReady.Models
         public string Zip { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
-        public RequestStatus Status { get; set; }
+        public RequestStatus Status { get; set; } = RequestStatus.Unassigned;
 
         // no support yet for spatial types
         public double Latitude { get; set; }
@@ -34,6 +34,6 @@ namespace AllReady.Models
 
         public ICollection<ItineraryRequest> Itineraries { get; set; }
 
-        public DateTime DateAdded { get; set; }
+        public DateTime DateAdded { get; set; } = DateTime.UtcNow;
     }
 }
