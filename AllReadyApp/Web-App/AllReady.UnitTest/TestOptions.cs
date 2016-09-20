@@ -1,5 +1,4 @@
-﻿
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.Extensions.Options;
 
 namespace AllReady.UnitTest

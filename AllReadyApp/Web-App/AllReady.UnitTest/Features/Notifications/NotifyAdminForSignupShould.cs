@@ -124,7 +124,7 @@ namespace AllReady.UnitTest.Features.Notifications
         {
             var taskDetailForNotificationModel = new TaskDetailForNotificationModel
             {
-                Volunteer = new ApplicationUser { Email = "VolunteerEmail", PhoneNumber = "VolunteerPhoneNumber" },
+                Volunteer = new ApplicationUser {Email = "VolunteerEmail", PhoneNumber = "VolunteerPhoneNumber"},
                 CampaignContacts = new List<CampaignContact>
                 {
                     new CampaignContact
@@ -142,7 +142,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
 
-            var notification = new VolunteerSignupNotification
+            var notification = new VolunteerSignedUpNotification
             {
                 UserId = Context.Users.First().Id,
                 TaskId = Context.Tasks.First().Id
@@ -187,7 +187,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
 
-            var notification = new VolunteerSignupNotification
+            var notification = new VolunteerSignedUpNotification
             {
                 UserId = Context.Users.First().Id,
                 TaskId = Context.Tasks.First().Id
@@ -228,7 +228,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
 
-            var notification = new VolunteerSignupNotification
+            var notification = new VolunteerSignedUpNotification
             {
                 UserId = Context.Users.First().Id,
                 TaskId = Context.Tasks.First().Id
@@ -258,7 +258,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
 
-            var notification = new VolunteerSignupNotification
+            var notification = new VolunteerSignedUpNotification
             {
                 UserId = Context.Users.First().Id,
                 TaskId = Context.Tasks.First().Id
@@ -292,7 +292,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
 
-            var notification = new VolunteerSignupNotification
+            var notification = new VolunteerSignedUpNotification
             {
                 UserId = Context.Users.First().Id,
                 TaskId = Context.Tasks.First().Id
@@ -321,7 +321,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
 
-            var notification = new VolunteerSignupNotification
+            var notification = new VolunteerSignedUpNotification
             {
                 UserId = Context.Users.First().Id,
                 TaskId = Context.Tasks.First().Id
@@ -349,7 +349,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
 
-            var notification = new VolunteerSignupNotification
+            var notification = new VolunteerSignedUpNotification
             {
                 UserId = Context.Users.First().Id,
                 TaskId = Context.Tasks.Skip(1).First().Id

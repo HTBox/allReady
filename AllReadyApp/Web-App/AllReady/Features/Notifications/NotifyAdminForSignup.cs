@@ -77,25 +77,18 @@ namespace AllReady.Features.Notifications
                 message.AppendLine();
                 message.AppendLine(GetTaskSkillsInfo(task, taskInfo.Volunteer));
 
-                Debug.WriteLine(adminEmail);
-                Debug.WriteLine(subject);
-                Debug.WriteLine(message.ToString());
-
-                if (!string.IsNullOrWhiteSpace(adminEmail))
+                var command = new NotifyVolunteersCommand
                 {
-                    var command = new NotifyVolunteersCommand
+                    ViewModel = new NotifyVolunteersViewModel
                     {
-                        ViewModel = new NotifyVolunteersViewModel
-                        {
-                            EmailMessage = message.ToString(),
-                            HtmlMessage = message.ToString(),
-                            EmailRecipients = new List<string> { adminEmail },
-                            Subject = subject
-                        }
-                    };
+                        EmailMessage = message.ToString(),
+                        HtmlMessage = message.ToString(),
+                        EmailRecipients = new List<string> { adminEmail },
+                        Subject = subject
+                    }
+                };
 
-                    await _mediator.SendAsync(command).ConfigureAwait(false);
-                }
+                await _mediator.SendAsync(command).ConfigureAwait(false);
             }
             catch (Exception e)
             {
