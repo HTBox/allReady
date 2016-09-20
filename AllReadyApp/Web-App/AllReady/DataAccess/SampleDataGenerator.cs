@@ -24,7 +24,6 @@ namespace AllReady.DataAccess
             _userManager = userManager;
         }
 
-        //private static ITaskIdProvider _taskIdProvider = new TaskIdProvider();
         public void InsertTestData()
         {
             // Avoid polluting the database if there's already something in there.
@@ -474,7 +473,6 @@ namespace AllReady.DataAccess
             var value = new List<AllReadyTask>();
             for (var i = 0; i < 5; i++)
             {
-                //var tempId = _taskIdProvider.NextValue();
                 value.Add(new AllReadyTask
                 {
                     Event = campaignEvent,
@@ -482,7 +480,8 @@ namespace AllReady.DataAccess
                     Name = "Task # " + i,
                     EndDateTime = DateTime.Today.AddHours(17).AddDays(i),
                     StartDateTime = DateTime.Today.AddHours(9).AddDays(i - 1),
-                    Organization = organization
+                    Organization = organization,
+                    NumberOfVolunteersRequired = 5
                 });
             }
             return value;
