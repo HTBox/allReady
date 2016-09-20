@@ -122,11 +122,22 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void PassANotifyVolunteersCommandToTheMediator()
         {
-            var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-                .ReturnsAsync(new Unit());
+            var taskDetailForNotificationModel = new TaskDetailForNotificationModel
+            {
+                Volunteer = new ApplicationUser { Email = "VolunteerEmail", PhoneNumber = "VolunteerPhoneNumber" },
+                CampaignContacts = new List<CampaignContact>
+                {
+                    new CampaignContact
+                    {
+                        ContactType = (int) ContactTypes.Primary,
+                        Contact = new Contact {Email = "CampaignContactEmail"}
+                    }
+                }
+            };
 
-            var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .ReturnsAsync(taskDetailForNotificationModel);
 
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
@@ -137,10 +148,10 @@ namespace AllReady.UnitTest.Features.Notifications
                 TaskId = Context.Tasks.First().Id
             };
 
-            var target = new NotifyAdminForSignup(Context, mediator.Object, options, logger);
+            var target = new NotifyAdminForSignup(Context, mediator.Object, options, null);
             await target.Handle(notification);
 
-            mediator.VerifyAll();
+            mediator.Verify(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Once);
         }
 
         /// <summary>
@@ -154,11 +165,24 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void PassAnEmailSubjectToTheMediator()
         {
-            var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(c => !String.IsNullOrWhiteSpace(c.ViewModel.Subject))))
-                .ReturnsAsync(new Unit());
+            const string adminEmail = "AdminEmail";
 
-            var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();
+            var taskDetailForNotificationModel = new TaskDetailForNotificationModel
+            {
+                Volunteer = new ApplicationUser { Email = "VolunteerEmail", PhoneNumber = "VolunteerPhoneNumber" },
+                CampaignContacts = new List<CampaignContact>
+                {
+                    new CampaignContact
+                    {
+                        ContactType = (int) ContactTypes.Primary,
+                        Contact = new Contact { Email = adminEmail }
+                    }
+                }
+            };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .ReturnsAsync(taskDetailForNotificationModel);
 
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
@@ -169,10 +193,10 @@ namespace AllReady.UnitTest.Features.Notifications
                 TaskId = Context.Tasks.First().Id
             };
 
-            var target = new NotifyAdminForSignup(Context, mediator.Object, options, logger);
+            var target = new NotifyAdminForSignup(Context, mediator.Object, options, null);
             await target.Handle(notification);
 
-            mediator.VerifyAll();
+            mediator.Verify(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(y => !string.IsNullOrWhiteSpace(y.ViewModel.Subject))), Times.Once);
         }
 
         /// <summary>
@@ -182,16 +206,24 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void SendToTheAdminEmail()
         {
-            var testEvent = Context.Events.First();
-            var testCampaign = testEvent.Campaign;
-            var testContact = testCampaign.CampaignContacts.First().Contact;
-            var expected = testContact.Email;
+            const string adminEmail = "AdminEmail";
+
+            var taskDetailForNotificationModel = new TaskDetailForNotificationModel
+            {
+                Volunteer = new ApplicationUser { Email = "VolunteerEmail", PhoneNumber = "VolunteerPhoneNumber" },
+                CampaignContacts = new List<CampaignContact>
+                {
+                    new CampaignContact
+                    {
+                        ContactType = (int) ContactTypes.Primary,
+                        Contact = new Contact { Email = adminEmail }
+                    }
+                }
+            };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(c => c.ViewModel.EmailRecipients.ToArray()[0] == expected)))
-                .ReturnsAsync(new Unit());
-
-            var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .ReturnsAsync(taskDetailForNotificationModel);
 
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
@@ -202,10 +234,10 @@ namespace AllReady.UnitTest.Features.Notifications
                 TaskId = Context.Tasks.First().Id
             };
 
-            var target = new NotifyAdminForSignup(Context, mediator.Object, options, logger);
+            var target = new NotifyAdminForSignup(Context, mediator.Object, options, null);
             await target.Handle(notification);
 
-            mediator.VerifyAll();
+            mediator.Verify(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(y => y.ViewModel.EmailRecipients.Contains(adminEmail))), Times.Once);
         }
 
         /// <summary>
@@ -253,7 +285,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 .Throws(new InvalidOperationException("Test Exception"));
 
             var logger = new Mock<ILogger<NotifyAdminForUserUnenrolls>>();
-            logger.Setup(x => x.Log(It.Is<LogLevel>(m => m == LogLevel.Error), 
+            logger.Setup(x => x.Log(It.Is<LogLevel>(m => m == LogLevel.Error),
                 It.IsAny<EventId>(), It.IsAny<object>(), It.IsAny<Exception>(),
                 It.IsAny<Func<object, Exception, string>>()));
 
