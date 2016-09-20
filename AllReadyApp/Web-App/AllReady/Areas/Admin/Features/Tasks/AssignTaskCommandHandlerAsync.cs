@@ -21,38 +21,35 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         protected override async Task HandleCore(AssignTaskCommandAsync message)
         {
-            var task = GetTask(message);
+            var task = _context.Tasks.Single(c => c.Id == message.TaskId);
+
             var taskSignups = new List<TaskSignup>();
 
-            if (task != null)
+            //New Items, if not in collection add them, save that list for the pub-event
+            foreach (var userId in message.UserIds)
             {
-                //New Items, if not in collection add them, save that list for the pub-event
-                foreach (var userId in message.UserIds)
+                var taskSignup = task.AssignedVolunteers.SingleOrDefault(a => a.User.Id == userId);
+                if (taskSignup != null) continue;
+
+                var user = _context.Users.Single(u => u.Id == userId);
+                taskSignup = new TaskSignup
                 {
-                    var taskSignup = task.AssignedVolunteers.SingleOrDefault(a => a.User.Id == userId);
+                    Task = task,
+                    User = user,
+                    PreferredEmail = user.Email,
+                    PreferredPhoneNumber = user.PhoneNumber,
+                    AdditionalInfo = string.Empty,
+                    Status = TaskStatus.Assigned.ToString(),
+                    StatusDateTimeUtc = DateTime.UtcNow
+                };
 
-                    if (taskSignup != null) continue;
-
-                    var user = _context.Users.Single(u => u.Id == userId);
-                    taskSignup = new TaskSignup
-                    {
-                        Task = task,
-                        User = user,
-                        PreferredEmail = user.Email,
-                        PreferredPhoneNumber = user.PhoneNumber,
-                        AdditionalInfo = string.Empty,
-                        Status = TaskStatus.Assigned.ToString(),
-                        StatusDateTimeUtc = DateTime.UtcNow
-                    };
-
-                    task.AssignedVolunteers.Add(taskSignup);
-                    taskSignups.Add(taskSignup);
-                }
-
-                //Remove task signups where the the user id is not included in the current list of assigned user id's
-                var taskSignupsToRemove = task.AssignedVolunteers.Where(taskSignup => message.UserIds.All(uid => uid != taskSignup.User.Id)).ToList();
-                taskSignupsToRemove.ForEach(taskSignup => task.AssignedVolunteers.Remove(taskSignup));
+                task.AssignedVolunteers.Add(taskSignup);
+                taskSignups.Add(taskSignup);
             }
+
+            //Remove task signups where the the user id is not included in the current list of assigned user id's
+            var taskSignupsToRemove = task.AssignedVolunteers.Where(taskSignup => message.UserIds.All(uid => uid != taskSignup.User.Id)).ToList();
+            taskSignupsToRemove.ForEach(taskSignup => task.AssignedVolunteers.Remove(taskSignup));
 
             await _context.SaveChangesAsync();
 
@@ -63,7 +60,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             // get all confirmed contact points for the broadcast
             smsRecipients.AddRange(taskSignups.Where(u => u.User.PhoneNumberConfirmed).Select(v => v.User.PhoneNumber));
             emailRecipients.AddRange(taskSignups.Where(u => u.User.EmailConfirmed).Select(v => v.User.Email));
-
+            
             var command = new NotifyVolunteersCommand
             {
                 ViewModel = new NotifyVolunteersViewModel
@@ -80,12 +77,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
             await _mediator.SendAsync(command);
         }
 
-        private AllReadyTask GetTask(AssignTaskCommandAsync message)
-        {
-            var task = _context.Tasks
-                .SingleOrDefault(c => c.Id == message.TaskId);
-
-            return task;
-        }
+        
     }
 }
