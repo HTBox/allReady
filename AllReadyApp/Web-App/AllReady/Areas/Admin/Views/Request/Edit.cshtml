@@ -28,10 +28,11 @@
 
 <div class="row">
     <div class="col-12">
-        <form asp-controller="Request" asp-action="Edit" asp-area="Admin">
+        <form asp-route="EditRequestPost" asp-area="Admin">
             <div class="form-horizontal">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
+                
+                <input type="hidden" asp-for="Id" />
                 <input type="hidden" asp-for="OrganizationId" />
                 <input type="hidden" asp-for="OrganizationName" />
                 <input type="hidden" asp-for="EventId" />

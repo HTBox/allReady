@@ -21,8 +21,6 @@ namespace AllReady.Areas.Admin.Features.Requests
                 .Include(l => l.Event)
                 .SingleOrDefaultAsync(t => t.RequestId == message.RequestModel.Id).ConfigureAwait(false) ?? _context.Add(new Request()).Entity;
 
-            if (request.RequestId == Guid.Empty) request.RequestId = Guid.NewGuid();
-
             request.EventId = message.RequestModel.EventId;
             request.Address = message.RequestModel.Address;
             request.City = message.RequestModel.City;
@@ -31,8 +29,6 @@ namespace AllReady.Areas.Admin.Features.Requests
             request.Zip = message.RequestModel.Zip;
             request.Email = message.RequestModel.Email;
             request.Phone = message.RequestModel.Phone;
-            request.Status = RequestStatus.Unassigned;
-            request.DateAdded = DateTime.UtcNow;
 
             // todo - longitude and latitude lookup
 

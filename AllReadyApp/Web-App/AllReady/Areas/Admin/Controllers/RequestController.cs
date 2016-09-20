@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Security;
@@ -64,12 +65,35 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         /// <summary>
-        /// Handles edit request POST requests
+        ///  Returns the view to allow a request to be modified.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("Edit/{id}")]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var model = await _mediator.SendAsync(new EditRequestQuery() { Id = id });
+
+            if (model == null)
+                return NotFound();
+
+            if (!User.IsOrganizationAdmin(model.OrganizationId))
+            {
+                return Unauthorized();
+            }
+
+            ViewData["Title"] = "Edit" + model.Name;
+
+            return View("Edit", model);
+        }
+
+        /// <summary>
+        /// Handles edit request POST
         /// </summary>
         /// <param name="model">The request edit model</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("Edit")]
+        [Route("Edit", Name = "EditRequestPost")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditRequestViewModel model)
         {
@@ -92,7 +116,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new EditRequestCommand { RequestModel = model });
 
-            return RedirectToAction("Details", "Event", new { id = model.EventId });
+            return RedirectToAction("Requests", "Event", new { id = model.EventId });
         }
     }
 }

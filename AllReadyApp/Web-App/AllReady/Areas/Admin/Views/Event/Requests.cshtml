@@ -61,7 +61,7 @@
                 @foreach (var req in Model.Requests)
                 {
                     <tr>
-                        <td>@req.Name</td>
+                        <td><a asp-action="Edit" asp-controller="Request" asp-route-id="@req.Id">@req.Name</a></td>
                         <td>@req.Address</td>
                         <td>@req.City</td>
                         <td>@req.Postcode</td>
