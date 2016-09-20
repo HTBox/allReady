@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Models;
-using AllReady.UnitTest.Features.Campaigns;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
@@ -35,8 +33,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         [Fact]
         public async Task ExistingCampaign()
         {
-            var command = new DeleteCampaignCommand { CampaignId = 1 };
-            var handler = new DeleteCampaignCommandHandler(Context);
+            var command = new DeleteCampaignCommandAsync { CampaignId = 1 };
+            var handler = new DeleteCampaignCommandHandlerAsync(Context);
             await handler.Handle(command);
 
             var data = Context.Campaigns.Count(_ => _.Id == 1);
@@ -46,8 +44,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         [Fact]
         public async Task CampaignDoesNotExist()
         {
-            var command = new DeleteCampaignCommand { CampaignId = 0 };
-            var handler = new DeleteCampaignCommandHandler(Context);
+            var command = new DeleteCampaignCommandAsync { CampaignId = 0 };
+            var handler = new DeleteCampaignCommandHandlerAsync(Context);
             await handler.Handle(command);
         }
 
@@ -56,8 +54,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         {
             const int campaignId = 1;
 
-            var sut = new DeleteCampaignCommandHandler(Context);
-            await sut.Handle(new DeleteCampaignCommand { CampaignId = campaignId });
+            var sut = new DeleteCampaignCommandHandlerAsync(Context);
+            await sut.Handle(new DeleteCampaignCommandAsync { CampaignId = campaignId });
             Assert.False(Context.Events.Any(t => t.Id == campaignId));
         }
 
@@ -66,8 +64,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         {
             const int campaignId = 1;
 
-            var sut = new DeleteCampaignCommandHandler(Context);
-            await sut.Handle(new DeleteCampaignCommand { CampaignId = 666 });
+            var sut = new DeleteCampaignCommandHandlerAsync(Context);
+            await sut.Handle(new DeleteCampaignCommandAsync() { CampaignId = 666 });
             Assert.False(Context.Events.Any(t => t.Id == campaignId));
         }
     }

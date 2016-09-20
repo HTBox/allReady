@@ -20,9 +20,7 @@ using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Campaign;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using System.Reflection;
 using AllReady.Features.Events;
-using AllReady.ViewModels.Event;
 using Shouldly;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers

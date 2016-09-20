@@ -1,7 +1,6 @@
 ﻿using AllReady.Areas.Admin.Features.Campaigns;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.UnitTest.Features.Campaigns;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
@@ -12,11 +11,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         public async Task LockedCampaignIsUnlocked()
         {
             // Arrange
-            var handler = new LockUnlockCampaignCommandHandler(Context);
+            var handler = new LockUnlockCampaignCommandHandlerAsync(Context);
 
             // Act
             var campaign = Context.Campaigns.FirstOrDefault(c => c.Name == "Locked Campaign");
-            await handler.Handle(new LockUnlockCampaignCommand { CampaignId = campaign.Id });
+            await handler.Handle(new LockUnlockCampaignCommandAsync { CampaignId = campaign.Id });
             var result = Context.Campaigns.FirstOrDefault(c => c.Name == "Locked Campaign");
 
             // Assert
@@ -27,11 +26,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         public async Task UnlockedCampaignIsLocked()
         {
             // Arrange
-            var handler = new LockUnlockCampaignCommandHandler(Context);
+            var handler = new LockUnlockCampaignCommandHandlerAsync(Context);
 
             // Act
             var campaign = Context.Campaigns.FirstOrDefault(c => c.Name == "Unlocked Campaign");
-            await handler.Handle(new LockUnlockCampaignCommand { CampaignId = campaign.Id });
+            await handler.Handle(new LockUnlockCampaignCommandAsync { CampaignId = campaign.Id });
             var result = Context.Campaigns.FirstOrDefault(c => c.Name == "Unlocked Campaign");
 
             // Assert
