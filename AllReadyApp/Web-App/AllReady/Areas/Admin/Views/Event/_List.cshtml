@@ -21,7 +21,8 @@
                     End
                 </th>
             </tr>
-            @foreach (var item in Model.Events) {
+            @foreach (var item in Model.Events)
+            {
                 <tr>
                     <td>
                         <a asp-controller="Event" asp-action="Details" asp-area="Admin" asp-route-id="@item.Id">@item.Name</a> 

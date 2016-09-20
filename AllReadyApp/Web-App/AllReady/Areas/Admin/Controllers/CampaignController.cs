@@ -40,7 +40,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var viewModel = await _mediator.SendAsync(new CampaignDetailQuery { CampaignId = id });
+            var viewModel = await _mediator.SendAsync(new CampaignDetailQueryAsync { CampaignId = id });
             if (viewModel == null)
             {
                 return NotFound();
@@ -67,7 +67,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Campaign/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var viewModel = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = id }); //not covered
+            var viewModel = await _mediator.SendAsync(new CampaignSummaryQueryAsync { CampaignId = id });
             if (viewModel == null)
             {
                 return NotFound();
