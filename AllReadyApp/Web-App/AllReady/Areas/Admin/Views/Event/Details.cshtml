@@ -62,6 +62,15 @@
 
 <div class="row">
     <div class="col-md-12">
+        <h3>Volunteer Summary</h3>
+        <p>@Model.VolunteersRequired @(Model.VolunteersRequired == 1 ? "volunteer" : "volunteers") are required across @Model.TaskCount @(Model.TaskCount == 1 ? "task" : "tasks").</p>
+        <p>@Model.AcceptedVolunteers @(Model.AcceptedVolunteers == 1 ? "volunteer" : "volunteers") are currently assigned and accepted. This event's volunteer requirement is @Model.VolunteerFulfilmentPercentage% fulfiled.</p>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
         <h3>Tasks</h3>
     </div>
 </div>
@@ -116,100 +125,100 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-12">
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#createItineraryModal">Create Itinerary</button>
-        </div>
-    </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#createItineraryModal">Create Itinerary</button>
+                </div>
+            </div>
 
-    @Html.Partial("~/Areas/Admin/Views/Itinerary/_List.cshtml", Model.Itineraries)
+            @Html.Partial("~/Areas/Admin/Views/Itinerary/_List.cshtml", Model.Itineraries)
 
     <!-- Create Itinerary Modal -->
-    <div class="modal fade" id="createItineraryModal" tabindex="-1" role="dialog" aria-labelledby="createItineraryLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="createItineraryLabel">Create Itinerary</h4>
-                </div>
-                <input type="hidden" id="itineraryDetailUrl" value="@Model.ItinerariesDetailsUrl" />
+            <div class="modal fade" id="createItineraryModal" tabindex="-1" role="dialog" aria-labelledby="createItineraryLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="createItineraryLabel">Create Itinerary</h4>
+                        </div>
+                        <input type="hidden" id="itineraryDetailUrl" value="@Model.ItinerariesDetailsUrl" />
 
-                <form asp-area="Admin" asp-controller="Itinerary" asp-action="Create" method="post" >
-                    <div class="modal-body">
-                        <input type="hidden" asp-for="NewItinerary.EventId" name="@nameof(Model.NewItinerary.EventId)">
-                        <div class="form-group">
-                            <label for="@nameof(Model.NewItinerary.Name)" class="control-label">Name</label>
-                            <input type="text" class="form-control wide" id="createItineraryModal-name" name="@nameof(Model.NewItinerary.Name)" asp-for="NewItinerary.Name">
-                        </div>
-                        <div class="form-group">
-                            <label for="@nameof(Model.NewItinerary.Date)" class="control-label">Scheduled Date</label>
-                            <input class="form-control" id="createItineraryModal-date" asp-for="NewItinerary.Date" name="@nameof(Model.NewItinerary.Date)" value="@Model.NewItinerary.Date.ToString("yyyy-MM-dd")">
-                        </div>
-                        <div class="alert alert-danger" role="alert"></div>
+                        <form asp-area="Admin" asp-controller="Itinerary" asp-action="Create" method="post">
+                            <div class="modal-body">
+                                <input type="hidden" asp-for="NewItinerary.EventId" name="@nameof(Model.NewItinerary.EventId)">
+                                <div class="form-group">
+                                    <label for="@nameof(Model.NewItinerary.Name)" class="control-label">Name</label>
+                                    <input type="text" class="form-control wide" id="createItineraryModal-name" name="@nameof(Model.NewItinerary.Name)" asp-for="NewItinerary.Name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="@nameof(Model.NewItinerary.Date)" class="control-label">Scheduled Date</label>
+                                    <input class="form-control" id="createItineraryModal-date" asp-for="NewItinerary.Date" name="@nameof(Model.NewItinerary.Date)" value="@Model.NewItinerary.Date.ToString("yyyy-MM-dd")">
+                                </div>
+                                <div class="alert alert-danger" role="alert"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="submit" id="createItinerary" class="btn btn-primary">Save</button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="submit" id="createItinerary" class="btn btn-primary">Save</button>
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-12">
-            <h3>Requests</h3>
-            &nbsp;
-        </div>
-    </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>Requests</h3>
+                    &nbsp;
+                </div>
+            </div>
 
-    <div class="row">
-        <div class="col-md-5ths col-sm-4 col-xs-12">
-            <a asp-action="Requests" asp-route-id="@Model.Id" class="dashboard-block-link">
-                <div class="dashboard-block">
-                    <div class="overlay"></div>
-                    <div class="dashboard-block-main"><span class="dashboard-block-main-text">@Model.TotalRequests</span></div>
-                    <div class="dashboard-block-subtext">Total Requests</div>
+            <div class="row">
+                <div class="col-md-5ths col-sm-4 col-xs-12">
+                    <a asp-action="Requests" asp-route-id="@Model.Id" class="dashboard-block-link">
+                        <div class="dashboard-block">
+                            <div class="overlay"></div>
+                            <div class="dashboard-block-main"><span class="dashboard-block-main-text">@Model.TotalRequests</span></div>
+                            <div class="dashboard-block-subtext">Total Requests</div>
+                        </div>
+                    </a>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-5ths col-sm-4 col-xs-12">
-            <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Unassigned" class="dashboard-block-link">
-                <div class="dashboard-block">
-                    <div class="overlay"></div>
-                    <div class="dashboard-block-main"><span class="dashboard-block-main-text">@Model.UnassignedRequests</span></div>
-                    <div class="dashboard-block-subtext">@Model.UnassignedPercentage% Unassigned</div>
+                <div class="col-md-5ths col-sm-4 col-xs-12">
+                    <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Unassigned" class="dashboard-block-link">
+                        <div class="dashboard-block">
+                            <div class="overlay"></div>
+                            <div class="dashboard-block-main"><span class="dashboard-block-main-text">@Model.UnassignedRequests</span></div>
+                            <div class="dashboard-block-subtext">@Model.UnassignedPercentage% Unassigned</div>
+                        </div>
+                    </a>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-5ths col-sm-4 col-xs-12">
-            <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Assigned"  class="dashboard-block-link">
-                <div class="dashboard-block">
-                    <div class="overlay"></div>
-                    <div class="dashboard-block-main"><span class="dashboard-block-main-text">@Model.AssignedRequests</span></div>
-                    <div class="dashboard-block-subtext">@Model.AssignedPercentage% Assigned</div>
+                <div class="col-md-5ths col-sm-4 col-xs-12">
+                    <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Assigned" class="dashboard-block-link">
+                        <div class="dashboard-block">
+                            <div class="overlay"></div>
+                            <div class="dashboard-block-main"><span class="dashboard-block-main-text">@Model.AssignedRequests</span></div>
+                            <div class="dashboard-block-subtext">@Model.AssignedPercentage% Assigned</div>
+                        </div>
+                    </a>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-5ths col-sm-4 col-xs-12">
-            <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Completed"  class="dashboard-block-link">
-                <div class="dashboard-block">
-                    <div class="overlay"></div>
-                    <div class="dashboard-block-main"><span class="dashboard-block-main-text">@Model.CompletedRequests</span></div>
-                    <div class="dashboard-block-subtext">@Model.CompletedPercentage% Completed</div>
+                <div class="col-md-5ths col-sm-4 col-xs-12">
+                    <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Completed" class="dashboard-block-link">
+                        <div class="dashboard-block">
+                            <div class="overlay"></div>
+                            <div class="dashboard-block-main"><span class="dashboard-block-main-text">@Model.CompletedRequests</span></div>
+                            <div class="dashboard-block-subtext">@Model.CompletedPercentage% Completed</div>
+                        </div>
+                    </a>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-5ths col-sm-4 col-xs-12">
-            <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Canceled"  class="dashboard-block-link">
-                <div class="dashboard-block">
-                    <div class="overlay"></div>
-                    <div class="dashboard-block-main"><span class="dashboard-block-main-text">@Model.CanceledRequests</span></div>
-                    <div class="dashboard-block-subtext">@Model.CanceledPercentage% Canceled</div>
+                <div class="col-md-5ths col-sm-4 col-xs-12">
+                    <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Canceled" class="dashboard-block-link">
+                        <div class="dashboard-block">
+                            <div class="overlay"></div>
+                            <div class="dashboard-block-main"><span class="dashboard-block-main-text">@Model.CanceledRequests</span></div>
+                            <div class="dashboard-block-subtext">@Model.CanceledPercentage% Canceled</div>
+                        </div>
+                    </a>
                 </div>
-            </a>
-        </div>
-    </div>
+            </div>
 }
 
 @section scripts {

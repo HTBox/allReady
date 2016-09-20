@@ -7,6 +7,7 @@ using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Itinerary;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Areas.Admin.ViewModels.Task;
+using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.Areas.Admin.Features.Events
 {
@@ -105,6 +106,16 @@ namespace AllReady.Areas.Admin.Features.Events
 
                 result.TotalRequests = result.CompletedRequests + result.CanceledRequests + result.AssignedRequests +
                                        result.UnassignedRequests;
+
+                result.VolunteersRequired = await _context.Tasks.Where(rec => rec.EventId == result.Id).SumAsync(rec => rec.NumberOfVolunteersRequired);
+
+                var acceptedVolunteers = await _context.Tasks
+                    .AsNoTracking()
+                    .Include(rec => rec.AssignedVolunteers)
+                    .Where(rec => rec.EventId == result.Id)
+                    .ToListAsync();
+
+                result.AcceptedVolunteers = acceptedVolunteers.Sum(x => x.AssignedVolunteers.Where(v => v.Status == TaskStatus.Accepted.ToString()).Count());
             }
 
             return result;
