@@ -4,7 +4,7 @@ using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using Xunit;
 
-namespace AllReady.UnitTest.Areas.Admin.Models.Validators
+namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
 {
     public class ItineraryEditModelValidatorTests
     {

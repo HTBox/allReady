@@ -4,22 +4,28 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Campaign;
 using AllReady.Areas.Admin.ViewModels.Shared;
-using Xunit;
-using Moq;
 using AllReady.Providers;
+using Moq;
+using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
 {
-    public class EditCampaignCommandHandlerTests : InMemoryContextTest
+    //TODO: move these tests into EditCampaignCommandHandlerTests1, then delete this class
+    public class EditCampaignCommandHandlerTests2 : InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        protected override void LoadTestData()
+        {
+            CampaignsHandlerTestHelper.LoadCampaignssHandlerTestData(Context);
+        }
+
+        [Fact]
         public async Task AddNewCampaign()
         {
-            //Arrange
+            // Arrange
             var handler = new EditCampaignCommandHandlerAsync(Context, Mock.Of<IConvertDateTimeOffset>());
             var newCampaign = new CampaignSummaryViewModel { Name = "New", Description = "Desc", TimeZoneId = "UTC" };
 
-            //Act
+            // Act
             var result = await handler.Handle(new EditCampaignCommandAsync { Campaign = newCampaign });
 
             // Assert
@@ -31,17 +37,17 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         /// Tests that the columms belonging the campaign table record are actually updated when a campaign is edited
         /// </summary>
         /// <remarks>This test is not testing the creation of location record, or impact record as those should be seperate tests</remarks>
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task UpdatingExistingCampaignUpdatesAllCoreProperties()
         {
             // Arrange
-            var name = "New Name";
-            var desc = "New Desc";
-            var fullDesc = "New Full Desc";
-            var timezoneId = "GMT Standard Time";
+            const string name = "New Name";
+            const string desc = "New Desc";
+            const string fullDesc = "New Full Desc";
+            const string timezoneId = "GMT Standard Time";
             var startDate = DateTime.Now;
             var endDate = DateTime.Now.AddDays(30);
-            var org = 2;
+            const int org = 2;
 
             var handler = new EditCampaignCommandHandlerAsync(Context, Mock.Of<IConvertDateTimeOffset>());
             var updatedCampaign = new CampaignSummaryViewModel
@@ -56,7 +62,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
                 OrganizationId = org,
             };
 
-            //Act
+            // Act
             var result = await handler.Handle(new EditCampaignCommandAsync { Campaign = updatedCampaign });
             var savedCampaign = Context.Campaigns.SingleOrDefault(s => s.Id == 2);
 
@@ -73,19 +79,19 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Assert.Equal(org, savedCampaign.ManagingOrganizationId);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task UpdatingExistingCampaignUpdatesLocationWithAllProperties()
         {
             // Arrange
-            var name = "New Name";
-            var desc = "New Desc";
-            var org = 2;
-            var address1 = "Address 1";
-            var address2 = "Address 1";
-            var city = "City";
-            var state = "State";
-            var postcode = "45231";
-            var country = "USA";
+            const string name = "New Name";
+            const string desc = "New Desc";
+            const int org = 2;
+            const string address1 = "Address 1";
+            const string address2 = "Address 1";
+            const string city = "City";
+            const string state = "State";
+            const string postcode = "45231";
+            const string country = "USA";
 
             var handler = new EditCampaignCommandHandlerAsync(Context, Mock.Of<IConvertDateTimeOffset>());
             var updatedCampaign = new CampaignSummaryViewModel
@@ -98,7 +104,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
                 Location = new LocationEditViewModel { Address1 = address1, Address2 = address2, City = city, State = state, PostalCode = postcode }
             };
 
-            //Act
+            // Act
             await handler.Handle(new EditCampaignCommandAsync { Campaign = updatedCampaign });
             var savedCampaign = Context.Campaigns.SingleOrDefault(s => s.Id == 2);
 
@@ -111,16 +117,17 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Assert.Equal(country, savedCampaign.Location.Country);
         }
 
+        [Fact]
         public async Task UpdatingExistingCampaignWithNoPriorContactAddsContactWithAllProperties()
         {
             // Arrange
-            var name = "New Name";
-            var desc = "New Desc";
-            var org = 2;
-            var contactEmail = "jdoe@example.com";
-            var firstname = "John";
-            var lastname = "Doe";
-            var telephone = "01323 111111";
+            const string name = "New Name";
+            const string desc = "New Desc";
+            const int org = 2;
+            const string contactEmail = "jdoe@example.com";
+            const string firstname = "John";
+            const string lastname = "Doe";
+            const string telephone = "01323 111111";
 
             var handler = new EditCampaignCommandHandlerAsync(Context, Mock.Of<IConvertDateTimeOffset>());
             var updatedCampaign = new CampaignSummaryViewModel
@@ -136,7 +143,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
                 PrimaryContactPhoneNumber = telephone
             };
 
-            //Act
+            // Act
             await handler.Handle(new EditCampaignCommandAsync { Campaign = updatedCampaign });
             var newContact = Context.Contacts.OrderBy(c => c.Id).LastOrDefault();
 
@@ -150,11 +157,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Assert.Equal(firstname, newContact.FirstName);
             Assert.Equal(lastname, newContact.LastName);
             Assert.Equal(telephone, newContact.PhoneNumber);
-        }
-
-        protected override void LoadTestData()
-        {
-            CampaignsHandlerTestHelper.LoadCampaignssHandlerTestData(Context);
         }
     }
 }

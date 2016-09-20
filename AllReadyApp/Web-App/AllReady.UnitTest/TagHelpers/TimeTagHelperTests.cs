@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using System.Text.Encodings.Web;
+using AllReady.Providers;
+using Moq;
 
 namespace AllReady.UnitTest.TagHelpers
 {
@@ -34,7 +35,7 @@ namespace AllReady.UnitTest.TagHelpers
             System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("en-US");
             System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
 
-            TimeTagHelper tagHelper = new TimeTagHelper();
+            TimeTagHelper tagHelper = new TimeTagHelper(Mock.Of<IConvertDateTimeOffset>());
             tagHelper.Value = new DateTimeOffset(2014, 12, 25, 13, 21, 0, TimeSpan.FromHours(0));
 
             var output = GetOutput();
@@ -47,7 +48,7 @@ namespace AllReady.UnitTest.TagHelpers
         [Fact]
         public void ValueShouldBeFormattedUsingSpecifiedFormat()
         {
-            TimeTagHelper tagHelper = new TimeTagHelper();
+            TimeTagHelper tagHelper = new TimeTagHelper(Mock.Of<IConvertDateTimeOffset>());
             tagHelper.Value = new DateTimeOffset(2014, 12, 25, 13, 21, 0, TimeSpan.FromHours(0));
             tagHelper.Format = "yyyy-MM-dd";
 
@@ -56,22 +57,6 @@ namespace AllReady.UnitTest.TagHelpers
 
             Assert.Null(output.TagName);
             Assert.Equal("2014-12-25", output.Content.GetContent());
-        }
-
-        [Fact]
-        public void ValueShouldBeConvertedToSpecifiedTimeZone()
-        {
-            TimeTagHelper tagHelper = new TimeTagHelper();
-            tagHelper.Value = new DateTimeOffset(2014, 12, 25, 13, 21, 0, TimeSpan.FromHours(0));
-            tagHelper.Format = "yyyy-MM-dd h:mm tt";
-            tagHelper.TargetTimeZoneId = "Central Standard Time";
-
-            var output = GetOutput();
-            tagHelper.Process(GetContext(), output);
-
-            Assert.Null(output.TagName);
-            Assert.Equal("2014-12-25 7:21 AM", output.Content.GetContent());
-
         }
     }
 }

@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Models;
 using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Extensions;
 using AllReady.Models;
+using AllReady.Providers;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,10 +14,12 @@ namespace AllReady.Areas.Admin.Features.Campaigns
     public class EditCampaignCommandHandlerAsync : IAsyncRequestHandler<EditCampaignCommandAsync, int>
     {
         private readonly AllReadyContext _context;
+        private readonly IConvertDateTimeOffset dateTimeOffsetsConverter;
 
-        public EditCampaignCommandHandlerAsync(AllReadyContext context)
+        public EditCampaignCommandHandlerAsync(AllReadyContext context, IConvertDateTimeOffset dateTimeOffsetsConverter)
         {
             _context = context;
+            this.dateTimeOffsetsConverter = dateTimeOffsetsConverter;
         }
 
         public async Task<int> Handle(EditCampaignCommandAsync message)
@@ -36,13 +38,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.ExternalUrlText = message.Campaign.ExternalUrlText;
 
             campaign.TimeZoneId = message.Campaign.TimeZoneId;
-
-            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(campaign.TimeZoneId);
-            var startDateTimeOffset = timeZoneInfo.GetUtcOffset(message.Campaign.StartDate);
-            campaign.StartDateTime = new DateTimeOffset(message.Campaign.StartDate.Year, message.Campaign.StartDate.Month, message.Campaign.StartDate.Day, 0, 0, 0, startDateTimeOffset);
-
-            var endDateTimeOffset = timeZoneInfo.GetUtcOffset(message.Campaign.EndDate);
-            campaign.EndDateTime = new DateTimeOffset(message.Campaign.EndDate.Year, message.Campaign.EndDate.Month, message.Campaign.EndDate.Day, 23, 59, 59, endDateTimeOffset);
+            campaign.StartDateTime = dateTimeOffsetsConverter.ConvertDateTimeOffsetTo(campaign.TimeZoneId, message.Campaign.StartDate);
+            campaign.EndDateTime = dateTimeOffsetsConverter.ConvertDateTimeOffsetTo(campaign.TimeZoneId, message.Campaign.EndDate, 23, 59, 59);
 
             campaign.ManagingOrganizationId = message.Campaign.OrganizationId;
             campaign.ImageUrl = message.Campaign.ImageUrl;
@@ -90,10 +87,10 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             // Add a Primary Campaign Contact
             else if (!hasPrimaryContact && addOrUpdatePrimaryContact)
             {
-                var campaignContact = new CampaignContact
+                var campaignContact = new CampaignContact()
                 {
                     ContactType = (int)ContactTypes.Primary,
-                    Contact = new Contact
+                    Contact = new Contact()
                     {
                         Email = contactModel.PrimaryContactEmail,
                         FirstName = contactModel.PrimaryContactFirstName,

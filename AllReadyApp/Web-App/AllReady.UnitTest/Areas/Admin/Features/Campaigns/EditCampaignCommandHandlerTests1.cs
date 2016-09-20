@@ -12,9 +12,9 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
 {
-    public class EditCampaign : TestBase
+    public class EditCampaignCommandHandlerTests1 : TestBase
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ModelIsCreated()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
@@ -23,7 +23,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Assert.NotEqual(0, actual);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task CampaignDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
@@ -45,7 +45,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
 
-            var htb = new Organization()
+            var htb = new Organization
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
@@ -53,7 +53,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
                 Campaigns = new List<Campaign>()
             };
 
-            var firePrev = new Campaign()
+            var firePrev = new Campaign
             {
                 Name = "Neighborhood Fire Prevention Days",
                 ManagingOrganization = htb,
@@ -63,7 +63,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             context.Organizations.Add(htb);
             context.SaveChanges();
 
-            const string NEW_NAME = "Some new name value";
+            const string newName = "Some new name value";
 
             var startDate = new DateTime(2014, 12, 10);
             var endDate = new DateTime(2015, 7, 3);
@@ -75,7 +75,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
                 StartDate = startDate,
                 Id = firePrev.Id,
                 ImageUrl = firePrev.ImageUrl,
-                Name = NEW_NAME,
+                Name = newName,
                 OrganizationId = firePrev.ManagingOrganizationId,
                 OrganizationName = firePrev.ManagingOrganization.Name,
                 TimeZoneId = "Eastern Standard Time"
@@ -86,7 +86,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Assert.Equal(1, result); // should get back the Campaign id
 
             var data = context.Campaigns.Single(_ => _.Id == 1);
-            Assert.Equal(NEW_NAME, data.Name);
+            Assert.Equal(newName, data.Name);
 
             Assert.Equal(2014, data.StartDateTime.Year);
             Assert.Equal(12, data.StartDateTime.Month);
@@ -100,7 +100,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Assert.Equal(3, data.EndDateTime.Day);
             Assert.Equal(23, data.EndDateTime.Hour);
             Assert.Equal(59, data.EndDateTime.Minute);
-            Assert.Equal(-4, data.EndDateTime.Offset.TotalHours);   
+            Assert.Equal(-4, data.EndDateTime.Offset.TotalHours);
         }
     }
 }

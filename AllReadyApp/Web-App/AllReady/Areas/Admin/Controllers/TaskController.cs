@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.ViewModels.Task;
-using AllReady.Areas.Admin.ViewModels.Validators;
+using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -17,12 +17,12 @@ namespace AllReady.Areas.Admin.Controllers
     public class TaskController : Controller
     {
         private readonly IMediator _mediator;
-        private readonly ITaskEditViewModelValidator _taskDetailModelValidator;
+        private readonly ITaskEditViewModelValidator _taskEditViewModelValidator;
 
-        public TaskController(IMediator mediator, ITaskEditViewModelValidator taskDetailModelValidator)
+        public TaskController(IMediator mediator, ITaskEditViewModelValidator taskEditViewModelValidator)
         {
             _mediator = mediator;
-            _taskDetailModelValidator = taskDetailModelValidator;
+            _taskEditViewModelValidator = taskEditViewModelValidator;
         }
 
         [HttpGet]
@@ -76,7 +76,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditViewModel model)
         {
-            var errors = _taskDetailModelValidator.Validate(model);
+            var errors = _taskEditViewModelValidator.Validate(model);
             errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)
