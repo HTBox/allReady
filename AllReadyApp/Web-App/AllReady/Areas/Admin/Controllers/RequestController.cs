@@ -1,6 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Events;
+using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -63,12 +63,36 @@ namespace AllReady.Areas.Admin.Controllers
             return View("Edit", model);
         }
 
+        /// <summary>
+        /// Handles edit request POST requests
+        /// </summary>
+        /// <param name="model">The request edit model</param>
+        /// <returns></returns>
         [HttpPost]
-        [Route("Admin/Request/Create")]
+        [Route("Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditRequestViewModel model)
         {
-            throw new NotImplementedException();
+            var campaignEvent = await _mediator.SendAsync(new EventSummaryQuery() { EventId = model.EventId });
+
+            if (campaignEvent == null)
+            {
+                return BadRequest("Invalid event id");
+            }
+
+            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+            {
+                return Unauthorized();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View("Edit", model);
+            }
+
+            await _mediator.SendAsync(new EditRequestCommand { RequestModel = model });
+
+            return RedirectToAction("Details", "Event", new { id = model.EventId });
         }
     }
 }
