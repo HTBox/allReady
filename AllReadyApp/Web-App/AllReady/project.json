@@ -41,9 +41,9 @@
     "Sendgrid": "6.1.0",
     "Twilio": "4.0.3",
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
-    "Autofac": "4.0.0-rc1-177",
+    "Autofac": "4.1.0",
     "CsvHelper": "2.15.0.2",
-    "Autofac.Extensions.DependencyInjection": "4.0.0-rc1-177",
+    "Autofac.Extensions.DependencyInjection": "4.0.0",
     "Microsoft.AspNetCore.Razor.Tools": {
       "version": "1.0.0-preview2-final",
       "type": "build"
