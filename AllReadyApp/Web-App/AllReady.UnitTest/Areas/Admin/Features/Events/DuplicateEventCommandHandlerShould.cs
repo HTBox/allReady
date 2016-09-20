@@ -41,7 +41,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal("Name", sut.Name);
             Assert.Equal("Description", sut.Description);
             Assert.Equal(EventType.Itinerary, sut.EventType);
-            Assert.Equal(10, sut.NumberOfVolunteersRequired);
             Assert.Equal(new DateTimeOffset(2016, 1, 1, 0, 0, 0, new TimeSpan()), sut.StartDateTime);
             Assert.Equal(new DateTimeOffset(2016, 1, 31, 0, 0, 0, new TimeSpan()), sut.EndDateTime);
             Assert.Equal("Organizer", sut.Organizer.Id);
@@ -203,14 +202,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
 
             Context.AddRange(skillOne, skillTwo);
 
-
             var @event = new Event()
             {
                 Campaign = new Campaign(),
                 Name = "Name",
                 Description = "Description",
                 EventType = EventType.Itinerary,
-                NumberOfVolunteersRequired = 10,
                 StartDateTime = new DateTimeOffset(2016, 1, 1, 0, 0, 0, new TimeSpan()),
                 EndDateTime = new DateTimeOffset(2016, 1, 31, 0, 0, 0, new TimeSpan()),
                 Location = new Location()
