@@ -7,6 +7,7 @@ using MediatR;
 using Moq;
 using Xunit;
 using System.Linq;
+using Geocoding;
 using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
@@ -56,28 +57,51 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Assert.False(Context.Tasks.Single(x => x.Id == task.Id).AssignedVolunteers.Any(x => x.User.Id == "user1"));
         }
 
-        /*[Fact]
-        public async Task NotifyNewVolunteersWithCorrectMessage()
+        [Fact]
+        public async Task NotifyVolunteersWithCorrectMessage()
         {
             const string expectedMessage = "You've been assigned a task from AllReady.";
+            var task = new AllReadyTask { Id = 1 };
+            Context.Add(new ApplicationUser { Id = "user1", Email = "user1@abc.com", PhoneNumber = "1234", EmailConfirmed = true, PhoneNumberConfirmed = true });
+            Context.Add(task);
+            Context.SaveChanges();
 
+            var message = new AssignTaskCommandAsync { TaskId = task.Id, UserIds = new List<string> { "user1" } };
             await sut.Handle(message);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
                    notifyCommand.ViewModel.EmailMessage == expectedMessage &&
                    notifyCommand.ViewModel.Subject == expectedMessage &&
-                   notifyCommand.ViewModel.EmailRecipients.Contains(newVolunteer.Id)
+                   notifyCommand.ViewModel.EmailRecipients.Contains("user1@abc.com") &&
+                   notifyCommand.ViewModel.SmsRecipients.Contains("1234") &&
+                   notifyCommand.ViewModel.SmsMessage == expectedMessage
             )), Times.Once());
         }
 
         [Fact]
         public async Task DoesNotNotifyVolunteersPreviouslySignedUp()
         {
+            var task = new AllReadyTask { Id = 1 };
+            var previouslySignedupUser = new ApplicationUser
+            {
+                Id = "user1",
+                Email = "user1@abc.com",
+                PhoneNumber = "1234",
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true
+            };
+            Context.Add(previouslySignedupUser);
+            task.AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User =  previouslySignedupUser } };
+            Context.Add(task);
+            Context.SaveChanges();
+
+            var message = new AssignTaskCommandAsync { TaskId = task.Id, UserIds = new List<string> { previouslySignedupUser.Id } };
             await sut.Handle(message);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
-                   notifyCommand.ViewModel.EmailRecipients.Contains("user2@abc.com")
-            )), Times.Never);
-        }*/
+                  notifyCommand.ViewModel.EmailRecipients.IsNullOrEmpty() &&
+                  notifyCommand.ViewModel.SmsRecipients.IsNullOrEmpty()
+           )), Times.Once());
+        }
     }
 }
