@@ -5,7 +5,6 @@ using AllReady.Models;
 using AllReady.ViewModels.Event;
 using AllReady.ViewModels.Task;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TaskSignupViewModel = AllReady.ViewModels.Shared.TaskSignupViewModel;
 
@@ -14,12 +13,10 @@ namespace AllReady.Features.Events
     public class ShowEventQueryHandler : IAsyncRequestHandler<ShowEventQuery, EventViewModel>
     {
         private readonly AllReadyContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ShowEventQueryHandler(AllReadyContext context, UserManager<ApplicationUser> userManager)
+        public ShowEventQueryHandler(AllReadyContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
         public async Task<EventViewModel> Handle(ShowEventQuery message)
@@ -40,9 +37,9 @@ namespace AllReady.Features.Events
 
             var eventViewModel = new EventViewModel(@event);
 
-            var user = await _userManager.GetUserAsync(message.User).ConfigureAwait(false);
-            var userId = user.Id;
-            var appUser = await _context.Users.SingleOrDefaultAsync(u => u.Id == userId).ConfigureAwait(false);
+            //var userId = _userManager.GetUserId(message.User);
+            var userId = message.UserId;
+            var appUser = this._context.Users.SingleOrDefault(u => u.Id == userId);
 
             eventViewModel.UserId = userId;
             eventViewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
