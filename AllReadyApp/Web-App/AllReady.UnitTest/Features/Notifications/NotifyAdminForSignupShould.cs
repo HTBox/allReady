@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 using Moq;
 using AllReady.Features.Notifications;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using AllReady.Models;
 
 namespace AllReady.UnitTest.Features.Notifications
@@ -16,7 +14,7 @@ namespace AllReady.UnitTest.Features.Notifications
     {
         protected override void LoadTestData()
         {
-            var testOrg = new Organization()
+            var testOrg = new Organization
             {
                 Name = "My Test Campaign",
                 LogoUrl = "http://www.htbox.org/testCampaign",
@@ -24,36 +22,36 @@ namespace AllReady.UnitTest.Features.Notifications
                 Campaigns = new List<Campaign>()
             };
 
-            var testCampaign1 = new Campaign()
+            var testCampaign1 = new Campaign
             {
                 Name = "Test Campaign 1",
                 ManagingOrganization = testOrg,
                 CampaignContacts = new List<CampaignContact>()
             };
 
-            var testCampaign2 = new Campaign()
+            var testCampaign2 = new Campaign
             {
                 Name = "Test Campaign 2",
                 ManagingOrganization = testOrg,
                 CampaignContacts = new List<CampaignContact>()
             };
 
-            var primaryCampaignContact1 = new CampaignContact()
+            var primaryCampaignContact1 = new CampaignContact
             {
                 ContactType = (int)ContactTypes.Primary,
-                Contact = new Contact()
+                Contact = new Contact
                 {
                     Email = "test@contactemail.com"
                 }
             };
 
-            var primaryCampaignContact2 = new CampaignContact()
+            var primaryCampaignContact2 = new CampaignContact
             {
                 ContactType = (int)ContactTypes.Primary,
                 Contact = new Contact()
             };
 
-            var testEvent1 = new Models.Event()
+            var testEvent1 = new Models.Event
             {
                 Id = 5,
                 Name = "Test Event Name",
@@ -65,7 +63,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 RequiredSkills = new List<EventSkill>()
             };
 
-            var testEvent2 = new Models.Event()
+            var testEvent2 = new Models.Event
             {
                 Id = 7,
                 Name = "Test Event 2",
@@ -91,17 +89,11 @@ namespace AllReady.UnitTest.Features.Notifications
             testOrg.Campaigns.Add(testCampaign1);
             testOrg.Campaigns.Add(testCampaign2);
 
-            this.Context.Organizations.Add(testOrg);
-            this.Context.Events.Add(testEvent1);
-            this.Context.Events.Add(testEvent2);
+            Context.Organizations.Add(testOrg);
+            Context.Events.Add(testEvent1);
+            Context.Events.Add(testEvent2);
 
-            var eventSignups = new List<EventSignup>();
-            eventSignups.Add(new EventSignup { Event = testEvent1, User = user1, SignupDateTime = DateTime.UtcNow });
-            eventSignups.Add(new EventSignup { Event = testEvent1, User = user2, SignupDateTime = DateTime.UtcNow });
-            eventSignups.Add(new EventSignup { Event = testEvent2, User = user1, SignupDateTime = DateTime.UtcNow.AddMinutes(-25) });
-            this.Context.EventSignup.AddRange(eventSignups);
-
-            var testTask1 = new AllReadyTask()
+            var testTask1 = new AllReadyTask
             {
                 Id = 7,
                 Event = testEvent1,
@@ -109,7 +101,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 // Required Skills?
             };
 
-            var testTask2 = new AllReadyTask()
+            var testTask2 = new AllReadyTask
             {
                 Id = 9,
                 Event = testEvent2,
@@ -117,10 +109,10 @@ namespace AllReady.UnitTest.Features.Notifications
                 // Required Skills?
             };
 
-            this.Context.Tasks.Add(testTask1);
-            this.Context.Tasks.Add(testTask2);
+            Context.Tasks.Add(testTask1);
+            Context.Tasks.Add(testTask2);
 
-            this.Context.SaveChanges();
+            Context.SaveChanges();
         }
 
         /// <summary>
@@ -139,14 +131,13 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
 
-            var notification = new VolunteerSignupNotification()
+            var notification = new VolunteerSignupNotification
             {
                 UserId = Context.Users.First().Id,
-                EventId = Context.Events.First().Id,
                 TaskId = Context.Tasks.First().Id
             };
 
-            var target = new NotifyAdminForSignup(this.Context, mediator.Object, options, logger);
+            var target = new NotifyAdminForSignup(Context, mediator.Object, options, logger);
             await target.Handle(notification);
 
             mediator.VerifyAll();
@@ -172,14 +163,13 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
 
-            var notification = new VolunteerSignupNotification()
+            var notification = new VolunteerSignupNotification
             {
                 UserId = Context.Users.First().Id,
-                EventId = Context.Events.First().Id,
                 TaskId = Context.Tasks.First().Id
             };
 
-            var target = new NotifyAdminForSignup(this.Context, mediator.Object, options, logger);
+            var target = new NotifyAdminForSignup(Context, mediator.Object, options, logger);
             await target.Handle(notification);
 
             mediator.VerifyAll();
@@ -206,14 +196,13 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
 
-            var notification = new VolunteerSignupNotification()
+            var notification = new VolunteerSignupNotification
             {
                 UserId = Context.Users.First().Id,
-                EventId = testEvent.Id,
                 TaskId = Context.Tasks.First().Id
             };
 
-            var target = new NotifyAdminForSignup(this.Context, mediator.Object, options, logger);
+            var target = new NotifyAdminForSignup(Context, mediator.Object, options, logger);
             await target.Handle(notification);
 
             mediator.VerifyAll();
@@ -237,14 +226,13 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
 
-            var notification = new VolunteerSignupNotification()
+            var notification = new VolunteerSignupNotification
             {
                 UserId = Context.Users.First().Id,
-                EventId = Context.Events.First().Id,
                 TaskId = Context.Tasks.First().Id
             };
 
-            var target = new NotifyAdminForSignup(this.Context, mediator.Object, options, logger.Object);
+            var target = new NotifyAdminForSignup(Context, mediator.Object, options, logger.Object);
             await target.Handle(notification);
 
             logger.Verify(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(),
@@ -272,14 +260,13 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
 
-            var notification = new VolunteerSignupNotification()
+            var notification = new VolunteerSignupNotification
             {
                 UserId = Context.Users.First().Id,
-                EventId = Context.Events.First().Id,
                 TaskId = Context.Tasks.First().Id
             };
 
-            var target = new NotifyAdminForSignup(this.Context, mediator.Object, options, logger.Object);
+            var target = new NotifyAdminForSignup(Context, mediator.Object, options, logger.Object);
             await target.Handle(notification);
 
             logger.VerifyAll();
@@ -302,14 +289,13 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
 
-            var notification = new VolunteerSignupNotification()
+            var notification = new VolunteerSignupNotification
             {
                 UserId = Context.Users.First().Id,
-                EventId = Context.Events.First().Id,
                 TaskId = Context.Tasks.First().Id
             };
 
-            var target = new NotifyAdminForSignup(this.Context, mediator.Object, options, logger.Object);
+            var target = new NotifyAdminForSignup(Context, mediator.Object, options, logger.Object);
             await target.Handle(notification);
 
             logger.Verify(x => x.Log(It.IsAny<LogLevel>(),
@@ -325,22 +311,19 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void SkipNotificationIfAdminEmailIsNotSpecified()
         {
-            var testEvent = Context.Events.Skip(1).First();
-
             var mediator = new Mock<IMediator>();
             var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();
 
             var options = new TestOptions<GeneralSettings>();
             options.Value.SiteBaseUrl = "localhost";
 
-            var notification = new VolunteerSignupNotification()
+            var notification = new VolunteerSignupNotification
             {
                 UserId = Context.Users.First().Id,
-                EventId = testEvent.Id,
                 TaskId = Context.Tasks.Skip(1).First().Id
             };
 
-            var target = new NotifyAdminForSignup(this.Context, mediator.Object, options, logger);
+            var target = new NotifyAdminForSignup(Context, mediator.Object, options, logger);
             await target.Handle(notification);
 
             mediator.Verify(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
