@@ -16,6 +16,7 @@ namespace AllReady.Areas.Admin.Controllers
     public class RequestController : Controller
     {
         public static string CreateRequestTitle = "Create New Request";
+        public const string EditRequestPostRouteName = "EditRequestPost";
 
         private readonly IMediator _mediator;
 
@@ -82,7 +83,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            ViewData["Title"] = "Edit" + model.Name;
+            ViewData["Title"] = "Edit " + model.Name;
 
             return View("Edit", model);
         }
@@ -93,7 +94,7 @@ namespace AllReady.Areas.Admin.Controllers
         /// <param name="model">The request edit model</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("Edit", Name = "EditRequestPost")]
+        [Route("Edit", Name = EditRequestPostRouteName)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditRequestViewModel model)
         {

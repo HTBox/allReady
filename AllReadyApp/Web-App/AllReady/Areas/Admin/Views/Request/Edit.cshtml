@@ -1,4 +1,6 @@
-﻿@model AllReady.Areas.Admin.ViewModels.Request.EditRequestViewModel
+﻿@using System.Threading.Tasks
+@using AllReady.Areas.Admin.Controllers
+@model AllReady.Areas.Admin.ViewModels.Request.EditRequestViewModel
 
 <div class="row">
     <div class="col-12">
@@ -28,7 +30,7 @@
 
 <div class="row">
     <div class="col-12">
-        <form asp-route="EditRequestPost" asp-area="Admin">
+        <form asp-route="@RequestController.EditRequestPostRouteName" asp-area="Admin">
             <div class="form-horizontal">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 
