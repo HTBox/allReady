@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Itineraries;
+using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.ViewModels.Itinerary;
 using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Areas.Admin.ViewModels.Shared;
@@ -93,7 +95,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DetailsReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
+        public async Task Create_ReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel());
@@ -108,7 +110,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DetailsReturnsCorrectViewAndViewModelWhenEventIsNotNullAndUserIsOrgAdmin()
+        public async Task Create_ReturnsCorrectViewAndViewModel_WhenEventIsNotNullAndUserIsOrgAdmin()
         {
             const int eventId = 1;
             const int orgId = 1;
@@ -133,6 +135,135 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var viewBagTitle = objResult.ViewData["Title"];
             viewBagTitle.ShouldNotBeNull();
             viewBagTitle.ShouldBe(RequestController.CreateRequestTitle);
+        }
+
+        [Fact]
+        public void Edit_HasHttpPostAttribute()
+        {
+            var sut = new RequestController(null);
+            var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<EditRequestViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void Edit_HasRouteAttribute_WithCorrectTemplate()
+        {
+            var sut = new RequestController(null);
+            var routeAttribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<EditRequestViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
+            Assert.Equal(routeAttribute.Template, "Edit");
+        }
+
+        [Fact]
+        public async Task Edit_SendsEventSummaryQuery_WithCorrectArguments()
+        {
+            const int eventId = 1;
+
+            EventSummaryQuery eventSummaryQuery = null; // will be assigned from the Moq callback
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(null).Callback<EventSummaryQuery>(cmd => eventSummaryQuery = cmd).Verifiable();
+
+            var sut = new RequestController(mockMediator.Object);
+
+            await sut.Edit(new EditRequestViewModel { EventId = eventId });
+
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<EventSummaryQuery>()), Times.Once);
+
+            eventSummaryQuery.EventId.ShouldBe(eventId);
+        }
+
+        [Fact]
+        public async Task Edit_ReturnsBadRequest_WhenEventSummaryQueryReturnsNull()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(null).Verifiable();
+
+            var sut = new RequestController(mockMediator.Object);
+            var result = await sut.Edit(new EditRequestViewModel { EventId = 1 });
+
+            var objResult = Assert.IsType<BadRequestObjectResult>(result);
+            objResult.StatusCode.ShouldNotBeNull();
+            objResult.StatusCode.Value.ShouldBe(StatusCodes.Status400BadRequest);
+        }
+
+        [Fact]
+        public async Task Edit_ReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel());
+
+            var sut = new RequestController(mockMediator.Object);
+            sut.MakeUserNotAnOrgAdmin();
+
+            var result = await sut.Edit(new EditRequestViewModel { EventId = 1 });
+
+            var objResult = Assert.IsType<UnauthorizedResult>(result);
+            objResult.StatusCode.ShouldBe(StatusCodes.Status401Unauthorized);
+        }
+
+        [Fact]
+        public async Task Edit_ReturnsViewResult_WhenModelStateIsNotValid()
+        {
+            const int eventId = 1;
+            const int orgId = 1;
+            var viewModel = new EventSummaryViewModel { Id = eventId, OrganizationId = orgId };
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(viewModel);
+
+            var sut = new RequestController(mockMediator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+            sut.ModelState.AddModelError("test", "test error");
+
+            var result = await sut.Edit(new EditRequestViewModel { EventId = eventId });
+
+            var objResult = Assert.IsType<ViewResult>(result);
+            objResult.ViewName.ShouldBe("Edit");
+        }
+
+        [Fact]
+        public async Task Edit_SendsEditRequestCommand_WhenEventIsNotNullAndUserIsOrgAdmin()
+        {
+            const int eventId = 1;
+            const int orgId = 1;
+            var viewModel = new EventSummaryViewModel { Id = eventId, OrganizationId = orgId };
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(viewModel);
+
+            EditRequestCommand editRequestCommand = null; // will be assigned from the Moq callback
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EditRequestCommand>())).ReturnsAsync(Guid.NewGuid()).Callback<EditRequestCommand>(cmd => editRequestCommand = cmd).Verifiable();
+
+            var sut = new RequestController(mockMediator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.Edit(new EditRequestViewModel { EventId = eventId });
+
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<EditRequestCommand>()), Times.Once);
+
+            editRequestCommand.RequestModel.EventId.ShouldBe(eventId);
+        }
+
+        [Fact]
+        public async Task Edit_ReturnsRedirectToAction_WhenEventIsNotNullAndUserIsOrgAdmin()
+        {
+            const int eventId = 1;
+            const int orgId = 1;
+            var viewModel = new EventSummaryViewModel { Id = eventId, OrganizationId = orgId };
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(viewModel);
+
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EditRequestCommand>())).ReturnsAsync(Guid.NewGuid());
+
+            var sut = new RequestController(mockMediator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.Edit(new EditRequestViewModel { EventId = eventId });
+
+            var objResult = Assert.IsType<RedirectToActionResult>(result);
+            objResult.ActionName.ShouldBe("Details");
+            objResult.ControllerName.ShouldBe("Event");
         }
     }
 }
