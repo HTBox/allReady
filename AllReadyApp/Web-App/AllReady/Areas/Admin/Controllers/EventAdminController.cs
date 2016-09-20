@@ -273,7 +273,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            //TODO: Should be using an EventSummaryQuery here
+            //TODO: Should be using an EventSummaryQueryAsync here
             var campaignEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = id });
             if (campaignEvent == null)
             {

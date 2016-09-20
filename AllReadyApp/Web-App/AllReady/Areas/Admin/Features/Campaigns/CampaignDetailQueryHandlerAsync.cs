@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Extensions;
 using AllReady.Areas.Admin.ViewModels.Campaign;
-using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -52,21 +51,13 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Location = campaign.Location.ToModel(),
                     Locked = campaign.Locked,
                     Featured = campaign.Featured,
-                    Events = campaign.Events.Select(a => new EventSummaryViewModel
+                    Events = campaign.Events.Select(a => new CampaignDetailViewModel.EventList
                     {
                         Id = a.Id,
                         Name = a.Name,
                         Description = a.Description,
-                        TimeZoneId = campaign.TimeZoneId,
                         StartDateTime = a.StartDateTime,
-                        EndDateTime = a.EndDateTime,
-                        CampaignId = campaign.Id,
-                        CampaignName = campaign.Name,
-                        OrganizationId = campaign.ManagingOrganizationId,
-                        OrganizationName = campaign.ManagingOrganization.Name,
-                        ImageUrl = a.ImageUrl,
-                        IsLimitVolunteers = a.IsLimitVolunteers,
-                        IsAllowWaitList = a.IsAllowWaitList
+                        EndDateTime = a.EndDateTime
                     })
                 };
 
