@@ -6,36 +6,39 @@ using AllReady.Models;
 using MediatR;
 using Moq;
 using Xunit;
+using System.Linq;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
     public class AssignTaskCommandHandlerAsyncShould : InMemoryContextTest
     {
-        //Seed Tasks to the context
-        //Seed Users to the context
-        //Should we check for whether volunteer already signed up? Whats the downside if we don't? How would a volunteer get signedup again for the same task? 
-        // Checks whetehr that particular user has already signed up. 
         private readonly AssignTaskCommandAsync message;
         private readonly Mock<IMediator> mediator;
         private readonly AssignTaskCommandHandlerAsync sut;
+        private readonly AllReadyTask task;
+        private readonly ApplicationUser newVolunteer;
+        private ApplicationUser existingVolunteer;
 
         public AssignTaskCommandHandlerAsyncShould()
         {
-            var task = new AllReadyTask
+            task = new AllReadyTask
             {
                 Id = 1,
                 AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User = new ApplicationUser { Id = "user3@abc.com" } } }
             };
 
-            var newVolunteer = new ApplicationUser {Id = "user1@abc.com" };
-            var existingVolunteer = new ApplicationUser {Id = "user2@abc.com"};
-
+            newVolunteer = new ApplicationUser {Id = "user1@abc.com" };
+            existingVolunteer = new ApplicationUser {Id = "user2@abc.com"};
             Context.Add(newVolunteer);
             Context.Add(existingVolunteer);
             Context.Add(task);
 
-            var users = new List<string> {"user2@abc.com", "user1@cd.com"};
-            message = new AssignTaskCommandAsync { TaskId = task.Id, UserIds = users };
+            message = new AssignTaskCommandAsync
+            {
+                TaskId = task.Id,
+                UserIds = new List<string> { newVolunteer.Id, existingVolunteer.Id }
+            };
+
             mediator = new Mock<IMediator>();
             Context.SaveChanges();
 
@@ -43,9 +46,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         }
 
         [Fact]
-        public async Task SignupVolunteersToTask()
+        public async Task SignsupVolunteersToTask()
         {
             await sut.Handle(message);
+
+            var assignedVolunteers = Context.Tasks.Single(x => x.Id == task.Id).AssignedVolunteers.Select(x => x.User.Id);
+            Assert.Equal(assignedVolunteers, new[] { newVolunteer.Id, existingVolunteer.Id});
         }
 
         [Fact]
@@ -74,8 +80,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             await sut.Handle(message);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
-                   notifyCommand.ViewModel.EmailRecipients.Contains("user1@abc.com")
-            )), Times.Once());
+                   notifyCommand.ViewModel.EmailRecipients.Contains("user2@abc.com")
+            )), Times.Never);
         }
     }
 }
