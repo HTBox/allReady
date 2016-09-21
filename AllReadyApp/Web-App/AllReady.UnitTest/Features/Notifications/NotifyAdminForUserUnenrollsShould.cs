@@ -7,11 +7,10 @@ using AllReady.Features.Notifications;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using AllReady.Models;
-using AllReady.Areas.Admin.ViewModels.Task;
 
 namespace AllReady.UnitTest.Features.Notifications
 {
-    public class NotifyAdminForUserUnenrollShould : InMemoryContextTest
+    public class NotifyAdminForUserUnenrollsShould : InMemoryContextTest
     {
         /// <summary>
         /// Verifies that an object of type NotifyVolunteersCommand 
@@ -20,23 +19,23 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void PassANotifyVolunteersCommandToTheMediator()
         {
-            int testTaskId = 29;
-            int testEventId = 15;
+            const int taskId = 29;
+            const int eventId = 15;
 
             var mediator = new Mock<IMediator>();
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync<EventDetailForNotificationModel>(It.IsAny<EventDetailForNotificationQueryAsync>()))
-                .ReturnsAsync(GetEventDetailForNotificationModel(testTaskId, testEventId));
+                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .ReturnsAsync(GetTaskDetailForNotificationModel(taskId, eventId));
 
             // Setup action call
             mediator.Setup(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
                 .ReturnsAsync(new Unit());
 
             var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();
-            TestOptions<GeneralSettings> options = GetSettings();
-            UserUnenrolls notification = GetUserUnenrolls(testTaskId, testEventId);
+            var options = GetSettings();
+            var notification = GetUserUnenrolls(taskId);
 
             var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger);
             await target.Handle(notification);
@@ -55,23 +54,23 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void PassAnEmailSubjectToTheMediator()
         {
-            int testTaskId = 29;
-            int testEventId = 15;
+            const int taskId = 29;
+            const int eventId = 15;
 
             var mediator = new Mock<IMediator>();
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync<EventDetailForNotificationModel>(It.IsAny<EventDetailForNotificationQueryAsync>()))
-                .ReturnsAsync(GetEventDetailForNotificationModel(testTaskId, testEventId));
+                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .ReturnsAsync(GetTaskDetailForNotificationModel(taskId, eventId));
 
             // Setup action call
             mediator.Setup(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(n => !string.IsNullOrWhiteSpace(n.ViewModel.Subject))))
                 .ReturnsAsync(new Unit());
 
             var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();
-            TestOptions<GeneralSettings> options = GetSettings();
-            UserUnenrolls notification = GetUserUnenrolls(testTaskId, testEventId);
+            var options = GetSettings();
+            var notification = GetUserUnenrolls(taskId);
 
             var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger);
             await target.Handle(notification);
@@ -86,26 +85,26 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void SendToTheAdminEmail()
         {
-            int testTaskId = 29;
-            int testEventId = 15;
+            const int taskId = 29;
+            const int eventId = 15;
 
-            var eventDetail = GetEventDetailForNotificationModel(testTaskId, testEventId);
-            var expectedEmail = eventDetail.CampaignContacts.First().Contact.Email;
+            var taskDetail = GetTaskDetailForNotificationModel(taskId, eventId);
+            var expectedEmail = taskDetail.CampaignContacts.First().Contact.Email;
 
             var mediator = new Mock<IMediator>();
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync<EventDetailForNotificationModel>(It.IsAny<EventDetailForNotificationQueryAsync>()))
-                .ReturnsAsync(eventDetail);
+                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .ReturnsAsync(taskDetail);
 
             // Setup action call
             mediator.Setup(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(n => n.ViewModel.EmailRecipients.Contains(expectedEmail))))
                 .ReturnsAsync(new Unit());
 
             var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();
-            TestOptions<GeneralSettings> options = GetSettings();
-            UserUnenrolls notification = GetUserUnenrolls(testTaskId, testEventId);
+            var options = GetSettings();
+            var notification = GetUserUnenrolls(taskId);
 
             var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger);
             await target.Handle(notification);
@@ -123,15 +122,15 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void LogIfAnExceptionOccurs()
         {
-            int testTaskId = 29;
-            int testEventId = 15;
+            const int taskId = 29;
+            const int eventId = 15;
 
             var mediator = new Mock<IMediator>();
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync<EventDetailForNotificationModel>(It.IsAny<EventDetailForNotificationQueryAsync>()))
-                .ReturnsAsync(GetEventDetailForNotificationModel(testTaskId, testEventId));
+                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .ReturnsAsync(GetTaskDetailForNotificationModel(taskId, eventId));
 
             // Setup exception
             mediator.Setup(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
@@ -139,8 +138,8 @@ namespace AllReady.UnitTest.Features.Notifications
 
             var logger = new Mock<ILogger<NotifyAdminForUserUnenrolls>>();
 
-            TestOptions<GeneralSettings> options = GetSettings();
-            UserUnenrolls notification = GetUserUnenrolls(testTaskId, testEventId);
+            var options = GetSettings();
+            var notification = GetUserUnenrolls(taskId);
 
             var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger.Object);
             await target.Handle(notification);
@@ -158,15 +157,15 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void LogAnErrorIfAnExceptionOccurs()
         {
-            int testTaskId = 29;
-            int testEventId = 15;
+            const int taskId = 29;
+            const int eventId = 15;
 
             var mediator = new Mock<IMediator>();
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync<EventDetailForNotificationModel>(It.IsAny<EventDetailForNotificationQueryAsync>()))
-                .ReturnsAsync(GetEventDetailForNotificationModel(testTaskId, testEventId));
+                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .ReturnsAsync(GetTaskDetailForNotificationModel(taskId, eventId));
 
             // Setup exception
             mediator.Setup(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
@@ -178,8 +177,8 @@ namespace AllReady.UnitTest.Features.Notifications
                 It.IsAny<EventId>(), It.IsAny<object>(), It.IsAny<Exception>(),
                         It.IsAny<Func<object, Exception, string>>()));
 
-            TestOptions<GeneralSettings> options = GetSettings();
-            UserUnenrolls notification = GetUserUnenrolls(testTaskId, testEventId);
+            var options = GetSettings();
+            var notification = GetUserUnenrolls(taskId);
 
             var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger.Object);
             await target.Handle(notification);
@@ -195,15 +194,15 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void LogTheExceptionIfAnExceptionOccurs()
         {
-            int testTaskId = 29;
-            int testEventId = 15;
+            const int taskId = 29;
+            const int eventId = 15;
 
             var mediator = new Mock<IMediator>();
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync<EventDetailForNotificationModel>(It.IsAny<EventDetailForNotificationQueryAsync>()))
-                .ReturnsAsync(GetEventDetailForNotificationModel(testTaskId, testEventId));
+                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .ReturnsAsync(GetTaskDetailForNotificationModel(taskId, eventId));
 
             // Setup exception
             mediator.Setup(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
@@ -216,8 +215,8 @@ namespace AllReady.UnitTest.Features.Notifications
                 It.IsAny<NullReferenceException>(),
                 It.IsAny<Func<object, Exception, string>>()));
 
-            TestOptions<GeneralSettings> options = GetSettings();
-            UserUnenrolls notification = GetUserUnenrolls(testTaskId, testEventId);
+            var options = GetSettings();
+            var notification = GetUserUnenrolls(taskId);
 
             var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger.Object);
             await target.Handle(notification);
@@ -232,20 +231,20 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void SkipNotificationIfAdminEmailIsNotSpecified()
         {
-            int testTaskId = 29;
-            int testEventId = 15;
-            var eventDetails = GetEventDetailForNotificationModel(testTaskId, testEventId, string.Empty);
+            const int taskId = 29;
+            const int eventId = 15;
+            var eventDetails = GetTaskDetailForNotificationModel(taskId, eventId, string.Empty);
 
             var mediator = new Mock<IMediator>();
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync<EventDetailForNotificationModel>(It.IsAny<EventDetailForNotificationQueryAsync>()))
+                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
                 .ReturnsAsync(eventDetails);
 
             var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();
-            TestOptions<GeneralSettings> options = GetSettings();
-            UserUnenrolls notification = GetUserUnenrolls(testTaskId, testEventId);
+            var options = GetSettings();
+            var notification = GetUserUnenrolls(taskId);
 
             var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger);
             await target.Handle(notification);
@@ -262,61 +261,45 @@ namespace AllReady.UnitTest.Features.Notifications
             return options;
         }
 
-        private static UserUnenrolls GetUserUnenrolls(int taskId, int eventId)
+        private static UserUnenrolls GetUserUnenrolls(int taskId)
         {
-            return new UserUnenrolls()
+            return new UserUnenrolls { TaskId = taskId };
+        }
+
+        private static TaskDetailForNotificationModel GetTaskDetailForNotificationModel(int taskId, int eventId)
+        {
+            const string adminEmail = "test@contactemail.com";
+            return GetTaskDetailForNotificationModel(taskId, eventId, adminEmail);
+        }
+
+        private static TaskDetailForNotificationModel GetTaskDetailForNotificationModel(int taskId, int eventId, string adminEmail)
+        {
+            var testUserId = Guid.NewGuid().ToString();
+            string testUserEmail = $"{Guid.NewGuid()}@email.com";
+            var testUserFirstName = "Joe";
+            var testUserLastName = "Volunteer";
+            var testCampaignName = Guid.NewGuid().ToString();
+            var testEventName = "Test Event";
+            var testTaskName = "Test Task 1";
+            var testTaskDescription = "Task Description 1";
+            var testTaskStart = DateTime.UtcNow.AddDays(5);
+
+            return GetTaskDetailForNotificationModel(taskId, eventId, adminEmail, testUserId, testUserEmail, testUserFirstName, testUserLastName, testCampaignName, testEventName, testTaskName, testTaskDescription, testTaskStart);
+        }
+
+        private static TaskDetailForNotificationModel GetTaskDetailForNotificationModel(int taskId, int eventId, string adminEmail, string testUserId, string testUserEmail, string testUserFirstName, string testUserLastName, string testCampaignName, string testEventName, string testTaskName, string testTaskDescription, DateTime testTaskStart)
+        {
+            return new TaskDetailForNotificationModel
             {
-                EventId = eventId,
-                TaskIds = new List<int>() { taskId }
-            };
-        }
-
-        private static EventDetailForNotificationModel GetEventDetailForNotificationModel(int taskId, int eventId)
-        {
-            string adminEmail = "test@contactemail.com";
-            return GetEventDetailForNotificationModel(taskId, eventId, adminEmail);
-        }
-
-        private static EventDetailForNotificationModel GetEventDetailForNotificationModel(int taskId, int eventId, string adminEmail)
-        {
-            string testUserId = Guid.NewGuid().ToString();
-            string testUserEmail = $"{Guid.NewGuid().ToString()}@email.com";
-            string testUserFirstName = "Joe";
-            string testUserLastName = "Volunteer";
-            string testCampaignName = Guid.NewGuid().ToString();
-            string testEventName = "Test Event";
-            string testTaskName = "Test Task 1";
-            string testTaskDescription = "Task Description 1";
-            DateTime testTaskStart = DateTime.UtcNow.AddDays(5);
-            return GetEventDetailForNotificationModel(taskId, eventId, adminEmail, testUserId, testUserEmail, testUserFirstName, testUserLastName, testCampaignName, testEventName, testTaskName, testTaskDescription, testTaskStart);
-        }
-
-        private static EventDetailForNotificationModel GetEventDetailForNotificationModel(int taskId, int eventId, string adminEmail, string testUserId, string testUserEmail, string testUserFirstName, string testUserLastName, string testCampaignName, string testEventName, string testTaskName, string testTaskDescription, DateTime testTaskStart)
-        {
-            return new EventDetailForNotificationModel()
-            {
-                CampaignContacts = new List<CampaignContact>()
-                        {
-                            new CampaignContact()
-                                    {
-                                        ContactType = (int)ContactTypes.Primary,
-                                        Contact = new Contact()
-                                        {
-                                            Email = adminEmail
-                                        }
-                                    }
-                        },
-                Tasks = new List<TaskSummaryViewModel>()
+                CampaignContacts = new List<CampaignContact> { new CampaignContact
+                {
+                    ContactType = (int)ContactTypes.Primary,
+                    Contact = new Contact
                     {
-                        new TaskSummaryViewModel()
-                        {
-                            Id = taskId,
-                            Name = testTaskName,
-                            Description = testTaskDescription,
-                            StartDateTime = testTaskStart
-                        }
-                    },
-                Volunteer = new ApplicationUser()
+                        Email = adminEmail
+                    }
+                }},
+                Volunteer = new ApplicationUser
                 {
                     Id = testUserId,
                     FirstName = testUserFirstName,
