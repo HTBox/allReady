@@ -47,14 +47,20 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var task = new AllReadyTask { Id = 1 };
             Context.Add(new ApplicationUser {Id = "user2"});
-            task.AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User = new ApplicationUser { Id = "user1", Email = "user1@abc.com", PhoneNumber = "1234" } } };
+            var previouslySignedupUser = new ApplicationUser
+            {
+                Id = "user1",
+                Email = "user1@abc.com",
+                PhoneNumber = "1234"
+            };
+            task.AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User =  previouslySignedupUser} };
             Context.Add(task);
             Context.SaveChanges();
 
             var message = new AssignTaskCommandAsync { TaskId = task.Id, UserIds = new List<string> { "user2" } };
             await sut.Handle(message);
 
-            Assert.False(Context.Tasks.Single(x => x.Id == task.Id).AssignedVolunteers.Any(x => x.User.Id == "user1"));
+            Assert.True(Context.Tasks.Single(x => x.Id == task.Id).AssignedVolunteers.Any(x => x.User.Id != previouslySignedupUser.Id ));
         }
 
         [Fact]
@@ -62,18 +68,27 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             const string expectedMessage = "You've been assigned a task from AllReady.";
             var task = new AllReadyTask { Id = 1 };
-            Context.Add(new ApplicationUser { Id = "user1", Email = "user1@abc.com", PhoneNumber = "1234", EmailConfirmed = true, PhoneNumberConfirmed = true });
+            var volunteer = new ApplicationUser
+            {
+                Id = "user1",
+                Email = "user1@abc.com",
+                PhoneNumber = "1234",
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true
+            };
+
+            Context.Add(volunteer);
             Context.Add(task);
             Context.SaveChanges();
 
-            var message = new AssignTaskCommandAsync { TaskId = task.Id, UserIds = new List<string> { "user1" } };
+            var message = new AssignTaskCommandAsync { TaskId = task.Id, UserIds = new List<string> { volunteer.Id } };
             await sut.Handle(message);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
                    notifyCommand.ViewModel.EmailMessage == expectedMessage &&
                    notifyCommand.ViewModel.Subject == expectedMessage &&
-                   notifyCommand.ViewModel.EmailRecipients.Contains("user1@abc.com") &&
-                   notifyCommand.ViewModel.SmsRecipients.Contains("1234") &&
+                   notifyCommand.ViewModel.EmailRecipients.Contains(volunteer.Email) &&
+                   notifyCommand.ViewModel.SmsRecipients.Contains(volunteer.PhoneNumber) &&
                    notifyCommand.ViewModel.SmsMessage == expectedMessage
             )), Times.Once());
         }
