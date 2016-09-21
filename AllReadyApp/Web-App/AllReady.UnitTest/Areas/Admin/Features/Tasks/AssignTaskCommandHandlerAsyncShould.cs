@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         }
 
         [Fact]
-        public async Task SignsupVolunteersToTask()
+        public async Task AssignsVolunteersToTask()
         {
             var newVolunteer = new ApplicationUser { Id = "user1", Email = "user1@abc.com", PhoneNumber = "1234"};
             var task = new AllReadyTask { Id = 1 };
