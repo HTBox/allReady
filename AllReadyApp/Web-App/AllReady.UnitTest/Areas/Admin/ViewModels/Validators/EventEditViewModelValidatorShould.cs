@@ -6,12 +6,12 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
 {
-    public class EventDetailModelValidatorShould
+    public class EventEditViewModelValidatorShould
     {
         [Fact]
         public void ReturnCorrectErrorWhenEndDateTimeIsLessThanStartDateTime()
         {
-            var validator = new EventEditModelValidator();
+            var validator = new EventEditViewModelValidator();
             var parentCampaign = new CampaignSummaryViewModel { EndDate = new DateTimeOffset(new DateTime(1999, 2, 1)) };
             var model = new EventEditViewModel
             {
@@ -28,7 +28,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
         [Fact]
         public void ReturnCorrectErrorWhenModelsStartDateTimeIsLessThanParentCampaignsStartDate()
         {
-            var validator = new EventEditModelValidator();
+            var validator = new EventEditViewModelValidator();
             var parentCampaign = new CampaignSummaryViewModel
             {
                 StartDate = new DateTimeOffset(new DateTime(2000, 1, 1)),
@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
         [Fact]
         public void RetrunCorrectErrorWhenModelsEndDateTimeIsGreaterThanParentCampaignsEndDate()
         {
-            var validator = new EventEditModelValidator();
+            var validator = new EventEditViewModelValidator();
             var parentCampaign = new CampaignSummaryViewModel
             {
                 StartDate = new DateTimeOffset(new DateTime(2000, 1, 1)),

@@ -26,13 +26,13 @@ namespace AllReady.Areas.Admin.Controllers
     {
         private readonly IImageService _imageService;
         private readonly IMediator _mediator;
-        private readonly IValidateEventDetailModels _eventDetailModelValidator;
+        private readonly IValidateEventEditViewModels eventEditViewModelValidator;
 
-        public EventController(IImageService imageService, IMediator mediator, IValidateEventDetailModels eventDetailModelValidator)
+        public EventController(IImageService imageService, IMediator mediator, IValidateEventEditViewModels eventEditViewModelValidator)
         {
             _imageService = imageService;
             _mediator = mediator;
-            _eventDetailModelValidator = eventDetailModelValidator;
+            this.eventEditViewModelValidator = eventEditViewModelValidator;
         }
 
         // GET: Event/Details/5
@@ -91,7 +91,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Event/Create/{campaignId}")]
-        public async Task<IActionResult> Create(int campaignId, EventEditViewModel campaignEvent, IFormFile fileUpload)
+        public async Task<IActionResult> Create(int campaignId, EventEditViewModel eventEditViewModel, IFormFile fileUpload)
         {
             var campaign = await _mediator.SendAsync(new CampaignSummaryQueryAsync { CampaignId = campaignId });
             if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
@@ -99,39 +99,39 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var errors = _eventDetailModelValidator.Validate(campaignEvent, campaign);
+            var errors = eventEditViewModelValidator.Validate(eventEditViewModel, campaign);
             errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             ModelState.Remove("NewItinerary");
 
             //TryValidateModel is called explictly because of MVC 6 behavior that supresses model state validation during model binding when binding to an IFormFile.
             //See #619.
-            if (ModelState.IsValid && TryValidateModel(campaignEvent))
+            if (ModelState.IsValid && TryValidateModel(eventEditViewModel))
             {
                 if (fileUpload != null)
                 {
                     if (!fileUpload.IsAcceptableImageContentType())
                     {
                         ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
-                        return View("Edit", campaignEvent);
+                        return View("Edit", eventEditViewModel);
                     }
                 }
 
-                campaignEvent.OrganizationId = campaign.OrganizationId;
-                var id = await _mediator.SendAsync(new EditEventCommand { Event = campaignEvent });
+                eventEditViewModel.OrganizationId = campaign.OrganizationId;
+                var id = await _mediator.SendAsync(new EditEventCommand { Event = eventEditViewModel });
 
                 if (fileUpload != null)
                 {
                     // resave now that event has the ImageUrl
-                    campaignEvent.Id = id;
-                    campaignEvent.ImageUrl = await _imageService.UploadEventImageAsync(campaign.OrganizationId, id, fileUpload);
-                    await _mediator.SendAsync(new EditEventCommand { Event = campaignEvent });
+                    eventEditViewModel.Id = id;
+                    eventEditViewModel.ImageUrl = await _imageService.UploadEventImageAsync(campaign.OrganizationId, id, fileUpload);
+                    await _mediator.SendAsync(new EditEventCommand { Event = eventEditViewModel });
                 }
 
                 return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
             }
 
-            return View("Edit", campaignEvent);
+            return View("Edit", eventEditViewModel);
         }
 
         // GET: Event/Edit/5
@@ -154,22 +154,22 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Event/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(EventEditViewModel campaignEvent, IFormFile fileUpload)
+        public async Task<IActionResult> Edit(EventEditViewModel eventEditViewModel, IFormFile fileUpload)
         {
-            if (campaignEvent == null)
+            if (eventEditViewModel == null)
             {
                 return BadRequest();
             }
 
-            var organizationId = await _mediator.SendAsync(new ManagingOrganizationIdByEventIdQuery { EventId = campaignEvent.Id });
+            var organizationId = await _mediator.SendAsync(new ManagingOrganizationIdByEventIdQuery { EventId = eventEditViewModel.Id });
             if (!User.IsOrganizationAdmin(organizationId))
             {
                 return Unauthorized();
             }
 
-            var campaign = await _mediator.SendAsync(new CampaignSummaryQueryAsync { CampaignId = campaignEvent.CampaignId });
+            var campaign = await _mediator.SendAsync(new CampaignSummaryQueryAsync { CampaignId = eventEditViewModel.CampaignId });
 
-            var errors = _eventDetailModelValidator.Validate(campaignEvent, campaign);
+            var errors = eventEditViewModelValidator.Validate(eventEditViewModel, campaign);
             errors.ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)
@@ -178,11 +178,11 @@ namespace AllReady.Areas.Admin.Controllers
                 {
                     if (fileUpload.IsAcceptableImageContentType())
                     {
-                        var existingImageUrl = campaignEvent.ImageUrl;
+                        var existingImageUrl = eventEditViewModel.ImageUrl;
                         var newImageUrl = await _imageService.UploadEventImageAsync(campaign.OrganizationId, campaign.Id, fileUpload);
                         if (!string.IsNullOrEmpty(newImageUrl))
                         {
-                            campaignEvent.ImageUrl = newImageUrl;
+                            eventEditViewModel.ImageUrl = newImageUrl;
                             if (existingImageUrl != null)
                             {
                                 await _imageService.DeleteImageAsync(existingImageUrl);
@@ -192,16 +192,16 @@ namespace AllReady.Areas.Admin.Controllers
                     else
                     {
                         ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
-                        return View(campaignEvent);
+                        return View(eventEditViewModel);
                     }
                 }
 
-                var id = await _mediator.SendAsync(new EditEventCommand { Event = campaignEvent });
+                var id = await _mediator.SendAsync(new EditEventCommand { Event = eventEditViewModel });
 
                 return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
             }
 
-            return View(campaignEvent);
+            return View(eventEditViewModel);
         }
 
         // GET: Event/Duplicate/5
@@ -236,9 +236,9 @@ namespace AllReady.Areas.Admin.Controllers
 
             var existingEvent = await _mediator.SendAsync(new EventEditQuery { EventId = model.Id });
             var campaign = await _mediator.SendAsync(new CampaignSummaryQueryAsync { CampaignId = existingEvent.CampaignId });
-            var newEvent = BuildNewEventDetailsModel(existingEvent, model);
+            var eventEditViewModel = BuildNewEventDetailsModel(existingEvent, model);
 
-            var errors = _eventDetailModelValidator.Validate(newEvent, campaign);
+            var errors = eventEditViewModelValidator.Validate(eventEditViewModel, campaign);
             errors.ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)
