@@ -21,23 +21,19 @@ namespace AllReady.Features.Notifications
             var users = _context.Users.Where(x => notification.NewlyAssignedVolunteers.Contains(x.Id)).ToList();
             var smsRecipients = users.Where(u => u.PhoneNumberConfirmed).Select(v => v.PhoneNumber).ToList();
             var emailRecipients = users.Where(u => u.EmailConfirmed).Select(v => v.Email).ToList();
-
-            if (smsRecipients.Any() || emailRecipients.Any())
+            var command = new NotifyVolunteersCommand
             {
-                var command = new NotifyVolunteersCommand
+                ViewModel = new NotifyVolunteersViewModel
                 {
-                    ViewModel = new NotifyVolunteersViewModel
-                    {
-                        SmsMessage = "You've been assigned a task from AllReady.",
-                        SmsRecipients = smsRecipients,
-                        EmailMessage = "You've been assigned a task from AllReady.",
-                        HtmlMessage = "You've been assigned a task from AllReady.",
-                        EmailRecipients = emailRecipients,
-                        Subject = "You've been assigned a task from AllReady."
-                    }
-                };
-                await _mediator.SendAsync(command);
-            }
+                    SmsMessage = "You've been assigned a task from AllReady.",
+                    SmsRecipients = smsRecipients,
+                    EmailMessage = "You've been assigned a task from AllReady.",
+                    HtmlMessage = "You've been assigned a task from AllReady.",
+                    EmailRecipients = emailRecipients,
+                    Subject = "You've been assigned a task from AllReady."
+                }
+            };
+            await _mediator.SendAsync(command);
         }
     }
 }
