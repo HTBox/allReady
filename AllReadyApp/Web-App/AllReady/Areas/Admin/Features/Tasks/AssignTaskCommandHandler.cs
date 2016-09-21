@@ -52,28 +52,11 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             await _context.SaveChangesAsync();
 
-            // send all notifications to the queue
-            var smsRecipients = new List<string>();
-            var emailRecipients = new List<string>();
-
-            // get all confirmed contact points for the broadcast
-            smsRecipients.AddRange(taskSignups.Where(u => u.User.PhoneNumberConfirmed).Select(v => v.User.PhoneNumber));
-            emailRecipients.AddRange(taskSignups.Where(u => u.User.EmailConfirmed).Select(v => v.User.Email));
-            
-            var command = new NotifyVolunteersCommand
+            await _mediator.PublishAsync(new TaskAssignedToVolunteersNotification
             {
-                ViewModel = new NotifyVolunteersViewModel
-                {
-                    SmsMessage = "You've been assigned a task from AllReady.",
-                    SmsRecipients = smsRecipients,
-                    EmailMessage = "You've been assigned a task from AllReady.",
-                    HtmlMessage = "You've been assigned a task from AllReady.",
-                    EmailRecipients = emailRecipients,
-                    Subject = "You've been assigned a task from AllReady."
-                }
-            };
-
-            await _mediator.SendAsync(command);
+                TaskId = message.TaskId,
+                NewlyAssignedVolunteers = taskSignups.Select(x => x.User.Id).ToList()
+            });
         }
 
         

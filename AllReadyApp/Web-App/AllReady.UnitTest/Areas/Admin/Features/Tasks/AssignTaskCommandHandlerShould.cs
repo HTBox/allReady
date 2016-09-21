@@ -62,9 +62,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         }
 
         [Fact]
-        public async Task NotifyVolunteersWithCorrectMessage()
+        public async Task PublishTaskAssignedToVolunteersNotification()
         {
-            const string expectedMessage = "You've been assigned a task from AllReady.";
             var task = new AllReadyTask { Id = 1 };
             var volunteer = new ApplicationUser
             {
@@ -82,17 +81,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             var message = new AssignTaskCommand { TaskId = task.Id, UserIds = new List<string> { volunteer.Id } };
             await sut.Handle(message);
 
-            mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
-                   notifyCommand.ViewModel.EmailMessage == expectedMessage &&
-                   notifyCommand.ViewModel.Subject == expectedMessage &&
-                   notifyCommand.ViewModel.EmailRecipients.Contains(volunteer.Email) &&
-                   notifyCommand.ViewModel.SmsRecipients.Contains(volunteer.PhoneNumber) &&
-                   notifyCommand.ViewModel.SmsMessage == expectedMessage
+            mediator.Verify(b => b.PublishAsync(It.Is<TaskAssignedToVolunteersNotification>(notification =>
+                   notification.TaskId == message.TaskId &&
+                   notification.NewlyAssignedVolunteers.Contains(volunteer.Id)
             )), Times.Once());
         }
 
         [Fact]
-        public async Task DoesNotNotifyVolunteersPreviouslySignedUp()
+        public async Task DoesNotPublishTaskAssignedNotificationToVolunteersPreviouslySignedUp()
         {
             var task = new AllReadyTask { Id = 1 };
             var previouslySignedupUser = new ApplicationUser
@@ -111,10 +107,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             var message = new AssignTaskCommand { TaskId = task.Id, UserIds = new List<string> { previouslySignedupUser.Id } };
             await sut.Handle(message);
 
-            mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
-                  notifyCommand.ViewModel.EmailRecipients.IsNullOrEmpty() &&
-                  notifyCommand.ViewModel.SmsRecipients.IsNullOrEmpty()
-           )), Times.Once());
+            mediator.Verify(b => b.PublishAsync(It.Is<TaskAssignedToVolunteersNotification>(notification => !notification.NewlyAssignedVolunteers.Contains(previouslySignedupUser.Id) )), Times.Once);
         }
     }
 }
