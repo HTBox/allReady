@@ -5,10 +5,10 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
 {
-    public class LockUnlockCampaignCommandHandlerTests : InMemoryContextTest
+    public class LockUnlockCampaignCommandHandlerAsyncShould : InMemoryContextTest
     {
         [Fact]
-        public async Task LockedCampaignIsUnlocked()
+        public async Task UnlockALockedCampaign()
         {
             // Arrange
             var handler = new LockUnlockCampaignCommandHandlerAsync(Context);
@@ -23,7 +23,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         }
 
         [Fact]
-        public async Task UnlockedCampaignIsLocked()
+        public async Task LockAnUnlockedCampaign()
         {
             // Arrange
             var handler = new LockUnlockCampaignCommandHandlerAsync(Context);
