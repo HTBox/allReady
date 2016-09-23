@@ -16,7 +16,7 @@ namespace AllReady.Areas.Admin.Features.Events
 
         protected override async Task HandleCore(DeleteEventCommand message)
         {
-            var @event =  _context.Events.SingleOrDefault(c => c.Id == message.EventId);
+            var @event = _context.Events.SingleOrDefault(c => c.Id == message.EventId);
             if (@event != null)
             {
                 _context.Events.Remove(@event);

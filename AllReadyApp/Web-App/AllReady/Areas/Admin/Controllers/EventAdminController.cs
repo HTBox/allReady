@@ -253,39 +253,32 @@ namespace AllReady.Areas.Admin.Controllers
         [ActionName("Delete")]
         public async Task<IActionResult> Delete(int id)
         {
-            var campaignEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = id });
-            if (campaignEvent == null)
-            {
-                return NotFound();
-            }
+            var viewModel = await _mediator.SendAsync(new DeleteQueryAsync { EventId = id });
 
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return Unauthorized();
             }
 
-            return View(campaignEvent);
+            viewModel.UserIsOrgAdmin = true;
+            viewModel.Title = $"Delete event {viewModel.Name}";
+
+            return View(viewModel);
         }
 
         // POST: Event/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(DeleteViewModel viewModel)
         {
-            var campaignEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = id });
-            if (campaignEvent == null)
-            {
-                return NotFound();
-            }
-
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+            if (!viewModel.UserIsOrgAdmin)
             {
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new DeleteEventCommand { EventId = id });
+            await _mediator.SendAsync(new DeleteEventCommand { EventId = viewModel.Id });
 
-            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = "Admin", id = campaignEvent.CampaignId });
+            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = "Admin", id = viewModel.CampaignId });
         }
         
         [HttpPost]
