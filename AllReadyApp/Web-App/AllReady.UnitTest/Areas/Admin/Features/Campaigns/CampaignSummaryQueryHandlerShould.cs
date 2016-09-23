@@ -27,9 +27,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         [Fact]
         public async Task ReturnNull_WhenCampaignIsNotFound()
         {
-            var handler = new CampaignSummaryQueryHandler(this.Context);
+            var handler = new CampaignSummaryQueryHandlerAsync(Context);
 
-            var result = await handler.Handle(new CampaignSummaryQuery { CampaignId = 222 });
+            var result = await handler.Handle(new CampaignSummaryQueryAsync { CampaignId = 222 });
 
             result.ShouldBeNull();
         }
@@ -37,9 +37,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         [Fact]
         public async Task ReturnCampaignSummaryViewModel_WhenCampaignExists()
         {
-            var handler = new CampaignSummaryQueryHandler(this.Context);
+            var handler = new CampaignSummaryQueryHandlerAsync(Context);
 
-            var result = await handler.Handle(new CampaignSummaryQuery { CampaignId = 111 });
+            var result = await handler.Handle(new CampaignSummaryQueryAsync { CampaignId = 111 });
 
             result.ShouldNotBeNull();
             result.ShouldBeOfType<CampaignSummaryViewModel>();
@@ -48,36 +48,30 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         [Fact]
         public async Task SetPrimaryContactInCampaignSummaryViewModel()
         {
-            var firstName = "contact1@example.com";
-            var lastName = "FirstName1";
-            var email = "LastName1";
-            var phoneNumber = "111-1111-1111";
-
-            Context.Campaigns.First().CampaignContacts = new List<CampaignContact>
+            var campaignContact = new CampaignContact
             {
-                new CampaignContact
-                {
-                    ContactType = (int)ContactTypes.Primary,
-                    Contact = new Contact {  FirstName=firstName,LastName=lastName,Email = email,PhoneNumber=phoneNumber }
-                }
+                ContactType = (int) ContactTypes.Primary,
+                Contact = new Contact { FirstName = "FirstName", LastName = "LastName", Email = "Email", PhoneNumber = "111-1111-1111" }
             };
 
+            Context.Campaigns.First().CampaignContacts = new List<CampaignContact> { campaignContact };
             Context.SaveChanges();
 
-            var handler = new CampaignSummaryQueryHandler(this.Context);
+            var handler = new CampaignSummaryQueryHandlerAsync(Context);
 
-            var result = await handler.Handle(new CampaignSummaryQuery { CampaignId = 111 });
+            var result = await handler.Handle(new CampaignSummaryQueryAsync { CampaignId = 111 });
 
-            result.PrimaryContactFirstName.ShouldBe(firstName);
-            result.PrimaryContactLastName.ShouldBe(lastName);
-            result.PrimaryContactEmail.ShouldBe(email);
-            result.PrimaryContactPhoneNumber.ShouldBe(phoneNumber);
+            result.PrimaryContactFirstName.ShouldBe(campaignContact.Contact.FirstName);
+            result.PrimaryContactLastName.ShouldBe(campaignContact.Contact.LastName);
+            result.PrimaryContactEmail.ShouldBe(campaignContact.Contact.Email);
+            result.PrimaryContactPhoneNumber.ShouldBe(campaignContact.Contact.PhoneNumber);
         }
 
         [Fact]
         public async Task NotSetPrimaryContactInCampaignSummaryViewModel()
         {
-            Context.Campaigns.First().CampaignContacts = new List<CampaignContact> {
+            Context.Campaigns.First().CampaignContacts = new List<CampaignContact>
+            {
                 new CampaignContact
                 {
                     Contact = new Contact { Email = "contact1@example.com", FirstName="FirstName1",LastName="LastName1",PhoneNumber="111-1111-1111" }
@@ -86,9 +80,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
 
             Context.SaveChanges();
 
-            var handler = new CampaignSummaryQueryHandler(this.Context);
+            var handler = new CampaignSummaryQueryHandlerAsync(Context);
 
-            var result = await handler.Handle(new CampaignSummaryQuery { CampaignId = 111 });
+            var result = await handler.Handle(new CampaignSummaryQueryAsync { CampaignId = 111 });
 
             result.PrimaryContactFirstName.ShouldBeNullOrEmpty();
             result.PrimaryContactLastName.ShouldBeNullOrEmpty();
