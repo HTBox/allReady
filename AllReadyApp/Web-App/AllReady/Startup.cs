@@ -115,11 +115,6 @@ namespace AllReady
             services.AddMvc().AddJsonOptions(options =>
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
-
-            //register MediatR
-            //https://lostechies.com/jimmybogard/2016/07/19/mediatr-extensions-for-microsoft-dependency-injection-released/
-            services.AddMediatR(typeof(Startup));
-
             // configure IoC support
             var container = CreateIoCContainer(services);
             return container.Resolve<IServiceProvider>();
@@ -157,7 +152,19 @@ namespace AllReady
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterSource(new ContravariantRegistrationSource());
+            containerBuilder.RegisterAssemblyTypes(typeof(IMediator).Assembly).AsImplementedInterfaces();
             containerBuilder.RegisterAssemblyTypes(typeof(Startup).Assembly).AsImplementedInterfaces();
+            containerBuilder.Register<SingleInstanceFactory>(ctx =>
+            {
+                var c = ctx.Resolve<IComponentContext>();
+                return t => c.Resolve(t);
+            });
+
+            containerBuilder.Register<MultiInstanceFactory>(ctx =>
+            {
+                var c = ctx.Resolve<IComponentContext>();
+                return t => (IEnumerable<object>)c.Resolve(typeof(IEnumerable<>).MakeGenericType(t));
+            });
 
             //ExternalUserInformationProviderFactory registration
             containerBuilder.RegisterType<TwitterExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Twitter");
