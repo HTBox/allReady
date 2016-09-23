@@ -18,34 +18,33 @@
 
 <h2>@ViewData["Title"]</h2>
 
-@using (Html.BeginForm())
+@using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal" }))
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        <hr />
+    <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         @if (isEdit)
         {
             <input asp-for="Id" type="hidden" />
         }
         <div class="form-group">
-            <label asp-for="Name" class="control-label col-md-2"></label>
-            <div class="col-md-10">
+            <label asp-for="Name" class="control-label col-sm-1"></label>
+            <div class="col-sm-11">
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="Description" class="control-label col-md-2"></label>
-            <div class="col-md-10">
+            <label asp-for="Description" class="control-label col-sm-1"></label>
+            <div class="col-sm-11">
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="ParentSkillId" class="control-label col-md-2"></label>
-            <div class="col-md-10">
+            <label asp-for="ParentSkillId" class="control-label col-sm-1"></label>
+            <div class="col-sm-11">
                 <div class="form-inline">
                     <select class="form-control" name="ParentSkillId" data-bind="options: availableSkills, optionsText: 'HierarchicalName', optionsValue: 'Id', value: parentSkillId"></select>
                     <span class="fa fa-question-circle" data-bind="visible: parentSkillDescription, tooltip: { title: parentSkillDescription, placement: 'top' }" aria-hidden="true"></span>
@@ -56,8 +55,8 @@
         @if (User.IsUserType(UserType.SiteAdmin))
         {
             <div class="form-group">
-                <label asp-for="OwningOrganizationName" class="col-md-2 control-label"></label>
-                <div class="col-md-10">
+                <label asp-for="OwningOrganizationName" class="col-sm-1 control-label"></label>
+                <div class="col-sm-11">
                     <select asp-for="OwningOrganizationId" asp-items="Model.OrganizationSelection.AddNullOptionToFront()" class="form-control"></select>
                 </div>
             </div>
@@ -66,13 +65,14 @@
         {
             <input asp-for="OwningOrganizationId" type="hidden" />
         }
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <button type="submit" value="@ViewData["Action"]" class="btn btn-default" data-bind="enable: isValidParent">@ViewData["Action"]</button>
-            <a class="btn btn-default" asp-area="Admin" asp-controller="Skill" asp-action="Index">Back to List</a>
+
+        <div class="form-group">
+            <div class="col-sm-offset-1 col-sm-11 ">
+
+                <button type="submit" value="@ViewData["Action"]" class="btn btn-default" data-bind="enable: isValidParent">@ViewData["Action"]</button>
+                <a class="btn btn-default" asp-area="Admin" asp-controller="Skill" asp-action="Index">Back to List</a>
+            </div>
         </div>
-    </div>
 }
 
 @section scripts {
