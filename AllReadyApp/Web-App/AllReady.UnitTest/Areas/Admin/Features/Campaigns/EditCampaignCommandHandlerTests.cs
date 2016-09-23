@@ -1,4 +1,5 @@
-﻿using AllReady.Areas.Admin.Features.Campaigns;
+﻿using System;
+using AllReady.Areas.Admin.Features.Campaigns;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Campaign;
@@ -33,6 +34,54 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             // assert
             result.ShouldBe(1); // Since no prior records ID should be 1
             data.Name.ShouldBe(name); // The name stored in the DB should match the value passed into the command
+        }
+
+        /// <summary>
+        /// Tests that the columms belonging the campaign table record are actually updated when a campaign is edited
+        /// </summary>
+        /// <remarks>This test is not testing the creation of location record, or impact record as those should be seperate tests</remarks>
+        [Fact]
+        public async Task UpdatingExistingCampaign_UpdatesAllCoreProperties()
+        {
+            CampaignsHandlerTestHelper.LoadCampaignssHandlerTestData(Context);
+
+            // Arrange
+            const string name = "New Name";
+            const string desc = "New Desc";
+            const string fullDesc = "New Full Desc";
+            const string timezoneId = "GMT Standard Time";
+            var startDate = DateTime.Now;
+            var endDate = DateTime.Now.AddDays(30);
+            const int org = 2;
+
+            var handler = new EditCampaignCommandHandlerAsync(Context, Mock.Of<IConvertDateTimeOffset>());
+            var updatedCampaign = new CampaignSummaryViewModel
+            {
+                Id = 2,
+                Name = name,
+                Description = desc,
+                FullDescription = fullDesc,
+                TimeZoneId = timezoneId,
+                StartDate = startDate,
+                EndDate = endDate,
+                OrganizationId = org,
+            };
+
+            //Act
+            var result = await handler.Handle(new EditCampaignCommandAsync { Campaign = updatedCampaign });
+            var savedCampaign = Context.Campaigns.SingleOrDefault(s => s.Id == 2);
+
+            // Assert
+            Assert.Equal(4, Context.Campaigns.Count());
+            Assert.Equal(2, result);
+
+            Assert.Equal(name, savedCampaign.Name);
+            Assert.Equal(desc, savedCampaign.Description);
+            Assert.Equal(fullDesc, savedCampaign.FullDescription);
+            Assert.Equal(timezoneId, savedCampaign.TimeZoneId);
+            Assert.NotEqual(startDate.Date, new DateTime()); // We're not testing the date logic in this test, only that a datetime value is saved
+            Assert.NotEqual(endDate.Date, new DateTime()); // We're not testing the date logic in this test, only that a datetime value is saved
+            Assert.Equal(org, savedCampaign.ManagingOrganizationId);
         }
 
         [Fact]
