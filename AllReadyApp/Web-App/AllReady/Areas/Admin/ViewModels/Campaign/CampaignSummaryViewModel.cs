@@ -6,14 +6,10 @@ using AllReady.Models;
 
 namespace AllReady.Areas.Admin.ViewModels.Campaign
 {
-    public class CampaignSummaryViewModel: IPrimaryContactViewModel
+    public class CampaignSummaryViewModel : IPrimaryContactViewModel
     {
-        public CampaignSummaryViewModel()
-        {
-            this.CampaignImpact = new CampaignImpact();
-        }
-
         public int Id { get; set; }
+
         [Required]
         public string Name { get; set; }
 
@@ -54,7 +50,7 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
         public DateTimeOffset EndDate { get; set; }
 
-        public CampaignImpact CampaignImpact { get; set; }
+        public CampaignImpact CampaignImpact { get; set; } = new CampaignImpact();
 
         [UIHint("Location")]
         public LocationEditViewModel Location { get; set; }

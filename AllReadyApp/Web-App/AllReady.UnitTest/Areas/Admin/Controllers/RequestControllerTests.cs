@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Events;
-using AllReady.Areas.Admin.Features.Itineraries;
 using AllReady.Areas.Admin.Features.Requests;
-using AllReady.Areas.Admin.ViewModels.Itinerary;
 using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.UnitTest.Extensions;
@@ -72,19 +69,19 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int id = 1;
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(null).Verifiable();
 
             var sut = new RequestController(mockMediator.Object);
             await sut.Create(id);
 
-            mockMediator.Verify(x => x.SendAsync(It.Is<EventSummaryQuery>(a => a.EventId == id)), Times.Once);
+            mockMediator.Verify(x => x.SendAsync(It.Is<EventSummaryQueryAsync>(a => a.EventId == id)), Times.Once);
         }
 
         [Fact]
         public async Task Create_ReturnsBadRequest_WhenEventSummaryQueryReturnsNull()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(null).Verifiable();
 
             var sut = new RequestController(mockMediator.Object);
             var result = await sut.Create(1);
@@ -98,7 +95,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task Create_ReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel());
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(new EventSummaryViewModel());
 
             var sut = new RequestController(mockMediator.Object);
             sut.MakeUserNotAnOrgAdmin();
@@ -117,7 +114,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var viewModel = new EventSummaryViewModel { Id = eventId, OrganizationId = orgId };
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(viewModel);
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(viewModel);
 
             var sut = new RequestController(mockMediator.Object);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
@@ -160,15 +157,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             const int eventId = 1;
 
-            EventSummaryQuery eventSummaryQuery = null; // will be assigned from the Moq callback
+            EventSummaryQueryAsync eventSummaryQuery = null; // will be assigned from the Moq callback
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(null).Callback<EventSummaryQuery>(cmd => eventSummaryQuery = cmd).Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(null).Callback<EventSummaryQueryAsync>(cmd => eventSummaryQuery = cmd).Verifiable();
 
             var sut = new RequestController(mockMediator.Object);
 
             await sut.Edit(new EditRequestViewModel { EventId = eventId });
 
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<EventSummaryQuery>()), Times.Once);
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<EventSummaryQueryAsync>()), Times.Once);
 
             eventSummaryQuery.EventId.ShouldBe(eventId);
         }
@@ -177,7 +174,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditPost_ReturnsBadRequest_WhenEventSummaryQueryReturnsNull()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(null).Verifiable();
 
             var sut = new RequestController(mockMediator.Object);
             var result = await sut.Edit(new EditRequestViewModel { EventId = 1 });
@@ -191,7 +188,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditPost_ReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel());
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(new EventSummaryViewModel());
 
             var sut = new RequestController(mockMediator.Object);
             sut.MakeUserNotAnOrgAdmin();
@@ -210,7 +207,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var viewModel = new EventSummaryViewModel { Id = eventId, OrganizationId = orgId };
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(viewModel);
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(viewModel);
 
             var sut = new RequestController(mockMediator.Object);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
@@ -230,7 +227,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var viewModel = new EventSummaryViewModel { Id = eventId, OrganizationId = orgId };
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(viewModel);
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(viewModel);
 
             EditRequestCommand editRequestCommand = null; // will be assigned from the Moq callback
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EditRequestCommand>())).ReturnsAsync(Guid.NewGuid()).Callback<EditRequestCommand>(cmd => editRequestCommand = cmd).Verifiable();
@@ -253,7 +250,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var viewModel = new EventSummaryViewModel { Id = eventId, OrganizationId = orgId };
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(viewModel);
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(viewModel);
 
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EditRequestCommand>())).ReturnsAsync(Guid.NewGuid());
 
@@ -353,4 +350,3 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
     }
 }
-

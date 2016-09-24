@@ -133,7 +133,7 @@ namespace AllReady
         services.AddTransient<IEmailSender, AuthMessageSender>();
         services.AddTransient<ISmsSender, AuthMessageSender>();
         services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
-        services.AddTransient<IValidateEventDetailModels, EventEditModelValidator>();
+        services.AddTransient<IValidateEventEditViewModels, EventEditViewModelValidator>();
         services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
         services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
         services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();

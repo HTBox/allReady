@@ -17,6 +17,5 @@ namespace AllReady.Areas.Admin.ViewModels.Organization
         [Display(Name = "Email")]
         [EmailAddress]
         string PrimaryContactEmail { get; set; }
-
     }
 }

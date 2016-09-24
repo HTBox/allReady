@@ -58,7 +58,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             return campaign.Id;
         }
 
-        void CreateUpdateOrDeleteCampaignPrimaryContact(Campaign campaign, IPrimaryContactViewModel contactModel)
+        private void CreateUpdateOrDeleteCampaignPrimaryContact(Campaign campaign, IPrimaryContactViewModel contactModel)
         {
             var hasPrimaryContact = campaign.CampaignContacts != null &&
                 campaign.CampaignContacts.Any(campaignContact => campaignContact.ContactType == (int)ContactTypes.Primary);

@@ -8,17 +8,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class CampaignSummaryQueryHandler : IAsyncRequestHandler<CampaignSummaryQuery, CampaignSummaryViewModel>
+    public class CampaignSummaryQueryHandlerAsync : IAsyncRequestHandler<CampaignSummaryQueryAsync, CampaignSummaryViewModel>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
 
-        public CampaignSummaryQueryHandler(AllReadyContext context)
+        public CampaignSummaryQueryHandlerAsync(AllReadyContext context)
         {
             _context = context;
 
         }
 
-        public async Task<CampaignSummaryViewModel> Handle(CampaignSummaryQuery message)
+        public async Task<CampaignSummaryViewModel> Handle(CampaignSummaryQueryAsync message)
         {
             CampaignSummaryViewModel result = null;
 
