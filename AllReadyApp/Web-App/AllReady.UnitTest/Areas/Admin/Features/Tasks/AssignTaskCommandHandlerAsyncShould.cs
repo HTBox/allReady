@@ -37,8 +37,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var taskSignup = Context.Tasks.Single(x => x.Id == task.Id).AssignedVolunteers.Single();
             Assert.Equal(taskSignup.User.Id, newVolunteer.Id);
-            Assert.Equal(taskSignup.PreferredEmail, newVolunteer.Email);
-            Assert.Equal(taskSignup.PreferredPhoneNumber, newVolunteer.PhoneNumber);
             Assert.Equal(taskSignup.Status, TaskStatus.Assigned.ToString());
         }
 

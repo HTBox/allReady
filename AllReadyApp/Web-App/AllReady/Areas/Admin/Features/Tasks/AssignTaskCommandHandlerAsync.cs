@@ -37,8 +37,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 {
                     Task = task,
                     User = user,
-                    PreferredEmail = user.Email,
-                    PreferredPhoneNumber = user.PhoneNumber,
                     AdditionalInfo = string.Empty,
                     Status = TaskStatus.Assigned.ToString(),
                     StatusDateTimeUtc = DateTime.UtcNow
