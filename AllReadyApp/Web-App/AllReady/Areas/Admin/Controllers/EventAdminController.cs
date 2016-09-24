@@ -290,14 +290,8 @@ namespace AllReady.Areas.Admin.Controllers
                 return BadRequest(ModelState);
             }
 
-            //TODO: Query only for the organization Id rather than the whole event detail
-            var campaignEvent = await _mediator.SendAsync(new EventDetailQuery { EventId = viewModel.EventId });
-            if (campaignEvent == null)
-            {
-                return NotFound();
-            }
-
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+            var eventsOrganizationId = await _mediator.SendAsync(new OrganizationIdByEventIdQueryAsync { EventId = viewModel.EventId });
+            if (!User.IsOrganizationAdmin(eventsOrganizationId))
             {
                 return Unauthorized();
             }

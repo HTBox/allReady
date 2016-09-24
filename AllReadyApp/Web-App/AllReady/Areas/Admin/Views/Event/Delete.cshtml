@@ -50,18 +50,5 @@
                 <a class="btn btn-default" asp-controller="Event" asp-action="Details" asp-area="Admin" asp-route-id="@Model.Id">Cancel</a>
             </div>
         </form>
-
-        @*@using (Html.BeginForm())
-        {
-            @Html.AntiForgeryToken()
-
-            <div class="form-actions no-color">
-                <button type="submit" class="btn btn-default">Delete</button>
-                <input type="hidden" asp-for="Id" />
-                <input type="hidden" asp-for="UserIsOrgAdmin" />
-                <input type="hidden" asp-for="CampaignId" />
-                <a class="btn btn-default" asp-controller="Event" asp-action="Details" asp-area="Admin" asp-route-id="@Model.Id">Cancel</a>
-            </div>
-        }*@
 </div>
 </div>
