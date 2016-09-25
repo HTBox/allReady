@@ -16,7 +16,6 @@ using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Features.Events;
-using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace AllReady.Areas.Admin.Controllers
 {

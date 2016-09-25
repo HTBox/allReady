@@ -442,7 +442,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DeleteConfirmedReturnsHttpNotFoundResult_WhenEventIsNull()
         {
             var sut = new EventController(null, Mock.Of<IMediator>(), null);
-            Assert.IsType<NotFoundResult>(await sut.DeleteConfirmed(It.IsAny<int>()).ConfigureAwait(false));
+            Assert.IsType<NotFoundResult>(await sut.DeleteConfirmed(It.IsAny<DeleteViewModel>()).ConfigureAwait(false));
         }
 
         [Fact]

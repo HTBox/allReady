@@ -40,7 +40,6 @@ namespace AllReady.Controllers
                 return new EventViewModel(campaignEvent);
             }
 
-
             // BUG Change this to IActionResult and use NotFound instead of null
             NotFound();
             return null;
