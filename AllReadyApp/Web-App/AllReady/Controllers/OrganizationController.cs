@@ -28,7 +28,7 @@ namespace AllReady.Controllers
                 return BadRequest();
             }
 
-            var model = await _mediator.SendAsync(new OrganizationDetailsQueryAsync { Id = id });
+            var model = await _mediator.SendAsync(new OrganizationDetailsQuery { Id = id });
 
             if (model == null)
             { 
@@ -46,7 +46,7 @@ namespace AllReady.Controllers
                 return BadRequest();
             }
 
-            var model = await _mediator.SendAsync(new OrganziationPrivacyPolicyQueryAsync { OrganizationId = id });
+            var model = await _mediator.SendAsync(new OrganizationPrivacyPolicyQuery { OrganizationId = id });
             
             if (model == null || string.IsNullOrEmpty(model.Content))
             { 

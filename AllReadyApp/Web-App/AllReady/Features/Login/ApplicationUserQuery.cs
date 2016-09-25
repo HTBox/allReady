@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Features.Login
 {
-    public class ApplicationUserQueryAsync : IAsyncRequest<ApplicationUser>
+    public class ApplicationUserQuery : IAsyncRequest<ApplicationUser>
     {
         public string UserName { get; set; }
     }

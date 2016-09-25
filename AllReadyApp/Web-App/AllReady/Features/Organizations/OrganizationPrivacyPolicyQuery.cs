@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Features.Organizations
 {
-    public class OrganziationPrivacyPolicyQueryAsync : IAsyncRequest<OrganizationPrivacyPolicyViewModel>
+    public class OrganizationPrivacyPolicyQuery : IAsyncRequest<OrganizationPrivacyPolicyViewModel>
     {
         public int OrganizationId { get; set; }
     }

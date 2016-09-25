@@ -11,18 +11,18 @@ using TaskSignupViewModel = AllReady.ViewModels.Shared.TaskSignupViewModel;
 
 namespace AllReady.Features.Events
 {
-    public class ShowEventQueryHandlerAsync : IAsyncRequestHandler<ShowEventQueryAsync, EventViewModel>
+    public class ShowEventQueryHandler : IAsyncRequestHandler<ShowEventQuery, EventViewModel>
     {
         private readonly AllReadyContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ShowEventQueryHandlerAsync(AllReadyContext context, UserManager<ApplicationUser> userManager)
+        public ShowEventQueryHandler(AllReadyContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
-        public async Task<EventViewModel> Handle(ShowEventQueryAsync message)
+        public async Task<EventViewModel> Handle(ShowEventQuery message)
         {
             var @event = await _context.Events
                 .Include(a => a.Location)

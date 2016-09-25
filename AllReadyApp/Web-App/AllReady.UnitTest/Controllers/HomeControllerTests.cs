@@ -19,7 +19,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new HomeController(mockMediator.Object);
             await sut.Index();
 
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<ActiveOrUpcomingCampaignsQueryAsync>()), Times.Once());
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<ActiveOrUpcomingCampaignsQuery>()), Times.Once());
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new HomeController(mockMediator.Object);
             await sut.Index();
 
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<FeaturedCampaignQueryAsync>()), Times.Once());
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<FeaturedCampaignQuery>()), Times.Once());
         }
 
         [Fact]

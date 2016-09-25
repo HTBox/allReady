@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AllReady.Features.Events
 {
-    public class ShowEventQueryAsync : IAsyncRequest<EventViewModel>
+    public class ShowEventQuery : IAsyncRequest<EventViewModel>
     {
         public int EventId { get; set; }
         public ClaimsPrincipal User { get; set; }

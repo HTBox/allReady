@@ -11,10 +11,10 @@ namespace AllReady.UnitTest.Features.Campaigns
         public async Task ReturnsSingleCampaignThatIsFeatured()
         {
             // Arrange
-            var handler = new FeaturedCampaignQueryHandlerAsync(Context);            
+            var handler = new FeaturedCampaignQueryHandler(Context);            
 
             // Act
-            var result = await handler.Handle(new FeaturedCampaignQueryAsync());
+            var result = await handler.Handle(new FeaturedCampaignQuery());
 
             // Assert
             Assert.NotNull(result);
@@ -25,10 +25,10 @@ namespace AllReady.UnitTest.Features.Campaigns
         public async Task FeaturedCampaignIncludesOrg()
         {
             // Arrange
-            var handler = new FeaturedCampaignQueryHandlerAsync(Context);
+            var handler = new FeaturedCampaignQueryHandler(Context);
 
             // Act
-            var result = await handler.Handle(new FeaturedCampaignQueryAsync());
+            var result = await handler.Handle(new FeaturedCampaignQuery());
 
             // Assert
             Assert.NotNull(result.OrganizationName);
@@ -43,10 +43,10 @@ namespace AllReady.UnitTest.Features.Campaigns
             Context.SaveChanges();
 
             // Arrange
-            var handler = new FeaturedCampaignQueryHandlerAsync(Context);
+            var handler = new FeaturedCampaignQueryHandler(Context);
 
             // Act
-            var result = await handler.Handle(new FeaturedCampaignQueryAsync());
+            var result = await handler.Handle(new FeaturedCampaignQuery());
 
             // Assert
             Assert.Null(result);

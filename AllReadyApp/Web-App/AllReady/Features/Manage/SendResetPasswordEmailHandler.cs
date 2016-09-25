@@ -4,11 +4,11 @@ using MediatR;
 
 namespace AllReady.Features.Manage
 {
-    public class SendResetPasswordEmailHandlerAsync : AsyncRequestHandler<SendResetPasswordEmail>
+    public class SendResetPasswordEmailHandler : AsyncRequestHandler<SendResetPasswordEmail>
     {
         private readonly IEmailSender emailSender;
 
-        public SendResetPasswordEmailHandlerAsync(IEmailSender emailSender)
+        public SendResetPasswordEmailHandler(IEmailSender emailSender)
         {
             this.emailSender = emailSender;
         }

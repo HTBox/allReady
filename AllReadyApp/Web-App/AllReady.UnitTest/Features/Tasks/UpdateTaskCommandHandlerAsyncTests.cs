@@ -17,7 +17,7 @@ namespace AllReady.UnitTest.Features.Tasks
             var options = this.CreateNewContextOptions();
 
             const int taskId = 1;
-            var message = new UpdateTaskCommandAsync { AllReadyTask = new AllReadyTask {Id = taskId} };
+            var message = new UpdateTaskCommand { AllReadyTask = new AllReadyTask {Id = taskId} };
 
             using (var context = new AllReadyContext(options)) {
                 context.Tasks.Add(new AllReadyTask {
@@ -30,7 +30,7 @@ namespace AllReady.UnitTest.Features.Tasks
             }
 
             using (var context = new AllReadyContext(options)) {
-                var sut = new UpdateTaskCommandHandlerAsync(context);
+                var sut = new UpdateTaskCommandHandler(context);
                 await sut.Handle(message);
             }
 

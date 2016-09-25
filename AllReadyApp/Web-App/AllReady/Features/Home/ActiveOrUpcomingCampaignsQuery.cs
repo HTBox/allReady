@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AllReady.Features.Home
 {
-    public class ActiveOrUpcomingCampaignsQueryAsync : IAsyncRequest<List<ActiveOrUpcomingCampaign>>
+    public class ActiveOrUpcomingCampaignsQuery : IAsyncRequest<List<ActiveOrUpcomingCampaign>>
     {
     }
 }

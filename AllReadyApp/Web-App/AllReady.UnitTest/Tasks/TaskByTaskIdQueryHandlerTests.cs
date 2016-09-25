@@ -13,7 +13,7 @@ namespace AllReady.UnitTest.Tasks
             var options = this.CreateNewContextOptions();
 
             const int taskId = 1;
-            var message = new TaskByTaskIdQueryAsync { TaskId = taskId };
+            var message = new TaskByTaskIdQuery { TaskId = taskId };
 
             using (var context = new AllReadyContext(options)) {
                 context.Tasks.Add(new AllReadyTask {Id = taskId});

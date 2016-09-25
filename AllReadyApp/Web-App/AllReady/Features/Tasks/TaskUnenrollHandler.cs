@@ -6,12 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskUnenrollHandlerAsync : IAsyncRequestHandler<TaskUnenrollCommand, TaskUnenrollResult>
+    public class TaskUnenrollHandler : IAsyncRequestHandler<TaskUnenrollCommand, TaskUnenrollResult>
     {
         private readonly IMediator _mediator;
         private readonly AllReadyContext _context;
 
-        public TaskUnenrollHandlerAsync(IMediator mediator, AllReadyContext context)
+        public TaskUnenrollHandler(IMediator mediator, AllReadyContext context)
         {
             _mediator = mediator;
             _context = context;

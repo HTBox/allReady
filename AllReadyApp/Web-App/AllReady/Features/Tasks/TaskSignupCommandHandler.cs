@@ -9,18 +9,18 @@ using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskSignupCommandHandlerAsync : IAsyncRequestHandler<TaskSignupCommandAsync, TaskSignupResult>
+    public class TaskSignupCommandHandler : IAsyncRequestHandler<TaskSignupCommand, TaskSignupResult>
     {
         private readonly IMediator _mediator;
         private readonly AllReadyContext _context;
 
-        public TaskSignupCommandHandlerAsync(IMediator mediator, AllReadyContext context)
+        public TaskSignupCommandHandler(IMediator mediator, AllReadyContext context)
         {
             _mediator = mediator;
             _context = context;
         }
 
-        public async Task<TaskSignupResult> Handle(TaskSignupCommandAsync message)
+        public async Task<TaskSignupResult> Handle(TaskSignupCommand message)
         {
             var model = message.TaskSignupModel;
 

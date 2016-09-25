@@ -4,16 +4,16 @@ using MediatR;
 
 namespace AllReady.Features.Tasks
 {
-    public class AddTaskCommandHandlerAsync : AsyncRequestHandler<AddTaskCommandAsync>
+    public class AddTaskCommandHandler : AsyncRequestHandler<AddTaskCommand>
     {
         private readonly AllReadyContext dataContext;
 
-        public AddTaskCommandHandlerAsync(AllReadyContext dataContext)
+        public AddTaskCommandHandler(AllReadyContext dataContext)
         {
             this.dataContext = dataContext;
         }
 
-        protected override async Task HandleCore(AddTaskCommandAsync message)
+        protected override async Task HandleCore(AddTaskCommand message)
         {
             this.dataContext.Add(message.AllReadyTask);
             await this.dataContext.SaveChangesAsync();

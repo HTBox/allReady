@@ -5,7 +5,7 @@ using MediatR;
 
 namespace AllReady.Features.Requests
 {
-    public class AddRequestCommandAsync : IAsyncRequest<AddRequestError>
+    public class AddRequestCommand : IAsyncRequest<AddRequestError>
     {
         public Request Request { get; set; }
     }

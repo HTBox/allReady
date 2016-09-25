@@ -8,18 +8,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Requests
 {
-    public class AddRequestCommandHandlerAsync : IAsyncRequestHandler<AddRequestCommandAsync, AddRequestError>
+    public class AddRequestCommandHandler : IAsyncRequestHandler<AddRequestCommand, AddRequestError>
     {
         private readonly AllReadyContext _dataContext;
         private readonly IGeocoder _geocoder;
 
-        public AddRequestCommandHandlerAsync(AllReadyContext dataContext, IGeocoder geocoder)
+        public AddRequestCommandHandler(AllReadyContext dataContext, IGeocoder geocoder)
         {
             _dataContext = dataContext;
             _geocoder = geocoder;
         }
 
-        public async Task<AddRequestError> Handle(AddRequestCommandAsync message)
+        public async Task<AddRequestError> Handle(AddRequestCommand message)
         {
             AddRequestError error = null;
             if (message.Request == null)

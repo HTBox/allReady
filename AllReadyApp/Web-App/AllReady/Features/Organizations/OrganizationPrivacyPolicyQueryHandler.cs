@@ -7,16 +7,16 @@ using AllReady.ViewModels.Organization;
 
 namespace AllReady.Features.Organizations
 {
-    public class OrganizationPrivacyPolicyQueryHandlerAsync : IAsyncRequestHandler<OrganziationPrivacyPolicyQueryAsync, OrganizationPrivacyPolicyViewModel>
+    public class OrganizationPrivacyPolicyQueryHandler : IAsyncRequestHandler<OrganizationPrivacyPolicyQuery, OrganizationPrivacyPolicyViewModel>
     {
         private readonly AllReadyContext _context;
 
-        public OrganizationPrivacyPolicyQueryHandlerAsync(AllReadyContext context)
+        public OrganizationPrivacyPolicyQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<OrganizationPrivacyPolicyViewModel> Handle(OrganziationPrivacyPolicyQueryAsync message)
+        public async Task<OrganizationPrivacyPolicyViewModel> Handle(OrganizationPrivacyPolicyQuery message)
         {
             return await _context.Organizations
                 .AsNoTracking()

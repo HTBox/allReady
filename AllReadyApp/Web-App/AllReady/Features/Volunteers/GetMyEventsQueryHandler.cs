@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace AllReady.Features.Volunteers
 {
-    public class GetMyEventsQueryHandlerAsync : IAsyncRequestHandler<GetMyEventsQuery, MyEventsListerViewModel>
+    public class GetMyEventsQueryHandler : IAsyncRequestHandler<GetMyEventsQuery, MyEventsListerViewModel>
     {
         private AllReadyContext _context;
 
-        public GetMyEventsQueryHandlerAsync(AllReadyContext context)
+        public GetMyEventsQueryHandler(AllReadyContext context)
         {
             _context = context;
         }

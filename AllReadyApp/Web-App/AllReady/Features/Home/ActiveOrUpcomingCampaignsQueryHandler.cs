@@ -9,16 +9,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Home
 {
-    public class ActiveOrUpcomingCampaignsQueryHandlerAsync : IAsyncRequestHandler<ActiveOrUpcomingCampaignsQueryAsync, List<ActiveOrUpcomingCampaign>>
+    public class ActiveOrUpcomingCampaignsQueryHandler : IAsyncRequestHandler<ActiveOrUpcomingCampaignsQuery, List<ActiveOrUpcomingCampaign>>
     {
         private readonly AllReadyContext _context;
 
-        public ActiveOrUpcomingCampaignsQueryHandlerAsync(AllReadyContext context)
+        public ActiveOrUpcomingCampaignsQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<List<ActiveOrUpcomingCampaign>> Handle(ActiveOrUpcomingCampaignsQueryAsync message)
+        public async Task<List<ActiveOrUpcomingCampaign>> Handle(ActiveOrUpcomingCampaignsQuery message)
         {
             return await _context.Campaigns
                 .AsNoTracking()

@@ -26,10 +26,10 @@ namespace AllReady.UnitTest.Features.Event
                 await context.SaveChangesAsync();
             }
 
-            var message = new UpdateMyTasksCommandAsync { UserId =userId, TaskSignups = new List<TaskSignupViewModel>() };
+            var message = new UpdateMyTasksCommand { UserId =userId, TaskSignups = new List<TaskSignupViewModel>() };
 
             using (var context = new AllReadyContext(options)) {
-                var sut = new UpdateMyTasksCommandHandlerAsync(context);
+                var sut = new UpdateMyTasksCommandHandler(context);
                 await sut.Handle(message);
             }
 
@@ -58,8 +58,8 @@ namespace AllReady.UnitTest.Features.Event
             }
 
             using (var context = new AllReadyContext(options)) {
-                var sut = new UpdateMyTasksCommandHandlerAsync(context) {DateTimeUtcNow = () => DateTime.UtcNow};
-                await sut.Handle(new UpdateMyTasksCommandAsync {TaskSignups = taskSignupViewModels});
+                var sut = new UpdateMyTasksCommandHandler(context) {DateTimeUtcNow = () => DateTime.UtcNow};
+                await sut.Handle(new UpdateMyTasksCommand {TaskSignups = taskSignupViewModels});
             }
 
             using (var context = new AllReadyContext(options)) {
@@ -84,7 +84,7 @@ namespace AllReady.UnitTest.Features.Event
                 new TaskSignupViewModel { Id = taskSignupId, StatusDescription = "statusDescription1", Status = "Status1", TaskId = 1, }
             };
 
-            var message = new UpdateMyTasksCommandAsync { TaskSignups = taskSignupViewModels, UserId = userId};
+            var message = new UpdateMyTasksCommand { TaskSignups = taskSignupViewModels, UserId = userId};
 
             using (var context = new AllReadyContext(options)) {
                 context.Users.Add(user);
@@ -94,7 +94,7 @@ namespace AllReady.UnitTest.Features.Event
             }
 
             using (var context = new AllReadyContext(options)) {
-                var sut = new UpdateMyTasksCommandHandlerAsync(context) {DateTimeUtcNow = () => dateTimeUtcNow};
+                var sut = new UpdateMyTasksCommandHandler(context) {DateTimeUtcNow = () => dateTimeUtcNow};
                 await sut.Handle(message);
             }
 

@@ -7,16 +7,16 @@ using AllReady.ViewModels.Home;
 
 namespace AllReady.Features.Campaigns
 {
-    public class FeaturedCampaignQueryHandlerAsync : IAsyncRequestHandler<FeaturedCampaignQueryAsync, CampaignSummaryViewModel>
+    public class FeaturedCampaignQueryHandler : IAsyncRequestHandler<FeaturedCampaignQuery, CampaignSummaryViewModel>
     {
         private readonly AllReadyContext _context;
 
-        public FeaturedCampaignQueryHandlerAsync(AllReadyContext dataAccess)
+        public FeaturedCampaignQueryHandler(AllReadyContext dataAccess)
         {
             _context = dataAccess;
         }
 
-        public async Task<CampaignSummaryViewModel> Handle(FeaturedCampaignQueryAsync message)
+        public async Task<CampaignSummaryViewModel> Handle(FeaturedCampaignQuery message)
         {
             return await _context.Campaigns.AsNoTracking()
                 .Where(c => c.Featured)

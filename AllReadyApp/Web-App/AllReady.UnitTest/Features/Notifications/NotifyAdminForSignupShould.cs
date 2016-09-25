@@ -136,7 +136,7 @@ namespace AllReady.UnitTest.Features.Notifications
             };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
                 .ReturnsAsync(taskDetailForNotificationModel);
 
             var options = new TestOptions<GeneralSettings>();
@@ -181,7 +181,7 @@ namespace AllReady.UnitTest.Features.Notifications
             };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
                 .ReturnsAsync(taskDetailForNotificationModel);
 
             var options = new TestOptions<GeneralSettings>();
@@ -222,7 +222,7 @@ namespace AllReady.UnitTest.Features.Notifications
             };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+            mediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
                 .ReturnsAsync(taskDetailForNotificationModel);
 
             var options = new TestOptions<GeneralSettings>();

@@ -28,7 +28,7 @@ namespace AllReady.Features.Notifications
             // don't let problem with notification keep us from continuing
             try
             {
-                var taskModel = await _mediator.SendAsync(new TaskDetailForNotificationQueryAsync { TaskId = notification.TaskId, UserId = notification.UserId })
+                var taskModel = await _mediator.SendAsync(new TaskDetailForNotificationQuery { TaskId = notification.TaskId, UserId = notification.UserId })
                     .ConfigureAwait(false);
 
                 var campaignContact = taskModel.CampaignContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);

@@ -6,16 +6,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Organizations
 {
-    public class OrganizationDetailsQueryHandlerAsync : IAsyncRequestHandler<OrganizationDetailsQueryAsync, OrganizationViewModel>
+    public class OrganizationDetailsQueryHandler : IAsyncRequestHandler<OrganizationDetailsQuery, OrganizationViewModel>
     {
         private readonly AllReadyContext _context;
 
-        public OrganizationDetailsQueryHandlerAsync(AllReadyContext context)
+        public OrganizationDetailsQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<OrganizationViewModel> Handle(OrganizationDetailsQueryAsync message)
+        public async Task<OrganizationViewModel> Handle(OrganizationDetailsQuery message)
         {
             var result = await _context.Organizations.AsNoTracking()
                 .Include(t => t.Campaigns)

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Features.Campaigns
 {
-    public class FeaturedCampaignQueryAsync : IAsyncRequest<CampaignSummaryViewModel>
+    public class FeaturedCampaignQuery : IAsyncRequest<CampaignSummaryViewModel>
     {
     }
 }

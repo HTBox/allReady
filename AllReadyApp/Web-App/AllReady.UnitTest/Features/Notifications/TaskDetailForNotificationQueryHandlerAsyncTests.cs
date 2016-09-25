@@ -105,8 +105,8 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async Task EventDoesNotExist()
         {
-            var query = new TaskDetailForNotificationQueryAsync { TaskId = 999, UserId = _user1.Id };
-            var handler = new TaskDetailForNotificationQueryHandlerAsync(Context);
+            var query = new TaskDetailForNotificationQuery { TaskId = 999, UserId = _user1.Id };
+            var handler = new TaskDetailForNotificationQueryHandler(Context);
 
             var result = await handler.Handle(query);
 

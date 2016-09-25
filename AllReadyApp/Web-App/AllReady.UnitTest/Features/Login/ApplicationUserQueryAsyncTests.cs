@@ -23,8 +23,8 @@ namespace AllReady.UnitTest.Features.Login
         [Fact]
         public async Task QueryUserThatExists()
         {
-            var queryHandler = new ApplicationUserQueryHandlerAsync(Context);
-            var user = await queryHandler.Handle(new ApplicationUserQueryAsync { UserName = "bObLoBlAw@RandomDomain.COM" });
+            var queryHandler = new ApplicationUserQueryHandler(Context);
+            var user = await queryHandler.Handle(new ApplicationUserQuery { UserName = "bObLoBlAw@RandomDomain.COM" });
 
             Assert.NotNull(user);
             Assert.Equal("bobloblaw@randomdomain.com", user.UserName);
@@ -33,8 +33,8 @@ namespace AllReady.UnitTest.Features.Login
         [Fact]
         public async Task QueryUserThatDoesNotExists()
         {
-            var queryHandler = new ApplicationUserQueryHandlerAsync(Context);
-            var user = await queryHandler.Handle(new ApplicationUserQueryAsync { UserName = "nothere@oursite.com" });
+            var queryHandler = new ApplicationUserQueryHandler(Context);
+            var user = await queryHandler.Handle(new ApplicationUserQuery { UserName = "nothere@oursite.com" });
 
             Assert.Null(user);            
         }

@@ -374,7 +374,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         private async Task<Event> GetEventBy(int eventId)
         {
-            return await _mediator.SendAsync(new EventByEventIdQueryAsync { EventId = eventId });
+            return await _mediator.SendAsync(new EventByEventIdQuery { EventId = eventId });
         }
 
         private static EventEditViewModel BuildNewEventDetailsModel(EventEditViewModel existingEvent, DuplicateEventViewModel newEventDetails)

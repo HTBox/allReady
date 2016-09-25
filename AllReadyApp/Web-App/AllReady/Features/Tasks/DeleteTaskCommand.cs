@@ -2,7 +2,7 @@
 
 namespace AllReady.Features.Tasks
 {
-    public class DeleteTaskCommandAsync : IAsyncRequest
+    public class DeleteTaskCommand : IAsyncRequest
     {
         public int TaskId { get; set; }
     }

@@ -5,16 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Notifications
 {
-    public class TaskDetailForNotificationQueryHandlerAsync : IAsyncRequestHandler<TaskDetailForNotificationQueryAsync, TaskDetailForNotificationModel>
+    public class TaskDetailForNotificationQueryHandler : IAsyncRequestHandler<TaskDetailForNotificationQuery, TaskDetailForNotificationModel>
     {
         private readonly AllReadyContext _context;
 
-        public TaskDetailForNotificationQueryHandlerAsync(AllReadyContext context)
+        public TaskDetailForNotificationQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<TaskDetailForNotificationModel> Handle(TaskDetailForNotificationQueryAsync message)
+        public async Task<TaskDetailForNotificationModel> Handle(TaskDetailForNotificationQuery message)
         {
             TaskDetailForNotificationModel result = null;
 
@@ -43,7 +43,7 @@ namespace AllReady.Features.Notifications
             return result;
         }
 
-        private async Task<AllReadyTask> GetTask(TaskDetailForNotificationQueryAsync message)
+        private async Task<AllReadyTask> GetTask(TaskDetailForNotificationQuery message)
         {
             return await _context.Tasks.AsNoTracking()
                 .Include(a => a.Event).ThenInclude(e => e.Campaign).ThenInclude(c => c.CampaignContacts).ThenInclude(cc => cc.Contact)

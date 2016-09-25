@@ -10,8 +10,8 @@ namespace AllReady.UnitTest.Features.Organizations
         [Fact]
         public async Task OrgWithNoPrivacyPolicy_ReturnsNullContent()
         {
-            var handler = new OrganizationPrivacyPolicyQueryHandlerAsync(Context);
-            var result = await handler.Handle(new OrganziationPrivacyPolicyQueryAsync { OrganizationId = 1 });
+            var handler = new OrganizationPrivacyPolicyQueryHandler(Context);
+            var result = await handler.Handle(new OrganizationPrivacyPolicyQuery { OrganizationId = 1 });
 
             Assert.NotNull(result);
             Assert.Equal("Org 1", result.OrganizationName);
@@ -21,8 +21,8 @@ namespace AllReady.UnitTest.Features.Organizations
         [Fact]
         public async Task OrgWithValidPrivacyPolicy_ReturnsContent()
         {
-            var handler = new OrganizationPrivacyPolicyQueryHandlerAsync(Context);
-            var result = await handler.Handle(new OrganziationPrivacyPolicyQueryAsync { OrganizationId = 2 });
+            var handler = new OrganizationPrivacyPolicyQueryHandler(Context);
+            var result = await handler.Handle(new OrganizationPrivacyPolicyQuery { OrganizationId = 2 });
 
             Assert.NotNull(result);
             Assert.Equal("Org 2", result.OrganizationName);
@@ -32,8 +32,8 @@ namespace AllReady.UnitTest.Features.Organizations
         [Fact]
         public async Task NullReturnedWhenSkillIdDoesNotExists()
         {
-            var handler = new OrganizationPrivacyPolicyQueryHandlerAsync(Context);
-            var result = await handler.Handle(new OrganziationPrivacyPolicyQueryAsync { OrganizationId = 100 });
+            var handler = new OrganizationPrivacyPolicyQueryHandler(Context);
+            var result = await handler.Handle(new OrganizationPrivacyPolicyQuery { OrganizationId = 100 });
 
             Assert.Null(result);
         }
@@ -41,8 +41,8 @@ namespace AllReady.UnitTest.Features.Organizations
         [Fact]
         public async Task NullReturnedWhenSkillIdNotInMessage()
         {
-            var handler = new OrganizationPrivacyPolicyQueryHandlerAsync(Context);
-            var result = await handler.Handle(new OrganziationPrivacyPolicyQueryAsync());
+            var handler = new OrganizationPrivacyPolicyQueryHandler(Context);
+            var result = await handler.Handle(new OrganizationPrivacyPolicyQuery());
 
             Assert.Null(result);
         }
