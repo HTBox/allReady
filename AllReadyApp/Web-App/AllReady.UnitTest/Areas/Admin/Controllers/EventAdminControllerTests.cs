@@ -454,7 +454,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new EventController(null, mediator.Object, null);
             sut.MakeUserNotAnOrgAdmin();
 
-            Assert.IsType<UnauthorizedResult>(await sut.DeleteConfirmed(It.IsAny<int>()).ConfigureAwait(false));
+            Assert.IsType<UnauthorizedResult>(await sut.DeleteConfirmed(It.IsAny<DeleteViewModel>()).ConfigureAwait(false));
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -475,7 +475,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DeleteConfirmedHasHttpPostAttribute()
         {
             var sut = EventControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -483,7 +483,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DeleteConfirmedHasActionNameAttributeWithCorrectName()
         {
             var sut = EventControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ActionNameAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<ActionNameAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Name, "Delete");
         }
@@ -492,7 +492,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DeleteConfirmedHasValidateAntiForgeryTokenAttribute()
         {
             var sut = EventControllerWithNoInjectedDependencies();
-            var routeAttribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var routeAttribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
         }
 
