@@ -10,8 +10,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
         [Fact]
         public async Task CorrectSkillReturnedWhenIdInMessage()
         {
-            var handler = new SkillEditQueryHandlerAsync(Context);
-            var result = await handler.Handle(new SkillEditQueryAsync { Id = 4 });
+            var handler = new SkillEditQueryHandler(Context);
+            var result = await handler.Handle(new SkillEditQuery { Id = 4 });
 
             Assert.NotNull(result);
             Assert.Equal("Skill 4", result.Name);
@@ -20,8 +20,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
         [Fact]
         public async Task NullReturnedWhenSkillIdDoesNotExists()
         {
-            var handler = new SkillEditQueryHandlerAsync(Context);
-            var result = await handler.Handle(new SkillEditQueryAsync { Id = 100 });
+            var handler = new SkillEditQueryHandler(Context);
+            var result = await handler.Handle(new SkillEditQuery { Id = 100 });
 
             Assert.Null(result);
         }
@@ -29,8 +29,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
         [Fact]
         public async Task NullReturnedWhenSkillIdNotInMessage()
         {
-            var handler = new SkillEditQueryHandlerAsync(Context);
-            var result = await handler.Handle(new SkillEditQueryAsync());
+            var handler = new SkillEditQueryHandler(Context);
+            var result = await handler.Handle(new SkillEditQuery());
 
             Assert.Null(result);
         }

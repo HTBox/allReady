@@ -32,8 +32,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task ReturnCorrectData()
         {
-            var sut = new DeleteQueryHandlerAsync(Context);
-            var result = await sut.Handle(new DeleteQueryAsync { TaskId = TaskId });
+            var sut = new DeleteQueryHandler(Context);
+            var result = await sut.Handle(new DeleteQuery { TaskId = TaskId });
 
             Assert.Equal(result.Id, task.Id);
             Assert.Equal(result.OrganizationId, task.Event.Campaign.ManagingOrganizationId);
@@ -49,8 +49,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task ReturnCorrectViewModel()
         {
-            var sut = new DeleteQueryHandlerAsync(Context);
-            var result = await sut.Handle(new DeleteQueryAsync { TaskId = TaskId });
+            var sut = new DeleteQueryHandler(Context);
+            var result = await sut.Handle(new DeleteQuery { TaskId = TaskId });
 
             Assert.IsType<DeleteViewModel>(result);
         }

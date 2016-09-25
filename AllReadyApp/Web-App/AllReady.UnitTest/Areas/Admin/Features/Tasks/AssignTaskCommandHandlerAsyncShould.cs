@@ -15,12 +15,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
     public class AssignTaskCommandHandlerAsyncShould : InMemoryContextTest
     {
         private readonly Mock<IMediator> mediator;
-        private readonly AssignTaskCommandHandlerAsync sut;
+        private readonly AssignTaskCommandHandler sut;
         
         public AssignTaskCommandHandlerAsyncShould()
         {
             mediator = new Mock<IMediator>();
-            sut = new AssignTaskCommandHandlerAsync(Context, mediator.Object);
+            sut = new AssignTaskCommandHandler(Context, mediator.Object);
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Add(task);
             Context.SaveChanges();
 
-            var message = new AssignTaskCommandAsync { TaskId = task.Id, UserIds = new List<string> { newVolunteer.Id } };
+            var message = new AssignTaskCommand { TaskId = task.Id, UserIds = new List<string> { newVolunteer.Id } };
             await sut.Handle(message);
 
             var taskSignup = Context.Tasks.Single(x => x.Id == task.Id).AssignedVolunteers.Single();
@@ -55,7 +55,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Add(task);
             Context.SaveChanges();
 
-            var message = new AssignTaskCommandAsync { TaskId = task.Id, UserIds = new List<string> { "user2" } };
+            var message = new AssignTaskCommand { TaskId = task.Id, UserIds = new List<string> { "user2" } };
             await sut.Handle(message);
 
             Assert.True(Context.Tasks.Single(x => x.Id == task.Id).AssignedVolunteers.Any(x => x.User.Id != previouslySignedupUser.Id ));
@@ -79,7 +79,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Add(task);
             Context.SaveChanges();
 
-            var message = new AssignTaskCommandAsync { TaskId = task.Id, UserIds = new List<string> { volunteer.Id } };
+            var message = new AssignTaskCommand { TaskId = task.Id, UserIds = new List<string> { volunteer.Id } };
             await sut.Handle(message);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
@@ -108,7 +108,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Add(task);
             Context.SaveChanges();
 
-            var message = new AssignTaskCommandAsync { TaskId = task.Id, UserIds = new List<string> { previouslySignedupUser.Id } };
+            var message = new AssignTaskCommand { TaskId = task.Id, UserIds = new List<string> { previouslySignedupUser.Id } };
             await sut.Handle(message);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>

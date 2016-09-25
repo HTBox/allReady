@@ -16,8 +16,8 @@ namespace AllReady.UnitTest.Features.Shared
 		public async Task ValidatesToTrueForValidStoredCodes()
 		{
 			//arrange
-			var handler = new CheckValidPostcodeQueryHandlerAsync( Context );
-			var message = new CheckValidPostcodeQueryAsync()
+			var handler = new CheckValidPostcodeQueryHandler( Context );
+			var message = new CheckValidPostcodeQuery()
 			{
 				Postcode = new PostalCodeGeo
 				{
@@ -46,8 +46,8 @@ namespace AllReady.UnitTest.Features.Shared
 																					bool stateFlag )
 		{
 			//arrange
-			var handler = new CheckValidPostcodeQueryHandlerAsync( Context );
-			var message = new CheckValidPostcodeQueryAsync
+			var handler = new CheckValidPostcodeQueryHandler( Context );
+			var message = new CheckValidPostcodeQuery
 			{
 				Postcode = new PostalCodeGeo
 				{

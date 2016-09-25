@@ -47,7 +47,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         {
             var mockMediator = new Mock<IMediator>();
 
-            var handler = new AddRequestsCommandHandlerAsync(Context, mockMediator.Object);
+            var handler = new AddRequestsCommandHandler(Context, mockMediator.Object);
             bool succeded = await handler.Handle(new AddRequestsCommand { ItineraryId = 7 });
 
             Assert.False(succeded);
@@ -59,7 +59,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         {
             var mockMediator = new Mock<IMediator>();
 
-            var handler = new AddRequestsCommandHandlerAsync(Context, mockMediator.Object);
+            var handler = new AddRequestsCommandHandler(Context, mockMediator.Object);
             bool succeded = await handler.Handle(new AddRequestsCommand { ItineraryId = _theItinerary.Id, RequestIdsToAdd = new List<string> { "7" } });
 
             Assert.False(succeded);
@@ -71,7 +71,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         {
             var mockMediator = new Mock<IMediator>();
 
-            var handler = new AddRequestsCommandHandlerAsync(Context, mockMediator.Object);
+            var handler = new AddRequestsCommandHandler(Context, mockMediator.Object);
             bool succeded = await handler.Handle(new AddRequestsCommand
             {
                 ItineraryId = _theItinerary.Id,
@@ -87,7 +87,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         {
             var mockMediator = new Mock<IMediator>();
 
-            var handler = new AddRequestsCommandHandlerAsync(Context, mockMediator.Object);
+            var handler = new AddRequestsCommandHandler(Context, mockMediator.Object);
             bool succeded = await handler.Handle(new AddRequestsCommand
             {
                 ItineraryId = _theItinerary.Id,
@@ -110,7 +110,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Context.ItineraryRequests.Add(new ItineraryRequest { OrderIndex = 1, ItineraryId = _theItinerary.Id });
             Context.SaveChanges();
 
-            var handler = new AddRequestsCommandHandlerAsync(Context, mockMediator.Object);
+            var handler = new AddRequestsCommandHandler(Context, mockMediator.Object);
             bool succeded = await handler.Handle(new AddRequestsCommand
             {
                 ItineraryId = _theItinerary.Id,

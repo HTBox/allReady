@@ -29,7 +29,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Task/Details/{id}")]
         public async Task<IActionResult> Details(int id)
         {
-            var viewModel = await _mediator.SendAsync(new DetailsQueryAsync { TaskId = id });
+            var viewModel = await _mediator.SendAsync(new DetailsQuery { TaskId = id });
             if (viewModel == null)
             {
                 return NotFound();
@@ -42,7 +42,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Task/Create/{eventId}")]
         public async Task<IActionResult> Create(int eventId)
         {
-            var viewModel = await _mediator.SendAsync(new CreateTaskQueryAsync { EventId = eventId });
+            var viewModel = await _mediator.SendAsync(new CreateTaskQuery { EventId = eventId });
             if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return Unauthorized();
@@ -59,7 +59,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Task/Edit/{id}")]
         public async Task<IActionResult> Edit(int id)
         {
-            var viewModel = await _mediator.SendAsync(new EditTaskQueryAsync { TaskId = id });
+            var viewModel = await _mediator.SendAsync(new EditTaskQuery { TaskId = id });
             if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return Unauthorized();
@@ -85,7 +85,7 @@ namespace AllReady.Areas.Admin.Controllers
                     return Unauthorized();
                 }
 
-                var taskId = await _mediator.SendAsync(new EditTaskCommandAsync { Task = viewModel });
+                var taskId = await _mediator.SendAsync(new EditTaskCommand { Task = viewModel });
 
                 return viewModel.Id == 0 ?
                     RedirectToAction(nameof(EventController.Details), "Event", new { id = viewModel.EventId }) :
@@ -97,7 +97,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var viewModel = await _mediator.SendAsync(new DeleteQueryAsync { TaskId = id });
+            var viewModel = await _mediator.SendAsync(new DeleteQuery { TaskId = id });
             if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return Unauthorized();
@@ -118,7 +118,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new DeleteTaskCommandAsync { TaskId = viewModel.Id });
+            await _mediator.SendAsync(new DeleteTaskCommand { TaskId = viewModel.Id });
 
             return RedirectToAction(nameof(EventController.Details), "Event", new { id = viewModel.EventId });
         }
@@ -127,13 +127,13 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Assign(int id, List<string> userIds)
         {
-            var tasksOrganizationId = await _mediator.SendAsync(new OrganizationIdByTaskIdQueryAsync { TaskId = id });
+            var tasksOrganizationId = await _mediator.SendAsync(new OrganizationIdByTaskIdQuery { TaskId = id });
             if (!User.IsOrganizationAdmin(tasksOrganizationId))
             {
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new AssignTaskCommandAsync { TaskId = id, UserIds = userIds });
+            await _mediator.SendAsync(new AssignTaskCommand { TaskId = id, UserIds = userIds });
 
             return RedirectToRoute(new { controller = "Task", Area = "Admin", action = nameof(Details), id });
         }
@@ -147,13 +147,13 @@ namespace AllReady.Areas.Admin.Controllers
                 return BadRequest(ModelState);
             }
 
-            var tasksOrganizationId = await _mediator.SendAsync(new OrganizationIdByTaskIdQueryAsync { TaskId = viewModel.TaskId });
+            var tasksOrganizationId = await _mediator.SendAsync(new OrganizationIdByTaskIdQuery { TaskId = viewModel.TaskId });
             if (!User.IsOrganizationAdmin(tasksOrganizationId))
             {
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new MessageTaskVolunteersCommandAsync { Model = viewModel });
+            await _mediator.SendAsync(new MessageTaskVolunteersCommand { Model = viewModel });
 
             return Ok();
         }

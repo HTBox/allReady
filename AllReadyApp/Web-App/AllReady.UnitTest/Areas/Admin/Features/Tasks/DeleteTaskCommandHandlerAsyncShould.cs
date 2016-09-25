@@ -19,8 +19,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task DeleteTask()
         {
-            var sut = new DeleteTaskCommandHandlerAsync(Context);
-            await sut.Handle(new DeleteTaskCommandAsync { TaskId = TaskId });
+            var sut = new DeleteTaskCommandHandler(Context);
+            await sut.Handle(new DeleteTaskCommand { TaskId = TaskId });
             Assert.False(Context.Tasks.Any(t => t.Id == TaskId));
         }
     }

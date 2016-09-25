@@ -16,9 +16,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Context.Campaigns.Add(new Campaign { Id = campaignId, ManagingOrganization = new Organization() });
             Context.SaveChanges();
 
-            var message = new DeleteQueryAsync { CampaignId = campaignId };
+            var message = new DeleteViewModelQuery { CampaignId = campaignId };
 
-            var sut = new DeleteQueryHandlerAsync(Context);
+            var sut = new DeleteViewModelQueryHandler(Context);
             var result = await sut.Handle(message);
 
             Assert.IsType<DeleteViewModel>(result);
@@ -34,9 +34,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Context.Campaigns.Add(new Campaign { Id = 2, ManagingOrganization = new Organization { Id = 2 }});
             Context.SaveChanges();
 
-            var message = new DeleteQueryAsync { CampaignId = campaign1.Id };
+            var message = new DeleteViewModelQuery { CampaignId = campaign1.Id };
 
-            var sut = new DeleteQueryHandlerAsync(Context);
+            var sut = new DeleteViewModelQueryHandler(Context);
             var result = await sut.Handle(message);
 
             Assert.Equal(result.Id, campaign1.Id);

@@ -68,7 +68,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 TaskSignupId = 1
             };
 
-            var handler = new AddTeamMemberCommandHandlerAsync(Context, null);
+            var handler = new AddTeamMemberCommandHandler(Context, null);
             var result = await handler.Handle(query);
 
             Assert.Equal(false, result);
@@ -83,7 +83,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 TaskSignupId = 1
             };
 
-            var handler = new AddTeamMemberCommandHandlerAsync(Context, Mock.Of<IMediator>());
+            var handler = new AddTeamMemberCommandHandler(Context, Mock.Of<IMediator>());
             var result = await handler.Handle(query);
 
             Assert.Equal(true, result);
@@ -99,7 +99,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             };
 
             var mockMediator = new Mock<IMediator>();
-            var handler = new AddTeamMemberCommandHandlerAsync(Context, mockMediator.Object);
+            var handler = new AddTeamMemberCommandHandler(Context, mockMediator.Object);
 
             await handler.Handle(query);
 
@@ -127,7 +127,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<PotentialItineraryTeamMembersQuery>())).ReturnsAsync(potentialTaskSignups);
 
-            var handler = new AddTeamMemberCommandHandlerAsync(Context, mockMediator.Object);
+            var handler = new AddTeamMemberCommandHandler(Context, mockMediator.Object);
             await handler.Handle(query);
 
             mockMediator.Verify(x => x.PublishAsync(It.Is<IntineraryVolunteerListUpdated>(y => y.TaskSignupId == query.TaskSignupId && y.ItineraryId == query.ItineraryId && y.UpdateType == UpdateType.VolunteerAssigned)), Times.Once);

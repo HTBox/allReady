@@ -58,7 +58,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return BadRequest();
             }
 
-            var campaignEvent = await _mediator.SendAsync(new EventSummaryQueryAsync { EventId = model.EventId });
+            var campaignEvent = await _mediator.SendAsync(new EventSummaryQuery { EventId = model.EventId });
             if (campaignEvent == null)
             {
                 return BadRequest();

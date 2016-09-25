@@ -78,7 +78,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             const string expectedMessage = "This is my message for all you task peeps";
             const string expectedSubject = "This is my subject";
-            var command = new MessageTaskVolunteersCommandAsync
+            var command = new MessageTaskVolunteersCommand
             {
                 Model = new MessageTaskVolunteersViewModel
                 {
@@ -90,7 +90,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var mediator = new Mock<IMediator>();
             
-            var handler = new MessageTaskVolunteersCommandHandlerAsync(Context, mediator.Object);
+            var handler = new MessageTaskVolunteersCommandHandler(Context, mediator.Object);
             await handler.Handle(command);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>

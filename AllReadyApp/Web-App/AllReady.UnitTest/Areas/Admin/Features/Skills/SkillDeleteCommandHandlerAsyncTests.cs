@@ -12,10 +12,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
         public async Task DeleteCommandRemovesSkill()
         {
             // Arrange
-            var handler = new SkillDeleteCommandHandlerAsync(Context);
+            var handler = new SkillDeleteCommandHandler(Context);
 
             // Act
-            await handler.Handle(new SkillDeleteCommandAsync { Id = 1 });
+            await handler.Handle(new SkillDeleteCommand { Id = 1 });
 
             // Assert
             Assert.Equal(6, Context.Skills.Count());

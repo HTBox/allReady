@@ -10,8 +10,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
     public class CreateTaskQueryHandlerAsyncShould : InMemoryContextTest
     {
         private readonly Event @event;
-        private readonly CreateTaskQueryAsync message;
-        private readonly CreateTaskQueryHandlerAsync sut;
+        private readonly CreateTaskQuery message;
+        private readonly CreateTaskQueryHandler sut;
 
         public CreateTaskQueryHandlerAsyncShould()
         {
@@ -27,8 +27,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Add(@event);
             Context.SaveChanges();
 
-            message = new CreateTaskQueryAsync { EventId = @event.Id };
-            sut = new CreateTaskQueryHandlerAsync(Context);
+            message = new CreateTaskQuery { EventId = @event.Id };
+            sut = new CreateTaskQueryHandler(Context);
         }
 
         [Fact]

@@ -63,7 +63,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Date = DateTime.Now
             }};
 
-            var sut = new EditItineraryCommandHandlerAsync(Context);
+            var sut = new EditItineraryCommandHandler(Context);
             var result = await sut.Handle(query);
 
             Assert.True(result > 0);
@@ -88,7 +88,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 }
             };
 
-            var sut = new EditItineraryCommandHandlerAsync(Context);
+            var sut = new EditItineraryCommandHandler(Context);
             var result = await sut.Handle(query);
 
             Assert.True(result == 1);

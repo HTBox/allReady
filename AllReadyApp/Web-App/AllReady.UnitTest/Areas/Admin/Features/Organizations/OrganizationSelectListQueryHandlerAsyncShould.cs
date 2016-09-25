@@ -22,8 +22,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
             context.Organizations.AddRange(organizations);
             context.SaveChanges();
 
-            var sut = new OrganizationSelectListQueryHandlerAsync(context);
-            var result = await sut.Handle(new OrganizationSelectListQueryAsync());
+            var sut = new OrganizationSelectListQueryHandler(context);
+            var result = await sut.Handle(new OrganizationSelectListQuery());
 
             Assert.IsType<List<SelectListItem>>(result);
         }

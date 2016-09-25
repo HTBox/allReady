@@ -10,8 +10,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
     public class EditTaskQueryHandlerAsyncShould : InMemoryContextTest
     {
-        private readonly EditTaskQueryAsync message;
-        private readonly EditTaskQueryHandlerAsync sut;
+        private readonly EditTaskQuery message;
+        private readonly EditTaskQueryHandler sut;
         private readonly AllReadyTask task;
 
         public EditTaskQueryHandlerAsyncShould()
@@ -44,8 +44,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Tasks.Add(task);
             Context.SaveChanges();
 
-            message = new EditTaskQueryAsync { TaskId = task.Id };
-            sut = new EditTaskQueryHandlerAsync(Context);
+            message = new EditTaskQuery { TaskId = task.Id };
+            sut = new EditTaskQueryHandler(Context);
 
         }
 

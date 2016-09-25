@@ -11,11 +11,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         public async Task UnlockALockedCampaign()
         {
             // Arrange
-            var handler = new LockUnlockCampaignCommandHandlerAsync(Context);
+            var handler = new LockUnlockCampaignCommandHandler(Context);
 
             // Act
             var campaign = Context.Campaigns.FirstOrDefault(c => c.Name == "Locked Campaign");
-            await handler.Handle(new LockUnlockCampaignCommandAsync { CampaignId = campaign.Id });
+            await handler.Handle(new LockUnlockCampaignCommand { CampaignId = campaign.Id });
             var result = Context.Campaigns.FirstOrDefault(c => c.Name == "Locked Campaign");
 
             // Assert
@@ -26,11 +26,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         public async Task LockAnUnlockedCampaign()
         {
             // Arrange
-            var handler = new LockUnlockCampaignCommandHandlerAsync(Context);
+            var handler = new LockUnlockCampaignCommandHandler(Context);
 
             // Act
             var campaign = Context.Campaigns.FirstOrDefault(c => c.Name == "Unlocked Campaign");
-            await handler.Handle(new LockUnlockCampaignCommandAsync { CampaignId = campaign.Id });
+            await handler.Handle(new LockUnlockCampaignCommand { CampaignId = campaign.Id });
             var result = Context.Campaigns.FirstOrDefault(c => c.Name == "Unlocked Campaign");
 
             // Assert

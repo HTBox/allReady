@@ -23,9 +23,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task ReturnCorrectData()
         {
-            var message = new OrganizationIdByTaskIdQueryAsync { TaskId = TaskId };
+            var message = new OrganizationIdByTaskIdQuery { TaskId = TaskId };
 
-            var sut = new OrganizationIdByTaskIdQueryHandlerAsync(Context);
+            var sut = new OrganizationIdByTaskIdQueryHandler(Context);
             var organizationId = await sut.Handle(message);
 
             Assert.Equal(organizationId, task.Organization.Id);

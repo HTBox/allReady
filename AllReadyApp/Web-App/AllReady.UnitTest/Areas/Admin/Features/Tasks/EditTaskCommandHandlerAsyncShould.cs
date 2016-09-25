@@ -19,7 +19,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             var @event = new Event { Id = 1, IsLimitVolunteers = true, IsAllowWaitList = false };
             var organization = new Organization { Id = 2 };
 
-            var message = new EditTaskCommandAsync
+            var message = new EditTaskCommand
             {
                 Task = new EditViewModel
                 {
@@ -38,7 +38,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Organizations.Add(organization);
             Context.SaveChanges();
 
-            var sut = new EditTaskCommandHandlerAsync(Context, Mock.Of<IConvertDateTimeOffset>());
+            var sut = new EditTaskCommandHandler(Context, Mock.Of<IConvertDateTimeOffset>());
             var taskId = await sut.Handle(message);
             var result = Context.Tasks.Single(x => x.Id == taskId);
 
@@ -75,7 +75,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Tasks.Add(task);
             Context.SaveChanges();
 
-            var message = new EditTaskCommandAsync
+            var message = new EditTaskCommand
             {
                 Task = new EditViewModel
                 {
@@ -92,7 +92,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 }
             };
 
-            var sut = new EditTaskCommandHandlerAsync(Context, Mock.Of<IConvertDateTimeOffset>());
+            var sut = new EditTaskCommandHandler(Context, Mock.Of<IConvertDateTimeOffset>());
             var taskId = await sut.Handle(message);
             var result = Context.Tasks.Single(x => x.Id == taskId);
 

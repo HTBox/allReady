@@ -16,8 +16,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Context.Campaigns.Add(new Campaign { ManagingOrganization = new Organization() });
             Context.SaveChanges();
 
-            var sut = new IndexQueryHandlerAsync(Context);
-            var result = await sut.Handle(new IndexQueryAsync());
+            var sut = new IndexQueryHandler(Context);
+            var result = await sut.Handle(new IndexQuery());
 
             Assert.IsType<List<IndexViewModel>>(result);
         }
@@ -32,9 +32,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Context.Campaigns.Add(new Campaign { Id = 2, ManagingOrganization = new Organization { Id = orgId2 }});
             Context.SaveChanges();
 
-            var message = new IndexQueryAsync { OrganizationId = orgId1 };
+            var message = new IndexQuery { OrganizationId = orgId1 };
 
-            var sut = new IndexQueryHandlerAsync(Context);
+            var sut = new IndexQueryHandler(Context);
             var result = await sut.Handle(message);
 
             Assert.Equal(result.Single().Id, orgId1);
@@ -50,8 +50,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             Context.Campaigns.Add(new Campaign { Id = 2, ManagingOrganization = new Organization { Id = orgId2 } });
             Context.SaveChanges();
 
-            var sut = new IndexQueryHandlerAsync(Context);
-            var result = await sut.Handle(new IndexQueryAsync());
+            var sut = new IndexQueryHandler(Context);
+            var result = await sut.Handle(new IndexQuery());
 
             Assert.Equal(result.Count(), 2);
         }

@@ -12,7 +12,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
         [Fact]
         public async Task ReturnAllOrganizationsAsOrganizationSummaryModels()
         {
-            var message = new OrganizationListQueryAysnc();
+            var message = new OrganizationListQuery();
 
             var organizations = new[]
             {
@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
             context.Organizations.AddRange(organizations);
             context.SaveChanges();
 
-            var sut = new OrganizationListQueryHandlerAsync(context);
+            var sut = new OrganizationListQueryHandler(context);
             var result = await sut.Handle(message);
 
             Assert.IsType<List<OrganizationSummaryViewModel>>(result);

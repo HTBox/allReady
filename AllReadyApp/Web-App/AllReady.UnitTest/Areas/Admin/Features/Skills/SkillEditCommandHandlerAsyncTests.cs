@@ -12,11 +12,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
         public async Task UpdatingExistingSkill()
         {
             // Arrange
-            var handler = new SkillEditCommandHandlerAsync(Context);
+            var handler = new SkillEditCommandHandler(Context);
             var newSkill = new SkillEditViewModel { Id = 2, Name = "New", Description = "Desc", OwningOrganizationId = 1 };
 
             // Act
-            var result = await handler.Handle(new SkillEditCommandAsync { Skill = newSkill });
+            var result = await handler.Handle(new SkillEditCommand { Skill = newSkill });
             var savedSkill = Context.Skills.SingleOrDefault(s => s.Id == 2);
 
             // Assert
@@ -29,11 +29,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Skills
         public async Task AddNewSkill()
         {
             // Arrange
-            var handler = new SkillEditCommandHandlerAsync(Context);
+            var handler = new SkillEditCommandHandler(Context);
             var newSkill = new SkillEditViewModel { Name = "New", Description = "Desc" };
 
             // Act
-            var result = await handler.Handle(new SkillEditCommandAsync { Skill = newSkill });
+            var result = await handler.Handle(new SkillEditCommand { Skill = newSkill });
 
             // Assert
             Assert.Equal(8, Context.Skills.Count());

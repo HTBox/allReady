@@ -271,7 +271,7 @@ namespace AllReady.Controllers
         [Authorize]
         public async Task<JsonResult> ChangeStatus(TaskChangeModel model)
         {
-            var result = await _mediator.SendAsync(new TaskStatusChangeCommandAsync { TaskStatus = model.Status, TaskId = model.TaskId, UserId = model.UserId, TaskStatusDescription = model.StatusDescription });
+            var result = await _mediator.SendAsync(new TaskStatusChangeCommand { TaskStatus = model.Status, TaskId = model.TaskId, UserId = model.UserId, TaskStatusDescription = model.StatusDescription });
             return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, model.UserId) });
         }
 

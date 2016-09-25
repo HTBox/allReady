@@ -41,7 +41,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DetailsReturnsHttpNotFoundResult_WhenEventIsNull()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQueryAsync>())).ReturnsAsync(new CampaignSummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel());
 
             var sut = new EventController(null, mediator.Object, null);
             var result = await sut.Details(It.IsAny<int>());
@@ -145,7 +145,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var imageService = new Mock<IImageService>();
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQueryAsync>())).ReturnsAsync(new CampaignSummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel());
 
             var eventDetailModelValidator = new Mock<IValidateEventEditViewModels>();
             eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
@@ -170,7 +170,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var imageService = new Mock<IImageService>();
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQueryAsync>())).ReturnsAsync(new CampaignSummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel());
 
             var eventDetailModelValidator = new Mock<IValidateEventEditViewModels>();
             eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
@@ -787,7 +787,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             var imageService = new Mock<IImageService>();
 
-            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQueryAsync>())).ReturnsAsync(new CampaignSummaryViewModel { StartDate = startDate, EndDate = endDate });
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel { StartDate = startDate, EndDate = endDate });
 
             var sut = new EventController(imageService.Object, mediator.Object, null);
             sut.SetClaims(new List<Claim>

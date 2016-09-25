@@ -27,7 +27,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Produces("application/json", Type = typeof(ContactInformationViewModel))]
         public async Task<ContactInformationViewModel> GetContact(int id)
         {
-            var contact = await _mediator.SendAsync(new OrganizationContactQueryAsync { OrganizationId = id, ContactType = ContactTypes.Primary });
+            var contact = await _mediator.SendAsync(new OrganizationContactQuery { OrganizationId = id, ContactType = ContactTypes.Primary });
             return contact;
         }
     }

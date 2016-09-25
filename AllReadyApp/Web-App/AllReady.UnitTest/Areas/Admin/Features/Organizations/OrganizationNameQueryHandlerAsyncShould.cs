@@ -12,8 +12,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
         {
             var context = Context;
             context.SaveChanges();
-            var sut = new OrganizationNameQueryHandlerAsync(context);
-            var result = await sut.Handle(new OrganizationNameQueryAsync());
+            var sut = new OrganizationNameQueryHandler(context);
+            var result = await sut.Handle(new OrganizationNameQuery());
 
             Assert.Null(result);
         }
@@ -26,8 +26,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
             context.Organizations.Add(organization);
             context.SaveChanges();
 
-            var sut = new OrganizationNameQueryHandlerAsync(context);
-            var result = await sut.Handle(new OrganizationNameQueryAsync { Id = organization.Id });
+            var sut = new OrganizationNameQueryHandler(context);
+            var result = await sut.Handle(new OrganizationNameQuery { Id = organization.Id });
 
             Assert.Equal(result, organization.Name);
         }

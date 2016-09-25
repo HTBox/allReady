@@ -39,8 +39,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         public async Task CampaignExists()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new CampaignDetailQueryAsync { CampaignId = _campaignId };
-            var handler = new CampaignDetailQueryHandlerAsync(context);
+            var query = new CampaignDetailQuery { CampaignId = _campaignId };
+            var handler = new CampaignDetailQueryHandler(context);
             var result = await handler.Handle(query);
             Assert.NotNull(result);
         }
@@ -49,8 +49,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         public async Task CampaignDoesNotExist()
         {
             var context = ServiceProvider.GetService<AllReadyContext>();
-            var query = new CampaignDetailQueryAsync { CampaignId = 0 };
-            var handler = new CampaignDetailQueryHandlerAsync(context);
+            var query = new CampaignDetailQuery { CampaignId = 0 };
+            var handler = new CampaignDetailQueryHandler(context);
             var result = await handler.Handle(query);
             Assert.Null(result);
         }

@@ -11,8 +11,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
     public class DetailsQueryHandlerAsyncShould : InMemoryContextTest
     {
         private readonly AllReadyTask task;
-        private readonly DetailsQueryAsync message;
-        private readonly DetailsQueryHandlerAsync sut;
+        private readonly DetailsQuery message;
+        private readonly DetailsQueryHandler sut;
 
         public DetailsQueryHandlerAsyncShould()
         {
@@ -38,8 +38,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Tasks.Add(task);
             Context.SaveChanges();
 
-            message = new DetailsQueryAsync { TaskId = task.Id };
-            sut = new DetailsQueryHandlerAsync(Context);
+            message = new DetailsQuery { TaskId = task.Id };
+            sut = new DetailsQueryHandler(Context);
         }
 
         [Fact]
