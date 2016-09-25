@@ -3,13 +3,12 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Security.Claims;
 using AllReady.Models;
-using Microsoft.AspNetCore.Identity;
 using Moq;
 using Shouldly;
 using Xunit;
 using System.Threading.Tasks;
 using AllReady.Features.Events;
-using Helpers;
+using AllReady.UnitTest.Helpers;
 
 namespace AllReady.UnitTest.Features.Event
 {
