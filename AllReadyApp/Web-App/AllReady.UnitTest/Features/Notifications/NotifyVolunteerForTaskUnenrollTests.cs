@@ -13,7 +13,7 @@ namespace AllReady.UnitTest.Features.Notifications
     public class NotifyVolunteerForTaskUnenrollShould
     {
         [Fact]
-        public async Task SendTaskDetailForNotificationQueryAsyncWithCorrectParameters()
+        public async Task SendTaskDetailForNotificationQueryWithCorrectParameters()
         {
             var notification = new UserUnenrolls
             {

@@ -20,7 +20,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
     public class TaskControllerTests
     {
         [Fact]
-        public async Task CreateGetSendsCreateTaskQueryAsyncWithTheCorrectEventId()
+        public async Task CreateGetSendsCreateTaskQueryWithTheCorrectEventId()
         {
             const int eventId = 1;
             const int organizationId = 1;
@@ -173,7 +173,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task EditGetSendsEditTaskQueryAsyncWithCorrectTaskId()
+        public async Task EditGetSendsEditTaskQueryWithCorrectTaskId()
         {
             const int taskId = 1;
             const int organizationId = 1;
@@ -349,7 +349,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task EditPostSendsEditTaskCommandAsyncWithCorrectModel_WhenModelStateIsValidAndUserIsOrganizationAdmin()
+        public async Task EditPostSendsEditTaskCommandWithCorrectModel_WhenModelStateIsValidAndUserIsOrganizationAdmin()
         {
             const int organizationId = 1;
 
@@ -436,7 +436,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DeleteSendsDeleteQueryAsyncWithCorrectTaskId()
+        public async Task DeleteSendsDeleteQueryWithCorrectTaskId()
         {
             const int taskId = 1;
             const int organizationId = 1;
@@ -485,7 +485,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DetailsSendsDetailsQueryAsyncWithCorrectTaskId()
+        public async Task DetailsSendsDetailsQueryWithCorrectTaskId()
         {
             const int taskId = 1;
             var mediator = new Mock<IMediator>();
@@ -551,7 +551,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DeleteConfirmedSendsDeleteTaskCommandAsyncWithCorrectTaskId()
+        public async Task DeleteConfirmedSendsDeleteTaskCommandWithCorrectTaskId()
         {
             const int taskId = 1;
             var mediator = new Mock<IMediator>();
@@ -609,7 +609,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task AssignSendsOrganizationIdByTaskIdQueryAsyncWithCorrectTaskId()
+        public async Task AssignSendsOrganizationIdByTaskIdQueryWithCorrectTaskId()
         {
             const int taskId = 1;
 
@@ -637,7 +637,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task AssignSendsAssignTaskCommandAsync()
+        public async Task AssignSendsAssignTaskCommand()
         {
             const int organizationId = 1;
             const int taskId = 1;
@@ -699,7 +699,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task MessageAllVounteersSendsOrganizationIdByTaskIdQueryAsyncWithCorrectTaskId()
+        public async Task MessageAllVounteersSendsOrganizationIdByTaskIdQueryWithCorrectTaskId()
         {
             const int organizationId = 1;
             var model = new MessageTaskVolunteersViewModel { TaskId = 1 };
@@ -728,7 +728,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task MessageAllVolunteersSendsMessageTaskVolunteersCommandAsyncWithCorrectData()
+        public async Task MessageAllVolunteersSendsMessageTaskVolunteersCommandWithCorrectData()
         {
             const int organizationId = 1;
             var model = new MessageTaskVolunteersViewModel();

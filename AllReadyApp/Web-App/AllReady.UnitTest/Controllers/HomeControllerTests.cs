@@ -12,7 +12,7 @@ namespace AllReady.UnitTest.Controllers
     public class HomeControllerTests
     {
         [Fact]
-        public async Task IndexSendsActiveOrUpcomingCampaignsQueryAsync()
+        public async Task IndexSendsActiveOrUpcomingCampaignsQuery()
         {
             var mockMediator = new Mock<IMediator>();
 

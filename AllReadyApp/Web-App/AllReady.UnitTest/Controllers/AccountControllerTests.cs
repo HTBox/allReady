@@ -90,7 +90,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task LoginPostSendsApplicationUserQueryAsyncWithTheCorrectEmail()
+        public async Task LoginPostSendsApplicationUserQueryWithTheCorrectEmail()
         {
             var model = new LoginViewModel { Email = "email" };
             var mediator = new Mock<IMediator>();
@@ -1273,7 +1273,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackSendsApplicationUserQueryAsyncWithCorrectUsername_WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull()
+        public async Task ExternalLoginCallbackSendsApplicationUserQueryWithCorrectUsername_WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;

@@ -28,7 +28,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
 
         [Fact]
-        public async Task IndexSendsIndexQueryAsyncWithCorrectData_WhenUserIsOrgAdmin()
+        public async Task IndexSendsIndexQueryWithCorrectData_WhenUserIsOrgAdmin()
         {
             const int organizationId = 99;
             var mockMediator = new Mock<IMediator>();
@@ -41,7 +41,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task IndexSendsIndexQueryAsyncWithCorrectData_WhenUserIsNotOrgAdmin()
+        public async Task IndexSendsIndexQueryWithCorrectData_WhenUserIsNotOrgAdmin()
         {
             var mockMediator = new Mock<IMediator>();
 
@@ -53,7 +53,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DetailsSendsCampaignDetailQueryAsyncWithCorrectCampaignId()
+        public async Task DetailsSendsCampaignDetailQueryWithCorrectCampaignId()
         {
             const int campaignId = 100;
             var mockMediator = new Mock<IMediator>();
@@ -119,7 +119,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task EditGetSendsCampaignSummaryQueryAsyncWithCorrectCampaignId()
+        public async Task EditGetSendsCampaignSummaryQueryWithCorrectCampaignId()
         {
             const int campaignId = 100;
             var mockMediator = new Mock<IMediator>();
@@ -309,7 +309,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DeleteSendsDeleteQueryAsyncWithCorrectCampaignId()
+        public async Task DeleteSendsDeleteQueryWithCorrectCampaignId()
         {
             const int organizationId = 99;
             const int campaignId = 100;
@@ -376,7 +376,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(viewModel.Id, campaignId);
         }
 
-        public async Task DeleteConfirmedSendsDeleteCampaignCommandAsyncWithCorrectCampaignId()
+        public async Task DeleteConfirmedSendsDeleteCampaignCommandWithCorrectCampaignId()
         {
             var viewModel = new DeleteViewModel { Id = 1 };
 
@@ -395,7 +395,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DetailConfirmedSendsDeleteCampaignCommandAsyncWithCorrectCampaignIdWhenUserIsOrgAdmin()
+        public async Task DetailConfirmedSendsDeleteCampaignCommandWithCorrectCampaignIdWhenUserIsOrgAdmin()
         {
             const int organizationId = 1;
 

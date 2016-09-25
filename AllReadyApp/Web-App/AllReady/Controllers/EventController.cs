@@ -32,7 +32,7 @@ namespace AllReady.Controllers
         //[Route("~/MyEvents/{id}/tasks")]
         //public async Task<IActionResult> UpdateMyTasks(int id, [FromBody] List<TaskSignupViewModel> model)
         //{
-        //    await _mediator.SendAsync(new UpdateMyTasksCommandAsync { TaskSignups = model, UserId = User.GetUserId() });
+        //    await _mediator.SendAsync(new UpdateMyTasksCommand { TaskSignups = model, UserId = User.GetUserId() });
         //    return Json(new { success = true });
         //}
 

@@ -63,7 +63,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DetailsSendsEventDetailQueryAsyncWithCorrectEventId()
+        public async Task DetailsSendsEventDetailQueryWithCorrectEventId()
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(null).Verifiable();

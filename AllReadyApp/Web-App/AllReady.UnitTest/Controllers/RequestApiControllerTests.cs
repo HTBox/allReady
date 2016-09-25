@@ -43,7 +43,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task PostSendsAddRequestCommandAsyncWithCorrectData()
+        public async Task PostSendsAddRequestCommandWithCorrectData()
         {
             var mediator = new Mock<IMediator>();
             var sut = new RequestApiController(mediator.Object);

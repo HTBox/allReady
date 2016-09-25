@@ -70,14 +70,14 @@ namespace AllReady.UnitTest.Controllers
 
         //TODO: mgmccarthy. commented out until I can figure out how to do SetupSequence on async invocations of mediator's SendAsync
         //[Fact]
-        //public async Task PostSendsAddTaskCommandAsyncWithCorrectData()
+        //public async Task PostSendsAddTaskCommandWithCorrectData()
         //{
         //    var model = new TaskViewModel { EventId = 1, Id = 1 };
         //    var allReadyTask = new AllReadyTask();
 
         //    var mediator = new Mock<IMediator>();
-        //    mediator.Setup(x => x.Send(It.IsAny<EventByEventIdQueryAsync>())).Returns(new Event());
-        //    mediator.SetupSequence(x => x.Send(It.IsAny<TaskByTaskIdQueryAsync>()))
+        //    mediator.Setup(x => x.Send(It.IsAny<EventByEventIdQuery>())).Returns(new Event());
+        //    mediator.SetupSequence(x => x.Send(It.IsAny<TaskByTaskIdQuery>()))
         //        .Returns(allReadyTask)
         //        .Returns(null);
 
@@ -87,7 +87,7 @@ namespace AllReady.UnitTest.Controllers
         //    var sut = new TaskApiController(mediator.Object, determineIfATaskIsEditable.Object, null);
         //    await sut.Post(model);
 
-        //    mediator.Verify(x => x.SendAsync(It.Is<AddTaskCommandAsync>(y => y.AllReadyTask == allReadyTask)), Times.Once);
+        //    mediator.Verify(x => x.SendAsync(It.Is<AddTaskCommand>(y => y.AllReadyTask == allReadyTask)), Times.Once);
         //}
 
         [Fact]
@@ -183,7 +183,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task PutSendsUpdateTaskCommandAsyncWithCorrectAllReadyTask()
+        public async Task PutSendsUpdateTaskCommandWithCorrectAllReadyTask()
         {
             var allReadyTask = new AllReadyTask();
             var model = new TaskViewModel { Name = "name", Description = "description", StartDateTime = DateTime.UtcNow, EndDateTime = DateTime.UtcNow };
@@ -267,7 +267,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task DeleteSendsDeleteTaskCommandAsyncWithCorrectTaskId()
+        public async Task DeleteSendsDeleteTaskCommandWithCorrectTaskId()
         {
             var allReadyTask = new AllReadyTask { Id = 1 };
 
@@ -474,7 +474,7 @@ namespace AllReady.UnitTest.Controllers
 
         #region UnregisterTask
         [Fact(Skip = "RTM Broken Tests")]
-        public async Task UnregisterTaskSendsTaskUnenrollCommandAsyncWithCorrectTaskIdAndUserId()
+        public async Task UnregisterTaskSendsTaskUnenrollCommandWithCorrectTaskIdAndUserId()
         {
             const string userId = "1";
             const int taskId = 1;

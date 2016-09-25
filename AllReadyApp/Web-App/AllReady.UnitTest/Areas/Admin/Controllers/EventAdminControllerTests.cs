@@ -31,7 +31,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DetailsSendsEventDetailQueryAsyncWithCorrectEventId()
+        public async Task DetailsSendsEventDetailQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -96,7 +96,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task CreateGetSendsCampaignSummaryQueryAsyncWithCorrectCampaignId()
+        public async Task CreateGetSendsCampaignSummaryQueryWithCorrectCampaignId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -229,7 +229,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async void EditGetSendsEventDetailQueryAsyncWithCorrectEventId()
+        public async void EditGetSendsEventDetailQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -285,7 +285,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task EditPostSendsCampaignSummaryQueryAsyncWithTheCorrectCampaignId()
+        public async Task EditPostSendsCampaignSummaryQueryWithTheCorrectCampaignId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -341,7 +341,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task EditPostSendsEditEventCommandAsyncWithCorrectEvent_WhenModelStateIsValid()
+        public async Task EditPostSendsEditEventCommandWithCorrectEvent_WhenModelStateIsValid()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -378,7 +378,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DeleteGetSendsEventDetailQueryAsyncWithCorrectEventId()
+        public async Task DeleteGetSendsEventDetailQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -432,7 +432,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DeleteConfirmedSendsEventDetailQueryAsyncWithCorrectEventId()
+        public async Task DeleteConfirmedSendsEventDetailQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -458,7 +458,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DeleteConfirmedSendsDeleteEventCommandAsyncWithCorrectEventId()
+        public async Task DeleteConfirmedSendsDeleteEventCommandWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -507,7 +507,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task MessageAllVolunteersSendsEventDetailQueryAsyncWithCorrectEventId()
+        public async Task MessageAllVolunteersSendsEventDetailQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -528,7 +528,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task MessageAllVolunteersSendsMessageEventVolunteersCommandAsyncWithCorrectData()
+        public async Task MessageAllVolunteersSendsMessageEventVolunteersCommandWithCorrectData()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
