@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using AllReady.Features.Events;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -43,9 +44,9 @@ namespace AllReady.Controllers
 
         [Route("[controller]/{id}/")]
         [AllowAnonymous]
-        public IActionResult ShowEvent(int id)
+        public async Task<IActionResult> ShowEvent(int id)
         {
-            var viewModel = _mediator.Send(new ShowEventQuery { EventId = id, User = User });
+            var viewModel = await _mediator.SendAsync(new ShowEventQueryAsync { EventId = id, User = User });
             if (viewModel == null)
             {
                 return NotFound();

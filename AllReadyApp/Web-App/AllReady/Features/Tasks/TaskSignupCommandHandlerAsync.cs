@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Features.Notifications;
@@ -10,12 +9,12 @@ using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskSignupHandlerAsync : IAsyncRequestHandler<TaskSignupCommandAsync, TaskSignupResult>
+    public class TaskSignupCommandHandlerAsync : IAsyncRequestHandler<TaskSignupCommandAsync, TaskSignupResult>
     {
         private readonly IMediator _mediator;
         private readonly AllReadyContext _context;
 
-        public TaskSignupHandlerAsync(IMediator mediator, AllReadyContext context)
+        public TaskSignupCommandHandlerAsync(IMediator mediator, AllReadyContext context)
         {
             _mediator = mediator;
             _context = context;
@@ -29,19 +28,18 @@ namespace AllReady.Features.Tasks
                 .Include(u => u.AssociatedSkills)
                 .SingleOrDefaultAsync(u => u.Id == model.UserId).ConfigureAwait(false);
 
-            var campaignEvent = await _context.Events
+            var @event = await _context.Events
                 .Include(a => a.RequiredSkills)
                 .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(s => s.Skill)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(t => t.User)
                 .SingleOrDefaultAsync(a => a.Id == model.EventId).ConfigureAwait(false);
 
-            if (campaignEvent == null)
+            if (@event == null)
             {
                 return new TaskSignupResult { Status = TaskSignupResult.FAILURE_EVENTNOTFOUND };
             }
 
-            var task = campaignEvent.Tasks.SingleOrDefault(t => t.Id == model.TaskId);
-
+            var task = @event.Tasks.SingleOrDefault(t => t.Id == model.TaskId);
             if (task == null)
             {
                 return new TaskSignupResult { Status = TaskSignupResult.FAILURE_TASKNOTFOUND };
@@ -61,8 +59,6 @@ namespace AllReady.Features.Tasks
                     User = user,
                     Status = TaskStatus.Accepted.ToString(),
                     StatusDateTimeUtc = DateTime.UtcNow,
-                    PreferredEmail = model.PreferredEmail,
-                    PreferredPhoneNumber = model.PreferredPhoneNumber,
                     AdditionalInfo = model.AdditionalInfo
                 });
             }
@@ -82,7 +78,7 @@ namespace AllReady.Features.Tasks
             await _context.SaveChangesAsync().ConfigureAwait(false);
 
             //Notify admins of a new volunteer
-            await _mediator.PublishAsync(new VolunteerSignupNotification { UserId = model.UserId, TaskId = task.Id })
+            await _mediator.PublishAsync(new VolunteerSignedUpNotification { UserId = model.UserId, TaskId = task.Id })
                 .ConfigureAwait(false);
 
             return new TaskSignupResult {Status = "success", Task = task};

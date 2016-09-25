@@ -5,7 +5,7 @@ using AllReady.Features.Events;
 
 namespace AllReady.UnitTest.Features.Event
 {
-    using Event = AllReady.Models.Event;
+    using Event = Models.Event;
 
     public class EventByEventIdQueryHandlerTests : InMemoryContextTest
     {
@@ -15,18 +15,21 @@ namespace AllReady.UnitTest.Features.Event
             var options = this.CreateNewContextOptions();
 
             const int eventId = 1;
-            var message = new EventByIdQuery { EventId = eventId };
+            var message = new EventByEventIdQueryAsync { EventId = eventId };
 
-            using (var context = new AllReadyContext(options)) {
-                context.Events.Add(new Event {
+            using (var context = new AllReadyContext(options))
+            {
+                context.Events.Add(new Event
+                {
                     Id = eventId
                 });
                 await context.SaveChangesAsync();
             }
 
-            using (var context = new AllReadyContext(options)) {
-                var sut = new EventByIdQueryHandler(context);
-                var e = sut.Handle(message);
+            using (var context = new AllReadyContext(options))
+            {
+                var sut = new EventByEventIdQueryHandlerAsync(context);
+                var e = await sut.Handle(message);
 
                 Assert.Equal(e.Id, eventId);
             }

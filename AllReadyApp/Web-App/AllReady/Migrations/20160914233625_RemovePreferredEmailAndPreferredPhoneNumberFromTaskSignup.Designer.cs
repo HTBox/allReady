@@ -8,9 +8,10 @@ using AllReady.Models;
 namespace AllReady.Migrations
 {
     [DbContext(typeof(AllReadyContext))]
-    partial class AllReadyContextModelSnapshot : ModelSnapshot
+    [Migration("20160914233625_RemovePreferredEmailAndPreferredPhoneNumberFromTaskSignup")]
+    partial class RemovePreferredEmailAndPreferredPhoneNumberFromTaskSignup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -282,6 +283,8 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired();
+
+                    b.Property<int>("NumberOfVolunteersRequired");
 
                     b.Property<string>("OrganizerId");
 

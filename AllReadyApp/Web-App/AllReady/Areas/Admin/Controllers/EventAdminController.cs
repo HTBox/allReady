@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Validators;
-using AllReady.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Features.Events;
 
@@ -319,7 +318,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostEventFile(int id, IFormFile file)
         {
-            var campaignEvent = GetEventBy(id);
+            var campaignEvent = await GetEventBy(id);
 
             campaignEvent.ImageUrl = await _imageService.UploadEventImageAsync(campaignEvent.Id, campaignEvent.Campaign.ManagingOrganizationId, file);
             await _mediator.SendAsync(new UpdateEvent { Event = campaignEvent });
@@ -331,7 +330,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Event/[action]/{id}/{status?}")]
         public async Task<IActionResult> Requests(int id, string status)
         {
-            var campaignEvent = GetEventBy(id);
+            var campaignEvent = await GetEventBy(id);
             if (campaignEvent == null)
             {
                 return NotFound();
@@ -373,10 +372,9 @@ namespace AllReady.Areas.Admin.Controllers
             return View(model);
         }
 
-        private Event GetEventBy(int eventId)
+        private async Task<Event> GetEventBy(int eventId)
         {
-            //TODO: refactor message to async when IAllReadyDataAccess read ops are made async
-            return _mediator.Send(new EventByIdQuery { EventId = eventId });
+            return await _mediator.SendAsync(new EventByEventIdQueryAsync { EventId = eventId });
         }
 
         private static EventEditViewModel BuildNewEventDetailsModel(EventEditViewModel existingEvent, DuplicateEventViewModel newEventDetails)

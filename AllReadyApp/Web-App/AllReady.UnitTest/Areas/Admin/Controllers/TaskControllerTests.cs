@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.ViewModels.Task;
-using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Extensions;
 using AllReady.UnitTest.Extensions;
@@ -291,7 +290,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var model = new EditViewModel { EndDateTime = DateTimeOffset.Now.AddDays(-1), StartDateTime = DateTimeOffset.Now.AddDays(1), EventId = 1 };
 
             var validator = new Mock<ITaskEditViewModelValidator>();
-            validator.Setup(x => x.Validate(model)).Returns(new List<KeyValuePair<string, string>>()).Verifiable();
+            validator.Setup(x => x.Validate(model)).ReturnsAsync(new List<KeyValuePair<string, string>>()).Verifiable();
 
             var sut = new TaskController(null, validator.Object);
             sut.AddModelStateError();
@@ -309,7 +308,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<EditViewModel>()))
-                .Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(errorKey, errorValue) });
+                .ReturnsAsync(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(errorKey, errorValue) });
 
             var sut = new TaskController(null, validator.Object);
             await sut.Edit(new EditViewModel());
@@ -325,7 +324,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<EditViewModel>()))
-                .Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("key", "value") });
+                .ReturnsAsync(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("key", "value") });
 
             var sut = new TaskController(Mock.Of<IMediator>(), validator.Object);
             var result = await sut.Edit(model) as ViewResult;
@@ -339,7 +338,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditPostReturnsUnauthorizedResultWhenModelStateIsValidAndUserIsNotAnOrganizationAdminUser()
         {
             var validator = new Mock<ITaskEditViewModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<EditViewModel>())).Returns(new List<KeyValuePair<string, string>>());
+            validator.Setup(x => x.Validate(It.IsAny<EditViewModel>())).ReturnsAsync(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(Mock.Of<IMediator>(), validator.Object);
             sut.SetDefaultHttpContext();
@@ -360,7 +359,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<EditTaskCommandAsync>())).ReturnsAsync(1);
 
             var validator = new Mock<ITaskEditViewModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<EditViewModel>())).Returns(new List<KeyValuePair<string, string>>());
+            validator.Setup(x => x.Validate(It.IsAny<EditViewModel>())).ReturnsAsync(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
@@ -381,7 +380,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<EditTaskCommandAsync>())).ReturnsAsync(1);
 
             var validator = new Mock<ITaskEditViewModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<EditViewModel>())).Returns(new List<KeyValuePair<string, string>>());
+            validator.Setup(x => x.Validate(It.IsAny<EditViewModel>())).ReturnsAsync(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
@@ -406,7 +405,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<EditTaskCommandAsync>())).ReturnsAsync(1);
 
             var validator = new Mock<ITaskEditViewModelValidator>();
-            validator.Setup(x => x.Validate(It.IsAny<EditViewModel>())).Returns(new List<KeyValuePair<string, string>>());
+            validator.Setup(x => x.Validate(It.IsAny<EditViewModel>())).ReturnsAsync(new List<KeyValuePair<string, string>>());
 
             var sut = new TaskController(mediator.Object, validator.Object);
             sut.MakeUserAnOrgAdmin(organizationId.ToString());

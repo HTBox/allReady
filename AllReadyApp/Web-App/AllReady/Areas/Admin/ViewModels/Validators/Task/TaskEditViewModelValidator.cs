@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Features.Events;
 using AllReady.Models;
@@ -24,11 +25,11 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
             _convertDateTimeOffsets = convertDateTimeOffsets;
         }
 
-        public List<KeyValuePair<string, string>> Validate(EditViewModel viewModel)
+        public async Task<List<KeyValuePair<string, string>>> Validate(EditViewModel viewModel)
         {
             var result = new List<KeyValuePair<string, string>>();
 
-            var @event = _mediator.Send(new EventByIdQuery { EventId = viewModel.EventId });
+            var @event = await _mediator.SendAsync(new EventByEventIdQueryAsync { EventId = viewModel.EventId });
 
             var convertedStartDateTime = _convertDateTimeOffsets.ConvertDateTimeOffsetTo(@event.Campaign.TimeZoneId, viewModel.StartDateTime, viewModel.StartDateTime.Hour, viewModel.StartDateTime.Minute);
             var convertedEndDateTime = _convertDateTimeOffsets.ConvertDateTimeOffsetTo(@event.Campaign.TimeZoneId, viewModel.EndDateTime, viewModel.EndDateTime.Hour, viewModel.EndDateTime.Minute);
@@ -66,6 +67,6 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
 
     public interface ITaskEditViewModelValidator
     {
-        List<KeyValuePair<string, string>> Validate(EditViewModel viewModel);
+        Task<List<KeyValuePair<string, string>>> Validate(EditViewModel model);
     }
 }

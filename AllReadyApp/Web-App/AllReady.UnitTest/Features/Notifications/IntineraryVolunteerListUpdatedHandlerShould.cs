@@ -29,8 +29,6 @@ namespace AllReady.UnitTest.Features.Notifications
             _taskSignup = new TaskSignup
             {
                 Id = 1,
-                PreferredEmail = "preferred@email.com",
-                PreferredPhoneNumber = "456",
                 User = _user
             };
 
@@ -61,19 +59,7 @@ namespace AllReady.UnitTest.Features.Notifications
         }
 
         [Fact]
-        public async Task NotDispatchNotificationWhenNoContactInformation()
-        {
-            var mockMediator = new Mock<IMediator>();
-            var mockGeneralSettings = new Mock<IOptions<GeneralSettings>>();
-
-            var handler = new IntineraryVolunteerListUpdatedHandler(Context, mockMediator.Object, mockGeneralSettings.Object);
-            await handler.Handle(new IntineraryVolunteerListUpdated { TaskSignupId = 3, ItineraryId = 1 });
-
-            mockMediator.Verify(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()),Times.Never);
-        }
-
-        [Fact]
-        public async Task DispatchNotificationToThePreferredEmailAddressAndPhoneNumber()
+        public async Task DispatchNotificationToTheEmailAddressAndPhoneNumber()
         {
             var mockMediator = new Mock<IMediator>();
             var mockGeneralSettings = new Mock<IOptions<GeneralSettings>>();
@@ -82,29 +68,11 @@ namespace AllReady.UnitTest.Features.Notifications
             var handler = new IntineraryVolunteerListUpdatedHandler(Context, mockMediator.Object, mockGeneralSettings.Object);
             await handler.Handle(new IntineraryVolunteerListUpdated { TaskSignupId = 1, ItineraryId = 1 });
 
-            mockMediator.Verify(m => m.SendAsync(It.Is<NotifyVolunteersCommand>((command) =>
+            mockMediator.Verify(m => m.SendAsync(It.Is<NotifyVolunteersCommand>(command =>
                 command.ViewModel.SmsRecipients.Count == 1 &&
-                command.ViewModel.SmsRecipients[0] == _taskSignup.PreferredPhoneNumber &&
+                command.ViewModel.SmsRecipients[0] == _taskSignup.User.PhoneNumber &&
                 command.ViewModel.EmailRecipients.Count == 1 &&
-                command.ViewModel.EmailRecipients[0] == _taskSignup.PreferredEmail
-            )), Times.Once);
-        }
-
-        [Fact]
-        public async Task DispatchNotificationToTheUserEmailAddressAndPhoneNumberAsFallback()
-        {
-            var mockMediator = new Mock<IMediator>();
-            var mockGeneralSettings = new Mock<IOptions<GeneralSettings>>();
-            mockGeneralSettings.SetupGet(m => m.Value).Returns(new GeneralSettings { SiteBaseUrl = string.Empty });
-
-            var handler = new IntineraryVolunteerListUpdatedHandler(Context, mockMediator.Object, mockGeneralSettings.Object);
-            await handler.Handle(new IntineraryVolunteerListUpdated { TaskSignupId = 2, ItineraryId = 1 });
-
-            mockMediator.Verify(m => m.SendAsync(It.Is<NotifyVolunteersCommand>((command) =>
-                command.ViewModel.SmsRecipients.Count == 1 &&
-                command.ViewModel.SmsRecipients[0] == _user.PhoneNumber &&
-                command.ViewModel.EmailRecipients.Count == 1 &&
-                command.ViewModel.EmailRecipients[0] == _user.Email
+                command.ViewModel.EmailRecipients[0] == _taskSignup.User.Email
             )), Times.Once);
         }
 
@@ -118,7 +86,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var handler = new IntineraryVolunteerListUpdatedHandler(Context, mockMediator.Object, mockGeneralSettings.Object);
             await handler.Handle(new IntineraryVolunteerListUpdated { TaskSignupId = 1, ItineraryId = 1, UpdateType = UpdateType.VolunteerAssigned });
 
-            mockMediator.Verify(m => m.SendAsync(It.Is<NotifyVolunteersCommand>((command) =>
+            mockMediator.Verify(m => m.SendAsync(It.Is<NotifyVolunteersCommand>(command =>
                 string.Equals(command.ViewModel.SmsMessage, $"You’ve been assigned to a team for {_itineraryDate} http://localhost/v") &&
                 string.Equals(command.ViewModel.Subject, $"You've been assigned to a team for {_itineraryDate}") &&
                 string.Equals(command.ViewModel.HtmlMessage, $"The volunteer organizer has assigned you to a team for {_itineraryDate}. See your http://localhost/v for more information.")
@@ -135,7 +103,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var handler = new IntineraryVolunteerListUpdatedHandler(Context, mockMediator.Object, mockGeneralSettings.Object);
             await handler.Handle(new IntineraryVolunteerListUpdated { TaskSignupId = 1, ItineraryId = 1, UpdateType = UpdateType.VolnteerUnassigned });
 
-            mockMediator.Verify(m => m.SendAsync(It.Is<NotifyVolunteersCommand>((command) =>
+            mockMediator.Verify(m => m.SendAsync(It.Is<NotifyVolunteersCommand>(command =>
                 string.Equals(command.ViewModel.SmsMessage, $"You’ve been unassigned from a team for {_itineraryDate} http://localhost/v") &&
                 string.Equals(command.ViewModel.Subject, $"You've been unassigned from a team for {_itineraryDate}") &&
                 string.Equals(command.ViewModel.HtmlMessage, $"The volunteer organizer has unassigned you from a team for {_itineraryDate}. See your http://localhost/v for more information.")

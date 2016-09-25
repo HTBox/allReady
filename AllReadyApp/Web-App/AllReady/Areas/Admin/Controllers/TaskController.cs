@@ -75,7 +75,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditViewModel viewModel)
         {
-            var errors = _taskEditViewModelValidator.Validate(viewModel);
+            var errors = await _taskEditViewModelValidator.Validate(viewModel);
             errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)

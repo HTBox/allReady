@@ -2,10 +2,11 @@
 using MediatR;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskByTaskIdQueryHandler : IRequestHandler<TaskByTaskIdQuery, AllReadyTask>
+    public class TaskByTaskIdQueryHandler : IAsyncRequestHandler<TaskByTaskIdQueryAsync, AllReadyTask>
     {
         private readonly AllReadyContext dataContext;
 
@@ -14,15 +15,17 @@ namespace AllReady.Features.Tasks
             this.dataContext = dataContext;
         }
 
-        public AllReadyTask Handle(TaskByTaskIdQuery message)
+        public async Task<AllReadyTask> Handle(TaskByTaskIdQueryAsync message)
         {
-            return dataContext.Tasks
+            return await dataContext.Tasks
                 .Include(x => x.Organization)
                 .Include(x => x.Event)
                 .Include(x => x.Event.Campaign)
                 .Include(x => x.AssignedVolunteers).ThenInclude(v => v.User)
                 .Include(x => x.RequiredSkills)
-                .Where(t => t.Id == message.TaskId).SingleOrDefault();
+                .Where(t => t.Id == message.TaskId)
+                .SingleOrDefaultAsync()
+                .ConfigureAwait(false);
         }
     }
 }
