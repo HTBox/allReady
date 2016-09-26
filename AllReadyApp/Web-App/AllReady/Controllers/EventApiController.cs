@@ -104,13 +104,13 @@ namespace AllReady.Controllers
         [HttpGet("{id}/checkin")]
         public async Task<ActionResult> GetCheckin(int id)
         {
-            var campaignEvent = await GetEventBy(id);
-            if (campaignEvent == null)
+            var @event = await GetEventBy(id);
+            if (@event == null)
             {
                 return NotFound();
             }
 
-            return View("NoUserCheckin", campaignEvent);
+            return View("NoUserCheckin", @event);
         }
 
         private async Task<Event> GetEventBy(int eventId) => await _mediator.SendAsync(new EventByEventIdQuery { EventId = eventId });

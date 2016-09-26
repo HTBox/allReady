@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 using System.Linq;
-using AllReady.Areas.Admin.ViewModels.Itinerary;
 using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.ViewModels.Event;
@@ -19,7 +18,6 @@ using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Campaign;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using AllReady.Features.Events;
 using Shouldly;
 using DeleteViewModel = AllReady.Areas.Admin.Features.Events.DeleteViewModel;
 
