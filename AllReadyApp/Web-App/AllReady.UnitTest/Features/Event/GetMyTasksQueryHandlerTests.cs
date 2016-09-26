@@ -6,14 +6,14 @@ using AllReady.Features.Events;
 
 namespace AllReady.UnitTest.Features.Event
 {
-    using Event = AllReady.Models.Event;
+    using Event = Models.Event;
 
     public class GetMyTasksQueryHandlerTests : InMemoryContextTest
     {
         [Fact]
         public async Task ReturnsExpectedTasks()
         {
-            var options = this.CreateNewContextOptions();
+            var options = CreateNewContextOptions();
 
             const int eventId = 1;
             const string userId = "9D0929AC-BE6A-4A0B-A758-6C6FC31A8C47";
