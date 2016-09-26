@@ -16,8 +16,7 @@ namespace AllReady.Areas.Admin.Features.Events
 
         public async Task<int> Handle(OrganizationIdByEventIdQuery message)
         {
-            var @event = await _context.Events
-                .AsNoTracking()
+            var @event = await _context.Events.AsNoTracking()
                 .Include(e => e.Campaign)
                 .ThenInclude(c => c.ManagingOrganization)
                 .SingleAsync(t => t.Id == message.EventId)
