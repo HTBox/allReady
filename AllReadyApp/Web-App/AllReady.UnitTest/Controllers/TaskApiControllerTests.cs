@@ -87,6 +87,8 @@ namespace AllReady.UnitTest.Controllers
         //    var sut = new TaskApiController(mediator.Object, determineIfATaskIsEditable.Object, null);
         //    await sut.Post(model);
 
+            mediator.Verify(x => x.SendAsync(It.Is<AddTaskCommandAsync>(y => y.AllReadyTask == allReadyTask)), Times.Once);
+        }
         //    mediator.Verify(x => x.SendAsync(It.Is<AddTaskCommand>(y => y.AllReadyTask == allReadyTask)), Times.Once);
         //}
 

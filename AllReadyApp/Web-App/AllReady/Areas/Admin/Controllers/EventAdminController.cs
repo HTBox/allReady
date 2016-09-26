@@ -25,13 +25,13 @@ namespace AllReady.Areas.Admin.Controllers
     {
         private readonly IImageService _imageService;
         private readonly IMediator _mediator;
-        private readonly IValidateEventEditViewModels eventEditViewModelValidator;
+        private readonly IValidateEventEditViewModels _eventEditViewModelValidator;
 
         public EventController(IImageService imageService, IMediator mediator, IValidateEventEditViewModels eventEditViewModelValidator)
         {
             _imageService = imageService;
             _mediator = mediator;
-            this.eventEditViewModelValidator = eventEditViewModelValidator;
+            _eventEditViewModelValidator = eventEditViewModelValidator;
         }
 
         // GET: Event/Details/5
@@ -98,7 +98,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var errors = eventEditViewModelValidator.Validate(eventEditViewModel, campaign);
+            var errors = _eventEditViewModelValidator.Validate(eventEditViewModel, campaign);
             errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             ModelState.Remove("NewItinerary");
@@ -168,7 +168,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = eventEditViewModel.CampaignId });
 
-            var errors = eventEditViewModelValidator.Validate(eventEditViewModel, campaign);
+            var errors = _eventEditViewModelValidator.Validate(eventEditViewModel, campaign);
             errors.ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)
@@ -242,7 +242,7 @@ namespace AllReady.Areas.Admin.Controllers
             var newEvent = BuildNewEventDetailsModel(existingEvent, viewModel);
 
             //mgmccarthy: why are we validating here? We don't need to validate as the event that is being duplicated was already validated before it was created
-            var errors = _eventDetailModelValidator.Validate(newEvent, campaign);
+            var errors = _eventEditViewModelValidator.Validate(newEvent, campaign);
             errors.ForEach(e => ModelState.AddModelError(e.Key, e.Value));
 
             if (ModelState.IsValid)
@@ -258,8 +258,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ActionName("Delete")]
         public async Task<IActionResult> Delete(int id)
         {
-            var viewModel = await _mediator.SendAsync(new DeleteQueryAsync { EventId = id });
-
+            var viewModel = await _mediator.SendAsync(new Features.Events.DeleteQueryAsync { EventId = id });
             if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return Unauthorized();

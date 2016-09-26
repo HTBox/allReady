@@ -12,7 +12,7 @@ namespace AllReady.UnitTest.Features.Event
         [Fact]
         public async Task CallsGetEventWithTheCorrectEventId()
         {
-            var options = this.CreateNewContextOptions();
+            var options = CreateNewContextOptions();
 
             const int eventId = 1;
             var message = new EventByEventIdQuery { EventId = eventId };
