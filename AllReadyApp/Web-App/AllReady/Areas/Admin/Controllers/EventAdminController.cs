@@ -49,7 +49,8 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            viewModel.ItinerariesDetailsUrl = GenerateItineraryDetailsTemplateUrl();
+            var url = Url.Action("Details", "Itinerary", new { Area = "Admin", id = 0 }).TrimEnd('0');
+            viewModel.ItinerariesDetailsUrl = string.Concat(url, "{id}");
 
             return View(viewModel);
         }
@@ -301,9 +302,6 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostEventFile(int id, IFormFile file)
         {
-            //var @event = await GetEventBy(id);
-            //@event.ImageUrl = await _imageService.UploadEventImageAsync(@event.Id, @event.Campaign.ManagingOrganizationId, file);
-
             var organizationId = await _mediator.SendAsync(new OrganizationIdByEventIdQuery { EventId = id });
             var imageUrl = await _imageService.UploadEventImageAsync(id, organizationId, file);
 
@@ -316,12 +314,6 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Event/[action]/{id}/{status?}")]
         public async Task<IActionResult> Requests(int id, string status)
         {
-            //var @event = await GetEventBy(id);
-            //if (@event == null)
-            //{
-            //    return NotFound();
-            //}
-
             var organizationId = await _mediator.SendAsync(new OrganizationIdByEventIdQuery { EventId = id });
             if (!User.IsOrganizationAdmin(organizationId))
             {
@@ -329,9 +321,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             var criteria = new RequestSearchCriteria { EventId = id };
-
             var pageTitle = "All Requests";
-
             var currentPage = "All";
 
             if (!string.IsNullOrEmpty(status))
@@ -356,12 +346,6 @@ namespace AllReady.Areas.Admin.Controllers
             viewModel.Requests = await _mediator.SendAsync(new RequestListItemsQuery { Criteria = criteria });
  
             return View(viewModel);
-        }
-
-        private string GenerateItineraryDetailsTemplateUrl()
-        {
-            var url = Url.Action("Details", "Itinerary", new { Area = "Admin", id = 0 }).TrimEnd('0');
-            return string.Concat(url, "{id}");
         }
 
         private static EventEditViewModel BuildNewEventDetailsModel(EventEditViewModel existingEvent, DuplicateEventViewModel newEventDetails)
