@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using AllReady.Features.Events;
 using Shouldly;
+using DeleteViewModel = AllReady.Areas.Admin.Features.Events.DeleteViewModel;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -377,7 +378,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DeleteGetSendsEventDetailQueryWithCorrectEventId()
+        public async Task DeleteGetSendsDeleteQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -387,8 +388,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DeleteGetReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Events.DeleteQuery>()))
-                .ReturnsAsync(new AllReady.Areas.Admin.Features.Events.DeleteViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>()))
+                .ReturnsAsync(new DeleteViewModel());
 
             var sut = new EventController(null, mediator.Object, null);
             sut.MakeUserNotAnOrgAdmin();
@@ -397,13 +398,48 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
+        public async Task DeleteGetSetsUserIsOrgAdminToTrueOnTheViewModel_WhenUserIsOrgAdmin()
+        {
+            const int organizationId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>())).ReturnsAsync(new DeleteViewModel { OrganizationId = organizationId });
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+
+            var result = await sut.Delete(It.IsAny<int>()) as ViewResult;
+            var resultModel = result.ViewData.Model as DeleteViewModel;
+
+            Assert.True(resultModel.UserIsOrgAdmin);
+        }
+
+        [Fact]
+        public async Task DeleteGetSetsTheCorrectTitleOnTheViewModel()
+        {
+            const string eventName = "EventName";
+            const int organizationId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>())).ReturnsAsync(new DeleteViewModel { Name = eventName, OrganizationId = organizationId });
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+
+            var result = await sut.Delete(It.IsAny<int>()) as ViewResult;
+            var resultModel = result.ViewData.Model as DeleteViewModel;
+
+            Assert.Equal(resultModel.Title, $"Delete event {eventName}");
+        }
+
+        [Fact]
         public async Task DeleteGetReturnsCorrectViewModel()
         {
             const int organizationId = 1;
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Events.DeleteQuery>()))
-                .ReturnsAsync(new AllReady.Areas.Admin.Features.Events.DeleteViewModel { OrganizationId = organizationId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>()))
+                .ReturnsAsync(new DeleteViewModel { OrganizationId = organizationId });
 
             var sut = new EventController(null, mediator.Object, null);
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
@@ -411,7 +447,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = (ViewResult) await sut.Delete(It.IsAny<int>()).ConfigureAwait(false);
             var resultModel = result.ViewData.Model;
 
-            Assert.IsType<AllReady.Areas.Admin.Features.Events.DeleteViewModel>(resultModel);
+            Assert.IsType<DeleteViewModel>(resultModel);
         }
 
         [Fact]
@@ -434,7 +470,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DeleteConfirmedReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
         {
             var sut = new EventController(null, null, null);
-            Assert.IsType<UnauthorizedResult>(await sut.DeleteConfirmed(new AllReady.Areas.Admin.Features.Events.DeleteViewModel { UserIsOrgAdmin = false }));
+            Assert.IsType<UnauthorizedResult>(await sut.DeleteConfirmed(new DeleteViewModel { UserIsOrgAdmin = false }));
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -455,7 +491,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DeleteConfirmedHasHttpPostAttribute()
         {
             var sut = EventControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<AllReady.Areas.Admin.Features.Events.DeleteViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -463,7 +499,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DeleteConfirmedHasActionNameAttributeWithCorrectName()
         {
             var sut = EventControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<AllReady.Areas.Admin.Features.Events.DeleteViewModel>())).OfType<ActionNameAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<ActionNameAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Name, "Delete");
         }
@@ -472,7 +508,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DeleteConfirmedHasValidateAntiForgeryTokenAttribute()
         {
             var sut = EventControllerWithNoInjectedDependencies();
-            var routeAttribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<AllReady.Areas.Admin.Features.Events.DeleteViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var routeAttribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
         }
 
