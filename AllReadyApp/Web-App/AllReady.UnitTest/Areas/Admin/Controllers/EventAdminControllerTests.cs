@@ -387,7 +387,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DeleteGetReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Events.DeleteQueryAsync>()))
+            mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Events.DeleteQuery>()))
                 .ReturnsAsync(new AllReady.Areas.Admin.Features.Events.DeleteViewModel());
 
             var sut = new EventController(null, mediator.Object, null);
@@ -402,7 +402,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int organizationId = 1;
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Events.DeleteQueryAsync>()))
+            mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Events.DeleteQuery>()))
                 .ReturnsAsync(new AllReady.Areas.Admin.Features.Events.DeleteViewModel { OrganizationId = organizationId });
 
             var sut = new EventController(null, mediator.Object, null);

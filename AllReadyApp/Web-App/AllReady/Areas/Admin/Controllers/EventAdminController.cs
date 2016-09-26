@@ -258,7 +258,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ActionName("Delete")]
         public async Task<IActionResult> Delete(int id)
         {
-            var viewModel = await _mediator.SendAsync(new Features.Events.DeleteQueryAsync { EventId = id });
+            var viewModel = await _mediator.SendAsync(new Features.Events.DeleteQuery { EventId = id });
             if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return Unauthorized();
@@ -294,7 +294,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return BadRequest(ModelState);
             }
 
-            var eventsOrganizationId = await _mediator.SendAsync(new OrganizationIdByEventIdQueryAsync { EventId = viewModel.EventId });
+            var eventsOrganizationId = await _mediator.SendAsync(new OrganizationIdByEventIdQuery { EventId = viewModel.EventId });
             if (!User.IsOrganizationAdmin(eventsOrganizationId))
             {
                 return Unauthorized();

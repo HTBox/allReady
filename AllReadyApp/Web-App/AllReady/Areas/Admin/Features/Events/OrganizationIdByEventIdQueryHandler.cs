@@ -5,16 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Events
 {
-    public class OrganizationIdByEventIdQueryHandlerAsync : IAsyncRequestHandler<OrganizationIdByEventIdQueryAsync, int>
+    public class OrganizationIdByEventIdQueryHandler : IAsyncRequestHandler<OrganizationIdByEventIdQuery, int>
     {
         private readonly AllReadyContext _context;
 
-        public OrganizationIdByEventIdQueryHandlerAsync(AllReadyContext context)
+        public OrganizationIdByEventIdQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<int> Handle(OrganizationIdByEventIdQueryAsync message)
+        public async Task<int> Handle(OrganizationIdByEventIdQuery message)
         {
             var @event = await _context.Events
                 .AsNoTracking()

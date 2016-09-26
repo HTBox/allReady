@@ -2,7 +2,7 @@
 
 namespace AllReady.Areas.Admin.Features.Events
 {
-    public class DeleteQueryAsync : IAsyncRequest<DeleteViewModel>
+    public class DeleteQuery : IAsyncRequest<DeleteViewModel>
     {
         public int EventId { get; set; }
     }
