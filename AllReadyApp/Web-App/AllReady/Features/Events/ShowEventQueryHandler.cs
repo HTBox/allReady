@@ -37,24 +37,22 @@ namespace AllReady.Features.Events
 
             var eventViewModel = new EventViewModel(@event);
 
-            //var userId = _userManager.GetUserId(message.User);
-            var userId = message.UserId;
-            var appUser = this._context.Users.SingleOrDefault(u => u.Id == userId);
+            var applicationUser = await _context.Users.SingleOrDefaultAsync(u => u.Id == message.UserId).ConfigureAwait(false);
 
-            eventViewModel.UserId = userId;
-            eventViewModel.UserSkills = appUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
+            eventViewModel.UserId = message.UserId;
+            eventViewModel.UserSkills = applicationUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
 
-            var assignedTasks = @event.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == userId)).ToList();
-            eventViewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
+            var assignedTasks = @event.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == message.UserId)).ToList();
+            eventViewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, message.UserId)).OrderBy(task => task.StartDateTime));
 
-            var unassignedTasks = @event.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != userId)).ToList();
-            eventViewModel.Tasks = new List<TaskViewModel>(unassignedTasks.Select(data => new TaskViewModel(data, userId)).OrderBy(task => task.StartDateTime));
+            var unassignedTasks = @event.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != message.UserId)).ToList();
+            eventViewModel.Tasks = new List<TaskViewModel>(unassignedTasks.Select(data => new TaskViewModel(data, message.UserId)).OrderBy(task => task.StartDateTime));
 
             eventViewModel.SignupModel = new TaskSignupViewModel
             {
                 EventId = eventViewModel.Id,
-                UserId = userId,
-                Name = appUser?.Name
+                UserId = message.UserId,
+                Name = applicationUser?.Name
             };
 
             return eventViewModel;

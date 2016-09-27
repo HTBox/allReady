@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using AllReady.Models;
 using Microsoft.AspNetCore.Identity;
 
@@ -8,6 +9,12 @@ namespace AllReady.Security
 {
     public static class ClaimsExtensions
     {
+        public static async Task<string> GetUserId(this ClaimsPrincipal claimsPrincipal, UserManager<ApplicationUser> userManager)
+        {
+            var user = await userManager.GetUserAsync(claimsPrincipal);
+            return user.Id;
+        }
+
         public static bool IsUserType(this ClaimsPrincipal user, UserType type)
         {
             var userTypeString = Enum.GetName(typeof(UserType), type);

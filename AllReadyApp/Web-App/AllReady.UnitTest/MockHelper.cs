@@ -2,36 +2,26 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.UnitTest
 {
     public static class MockHelper
     {
-        public static Mock<SignInManager<ApplicationUser>> CreateSignInManagerMock(Mock<UserManager<ApplicationUser>> userManager)
+        public static Mock<SignInManager<ApplicationUser>> CreateSignInManagerMock(IMock<UserManager<ApplicationUser>> userManagerMock = null)
         {
-            var httpContext = new Mock<HttpContext>();
-
             var contextAccessor = new Mock<IHttpContextAccessor>();
-            contextAccessor.Setup(mock => mock.HttpContext).Returns(() => httpContext.Object);
-            var claimsFactory = new Mock<IUserClaimsPrincipalFactory<ApplicationUser>>();
-            var signInManager = new Mock<SignInManager<ApplicationUser>>(
-            userManager.Object,
-            contextAccessor.Object,
-            claimsFactory.Object,
-            null, null);
+            contextAccessor.Setup(mock => mock.HttpContext).Returns(Mock.Of<HttpContext>);
 
-            return signInManager;
+            return new Mock<SignInManager<ApplicationUser>>(
+                userManagerMock == null ? 
+                    CreateUserManagerMock().Object : 
+                    userManagerMock.Object,
+                contextAccessor.Object, Mock.Of<IUserClaimsPrincipalFactory<ApplicationUser>>(), null, null);
         }
 
         public static Mock<UserManager<ApplicationUser>> CreateUserManagerMock()
         {
             return new Mock<UserManager<ApplicationUser>>(Mock.Of<IUserStore<ApplicationUser>>(), null, null, null, null, null, null, null, null);
         }
-
-
     }
 }
