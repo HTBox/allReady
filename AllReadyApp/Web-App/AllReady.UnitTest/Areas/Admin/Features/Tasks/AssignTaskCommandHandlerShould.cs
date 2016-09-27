@@ -7,7 +7,6 @@ using MediatR;
 using Moq;
 using Xunit;
 using System.Linq;
-using Geocoding;
 using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
