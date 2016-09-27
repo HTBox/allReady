@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Features.Events;
 using AllReady.UnitTest.Extensions;
@@ -38,38 +39,36 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void ShowEventSendsShowEventQueryWithCorrectData()
+        public async Task ShowEventSendsShowEventQueryWithCorrectData()
         {
             var builder = EventControllerBuilder.Instance();
             var sut = builder.WithMediator().WithUserLogged().Build();
             
-            sut.ShowEvent(1);
+            await sut.ShowEvent(1);
 
             builder
                 .MediatorMock
-                .Verify(x => 
-                    x.Send(It.Is<ShowEventQuery>(y => 
-                        y.EventId== 1 && y.User == sut.ControllerContext.HttpContext.User)));
+                .Verify(x => x.SendAsync(It.Is<ShowEventQueryAsync>(y => y.EventId== 1 && y.User == sut.ControllerContext.HttpContext.User)));
         }
 
         [Fact]
-        public void ShowEventReturnsHttpNotFoundResultWhenViewModelIsNull()
+        public async Task ShowEventReturnsHttpNotFoundResultWhenViewModelIsNull()
         {
             var builder = EventControllerBuilder.Instance();
             var sut = builder.WithMediator().Build();
 
             builder
                 .MediatorMock
-                .Setup(x => x.Send(It.IsAny<ShowEventQuery>()))
-                .Returns(() => null);
+                .Setup(x => x.SendAsync(It.IsAny<ShowEventQueryAsync>()))
+                .ReturnsAsync(null);
 
-            var result = sut.ShowEvent(0);
+            var result = await sut.ShowEvent(0);
 
             Assert.True(result is NotFoundResult);
         }
 
         [Fact]
-        public void ShowEventReturnsEventWithTasksViewWithCorrrectViewModelWhenViewModelIsNotNull()
+        public async Task ShowEventReturnsEventWithTasksViewWithCorrrectViewModelWhenViewModelIsNotNull()
         {
             var builder = EventControllerBuilder.Instance();
             var eventViewModel = new EventViewModel();
@@ -77,10 +76,10 @@ namespace AllReady.UnitTest.Controllers
 
             builder
                 .MediatorMock
-                .Setup(x => x.Send(It.IsAny<ShowEventQuery>()))
-                .Returns(eventViewModel);
+                .Setup(x => x.SendAsync(It.IsAny<ShowEventQueryAsync>()))
+                .ReturnsAsync(eventViewModel);
 
-            var result = sut.ShowEvent(0) as ViewResult;
+            var result = await sut.ShowEvent(0) as ViewResult;
 
             Assert.Equal(eventViewModel, result.Model);
             Assert.Equal("EventWithTasks", result.ViewName);
@@ -124,28 +123,23 @@ namespace AllReady.UnitTest.Controllers
 
             public static EventControllerBuilder Instance()
             {
-                if (_builder == null)
-                    _builder = new EventControllerBuilder();
-
-                return _builder;
+                return _builder ?? (_builder = new EventControllerBuilder());
             }
 
             public EventController Build()
             {
-                if (_controllerContext == null)
-                    return new EventController(_mediator);
-
-                return new EventController(_mediator)
-                {
-                    ControllerContext = _controllerContext
-                };
+                return _controllerContext == null
+                    ? new EventController(_mediator)
+                    : new EventController(_mediator)
+                    {
+                        ControllerContext = _controllerContext
+                    };
             }
 
             public Mock<IMediator> MediatorMock { get; }
 
             public EventControllerBuilder WithMediator()
             {
-
                 _mediator = MediatorMock.Object;
                 return this;
             }
@@ -155,8 +149,7 @@ namespace AllReady.UnitTest.Controllers
                 var httpContext = new Mock<HttpContext>();
 
                 var controllerContext = new Mock<ControllerContext>();
-                var principal = new Moq.Mock<ClaimsPrincipal>();
-
+                var principal = new Mock<ClaimsPrincipal>();
 
                 principal.Setup(p => p.IsInRole("Administrator")).Returns(true);
                 principal.SetupGet(x => x.Identity.Name).Returns("userName");

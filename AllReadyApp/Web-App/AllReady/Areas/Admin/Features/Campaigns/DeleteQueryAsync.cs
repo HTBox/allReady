@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class CampaignSummaryQuery : IAsyncRequest<CampaignSummaryViewModel>
+    public class DeleteQueryAsync : IAsyncRequest<DeleteViewModel>
     {
         public int CampaignId { get; set; }
     }

@@ -547,10 +547,6 @@ namespace AllReady.Migrations
 
                     b.Property<int?>("ItineraryId");
 
-                    b.Property<string>("PreferredEmail");
-
-                    b.Property<string>("PreferredPhoneNumber");
-
                     b.Property<string>("Status");
 
                     b.Property<DateTime>("StatusDateTimeUtc");

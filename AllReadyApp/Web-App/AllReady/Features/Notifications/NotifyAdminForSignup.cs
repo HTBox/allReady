@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyAdminForSignup : IAsyncNotificationHandler<VolunteerSignupNotification>
+    public class NotifyAdminForSignup : IAsyncNotificationHandler<VolunteerSignedUpNotification>
     {
         private readonly AllReadyContext _context;
         private readonly IMediator _mediator;
@@ -27,7 +27,7 @@ namespace AllReady.Features.Notifications
             _logger = logger;
         }
 
-        public async Task Handle(VolunteerSignupNotification notification)
+        public async Task Handle(VolunteerSignedUpNotification notification)
         {
             // don't let problem with notification keep us from continuing
             try
@@ -44,24 +44,21 @@ namespace AllReady.Features.Notifications
 
                 var eventLink = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Event/Details/{taskInfo.EventId}";
 
-                AllReadyTask task = null;
-                string taskLink = null;
-                TaskSignup taskSignup = null;
-
-                task = await _context.Tasks.SingleOrDefaultAsync(t => t.Id == notification.TaskId).ConfigureAwait(false);
+                var task = await _context.Tasks.SingleOrDefaultAsync(t => t.Id == notification.TaskId).ConfigureAwait(false);
                 if (task == null)
                 {
                     return;
                 }
-                taskLink = $"View task: http://{_options.Value.SiteBaseUrl}/Admin/task/Details/{task.Id}";
-                taskSignup = task.AssignedVolunteers.FirstOrDefault(t => t.User.Id == taskInfo.Volunteer.Id);
+
+                var taskLink = $"View task: http://{_options.Value.SiteBaseUrl}/Admin/task/Details/{task.Id}";
+                var taskSignup = task.AssignedVolunteers.FirstOrDefault(t => t.User.Id == taskInfo.Volunteer.Id);
 
                 //set for task signup
-                var volunteerEmail = !string.IsNullOrWhiteSpace(taskSignup?.PreferredEmail) ? taskSignup.PreferredEmail : taskInfo.Volunteer.Email;
-                var volunteerPhoneNumber = !string.IsNullOrWhiteSpace(taskSignup?.PreferredPhoneNumber) ? taskSignup.PreferredPhoneNumber : taskInfo.Volunteer.PhoneNumber;
+                var volunteerEmail = taskInfo.Volunteer.Email;
+                var volunteerPhoneNumber = taskInfo.Volunteer.PhoneNumber;
                 var volunteerComments = !string.IsNullOrWhiteSpace(taskSignup?.AdditionalInfo) ? taskSignup.AdditionalInfo : string.Empty;
                 var remainingRequiredVolunteersPhrase = $"{task.NumberOfUsersSignedUp}/{task.NumberOfVolunteersRequired}";
-                var typeOfSignupPhrase = "a task";
+                const string typeOfSignupPhrase = "a task";
 
                 var subject = $"A volunteer has signed up for {typeOfSignupPhrase}";
 
@@ -80,25 +77,18 @@ namespace AllReady.Features.Notifications
                 message.AppendLine();
                 message.AppendLine(GetTaskSkillsInfo(task, taskInfo.Volunteer));
 
-                Debug.WriteLine(adminEmail);
-                Debug.WriteLine(subject);
-                Debug.WriteLine(message.ToString());
-
-                if (!string.IsNullOrWhiteSpace(adminEmail))
+                var command = new NotifyVolunteersCommand
                 {
-                    var command = new NotifyVolunteersCommand
+                    ViewModel = new NotifyVolunteersViewModel
                     {
-                        ViewModel = new NotifyVolunteersViewModel
-                        {
-                            EmailMessage = message.ToString(),
-                            HtmlMessage = message.ToString(),
-                            EmailRecipients = new List<string> { adminEmail },
-                            Subject = subject
-                        }
-                    };
+                        EmailMessage = message.ToString(),
+                        HtmlMessage = message.ToString(),
+                        EmailRecipients = new List<string> { adminEmail },
+                        Subject = subject
+                    }
+                };
 
-                    await _mediator.SendAsync(command).ConfigureAwait(false);
-                }
+                await _mediator.SendAsync(command).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -109,7 +99,10 @@ namespace AllReady.Features.Notifications
         private static string GetTaskSkillsInfo(AllReadyTask task, ApplicationUser volunteer)
         {
             var result = new StringBuilder();
-            if (task.RequiredSkills.Count == 0) return result.ToString();
+            if (task.RequiredSkills.Count == 0)
+            {
+                return result.ToString();
+            }
             result.AppendLine("   Skills Required:");
             foreach (var skill in task.RequiredSkills)
             {

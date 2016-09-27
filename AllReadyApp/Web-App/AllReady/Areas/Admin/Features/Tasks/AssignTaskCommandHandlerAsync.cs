@@ -1,6 +1,7 @@
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,8 +37,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 {
                     Task = task,
                     User = user,
-                    PreferredEmail = user.Email,
-                    PreferredPhoneNumber = user.PhoneNumber,
                     AdditionalInfo = string.Empty,
                     Status = TaskStatus.Assigned.ToString(),
                     StatusDateTimeUtc = DateTime.UtcNow

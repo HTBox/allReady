@@ -5,16 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class LockUnlockCampaignCommandHandler : AsyncRequestHandler<LockUnlockCampaignCommand>
+    public class LockUnlockCampaignCommandHandlerAsync : AsyncRequestHandler<LockUnlockCampaignCommandAsync>
     {
         private AllReadyContext _context;
 
-        public LockUnlockCampaignCommandHandler(AllReadyContext context)
+        public LockUnlockCampaignCommandHandlerAsync(AllReadyContext context)
         {
             _context = context;
 
         }
-        protected override async Task HandleCore(LockUnlockCampaignCommand message)
+        protected override async Task HandleCore(LockUnlockCampaignCommandAsync message)
         {
             var campaign = await _context.Campaigns
                 .SingleOrDefaultAsync(c => c.Id == message.CampaignId)

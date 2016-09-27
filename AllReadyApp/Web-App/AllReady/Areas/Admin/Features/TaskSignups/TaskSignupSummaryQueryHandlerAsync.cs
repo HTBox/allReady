@@ -21,14 +21,13 @@ namespace AllReady.Areas.Admin.Features.TaskSignups
             return await _context.TaskSignups.AsNoTracking()
                 .Include(x => x.User)
                 .Where(x => x.Id == message.TaskSignupId)
-                .Select(
-                    x =>
-                        new TaskSignupSummaryViewModel
-                        {
-                            TaskSignupId = x.Id,
-                            VolunteerName = x.User.Name,
-                            VolunteerEmail = x.PreferredEmail ?? x.User.Email
-                        })
+                .Select( x =>
+                new TaskSignupSummaryViewModel
+                {
+                    TaskSignupId = x.Id,
+                    VolunteerName = x.User.Name,
+                    VolunteerEmail = x.User.Email
+                })
                 .FirstOrDefaultAsync().ConfigureAwait(false);
         }
     }

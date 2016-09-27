@@ -16,7 +16,8 @@
     <div id="col-main">
         <div class="col-md-9">
             <h2 class="inline-form">
-                @if (Model.Featured) {
+                @if (Model.Featured)
+                {
                     <i class="fa fa-star star-highlight" aria-hidden="true"></i>
                 }
                 @Model.Name
@@ -105,7 +106,7 @@
             <a href="@Model.ExternalUrl" target="_blank">@(string.IsNullOrWhiteSpace(Model.ExternalUrlText) ? Model.ExternalUrl : Model.ExternalUrlText) <i class="fa fa-external-link"></i></a>
         }
         <hr />
-        @if (!String.IsNullOrEmpty(Model.ImageUrl))
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
             {
             <div class="row">
                 <img src="@Model.ImageUrl" class="img-responsive" />
@@ -116,7 +117,7 @@
     </div>
     <div class="col-md-4">
         @if (Model.CampaignImpact != null && Model.CampaignImpact.Display)
-            {
+        {
             @Html.Partial("_CampaignImpact")
         }
     </div>

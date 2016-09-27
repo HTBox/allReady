@@ -7,9 +7,10 @@ using AllReady.Models;
 
 namespace AllReady.Areas.Admin.ViewModels.Campaign
 {
-    public class CampaignDetailViewModel: IPrimaryContactViewModel
+    public class CampaignDetailViewModel : IPrimaryContactViewModel
     {
         public int Id { get; set; }
+
         public string Name { get; set; }
 
         public string Description { get; set; }
@@ -22,10 +23,8 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         [Display(Name = "External URL Text")]
         public string ExternalUrlText { get; set; }
 
-
         [Display(Name = "Organization")]
         public int OrganizationId { get; set; }
-
 
         [Display(Name = "Organization")]
         public string OrganizationName { get; set; }
@@ -43,7 +42,8 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         [Display(Name = "End Date")]
         public DateTimeOffset EndDate { get; set; }
 
-		public IEnumerable<EventSummaryViewModel> Events { get; set; }
+        public IEnumerable<EventList> Events { get; set; }
+
         public CampaignImpact CampaignImpact { get; set; }
 
         [UIHint("Location")]
@@ -66,5 +66,20 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         public bool Locked { get; set; }
 
         public bool Featured { get; set; }
+
+        public class EventList
+        {
+            public int Id { get; set; }
+
+            public string Name { get; set; }
+
+            public string Description { get; set; }
+
+            [Display(Name = "Start Date")]
+            public DateTimeOffset StartDateTime { get; set; }
+
+            [Display(Name = "End Date")]
+            public DateTimeOffset EndDateTime { get; set; }
+        }
     }
 }

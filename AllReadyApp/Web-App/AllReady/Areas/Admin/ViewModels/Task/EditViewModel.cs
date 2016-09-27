@@ -41,7 +41,7 @@ namespace AllReady.Areas.Admin.ViewModels.Task
 
         public List<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();
 
-        //only used for update sceanrios
+        //only used for update scenarios
         public List<VolunteerViewModel> AssignedVolunteers { get; set; } = new List<VolunteerViewModel>();
 
         //added for min/max validation on the create/edit views

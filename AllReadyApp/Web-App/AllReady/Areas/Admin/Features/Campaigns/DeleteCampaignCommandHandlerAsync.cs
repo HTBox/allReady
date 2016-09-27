@@ -5,19 +5,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Campaigns
 {
-    public class DeleteCampaignCommandHandler : AsyncRequestHandler<DeleteCampaignCommand>
+    public class DeleteCampaignCommandHandlerAsync : AsyncRequestHandler<DeleteCampaignCommandAsync>
     {
         private AllReadyContext _context;
 
-        public DeleteCampaignCommandHandler(AllReadyContext context)
+        public DeleteCampaignCommandHandlerAsync(AllReadyContext context)
         {
             _context = context;
         }
 
-        protected override async Task HandleCore(DeleteCampaignCommand message)
+        protected override async Task HandleCore(DeleteCampaignCommandAsync message)
         {
             var campaign = await _context.Campaigns.SingleOrDefaultAsync(c => c.Id == message.CampaignId).ConfigureAwait(false);
-
             if (campaign != null)
             {
                 _context.Campaigns.Remove(campaign);

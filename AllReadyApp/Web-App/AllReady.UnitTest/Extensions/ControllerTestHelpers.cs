@@ -129,6 +129,15 @@ namespace AllReady.UnitTest.Extensions
             Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
         }
 
+        public static void MakeUserASiteAdmin(this Controller controller)
+        {
+            var siteAdminClaim = new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()) };
+
+            SetFakeHttpContextIfNotAlreadySet(controller);
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(siteAdminClaim));
+            Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
+        }
+
         public static void MakeUserNotAnOrgAdmin(this Controller controller)
         {
             var claims = new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.BasicUser)) };

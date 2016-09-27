@@ -1,4 +1,5 @@
-﻿using AllReady.Areas.Admin.ViewModels.Event;
+﻿using System.Globalization;
+using AllReady.Areas.Admin.ViewModels.Event;
 using Shouldly;
 using Xunit;
 
@@ -33,7 +34,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels
 
             var result = sut.UnassignedPercentage;
 
-            result.ShouldBe("0.0");
+            result.ShouldBe(0D.ToString("0.0"));
         }
 
         [Fact]
@@ -47,7 +48,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels
 
             var result = sut.UnassignedPercentage;
 
-            result.ShouldBe("20.0");
+            result.ShouldBe(20D.ToString("0.0"));
         }
 
         [Fact]
@@ -61,7 +62,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels
 
             var result = sut.AssignedPercentage;
 
-            result.ShouldBe("0.0");
+            result.ShouldBe(0D.ToString("0.0"));
         }
 
         [Fact]
@@ -75,7 +76,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels
 
             var result = sut.AssignedPercentage;
 
-            result.ShouldBe("20.0");
+            result.ShouldBe(20D.ToString("0.0"));
         }
 
         [Fact]
@@ -89,7 +90,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels
 
             var result = sut.CompletedPercentage;
 
-            result.ShouldBe("0.0");
+            result.ShouldBe(0D.ToString("0.0"));
         }
 
         [Fact]
@@ -103,7 +104,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels
 
             var result = sut.CompletedPercentage;
 
-            result.ShouldBe("20.0");
+            result.ShouldBe(20D.ToString("0.0"));
         }
 
         [Fact]
@@ -117,7 +118,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels
 
             var result = sut.CanceledPercentage;
 
-            result.ShouldBe("0.0");
+            result.ShouldBe(0D.ToString("0.0"));
         }
 
         [Fact]
@@ -131,7 +132,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels
 
             var result = sut.CanceledPercentage;
 
-            result.ShouldBe("20.0");
+            result.ShouldBe(20D.ToString("0.0"));
         }
 
         [Fact]

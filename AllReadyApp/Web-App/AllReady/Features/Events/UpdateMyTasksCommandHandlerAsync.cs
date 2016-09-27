@@ -6,12 +6,12 @@ using MediatR;
 
 namespace AllReady.Features.Events
 {
-    public class UpdateMyTasksHandlerAsync : AsyncRequestHandler<UpdateMyTasksCommandAsync>
+    public class UpdateMyTasksCommandHandlerAsync : AsyncRequestHandler<UpdateMyTasksCommandAsync>
     {
         private readonly AllReadyContext dbContext;
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        public UpdateMyTasksHandlerAsync(AllReadyContext DbContext)
+        public UpdateMyTasksCommandHandlerAsync(AllReadyContext DbContext)
         {
             this.dbContext = DbContext;
         }

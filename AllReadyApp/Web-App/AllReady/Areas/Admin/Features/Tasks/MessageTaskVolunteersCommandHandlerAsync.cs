@@ -29,9 +29,10 @@ namespace AllReady.Areas.Admin.Features.Tasks
             var smsRecipients = new List<string>();
             var emailRecipients = new List<string>();
 
+            //mgmccarthy: since we're allowing people to volunteer w/out confirming their email and phone, then we should allowing messaging them w/out confirming their email and phone
             smsRecipients.AddRange(users.Where(u => u.User.PhoneNumberConfirmed).Select(v => v.User.PhoneNumber));
             emailRecipients.AddRange(users.Where(u => u.User.EmailConfirmed).Select(v => v.User.Email));
-            
+
             var command = new NotifyVolunteersCommand
             {
                 // todo: what information do we add about the task?
@@ -48,7 +49,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 }
             };
 
-            await _mediator.SendAsync(command);
+            await _mediator.SendAsync(command).ConfigureAwait(false);
         }
     }
 }

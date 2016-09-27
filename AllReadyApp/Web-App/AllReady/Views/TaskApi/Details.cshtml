@@ -1,5 +1,5 @@
 ﻿@using AllReady.ViewModels.Task
-@model AllReady.ViewModels.Task.TaskViewModel
+@model TaskViewModel
 
 <div class="row">
     <div class="col-sm-7">
@@ -8,7 +8,7 @@
                 <h2>@Model.Name</h2>
                 @if (@Model.StartDateTime != null)
                 {
-                <p class="date-address">@Model.StartDateTime.ToString("F") - @Model.EndDateTime.ToString("F")</p>
+                    <p class="date-address">@Model.StartDateTime.ToString("F") - @Model.EndDateTime.ToString("F")</p>
                 }
                 <p>@Model.Description</p>
                 @if (Model.AssignedVolunteers != null && Model.AssignedVolunteers.Count > 0)
@@ -52,11 +52,3 @@
             </div>
     </div>
 </div>
-
-
-
-
-
-
-
-

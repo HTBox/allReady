@@ -34,12 +34,11 @@ namespace AllReady.Controllers
           _userManager = userManager;
         }
 
-        //TODO: where is this being called from?
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Post([FromBody]TaskViewModel task)
         {
-            var allReadyTask = ToModel(task, _mediator);
+            var allReadyTask = await ToModel(task, _mediator);
             if (allReadyTask == null)
             {
                 return BadRequest("Should have found a matching event Id");
@@ -51,7 +50,7 @@ namespace AllReady.Controllers
                 return Unauthorized();
             }
 
-            if (IfTaskExists(task))
+            if (await TaskExists(task.Id))
             {
                 return BadRequest();
             }
@@ -62,9 +61,9 @@ namespace AllReady.Controllers
             return Created("", allReadyTask);
         }
 
-        public AllReadyTask ToModel(TaskViewModel taskViewModel, IMediator mediator)
+        public async Task<AllReadyTask> ToModel(TaskViewModel taskViewModel, IMediator mediator)
         {
-            var @event = mediator.Send(new EventByIdQuery { EventId = taskViewModel.EventId });
+            var @event = await mediator.SendAsync(new EventByEventIdQueryAsync { EventId = taskViewModel.EventId });
             if (@event == null)
             {
                 return null;
@@ -78,7 +77,7 @@ namespace AllReady.Controllers
             }
             else
             {
-                allReadyTask = mediator.Send(new TaskByTaskIdQuery { TaskId = taskViewModel.Id });
+                allReadyTask = await mediator.SendAsync(new TaskByTaskIdQueryAsync { TaskId = taskViewModel.Id });
                 newTask = false;
             }
 
@@ -144,7 +143,7 @@ namespace AllReady.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody]TaskViewModel value)
         {
-            var allReadyTask = GetTaskBy(id);
+            var allReadyTask = await GetTaskBy(id);
             if (allReadyTask == null)
             {
                 return BadRequest();
@@ -171,7 +170,7 @@ namespace AllReady.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var allReadyTask = GetTaskBy(id);
+            var allReadyTask = await GetTaskBy(id);
             if (allReadyTask == null)
             {
                 return BadRequest();
@@ -276,14 +275,14 @@ namespace AllReady.Controllers
             return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, model.UserId) });
         }
 
-        private bool IfTaskExists(TaskViewModel task)
+        private async Task<bool> TaskExists(int taskId)
         {
-            return GetTaskBy(task.Id) != null;
+            return await GetTaskBy(taskId) != null;
         }
 
-        private AllReadyTask GetTaskBy(int taskId)
+        private async Task<AllReadyTask> GetTaskBy(int taskId)
         {
-            return _mediator.Send(new TaskByTaskIdQuery { TaskId = taskId });
+            return await _mediator.SendAsync(new TaskByTaskIdQueryAsync { TaskId = taskId });
         }
     }
 

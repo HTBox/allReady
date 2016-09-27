@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Events;
 using AllReady.Models;
-using AllReady.UnitTest.Features.Campaigns;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Events
@@ -46,31 +45,24 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         }
 
         [Fact]
-        public void ExistingEvent()
+        public async Task ExistingEvent()
         {
             var command = new DeleteEventCommand { EventId = 1 };
             var handler = new DeleteEventCommandHandler(Context);
-            handler.Handle(command);
+            await handler.Handle(command);
 
             var data = Context.Events.Count(_ => _.Id == 1);
             Assert.Equal(0, data);
         }
 
         [Fact]
-        public void EventDoesNotExist()
-        {
-            var command = new DeleteEventCommand { EventId = 0 };
-            var handler = new DeleteEventCommandHandler(Context);
-            handler.Handle(command);
-            //TODO: this test needs to be completed to actually test something
-        }
-
-        [Fact]
-        public void EventIsDeleted()
+        public async Task EventIsDeleted()
         {
             const int eventId = 1;
+
             var sut = new DeleteEventCommandHandler(Context);
-            sut.Handle(new DeleteEventCommand { EventId = eventId });
+            await sut.Handle(new DeleteEventCommand { EventId = eventId });
+
             Assert.False(Context.Events.Any(t => t.Id == eventId));
         }
     }
