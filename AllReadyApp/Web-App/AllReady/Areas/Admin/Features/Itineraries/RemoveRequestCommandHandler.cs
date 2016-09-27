@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AllReady.Areas.Admin.Features.Itineraries
 {
     public class RemoveRequestCommandHandler : IAsyncRequestHandler<RemoveRequestCommand, bool>
+    public class RemoveRequestCommandHandlerAsync : AsyncRequestHandler<RemoveRequestCommand>
     {
         private readonly AllReadyContext _context;
 
@@ -15,7 +16,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             _context = context;
         }
 
-        public async Task<bool> Handle(RemoveRequestCommand message)
+        protected override async Task HandleCore(RemoveRequestCommand message)
         {
             var itineraryRequests = await _context.ItineraryRequests
                 .Include(r => r.Itinerary)
@@ -27,25 +28,23 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
             if (requestToRemove == null || requestToRemove.Request.Status == RequestStatus.Completed)
             {
-                return false;
+                return;
             }
 
             // Update the request status
-            requestToRemove.Request.Status = RequestStatus.Unassigned;        
+            requestToRemove.Request.Status = RequestStatus.Unassigned;
 
             // remove the request to itinerary assignment
             _context.ItineraryRequests.Remove(requestToRemove);
 
             var requestsToMoveUp = itineraryRequests.Where(r => r.ItineraryId == message.ItineraryId && r.OrderIndex > requestToRemove.OrderIndex);
 
-            foreach(var requestToMoveUp in requestsToMoveUp)
+            foreach (var requestToMoveUp in requestsToMoveUp)
             {
                 requestToMoveUp.OrderIndex--;
             }
 
             await _context.SaveChangesAsync().ConfigureAwait(false);
-
-            return true;
         }
     }
 }
