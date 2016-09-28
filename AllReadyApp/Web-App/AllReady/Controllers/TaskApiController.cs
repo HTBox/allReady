@@ -12,7 +12,7 @@ using AllReady.ViewModels.Shared;
 using AllReady.ViewModels.Task;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using DeleteTaskCommandAsync = AllReady.Features.Tasks.DeleteTaskCommandAsync;
+using DeleteTaskCommand = AllReady.Features.Tasks.DeleteTaskCommand;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using AllReady.Features.Events;
@@ -55,7 +55,7 @@ namespace AllReady.Controllers
                 return BadRequest();
             }
 
-            await _mediator.SendAsync(new AddTaskCommandAsync { AllReadyTask = allReadyTask });
+            await _mediator.SendAsync(new AddTaskCommand { AllReadyTask = allReadyTask });
 
             //http://stackoverflow.com/questions/1860645/create-request-with-post-which-response-codes-200-or-201-and-content
             return Created("", allReadyTask);
@@ -63,7 +63,7 @@ namespace AllReady.Controllers
 
         public async Task<AllReadyTask> ToModel(TaskViewModel taskViewModel, IMediator mediator)
         {
-            var @event = await mediator.SendAsync(new EventByEventIdQueryAsync { EventId = taskViewModel.EventId });
+            var @event = await mediator.SendAsync(new EventByEventIdQuery { EventId = taskViewModel.EventId });
             if (@event == null)
             {
                 return null;
@@ -77,7 +77,7 @@ namespace AllReady.Controllers
             }
             else
             {
-                allReadyTask = await mediator.SendAsync(new TaskByTaskIdQueryAsync { TaskId = taskViewModel.Id });
+                allReadyTask = await mediator.SendAsync(new TaskByTaskIdQuery { TaskId = taskViewModel.Id });
                 newTask = false;
             }
 
@@ -161,7 +161,7 @@ namespace AllReady.Controllers
             allReadyTask.StartDateTime = value.StartDateTime.UtcDateTime;
             allReadyTask.EndDateTime = value.EndDateTime.UtcDateTime;
 
-            await _mediator.SendAsync(new UpdateTaskCommandAsync { AllReadyTask = allReadyTask });
+            await _mediator.SendAsync(new UpdateTaskCommand { AllReadyTask = allReadyTask });
 
             //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
             return NoContent();
@@ -182,7 +182,7 @@ namespace AllReady.Controllers
                 return Unauthorized();
             }
             
-            await _mediator.SendAsync(new DeleteTaskCommandAsync { TaskId = allReadyTask.Id });
+            await _mediator.SendAsync(new DeleteTaskCommand { TaskId = allReadyTask.Id });
 
             //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
             return Ok();
@@ -207,7 +207,7 @@ namespace AllReady.Controllers
                 return Json(new { errors = ModelState.GetErrorMessages() });
             }
 
-            var result = await _mediator.SendAsync(new TaskSignupCommandAsync { TaskSignupModel = signupModel });
+            var result = await _mediator.SendAsync(new TaskSignupCommand { TaskSignupModel = signupModel });
 
             switch (result.Status)
             {
@@ -271,7 +271,7 @@ namespace AllReady.Controllers
         [Authorize]
         public async Task<JsonResult> ChangeStatus(TaskChangeModel model)
         {
-            var result = await _mediator.SendAsync(new TaskStatusChangeCommandAsync { TaskStatus = model.Status, TaskId = model.TaskId, UserId = model.UserId, TaskStatusDescription = model.StatusDescription });
+            var result = await _mediator.SendAsync(new TaskStatusChangeCommand { TaskStatus = model.Status, TaskId = model.TaskId, UserId = model.UserId, TaskStatusDescription = model.StatusDescription });
             return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, model.UserId) });
         }
 
@@ -282,7 +282,7 @@ namespace AllReady.Controllers
 
         private async Task<AllReadyTask> GetTaskBy(int taskId)
         {
-            return await _mediator.SendAsync(new TaskByTaskIdQueryAsync { TaskId = taskId });
+            return await _mediator.SendAsync(new TaskByTaskIdQuery { TaskId = taskId });
         }
     }
 

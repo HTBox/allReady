@@ -47,7 +47,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
                 NewStatus = RequestStatus.Completed
             };
             
-            var handler = new RequestStatusChangeCommandHandlerAsync(Context);
+            var handler = new RequestStatusChangeCommandHandler(Context);
 
             var result = await handler.Handle(query);
 
@@ -66,7 +66,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
                 NewStatus = RequestStatus.Assigned
             };
 
-            var handler = new RequestStatusChangeCommandHandlerAsync(Context);
+            var handler = new RequestStatusChangeCommandHandler(Context);
 
             var result = await handler.Handle(query);
 

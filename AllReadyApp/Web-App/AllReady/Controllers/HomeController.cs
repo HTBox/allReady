@@ -20,8 +20,8 @@ namespace AllReady.Controllers
         {
             var model = new IndexViewModel
             {
-                FeaturedCampaign = await mediator.SendAsync(new FeaturedCampaignQueryAsync()),
-                ActiveOrUpcomingCampaigns = await mediator.SendAsync(new ActiveOrUpcomingCampaignsQueryAsync())
+                FeaturedCampaign = await mediator.SendAsync(new FeaturedCampaignQuery()),
+                ActiveOrUpcomingCampaigns = await mediator.SendAsync(new ActiveOrUpcomingCampaignsQuery())
             };
 
             return View(model);

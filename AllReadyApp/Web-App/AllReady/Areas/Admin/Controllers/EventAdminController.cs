@@ -66,7 +66,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Event/Create/{campaignId}")]
         public async Task<IActionResult> Create(int campaignId)
         {
-            var campaign = await _mediator.SendAsync(new CampaignSummaryQueryAsync { CampaignId = campaignId });
+            var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
             if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
             {
                 return Unauthorized();
@@ -92,7 +92,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Event/Create/{campaignId}")]
         public async Task<IActionResult> Create(int campaignId, EventEditViewModel eventEditViewModel, IFormFile fileUpload)
         {
-            var campaign = await _mediator.SendAsync(new CampaignSummaryQueryAsync { CampaignId = campaignId });
+            var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
             if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
             {
                 return Unauthorized();
@@ -166,7 +166,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var campaign = await _mediator.SendAsync(new CampaignSummaryQueryAsync { CampaignId = eventEditViewModel.CampaignId });
+            var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = eventEditViewModel.CampaignId });
 
             var errors = eventEditViewModelValidator.Validate(eventEditViewModel, campaign);
             errors.ForEach(e => ModelState.AddModelError(e.Key, e.Value));
@@ -234,7 +234,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
 
             var existingEvent = await _mediator.SendAsync(new EventEditQuery { EventId = model.Id });
-            var campaign = await _mediator.SendAsync(new CampaignSummaryQueryAsync { CampaignId = existingEvent.CampaignId });
+            var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = existingEvent.CampaignId });
             var eventEditViewModel = BuildNewEventDetailsModel(existingEvent, model);
 
             var errors = eventEditViewModelValidator.Validate(eventEditViewModel, campaign);
@@ -374,7 +374,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         private async Task<Event> GetEventBy(int eventId)
         {
-            return await _mediator.SendAsync(new EventByEventIdQueryAsync { EventId = eventId });
+            return await _mediator.SendAsync(new EventByEventIdQuery { EventId = eventId });
         }
 
         private static EventEditViewModel BuildNewEventDetailsModel(EventEditViewModel existingEvent, DuplicateEventViewModel newEventDetails)

@@ -29,7 +29,7 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
         {
             var result = new List<KeyValuePair<string, string>>();
 
-            var @event = await _mediator.SendAsync(new EventByEventIdQueryAsync { EventId = viewModel.EventId });
+            var @event = await _mediator.SendAsync(new EventByEventIdQuery { EventId = viewModel.EventId });
 
             var convertedStartDateTime = _convertDateTimeOffsets.ConvertDateTimeOffsetTo(@event.Campaign.TimeZoneId, viewModel.StartDateTime, viewModel.StartDateTime.Hour, viewModel.StartDateTime.Minute);
             var convertedEndDateTime = _convertDateTimeOffsets.ConvertDateTimeOffsetTo(@event.Campaign.TimeZoneId, viewModel.EndDateTime, viewModel.EndDateTime.Hour, viewModel.EndDateTime.Minute);

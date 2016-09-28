@@ -32,7 +32,7 @@ namespace AllReady.Controllers
         //[Route("~/MyEvents/{id}/tasks")]
         //public async Task<IActionResult> UpdateMyTasks(int id, [FromBody] List<TaskSignupViewModel> model)
         //{
-        //    await _mediator.SendAsync(new UpdateMyTasksCommandAsync { TaskSignups = model, UserId = User.GetUserId() });
+        //    await _mediator.SendAsync(new UpdateMyTasksCommand { TaskSignups = model, UserId = User.GetUserId() });
         //    return Json(new { success = true });
         //}
 
@@ -46,7 +46,7 @@ namespace AllReady.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ShowEvent(int id)
         {
-            var viewModel = await _mediator.SendAsync(new ShowEventQueryAsync { EventId = id, User = User });
+            var viewModel = await _mediator.SendAsync(new ShowEventQuery { EventId = id, User = User });
             if (viewModel == null)
             {
                 return NotFound();

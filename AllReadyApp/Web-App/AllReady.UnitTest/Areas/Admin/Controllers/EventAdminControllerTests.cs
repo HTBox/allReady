@@ -31,7 +31,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DetailsSendsEventDetailQueryAsyncWithCorrectEventId()
+        public async Task DetailsSendsEventDetailQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -41,7 +41,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DetailsReturnsHttpNotFoundResult_WhenEventIsNull()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQueryAsync>())).ReturnsAsync(new CampaignSummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel());
 
             var sut = new EventController(null, mediator.Object, null);
             var result = await sut.Details(It.IsAny<int>());
@@ -96,7 +96,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task CreateGetSendsCampaignSummaryQueryAsyncWithCorrectCampaignId()
+        public async Task CreateGetSendsCampaignSummaryQueryWithCorrectCampaignId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -145,7 +145,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var imageService = new Mock<IImageService>();
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQueryAsync>())).ReturnsAsync(new CampaignSummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel());
 
             var eventDetailModelValidator = new Mock<IValidateEventEditViewModels>();
             eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
@@ -170,7 +170,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var imageService = new Mock<IImageService>();
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQueryAsync>())).ReturnsAsync(new CampaignSummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel());
 
             var eventDetailModelValidator = new Mock<IValidateEventEditViewModels>();
             eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
@@ -229,7 +229,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async void EditGetSendsEventDetailQueryAsyncWithCorrectEventId()
+        public async void EditGetSendsEventDetailQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -285,7 +285,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task EditPostSendsCampaignSummaryQueryAsyncWithTheCorrectCampaignId()
+        public async Task EditPostSendsCampaignSummaryQueryWithTheCorrectCampaignId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -341,7 +341,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task EditPostSendsEditEventCommandAsyncWithCorrectEvent_WhenModelStateIsValid()
+        public async Task EditPostSendsEditEventCommandWithCorrectEvent_WhenModelStateIsValid()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -378,7 +378,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DeleteGetSendsEventDetailQueryAsyncWithCorrectEventId()
+        public async Task DeleteGetSendsEventDetailQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -432,7 +432,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DeleteConfirmedSendsEventDetailQueryAsyncWithCorrectEventId()
+        public async Task DeleteConfirmedSendsEventDetailQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -458,7 +458,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DeleteConfirmedSendsDeleteEventCommandAsyncWithCorrectEventId()
+        public async Task DeleteConfirmedSendsDeleteEventCommandWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -507,7 +507,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task MessageAllVolunteersSendsEventDetailQueryAsyncWithCorrectEventId()
+        public async Task MessageAllVolunteersSendsEventDetailQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -528,7 +528,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task MessageAllVolunteersSendsMessageEventVolunteersCommandAsyncWithCorrectData()
+        public async Task MessageAllVolunteersSendsMessageEventVolunteersCommandWithCorrectData()
         {
             // delete this line when starting work on this unit test
             await TaskFromResultZero;
@@ -633,19 +633,19 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task RequestsSendsEventByIdQuery()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(It.IsAny<Event>()).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(It.IsAny<Event>()).Verifiable();
 
             var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventEditViewModels>());
             await sut.Requests(1, null);
 
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<EventByEventIdQueryAsync>()), Times.Once);
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<EventByEventIdQuery>()), Times.Once);
         }
 
         [Fact]
         public async Task RequestsReturnsHttpNotFoundResult_WhenEventIsNull()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(null).Verifiable();
 
             var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventEditViewModels>());
 
@@ -656,7 +656,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task RequestsReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganizationId = 1000 } }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganizationId = 1000 } }).Verifiable();
             
             var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventEditViewModels>());
             sut.MakeUserNotAnOrgAdmin();
@@ -670,7 +670,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int orgId = 1;
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganizationId = orgId } }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganizationId = orgId } }).Verifiable();
 
             var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventEditViewModels>());
             sut.MakeUserAnOrgAdmin(orgId.ToString());
@@ -683,7 +683,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             const int orgId = 1;
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganizationId = orgId } }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganizationId = orgId } }).Verifiable();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventRequestsQuery>())).ReturnsAsync(new EventRequestsViewModel()).Verifiable();
 
             var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventEditViewModels>());
@@ -700,7 +700,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int orgId = 1;
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganizationId = orgId } }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganizationId = orgId } }).Verifiable();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventRequestsQuery>())).ReturnsAsync(new EventRequestsViewModel()).Verifiable();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<RequestListItemsQuery>())).ReturnsAsync(new List<RequestListViewModel>()).Verifiable();
 
@@ -718,7 +718,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int orgId = 1;
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganizationId = orgId }}).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganizationId = orgId }}).Verifiable();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventRequestsQuery>())).ReturnsAsync(new EventRequestsViewModel()).Verifiable();
 
             var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventEditViewModels>());
@@ -735,7 +735,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int orgId = 1;
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganizationId = orgId } }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganizationId = orgId } }).Verifiable();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventRequestsQuery>())).ReturnsAsync(new EventRequestsViewModel()).Verifiable();
 
             var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventEditViewModels>());
@@ -756,7 +756,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task RequestsSetsCorrectPageTitleOnModel_WhenStatusParamIsSet()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganizationId = 1 } }).Verifiable();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventRequestsQuery>())).ReturnsAsync(new EventRequestsViewModel()).Verifiable();
 
             var sut = new EventController(Mock.Of<IImageService>(), mockMediator.Object, Mock.Of<IValidateEventEditViewModels>());
@@ -787,7 +787,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             var imageService = new Mock<IImageService>();
 
-            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQueryAsync>())).ReturnsAsync(new CampaignSummaryViewModel { StartDate = startDate, EndDate = endDate });
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel { StartDate = startDate, EndDate = endDate });
 
             var sut = new EventController(imageService.Object, mediator.Object, null);
             sut.SetClaims(new List<Claim>

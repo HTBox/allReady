@@ -38,7 +38,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Create")]
         public async Task<IActionResult> Create(int eventId)
         {
-            var campaignEvent = await _mediator.SendAsync(new EventSummaryQueryAsync { EventId = eventId });
+            var campaignEvent = await _mediator.SendAsync(new EventSummaryQuery { EventId = eventId });
 
             if (campaignEvent == null)
             {
@@ -98,7 +98,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditRequestViewModel model)
         {
-            var campaignEvent = await _mediator.SendAsync(new EventSummaryQueryAsync { EventId = model.EventId });
+            var campaignEvent = await _mediator.SendAsync(new EventSummaryQuery { EventId = model.EventId });
 
             if (campaignEvent == null)
             {

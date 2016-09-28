@@ -48,7 +48,7 @@ namespace AllReady.UnitTest.Controllers
 
             builder
                 .MediatorMock
-                .Verify(x => x.SendAsync(It.Is<ShowEventQueryAsync>(y => y.EventId== 1 && y.User == sut.ControllerContext.HttpContext.User)));
+                .Verify(x => x.SendAsync(It.Is<ShowEventQuery>(y => y.EventId== 1 && y.User == sut.ControllerContext.HttpContext.User)));
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace AllReady.UnitTest.Controllers
 
             builder
                 .MediatorMock
-                .Setup(x => x.SendAsync(It.IsAny<ShowEventQueryAsync>()))
+                .Setup(x => x.SendAsync(It.IsAny<ShowEventQuery>()))
                 .ReturnsAsync(null);
 
             var result = await sut.ShowEvent(0);
@@ -76,7 +76,7 @@ namespace AllReady.UnitTest.Controllers
 
             builder
                 .MediatorMock
-                .Setup(x => x.SendAsync(It.IsAny<ShowEventQueryAsync>()))
+                .Setup(x => x.SendAsync(It.IsAny<ShowEventQuery>()))
                 .ReturnsAsync(eventViewModel);
 
             var result = await sut.ShowEvent(0) as ViewResult;

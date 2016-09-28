@@ -58,8 +58,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
         [Fact]
         public async Task OrganizationThatMatchesOrganizationIdOnCommand_ReturnsOrganization()
         {
-            var query = new OrganizationDetailQueryAsync { Id = 1 };
-            var handler = new OrganizationDetailQueryHandlerAsync(Context);
+            var query = new OrganizationDetailQuery { Id = 1 };
+            var handler = new OrganizationDetailQueryHandler(Context);
             var result = await handler.Handle(query);
             Assert.NotNull(result);
         }
@@ -67,8 +67,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
         [Fact]
         public async Task OrganizationsThatDoNotMatchOrganizationIdOnCommand_ReturnsNull()
         {
-            var query = new OrganizationDetailQueryAsync { Id = 999};
-            var handler = new OrganizationDetailQueryHandlerAsync(Context);
+            var query = new OrganizationDetailQuery { Id = 999};
+            var handler = new OrganizationDetailQueryHandler(Context);
             var result = await handler.Handle(query);
             Assert.Null(result);
         }
@@ -76,8 +76,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
         [Fact]
         public async Task OrganizationThatMatchesOrganizationIdOnCommand_ReturnsOrganizationDetails()
         {
-            var query = new OrganizationDetailQueryAsync { Id = 1 };
-            var handler = new OrganizationDetailQueryHandlerAsync(Context);
+            var query = new OrganizationDetailQuery { Id = 1 };
+            var handler = new OrganizationDetailQueryHandler(Context);
             var result = await handler.Handle(query);
             Assert.Equal(1, result.Id);
             Assert.Equal("http://www.org1.org", result.WebUrl);
@@ -91,8 +91,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
         [Fact]
         public async Task OrganizationThatMatchesOrganizationIdOnCommand_ReturnsCampaignDetails()
         {
-            var query = new OrganizationDetailQueryAsync { Id = 1 };
-            var handler = new OrganizationDetailQueryHandlerAsync(Context);
+            var query = new OrganizationDetailQuery { Id = 1 };
+            var handler = new OrganizationDetailQueryHandler(Context);
             var result = await handler.Handle(query);
             Assert.Equal(1, result.Campaigns.Count);
             Assert.Equal("Campaign 1", result.Campaigns[0].Name);
@@ -101,8 +101,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
         [Fact]
         public async Task OrganizationThatMatchesOrganizationIdOnCommand_ReturnsContactDetails()
         {
-            var query = new OrganizationDetailQueryAsync { Id = 1 };
-            var handler = new OrganizationDetailQueryHandlerAsync(Context);
+            var query = new OrganizationDetailQuery { Id = 1 };
+            var handler = new OrganizationDetailQueryHandler(Context);
             var result = await handler.Handle(query);
             Assert.Equal("contact@example.com", result.PrimaryContactEmail);
             Assert.Equal("firstName", result.PrimaryContactFirstName);

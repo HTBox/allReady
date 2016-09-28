@@ -29,7 +29,7 @@ namespace AllReady.UnitTest.Features.Event
                 LastName = "Bar",
                 PhoneNumber = "555-555-5555",
             };
-            var message = new ShowEventQueryAsync { EventId = 1, User = new ClaimsPrincipal() };
+            var message = new ShowEventQuery { EventId = 1, User = new ClaimsPrincipal() };
             var userManager = CreateUserManagerMock();
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = appUser.Id });
 
@@ -42,7 +42,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new ShowEventQueryHandlerAsync(context, userManager.Object);
+                var sut = new ShowEventQueryHandler(context, userManager.Object);
                 var eventViewModel = await sut.Handle(message);
 
                 Assert.Equal(message.EventId, eventViewModel.SignupModel.EventId);
@@ -56,7 +56,7 @@ namespace AllReady.UnitTest.Features.Event
         {
             var options = this.CreateNewContextOptions();
 
-            var message = new ShowEventQueryAsync { EventId = 1 };
+            var message = new ShowEventQuery { EventId = 1 };
 
             using (var context = new AllReadyContext(options))
             {
@@ -66,7 +66,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new ShowEventQueryHandlerAsync(context, null);
+                var sut = new ShowEventQueryHandler(context, null);
                 var result = await sut.Handle(message);
 
                 result.ShouldBeNull();
@@ -79,7 +79,7 @@ namespace AllReady.UnitTest.Features.Event
             var options = this.CreateNewContextOptions();
 
             const int eventId = 1;
-            var message = new ShowEventQueryAsync { EventId = eventId };
+            var message = new ShowEventQuery { EventId = eventId };
 
             using (var context = new AllReadyContext(options))
             {
@@ -93,7 +93,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new ShowEventQueryHandlerAsync(context, null);
+                var sut = new ShowEventQueryHandler(context, null);
                 var result = await sut.Handle(message);
 
                 result.ShouldBeNull();
@@ -107,7 +107,7 @@ namespace AllReady.UnitTest.Features.Event
 
             const int eventId = 1;
             const string userId = "1";
-            var message = new ShowEventQueryAsync { EventId = eventId, User = new ClaimsPrincipal() };
+            var message = new ShowEventQuery { EventId = eventId, User = new ClaimsPrincipal() };
 
             var userManager = CreateUserManagerMock();
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = userId });
@@ -125,7 +125,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new ShowEventQueryHandlerAsync(context, userManager.Object);
+                var sut = new ShowEventQueryHandler(context, userManager.Object);
                 await sut.Handle(message);
 
                 userManager.Verify(x => x.GetUserAsync(message.User), Times.Once);
@@ -141,7 +141,7 @@ namespace AllReady.UnitTest.Features.Event
             const string userId = "asdfasdf";
 
             var appUser = new ApplicationUser { Id = userId };
-            var message = new ShowEventQueryAsync { EventId = eventId, User = new ClaimsPrincipal() };
+            var message = new ShowEventQuery { EventId = eventId, User = new ClaimsPrincipal() };
             var userManager = CreateUserManagerMock();
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = userId });
 
@@ -154,7 +154,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new ShowEventQueryHandlerAsync(context, userManager.Object);
+                var sut = new ShowEventQueryHandler(context, userManager.Object);
                 var eventViewModel = await sut.Handle(message);
 
                 eventViewModel.UserSkills.ShouldBeEmpty();
@@ -174,7 +174,7 @@ namespace AllReady.UnitTest.Features.Event
                 Id = userId,
                 AssociatedSkills = null
             };
-            var message = new ShowEventQueryAsync { EventId = eventId, User = new ClaimsPrincipal() };
+            var message = new ShowEventQuery { EventId = eventId, User = new ClaimsPrincipal() };
 
             var userManager = CreateUserManagerMock();
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = appUser.Id });
@@ -188,7 +188,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new ShowEventQueryHandlerAsync(context, userManager.Object);
+                var sut = new ShowEventQueryHandler(context, userManager.Object);
                 var eventViewModel = await sut.Handle(message);
                 
                 eventViewModel.UserSkills.ShouldBeEmpty();
@@ -204,7 +204,7 @@ namespace AllReady.UnitTest.Features.Event
             const string userId = "asdfasdf";
 
             var appUser = new ApplicationUser { Id = userId };
-            var message = new ShowEventQueryAsync { EventId = eventId, User = new ClaimsPrincipal() };
+            var message = new ShowEventQuery { EventId = eventId, User = new ClaimsPrincipal() };
             var allReadyEvent = CreateAllReadyEventWithTasks(message.EventId, appUser);
 
             var userManager = CreateUserManagerMock();
@@ -219,7 +219,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new ShowEventQueryHandlerAsync(context, userManager.Object);
+                var sut = new ShowEventQueryHandler(context, userManager.Object);
                 var eventViewModel = await sut.Handle(message);
 
                 Assert.Equal(allReadyEvent.Tasks.Where(x => x.AssignedVolunteers.Any(y => y.User.Id.Equals(appUser.Id))).Count(),
@@ -242,7 +242,7 @@ namespace AllReady.UnitTest.Features.Event
             const string userId = "asdfasdf";
 
             var appUser = new ApplicationUser { Id = userId };
-            var message = new ShowEventQueryAsync { EventId = eventId, User = new ClaimsPrincipal() };
+            var message = new ShowEventQuery { EventId = eventId, User = new ClaimsPrincipal() };
             var allReadyEvent = CreateAllReadyEventWithTasks(message.EventId, appUser);
 
             var userManager = CreateUserManagerMock();
@@ -257,7 +257,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new ShowEventQueryHandlerAsync(context, userManager.Object);
+                var sut = new ShowEventQueryHandler(context, userManager.Object);
                 var eventViewModel = await sut.Handle(message);
 
                 Assert.Equal(allReadyEvent.Tasks.Where(x => !x.AssignedVolunteers.Any(v => v.User.Id.Equals(appUser.Id))).Count(),

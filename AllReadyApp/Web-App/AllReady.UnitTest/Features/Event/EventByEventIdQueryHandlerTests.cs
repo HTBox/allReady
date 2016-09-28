@@ -15,7 +15,7 @@ namespace AllReady.UnitTest.Features.Event
             var options = this.CreateNewContextOptions();
 
             const int eventId = 1;
-            var message = new EventByEventIdQueryAsync { EventId = eventId };
+            var message = new EventByEventIdQuery { EventId = eventId };
 
             using (var context = new AllReadyContext(options))
             {
@@ -28,7 +28,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new EventByEventIdQueryHandlerAsync(context);
+                var sut = new EventByEventIdQueryHandler(context);
                 var e = await sut.Handle(message);
 
                 Assert.Equal(e.Id, eventId);

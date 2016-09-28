@@ -114,6 +114,6 @@ namespace AllReady.Controllers
             return View("NoUserCheckin", campaignEvent);
         }
 
-        private async Task<Event> GetEventBy(int eventId) => await _mediator.SendAsync(new EventByEventIdQueryAsync { EventId = eventId });
+        private async Task<Event> GetEventBy(int eventId) => await _mediator.SendAsync(new EventByEventIdQuery { EventId = eventId });
     }
 }
