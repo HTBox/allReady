@@ -5,16 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Events
 {
-    public class EventByEventIdQueryHandlerAsync : IAsyncRequestHandler<EventByEventIdQueryAsync, Event>
+    public class EventByEventIdQueryHandler : IAsyncRequestHandler<EventByEventIdQuery, Event>
     {
         private readonly AllReadyContext _context;
 
-        public EventByEventIdQueryHandlerAsync(AllReadyContext context)
+        public EventByEventIdQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<Event> Handle(EventByEventIdQueryAsync message)
+        public async Task<Event> Handle(EventByEventIdQuery message)
         {
             // TODO: can we leave off some of these .Include()?
             return await _context.Events

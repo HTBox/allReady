@@ -18,8 +18,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         [Fact]
         public async Task DeleteAnExistingCampaignWithMatchingCampaignId()
         {
-            var command = new DeleteCampaignCommandAsync { CampaignId = 1 };
-            var handler = new DeleteCampaignCommandHandlerAsync(Context);
+            var command = new DeleteCampaignCommand { CampaignId = 1 };
+            var handler = new DeleteCampaignCommandHandler(Context);
             await handler.Handle(command);
 
             var result = Context.Campaigns.Count();
@@ -29,8 +29,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
         [Fact]
         public async Task NotDeleteAnExistingCampaignWithNonMatchingCampaignId()
         {
-            var command = new DeleteCampaignCommandAsync { CampaignId = 2 };
-            var handler = new DeleteCampaignCommandHandlerAsync(Context);
+            var command = new DeleteCampaignCommand { CampaignId = 2 };
+            var handler = new DeleteCampaignCommandHandler(Context);
             await handler.Handle(command);
 
             var result = Context.Campaigns.Count();

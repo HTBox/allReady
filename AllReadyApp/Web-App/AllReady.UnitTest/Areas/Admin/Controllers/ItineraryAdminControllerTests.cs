@@ -63,7 +63,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DetailsSendsEventDetailQueryAsyncWithCorrectEventId()
+        public async Task DetailsSendsEventDetailQueryWithCorrectEventId()
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(null).Verifiable();
@@ -160,20 +160,20 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             };
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQueryAsync>()))
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>()))
                 .ReturnsAsync(It.IsAny<EventSummaryViewModel>()).Verifiable();
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
             await sut.Create(model);
 
-            mockMediator.Verify(x => x.SendAsync(It.Is<EventSummaryQueryAsync>(y => y.EventId == model.EventId)), Times.Once);
+            mockMediator.Verify(x => x.SendAsync(It.Is<EventSummaryQuery>(y => y.EventId == model.EventId)), Times.Once);
         }
 
         [Fact]
         public async Task CreateReturnsHttpBadRequestIfEventNull()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(null);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(null);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
             Assert.IsType<BadRequestResult>(await sut.Create(It.IsAny<ItineraryEditViewModel>()).ConfigureAwait(false));
@@ -185,7 +185,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int orgId = 1;
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(new EventSummaryViewModel { OrganizationId = orgId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { OrganizationId = orgId });
 
             var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object);
             sut.MakeUserNotAnOrgAdmin();
@@ -201,7 +201,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             //var sut = GetItineraryControllerWithEventSummaryQuery(UserType.OrgAdmin.ToString(), 1);
             var mediator = new Mock<IMediator>();
 
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(new EventSummaryViewModel { OrganizationId = orgId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { OrganizationId = orgId });
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryCommand>())).ReturnsAsync(orgId);
 
             var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object);
@@ -218,7 +218,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             //var sut = GetItineraryControllerWithEventSummaryQuery(UserType.SiteAdmin.ToString(), 0);
             var mediator = new Mock<IMediator>();
 
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(new EventSummaryViewModel { OrganizationId = orgId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { OrganizationId = orgId });
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryCommand>())).ReturnsAsync(orgId);
 
             var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object);
@@ -237,7 +237,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int orgId = 1;
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(new EventSummaryViewModel { OrganizationId = orgId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { OrganizationId = orgId });
 
             var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
@@ -264,7 +264,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             {
                 Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31))
             };
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(eventSummaryModel);
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(eventSummaryModel);
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryCommand>())).ReturnsAsync(1);
 
             var mockValidator = new Mock<IItineraryEditModelValidator>();
@@ -294,7 +294,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
 
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(new EventSummaryViewModel { Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31)) });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31)) });
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryCommand>())).ReturnsAsync(1);
 
             var validatorError = new List<KeyValuePair<string, string>>
@@ -329,7 +329,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
 
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(new EventSummaryViewModel { Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31)) });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31)) });
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryCommand>())).ReturnsAsync(0).Verifiable();
 
             var mockValidator = new Mock<IItineraryEditModelValidator>();
@@ -359,7 +359,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
 
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQueryAsync>())).ReturnsAsync(new EventSummaryViewModel { Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31)) });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { Id = 1, Name = "Event", OrganizationId = 1, StartDateTime = new DateTimeOffset(new DateTime(2016, 01, 01)), EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31)) });
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryCommand>())).ReturnsAsync(0);
 
             var mockValidator = new Mock<IItineraryEditModelValidator>();

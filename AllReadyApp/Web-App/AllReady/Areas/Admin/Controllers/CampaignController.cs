@@ -29,7 +29,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Campaign
         public async Task<IActionResult> Index()
         {
-            var query = new IndexQueryAsync();
+            var query = new IndexQuery();
             if (User.IsUserType(UserType.OrgAdmin))
             {
                 query.OrganizationId = User.GetOrganizationId();
@@ -40,7 +40,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var viewModel = await _mediator.SendAsync(new CampaignDetailQueryAsync { CampaignId = id });
+            var viewModel = await _mediator.SendAsync(new CampaignDetailQuery { CampaignId = id });
             if (viewModel == null)
             {
                 return NotFound();
@@ -67,7 +67,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Campaign/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var viewModel = await _mediator.SendAsync(new CampaignSummaryQueryAsync { CampaignId = id });
+            var viewModel = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = id });
             if (viewModel == null)
             {
                 return NotFound();
@@ -125,7 +125,7 @@ namespace AllReady.Areas.Admin.Controllers
                     }
                 }
 
-                var id = await _mediator.SendAsync(new EditCampaignCommandAsync { Campaign = campaign });
+                var id = await _mediator.SendAsync(new EditCampaignCommand { Campaign = campaign });
 
                 return RedirectToAction(nameof(Details), new { area = "Admin", id });
             }
@@ -136,7 +136,7 @@ namespace AllReady.Areas.Admin.Controllers
         // GET: Campaign/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var viewModel = await _mediator.SendAsync(new DeleteQueryAsync { CampaignId = id });
+            var viewModel = await _mediator.SendAsync(new DeleteViewModelQuery { CampaignId = id });
             if (viewModel == null)
             {
                 return NotFound();
@@ -163,7 +163,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new DeleteCampaignCommandAsync { CampaignId = viewModel.Id });
+            await _mediator.SendAsync(new DeleteCampaignCommand { CampaignId = viewModel.Id });
 
             return RedirectToAction(nameof(Index), new { area = "Admin" });
         }
@@ -177,7 +177,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new LockUnlockCampaignCommandAsync { CampaignId = id });
+            await _mediator.SendAsync(new LockUnlockCampaignCommand { CampaignId = id });
 
             return RedirectToAction(nameof(Details), new { area = "Admin", id });
         }

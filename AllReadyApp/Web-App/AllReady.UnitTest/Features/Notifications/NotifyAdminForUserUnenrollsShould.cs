@@ -26,7 +26,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
                 .ReturnsAsync(GetTaskDetailForNotificationModel(taskId, eventId));
 
             // Setup action call
@@ -61,7 +61,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
                 .ReturnsAsync(GetTaskDetailForNotificationModel(taskId, eventId));
 
             // Setup action call
@@ -95,7 +95,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
                 .ReturnsAsync(taskDetail);
 
             // Setup action call
@@ -129,7 +129,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
                 .ReturnsAsync(GetTaskDetailForNotificationModel(taskId, eventId));
 
             // Setup exception
@@ -164,7 +164,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
                 .ReturnsAsync(GetTaskDetailForNotificationModel(taskId, eventId));
 
             // Setup exception
@@ -201,7 +201,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
                 .ReturnsAsync(GetTaskDetailForNotificationModel(taskId, eventId));
 
             // Setup exception
@@ -239,7 +239,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQueryAsync>()))
+                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
                 .ReturnsAsync(eventDetails);
 
             var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();

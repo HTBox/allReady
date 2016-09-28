@@ -52,19 +52,19 @@ namespace AllReady.UnitTest.Controllers
             const int eventId = 1;
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() } });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() } });
             var sut = new EventApiController(mediator.Object);
 
             await sut.Get(eventId);
 
-            mediator.Verify(x => x.SendAsync(It.Is<EventByEventIdQueryAsync>(y => y.EventId == eventId)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<EventByEventIdQuery>(y => y.EventId == eventId)), Times.Once);
         }
 
         [Fact]
         public async Task GetByIdReturnsCorrectViewModel()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() } });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() } });
             var sut = new EventApiController(mediator.Object);
             var result = await sut.Get(It.IsAny<int>());
 
@@ -259,7 +259,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task GetCheckinReturnsTheCorrectViewModel()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() } });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() } });
 
             var sut = new EventApiController(mediator.Object);
             var result = await sut.GetCheckin(It.IsAny<int>()) as ViewResult;
@@ -271,7 +271,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task GetCheckinReturnsTheCorrectView()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQueryAsync>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() } });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event { Campaign = new Campaign { ManagingOrganization = new Organization() } });
 
             var sut = new EventApiController(mediator.Object);
             var result = await sut.GetCheckin(It.IsAny<int>()) as ViewResult;

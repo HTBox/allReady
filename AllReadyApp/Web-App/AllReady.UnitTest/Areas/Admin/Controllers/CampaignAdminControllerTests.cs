@@ -28,7 +28,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
 
         [Fact]
-        public async Task IndexSendsIndexQueryAsyncWithCorrectData_WhenUserIsOrgAdmin()
+        public async Task IndexSendsIndexQueryWithCorrectData_WhenUserIsOrgAdmin()
         {
             const int organizationId = 99;
             var mockMediator = new Mock<IMediator>();
@@ -37,11 +37,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
             await sut.Index();
 
-            mockMediator.Verify(mock => mock.SendAsync(It.Is<IndexQueryAsync>(q => q.OrganizationId == organizationId)));
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<IndexQuery>(q => q.OrganizationId == organizationId)));
         }
 
         [Fact]
-        public async Task IndexSendsIndexQueryAsyncWithCorrectData_WhenUserIsNotOrgAdmin()
+        public async Task IndexSendsIndexQueryWithCorrectData_WhenUserIsNotOrgAdmin()
         {
             var mockMediator = new Mock<IMediator>();
 
@@ -49,11 +49,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             sut.MakeUserNotAnOrgAdmin();
             await sut.Index();
 
-            mockMediator.Verify(mock => mock.SendAsync(It.Is<IndexQueryAsync>(q => q.OrganizationId == null)));
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<IndexQuery>(q => q.OrganizationId == null)));
         }
 
         [Fact]
-        public async Task DetailsSendsCampaignDetailQueryAsyncWithCorrectCampaignId()
+        public async Task DetailsSendsCampaignDetailQueryWithCorrectCampaignId()
         {
             const int campaignId = 100;
             var mockMediator = new Mock<IMediator>();
@@ -61,7 +61,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new CampaignController(mockMediator.Object, null);
             await sut.Details(campaignId);
 
-            mockMediator.Verify(mock => mock.SendAsync(It.Is<CampaignDetailQueryAsync>(c => c.CampaignId == campaignId)));
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<CampaignDetailQuery>(c => c.CampaignId == campaignId)));
         }
 
         [Fact]
@@ -94,7 +94,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
 
             // model is not null
-            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignDetailQueryAsync>(c=>c.CampaignId == campaignId))).ReturnsAsync(new CampaignDetailViewModel { OrganizationId = organizationId, Id = campaignId }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignDetailQuery>(c=>c.CampaignId == campaignId))).ReturnsAsync(new CampaignDetailViewModel { OrganizationId = organizationId, Id = campaignId }).Verifiable();
 
             // user is org admin
             var sut = new CampaignController(mockMediator.Object, null);
@@ -119,7 +119,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task EditGetSendsCampaignSummaryQueryAsyncWithCorrectCampaignId()
+        public async Task EditGetSendsCampaignSummaryQueryWithCorrectCampaignId()
         {
             const int campaignId = 100;
             var mockMediator = new Mock<IMediator>();
@@ -127,7 +127,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new CampaignController(mockMediator.Object, null);
             await sut.Edit(campaignId);
 
-            mockMediator.Verify(mock => mock.SendAsync(It.Is<CampaignSummaryQueryAsync>(c => c.CampaignId == campaignId)));
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(c => c.CampaignId == campaignId)));
         }
 
         [Fact]
@@ -181,8 +181,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int newCampaignId = 100;
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EditCampaignCommandAsync>()))
-                .Returns((EditCampaignCommandAsync q) => Task.FromResult<int>(newCampaignId) );
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EditCampaignCommand>()))
+                .Returns((EditCampaignCommand q) => Task.FromResult<int>(newCampaignId) );
 
             var mockImageService = new Mock<IImageService>();
             var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
@@ -201,7 +201,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var view = (RedirectToActionResult) await sut.Edit(model, file);
 
             // verify the edit(add) is called
-            mockMediator.Verify(mock => mock.SendAsync(It.Is<EditCampaignCommandAsync>(c => c.Campaign.OrganizationId == organizationId)));
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<EditCampaignCommand>(c => c.Campaign.OrganizationId == organizationId)));
 
             // verify that the next route
             Assert.Equal(view.RouteValues["area"], "Admin");
@@ -309,19 +309,19 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DeleteSendsDeleteQueryAsyncWithCorrectCampaignId()
+        public async Task DeleteSendsDeleteQueryWithCorrectCampaignId()
         {
             const int organizationId = 99;
             const int campaignId = 100;
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.Is<DeleteQueryAsync>(c => c.CampaignId == campaignId))).ReturnsAsync(new DeleteViewModel { Id = campaignId, OrganizationId = organizationId });
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<DeleteViewModelQuery>(c => c.CampaignId == campaignId))).ReturnsAsync(new DeleteViewModel { Id = campaignId, OrganizationId = organizationId });
 
             var sut = new CampaignController(mockMediator.Object, null);
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
             await sut.Delete(campaignId);
 
-            mockMediator.Verify(mock => mock.SendAsync(It.Is<DeleteQueryAsync>(c => c.CampaignId == campaignId)), Times.Once);
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<DeleteViewModelQuery>(c => c.CampaignId == campaignId)), Times.Once);
         }
 
         [Fact]
@@ -336,7 +336,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DeleteReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQueryAsync>())).ReturnsAsync(new DeleteViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<DeleteViewModelQuery>())).ReturnsAsync(new DeleteViewModel());
 
             var sut = new CampaignController(mediator.Object, null);
             sut.MakeUserNotAnOrgAdmin();
@@ -350,7 +350,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int organizationId = 1;
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQueryAsync>())).ReturnsAsync(new DeleteViewModel { OrganizationId = organizationId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<DeleteViewModelQuery>())).ReturnsAsync(new DeleteViewModel { OrganizationId = organizationId });
 
             var sut = new CampaignController(mediator.Object, null);
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
@@ -365,7 +365,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int campaignId = 100;
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.Is<DeleteQueryAsync>(c => c.CampaignId == campaignId))).ReturnsAsync(new DeleteViewModel { Id = campaignId, OrganizationId = organizationId });
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<DeleteViewModelQuery>(c => c.CampaignId == campaignId))).ReturnsAsync(new DeleteViewModel { Id = campaignId, OrganizationId = organizationId });
 
             var sut = new CampaignController(mockMediator.Object, null);
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
@@ -376,7 +376,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(viewModel.Id, campaignId);
         }
 
-        public async Task DeleteConfirmedSendsDeleteCampaignCommandAsyncWithCorrectCampaignId()
+        public async Task DeleteConfirmedSendsDeleteCampaignCommandWithCorrectCampaignId()
         {
             var viewModel = new DeleteViewModel { Id = 1 };
 
@@ -384,7 +384,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new CampaignController(mediator.Object, null);
             await sut.DeleteConfirmed(viewModel);
 
-            mediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommandAsync>(i => i.CampaignId == viewModel.Id)), Times.Once);
+            mediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == viewModel.Id)), Times.Once);
         }
 
         [Fact]
@@ -395,7 +395,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DetailConfirmedSendsDeleteCampaignCommandAsyncWithCorrectCampaignIdWhenUserIsOrgAdmin()
+        public async Task DetailConfirmedSendsDeleteCampaignCommandWithCorrectCampaignIdWhenUserIsOrgAdmin()
         {
             const int organizationId = 1;
 
@@ -408,7 +408,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             await sut.DeleteConfirmed(viewModel);
 
-            mockMediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommandAsync>(i => i.CampaignId == viewModel.Id)), Times.Once);
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == viewModel.Id)), Times.Once);
         }
 
         [Fact]
@@ -472,7 +472,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             await sut.LockUnlock(campaignId);
 
-            mockMediator.Verify(mock => mock.SendAsync(It.Is<LockUnlockCampaignCommandAsync>(q => q.CampaignId == campaignId)), Times.Once);
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<LockUnlockCampaignCommand>(q => q.CampaignId == campaignId)), Times.Once);
         }
 
         [Fact]
@@ -514,7 +514,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static Mock<IMediator> MockMediatorCampaignDetailQuery(out CampaignController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignDetailQueryAsync>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignDetailQuery>())).ReturnsAsync(null).Verifiable();
 
             controller = new CampaignController(mockMediator.Object, null);
 
@@ -524,7 +524,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static Mock<IMediator> MockMediatorCampaignSummaryQuery(out CampaignController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQueryAsync>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(null).Verifiable();
 
             controller = new CampaignController(mockMediator.Object, null);
             return mockMediator;
@@ -533,7 +533,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static CampaignController CampaignControllerWithDetailQuery(string userType, int organizationId)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignDetailQueryAsync>())).ReturnsAsync(new CampaignDetailViewModel { OrganizationId = organizationId }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignDetailQuery>())).ReturnsAsync(new CampaignDetailViewModel { OrganizationId = organizationId }).Verifiable();
 
             var sut = new CampaignController(mockMediator.Object, null);
             sut.SetClaims(new List<Claim>
@@ -548,7 +548,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static CampaignController CampaignControllerWithSummaryQuery(string userType, int organizationId)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQueryAsync>()))
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>()))
                 .ReturnsAsync(new CampaignSummaryViewModel { OrganizationId = organizationId, Location = new LocationEditViewModel() }).Verifiable();
 
             var mockImageService = new Mock<IImageService>();

@@ -90,7 +90,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task LoginPostSendsApplicationUserQueryAsyncWithTheCorrectEmail()
+        public async Task LoginPostSendsApplicationUserQueryWithTheCorrectEmail()
         {
             var model = new LoginViewModel { Email = "email" };
             var mediator = new Mock<IMediator>();
@@ -101,7 +101,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AccountController(null, signInManager.Object, null, mediator.Object, null, null);
             await sut.Login(model);
 
-            mediator.Verify(x => x.SendAsync(It.Is<ApplicationUserQueryAsync>(y => y.UserName == model.Email)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<ApplicationUserQuery>(y => y.UserName == model.Email)), Times.Once);
         }
 
         [Fact]
@@ -111,7 +111,7 @@ namespace AllReady.UnitTest.Controllers
             applicationUser.MakeOrgAdmin();
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQueryAsync>())).ReturnsAsync(applicationUser);
+            mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQuery>())).ReturnsAsync(applicationUser);
 
             var userManager = CreateUserManagerMock();
             userManager.Setup(x => x.IsEmailConfirmedAsync(applicationUser)).ReturnsAsync(false).Verifiable();
@@ -133,7 +133,7 @@ namespace AllReady.UnitTest.Controllers
             applicationUser.MakeSiteAdmin();
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQueryAsync>())).ReturnsAsync(applicationUser);
+            mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQuery>())).ReturnsAsync(applicationUser);
 
             var userManager = CreateUserManagerMock();
             userManager.Setup(x => x.IsEmailConfirmedAsync(applicationUser)).ReturnsAsync(false).Verifiable();
@@ -154,7 +154,7 @@ namespace AllReady.UnitTest.Controllers
             var model = new LoginViewModel { Email = "email", Password = "password", RememberMe = true };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQueryAsync>())).ReturnsAsync(new ApplicationUser());
+            mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQuery>())).ReturnsAsync(new ApplicationUser());
 
             var signInManager = MockHelper.CreateSignInManagerMock(CreateUserManagerMock());
             signInManager.Setup(x => x.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
@@ -172,7 +172,7 @@ namespace AllReady.UnitTest.Controllers
             var applicationUser = new ApplicationUser();
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQueryAsync>())).ReturnsAsync(applicationUser);
+            mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQuery>())).ReturnsAsync(applicationUser);
 
             var signInManager = MockHelper.CreateSignInManagerMock(CreateUserManagerMock());
             signInManager.Setup(x => x.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
@@ -197,7 +197,7 @@ namespace AllReady.UnitTest.Controllers
             var model = new LoginViewModel { RememberMe = true };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQueryAsync>())).ReturnsAsync(new ApplicationUser());
+            mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQuery>())).ReturnsAsync(new ApplicationUser());
 
             var signInManager = MockHelper.CreateSignInManagerMock(CreateUserManagerMock());
             signInManager.Setup(x => x.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.TwoFactorRequired);
@@ -221,7 +221,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task LoginPostReturnsLockoutView_WhenUserIsNull_AndResultIsLockedOutIsTrue()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQueryAsync>())).ReturnsAsync(new ApplicationUser());
+            mediator.Setup(x => x.SendAsync(It.IsAny<ApplicationUserQuery>())).ReturnsAsync(new ApplicationUser());
 
             var signInManager = MockHelper.CreateSignInManagerMock(CreateUserManagerMock());
             signInManager.Setup(x => x.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.LockedOut);
@@ -1273,7 +1273,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackSendsApplicationUserQueryAsyncWithCorrectUsername_WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull()
+        public async Task ExternalLoginCallbackSendsApplicationUserQueryWithCorrectUsername_WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
             await taskFromResultZero;

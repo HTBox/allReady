@@ -17,12 +17,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
     public class TaskStatusChangeHandlerTests : InMemoryContextTest
     {
         private readonly Mock<IMediator> mediator;
-        private readonly TaskStatusChangeHandlerAsync handler;
+        private readonly TaskStatusChangeHandler handler;
 
         public TaskStatusChangeHandlerTests()
         {
             mediator = new Mock<IMediator>();
-            handler = new TaskStatusChangeHandlerAsync(Context, mediator.Object);
+            handler = new TaskStatusChangeHandler(Context, mediator.Object);
         }
 
         protected override void LoadTestData()
@@ -90,12 +90,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             await Context.SaveChangesAsync();
         }
 
-        protected TaskStatusChangeCommandAsync CreateCommand(TaskStatus status, string description = "")
+        protected TaskStatusChangeCommand CreateCommand(TaskStatus status, string description = "")
         {
             var user = Context.Users.First();
             var task = Context.Tasks.First();
 
-            return new TaskStatusChangeCommandAsync
+            return new TaskStatusChangeCommand
             {
                 UserId = user.Id,
                 TaskId = task.Id,
@@ -109,7 +109,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommandAsync
+            var command = new TaskStatusChangeCommand
             {
                 TaskId = task.Id,
                 UserId = user.Id,
@@ -131,7 +131,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommandAsync
+            var command = new TaskStatusChangeCommand
             {
                 TaskId = task.Id,
                 UserId = user.Id,
@@ -157,7 +157,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommandAsync
+            var command = new TaskStatusChangeCommand
             {
                 TaskId = task.Id,
                 UserId = user.Id,
@@ -184,7 +184,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommandAsync
+            var command = new TaskStatusChangeCommand
             {
                 TaskId = task.Id,
                 UserId = user.Id,
@@ -223,7 +223,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommandAsync
+            var command = new TaskStatusChangeCommand
             {
                 TaskId = task.Id,
                 UserId = user.Id,
@@ -281,7 +281,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommandAsync
+            var command = new TaskStatusChangeCommand
             {
                 TaskId = task.Id,
                 UserId = user.Id,
@@ -304,7 +304,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             var dateTime = DateTime.UtcNow;
             var task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommandAsync
+            var command = new TaskStatusChangeCommand
             {
                 TaskId = task.Id,
                 UserId = user.Id,
@@ -356,7 +356,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommandAsync
+            var command = new TaskStatusChangeCommand
             {
                 TaskId = task.Id,
                 UserId = user.Id,
@@ -379,7 +379,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             var dateTime = DateTime.UtcNow;
             var user = Context.Users.First();
             var task = Context.Tasks.First();
-            var command = new TaskStatusChangeCommandAsync
+            var command = new TaskStatusChangeCommand
             {
                 TaskId = task.Id,
                 UserId = user.Id,
