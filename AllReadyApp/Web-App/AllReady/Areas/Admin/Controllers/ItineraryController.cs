@@ -219,7 +219,6 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Itinerary/{itineraryId}/[Action]/{requestId}")]
-        //public async Task<IActionResult> RemoveRequest(int itineraryId, Guid requestId)
         public async Task<IActionResult> RemoveRequest(RequestSummaryViewModel viewModel)
         {
             if(!viewModel.UserIsOrgAdmin)
@@ -230,16 +229,6 @@ namespace AllReady.Areas.Admin.Controllers
             await _mediator.SendAsync(new RemoveRequestCommand { RequestId = viewModel.Id, ItineraryId = viewModel.ItineraryId });
 
             return RedirectToAction("Details", new { id = viewModel.ItineraryId });
-            
-            //var orgId = await GetOrganizationIdBy(itineraryId);
-            //if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
-            //{
-            //    return Unauthorized();
-            //}
-
-            //await _mediator.SendAsync(new RemoveRequestCommand { RequestId = requestId, ItineraryId = itineraryId });
-
-            //return RedirectToAction("Details", new { id = itineraryId });
         }
 
         [HttpPost]

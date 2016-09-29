@@ -20,8 +20,8 @@
         </p>
 
         <form asp-area="Admin" asp-controller="Itinerary" asp-action="RemoveRequest" asp-route-itineraryId="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" asp-route-requestId="@Model.Id">
-            <input type="hidden" asp-for="@Model.Id" /> @*this is the RequestId*@
-            <input type="hidden" asp-for="@Model.ItineraryId" /> @*this is the RequestId*@
+            <input type="hidden" asp-for="@Model.Id" />
+            <input type="hidden" asp-for="@Model.ItineraryId" />
             <input type="hidden" asp-for="@Model.UserIsOrgAdmin" />
             <div class="form-actions no-color">
                 <button type="submit" class="btn btn-primary">Delete</button>
