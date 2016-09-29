@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Notifications
 {
@@ -18,7 +19,7 @@ namespace AllReady.Features.Notifications
 
         public async Task Handle(TaskAssignedToVolunteersNotification notification)
         {
-            var users = _context.Users.Where(x => notification.NewlyAssignedVolunteers.Contains(x.Id)).ToList();
+            var users = await _context.Users.Where(x => notification.NewlyAssignedVolunteers.Contains(x.Id)).ToListAsync();
             var smsRecipients = users.Where(u => u.PhoneNumberConfirmed).Select(v => v.PhoneNumber).ToList();
             var emailRecipients = users.Where(u => u.EmailConfirmed).Select(v => v.Email).ToList();
             var command = new NotifyVolunteersCommand
