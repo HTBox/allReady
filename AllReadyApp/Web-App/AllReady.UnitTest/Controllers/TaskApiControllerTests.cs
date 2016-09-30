@@ -68,29 +68,26 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(result.StatusCode, 400);
         }
 
-        //TODO: mgmccarthy. commented out until I can figure out how to do SetupSequence on async invocations of mediator's SendAsync
-        //[Fact]
-        //public async Task PostSendsAddTaskCommandWithCorrectData()
-        //{
-        //    var model = new TaskViewModel { EventId = 1, Id = 1 };
-        //    var allReadyTask = new AllReadyTask();
+        [Fact]
+        public async Task PostSendsAddTaskCommandAsyncWithCorrectData()
+        {
+            var model = new TaskViewModel { EventId = 1, Id = 1 };
+            var allReadyTask = new AllReadyTask();
 
-        //    var mediator = new Mock<IMediator>();
-        //    mediator.Setup(x => x.Send(It.IsAny<EventByEventIdQuery>())).Returns(new Event());
-        //    mediator.SetupSequence(x => x.Send(It.IsAny<TaskByTaskIdQuery>()))
-        //        .Returns(allReadyTask)
-        //        .Returns(null);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event());
+            mediator.SetupSequence(x => x.SendAsync(It.IsAny<TaskByTaskIdQuery>()))
+                .ReturnsAsync(allReadyTask)
+                .ReturnsAsync(null);
 
-        //    var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
-        //    determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>(), null)).Returns(true);
+            var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
+            determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>(), null)).Returns(true);
 
-        //    var sut = new TaskApiController(mediator.Object, determineIfATaskIsEditable.Object, null);
-        //    await sut.Post(model);
+            var sut = new TaskApiController(mediator.Object, determineIfATaskIsEditable.Object, null);
+            await sut.Post(model);
 
-            mediator.Verify(x => x.SendAsync(It.Is<AddTaskCommandAsync>(y => y.AllReadyTask == allReadyTask)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<AddTaskCommand>(y => y.AllReadyTask == allReadyTask)), Times.Once);
         }
-        //    mediator.Verify(x => x.SendAsync(It.Is<AddTaskCommand>(y => y.AllReadyTask == allReadyTask)), Times.Once);
-        //}
 
         [Fact]
         public async Task PostSendsTaskByTaskIdQueryWithCorrectTaskId()

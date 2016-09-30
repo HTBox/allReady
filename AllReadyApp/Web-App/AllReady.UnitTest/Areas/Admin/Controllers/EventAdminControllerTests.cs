@@ -764,22 +764,5 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             return new EventController(null, null, null);
         }
-
-        private static EventController GetEventController(DateTimeOffset startDate, DateTimeOffset endDate)
-        {
-            var mediator = new Mock<IMediator>();
-            var imageService = new Mock<IImageService>();
-
-            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel { StartDate = startDate, EndDate = endDate });
-
-            var sut = new EventController(imageService.Object, mediator.Object, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
-            });
-
-            return sut;
-        }
     }
 }
