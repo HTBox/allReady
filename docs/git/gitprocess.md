@@ -104,54 +104,18 @@ You will want to make sure to do a clone and not download the zip file version o
 
         git clone http://github.com/[Your UserName]/allReady
 
-You now have the repository on your machine.  Next we need to install all of the npm and bower dependencies for the web application and mobile app.
+You now have the repository on your machine.  
 
-### Install Web App Dependencies
+There are 2 Visual Studio solutions in the allReady\AllReadyApp directory.  
 
-1. cd into the allReady/AllReadyApp/Web-App directory
-1. For the npm dependencies you need to run
+1. AllReadyWebonly.sln -> This file will open just the web project files and does not include the mobile application.  Use this solution if you are not going to be working on the mobile application. 
+1. AllReadyApp.sln -> This file will open all of the allReady projects including the mobile application.  Use this file if you are going to be working on the mobile application.
 
-        npm install
+The first time that you open up the solution in Visual Studio, it will install the npm and bower dependencies.  This can take several minutes depending on your internet connection.  Once all of the npm and bower dependencies have been installed, you need to build the solution.  Building the solution the first time will download all of the nuget packages.  
 
-1. For the bower dependencies you need to run 
-
-        bower install
-
-    * If you get a message that bower is not a recognized command, it means that you have not installed bower yet.  You can install bower by running `npm install -g bower`
-
-If you are not going to be working on the allReady mobile application you are now ready to open up the allReady solution in Visual Studio and make sure that it compiles.  In the allReady\AllReadyApp directory is the AllReadyWebonly.sln file that will open just the web project files and does not include the mobile application.  Open up this file and compile the project in Visual Studio.  This will take a few minutes the first time as it pulls down all of the nuget packages that are referenced.
-
-If you are going to be working on the mobile application as well as the web application, go through the "Mobile App dependencies" section.
+If you are building the mobile application it will take several minutes to download additional dependencies that Visual Studio needs.  
 
 Once the solution compiles successfully you are ready to start contributing.
-
-### Install Mobile App Dependencies
-
-1. cd into the allReady/AllReadyApp/Web-App/AllReady directory
-1. For the npm dependencies you need to run
-
-        npm install
-
-1. For the bower dependencies you need to run
-
-        bower install
-
-    * If you get a message that bower is not a recognized command, it means that you have not installed bower yet.  You can install bower by running `npm install -g bower`.  You will need to reopen your command prompt after install and navigate back to the  allReady/AllReadyApp/Web-App/AllReady directory.
-1. Before installing the ionic and cordova dependencies you need to run and answer the "send anonymous usage" question.
-
-        cordova -v
-        
-    * If you get a message that cordova is not a recognized command, it means that you do not have cordova installed yet.  You can install cordova by running `npm install -g cordova` . You will need to reopen your command prompt after install and navigate back to the  allReady/AllReadyApp/Web-App/AllReady directory.
-1. Now we need to restore all of the cordova platforms and plugins that are configured by running:
-
-        ionic state restore
-     
-    * If you get a message that ionic is not a recognized command, it means that you do not have ionic installed yet.  You can install ionic by running `npm install -g ionic` . You will need to reopen your command prompt after install and navigate back to the  allReady/AllReadyApp/Web-App/AllReady directory.
-
-You are now ready to open up the solution in Visual Studio.  In the allReady\AllReadyApp directory is the AllReadyApp.sln file that will open up all of the projects.  Open up this file and compile the project in Visual Studio.  Compiling the first time will take several minutes as all of the nuget packages and cordova references are download.
-
-Once the solution compiles successfully you are ready to start contributing.
-
 
 ## Setup a link to the HTBox/allReady repository
 
@@ -396,3 +360,10 @@ Often, the project owners will make comments on your pull request and ask you to
 Thank you for contributing to the allReady project.  Keep the changes coming.  When you are ready to work on another issues, start at the     
 
 At this point, you are ready to work on more Github issues.  This time you can start at the "Creating a branch" section.
+
+## Additional Resources
+
+[https://www.stevejgordon.co.uk/contributing-to-allready](https://www.stevejgordon.co.uk/contributing-to-allready)
+[https://www.stevejgordon.co.uk/github-contributor-tips-tricks-gitiquette](https://www.stevejgordon.co.uk/github-contributor-tips-tricks-gitiquette)
+[http://www.davepaquette.com/archive/2016/01/24/Submitting-Your-First-Pull-request.aspx](http://www.davepaquette.com/archive/2016/01/24/Submitting-Your-First-Pull-request.aspx)
+[http://chris.beams.io/posts/git-commit/](http://chris.beams.io/posts/git-commit/)
