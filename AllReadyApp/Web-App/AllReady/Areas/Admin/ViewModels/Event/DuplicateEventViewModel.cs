@@ -14,6 +14,7 @@ namespace AllReady.Areas.Admin.ViewModels.Event
 
         [Display(Name = "Campaign")]
         public int CampaignId { get; set; }
+
         [Display(Name = "Campaign")]
         public string CampaignName { get; set; }
 
@@ -24,8 +25,10 @@ namespace AllReady.Areas.Admin.ViewModels.Event
 
         [Display(Name = "Start Date")]
         public DateTimeOffset StartDateTime { get; set; }
+
         [Display(Name = "End Date")]
         public DateTimeOffset EndDateTime { get; set; }
 
+        public bool UserIsOrgAdmin { get; set; }
     }
 }

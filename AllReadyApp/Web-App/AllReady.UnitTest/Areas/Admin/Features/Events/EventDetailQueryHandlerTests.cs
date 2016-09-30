@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Events;
 using AllReady.Models;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Events

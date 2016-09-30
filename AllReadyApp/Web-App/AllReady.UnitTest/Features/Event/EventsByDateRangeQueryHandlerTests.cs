@@ -8,7 +8,6 @@ namespace AllReady.UnitTest.Features.Event
 {
     public class EventsByDateRangeQueryHandlerTests : InMemoryContextTest
     {
-
         [Fact]
         public void CallsEventsPropertyOnce()
         {
