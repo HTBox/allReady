@@ -17,9 +17,13 @@
     "SiteBaseUrl": "http://localhost:48408/",
     "DefaultTimeZone": "Central Standard Time"
   },
-  "ApplicationInsights": {
-    "InstrumentationKey": "[instrumentationkey]"
-  },
+    "ApplicationInsights": {
+        "InstrumentationKey": "[instrumentationkey]"
+    },
+    "Geocoding": {
+        "EnableGoogleGeocodingService": "false",
+        "GoogleGeocodingApiKey": "[geocodingapikey]"
+    },
   "Data": {
     "DefaultConnection": {
       "ConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
