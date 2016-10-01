@@ -1,7 +1,9 @@
 using System.Threading.Tasks;
 using AllReady.Features.Events;
+using AllReady.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Controllers
@@ -9,10 +11,12 @@ namespace AllReady.Controllers
     public class EventController : Controller
     {
         private readonly IMediator _mediator;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public EventController(IMediator mediator)
+        public EventController(IMediator mediator, UserManager<ApplicationUser> userManager)
         {
             _mediator = mediator;
+            _userManager = userManager;
         }
 
         // note: sgordon: These are currently not used as we've simplified the my events page. Note that My Events is moved to VolunteerController and now known as dashboard.
@@ -46,7 +50,8 @@ namespace AllReady.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ShowEvent(int id)
         {
-            var viewModel = await _mediator.SendAsync(new ShowEventQuery { EventId = id, User = User });
+            var user = await _userManager.GetUserAsync(User);
+            var viewModel = await _mediator.SendAsync(new ShowEventQuery { EventId = id, UserId = user.Id });
             if (viewModel == null)
             {
                 return NotFound();

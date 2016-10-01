@@ -1,13 +1,11 @@
 ﻿using System.Linq;
 using AllReady.Controllers;
 using AllReady.UnitTest.Extensions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 using MediatR;
 using System.Threading.Tasks;
-using AllReady.Features.Login;
 using AllReady.ViewModels.Account;
 
 namespace AllReady.UnitTest.Controllers
