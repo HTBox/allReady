@@ -27,6 +27,8 @@ using Microsoft.Extensions.PlatformAbstractions;
 using AllReady.Security.Middleware;
 using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Geocoding;
+using Geocoding.Google;
 
 namespace AllReady
 {
@@ -50,7 +52,8 @@ namespace AllReady
 
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
                 builder.AddApplicationInsightsSettings(developerMode: true);
-            } else if(env.IsStaging() || env.IsProduction())
+            }
+            else if (env.IsStaging() || env.IsProduction())
             {
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
                 builder.AddApplicationInsightsSettings(developerMode: false);
@@ -120,23 +123,30 @@ namespace AllReady
             return container.Resolve<IServiceProvider>();
         }
 
-    private IContainer CreateIoCContainer(IServiceCollection services)
-    {
-        // todo: move these to a proper autofac module
-        // Register application services.
-        services.AddSingleton((x) => Configuration);
-        services.AddTransient<IEmailSender, AuthMessageSender>();
-        services.AddTransient<ISmsSender, AuthMessageSender>();
-        services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
-        services.AddTransient<IValidateEventEditViewModels, EventEditViewModelValidator>();
-        services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
-        services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
-        services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
-        services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
-        services.AddTransient<IConvertDateTimeOffset, DateTimeOffsetConverter>();
-        services.AddSingleton<IImageService, ImageService>();
-        //services.AddSingleton<GeoService>();
-        services.AddTransient<SampleDataGenerator>();
+        private IContainer CreateIoCContainer(IServiceCollection services)
+        {
+            // todo: move these to a proper autofac module
+            // Register application services.
+            services.AddSingleton((x) => Configuration);
+            services.AddTransient<IEmailSender, AuthMessageSender>();
+            services.AddTransient<ISmsSender, AuthMessageSender>();
+            services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
+            services.AddTransient<IValidateEventEditViewModels, EventEditViewModelValidator>();
+            services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
+            services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
+            services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
+            services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
+            services.AddTransient<IConvertDateTimeOffset, DateTimeOffsetConverter>();
+            services.AddSingleton<IImageService, ImageService>();
+            services.AddTransient<SampleDataGenerator>();
+
+            if (Configuration["Geocoding:EnableGoogleGeocodingService"] == "true")
+            {
+                //This setting is false by default. To enable Google geocoding you will
+                //need to override this setting in your user secrets or env vars.
+                //Visit https://developers.google.com/maps/documentation/geocoding/get-api-key to get a free standard usage API key
+                services.AddSingleton<IGeocoder>(new GoogleGeocoder(Configuration["Geocoding:GoogleGeocodingApiKey"]));
+            }
 
             if (Configuration["Data:Storage:EnableAzureQueueService"] == "true")
             {
