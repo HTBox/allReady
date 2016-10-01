@@ -77,8 +77,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event());
             mediator.SetupSequence(x => x.SendAsync(It.IsAny<TaskByTaskIdQuery>()))
-                .ReturnsAsync(allReadyTask)
-                .ReturnsAsync(null);
+                .ReturnsAsync(new AllReadyTask()).ReturnsAsync(null);
 
             var determineIfATaskIsEditable = new Mock<IDetermineIfATaskIsEditable>();
             determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>(), null)).Returns(true);

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Security.Claims;
 using AllReady.Models;
-using Moq;
 using Shouldly;
 using Xunit;
 using System.Threading.Tasks;
 using AllReady.Features.Events;
-using AllReady.UnitTest.Helpers;
 
 namespace AllReady.UnitTest.Features.Event
 {
@@ -19,7 +16,7 @@ namespace AllReady.UnitTest.Features.Event
         [Fact]
         public async Task SetsTaskSignupViewModel_WithTheCorrectData()
         {
-            var options = this.CreateNewContextOptions();
+            var options = CreateNewContextOptions();
 
             var appUser = new ApplicationUser
             {
@@ -29,9 +26,8 @@ namespace AllReady.UnitTest.Features.Event
                 LastName = "Bar",
                 PhoneNumber = "555-555-5555",
             };
-            var message = new ShowEventQueryAsync { EventId = 1, User = new ClaimsPrincipal() };
-            var userManager = TestHelpers.CreateUserManagerMock();
-            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = appUser.Id });
+
+            var message = new ShowEventQuery { EventId = 1, UserId = appUser.Id };
 
             using (var context = new AllReadyContext(options))
             {
@@ -42,7 +38,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new ShowEventQueryHandlerAsync(context, userManager.Object);
+                var sut = new ShowEventQueryHandler(context);
                 var eventViewModel = await sut.Handle(message);
 
                 Assert.Equal(message.EventId, eventViewModel.SignupModel.EventId);
@@ -54,9 +50,9 @@ namespace AllReady.UnitTest.Features.Event
         [Fact]
         public async Task ReturnNullWhenEventIsNotFound()
         {
-            var options = this.CreateNewContextOptions();
+            var options = CreateNewContextOptions();
 
-            var message = new ShowEventQueryAsync { EventId = 1 };
+            var message = new ShowEventQuery { EventId = 1 };
 
             using (var context = new AllReadyContext(options))
             {
@@ -66,7 +62,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new ShowEventQueryHandlerAsync(context, null);
+                var sut = new ShowEventQueryHandler(context);
                 var result = await sut.Handle(message);
 
                 result.ShouldBeNull();
@@ -74,12 +70,12 @@ namespace AllReady.UnitTest.Features.Event
         }
 
         [Fact]
-        public async Task ReturnNullWhenEventsCampaignIslocked()
+        public async Task ReturnNullWhenEventsCampaignIsLocked()
         {
-            var options = this.CreateNewContextOptions();
+            var options = CreateNewContextOptions();
 
             const int eventId = 1;
-            var message = new ShowEventQueryAsync { EventId = eventId };
+            var message = new ShowEventQuery { EventId = eventId };
 
             using (var context = new AllReadyContext(options))
             {
@@ -93,7 +89,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new ShowEventQueryHandlerAsync(context, null);
+                var sut = new ShowEventQueryHandler(context);
                 var result = await sut.Handle(message);
 
                 result.ShouldBeNull();
@@ -101,49 +97,15 @@ namespace AllReady.UnitTest.Features.Event
         }
 
         [Fact]
-        public async Task InvokeGetUserIdWithTheCorrectUser_WhenEventIsNotNullAndEventsCampaignIsUnlocked()
-        {
-            var options = this.CreateNewContextOptions();
-
-            const int eventId = 1;
-            const string userId = "1";
-            var message = new ShowEventQueryAsync { EventId = eventId, User = new ClaimsPrincipal() };
-
-            var userManager = TestHelpers.CreateUserManagerMock();
-            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = userId });
-
-            using (var context = new AllReadyContext(options))
-            {
-                context.Events.Add(new Models.Event
-                {
-                    Id = eventId,
-                    Campaign = new Campaign { Locked = false }
-                });
-                context.Users.Add(new ApplicationUser { Id = userId });
-                await context.SaveChangesAsync();
-            }
-
-            using (var context = new AllReadyContext(options))
-            {
-                var sut = new ShowEventQueryHandlerAsync(context, userManager.Object);
-                await sut.Handle(message);
-
-                userManager.Verify(x => x.GetUserAsync(message.User), Times.Once);
-            }
-        }
-
-        [Fact]
         public async Task SetUserSkillsToNull_WhenAppUserIsNull_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
-            var options = this.CreateNewContextOptions();
+            var options = CreateNewContextOptions();
 
             const int eventId = 1;
             const string userId = "asdfasdf";
 
             var appUser = new ApplicationUser { Id = userId };
-            var message = new ShowEventQueryAsync { EventId = eventId, User = new ClaimsPrincipal() };
-            var userManager = TestHelpers.CreateUserManagerMock();
-            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = userId });
+            var message = new ShowEventQuery { EventId = eventId, UserId = userId };
 
             using (var context = new AllReadyContext(options))
             {
@@ -154,7 +116,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new ShowEventQueryHandlerAsync(context, userManager.Object);
+                var sut = new ShowEventQueryHandler(context);
                 var eventViewModel = await sut.Handle(message);
 
                 eventViewModel.UserSkills.ShouldBeEmpty();
@@ -162,22 +124,15 @@ namespace AllReady.UnitTest.Features.Event
         }
 
         [Fact]
-        public async Task SetUserSkillsToNull_WhenAppUserIsNotNull_AndAppUserseAssociatedSkillsIsNull_AndEventIsNotNullAndEventsCampaignIsUnlocked()
+        public async Task SetUserSkillsToNull_WhenAppUserIsNotNull_AndAppUserAssociatedSkillsIsNull_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
-            var options = this.CreateNewContextOptions();
+            var options = CreateNewContextOptions();
 
             const int eventId = 1;
             const string userId = "asdfasdf";
 
-            var appUser = new ApplicationUser
-            {
-                Id = userId,
-                AssociatedSkills = null
-            };
-            var message = new ShowEventQueryAsync { EventId = eventId, User = new ClaimsPrincipal() };
-
-            var userManager = TestHelpers.CreateUserManagerMock();
-            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = appUser.Id });
+            var appUser = new ApplicationUser { Id = userId, AssociatedSkills = null };
+            var message = new ShowEventQuery { EventId = eventId, UserId = userId };
 
             using (var context = new AllReadyContext(options))
             {
@@ -188,9 +143,9 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new ShowEventQueryHandlerAsync(context, userManager.Object);
+                var sut = new ShowEventQueryHandler(context);
                 var eventViewModel = await sut.Handle(message);
-                
+
                 eventViewModel.UserSkills.ShouldBeEmpty();
             }
         }
@@ -198,17 +153,14 @@ namespace AllReady.UnitTest.Features.Event
         [Fact]
         public async Task SetUserTasksToListOfTaskViewModelForAnyTasksWhereTheUserHasVolunteeredInAscendingOrderByTaskStartDateTime_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
-            var options = this.CreateNewContextOptions();
+            var options = CreateNewContextOptions();
 
             const int eventId = 1;
             const string userId = "asdfasdf";
 
             var appUser = new ApplicationUser { Id = userId };
-            var message = new ShowEventQueryAsync { EventId = eventId, User = new ClaimsPrincipal() };
+            var message = new ShowEventQuery { EventId = eventId, UserId = userId };
             var allReadyEvent = CreateAllReadyEventWithTasks(message.EventId, appUser);
-
-            var userManager = TestHelpers.CreateUserManagerMock();
-            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = appUser.Id });
 
             using (var context = new AllReadyContext(options))
             {
@@ -219,7 +171,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new ShowEventQueryHandlerAsync(context, userManager.Object);
+                var sut = new ShowEventQueryHandler(context);
                 var eventViewModel = await sut.Handle(message);
 
                 Assert.Equal(allReadyEvent.Tasks.Where(x => x.AssignedVolunteers.Any(y => y.User.Id.Equals(appUser.Id))).Count(),
@@ -236,17 +188,14 @@ namespace AllReady.UnitTest.Features.Event
         [Fact]
         public async Task SetTasksToListOfTaskViewModelForAnyTasksWhereTheUserHasNotVolunteeredInAscendingOrderByTaskStartDateTime_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
-            var options = this.CreateNewContextOptions();
+            var options = CreateNewContextOptions();
 
             const int eventId = 1;
             const string userId = "asdfasdf";
 
             var appUser = new ApplicationUser { Id = userId };
-            var message = new ShowEventQueryAsync { EventId = eventId, User = new ClaimsPrincipal() };
+            var message = new ShowEventQuery { EventId = eventId, UserId = userId };
             var allReadyEvent = CreateAllReadyEventWithTasks(message.EventId, appUser);
-
-            var userManager = TestHelpers.CreateUserManagerMock();
-            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = appUser.Id });
 
             using (var context = new AllReadyContext(options))
             {
@@ -257,7 +206,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new ShowEventQueryHandlerAsync(context, userManager.Object);
+                var sut = new ShowEventQueryHandler(context);
                 var eventViewModel = await sut.Handle(message);
 
                 Assert.Equal(allReadyEvent.Tasks.Where(x => !x.AssignedVolunteers.Any(v => v.User.Id.Equals(appUser.Id))).Count(),
@@ -270,8 +219,6 @@ namespace AllReady.UnitTest.Features.Event
                 }
             }
         }
-
-
 
         private static Models.Event CreateAllReadyEventWithTasks(int eventId, ApplicationUser appUser)
         {
