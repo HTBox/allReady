@@ -363,7 +363,7 @@ At this point, you are ready to work on more Github issues.  This time you can s
 
 ## Additional Resources
 
-[https://www.stevejgordon.co.uk/contributing-to-allready](https://www.stevejgordon.co.uk/contributing-to-allready)
-[https://www.stevejgordon.co.uk/github-contributor-tips-tricks-gitiquette](https://www.stevejgordon.co.uk/github-contributor-tips-tricks-gitiquette)
-[http://www.davepaquette.com/archive/2016/01/24/Submitting-Your-First-Pull-request.aspx](http://www.davepaquette.com/archive/2016/01/24/Submitting-Your-First-Pull-request.aspx)
-[http://chris.beams.io/posts/git-commit/](http://chris.beams.io/posts/git-commit/)
+* [https://www.stevejgordon.co.uk/contributing-to-allready](https://www.stevejgordon.co.uk/contributing-to-allready)
+* [https://www.stevejgordon.co.uk/github-contributor-tips-tricks-gitiquette](https://www.stevejgordon.co.uk/github-contributor-tips-tricks-gitiquette)
+* [http://www.davepaquette.com/archive/2016/01/24/Submitting-Your-First-Pull-request.aspx](http://www.davepaquette.com/archive/2016/01/24/Submitting-Your-First-Pull-request.aspx)
+* [http://chris.beams.io/posts/git-commit/](http://chris.beams.io/posts/git-commit/)
