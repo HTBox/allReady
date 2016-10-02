@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Security.Claims;
 using AllReady.Models;
-using Moq;
 using Shouldly;
 using Xunit;
 using System.Threading.Tasks;
@@ -134,7 +132,7 @@ namespace AllReady.UnitTest.Features.Event
             const string userId = "asdfasdf";
 
             var appUser = new ApplicationUser { Id = userId, AssociatedSkills = null };
-            var message = new ShowEventQuery { EventId = eventId, UserId  = userId };
+            var message = new ShowEventQuery { EventId = eventId, UserId = userId };
 
             using (var context = new AllReadyContext(options))
             {
@@ -147,7 +145,7 @@ namespace AllReady.UnitTest.Features.Event
             {
                 var sut = new ShowEventQueryHandler(context);
                 var eventViewModel = await sut.Handle(message);
-                
+
                 eventViewModel.UserSkills.ShouldBeEmpty();
             }
         }
