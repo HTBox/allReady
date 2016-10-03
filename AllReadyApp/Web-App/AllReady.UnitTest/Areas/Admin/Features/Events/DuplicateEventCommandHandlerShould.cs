@@ -77,7 +77,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal("Country", sut.Country);
         }
 
-
         [Fact]
         public async Task CreateNewTaskEntities()
         {

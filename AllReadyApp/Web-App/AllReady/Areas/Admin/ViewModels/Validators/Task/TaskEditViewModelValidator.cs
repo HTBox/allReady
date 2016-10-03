@@ -67,6 +67,6 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
 
     public interface ITaskEditViewModelValidator
     {
-        Task<List<KeyValuePair<string, string>>> Validate(EditViewModel model);
+        Task<List<KeyValuePair<string, string>>> Validate(EditViewModel viewModel);
     }
 }

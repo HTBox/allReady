@@ -9,17 +9,18 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Event
 {
-
     // FRAGILE: create lots of AllReadyContext to defeat change tracking, see https://docs.efproject.net/en/latest/miscellaneous/testing.html
-    public class UpdateMyTasksHandlerShould : InMemoryContextTest {
+    public class UpdateMyTasksHandlerShould : InMemoryContextTest
+    {
 
 
         [Fact]
-        public async Task CanSaveZeroTasks() {
-            var options = this.CreateNewContextOptions();
+        public async Task CanSaveZeroTasks()
+        {
+            var options = CreateNewContextOptions();
 
             const string userId = "1";
-            var user = new ApplicationUser() {Id = userId};
+            var user = new ApplicationUser {Id = userId};
 
             using (var context = new AllReadyContext(options)) {
                 context.Users.Add(user);
@@ -40,15 +41,16 @@ namespace AllReady.UnitTest.Features.Event
         }
 
         [Fact]
-        public async Task InvokeUpdateTaskSignupAsyncForEachTaskSignupViewModelOnCommand() {
-            var options = this.CreateNewContextOptions();
+        public async Task InvokeUpdateTaskSignupAsyncForEachTaskSignupViewModelOnCommand()
+        {
+            var options = CreateNewContextOptions();
 
             const string userId = "1";
             const int firstId = 1;
             const int secondId = 2;
 
-            var user = new ApplicationUser() {Id = userId};
-            var taskSignupViewModels = new List<TaskSignupViewModel> {new TaskSignupViewModel() {Id = firstId}, new TaskSignupViewModel() {Id = secondId}};
+            var user = new ApplicationUser {Id = userId};
+            var taskSignupViewModels = new List<TaskSignupViewModel> {new TaskSignupViewModel {Id = firstId}, new TaskSignupViewModel {Id = secondId}};
 
             using (var context = new AllReadyContext(options)) {
                 context.Users.Add(user);
@@ -73,11 +75,11 @@ namespace AllReady.UnitTest.Features.Event
         [Fact]
         public async Task InvokeUpdateTaskSignupAsyncWithTheCorrectParametersForEachTaskSignupViewModelOnCommand()
         {
-            var options = this.CreateNewContextOptions();
+            var options = CreateNewContextOptions();
 
             const string userId = "1";
             const int taskSignupId = 1;
-            var user = new ApplicationUser() {Id = userId};
+            var user = new ApplicationUser {Id = userId};
             var dateTimeUtcNow = DateTime.UtcNow;
             var taskSignupViewModels = new List<TaskSignupViewModel>
             {
@@ -105,4 +107,3 @@ namespace AllReady.UnitTest.Features.Event
         }
     }
 }
-

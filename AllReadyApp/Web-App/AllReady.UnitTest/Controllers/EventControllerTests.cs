@@ -3,11 +3,11 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Features.Events;
+using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels.Event;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -41,45 +41,57 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task ShowEventSendsShowEventQueryWithCorrectData()
         {
-            var builder = EventControllerBuilder.Instance();
-            var sut = builder.WithMediator().WithUserLogged().Build();
-            
-            await sut.ShowEvent(1);
+            const string userId = "1";
+            const int eventId = 1;
 
-            builder
-                .MediatorMock
-                .Verify(x => x.SendAsync(It.Is<ShowEventQuery>(y => y.EventId== 1 && y.User == sut.ControllerContext.HttpContext.User)));
+            var mediator = new Mock<IMediator>();
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = userId });
+            
+            var sut = new EventController(mediator.Object, userManager.Object);
+            sut.SetFakeUser(userId);
+            await sut.ShowEvent(eventId);
+
+            mediator.Verify(x => x.SendAsync(It.Is<ShowEventQuery>(y => y.EventId == eventId)), Times.Once);
         }
 
         [Fact]
         public async Task ShowEventReturnsHttpNotFoundResultWhenViewModelIsNull()
         {
-            var builder = EventControllerBuilder.Instance();
-            var sut = builder.WithMediator().Build();
+            const string userId = "1";
 
-            builder
-                .MediatorMock
-                .Setup(x => x.SendAsync(It.IsAny<ShowEventQuery>()))
-                .ReturnsAsync(null);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<ShowEventQuery>())).ReturnsAsync(null);
 
-            var result = await sut.ShowEvent(0);
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = userId });
 
-            Assert.True(result is NotFoundResult);
+            var sut = new EventController(mediator.Object, userManager.Object);
+            sut.SetFakeUser(userId);
+
+            var result = await sut.ShowEvent(It.IsAny<int>());
+
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
-        public async Task ShowEventReturnsEventWithTasksViewWithCorrrectViewModelWhenViewModelIsNotNull()
+        public async Task ShowEventReturnsCorrrectViewAndViewModelWhenViewModelIsNotNull()
         {
-            var builder = EventControllerBuilder.Instance();
+            const string userId = "1";
+
             var eventViewModel = new EventViewModel();
-            var sut = builder.WithMediator().Build();
 
-            builder
-                .MediatorMock
-                .Setup(x => x.SendAsync(It.IsAny<ShowEventQuery>()))
-                .ReturnsAsync(eventViewModel);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<ShowEventQuery>())).ReturnsAsync(eventViewModel);
 
-            var result = await sut.ShowEvent(0) as ViewResult;
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = userId });
+
+            var sut = new EventController(mediator.Object, userManager.Object);
+            sut.SetFakeUser(userId);
+
+            var result = await sut.ShowEvent(It.IsAny<int>()) as ViewResult;
 
             Assert.Equal(eventViewModel, result.Model);
             Assert.Equal("EventWithTasks", result.ViewName);
@@ -112,8 +124,7 @@ namespace AllReady.UnitTest.Controllers
 
         private class EventControllerBuilder
         {
-            private IMediator _mediator;
-            private ControllerContext _controllerContext;
+            private readonly IMediator _mediator;
             private static EventControllerBuilder _builder;
             private EventControllerBuilder()
             {
@@ -128,38 +139,10 @@ namespace AllReady.UnitTest.Controllers
 
             public EventController Build()
             {
-                return _controllerContext == null
-                    ? new EventController(_mediator)
-                    : new EventController(_mediator)
-                    {
-                        ControllerContext = _controllerContext
-                    };
+                return new EventController(_mediator, null);
             }
 
-            public Mock<IMediator> MediatorMock { get; }
-
-            public EventControllerBuilder WithMediator()
-            {
-                _mediator = MediatorMock.Object;
-                return this;
-            }
-
-            public EventControllerBuilder WithUserLogged()
-            {
-                var httpContext = new Mock<HttpContext>();
-
-                var controllerContext = new Mock<ControllerContext>();
-                var principal = new Mock<ClaimsPrincipal>();
-
-                principal.Setup(p => p.IsInRole("Administrator")).Returns(true);
-                principal.SetupGet(x => x.Identity.Name).Returns("userName");
-
-                httpContext.Setup(x => x.User).Returns(principal.Object);
-                controllerContext.Object.HttpContext = httpContext.Object;
-                _controllerContext = controllerContext.Object;
-
-                return this;
-            }
+            private Mock<IMediator> MediatorMock { get; }
         }
     }
 }
