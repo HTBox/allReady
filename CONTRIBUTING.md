@@ -8,16 +8,7 @@ This repo contains the code for **allReady**, an open-source solution focused on
 
 + [Project overview](#project-overview)
 + [How you can help](#how-you-can-help)
-+ [Solution architecture](#solution-architecture)
-	+ [Web application](#web-application)
-	+ [Cross-platform mobile app](#cross-platform-mobile-app)
-+ [Get started with the allReady solution](#get-started-with-the-allready-solution)
-	+ [Prerequisites](#prerequisites)
-	+ [Configure the web project](#configure-the-web-project)
-	+ [Configure the mobile app project](#configure-the-mobile-app-project)
-	+ [Run and test locally](#run-and-test-locally)
-	+ [Deploy to Azure](#deploy-to-azure)
-	
++ [Solution architecture](#solution-architecture)	
 
 ##Project overview
 allReady is focused on increasing awareness, efficiency and impact of preparedness campaigns delivered by humanitarian and disaster response organizations in local communities.  As community preparedness and resliency increases, the potential for impactful disasters (both large and small) is greatly decreased.  Though not as visible or emotionally salient as saving children from a burning building, preparedness activities like ensuring working smoke detectors in a community, follows the industry rule of thumb where an hour or dollar spent before a disaster is worth 15-30 afterwards.  The goal of allReady hinges on growing awareness of, and engaging communities and their volunteers in preparedness campaigns, and more aspirationally, to "put disaster response out of business" by preparing communities to be reslient to inevitable disasters. 
