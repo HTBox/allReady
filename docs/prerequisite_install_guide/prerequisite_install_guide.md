@@ -4,7 +4,7 @@ This guide will walk you through all of the software that needs to be installed 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**
+**Table Of Contents**
 
 - [General Install Steps](#general-install-steps)
   - [Windows Showing File Extensions](#windows-showing-file-extensions)
@@ -18,7 +18,8 @@ This guide will walk you through all of the software that needs to be installed 
   - [Bower](#bower)
   - [Gulp](#gulp)
   - [Visual Studio](#visual-studio)
-  - [Visual Studio Post Install Configuations](#visual-studio-post-install-configuations)
+  - [Configure Visual Studio External Web Tools](#configure-visual-studio-external-web-tools)
+  - [Installing Microsoft ASP.NET and Web Tools](#installing-microsoft-aspnet-and-web-tools)
 - [Web Solution](#web-solution)
   - [Compiling Web Solution](#compiling-web-solution)
   - [Running Web Solution](#running-web-solution)
@@ -287,27 +288,155 @@ allReady uses Visual Studio 2015 along with .NET Core.  This guide will be using
 
     ![Install Progress](images/vs-install-8-installing.png)
          
-### Visual Studio Post Install Configuations
+### Configure Visual Studio External Web Tools
 
-* Configure External Web Tools (put PATH first)
+We now need to tell Visual Studio to put our PATH environment variable higher in the order of paths that are used to call external web tools.
+
+1. Open Visual Studio
+1. Click on the Tools Menu and Select Options
+
+    ![Open Options Dialog](images/vs-install-11-options.png)
+
+1. Expand the "Projects and Solutions" section, select the "External Web Tools", in the list of "Locations of external tools:" click on the $(PATH), click the Up arrow until $(PATH) is at the top and click the OK button 
+
+    ![External Web Tools](images/vs-install-12-external-web-tools.png)
 
 
-### Installing .NET Core
+### Installing Microsoft ASP.NET and Web Tools
 
-### Installing ASP.NET Core Tooling
+allReady uses ASP.NET Core and we need to install the tooling for .NET Core.  
+
+1. Open Visual Studio
+1. Click on the Tools Menu and Select "Extensions and Updates" 
+
+    ![Extensions and Updates](images/vs-install-13-extensions-updates.png)
+
+1. Expand the Updates section, select "Visual Studio Gallery", and if you see the "Microsoft ASP.NET and Web Tools" click the Update button. 
+
+    ![Microsoft ASP.NET and Web Tools Update](images/dotnet-core-install-1-aspnet-update.png)
+
+1. This will launch you default browser and download the update.  Once the update has been downloaded close Visual Studio and launch the exe.
+1. If a "Open File - Security Warning" dialog comes up, click the Run button
+
+    ![Open File Security Warning](images/dotnet-core-install-2-open-file-warning.png)
+
+1.  Accept the license Terms and Click the Install Button
+
+    ![Accept license terms](images/dotnet-core-install-3-license-terms.png)
+
+1. If the User Access Control prompt comes up, click Yes
+
+    ![UAC Prompt](images/dotnet-core-install-4-uac.png)
+
+1. The install will take a few minutes
+
+    ![Installing](images/dotnet-core-install-5-installing.png)
+
+1. When the install is done click the Close button
+
+    ![Install Finished.  Click Close](images/dotnet-core-install-6-close.png)
+
+You have now finished installing all of the required software to start working on the Web Solution.  
+
+> Even if you are only planning on working on the mobile application, the API that the mobile application uses is part of the Web Solution so you will want to make sure that you can compile and run the web solution.  
 
 
 ## Web Solution
 
+The web solution contains the web site along with all of the unit tests.  
+
+> Note: The web solution does not contain the mobile application.
+
+### Open the Solution File
+
+In the allReadyApp directory are 2 solution files.  You will want to open the **AllReadyWebOnly.sln**
+
+![AllReadyWebOnly.sln file](images/web-1-sln-file.png)
+
+1. Double-click on the "AllReadyWebOnly.sln" file in Windows Explorer
+1. If you are prompted to say how you want to open the sln file, click the More apps 
+
+    ![How do you want to open this file dialog](images/web-2-how-to-open-sln.png)
+
+1. Scroll down until you see Visual Studio 2015, click the "Always use this app to open .sln files" and click Ok
+
+    ![Select Visual Studio 2015](images/web-3-open-with-vs2015.png)
+
+1. The first time that you open the solution is will restore the package dependencies for the unit test and web projects.
+
+    ![restore packages info in solution explorer](images/web-4-restore-packages.png)
+    
+    ![unit test project Restoring](images/web-4-unit-test-restore.png)
+
+    ![web project restoring](images/web-4-web-restore.png)
+
+1. Once the package dependencies restore is completed, the Task Runner Explorer will popup and start the Gulp watch task.
+
+    ![task runner explorer](images/web-5-task-runner-explorer.png)
+
 ### Compiling Web Solution
 
+Now that the package dependencies are restored you are ready to build the solution.
 
-### Running Web Solution
+![Build Menu Build Solution Option](images/web-6-build-solution.png)
+
+The first time that you compile the solution all of the nuget packages will be restored.
+
+![Nuget Package Restore](images/web-7-nuget-restore.png)
+
+It may take a few minutes to compile the solution the first time.  
+
+If all has went well your solution compiled successfully and you are ready to run the web site.
+
+### Running The Web Site
+
+By default the Web project is set as the Startup Project.  You can verify this in Solution Explorer by looking at the Web\AllReady project and seeing that it is bolded.
+
+![Startup Project Verification](images/web-8-startup-project.png)
+
+If the project is not set as the startup project, right-click on it and select "Set as Startup Project"
+
+![Set Startup Project](images/web-8-startup-project-set.png)
+
+Once the startup project is set you are ready to start debugging the project.  There are 3 ways to start up the project:
+
+1. Press F5
+1. Click on the IIS Express button on the toolbar
+
+    ![IIS Express Button on Toolbar](images/web-9-iisexpress-button.png)
+
+1. Go under the Debug menu and select "Start Debugging"    
+
+    ![Debug Menu Start Debugging Option](images/web-9-start-debugging.png)
+
+1. If everything worked you should now be looking at a view of the website in your default browser.
+
+    ![WebSite](images/web-10-website-launched.png)
+
+1. There are 2 accounts already created for you to log in with to test out different functionality.  You can get the account information at [https://github.com/HTBox/allReady/wiki/Solution-architecture#run-and-test-locally](https://github.com/HTBox/allReady/wiki/Solution-architecture#run-and-test-locally)
+
+
+## Running Test Cases
+
+### Unit Tests
+
+We need to verify that you can run the unit test.  allReady has over 1,000 unit test.  The expectation is that as you add functionality there is a unit test that accompanies it.  
+
+### UI Tests
+
+There is also a suite of UI test using [Canopy](http://lefthandedgoat.github.io/canopy/index.html).  
+
+> In order to run the Canopy test, you need to have Chrome installed.  You can download Chrome at [https://www.google.com/chrome/browser/desktop/index.html](https://www.google.com/chrome/browser/desktop/index.html)
+
+
+
 
 
 ## Mobile Solution
 
 ###  Installing Mobile Tools
+
+Make sure that you have followed all of the steps that are part of the ["General Section"](#general-install-steps) of this guide as those tools are required plus the tools that this section will install.
 
 * jdk8
 * vs 2015 cordova tools
@@ -329,4 +458,4 @@ allReady uses Visual Studio 2015 along with .NET Core.  This guide will be using
 
 
 
-## Running Test Cases
+
