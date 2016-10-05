@@ -51,7 +51,7 @@ namespace AllReady.Controllers
         public async Task<IActionResult> ShowEvent(int id)
         {
             var user = await _userManager.GetUserAsync(User);
-            var viewModel = await _mediator.SendAsync(new ShowEventQuery { EventId = id, UserId = user.Id });
+            var viewModel = await _mediator.SendAsync(new ShowEventQuery { EventId = id, UserId = user?.Id });
             if (viewModel == null)
             {
                 return NotFound();
