@@ -7,7 +7,7 @@ open Pages
 
 let All baseUrl =
     let testOrganizationName = Utils.GetScenarioTestName "My test project for Admin"
-    let testCampaignName = Utils.GetScenarioTestName "My test campaign for Admin"
+    
  
     context "allReady Admin Activities"
 
@@ -42,6 +42,7 @@ let All baseUrl =
         title() |> is "Campaigns - Admin - allReady"
 
     "Admin can create new campaign" &&& fun _ ->
+        let testCampaignName = Utils.GetScenarioTestName "Test Campaign for Admin"
         AdminCampaigns.SelectCreateNew()
         AdminCampaignCreate.PopulateCampaignDetails 
             {AdminCampaignCreate.DefaultCampaignDetails with 
@@ -58,6 +59,7 @@ let All baseUrl =
         "td a" *= testCampaignName
 
     "Admin can create a campaign from public campaign page" &&& fun _ ->
+        let testCampaignName = Utils.GetScenarioTestName "Test Campaign for Admin From Public Page"
         Campaigns.SelectCreateNew()
         AdminCampaignCreate.PopulateCampaignDetails 
             {AdminCampaignCreate.DefaultCampaignDetails with 

@@ -65,6 +65,15 @@
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
+    <None Include="chromedriver.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="IEDriverServer.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="MicrosoftWebDriver.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="canopy">
@@ -81,7 +90,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SizSelCsZzz">
-      <HintPath>..\packages\SizSelCsZzz.0.3.35.0\lib\SizSelCsZzz.dll</HintPath>
+      <HintPath>..\packages\SizSelCsZzz.0.3.36.0\lib\SizSelCsZzz.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
