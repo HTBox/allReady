@@ -5,7 +5,8 @@ open System
 Console.WriteLine("Launching Scenario Tests")
 
 //start an instance of the firefox browser
-start firefox
+//start firefox
+start chrome
 pin Left
 resize (1024, 768)
 
