@@ -51,11 +51,12 @@
 }
 else
 {
-    <p>There are no potential team members to add to this itinerary</p>
+    <p>There are no potential team members to add to this itinerary. There must be volunteers (for a task occuring on the same day as the itinerary) for them to be available to assign to this team.</p>
 }
 
 <div class="row">
     <div class="col-md-8">
+        <h4>Assigned Team Members</h4>
         @if (Model.TeamMembers.Any())
         {
             <table class="table">
@@ -84,7 +85,7 @@ else
                             <p>@teamMember.TaskName</p>
                         </td>
                         <td>
-                            <a data-toggle="tooltip" data-placement="top" title="Remove" asp-action="ConfirmRemoveTeamMember" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-taskSignupId="@teamMember.TaskSignupId" class="btn btn-danger"><span class="fa fa-remove"></span></a>
+                            <a data-toggle="tooltip" data-placement="top" title="Remove from team" asp-action="ConfirmRemoveTeamMember" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-taskSignupId="@teamMember.TaskSignupId" class="btn btn-danger"><span class="fa fa-remove"></span></a>
                         </td>
                     </tr>
                 }
@@ -93,8 +94,7 @@ else
         }
         else
         {
-            <br />
-            <p>There are currently no assigned team members for this itinerary</p>
+            <p>There are currently no assigned team members for this itinerary.</p>
         }
     </div>
 </div>
@@ -136,19 +136,14 @@ else
                             <p>@request.City</p>
                         </td>
                         <td>
-                            <form asp-action="MoveRequestUp" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn"><button type="submit" class="btn btn-default submit-form" @if (@request.IsFirst)
-                                                                                                                                                                                                                                               {
-                                                                                                                                                                                                                                                   <text>disabled</text>
-                                                                                                                                                                                                                                               }><span class="fa fa-arrow-up"></span></button>
+                            <form asp-action="MoveRequestUp" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
+                                <button type="submit" class="btn btn-default submit-form" @if (@request.IsFirst) { <text>disabled</text> }><span class="fa fa-arrow-up"></span></button>
                             </form>
                             <form asp-action="MoveRequestDown" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
-                                <button type="submit" class="btn btn-default submit-form" @if (@request.IsLast)
-                                                                                          {
-                                                                                              <text>disabled</text>
-                                                                                          }><span class="fa fa-arrow-down"></span></button>
+                                <button type="submit" class="btn btn-default submit-form" @if (@request.IsLast) { <text>disabled</text> }><span class="fa fa-arrow-down"></span></button>
                             </form>
 
-                            <a data-toggle="tooltip" data-placement="top" title="Remove" asp-action="ConfirmRemoveRequest" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="btn btn-danger right-action-btn"><span class="fa fa-trash"></span></a>
+                            <a data-toggle="tooltip" data-placement="top" title="Remove from itinerary" asp-action="ConfirmRemoveRequest" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="btn btn-danger right-action-btn"><span class="fa fa-trash"></span></a>
                         </td>
                         <td>
                          @request.Status
