@@ -4,14 +4,13 @@ using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-
     public class OrganizationByIdQueryHandler : IRequestHandler<OrganizationByIdQuery, Organization>
     {
         private readonly AllReadyContext _context;
 
         public OrganizationByIdQueryHandler(AllReadyContext context)
         {
-            this._context = context;
+            _context = context;
         }
 
         public Organization Handle(OrganizationByIdQuery message)

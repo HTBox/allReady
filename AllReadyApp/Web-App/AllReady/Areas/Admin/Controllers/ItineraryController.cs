@@ -161,37 +161,37 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> ConfirmRemoveTeamMember(int itineraryId, int taskSignupId)
         {
             var orgId = await GetOrganizationIdBy(itineraryId);
-
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
                 return Unauthorized();
             }
 
-            var model = await _mediator.SendAsync(new TaskSignupSummaryQuery { TaskSignupId = taskSignupId });
-
-            if (model == null)
+            var viewModel = await _mediator.SendAsync(new TaskSignupSummaryQuery { TaskSignupId = taskSignupId });
+            if (viewModel == null)
             {
                 return NotFound();
             }
 
-            return View("ConfirmRemoveTeamMember", model);
+            viewModel.ItineraryId = itineraryId;
+            viewModel.Title = $"Remove team member: {viewModel.VolunteerName}";
+            viewModel.UserIsOrgAdmin = true;
+
+            return View("ConfirmRemoveTeamMember", viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
-        public async Task<IActionResult> RemoveTeamMember(int itineraryId, int taskSignupId)
+        public async Task<IActionResult> RemoveTeamMember(TaskSignupSummaryViewModel viewModel)
         {
-            var orgId = await GetOrganizationIdBy(itineraryId);
-
-            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            if (!viewModel.UserIsOrgAdmin)
             {
                 return Unauthorized();
             }
 
-            var result = await _mediator.SendAsync(new RemoveTeamMemberCommand { TaskSignupId = taskSignupId });
+            await _mediator.SendAsync(new RemoveTeamMemberCommand { TaskSignupId = viewModel.TaskSignupId });
 
-            return RedirectToAction("Details", new { id = itineraryId });
+            return RedirectToAction("Details", new { id = viewModel.ItineraryId });
         }
 
         [HttpGet]
@@ -279,7 +279,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             // todo: sgordon - Extend this to return success / failure message to the user
 
-            await _mediator.SendAsync(new RequestStatusChangeCommand() { RequestId = requestId, NewStatus = RequestStatus.Completed});
+            await _mediator.SendAsync(new RequestStatusChangeCommand { RequestId = requestId, NewStatus = RequestStatus.Completed});
 
             return RedirectToAction("Details", new { id = itineraryId });
         }
@@ -298,7 +298,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             // todo: sgordon - Extend this to return success / failure message to the user
 
-            await _mediator.SendAsync(new RequestStatusChangeCommand() { RequestId = requestId, NewStatus = RequestStatus.Assigned });
+            await _mediator.SendAsync(new RequestStatusChangeCommand { RequestId = requestId, NewStatus = RequestStatus.Assigned });
 
             return RedirectToAction("Details", new { id = itineraryId });
         }

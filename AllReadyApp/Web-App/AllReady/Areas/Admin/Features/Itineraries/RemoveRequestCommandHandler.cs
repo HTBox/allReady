@@ -6,8 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Itineraries
 {
-    public class RemoveRequestCommandHandler : IAsyncRequestHandler<RemoveRequestCommand, bool>
-    public class RemoveRequestCommandHandlerAsync : AsyncRequestHandler<RemoveRequestCommand>
+    public class RemoveRequestCommandHandler : AsyncRequestHandler<RemoveRequestCommand>
     {
         private readonly AllReadyContext _context;
 
