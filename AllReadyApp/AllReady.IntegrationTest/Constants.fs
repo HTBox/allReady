@@ -1,7 +1,7 @@
 ﻿module Constants
 
 // URLS
-let UrlLocalHost = "http://localhost:33310/"
+let UrlLocalHost = "http://localhost:48408/"
 
 // Credentials
 let SiteAdminUserName = "Administrator@example.com"
