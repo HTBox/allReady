@@ -708,6 +708,111 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
+        public async Task ConfirmRemoveRequestSendsOrganizationIdQueryWithCorrectIntineraryId()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async Task ConfirmRemoveRequestReturnsUnauthorizedResult_WhenOrgIdIsZero()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async Task ConfirmRemoveRequestReturnsUnauthorizedResult_WhenUserIsNotOrgAdmin()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async Task ConfirmRemoveRequestReturnsNotFoundResult_WhenViewModelIsNull()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async Task ConfirmRemoveRequestAssignsCorrectTitleOnViewModel()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async Task ConfirmRemoveRequestSetsUserIsOrgAdminToTrue_WhenUserIsOrgAdmin()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async Task ConfirmRemoveRequestRetrunsCorrectViewAndViewModel()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async Task ConfirmRemoveRequestHasHttpGetAttribute()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async Task ConfirmRemoveRequestHasRouteAttributeWithTheCorrectRouteValule()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async Task RemoveRequestReturnsUnathorizedResult_WhenUserIsNotOrgAdmin()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async Task RemoveRequestSendsRemoveRequestCommandWithCorrectData()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async Task RemoveRequestRedirectsToCorrectActionWithCorrrectRouteValues()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async Task RemoveRequestHasHttpPostAttribute()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async Task RemoveRequestHasValidateAntiForgeryTokenAttribute()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
+        public async Task RemoveRequestHasRouteAttributeWithCorrectRouteValue()
+        {
+            // delete this line when starting work on this unit test
+            await TaskFromResultZero;
+        }
+
+        [Fact]
         public async Task ConfirmRemoveTeamMemberSendsOrganizationIdQueryWithTheCorrectItineraryId()
         {
             const int itineraryId = 1;
@@ -722,7 +827,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task ConfirmRemoveTeamMemberReturnsHttpUnauthorizedWhenOrganizationIdIsZero()
+        public async Task ConfirmRemoveTeamMemberReturnsHttpUnauthorized_WhenOrganizationIdIsZero()
         {
             var itineraryId = It.IsAny<int>();
             var taskSignupId = It.IsAny<int>();
@@ -736,7 +841,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task ConfirmRemoveTeamMemberReturnsHttpUnauthorizedWhenUserIsNotOrgAdmin()
+        public async Task ConfirmRemoveTeamMemberReturnsHttpUnauthorized_WhenUserIsNotOrgAdmin()
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
@@ -765,7 +870,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task ConfirmRemoveTeamMemberReturnsHttpNotFoundWhenTaskSignupSummaryModelIsNull()
+        public async Task ConfirmRemoveTeamMemberReturnsHttpNotFound_WhenTaskSignupSummaryModelIsNull()
         {
             const int orgId = 1;
 
@@ -830,7 +935,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task RemoveTeamMemberSendsRemoveTeamMemberCommandWithCorrectTaskSignupIdWhenOrganizationIsNotZero_AndUserIsOrgAdmin()
+        public async Task RemoveTeamMemberSendsRemoveTeamMemberCommandWithCorrectTaskSignupId_WhenOrganizationIsNotZero_AndUserIsOrgAdmin()
         {
             const int taskSignupId = 1;
 
@@ -846,7 +951,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task RemoveTeamMemberRedirectsToCorrectActionWithCorrectRouteValuesWhenOrganizationIdIsNotZero_AndUserIsOrgAdmin()
+        public async Task RemoveTeamMemberRedirectsToCorrectActionWithCorrectRouteValues_WhenOrganizationIdIsNotZero_AndUserIsOrgAdmin()
         {
             const int orgId = 1;
 
