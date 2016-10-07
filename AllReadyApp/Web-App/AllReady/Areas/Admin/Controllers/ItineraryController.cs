@@ -205,7 +205,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             var  viewModel = await _mediator.SendAsync(new RequestSummaryQuery { RequestId = requestId });
-            if ( viewModel == null)
+            if (viewModel == null)
             {
                 return NotFound();
             }
