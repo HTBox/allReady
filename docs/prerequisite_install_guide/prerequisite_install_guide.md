@@ -355,7 +355,7 @@ The reason that you need to fork the repository is because you do not have write
 
     ![Fork Button](images/get-code-fork.png)
 
-1. After the fork has been made, you will be redirect over to the fork.  Your repository will be https://github.com/[User Name]/allReady
+1. After the fork has been made, you will be redirect over to the fork.  Your repository will be https:<i></i>//github.com/**[Your User Name]**/allReady
 
 You are now ready to download the repository onto your machine by cloning it.
 
