@@ -545,7 +545,7 @@ To run the UI test, you first need to start up the web site.
     * If any errors occurred, it will stop at the line in Visual Studio.  If you get a time out error, this typically means that either the test was not able to navigate to the page it expected to be on or the element it was looking for was not able to be found.   
 
 
-You are now ready to start working on the allReady web site and unit test.  Please read through the [Git guide](docs/git/gitprocess.md) for the process of contributing to the allReady repository.
+You are now ready to start working on the allReady web site and unit test.  Please read through the [Git guide](../git/gitprocess.md) for the process of contributing to the allReady repository.
 
 > **If you are planning on working on the mobile application, continue with the rest of this guide.**  
 

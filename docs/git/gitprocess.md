@@ -1,6 +1,6 @@
 # Git Usage for allReady
 
-> **WARNING:** This guide assumes that you have already installed all of the required software for the allReady project per the [install guide](docs/prerequisite_install_guide/prerequisite_install_guide.md) and only covers usage of Git.  
+> **WARNING:** This guide assumes that you have already installed all of the required software for the allReady project per the [install guide](../prerequisite_install_guide/prerequisite_install_guide.md) and only covers usage of Git.  
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
