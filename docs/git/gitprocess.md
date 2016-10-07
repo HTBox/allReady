@@ -4,19 +4,18 @@
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**
+**Table Of Contents**
 
-- [Installing Git](#installing-git)
-- [Configuring Git](#configuring-git)
-- [Forking the Repository](#forking-the-repository)
-- [Cloning the Repository](#cloning-the-repository)
-- [Setup a link to the HTBox/allReady repository](#setup-a-link-to-the-htboxallready-repository)
 - [Creating a branch](#creating-a-branch)
 - [Committing Changes Locally](#committing-changes-locally)
+  - [Adding Changes](#adding-changes)
+  - [Backout Changes](#backout-changes)
+  - [Committing Changes](#committing-changes)
 - [Sending Changes to Github](#sending-changes-to-github)
 - [Creating a Pull Request](#creating-a-pull-request)
 - [Making changes to an existing pull request](#making-changes-to-an-existing-pull-request)
 - [Thank you](#thank-you)
+- [Additional Resources](#additional-resources)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
