@@ -191,7 +191,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new RemoveTeamMemberCommand { TaskSignupId = viewModel.TaskSignupId });
 
-            return RedirectToAction("Details", new { id = viewModel.ItineraryId });
+            return RedirectToAction(nameof(Details), new { id = viewModel.ItineraryId });
         }
 
         [HttpGet]
@@ -228,7 +228,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new RemoveRequestCommand { RequestId = viewModel.Id, ItineraryId = viewModel.ItineraryId });
 
-            return RedirectToAction("Details", new { id = viewModel.ItineraryId });
+            return RedirectToAction(nameof(Details), new { id = viewModel.ItineraryId });
         }
 
         [HttpPost]
