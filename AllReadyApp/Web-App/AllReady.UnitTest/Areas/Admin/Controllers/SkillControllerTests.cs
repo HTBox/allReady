@@ -13,6 +13,7 @@ using AllReady.Areas.Admin.Features.Organizations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 using AllReady.Areas.Admin.ViewModels.Skill;
+using Microsoft.AspNetCore.Routing;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -603,57 +604,60 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task SkillDeleteConfirmedPostNoSkillReturns404()
+        public async Task DeleteConfirmedPostReturnsUnauthorizedResult_WhenSkillBelongsToSameOrgAsOrgAdminIsFalse()
         {
             // Arrange
-            const int skillId = 0;
+            var viewModel = new SkillDeleteViewModel { SkillBelongsToSameOrgAsOrgAdmin = false };
             SkillController controller;
-            var mockMediator = MockMediatorSkillDeleteQueryNullModel(out controller);
+            MockMediatorSkillDeleteQueryNullModel(out controller);
 
             // Act
-            var result = await controller.DeleteConfirmed(skillId) as NotFoundResult;
+            var result = await controller.DeleteConfirmed(viewModel) as UnauthorizedResult;
 
             // Assert
-            Assert.NotNull(result);
-            mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillDeleteQuery>()), Times.Once);
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]
-        public async Task SkillDeleteConfirmedPostFromSiteAdminReturnsRedirectToAction()
+        public async Task DeleteConfirmedPostSendsSkillDeleteCommandWithCorrectSkillId()
         {
             // Arrange
+            const int skillId = 1;
             SkillController controller;
             var mockMediator = MockMediatorSkillDeleteQuery(out controller);
+
+            var viewModel = new SkillDeleteViewModel { SkillBelongsToSameOrgAsOrgAdmin = true, SkillId = skillId };
 
             var mockContext = MockControllerContextWithUser(SiteAdmin());
             controller.ControllerContext = mockContext.Object;
 
             // Act            
-            var result = await controller.DeleteConfirmed(1) as RedirectToActionResult;
+            await controller.DeleteConfirmed(viewModel);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal("Index", result.ActionName);
-
-            mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillDeleteCommand>()), Times.Once);
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<SkillDeleteCommand>(y => y.Id == skillId)), Times.Once);
         }
-        
+
         [Fact]
-        public async Task SkilllDeleteConfirmedPostForNonAdminUserWithNoOrgIdReturns401()
+        public async Task DeleteConfirmedPostReturnsRedirectToTheCorrectActionWithTheCorrectRouteValues()
         {
             // Arrange
-            const int skillId = 1;
             SkillController controller;
             MockMediatorSkillDeleteQuery(out controller);
 
-            var mockContext = MockControllerContextWithUser(OrgAdminWithMissingOrgId());
+            var viewModel = new SkillDeleteViewModel { SkillBelongsToSameOrgAsOrgAdmin = true };
+
+            var routeValueDictionary = new RouteValueDictionary { ["area"] = "Admin" };
+
+            var mockContext = MockControllerContextWithUser(SiteAdmin());
             controller.ControllerContext = mockContext.Object;
 
-            // Act
-            var result = await controller.DeleteConfirmed(skillId);
+            // Act            
+            var result = await controller.DeleteConfirmed(viewModel) as RedirectToActionResult;
 
             // Assert
-            Assert.IsType<UnauthorizedResult>(result);
+            Assert.Equal(nameof(SkillController.Index), result.ActionName);
+            Assert.Equal(routeValueDictionary, result.RouteValues);
         }
 
         [Fact(Skip = "NotImplemented")]

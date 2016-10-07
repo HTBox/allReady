@@ -1,19 +1,15 @@
 @model AllReady.Areas.Admin.ViewModels.Skill.SkillDeleteViewModel
 
-@{
-    ViewData["Title"] = $"Delete skill {Model.HierarchicalName}";
-}
-
 <div class="row">
     <div class="col-md-12">
         <h3>Are you sure you want to delete @Model.HierarchicalName?</h3>
-        @if (Model.ChildrenNames.Count() > 0)
+        @if (Model.ChildrenNames.Any())
         {
             <div class="alert alert-warning" role="alert">
                 <strong>Whoa there!</strong>
                 The following skills will become orphans if you delete @Model.HierarchicalName:
                 <ul>
-                    @foreach (string childSkill in Model.ChildrenNames)
+                    @foreach (var childSkill in Model.ChildrenNames)
                     {
                         <li>@childSkill</li>
                     }
@@ -27,6 +23,8 @@
         @using (Html.BeginForm())
         {
             @Html.AntiForgeryToken()
+            <input asp-for="SkillId" type="hidden" />
+            <input asp-for="SkillBelongsToSameOrgAsOrgAdmin" type="hidden" />
             <div class="form-actions no-color">
                 <button type="submit" class="btn btn-default">Delete</button>
                 <a class="btn btn-default" asp-area="Admin" asp-controller="Skill" asp-action="Index">Back to List</a>
