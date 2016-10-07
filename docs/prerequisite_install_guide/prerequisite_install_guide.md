@@ -340,6 +340,74 @@ You have now finished installing all of the required software to start working o
 
 > Even if you are only planning on working on the mobile application, the API that the mobile application uses is part of the Web Solution so you will want to make sure that you can compile and run the web solution.  
 
+## Getting the Source Code
+
+### Forking the Repository
+
+In order to make changes the first thing you need to do is create a copy of the repository into your account.  In Git terms, this is called forking the repository.
+
+The reason that you need to fork the repository is because you do not have write access to the HTBox allReady repository.  When you fork the repository into your account, you have full write access to it to make changes and then you can send them back to the HTBox allReady repository by submitting a pull request.
+
+**Steps to Fork the Repository:**  
+
+1. Navigate to [https://github.com/HTBox/allReady](https://github.com/HTBox/allReady)
+1. Click on the Fork button
+
+    ![Fork Button](images/get-code-fork.png)
+
+1. After the fork has been made, you will be redirect over to the fork.  Your repository will be https://github.com/[User Name]/allReady
+
+You are now ready to download the repository onto your machine by cloning it.
+
+### Cloning the Repository
+
+Cloning the repository is how you get the repository from Github onto your local machine and keep the link to Github to be able to interact with the repository local.
+
+You will want to make sure to do a clone and not download the zip file version of the repository if you want to be able to interact with the source code on your machine as a Git repository.
+
+**Steps to Clone:**
+
+1. Navigate to your forked copy of the repository.
+1. Click on the "Clone or download" button
+1. In the popup that comes up, click on the Clipboard looking button next to the url.
+
+    ![Clone Get Url](images/get-code-clone-geturl.png)
+
+1. Next you need to open up a terminal / command prompt
+1. In the command prompt, navigate to where you want to store your source code at.  
+1. Then run the following command to create an allReady directory and download the repository onto your machine.  Make sure to replace "[Your UserName]" with your actual Github user name.
+
+        git clone http://github.com/[Your UserName]/allReady
+
+You now have the repository on your machine.  
+
+There are 2 Visual Studio solutions in the allReady\AllReadyApp directory.  
+
+1. AllReadyWebonly.sln -> This file will open just the web project files and does not include the mobile application.  Use this solution if you are not going to be working on the mobile application. 
+1. AllReadyApp.sln -> This file will open all of the allReady projects including the mobile application.  Use this file if you are going to be working on the mobile application.
+
+The first time that you open up the solution in Visual Studio, it will install the npm and bower dependencies.  This can take several minutes depending on your internet connection.  Once all of the npm and bower dependencies have been installed, you need to build the solution.  Building the solution the first time will download all of the nuget packages.  
+
+If you are building the mobile application it will take several minutes to download additional dependencies that Visual Studio needs.  
+
+Once the solution compiles successfully you are ready to start contributing.
+
+### Setup a link to the HTBox/allReady repository
+
+Before making changes to your repository, you will want to setup a reference back to the HTBox allReady repository so that you can pull changes into your forked repository.
+
+1. Open the command prompt and navigate to the allReady directory.
+1. Run the following command to setup a reference called upstream to the HTBox/allReady repository.
+
+        git remote add upstream https://github.com/HTBox/allReady.git
+
+1. Verify that it was setup successfully by running 
+
+        git remote -v         
+        
+    ![git remote -v output](images/get-code-remote-v.png)
+
+Now that we have the code we are ready to make sure that it compiles and that you can run the unit tests.
 
 ## Web Solution
 
@@ -420,18 +488,68 @@ Once the startup project is set you are ready to start debugging the project.  T
 
 ### Unit Tests
 
-We need to verify that you can run the unit test.  allReady has over 1,000 unit test.  The expectation is that as you add functionality there is a unit test that accompanies it.  
+We need to verify that you can run the unit test.  allReady has over 1,000 unit test.  The expectation is that as you add functionality there is a unit test that accompanies it.  You should also run all of the unit test before submitting any pull arequest.
+
+The unit test project is in the Test folder and called AllReady.UnitTest.  
+
+![](images/unit-test-1-project.png)
+
+
+To run the test you will use the Visual Studio Test Explorer.  
+
+1. Open the Visual Studio Test Explorer under Test -> Windows -> Test Explorer menu.
+
+    ![](images/unit-test-2-test-explorer-menu.png)
+
+1. Once the Test Explorer is open you can either click the Run All to execute all of the tests.  Note that it may take a few minutes for all of the test to show up in the list of tests.
+
+    ![](images/unit-test-3-test-explorer.png)
+
+1. When the test are executing it will show a progress bar at the top, change the "Run All" link to a Cancel link and as a test completes, is skipped or fails, it will show up in the different categories.
+
+    ![](images/unit-test-4-running-tests.png)
+
+1. Once all of the test have been run the progress bar will be a solid color to indicate the status. The "Run All" link will also be available again.   
+    * Green = All Run successfully
+    * Orange = At least 1 test was skipped
+    * Red = At least 1 test failed
+
+    ![](images/unit-test-5-completed-run.png)
+
+1. If any of the tests fail, you will need to work to make the test pass.   
 
 ### UI Tests
 
-There is also a suite of UI test using [Canopy](http://lefthandedgoat.github.io/canopy/index.html).  
+There is also a suite of UI test in the  Test\AllReady.ScenarioTest project.  The test use  [Canopy](http://lefthandedgoat.github.io/canopy/index.html)which is an F# library that makes it easier to work with the Selenium Web Driver to automated web site UI tests.   
 
 > In order to run the Canopy test, you need to have Chrome installed.  You can download Chrome at [https://www.google.com/chrome/browser/desktop/index.html](https://www.google.com/chrome/browser/desktop/index.html)
 
+As you make UI changes, it would be very helpful to create a UI test for those changes.  
+
+The AllReady.ScenarioTest project is a console application.  You can either run it within Visual Studio or from the command line.  The instructions below are going to show how to run the tests from within Visual Studio.  
 
 
+To run the UI test, you first need to start up the web site.
+
+1.  The canopy test require that the web site is running.  Make sure that the  Web\AllReady project is the start up project.  Press F5 to start the web site in debug mode or Ctrl+F5 to start without debug mode.
+1. Before we run the test we need to set a breakpoint to prevent the console application for the canopy tests from automatically exiting.  Open the Program.fs file and set the breakpoint on the `quit()` statement like below.
+
+    ![breakpoint on quit statement](images/canopy-2-breakpoint.png)
+
+1. Now that the web site is running and breakpoint is set, we are ready to run our UI test.  In Visual Studio solution explorer, right-click on the AllReady.ScenarioTest project, select the Debug menu, and click on "Start New Instance"
+
+    ![](images/canopy-1-start-new-instance.png)
+
+1. This will build the project, launch Chrome, and run the automated test.  It will take a few minutes for the test suite to run.  You will see the Chrome browser that was open being automatically interacted with by the Canopy test. 
+    * If there are no error, the console application will exit and the chrome browser that it opened will close. 
+    * If any errors occurred, it will stop at the line in Visual Studio.  If you get a time out error, this typically means that either the test was not able to navigate to the page it expected to be on or the element it was looking for was not able to be found.   
 
 
+You are now ready to start working on the allReady web site and unit test.  Please read through the [Git guide](docs/git/gitprocess.md) for the process of contributing to the allReady repository.
+
+> **If you are planning on working on the mobile application, continue with the rest of this guide.**  
+
+ 
 ## Mobile Solution
 
 ###  Installing Mobile Tools
