@@ -9,18 +9,30 @@ module TopMenu =
 
     let SelectAdminCampaigns _ =
         hover Admin
+        sleep 1
         click AdminCampaigns
 
     let SelectAdminOrganizations _ =
         hover Admin
+        sleep 1
         click AdminOrganizations
 
     let SelectCampaigns _ =
         click Campaigns
 
+module AdminOrganizations =
+    let RelativeUrl = "Admin/Organization"
+
+module Campaigns = 
+    let RelativeUrl = "Campaign"
+    let private CreateNew = "Create Campaign"
+
+    let SelectCreateNew _ = 
+        click CreateNew
+
 module AdminCampaigns =
     let RelativeUrl = "Admin/Campaign"
-    let private CreateNew = "Create New"
+    let private CreateNew = "#CreateNew"
 
     let SelectCreateNew _ = 
         click CreateNew
@@ -32,6 +44,10 @@ module AdminCampaignCreate =
         Description:string
         FullDescription:string
         OrganizationName:string
+        City:string
+        State:string
+        PostalCode:int
+        Country:string
     }
 
     let DefaultCampaignDetails = {
@@ -39,6 +55,10 @@ module AdminCampaignCreate =
         Description = ""
         FullDescription = ""
         OrganizationName = ""
+        City="Redmond"
+        State="WA"
+        PostalCode=98052
+        Country="US"
     }
 
     let private createBtn = "Create"
@@ -52,71 +72,136 @@ module AdminCampaignCreate =
         let insertFullDescriptionScript = sprintf "tinyMCE.activeEditor.setContent('%s')" details.FullDescription
         js(insertFullDescriptionScript) |> ignore
         "#OrganizationId" << details.OrganizationName
-
+        "#Location_City" << details.City
+        "#Location_State" << details.State
+        "#Location_PostalCode" << details.PostalCode.ToString()
+        "#Location_Country" << details.Country
 
 module AdminCampaignDetails =
     let RelativeUrl = "Admin/Campaign/Details"
 
     let private createNew = "Create New"
 
-    let CreateNewActivity _ =
+    let CreateNewEvent _ =
         click createNew
-
-
 
 module AdminOrganizationCreate =
     type OrganizationDetails = {
         Name:string
         WebUrl:string
         LogoUrl:string
+        City:string
+        State:string
+        PostalCode:int
+        Country:string
+        PrivacyPolicyUrl:string
     }
     let DefaultOrganizationDetails  = {
         Name = ""
         WebUrl=""
         LogoUrl=""
+        City="Redmond"
+        State="WA"
+        PostalCode=98052
+        Country="US"
+        PrivacyPolicyUrl="http://putsomethinghere.com"
     }
 
     let PopulateOrganizationDetails details =
         "#LogoUrl" << details.LogoUrl
         "#Name" << details.Name 
         "#WebUrl" << details.WebUrl
+        "#Location_City" << details.City
+        "#Location_State" << details.State
+        "#Location_PostalCode" << details.PostalCode.ToString()
+        "#Location_Country" << details.Country
+        "#PrivacyPolicyUrl" << details.PrivacyPolicyUrl
 
     let Save _ =
-        click "Save"
+        click "Create"
 
 
-
-module AdminActivityCreate =
-    type ActivityDetails = {
+module AdminEventCreate = 
+    
+    type EventDetails = {
         Name:string
-        Description:string
-        VolunteersRequired:int
-        StartDate:string
-        EndDate:string
-        ActivityType: int
+        StartDate:System.DateTime
+        EndDate:System.DateTime
+        EventType: int
+        City:string
+        State:string
+        PostalCode:int
+        Country:string
+        Address1:string
     }
 
-    let DefaultActivityDetails = {
+    let DefaultEventDetails = {
         Name = ""
-        Description = ""
-        VolunteersRequired = 1
-        StartDate = ""
-        EndDate = ""
-        ActivityType = 1
+        StartDate = System.DateTime.Now.AddDays(1.0)
+        EndDate = System.DateTime.Now.AddDays(5.0)
+        EventType = 2
+        City="Redmond"
+        State="WA"
+        PostalCode=98052
+        Country="US"
+        Address1="Address Goes Here"
     }
 
-    let PopulateActivityDetails details =
+    let PopulateEventdetails details =
         "#Name" << details.Name
-        "#Description" << details.Description
-        "#NumberOfVolunteersRequired" << details.VolunteersRequired.ToString()
-        "#StartDateTime" << details.StartDate
-        "#EndDateTime" << details.EndDate
-        "#ActivityType" << details.ActivityType.ToString()
+        "#StartDateTime" << details.StartDate.ToString()
+        "#EndDateTime" << details.EndDate.ToString()
+        "#EventType" << details.EventType.ToString()
+        "#Location_City" << details.City
+        "#Location_State" << details.State
+        "#Location_PostalCode" << details.PostalCode.ToString()
+        "#Location_Country" << details.Country
+        "#Location_Address1" << details.Address1
 
     let private createBtn = ".submit-form"
 
     let Create _ =
         click createBtn
 
-module AdminActivityDetails = 
-    let RelativeUrl = "Admin/Activity/Details"
+module AdminTaskCreate =
+    type TaskDetails = {
+        Name:string
+        Description:string
+        VolunteersRequired:int
+        StartDate:System.DateTime
+        EndDate:System.DateTime
+    }
+
+    let DefaultTaskDetails = {
+        Name = ""
+        Description = ""
+        VolunteersRequired = 1
+        StartDate = System.DateTime.Now.AddDays(1.0)
+        EndDate = System.DateTime.Now.AddDays(5.0)
+    }
+
+    let PopulateTaskDetails details =
+        "#Name" << details.Name
+        "#Description" << details.Description
+        "#NumberOfVolunteersRequired" << details.VolunteersRequired.ToString()
+        "#StartDateTime" << details.StartDate.ToString()
+        "#EndDateTime" << details.EndDate.ToString()
+
+    let private createBtn = "Save"
+
+    let Create _ =
+        click createBtn
+
+module AdminEventDetails = 
+    let RelativeUrl = "Admin/Event/Details"
+
+    let private createNew = "Create Task"
+
+    let CreateNewTask _ =
+        click createNew
+
+module AdminTaskDetails = 
+    let RelativeUrl = "Admin/Task/Details"
+
+
+    
