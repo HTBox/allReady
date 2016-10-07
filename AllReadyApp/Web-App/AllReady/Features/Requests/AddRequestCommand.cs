@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using AllReady.Models;
+﻿using AllReady.Models;
 using MediatR;
 
 namespace AllReady.Features.Requests

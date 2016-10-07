@@ -6,23 +6,27 @@ using System;
 using System.Collections.Generic;
 using AllReady.Areas.Admin.Features.Requests;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Extensions.Internal;
 
 namespace AllReady.Areas.Admin.Features.Itineraries
 {
     public class AddRequestsCommandHandler : IAsyncRequestHandler<AddRequestsCommand, bool>
     {
-        private readonly IAllReadyDataAccess _data;
+        private readonly AllReadyContext _context;
         private readonly IMediator _mediator;
 
         public AddRequestsCommandHandler(AllReadyContext context, IMediator mediator)
         {
-            _data = data;
+            _context = context;
             _mediator = mediator;
         }
 
         public async Task<bool> Handle( AddRequestsCommand message )
         {
-            Itinerary itinerary = await _data.GetItineraryByIdAsync(message.ItineraryId);
+            //Itinerary itinerary = await _context.GetItineraryByIdAsync(message.ItineraryId);
+            var itinerary = await _context.Itineraries
+                .Where(x => x.Id == message.ItineraryId)
+                .SingleOrDefaultAsync();
 
             if (itinerary == null)
             {
@@ -30,11 +34,14 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 return false;
             }
 
-            var requestsToUpdate = await _data.Requests
+            //var requestsToUpdate = await _context.Requests
+            //    .Where(r => message.RequestIdsToAdd.Contains(r.RequestId.ToString()))
+            //    .ToList();
+            var requestsToUpdate = await _context.Requests.AsAsyncEnumerable()
                 .Where(r => message.RequestIdsToAdd.Contains(r.RequestId.ToString()))
                 .ToList();
-
-            HashSet<string> foundRequests = new HashSet<string>(requestsToUpdate.Select(s => s.RequestId.ToString()));
+            
+            var foundRequests = new HashSet<string>(requestsToUpdate.Select(s => s.RequestId.ToString()));
 
             var notFound = message.RequestIdsToAdd.Where(m => !foundRequests.Contains(m));
 
@@ -47,7 +54,13 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
             if (requestsToUpdate.Count > 0)
             {
-                var orderIndex = await _data.ItineraryRequests
+                //var orderIndex = await _context.ItineraryRequests
+                //    .Where(i => i.ItineraryId == itinerary.Id)
+                //    .OrderByDescending(i => i.OrderIndex)
+                //    .Select(i => i.OrderIndex)
+                //    .FirstOrDefault();
+
+                var orderIndex = await _context.ItineraryRequests.AsAsyncEnumerable()
                     .Where(i => i.ItineraryId == itinerary.Id)
                     .OrderByDescending(i => i.OrderIndex)
                     .Select(i => i.OrderIndex)
@@ -76,8 +89,9 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     }
                 }
 
-                await _data.AddItineraryRequests(itineraryRequestsToAdd);
-
+                //await _context.AddItineraryRequests(itineraryRequestsToAdd);
+                _context.ItineraryRequests.AddRange(itineraryRequestsToAdd);
+                await _context.SaveChangesAsync();
 
                 //On Successful addition of request
                 Func<Request, Itinerary, string> getNotificationMessage = ( r, i ) => String.Format(ItinerariesMessages.RequestAddedInitialNotificationFormat, i.Date);

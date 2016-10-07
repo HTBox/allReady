@@ -33,8 +33,8 @@ namespace AllReady.Features.Requests
             {
                 //todo: I'm not sure if this logic is going to be correct, as this allows an update of status to existing requests.
                 //I added this because the red cross is passing in current status.
-                string providerId = request?.ProviderId;
-                Request entity = await _dataContext.Requests.FirstOrDefaultAsync(x => x.ProviderId == providerId);
+                var providerId = request?.ProviderId;
+                var entity = await _dataContext.Requests.FirstOrDefaultAsync(x => x.ProviderId == providerId);
 
                 if (entity == null)
                 {
@@ -57,7 +57,10 @@ namespace AllReady.Features.Requests
                 }
 
                 await _dataContext.SaveChangesAsync();
-                await _dataAccess.AddRequestAsync(entity ?? request);
+
+                //await _dataContext.AddRequestAsync(entity ?? request);
+                _dataContext.Requests.Add(request);
+                await _dataContext.SaveChangesAsync();
             }
             catch (Exception)
             {
@@ -73,6 +76,5 @@ namespace AllReady.Features.Requests
 
             return error;
         }
-
     }
 }
