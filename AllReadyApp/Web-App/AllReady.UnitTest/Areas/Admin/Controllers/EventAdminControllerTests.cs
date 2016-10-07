@@ -38,10 +38,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task DetailsReturnsHttpNotFoundResult_WhenEventIsNull()
         {
-            var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel());
+            //var mediator = new Mock<IMediator>();
+            //mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQueryAsync>())).ReturnsAsync(new CampaignSummaryViewModel());
 
-            var sut = new EventController(null, mediator.Object, null);
+            //var sut = new EventController(null, mediator.Object, null);
+            var sut = new EventController(null, Mock.Of<IMediator>(), null);
             var result = await sut.Details(It.IsAny<int>());
 
             Assert.IsType<NotFoundResult>(result);
