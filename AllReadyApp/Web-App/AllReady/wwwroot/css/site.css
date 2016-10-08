@@ -105,8 +105,9 @@ footer {
 }
 
 .navbar {
-    background-color: #d58033;
+    background-color:#ab6627;
     border-radius: 0;
+    margin-bottom:0;
 }
 
 .navbar-brand {

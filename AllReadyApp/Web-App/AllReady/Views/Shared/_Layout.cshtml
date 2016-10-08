@@ -44,20 +44,24 @@
         <nav class="navbar navbar-default">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand"><img src="~/images/Web-Logo-small.png" alt="Web Logo" /></a>
-                </div>
-                <div class="navbar-collapse collapse">
                     @{
                         var descriptor = (Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)ViewContext.ActionDescriptor;
                         var areaName = descriptor.RouteValues["area"]; // there must be a better way to get the area name!
                         var controllerName = descriptor.ControllerName;
                         var isUser = areaName != "Admin";
                     }
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div @(descriptor.ActionName == "Index" && controllerName == "Home" ? " style=display:none;" : "")>
+                        <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand"><img  src="~/images/Web-Logo-small.png" alt="Web Logo" /></a>
+                    </div> 
+                </div>
+
+                <div class="navbar-collapse collapse">
+                  
                     <ul class="nav navbar-nav">
                         <li @(isUser && controllerName == "Campaign" ? " class=active" : "")><a asp-area="" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
                         <li @(isUser && controllerName == "Organization" ? " class=active" : "")><a asp-area="" asp-controller="Organization" asp-action="Index">Organizations</a></li>
@@ -69,9 +73,15 @@
                 <!--/.nav-collapse -->
             </div>
         </nav>
+        <div class="row logo-background" @(descriptor.ActionName == "Index" && controllerName == "Home" ?  "" : " style=display:none;" )>
+            <div class="col-md-12">
+                <div class="center"><img src="~/images/Web-Logo.png" alt="Logo image for the project" class="img-responsive center-block" /></div>
+                <h3 class="text-center sub-title">Get connected. Work together. Be prepared.</h3>
+            </div>
+        </div>
     </header>
 
-    <div class="container-fluid body-content">
+        <div class="container-fluid body-content">
         @RenderBody()
     </div>
     @await Html.PartialAsync("_Footer")
