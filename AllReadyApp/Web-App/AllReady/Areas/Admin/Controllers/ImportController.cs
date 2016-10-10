@@ -35,12 +35,12 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Index(IFormFile file)
         {
             // todo: - proper view model
-            //       - more complete result type/info
+            //- more complete result type/info
 
             if (file == null)
             {
                 _logger.LogInformation($"User {User.Identity.Name} attempted a file upload without specifying a file.");
-                RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
             using (var stream = file.OpenReadStream())
@@ -53,7 +53,6 @@ namespace AllReady.Areas.Admin.Controllers
                     var requests = csvReader.GetRecords<Request>().ToList();
 
                     var errors = _mediator.Send(new ImportRequestsCommand { Requests = requests });
-
                 }
             }
 
@@ -62,6 +61,5 @@ namespace AllReady.Areas.Admin.Controllers
 
             return View();
         }
-
     }
 }
