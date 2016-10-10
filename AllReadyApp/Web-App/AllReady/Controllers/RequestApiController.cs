@@ -22,32 +22,31 @@ namespace AllReady.Controllers
 
         [HttpPost]
         [ExternalEndpoint]
-        public async Task<IActionResult> Post([FromBody]RequestViewModel request)
+        public async Task<IActionResult> Post([FromBody]RequestViewModel viewModel)
         {
-            var allReadyRequest = ToModel(request, _mediator);
-
-            var error = await _mediator.SendAsync(new AddRequestCommand { Request = allReadyRequest });
-
-            if (error != null)
+            if (viewModel.ProviderId == null)
             {
-                return MapError(error);
+                return MapError(new AddRequestError { ProviderId = "", Reason = "No ProviderId" });
             }
-            return Created(string.Empty, allReadyRequest);
+
+            var request = ToModel(viewModel);
+
+            await _mediator.SendAsync(new AddRequestCommand { Request = request });
+
+            return Created(string.Empty, request);
         }
 
         private IActionResult MapError(AddRequestError error)
         {
-            if (error.IsInternal)
-            {
-                return StatusCode(500, error);
-            }
-            else
-            {
-                return BadRequest(error);
-            }
+            //I don't see anywhere this is set, so why do we have code for it?
+            //if (error.IsInternal)
+            //{
+            //    return StatusCode(500, error);
+            //}
+            return BadRequest(error);
         }
 
-        public Request ToModel(RequestViewModel requestViewModel, IMediator mediator)
+        private static Request ToModel(RequestViewModel requestViewModel)
         {
             var request = new Request
             {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace AllReady.Areas.Admin.Features.Itineraries
+﻿namespace AllReady.Areas.Admin.Features.Itineraries
 {
     public static class ItinerariesMessages
     {

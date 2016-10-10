@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace AllReady.ViewModels.Requests
 {
     public class RequestViewModel
@@ -17,5 +19,14 @@ namespace AllReady.ViewModels.Requests
         // allow for unique identifiers and mapping information
         public string ProviderId { get; set; }      // for RedCross, "serial"
         public string ProviderData { get; set; }    // for Red Cross, "assigned_rc_region"
+
+        public List<CommuniationPreference> CommunicationPrefernces { get; set; }
+    }
+
+    public enum CommuniationPreference
+    {
+        Sms = 0,
+        Email = 1,
+        Phone = 2
     }
 }

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Features.Requests
 {
-    public class AddRequestCommand : IAsyncRequest<AddRequestError>
+    public class AddRequestCommand : IAsyncRequest
     {
         public Request Request { get; set; }
     }
