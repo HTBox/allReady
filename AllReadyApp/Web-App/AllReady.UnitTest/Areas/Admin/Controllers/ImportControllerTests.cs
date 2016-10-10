@@ -1,6 +1,8 @@
 ﻿using System;
 using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Features.Requests;
 using AllReady.UnitTest.Extensions;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -32,8 +34,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var message = $"User {userName} attempted a file upload without specifying a file.";
 
-            logger.Verify(x => x.Log(LogLevel.Information, It.IsAny<EventId>(), It.Is<Microsoft.Extensions.Logging.Internal.FormattedLogValues>(y => (string) y[0].Value == message), 
-                It.IsAny<Exception>(), It.IsAny<Func<object, Exception, string>>()), Times.Once);
+            logger.Verify(
+                x =>
+                    x.Log(LogLevel.Information, It.IsAny<EventId>(),
+                        It.Is<Microsoft.Extensions.Logging.Internal.FormattedLogValues>(
+                            y => (string) y[0].Value == message),
+                        It.IsAny<Exception>(), It.IsAny<Func<object, Exception, string>>()), Times.Once);
         }
 
         [Fact]
@@ -44,6 +50,18 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = sut.Index(null) as RedirectToActionResult;
 
             Assert.Equal(result.ActionName, nameof(ImportController.Index));
+        }
+
+        [Fact]
+        public void IndexPostDoesNotSendImportRequestsCommand_WhenFileIsNull()
+        {
+            var mediator = new Mock<IMediator>();
+
+            var sut = new ImportController(mediator.Object, Mock.Of<ILogger<ImportController>>());
+            sut.SetFakeUser("1");
+            sut.Index(null);
+
+            mediator.Verify(x => x.Send(It.IsAny<ImportRequestsCommand>()), Times.Never);
         }
     }
 }
