@@ -6,7 +6,7 @@ using AllReady.Models;
 
 namespace AllReady.Extensions
 {
-    public static class EnumExtensions
+    public static class EnumerableExtensions
     {
         public static string ToName(this UserType theType)
         {

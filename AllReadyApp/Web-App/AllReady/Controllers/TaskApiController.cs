@@ -112,11 +112,9 @@ namespace AllReady.Controllers
 
             if (taskViewModel.AssignedVolunteers != null && taskViewModel.AssignedVolunteers.Count > 0)
             {
-                var taskUsersList = taskViewModel.AssignedVolunteers.Select(tvm => new TaskSignup
-                {
-                    Task = allReadyTask,
-                    User = mediator.Send(new UserByUserIdQuery { UserId = tvm.UserId })
-                }).ToList();
+                var assignedVolunteers = taskViewModel.AssignedVolunteers.ToList();
+
+                var taskUsersList = await assignedVolunteers.ToTaskSignups(allReadyTask, _mediator);
 
                 // We may be updating an existing task
                 if (newTask || allReadyTask.AssignedVolunteers.Count == 0)
@@ -283,6 +281,24 @@ namespace AllReady.Controllers
         private async Task<AllReadyTask> GetTaskBy(int taskId)
         {
             return await _mediator.SendAsync(new TaskByTaskIdQuery { TaskId = taskId });
+        }    
+    }
+
+    public static class TaskSignupViewModelExtensions
+    {
+        public static async Task<List<TaskSignup>> ToTaskSignups(this List<ViewModels.Event.TaskSignupViewModel> viewModels, AllReadyTask task, IMediator mediator)
+        {
+            var taskSignups = new List<TaskSignup>();
+            foreach (var viewModel in viewModels)
+            {
+                taskSignups.Add(new TaskSignup
+                {
+                    Task = task,
+                    User = await mediator.SendAsync(new UserByUserIdQuery { UserId = viewModel.UserId })
+                });
+            }
+
+            return taskSignups;
         }
     }
 
