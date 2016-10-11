@@ -33,6 +33,16 @@ namespace AllReady.UnitTest.Extensions
             Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
         }
 
+        public static void SetFakeUserName(this Controller controller, string userName)
+        {
+            SetFakeHttpContextIfNotAlreadySet(controller);
+
+            var claimsPrincipal = new ClaimsPrincipal();
+            claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.Name, userName) }));
+
+            Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
+        }
+
         public static void SetFakeUserWithCookieAuthenticationType(this Controller controller, string userId)
         {
             SetFakeHttpContextIfNotAlreadySet(controller);
