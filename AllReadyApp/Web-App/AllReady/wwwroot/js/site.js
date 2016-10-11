@@ -16,6 +16,13 @@ var renderBingMap = function (divIdForMap, positionCoordsList) {
     }
 }
 
+var renderRequestsMap = function(divIdForMap, requestData) {
+    if (requestData) {
+        var bingMap = createBingMap(divIdForMap);
+        addRequestPins(bingMap, requestData);
+    }
+}
+
 var getGeoCoordinates = function (address1, address2, city, state, postalCode, country, callbackFunction) {
     var lookupAddress = "";
     lookupAddress = lookupAddress + (address1 != undefined || address1 != null ? " " + address1 : null);
@@ -65,6 +72,19 @@ function createMapLocationsAndAddPushPinsToMap(bingMap, positionCoordsList) {
         bingMap.entities.push(pushpin);
     });
     return microsoftMapsLocations;
+}
+
+function addRequestPins(bingMap, requestData) {
+    var locations = [];
+    $.each(requestData, function (index, data) {
+        var location = new Microsoft.Maps.Location(data.lat, data.long);
+        locations.push(location);
+        var order = index + 1;
+        var pin = new Microsoft.Maps.Pushpin(location, { title: data.name, color: data.color, text: order.toString() });
+        bingMap.entities.push(pin);        
+    });
+    var rect = Microsoft.Maps.LocationRect.fromLocations(locations);
+    bingMap.setView({ bounds: rect, padding: 80 });
 }
 
 function setMapCenterAndZoom(bingMap, microsoftMapsLocations) {

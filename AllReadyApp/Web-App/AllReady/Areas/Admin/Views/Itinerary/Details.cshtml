@@ -20,7 +20,7 @@
         <h2>
             @Model.Name
             @*<a asp-area="Admin" asp-controller="Itinerary" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
-            <a asp-area="Admin" asp-controller="Itinerary" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>*@
+                <a asp-area="Admin" asp-controller="Itinerary" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>*@
         </h2>
         <p>Scheduled for @Model.DisplayDate</p>
     </div>
@@ -137,18 +137,18 @@ else
                         </td>
                         <td>
                             <form asp-action="MoveRequestUp" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
-                                <button type="submit" class="btn btn-default submit-form" @if (@request.IsFirst) { <text>disabled</text> }><span class="fa fa-arrow-up"></span></button>
+                                <button type="submit" class="btn btn-default submit-form" @if (@request.IsFirst) { <text> disabled</text> }><span class="fa fa-arrow-up"></span></button>
                             </form>
                             <form asp-action="MoveRequestDown" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
-                                <button type="submit" class="btn btn-default submit-form" @if (@request.IsLast) { <text>disabled</text> }><span class="fa fa-arrow-down"></span></button>
+                                <button type="submit" class="btn btn-default submit-form" @if (@request.IsLast) { <text> disabled</text> }><span class="fa fa-arrow-down"></span></button>
                             </form>
 
                             <a data-toggle="tooltip" data-placement="top" title="Remove from itinerary" asp-action="ConfirmRemoveRequest" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="btn btn-danger right-action-btn"><span class="fa fa-trash"></span></a>
                         </td>
                         <td>
-                         @request.Status
-                            @if(request.Status == RequestStatus.Assigned)
-                            { 
+                            @request.Status
+                            @if (request.Status == RequestStatus.Assigned)
+                            {
                                 <form asp-action="MarkComplete" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
                                     <button type="submit" class="btn btn-success submit-form" title="Mark this request as complete"><span class="fa fa-check"></span></button>
                                 </form>
@@ -160,7 +160,7 @@ else
                                 </form>
                             }
                         </td>
-                    </tr> 
+                    </tr>
                 }
             </table>
         }
@@ -171,4 +171,37 @@ else
         }
     </div>
 </div>
+
+<div id="myMap" style="position:relative;width:100%;height:500px;"></div>
+
+@section scripts {
+    <script type='text/javascript'
+            src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap'
+            async defer></script>
+    <script type='text/javascript'>
+        function GetMap() {
+            renderRequestsMap("myMap", getLocationsFromModelRequests());
+        };
+
+        function getLocationsFromModelRequests() {
+            var requestData = [];
+            @foreach (var request in Model.Requests){
+                @:var reqData = {lat:@request.Latitude, long:@request.Longitude, name:'@request.Name', color:'blue'};
+
+                if (request.Status == RequestStatus.Completed)
+                {
+                    @:reqData.color = 'green';
+                            }
+
+                if (request.Status == RequestStatus.Canceled)
+                {
+                    @:reqData.color = 'red';
+                }
+
+                @:requestData.push(reqData)
+                        }
+            return requestData;
+        }
+    </script>
+}
 
