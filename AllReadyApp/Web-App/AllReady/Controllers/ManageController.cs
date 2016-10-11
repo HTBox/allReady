@@ -44,7 +44,7 @@ namespace AllReady.Controllers
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
 
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             return View(await user.ToViewModel(_userManager, _signInManager));
         }
 
@@ -55,7 +55,7 @@ namespace AllReady.Controllers
         {
             var shouldRefreshSignin = false;
 
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
 
             if (!ModelState.IsValid)
             {
@@ -131,7 +131,7 @@ namespace AllReady.Controllers
         [HttpGet]
         public async Task<IActionResult> RemoveLogin()
         {
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             var linkedAccounts = await _userManager.GetLoginsAsync(user);
             ViewData[SHOW_REMOVE_BUTTON] = await _userManager.HasPasswordAsync(user) || linkedAccounts.Count > 1;
             return View(linkedAccounts);
@@ -144,7 +144,7 @@ namespace AllReady.Controllers
         {
             ManageMessageId? message = ManageMessageId.Error;
 
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
 
             if (user != null)
             {
@@ -176,7 +176,7 @@ namespace AllReady.Controllers
             }
 
             // Generate the token and send it
-            await GenerateChangePhoneNumberTokenAndSendAccountSecurityTokenSms(GetCurrentUser(), model.PhoneNumber);
+            await GenerateChangePhoneNumberTokenAndSendAccountSecurityTokenSms(await GetCurrentUser(), model.PhoneNumber);
             return RedirectToAction(nameof(VerifyPhoneNumber), new { model.PhoneNumber });
         }
 
@@ -185,7 +185,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResendPhoneNumberConfirmation(string phoneNumber)
         {
-            await GenerateChangePhoneNumberTokenAndSendAccountSecurityTokenSms(GetCurrentUser(), phoneNumber);
+            await GenerateChangePhoneNumberTokenAndSendAccountSecurityTokenSms(await GetCurrentUser(), phoneNumber);
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = phoneNumber });
         }
 
@@ -194,7 +194,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EnableTwoFactorAuthentication()
         {
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             if (user != null)
             {
                 await _userManager.SetTwoFactorEnabledAsync(user, true);
@@ -209,7 +209,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DisableTwoFactorAuthentication()
         {
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             if (user != null)
             {
                 await _userManager.SetTwoFactorEnabledAsync(user, false);
@@ -237,7 +237,7 @@ namespace AllReady.Controllers
                 return View(model);
             }
 
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             if (user != null)
             {
                 var result = await _userManager.ChangePhoneNumberAsync(user, model.PhoneNumber, model.Code);
@@ -258,7 +258,7 @@ namespace AllReady.Controllers
         [HttpGet]
         public async Task<IActionResult> RemovePhoneNumber()
         {
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             if (user != null)
             {
                 var result = await _userManager.SetPhoneNumberAsync(user, null);
@@ -290,7 +290,7 @@ namespace AllReady.Controllers
                 return View(model);
             }
 
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             if (user != null)
             {
                 var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
@@ -325,7 +325,7 @@ namespace AllReady.Controllers
                 return View(model);
             }
 
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             if (user != null)
             {
                 if(!await _userManager.CheckPasswordAsync(user, model.Password))
@@ -362,7 +362,7 @@ namespace AllReady.Controllers
                 return View(ERROR_VIEW);
             }
 
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             if (user == null)
             {
                 return View(ERROR_VIEW);
@@ -385,7 +385,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResendChangeEmailConfirmation()
         {
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
 
             if(string.IsNullOrEmpty(user.PendingNewEmail))
             {
@@ -401,7 +401,7 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CancelChangeEmail()
         {
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
 
             user.PendingNewEmail = null;
             await _userManager.UpdateAsync(user);
@@ -426,7 +426,7 @@ namespace AllReady.Controllers
                 return View(model);
             }
 
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             if (user != null)
             {
                 var result = await _userManager.AddPasswordAsync(user, model.NewPassword);
@@ -451,7 +451,7 @@ namespace AllReady.Controllers
                 : message == ManageMessageId.Error ? ERROR_OCCURRED
                 : "";
 
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             if (user == null)
             {
                 return View(ERROR_VIEW);
@@ -484,7 +484,7 @@ namespace AllReady.Controllers
         [HttpGet]
         public async Task<ActionResult> LinkLoginCallback()
         {
-            var user = GetCurrentUser();
+            var user = await GetCurrentUser();
             if (user == null)
             {
                 return View(ERROR_VIEW);
@@ -547,9 +547,9 @@ namespace AllReady.Controllers
             Error
         }
 
-        private ApplicationUser GetCurrentUser()
+        private async Task<ApplicationUser> GetCurrentUser()
         {
-            return _mediator.Send(new UserByUserIdQuery { UserId = _userManager.GetUserId(User) });
+            return await _mediator.SendAsync(new UserByUserIdQuery { UserId = _userManager.GetUserId(User) });
         }
 
         //ViewData Constants

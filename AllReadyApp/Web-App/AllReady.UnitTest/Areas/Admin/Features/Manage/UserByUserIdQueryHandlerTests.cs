@@ -10,21 +10,24 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Manage
         [Fact]
         public async Task UserByUserIdQueryHandlerInvokesGetUserWithTheCorrectUserId()
         {
-            var options = this.CreateNewContextOptions();
+            var options = CreateNewContextOptions();
 
             const string userId = "1";
             var message = new UserByUserIdQuery { UserId = userId };
 
-            using (var context = new AllReadyContext(options)) {
-                context.Users.Add(new ApplicationUser {
+            using (var context = new AllReadyContext(options))
+            {
+                context.Users.Add(new ApplicationUser
+                {
                     Id = userId
                 });
                 await context.SaveChangesAsync();
             }
 
-            using (var context = new AllReadyContext(options)) {
+            using (var context = new AllReadyContext(options))
+            {
                 var sut = new UserByUserIdQueryHandler(context);
-                var user = sut.Handle(message);
+                var user = await sut.Handle(message);
 
                 Assert.Equal(user.Id, userId);
             }

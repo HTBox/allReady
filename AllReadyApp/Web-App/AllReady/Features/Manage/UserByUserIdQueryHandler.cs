@@ -1,11 +1,12 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Manage
 {
-    public class UserByUserIdQueryHandler : IRequestHandler<UserByUserIdQuery, ApplicationUser>
+    public class UserByUserIdQueryHandler : IAsyncRequestHandler<UserByUserIdQuery, ApplicationUser>
     {
         private readonly AllReadyContext dataContext;
 
@@ -14,13 +15,13 @@ namespace AllReady.Features.Manage
             this.dataContext = dataContext;
         }
 
-        public ApplicationUser Handle(UserByUserIdQuery message)
+        public async Task<ApplicationUser> Handle(UserByUserIdQuery message)
         {
-            return dataContext.Users
+            return await dataContext.Users
                 .Where(u => u.Id == message.UserId)
                 .Include(u => u.AssociatedSkills).ThenInclude((UserSkill us) => us.Skill)
                 .Include(u => u.Claims)
-                .SingleOrDefault();
+                .SingleOrDefaultAsync();
         }
     }
 }

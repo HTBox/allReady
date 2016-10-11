@@ -1,23 +1,23 @@
 ﻿using System.Collections.Generic;
 using AllReady.Models;
 using MediatR;
-using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-
-    public class AllOrganizationsQueryHandler : IRequestHandler<AllOrganizationsQuery, IEnumerable<Organization>>
+    public class AllOrganizationsQueryHandler : IAsyncRequestHandler<AllOrganizationsQuery, IEnumerable<Organization>>
     {
         private readonly AllReadyContext _context;
 
         public AllOrganizationsQueryHandler(AllReadyContext context)
         {
-            this._context = context;
+            _context = context;
         }
 
-        public IEnumerable<Organization> Handle(AllOrganizationsQuery message)
+        public async Task<IEnumerable<Organization>> Handle(AllOrganizationsQuery message)
         {
-            return _context.Organizations.ToList();
+            return await _context.Organizations.ToListAsync();
         }
     }
 }
