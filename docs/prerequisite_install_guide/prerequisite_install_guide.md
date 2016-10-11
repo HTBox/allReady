@@ -33,9 +33,18 @@ This guide will walk you through all of the software that needs to be installed 
   - [UI Tests](#ui-tests)
 - [Mobile Solution](#mobile-solution)
   - [Installing Mobile Tools](#installing-mobile-tools)
+    - [Installing Java JDK 8](#installing-java-jdk-8)
+    - [Cordova](#cordova)
+    - [Ionic Framework](#ionic-framework)
+    - [Restoring the Ionic State](#restoring-the-ionic-state)
+    - [Visual Studio 2015 Tools For Apache Cordova](#visual-studio-2015-tools-for-apache-cordova)
+    - [NPM Task Runner](#npm-task-runner)
+  - [Opening Mobile Solution](#opening-mobile-solution)
   - [Compiling Mobile Solution](#compiling-mobile-solution)
-  - [Running in Web Browser](#running-in-web-browser)
-  - [Deploying to Android Mobile Device](#deploying-to-android-mobile-device)
+  - [Running Mobile application](#running-mobile-application)
+    - [Web Browser with Ionic Serve](#web-browser-with-ionic-serve)
+    - [In the Visual Studio Emulator for Android](#in-the-visual-studio-emulator-for-android)
+    - [On an Android Device](#on-an-android-device)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -308,7 +317,6 @@ We now need to tell Visual Studio to put our PATH environment variable higher in
 
     ![External Web Tools](images/vs-install-12-external-web-tools.png)
 
-
 ### Installing Microsoft ASP.NET and Web Tools
 
 allReady uses ASP.NET Core and we need to install the tooling for .NET Core.  
@@ -499,29 +507,29 @@ We need to verify that you can run the unit test.  allReady has over 1,000 unit 
 
 The unit test project is in the Test folder and called AllReady.UnitTest.  
 
-![](images/unit-test-1-project.png)
+![unit test project](images/unit-test-1-project.png)
 
 
 To run the test you will use the Visual Studio Test Explorer.  
 
 1. Open the Visual Studio Test Explorer under Test -> Windows -> Test Explorer menu.
 
-    ![](images/unit-test-2-test-explorer-menu.png)
+    ![test menu with windows/test explorer highlighted](images/unit-test-2-test-explorer-menu.png)
 
 1. Once the Test Explorer is open you can either click the Run All to execute all of the tests.  Note that it may take a few minutes for all of the test to show up in the list of tests.
 
-    ![](images/unit-test-3-test-explorer.png)
+    ![Test explorer](images/unit-test-3-test-explorer.png)
 
 1. When the test are executing it will show a progress bar at the top, change the "Run All" link to a Cancel link and as a test completes, is skipped or fails, it will show up in the different categories.
 
-    ![](images/unit-test-4-running-tests.png)
+    ![test explorer running test](images/unit-test-4-running-tests.png)
 
 1. Once all of the test have been run the progress bar will be a solid color to indicate the status. The "Run All" link will also be available again.   
     * Green = All Run successfully
     * Orange = At least 1 test was skipped
     * Red = At least 1 test failed
 
-    ![](images/unit-test-5-completed-run.png)
+    ![test explorer completed run](images/unit-test-5-completed-run.png)
 
 1. If any of the tests fail, you will need to work to make the test pass.   
 
@@ -538,14 +546,14 @@ The AllReady.ScenarioTest project is a console application.  You can either run 
 
 To run the UI test, you first need to start up the web site.
 
-1.  The canopy test require that the web site is running.  Make sure that the  Web\AllReady project is the start up project.  Press F5 to start the web site in debug mode or Ctrl+F5 to start without debug mode.
+1.  The canopy tests require that the web site is running.  Make sure that the  Web\AllReady project is the start up project.  Press F5 to start the web site in debug mode or Ctrl+F5 to start without debug mode.
 1. Before we run the test we need to set a breakpoint to prevent the console application for the canopy tests from automatically exiting.  Open the Program.fs file and set the breakpoint on the `quit()` statement like below.
 
     ![breakpoint on quit statement](images/canopy-2-breakpoint.png)
 
 1. Now that the web site is running and breakpoint is set, we are ready to run our UI test.  In Visual Studio solution explorer, right-click on the AllReady.ScenarioTest project, select the Debug menu, and click on "Start New Instance"
 
-    ![](images/canopy-1-start-new-instance.png)
+    ![start new instance of canopy test](images/canopy-1-start-new-instance.png)
 
 1. This will build the project, launch Chrome, and run the automated test.  It will take a few minutes for the test suite to run.  You will see the Chrome browser that was open being automatically interacted with by the Canopy test. 
     * If there are no error, the console application will exit and the chrome browser that it opened will close. 
@@ -561,26 +569,362 @@ You are now ready to start working on the allReady web site and unit test.  Plea
 
 ###  Installing Mobile Tools
 
-Make sure that you have followed all of the steps that are part of the ["General Section"](#general-install-steps) of this guide as those tools are required plus the tools that this section will install.
+This section will guide you through installing all of the software and configurations that are needed to get the mobile application up and running.
 
-* jdk8
-* vs 2015 cordova tools
-* ionic
-* cordova
-* gulp-cli
-* bower
+>**Make sure that you have followed all of the steps above to get all of the software installed/configuration and the web application running.  The mobile solution uses the API that is part of the Web solution**
+
+The mobile application uses the [Ionic framework] (http://ionicframework.com) version 1 which is built on top of Angular v1, Html 5, Css3, JavaScript, and Cordova.  The backend for the mobile application is the WebAPI endpoints that are part of the web solution.  
+
+#### Installing Java JDK 8
+
+The Java JDK 8 is required to compile the mobile solution for the Android platform.  We are install this outside of the Visual Studio installer because currently the Visual Studio 2015 installer installs an older version of JDK 7 and Google has moved the Android platform to JDK8.
+
+1. Download JDK 8 from [http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+
+1. You need to accept the license agreement before you can download
+
+    ![JDK 8 Accept License](images/jdk8-1-accept-license.png)
+
+1. After you accept the license agreement you can then download the Windows x64 version.
+
+    ![JDK 8 Download](images/jdk8-2-download.png)
+
+1. If the User Account Prompt comes up, click on the Yes button
+
+    ![user account control prompt](images/jdk8-3-uac.png)
+
+1. On the 1st screen, click next
+
+    ![installer first screen](images/jdk8-4.png)
+
+1. Leave all of the default options selected and click Next  
+
+    ![leave default options selected](images/jdk8-5.png)
+
+1. It will take a few minutes to get the install ready and then it will popup the next screen to input the destination folder
+
+    ![install prep progress](images/jdk8-6.png)
+
+1. The install will prompt for the destination folder.  Leave at the default and click Next.  
+
+    ![destination folder input](images/jdk8-7.png)
+
+1. It will take a few minutes for the install to completed.  Once the install is completed click the Close button 
+
+    ![jdk8 install finished](images/jdk8-9.png)
+
+Once the install is completed we need to set the JAVA_HOME environment variable
+
+1.  Go under the Start Menu and type in "edit the system environment" and select the "Edit the system environment variables" control panel option. 
+
+    ![finding system environment variable edit option in start menu](images/jdk8-10-env-variables.png)
+
+1. Press the Environment Variables button 
+
+    ![open environment variables dialog](images/jdk8-11-env-var-button.png)
+
+1. Under the System Variables click on the New... button
+
+    ![click new system environment variable](images/jdk8-12-new-sys-env-var.png)
+
+1. For the Variable name: enter JAVA_HOME and click the Browser Directory... button
+    
+    ![input name and select browser directory](images/jdk8-13-java-home.png)
+
+1. Navigate to C:\Program Files\Java, select the JDK8 version that you just installed and click the Ok button
+
+    ![select jdk version installed](images/jdk8-14-jdk-version.png)
+
+1.  To save the JAVA_HOME environment variable, click the Ok button
+    
+    ![save java_home environment variable](images/jdk8-15-java-home-dir-set.png)
+1. Click the Ok button to close the Environment Variable editor
+
+    ![close edit environment variable dialog](images/jdk8-16-finished-env-vars.png)
+
+
+#### Cordova 
+
+The next thing that we need to do is to get the Cordova tooling installed.  We are going to install this outside of the Visual Studio install so that all of the Ionic framework commands are available to use since many of them require the Cordova tooling be installed globally.
+
+1. Open a command prompt and run:
+
+        npm install -g cordova
+
+1. Verify the Cordova install by getting the version installed.  As of this writing it returned 6.3.1.
+
+        cordova -v
+
+    > You need to answer the prompt "May Cordova anonymous report usage statistics to improve the tool over time?   
+
+#### Ionic Framework
+
+Next we need to install the Ionic Framework command line interface.  The Ionic CLI allows us to easily add Cordova plugins, add new mobile platforms, compile the Android APK, plus many more useful features.  
+
+1. Open a command prompt and run:
+
+        npm install -g ionic
+
+1. Verify the Ionic install by getting the version installed.  As of this writing it returned 2.1.0
+
+        ionic -v
+
+#### Restoring the Ionic State
+
+After the tooling for both Cordova and Ionic is installed, we need to restore the ionic state.  This will install the configured Cordova platforms and plugins.
+
+Open a command prompt and run:
+
+```bash
+ionic state restore
+```
+
+#### Visual Studio 2015 Tools For Apache Cordova
+
+The last bit of software that we need to install is the Visual Studio 2015 Tools for Apache Cordova.  This tooling provide a very useful Android emulator, allows you to build and deploy to Android devices or emulators directly from Visual Studio, and to debug the application from within Visual Studio.
+
+To install the Tools for Apache Cordova, we need to add additional features to the already installed Visual Studio 2015 Community Edition. 
+
+1. Open the Start Menu and type "Programs and Features"
+
+    ![start menu programs and features](images/taco-1-programs-and-features.png)
+
+1. In the search box enter Visual Studio 2015, select Microsoft Visual Studio Community 2015 with  Updates, click the Change option
+
+    ![find visual studio 2015 and click change](images/taco-2-vs2015-change.png)
+
+1.  This will open up the Visual Studio 2015 install.  It will take a few minutes for it to pull down the configuration feed
+
+    ![waiting for visual studio installer to configure feed](images/taco-3-configure-feed.png)
+
+1. Click the modify button to change the options that Visual Studio 2015 has installed.
+
+    ![click modify button](images/taco-4-modify.png)
+
+1. Expand the Cross Platform Mobile Development Section and Select "Html/Javascript (Apache Cordova) Update 10" option
+
+    ![select Cross Platform Mobile Developer Html/Javascript (Apache Cordova) Update 10 option](images/taco-5-select-tools.png)
+
+1. When you check the "Html/Javascript (Apache Cordova) Update 10" option it will also check the "Windows and Web Development\Windows 8.1 and Windows Phone 8.0/8.1 Tools" which the allReady mobile solution does not target.  Unless you are already doing "Windows 8.1 and Windows Phone 8.0/8.1" development you can uncheck this option and save yourself about 8 gigs worth of disk space.
+
+    ![uncheck Windows 8.1 and Windows Phone 8.0/8.1 Tools](images/taco-6-uncheck-win81-tools.png)
+
+1. Click the Next Button
+
+    ![Click next](images/taco-7-next.png)
+
+1.  Verify that everything is selected and click the Update button
+
+    ![verify install and click update](images/taco-8-verify-install.png)
+
+1. If prompt with a User Account Control dialog, click Yes to let the install proceed
+
+    ![uac click yes](images/taco-9-uac.png)
+
+1. It will take a bit for all of the software to install as it is ~7 gigs of software that it has to download
+
+    ![waiting while installing](images/taco-10-installing.png)
+
+1. Once the install is completed, you may be asked to restart.  When you are ready to restart the computer click on the restart button
+
+    ![intall done need to restart](images/taco-11-restart.png)    
+
+#### NPM Task Runner
+
+The Mobile Application has npm task setup for ionic serve and in order to run those from within Visual Studio you need to install the NPM task runner extension.
+
+1. Open Visual Studio
+1. Go under Tools Menu and select Extensions and Updates
+
+    ![open Extensions and Updates ](images/vs-ext-0-open-extension-mgr.png)
+
+1. Once the dialog opens for Extensions and Updates
+
+    1. Click On the Visual Studio Gallery Section
+    1. Click on the Search box and enter npm
+    1. Find the "NPM Task Runner" and click the Download button
+
+    ![find Npm task runner and click download](images/vs-ext-1-find-npm-task-runner.png)    
+
+1. Once the download is completed it will automatically start the installer and ask you to click the install button
+    
+    ![click install](images/vs-ext-2-npm-task-runner-install.png)
+
+1. Once the install is completed, it will ask you to restart Visual Studio for it to take effect.
+
+    ![restart visual studio](images/vs-ext-3-restart-vs.png)    
+
+
+### Opening Mobile Solution
+
+In the allReadyApp directory are 2 solution files.  You will want to open the **AllReadyApp.sln**
+
+1. Double-click on the "AllReadyApp.sln" file in Windows Explorer to open it in Visual Studio 2015
+
+    ![How do you want to open this file dialog](images/mobile-1-open-sln.png)
+
+1. The first time that you open the solution is will restore the package dependencies for the unit test and web projects.
+
+    ![restore packages info in solution explorer](images/mobile-2-restoring-packages.png)    
+
 
 ### Compiling Mobile Solution
 
-* ionic state restore
-* open in Visual Studio
+Now that the npm and bower package dependencies are restored you are ready to build the solution.
 
-### Running in Web Browser
+![Build Menu Build Solution Option](images/web-6-build-solution.png)
+
+The first time that you compile the mobile solution it will take several minutes as it has to download the vs-tac npm package. 
+
+If all has went well your solution compiled successfully and you are ready to run the mobile application.
+
+### Running Mobile application
+
+There are 4 ways to run the mobile application:
+
+1. In a Web Browser using Ionic command line
+    * This is useful for testing outside of Visual Studio.  You can also get a view of iOS and Android side-by-side which is helpful.
+1. In a Web Browser using Ripple  
+    * This is useful for using Visual Studio to do debugging
+1. In the Visual Studio Android Emulator.  
+    * This is useful for testing what it should work like on an actual device.
+1. On an Android Device
+    * This is useful before you deploy to the app store to make sure that everything works as expect on a real device.     
+
+#### Web Browser with Ionic Serve
+
+We can do most of our mobile testing in the web browser.  However, anything that uses a Cordova plugins will not working in the web browser.  
+
+To test in the browser we will be using the ionic serve command which compile the sass file, starts up a node based web server with livereload, and launches your default web browser (Chrome is suggested).
+
+To run the ionic serve we will be using the Visual Studio NPM Task Runner extension that we installed earlier.  There are 2 npm commands that have been added to the package.json file for the AppReadyApp to launch the ionic serve process:
+
+1. ionic-serve -> starts up the server, open the default browser and navigates to the mobile app view. You can still get to the ionic-lab page that ionic-lab launches.
+1. ionic-lab -> same as the ionic serve but the start up page is the ionic-lab page that shows a side by side view of Android and iOS.
+
+Before launching the ionic npm task, we need to have the web site running in order to access the allReady Api. 
+
+1. Set the Web\AllReady project as the start up project by right clicking on the Web\AllReady project and selecting "Set as Startup Project"
+
+    ![Set Startup Project](images/web-8-startup-project-set.png)
+
+1. Once the startup project is set you are ready to start debugging the project.  There are 3 ways to start up the project:
+
+1. Press F5
+1. Click on the IIS Express button on the toolbar
+
+    ![IIS Express Button on Toolbar](images/web-9-iisexpress-button.png)
+
+1. Go under the Debug menu and select "Start Debugging"    
+
+    ![Debug Menu Start Debugging Option](images/web-9-start-debugging.png)
+
+1.  Once the Web Site is started we can launch the npm ionic task by right clicking on the task that you want to start and selecting run
+
+    ![right click on ionic-serve npm task](images/ionic-1-task-runner-run.png)
+
+1. The task runner explorer will open up a new tab and run the task that you selected. In the screenshot below, the ionic-serve task is running
+
+    ![ionic-serve running](images/ionic-2-ionic-serve-running.png)
+
+    * The ionic-serve will open up your default web browser to http<i></i>://localhost:8100.  If you want to get the lab page, add ionic-lab to your url.
+
+        ![mobile app in chrome](images/ionic-3-web-page.png)
+
+    * The ionic-lab will open up your default web browser to http<i></i>://localhost:8100/ionic-lab
+
+        ![ionic-lab page in chrome](images/ionic-4-lab.png)
+
+Now you can use the Chrome Developer Tools to doing any element inspecting or JavaScript debugging. As you make changes, the ionic serve has livereloading built-in and it will automatically refresh you web browser. 
 
 
-### Deploying to Android Mobile Device
+#### In the Visual Studio Emulator for Android
+
+Using the Visual Studio Android Emulator requires the Windows Hyper-V featue to be enabled.
+
+By default when you install the Visual Studio Tooling for Apache Cordova, it downloads 2 devices for the Visual Studio Emulator for Android: 7" KitKat(4.4) XHDPI Tablet and 5" KitKat(4.4) XXHDPI Phone.  
+
+![default emulator devices](images/emulator-1-default-devices.png)
 
 
+> If you want to download additional devices, open up the Visual Studio Emulator for Android, find the device that you want to download and click on the ![download device icon](images/emulator-2-download-icon.png) icon for the device you want.  Once you download a device it will automatically become available as a target in Visual Studio for the AllReadyApp project.
+
+
+**WARNING:** With the default configuration of the Mobile App, you will not be able to communicate with the Api since it uses the web site running locally on your running using localhost which is not available to external devices or emulators.  To get around this you need to make sure that any Api changes you have made have have been submitted as a Pull Request and merged into the AllReady master branch.  
+
+Changing the Api Url requires a coding change.
+
+1. In the AppReadyApp project, open the www\services\backend.service.js file
+1. Change the protocol from http:// to https://
+1. Change the domainUrl variable from localhost:48408 to allready-d.azurewebsites.net
+1. Save the file
+
+To build and deploy the Mobile Application to the Visual Studio Emulator for Android you need to set the Mobile\AllReadyApp project to the startup project by bight clicking on the AllReadyApp project and selecting "Set as StartUp Project"
+
+![set AllReadyApp as startup project](images/mobile-5-app-startup-set.png)
+
+Next you need to set the target for the project to the device that you want to deploy to by click on the target drop down.
+
+![select emulator device](images/emulator-3-deploy.png)
+
+Now you are ready to deploy to the Visual Studio Emulator for Android using 1 of 3 ways:
+
+1. Press F5
+1. Clicking on the Emulator that you selected in the target list
+1. Go under the Debug menu and select Start Debugging
+
+The virtual machine for the selected emulator will start, Visual Studio will build the mobile application and then deploy it to the emulator.
+
+> This first time that you deploy to either an emulator or an Android device the android sdk will download Gradle.  This may take a few minutes.
+
+The first time that you launch a Visual Studio Emulator for Android device it will take a few minutes to set it up and launch.  You may be ask a few question about networking.
+
+1. The emulator needs to be able to connect to the internet in order to talk with the allReady Api.  If you are prompted to configure the emulator to connect to the Internet, click Yes.
+
+    ![emulator needs network connection](images/emulator-4-need-network-connection.png)
+
+1. If you are not running Visual Studio as an administrator you will be you will prompted to retry the configuration as an Administrator 
+
+    ![rety as an admin](images/emulator-5-retry-as-admin.png)
+
+1. If the User Account Control comes up for the Windows Phone Packages, click Yes
+
+    ![Windows phone packages User Account Control](images/emulator-6-uac.png)
+
+1. The emulator will then take a few more minutes and then you will be presented with the Android OS.  Click Ok on the initial screen.
+
+    ![emulator launched and OS is booted](images/emulator-7-launched.png) 
+
+#### On an Android Device 
+
+> **Important:** You must be able to access the Android device on Windows in order for this to work.  It is outside of this guide to troubleshoot Windows not seeing your Android device.
+
+**WARNING:** With the default configuration of the Mobile App, you will not be able to communicate with the Api since it uses the web site running locally on your running using localhost which is not available to external devices or emulators.  To get around this you need to make sure that any Api changes you have made have have been submitted as a Pull Request and merged into the AllReady master branch.  
+
+Changing the Api Url requires a coding change.
+
+1. In the AppReadyApp project, open the www\services\backend.service.js file
+1. Change the protocol from http:// to https://
+1. Change the domainUrl variable from localhost:48408 to allready-d.azurewebsites.net
+1. Save the file
+
+To build and deploy the Mobile Application to your Android device you need to set the Mobile\AllReadyApp project to the startup project by bight clicking on the AllReadyApp project and selecting "Set as StartUp Project"
+
+![set AllReadyApp as startup project](images/mobile-5-app-startup-set.png)
+
+The last thing is to set the Target for the project to the device that you want to deploy to by click on the target drop down.
+
+![select device for target](images/device-1-deploy.png)
+
+Now you are ready to deploy to your Android device from Visual Studio using 1 of 3 ways:
+
+1. Press F5
+1. Clicking on the Device that you selected in the target list
+1. Go under the Debug menu and select Start Debugging
+
+Visual Studio will then build the mobile application and deploy it to your device.
+
+> This first time that you deploy to either an Android device or the emulator the android sdk will download Gradle.  This may take a few minutes.
 
 
 
