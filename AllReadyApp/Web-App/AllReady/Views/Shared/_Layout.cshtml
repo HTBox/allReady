@@ -1,11 +1,9 @@
-﻿﻿@using AllReady.Controllers
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - allReady</title>
-
     <link href='https://fonts.googleapis.com/css?family=Roboto:300,100' rel='stylesheet' type='text/css' />
     <environment names="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -27,7 +25,8 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     </environment>
-    @if (TelemetryConfiguration != null && !string.IsNullOrEmpty(TelemetryConfiguration.InstrumentationKey) && !TelemetryConfiguration.InstrumentationKey.StartsWith("[")) {
+    @if (TelemetryConfiguration != null && !string.IsNullOrEmpty(TelemetryConfiguration.InstrumentationKey) && !TelemetryConfiguration.InstrumentationKey.StartsWith("["))
+    {
         @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
     }
     @RenderSection("styles", required: false)
@@ -61,12 +60,11 @@
                     <ul class="nav navbar-nav">
                         <li @(isUser && controllerName == "Campaign" ? " class=active" : "")><a asp-area="" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
                         <li @(isUser && controllerName == "Organization" ? " class=active" : "")><a asp-area="" asp-controller="Organization" asp-action="Index">Organizations</a></li>
-                        <li @(isUser && controllerName == "Home" ? " class=active" : "")><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                        <li @(isUser && controllerName == "Home" && descriptor.ActionName == "About" ? " class=active" : "")><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
                         @await Html.PartialAsync("_AdminNavigationPartial")
                     </ul>
                     @await Html.PartialAsync("_LoginPartial")
                 </div>
-                <!--/.nav-collapse -->
             </div>
         </nav>
     </header>
@@ -155,7 +153,7 @@
                 if ($(element).attr("max")) {
                     $(element).data("DateTimePicker").maxDate($(element).attr("max"));
                 }
-               
+
                 $(element).data("DateTimePicker").date(moment($(element).attr("value")));
             });
             tinymce.init({
@@ -169,8 +167,6 @@
                 autosave_ask_before_unload: false
             });
         });
-
-
     </script>
     @RenderSection("scripts", required: false)
 </body>

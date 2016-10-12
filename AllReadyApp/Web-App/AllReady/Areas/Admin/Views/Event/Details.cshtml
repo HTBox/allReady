@@ -26,7 +26,7 @@
     }
     <div class="col-md-10">
         <h2>
-            @Model.Name
+            <span data-event-title>@Model.Name</span>
             <a asp-area="Admin" asp-controller="Event" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
             <a asp-area="Admin" asp-controller="Event" asp-action="Duplicate" asp-route-id="@Model.Id" class="btn btn-default">Duplicate</a>
             <a asp-area="Admin" asp-controller="Event" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>
@@ -63,8 +63,8 @@
 <div class="row">
     <div class="col-md-12">
         <h3>Volunteer Summary</h3>
-        <p>@Model.VolunteersRequired @(Model.VolunteersRequired == 1 ? "volunteer" : "volunteers") are required across @Model.TaskCount @(Model.TaskCount == 1 ? "task" : "tasks").</p>
-        <p>@Model.AcceptedVolunteers @(Model.AcceptedVolunteers == 1 ? "volunteer" : "volunteers") are currently assigned and accepted. This event's volunteer requirement is @Model.VolunteerFulfilmentPercentage% fulfiled.</p>
+        <p>@Model.VolunteersRequired @(Model.VolunteersRequired == 1 ? "volunteer is" : "volunteers are") required across @Model.TaskCount @(Model.TaskCount == 1 ? "task" : "tasks").</p>
+        <p>@Model.AcceptedVolunteers @(Model.AcceptedVolunteers == 1 ? "volunteer is" : "volunteers are") currently assigned and accepted. This event's volunteer requirement is @Model.VolunteerFulfilmentPercentage% fulfilled.</p>
     </div>
 </div>
 

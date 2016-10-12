@@ -37,16 +37,21 @@ namespace AllReady.Features.Events
 
             var eventViewModel = new EventViewModel(@event);
 
-            var applicationUser = await _context.Users.SingleOrDefaultAsync(u => u.Id == message.UserId).ConfigureAwait(false);
+            ApplicationUser applicationUser = null;
 
-            eventViewModel.UserId = message.UserId;
-            eventViewModel.UserSkills = applicationUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
+            if (!string.IsNullOrEmpty(message.UserId))
+            {
+                applicationUser = await _context.Users.SingleOrDefaultAsync(u => u.Id == message.UserId).ConfigureAwait(false);
 
-            var assignedTasks = @event.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == message.UserId)).ToList();
-            eventViewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, message.UserId)).OrderBy(task => task.StartDateTime));
+                eventViewModel.UserId = message.UserId;
+                eventViewModel.UserSkills = applicationUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
 
-            var unassignedTasks = @event.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != message.UserId)).ToList();
-            eventViewModel.Tasks = new List<TaskViewModel>(unassignedTasks.Select(data => new TaskViewModel(data, message.UserId)).OrderBy(task => task.StartDateTime));
+                var assignedTasks = @event.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == message.UserId)).ToList();
+                eventViewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, message.UserId)).OrderBy(task => task.StartDateTime));
+
+                var unassignedTasks = @event.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != message.UserId)).ToList();
+                eventViewModel.Tasks = new List<TaskViewModel>(unassignedTasks.Select(data => new TaskViewModel(data, message.UserId)).OrderBy(task => task.StartDateTime));
+            }
 
             eventViewModel.SignupModel = new TaskSignupViewModel
             {

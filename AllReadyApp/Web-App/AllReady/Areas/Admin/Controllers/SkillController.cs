@@ -182,8 +182,8 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var model = await _mediator.SendAsync(new SkillDeleteQuery { Id = id });
-            if (model == null)
+            var viewModel = await _mediator.SendAsync(new SkillDeleteQuery { Id = id });
+            if (viewModel == null)
             {
                 return NotFound();
             }
@@ -194,39 +194,30 @@ namespace AllReady.Areas.Admin.Controllers
                 var organizationId = User.GetOrganizationId();
 
                 // security check to ensure the skill belongs to the same org as the org admin
-                if (!organizationId.HasValue || model.OwningOrganizationId != organizationId)
+                if (!organizationId.HasValue || viewModel.OwningOrganizationId != organizationId)
                 {
                     return new UnauthorizedResult();
                 }
             }
 
-            return View("Delete", model);
+            viewModel.Title = $"Delete skill {viewModel.HierarchicalName}";
+            viewModel.SkillBelongsToSameOrgAsOrgAdmin = true;
+
+            return View("Delete", viewModel);
         }
 
         // GET /Admin/Skill/Delete/{id}
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(SkillDeleteViewModel viewModel)
         {
-            var model = await _mediator.SendAsync(new SkillDeleteQuery { Id = id });
-            if (model == null)
+            if (!viewModel.SkillBelongsToSameOrgAsOrgAdmin)
             {
-                return NotFound();
+                return new UnauthorizedResult();
             }
 
-            // security check to ensure the skill belongs to the same org as the org admin
-            if (!User.IsUserType(UserType.SiteAdmin))
-            {
-                var organizationId = User.GetOrganizationId();
+            await _mediator.SendAsync(new SkillDeleteCommand { Id = viewModel.SkillId });
 
-                // security check to ensure the skill belongs to the same org as the org admin
-                if (!organizationId.HasValue || model.OwningOrganizationId != organizationId)
-                {
-                    return new UnauthorizedResult();
-                }
-            }
-
-            await _mediator.SendAsync(new SkillDeleteCommand { Id = id });
             return RedirectToAction(nameof(Index), new { area = "Admin" });
         }
     }

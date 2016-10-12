@@ -8,6 +8,12 @@
 
 .logo-background {
     background-color: #d58033;
+    position: relative;
+    width: 100vw;
+    left: -25px;
+    color: #fff;
+    padding-bottom: 20px;
+    margin-top: -20px;
 }
 
 /* Set widths on the form inputs since otherwise they're 100% wide */
@@ -54,6 +60,10 @@ footer, footer a {
         margin-left: 10px;
         margin-right: 10px;
     }
+
+header {
+    margin-bottom: 20px;
+}
 
 footer {
     position: absolute;
@@ -105,8 +115,10 @@ footer {
 }
 
 .navbar {
-    background-color: #d58033;
+    
+    background-color:#d58033;
     border-radius: 0;
+    margin-bottom:0;
 }
 
 .navbar-brand {
@@ -491,7 +503,6 @@ Navigation
 .inline-form {
     display: inline-block;
 }
-
 .myevents h3 {
     margin-bottom: 20px;
 }
@@ -725,3 +736,26 @@ a:hover .myevents-block {
     border-color: #d58033 #e5e5e5 #fff;
 }
 
+.featured-campaign {
+    border: 1px solid #d58033;
+    padding: 6px;
+    margin: 10px;
+    background: #e4cdb8;
+}
+
+.featured-campaign h2 {
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+.featured-campaign h3 {
+    margin-top: 0;
+}
+
+.featured-campaign h4 {
+    margin-top: 5px;
+}
+
+.featured-campaign h4, p{
+    color: black;
+}

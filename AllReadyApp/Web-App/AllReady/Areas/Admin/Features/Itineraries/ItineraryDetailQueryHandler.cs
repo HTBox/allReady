@@ -51,7 +51,9 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                         Name = r.Request.Name,
                         Address = r.Request.Address,
                         City = r.Request.City,
-                        Status = r.Request.Status
+                        Status = r.Request.Status,
+                        Longitude = r.Request.Longitude,
+                        Latitude = r.Request.Latitude
                     }).ToList()
                 })
                 .SingleOrDefaultAsync().ConfigureAwait(false);
