@@ -4,8 +4,9 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Notifications
 {
-    public class RequestsAdded : IAsyncNotification
+    public class RequestsAssignedToIntinerary : IAsyncNotification
     {
+        public int ItineraryId { get; set; }
         public List<Guid> RequestIds { get; set; }
     }
 }

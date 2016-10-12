@@ -83,7 +83,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
                 await _context.SaveChangesAsync();
 
-                await _mediator.PublishAsync(new RequestsAdded { RequestIds = requestsToUpdate.Select(x => x.RequestId).ToList()});
+                await _mediator.PublishAsync(new RequestsAssignedToIntinerary { ItineraryId = message.ItineraryId, RequestIds = requestsToUpdate.Select(x => x.RequestId).ToList()});
 
                 //stuff added after Steve's code
                 ////On Successful addition of request
