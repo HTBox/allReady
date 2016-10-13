@@ -29,6 +29,9 @@ using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Geocoding;
 using Geocoding.Google;
+using Hangfire;
+using Hangfire.SqlServer;
+using Microsoft.EntityFrameworkCore.Storage.Internal;
 
 namespace AllReady
 {
@@ -118,6 +121,9 @@ namespace AllReady
             services.AddMvc().AddJsonOptions(options =>
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
+            //Hangfire
+            services.AddHangfire(configuration => configuration.UseSqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"]));
+
             // configure IoC support
             var container = CreateIoCContainer(services);
             return container.Resolve<IServiceProvider>();
@@ -183,6 +189,9 @@ namespace AllReady
             containerBuilder.RegisterType<MicrosoftAndFacebookExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Facebook");
             containerBuilder.RegisterType<ExternalUserInformationProviderFactory>().As<IExternalUserInformationProviderFactory>();
 
+            //Hangfire
+            containerBuilder.RegisterInstance(new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"]))).As<IBackgroundJobClient>();
+
             //Populate the container with services that were previously registered
             containerBuilder.Populate(services);
 
@@ -191,8 +200,8 @@ namespace AllReady
         }
 
         // Configure is called after ConfigureServices is called.
-        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context,
-            IConfiguration configuration)
+        //public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context, IConfiguration configuration)
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context)
         {
             // Put first to avoid issues with OPTIONS when calling from Angular/Browser.  
             app.UseCors("allReady");
@@ -292,7 +301,7 @@ namespace AllReady
 
                 app.UseMicrosoftAccountAuthentication(options);
             }
-            //TODO: mgmccarthy: working on getting email from Twitter
+
             //http://www.bigbrainintelligence.com/Post/get-users-email-address-from-twitter-oauth-ap
             if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
             {
@@ -339,6 +348,10 @@ namespace AllReady
             {
                 await sampleData.CreateAdminUser();
             }
+
+            //Hangfire
+            app.UseHangfireDashboard();
+            app.UseHangfireServer();
         }
     }
 }

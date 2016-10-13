@@ -33,13 +33,13 @@ namespace AllReady.Areas.Admin.Features.Notifications
             //send message out for initial verification
             foreach (var phoneNumber in requestorPhoneNumbers)
             {
-                var queuedSms = new AllReady.Models.Notifications.QueuedSmsMessage
-                {
-                    Recipient = phoneNumber,
-                    Message = $@"Your request has been scheduled by allREady for {dateAssigned}. Please response with ""Y"" to confirm this request or ""N"" to cancel this request."
-                };
-                var sms = JsonConvert.SerializeObject(queuedSms);
-                await storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
+                //var queuedSms = new AllReady.Models.Notifications.QueuedSmsMessage
+                //{
+                //    Recipient = phoneNumber,
+                //    Message = $@"Your request has been scheduled by allREady for {dateAssigned}. Please response with ""Y"" to confirm this request or ""N"" to cancel this request."
+                //};
+                //var sms = JsonConvert.SerializeObject(queuedSms);
+                //await storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
             }
 
             await mediator.PublishAsync(new RequestConfirmationsSent { RequestIds = notification.RequestIds});

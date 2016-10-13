@@ -62,6 +62,10 @@
     },
     "linqtotwitter": "4.1.0",
     "Geocoding.net": "3.4.0",
+    "Hangfire.AspNetCore": "1.6.5",
+    "Hangfire": "1.6.5",
+    "Hangfire.Core": "1.6.5",
+    "Hangfire.SqlServer": "1.6.5",
     "AllReady.Core": "1.0.0-*"
   },
 
