@@ -74,7 +74,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                             ItineraryId = itinerary.Id,
                             Request = request,
                             OrderIndex = orderIndex,
-                            DateAssigned = DateTimeUtcNow()
+                            DateAssigned = DateTimeUtcNow() //what are we doing about converting DateTimeUtc to the local time of the requestor? Or dont' we care?
                         });
 
                         // todo: sgordon: Add a history record here and include the assigned date in the ItineraryRequest

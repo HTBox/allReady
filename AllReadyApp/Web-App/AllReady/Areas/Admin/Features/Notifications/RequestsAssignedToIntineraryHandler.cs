@@ -13,11 +13,13 @@ namespace AllReady.Areas.Admin.Features.Notifications
     {
         private readonly AllReadyContext context;
         private readonly IQueueStorageService storageService;
+        private readonly IMediator mediator;
 
-        public RequestsAssignedToIntineraryHandler(AllReadyContext context, IQueueStorageService storageService)
+        public RequestsAssignedToIntineraryHandler(AllReadyContext context, IQueueStorageService storageService, IMediator mediator)
         {
             this.context = context;
             this.storageService = storageService;
+            this.mediator = mediator;
         }
 
         public async Task Handle(RequestsAssignedToIntinerary notification)
@@ -39,6 +41,8 @@ namespace AllReady.Areas.Admin.Features.Notifications
                 var sms = JsonConvert.SerializeObject(queuedSms);
                 await storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
             }
+
+            await mediator.PublishAsync(new RequestConfirmationsSent { RequestIds = notification.RequestIds});
         }
     }
 }
