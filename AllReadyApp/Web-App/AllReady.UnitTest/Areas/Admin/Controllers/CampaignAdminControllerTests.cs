@@ -283,7 +283,27 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact(Skip = "NotImplemented")]
         public async Task EditPostInvokesDeleteImageAsync_WhenCampaignHasAnImage()
         {
-            // delete this line when starting work on this unit test
+            const int organizationId = 1;
+            const int campaignId = 100;
+
+            var mockMediator = new Mock<IMediator>();
+            var mockImageService = new Mock<IImageService>();
+
+            var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+
+            var file = FormFile("image/jpeg");
+            var campaignSummaryViewModel = new CampaignSummaryViewModel
+            {
+                Name = "Foo",
+                OrganizationId = organizationId,
+                Id = campaignId,
+                StartDate = new DateTimeOffset(new DateTime(2016, 2, 13)),
+                EndDate = new DateTimeOffset(new DateTime(2016, 2, 14)),
+            };
+
+            await sut.Edit(campaignSummaryViewModel, file);
+
             await TaskFromResultZero;
         }
 
