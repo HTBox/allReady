@@ -308,11 +308,31 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockImageService.Verify(mock => mock.DeleteImageAsync(It.Is<string>(x => x == "existingImageUrl")), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditPostDoesNotInvokeDeleteImageAsync__WhenCampaignDoesNotHaveAnImage()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            const int organizationId = 1;
+            const int campaignId = 100;
+
+            var mockMediator = new Mock<IMediator>();
+            var mockImageService = new Mock<IImageService>();
+
+            var file = FormFile("image/jpeg");
+            mockImageService.Setup(x => x.UploadCampaignImageAsync(It.IsAny<int>(), It.IsAny<int>(), file)).ReturnsAsync("newImageUrl");
+
+            var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+
+            var campaignSummaryViewModel = new CampaignSummaryViewModel
+            {
+                OrganizationId = organizationId,
+                Id = campaignId,
+                StartDate = new DateTimeOffset(new DateTime(2016, 2, 13)),
+                EndDate = new DateTimeOffset(new DateTime(2016, 2, 14)),
+            };
+
+            await sut.Edit(campaignSummaryViewModel, file);
+            mockImageService.Verify(mock => mock.DeleteImageAsync(It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
