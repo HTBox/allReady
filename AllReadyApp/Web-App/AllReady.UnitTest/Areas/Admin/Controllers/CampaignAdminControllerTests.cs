@@ -17,16 +17,12 @@ using AllReady.Extensions;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using AllReady.Areas.Admin.ViewModels.Campaign;
-using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Areas.Admin.ViewModels.Shared;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
     public class CampaignAdminControllerTests 
     {
-        //delete this line when all unit tests using it have been completed
-        private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
-
         [Fact]
         public async Task IndexSendsIndexQueryWithCorrectData_WhenUserIsOrgAdmin()
         {
@@ -220,10 +216,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditPostRedirectsToCorrectActionWithCorrectRouteValuesWhenModelStateIsValid()
         {
             var sut = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), It.IsAny<int>());
-            var result = await sut.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = It.IsAny<int>() }, null);
+            var result = (RedirectToActionResult) await sut.Edit(new CampaignSummaryViewModel { Name = "Foo",  OrganizationId = It.IsAny<int>() }, null);
 
-            //TODO: test result for correct Action name and Route values
-            Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal(result.ActionName, "Details");
+            Assert.Equal(result.RouteValues["area"], "Admin");
         }
 
         [Fact]
@@ -235,8 +231,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await sut.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = It.IsAny<int>() }, file);
 
             Assert.False(sut.ModelState.IsValid);
-            Assert.True(sut.ModelState.ContainsKey("ImageUrl"));
-            //TODO: test that the value associated with the key is correct
+            Assert.Equal(sut.ModelState["ImageUrl"].Errors.Single().ErrorMessage, "You must upload a valid image file for the logo (.jpg, .png, .gif)");
         }
 
         [Fact]
@@ -619,14 +614,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Country = "Canada",
             PostalCode = "M1T2T9"
         };
-
-        private static OrganizationEditViewModel AgincourtAwareModel => new OrganizationEditViewModel
-        {
-            Name = "Agincourt Awareness",
-            Location = BogusAveModel,
-            WebUrl = "http://www.AgincourtAwareness.ca",
-            LogoUrl = "http://www.AgincourtAwareness.ca/assets/LogoLarge.png" }
-        ;
 
         private static CampaignSummaryViewModel MassiveTrafficLightOutageModel => new CampaignSummaryViewModel
         {
