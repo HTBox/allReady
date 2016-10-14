@@ -215,11 +215,19 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task EditPostRedirectsToCorrectActionWithCorrectRouteValuesWhenModelStateIsValid()
         {
-            var sut = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), It.IsAny<int>());
-            var result = (RedirectToActionResult) await sut.Edit(new CampaignSummaryViewModel { Name = "Foo",  OrganizationId = It.IsAny<int>() }, null);
+            const int organizationId = 99;
+            const int campaignId = 100;
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EditCampaignCommand>())).ReturnsAsync(campaignId);
+            var sut = new CampaignController(mockMediator.Object, new Mock<IImageService>().Object);
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+
+            var result = (RedirectToActionResult) await sut.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = organizationId, Id = campaignId }, null);
 
             Assert.Equal(result.ActionName, "Details");
             Assert.Equal(result.RouteValues["area"], "Admin");
+            Assert.Equal(result.RouteValues["id"], campaignId);
         }
 
         [Fact]
