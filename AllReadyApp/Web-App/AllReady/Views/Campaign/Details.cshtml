@@ -3,6 +3,14 @@
 @{
     ViewData["Title"] = Model.Name;
 }
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
+            <li>@Model.Name</li>
+        </ol>
+    </div>
+</div>
 
 <div class="row">
     <div id="col-main">
