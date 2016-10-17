@@ -8,6 +8,13 @@
 </div>
 <div class="row">
     <div class="col-md-12">
+        <div class="btn-group btn-group-sm row-btn-margin">
+            <a data-toggle="tooltip" data-placement="top" title="Create New" asp-area="Admin" asp-controller="Skill" asp-action="Create" class="btn btn-default"><span class="fa fa-plus"></span>&nbsp; Create Skill</a>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
         <table class="table table-responsive table-condensed">
             <tr>
                 <th>Action</th>
@@ -23,15 +30,15 @@
                         @Html.DisplayNameFor(model => model.First().OwningOrganizationName)
                     </th>
                 }
-                <th></th>
             </tr>
 
             @foreach (var item in Model.OrderBy(s => s.HierarchicalName))
             {
                 <tr>
                     <td>
-                        <div class="btn-group btn-group-sm row-btn-margin">
-                            <a data-toggle="tooltip" data-placement="top" title="Edit" asp-area="Admin" asp-controller="Skill" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success"><span class="fa fa-edit"></span></a>
+                        <div class="btn-toolbar">
+                            <a data-toggle="tooltip" data-placement="top" title="Edit" asp-area="Admin" asp-controller="Skill" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-success"><span class="fa fa-edit"></span></a>
+                            <a data-toggle="tooltip" data-placement="top" title="Delete" asp-area="Admin" asp-controller="Skill" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger"><span class="fa fa-remove"></span></a>
                         </div>
                     </td>
                     <td>
@@ -46,21 +53,9 @@
                             @(item.OwningOrganizationName == null ? "" : item.OwningOrganizationName)
                         </td>
                     }
-                    <td>
-                        <div class="btn-group btn-group-sm row-btn-margin pull-right">
-                            <a data-toggle="tooltip" data-placement="top" title="Delete" asp-area="Admin" asp-controller="Skill" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger"><span class="fa fa-remove"></span></a>
-                        </div>
-                    </td>
                 </tr>
             }
         </table>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="btn-group btn-group-sm row-btn-margin">
-            <a data-toggle="tooltip" data-placement="top" title="Create New" asp-area="Admin" asp-controller="Skill" asp-action="Create" class="btn btn-success"><span class="fa fa-plus"></span></a>
-        </div>
     </div>
 </div>
 

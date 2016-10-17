@@ -11,6 +11,14 @@
 </div>
 <div class="row">
     <div class="col-md-12">
+        <div class="btn-group btn-group-sm row-btn-margin">
+            <a data-toggle="tooltip" data-placement="top" id="CreateNew" title="Create New" href="@Url.Action("Create", "Organization")" class="btn btn-default"><span class="fa fa-plus"></span>&nbsp; Create Organization</a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
         <table class="table table-responsive table-condensed">
             <tr>
                 <th class="col-md-1">Action
@@ -24,14 +32,14 @@
                 <th class="col-md-4">
                     Logo
                 </th>
-                <th class="col-md-1"></th>
             </tr>
             @foreach (var item in Model)
             {
                 <tr>
                     <td>
-                        <div class="btn-group btn-group-sm row-btn-margin">
-                            <a data-toggle="tooltip" data-placement="top" title="Edit" href="@Url.Action("Edit", "Organization", new {id = item.Id})" class="btn btn-success"><span class="fa fa-edit"></span></a>
+                        <div class="row-btn-margin btn-toolbar">
+                            <a data-toggle="tooltip" data-placement="top" title="Edit" href="@Url.Action("Edit", "Organization", new {id = item.Id})" class="btn btn-sm btn-success"><span class="fa fa-edit"></span></a>
+                            &nbsp; <a data-toggle="tooltip" data-placement="top" title="Delete" href="@Url.Action("Delete", "Organization", new { id = item.Id })" class="btn btn-sm  btn-danger"><span class="fa fa-remove"></span></a>
                         </div>
                     </td>
                     <td>
@@ -48,23 +56,12 @@
                             </a>
                         }
                     </td>
-                    <td>
-                        <div class="btn-group btn-group-sm row-btn-margin pull-right">
-                            <a data-toggle="tooltip" data-placement="top" title="Delete" href="@Url.Action("Delete", "Organization", new { id = item.Id })" class="btn btn-danger"><span class="fa fa-remove"></span></a>
-                        </div>
-                    </td>
                 </tr>
             }
         </table>
     </div>
 </div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="btn-group btn-group-sm row-btn-margin">
-            <a data-toggle="tooltip" data-placement="top" id="CreateNew" title="Create New" href="@Url.Action("Create", "Organization")" class="btn btn-success"><span class="fa fa-plus"></span></a>
-        </div>
-    </div>
-</div>
+
 
 @section scripts {
     <script type="text/javascript">
