@@ -17,16 +17,12 @@ using AllReady.Extensions;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using AllReady.Areas.Admin.ViewModels.Campaign;
-using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Areas.Admin.ViewModels.Shared;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
     public class CampaignAdminControllerTests 
     {
-        //delete this line when all unit tests using it have been completed
-        private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
-
         [Fact]
         public async Task IndexSendsIndexQueryWithCorrectData_WhenUserIsOrgAdmin()
         {
@@ -219,11 +215,19 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task EditPostRedirectsToCorrectActionWithCorrectRouteValuesWhenModelStateIsValid()
         {
-            var sut = CampaignControllerWithSummaryQuery(UserType.OrgAdmin.ToString(), It.IsAny<int>());
-            var result = await sut.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = It.IsAny<int>() }, null);
+            const int organizationId = 99;
+            const int campaignId = 100;
 
-            //TODO: test result for correct Action name and Route values
-            Assert.IsType<RedirectToActionResult>(result);
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EditCampaignCommand>())).ReturnsAsync(campaignId);
+            var sut = new CampaignController(mockMediator.Object, new Mock<IImageService>().Object);
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+
+            var result = (RedirectToActionResult) await sut.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = organizationId, Id = campaignId }, null);
+
+            Assert.Equal(result.ActionName, "Details");
+            Assert.Equal(result.RouteValues["area"], "Admin");
+            Assert.Equal(result.RouteValues["id"], campaignId);
         }
 
         [Fact]
@@ -235,8 +239,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await sut.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = It.IsAny<int>() }, file);
 
             Assert.False(sut.ModelState.IsValid);
-            Assert.True(sut.ModelState.ContainsKey("ImageUrl"));
-            //TODO: test that the value associated with the key is correct
+            Assert.Equal(sut.ModelState["ImageUrl"].Errors.Single().ErrorMessage, "You must upload a valid image file for the logo (.jpg, .png, .gif)");
         }
 
         [Fact]
@@ -280,18 +283,59 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 It.Is<IFormFile>(i => i == file)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditPostInvokesDeleteImageAsync_WhenCampaignHasAnImage()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            const int organizationId = 1;
+            const int campaignId = 100;
+
+            var mockMediator = new Mock<IMediator>();
+            var mockImageService = new Mock<IImageService>();
+
+            var file = FormFile("image/jpeg");
+            mockImageService.Setup(x => x.UploadCampaignImageAsync(It.IsAny<int>(), It.IsAny<int>(), file)).ReturnsAsync("newImageUrl");
+
+            var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+
+            var campaignSummaryViewModel = new CampaignSummaryViewModel
+            {
+                OrganizationId = organizationId,
+                ImageUrl = "existingImageUrl",
+                Id = campaignId,
+                StartDate = new DateTimeOffset(new DateTime(2016, 2, 13)),
+                EndDate = new DateTimeOffset(new DateTime(2016, 2, 14)),
+            };
+            
+            await sut.Edit(campaignSummaryViewModel, file);
+            mockImageService.Verify(mock => mock.DeleteImageAsync(It.Is<string>(x => x == "existingImageUrl")), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditPostDoesNotInvokeDeleteImageAsync__WhenCampaignDoesNotHaveAnImage()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            const int organizationId = 1;
+            const int campaignId = 100;
+
+            var mockMediator = new Mock<IMediator>();
+            var mockImageService = new Mock<IImageService>();
+
+            var file = FormFile("image/jpeg");
+            mockImageService.Setup(x => x.UploadCampaignImageAsync(It.IsAny<int>(), It.IsAny<int>(), file)).ReturnsAsync("newImageUrl");
+
+            var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+
+            var campaignSummaryViewModel = new CampaignSummaryViewModel
+            {
+                OrganizationId = organizationId,
+                Id = campaignId,
+                StartDate = new DateTimeOffset(new DateTime(2016, 2, 13)),
+                EndDate = new DateTimeOffset(new DateTime(2016, 2, 14)),
+            };
+
+            await sut.Edit(campaignSummaryViewModel, file);
+            mockImageService.Verify(mock => mock.DeleteImageAsync(It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
@@ -578,14 +622,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Country = "Canada",
             PostalCode = "M1T2T9"
         };
-
-        private static OrganizationEditViewModel AgincourtAwareModel => new OrganizationEditViewModel
-        {
-            Name = "Agincourt Awareness",
-            Location = BogusAveModel,
-            WebUrl = "http://www.AgincourtAwareness.ca",
-            LogoUrl = "http://www.AgincourtAwareness.ca/assets/LogoLarge.png" }
-        ;
 
         private static CampaignSummaryViewModel MassiveTrafficLightOutageModel => new CampaignSummaryViewModel
         {
