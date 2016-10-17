@@ -959,6 +959,3 @@ Now you are ready to deploy to your Android device from Visual Studio using 1 of
 Visual Studio will then build the mobile application and deploy it to your device.
 
 > This first time that you deploy to either an Android device or the emulator the android sdk will download Gradle.  This may take a few minutes.
-
-
-
