@@ -642,6 +642,23 @@ Once the install is completed we need to set the JAVA_HOME environment variable
 
     ![close edit environment variable dialog](images/jdk8-16-finished-env-vars.png)
 
+If you are behind a proxy server you need to add your proxy configuration to Java.
+
+1. Under the Start Menu search for Java and select Configure Java
+
+    ![start menu configure java](images/java-proxy-1.png)
+
+1. Click on Network Settings... button
+
+    ![java control panel network settings](images/java-proxy-2.png)
+
+1. Click on the Advanced... button
+
+    ![network settings advanced button](images/java-proxy-3.png)
+
+1. Enter you proxy server for Http and Secure (https), the ports for them, and addresses to skip for proxy (suggest 127.0.0.1;*.yourdomain.com).  Make sure to replace *.yourdomain.com with your network domain.
+
+    ![advanced network settings](images/java-proxy-4.png)
 
 #### Cordova 
 
@@ -673,15 +690,32 @@ Next we need to install the Ionic Framework command line interface.  The Ionic C
 
 After the tooling for both Cordova and Ionic is installed, we need to restore the ionic state.  This will install the configured Cordova platforms and plugins.
 
-Open a command prompt and run:
+1. Open a command prompt 
+1. Navigate to the allReady\allReadyApp\Mobile-App directory
+1. Run the following command to restore the platforms and plugins
 
-```bash
-ionic state restore
-```
+        ionic state restore
 
 #### Visual Studio 2015 Tools For Apache Cordova
 
 The last bit of software that we need to install is the Visual Studio 2015 Tools for Apache Cordova.  This tooling provide a very useful Android emulator, allows you to build and deploy to Android devices or emulators directly from Visual Studio, and to debug the application from within Visual Studio.
+
+If you are behind a proxy server, you need to create a configuration file to tell the Android SDK what the proxy server is.
+
+1. BEFORE installing Visual Studio Tools for Apache Cordova create a file at: **%USERPROFILE%\\.android\androidtool.cfg**
+1. In the androidtool.cfg file that you just created, place the following contents.  Make sure update **"http.proxyPort"** and **"http.proxyHost"** in the file
+
+        ### Settings for Android Tool
+        http.proxyPort=8888
+        sdkman.enable.previews=false
+        http.proxyHost=127.0.0.1
+        sdkman.ask.adb.restart=false
+        sdkman.show.update.only=true
+        sdkman.force.http=false
+        sdkman.use.dl.cache=true
+
+1.  Now you are ready to install the Visual Studio Tools for Apache Cordova
+
 
 To install the Tools for Apache Cordova, we need to add additional features to the already installed Visual Studio 2015 Community Edition. 
 
