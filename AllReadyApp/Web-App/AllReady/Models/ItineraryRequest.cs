@@ -16,6 +16,7 @@ namespace AllReady.Models
         public Guid RequestId { get; set; }
         public Request Request { get; set; }
 
+        //TODO: mgmccarthy: need to change this type from DateTime to DateTimeOffset in order to calculate local time of requestors to schedule the correct delivery time of sms confirmation messages for each request
         [Required]
         public DateTime DateAssigned { get; set; }
 

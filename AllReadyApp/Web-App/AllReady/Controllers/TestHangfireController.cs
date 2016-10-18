@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Controllers
 {
-    public class HangfireController : Controller
+    public class TestHangfireController : Controller
     {
         private readonly IBackgroundJobClient backgroundJob;
-        public HangfireController(IBackgroundJobClient backgroundJob)
+        public TestHangfireController(IBackgroundJobClient backgroundJob)
         {
             this.backgroundJob = backgroundJob;
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using AllReady.Areas.Admin.Features.Notifications;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Controllers;
@@ -30,8 +31,8 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Geocoding;
 using Geocoding.Google;
 using Hangfire;
+using Hangfire.Dashboard;
 using Hangfire.SqlServer;
-using Microsoft.EntityFrameworkCore.Storage.Internal;
 
 namespace AllReady
 {
@@ -144,6 +145,8 @@ namespace AllReady
             services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
             services.AddTransient<IConvertDateTimeOffset, DateTimeOffsetConverter>();
             services.AddSingleton<IImageService, ImageService>();
+            services.AddTransient<ISmsRequestConfirmationResender, SmsRequestConfirmationResender>(); //Hangfire
+
             services.AddTransient<SampleDataGenerator>();
 
             if (Configuration["Geocoding:EnableGoogleGeocodingService"] == "true")
@@ -152,6 +155,11 @@ namespace AllReady
                 //need to override this setting in your user secrets or env vars.
                 //Visit https://developers.google.com/maps/documentation/geocoding/get-api-key to get a free standard usage API key
                 services.AddSingleton<IGeocoder>(new GoogleGeocoder(Configuration["Geocoding:GoogleGeocodingApiKey"]));
+            }
+            else
+            {
+                //implement null object pattern to protect against IGeocoder not being passed a legit reference at runtime b/c of the above conditional
+                services.AddSingleton<IGeocoder>(new NullObjectGeocoder());
             }
 
             if (Configuration["Data:Storage:EnableAzureQueueService"] == "true")
@@ -190,7 +198,11 @@ namespace AllReady
             containerBuilder.RegisterType<ExternalUserInformationProviderFactory>().As<IExternalUserInformationProviderFactory>();
 
             //Hangfire
-            containerBuilder.RegisterInstance(new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"]))).As<IBackgroundJobClient>();
+            containerBuilder.RegisterInstance(new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"])))
+                .As<IBackgroundJobClient>();
+            //this is wherethe ISmsRequestConfirmationResender dependency is SUPPOSED to be registered, but I have it registered in CreateIocContainer and it seems to work fine
+            //containerBuilder.RegisterType<SmsRequestConfirmationResender>().As<ISmsRequestConfirmationResender>()
+            //    .WithParameter()
 
             //Populate the container with services that were previously registered
             containerBuilder.Populate(services);
@@ -200,8 +212,7 @@ namespace AllReady
         }
 
         // Configure is called after ConfigureServices is called.
-        //public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context, IConfiguration configuration)
-        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context)
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context, IConfiguration configuration)
         {
             // Put first to avoid issues with OPTIONS when calling from Angular/Browser.  
             app.UseCors("allReady");
@@ -325,6 +336,13 @@ namespace AllReady
                 app.UseGoogleAuthentication(options);
             }
 
+            //Hangfire
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                Authorization = new List<DashboardAuthorizationFilter>()
+            });
+            app.UseHangfireServer();
+
             // Add MVC to the request pipeline.
             app.UseMvc(routes =>
             {
@@ -348,10 +366,15 @@ namespace AllReady
             {
                 await sampleData.CreateAdminUser();
             }
+        }
+    }
 
-            //Hangfire
-            app.UseHangfireDashboard();
-            app.UseHangfireServer();
+    public class DashboardAuthorizationFilter : IDashboardAuthorizationFilter
+    {
+        //TODO mgmccarthy: we need real implelentation to authorize useres to see the Hangfire dashboard, right now, anyone can go to the dashboard
+        public bool Authorize(DashboardContext context)
+        {
+            return true;
         }
     }
 }

@@ -1,28 +1,63 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Models;
+using Hangfire;
 using MediatR;
+using Microsoft.EntityFrameworkCore.Extensions.Internal;
 
 namespace AllReady.Areas.Admin.Features.Notifications
 {
-    public class RequestConfirmationsSentHandler //: IAsyncNotificationHandler<RequestConfirmationsSent>
+    public class RequestConfirmationsSentHandler : IAsyncNotificationHandler<RequestConfirmationsSent>
     {
-        //public RequestConfirmationsSentHandler()
-        //{
-        //}
+        private readonly AllReadyContext context;
+        private readonly IBackgroundJobClient backgroundJob;
 
-        //public async Task Handle(RequestConfirmationsSent notification)
+        public RequestConfirmationsSentHandler(AllReadyContext context, IBackgroundJobClient backgroundJob)
+        {
+            this.context = context;
+            this.backgroundJob = backgroundJob;
+        }
+
+        public async Task Handle(RequestConfirmationsSent notification)
+        {
+            //update the Request status to PendingConfirmation
+            var requests = await context.Requests.AsAsyncEnumerable()
+                .Where(x => notification.RequestIds.Contains(x.RequestId))
+                .ToList();
+
+            requests.ForEach(request => request.Status = RequestStatus.PendingConfirmation);
+            await context.SaveChangesAsync();
+
+            var intineraryRequests = await context.ItineraryRequests.AsAsyncEnumerable()
+                .Where(x => notification.RequestIds.Contains(x.RequestId))
+                .ToList();
+
+            //var campaignsTimeZoneId = context.Itineraries.AsNoTracking()
+            //    .Include(i => i.Event).ThenInclude(e => e.Campaign)
+            //    .Single(i => i.Id == notification.ItineraryId).Event.Campaign.TimeZoneId;
+
+            //TODO mgmccarthy: do we want to handle these requests as a batch or schedule them per request?
+            //TODO mgmccarthy: need to convert DateAssigned to local time of requestor
+            //intineraryRequests.ForEach(request => backgroundJob.Schedule<ISmsRequestConfirmationResender>(x => 
+            //    x.ResendSms(request.RequestId), SevenDaysBeforeAtNoon(request.DateAssigneDateTimeOffset, campaignsTimeZoneId)));
+
+            intineraryRequests.ForEach(request => backgroundJob.Schedule<ISmsRequestConfirmationResender>(x =>
+                x.ResendSms(request.RequestId), SevenDaysBeforeAtNoon(request.DateAssigned)));
+        }
+
+        private static DateTime SevenDaysBeforeAtNoon(DateTime dateAssigned)
+        {
+            //return dateAssigned.AddDays(-7).AtNoon();
+            var sevenDaysBefore = dateAssigned.AddDays(-7);
+            var result = new DateTime(sevenDaysBefore.Year, sevenDaysBefore.Month, sevenDaysBefore.Day, 12, 0, 0);
+            return result;
+        }
+
+        //private DateTimeOffset SevenDaysBeforeAtNoon(DateTimeOffset dateAssigned, string campaignsTimeZoneId)
         //{
-        //    //the sms's have been sent out for requestor's to confirm or cancel their request... what we need to do here
-        //    //1. query the Requet table and check to see if they status has been moved to ??? for each request
-        //    //2. if the status has not been moved to the ??? status that means they've confirmed, if it's been moved to unassigned, then they've canceled, if it's "assigned" then they have not got back to us yet
-        //    //3. if they have not got back to us yet (which is doubtful for this short time), schedule a job a week before the Request's DateAdded value to send another confirm/cancel sms text
-        //    //- send a command to do this
-        //    //- BackgroundJob.Schedule(() => TextBuffer.WriteLine("Scheduled Job completed successfully!"), TimeSpan.FromSeconds(5));
-        //    //- is there any way to have the Schedule lambda actually send a message via a mediator so we can designate a handler for the "week before" check?
-        //    //- this handler will again query the db to see what the status of the request is and either do nothing, or enqueue another scheduled job
-        //    //- then same thing for day before request, y/n sms text
+        //    var convertedDateTimeOffset = dateTimeOffsetConverter.ConvertDateTimeOffsetTo(campaignsTimeZoneId, dateAssigned, 12, 0, 0);
+        //    return convertedDateTimeOffset.AddDays(-7);
         //}
     }
 }

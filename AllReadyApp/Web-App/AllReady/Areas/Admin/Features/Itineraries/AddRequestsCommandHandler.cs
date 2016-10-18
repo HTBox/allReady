@@ -74,29 +74,15 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                             ItineraryId = itinerary.Id,
                             Request = request,
                             OrderIndex = orderIndex,
-                            DateAssigned = DateTimeUtcNow() //what are we doing about converting DateTimeUtc to the local time of the requestor? Or dont' we care?
+                            DateAssigned = DateTimeUtcNow()
                         });
-
-                        // todo: sgordon: Add a history record here and include the assigned date in the ItineraryRequest
                     }
                 }
 
                 await _context.SaveChangesAsync();
 
-                await _mediator.PublishAsync(new RequestsAssignedToIntinerary { ItineraryId = message.ItineraryId, RequestIds = requestsToUpdate.Select(x => x.RequestId).ToList()});
-
-                //stuff added after Steve's code
-                ////On Successful addition of request
-                //Func<Request, Itinerary, string> getNotificationMessage = ( r, i ) => Format(ItinerariesMessages.RequestAddedInitialNotificationFormat, i.Date);
-
-                //await _mediator.SendAsync(new NotifyRequestorsCommand
-                //{
-                //    Requests = requestsToUpdate,
-                //    Itinerary = itinerary,
-                //    NotificationMessageBuilder = getNotificationMessage
-                //});
+                await _mediator.PublishAsync(new RequestsAssignedToIntinerary { ItineraryId = message.ItineraryId, RequestIds = requestsToUpdate.Select(x => x.RequestId).ToList() });
             }
-
             return true;
         }
     }

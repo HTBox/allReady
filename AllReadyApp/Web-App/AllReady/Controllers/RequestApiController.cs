@@ -14,6 +14,8 @@ namespace AllReady.Controllers
     public class RequestApiController : Controller
     {
         private readonly IMediator _mediator;
+        public Func<Guid> RequestId = () => Guid.NewGuid();
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
         public RequestApiController(IMediator mediator)
         {
@@ -24,16 +26,37 @@ namespace AllReady.Controllers
         [ExternalEndpoint]
         public async Task<IActionResult> Post([FromBody]RequestViewModel viewModel)
         {
+            //validate before sending command
             if (viewModel.ProviderId == null)
             {
                 return MapError(new AddRequestError { ProviderId = "", Reason = "No ProviderId" });
             }
 
-            var request = ToModel(viewModel);
+            Guid requestId;
+            if (!Guid.TryParse(viewModel.RequestId, out requestId))
+            {
+                return MapError(new AddRequestError { ProviderId = viewModel.ProviderId, Reason = "RequestId must be convertable to a Guid." });
+            }
 
-            await _mediator.SendAsync(new AddRequestCommand { Request = request });
+            if (!EnumCanBeMapped(viewModel.Status))
+            {
+                return MapError(new AddRequestError { ProviderId = viewModel.ProviderId, Reason = "enum string provided cannot be mapped to Request enum type." });
+            }
 
-            return Created(string.Empty, request);
+            var result = await _mediator.SendAsync(new AddRequestCommand { RequestViewModel = viewModel });
+
+            return Created(string.Empty, result);
+        }
+
+        private static bool EnumCanBeMapped(string stringStatus)
+        {
+            RequestStatus enumStatus;
+            if (Enum.TryParse(stringStatus, out enumStatus))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private IActionResult MapError(AddRequestError error)
@@ -44,34 +67,6 @@ namespace AllReady.Controllers
             //    return StatusCode(500, error);
             //}
             return BadRequest(error);
-        }
-
-        private static Request ToModel(RequestViewModel requestViewModel)
-        {
-            var request = new Request
-            {
-                ProviderId = requestViewModel.ProviderId,
-                ProviderData = requestViewModel.ProviderData,
-                Address = requestViewModel.Address,
-                City = requestViewModel.City,
-                DateAdded = DateTime.UtcNow,
-                Email = requestViewModel.Email,
-                Name = requestViewModel.Name,
-                Phone = requestViewModel.Phone,
-                State = requestViewModel.State,
-                Zip = requestViewModel.Zip,
-                Status = RequestStatus.Unassigned,
-                Latitude = requestViewModel.Latitude,
-                Longitude = requestViewModel.Longitude
-            };
-
-            RequestStatus status;
-            if (Enum.TryParse(requestViewModel.Status, out status))
-            {
-                request.Status = status;
-            }
-
-            return request;
         }
     }
 }
