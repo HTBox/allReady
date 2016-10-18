@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Models;
+using AllReady.Models.Notifications;
 using AllReady.Services;
 using MediatR;
 using Newtonsoft.Json;
@@ -37,7 +38,7 @@ namespace AllReady.Areas.Admin.Features.Notifications
             foreach (var result in results)
             {
                 //TODO mgmccarthy: need to convert DateAssigned to local time of requestor
-                var queuedSms = new AllReady.Models.Notifications.QueuedSmsMessage
+                var queuedSms = new QueuedSmsMessage
                 {
                     Recipient = result.PhoneNumber,
                     Message = $@"Your request has been scheduled by allReady for {result.DateAssigned}. Please response with ""Y"" to confirm this request or ""N"" to cancel this request."

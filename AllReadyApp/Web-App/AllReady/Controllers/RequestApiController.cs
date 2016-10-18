@@ -14,7 +14,6 @@ namespace AllReady.Controllers
     public class RequestApiController : Controller
     {
         private readonly IMediator _mediator;
-        public Func<Guid> RequestId = () => Guid.NewGuid();
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
         public RequestApiController(IMediator mediator)

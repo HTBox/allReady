@@ -25,9 +25,10 @@ namespace AllReady.Features.Requests
 
         public async Task<Request> Handle(AddRequestCommand message)
         {
-            var address = _geocoder.Geocode(message.Request.Address, message.Request.City, message.Request.State, message.Request.Zip, string.Empty).FirstOrDefault();
+            var address = _geocoder.Geocode(message.RequestViewModel.Address, message.RequestViewModel.City, message.RequestViewModel.State, message.RequestViewModel.Zip, string.Empty).FirstOrDefault();
+            var requestId = GetRequestId(message.RequestViewModel.RequestId);
 
-            var request = await _context.Requests.SingleOrDefaultAsync(x => x.RequestId == message.Request.RequestId) ?? new Request();
+            var request = await _context.Requests.SingleOrDefaultAsync(x => x.RequestId == requestId) ?? new Request();
             request.RequestId = GetRequestId(message.RequestViewModel.RequestId);
             request.ProviderId = message.RequestViewModel.ProviderId;
             request.ProviderData = message.RequestViewModel.ProviderData;
