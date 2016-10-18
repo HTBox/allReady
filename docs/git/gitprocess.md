@@ -1,138 +1,23 @@
 # Git Usage for allReady
 
->This guide assumes that you have already installed all of the required software for the allReady project and only covers usage of Git.
+> **WARNING:** This guide assumes that you have already installed all of the required software for the allReady project per the [install guide](../prerequisite_install_guide/prerequisite_install_guide.md) and only covers usage of Git.  
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**
+**Table Of Contents**
 
-- [Installing Git](#installing-git)
-- [Configuring Git](#configuring-git)
-- [Forking the Repository](#forking-the-repository)
-- [Cloning the Repository](#cloning-the-repository)
-- [Setup a link to the HTBox/allReady repository](#setup-a-link-to-the-htboxallready-repository)
 - [Creating a branch](#creating-a-branch)
 - [Committing Changes Locally](#committing-changes-locally)
+  - [Adding Changes](#adding-changes)
+  - [Backout Changes](#backout-changes)
+  - [Committing Changes](#committing-changes)
 - [Sending Changes to Github](#sending-changes-to-github)
 - [Creating a Pull Request](#creating-a-pull-request)
 - [Making changes to an existing pull request](#making-changes-to-an-existing-pull-request)
 - [Thank you](#thank-you)
+- [Additional Resources](#additional-resources)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-## Installing Git
-
-In order to contribute to allReady, you need to make sure to have a Git client installed.  This guide use the Git command line.  
-
-The instructions for installing the Git command line are available at [https://git-scm.com/book/en/v2/Getting-Started-Installing-Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-
-## Configuring Git
-
-There is a little bit of configuration that you need to do git in order for git to work correctly.
-
->**Note:** the --global is used in the command below to set the default configuration for all repositories.  If it is left off, you need to first clone the repository and then run the command in the allReady folder to save it as just a project configuration.
-
-**User Name to Associate to Changes**  
-
-```
-git config --global user.name "Your Name"
-```
-
-**Email Address Associated to Github Account**
-
-```
-git config --global user.email "youremail@domain.com"
-```
-
-**Setup Long Paths (Windows Only)**
-
-```
-git config --global --add core.longpaths true
-```
-
-**Proxy Servers**
-
-If you are behind a proxy server, you may also need to add the following configurations.
-
-```
-git config --global --add [Your Proxy Server and Port]
-
-git config --global --add https.proxy [Your Proxy Server and Port]
-
-```
-
-Not always is the git protocol allowed through firewalls.  If you encounter issue with not being able to interact with remote repository you can tell git to always use the https protocol instead.
-
-```
-git config --global --add url.https://github.com.insteadof git://github.com
-```
-
-## Forking the Repository
-
-In order to make changes the first thing you need to do is create a copy of the repository into your account.  In Git terms, this is called forking the repository.
-
-The reason that you need to fork the repository is because you do not have write access to the HTBox allReady repository.  When you fork the repository into your account, you have full write access to it to make changes and then you can send them back to the HTBox allReady repository by submitting a pull request.
-
-**Steps to Fork the Repository:**  
-
-1. Navigate to [https://github.com/HTBox/allReady](https://github.com/HTBox/allReady)
-1. Click on the Fork button
-
-    ![Fork Button](images/fork.png)
-
-1. After the fork has been made, you will be redirect over to the fork.  Your repository will be https://github.com/[User Name]/allReady
-
-You are now ready to download the repository onto your machine by cloning it.
-
-## Cloning the Repository
-
-Cloning the repository is how you get the repository from Github onto your local machine and keep the link to Github to be able to interact with the repository local.
-
-You will want to make sure to do a clone and not download the zip file version of the repository if you want to be able to interact with the source code on your machine as a Git repository.
-
-**Steps to Clone:**
-
-1. Navigate to your forked copy of the repository.
-1. Click on the "Clone or download" button
-1. In the popup that comes up, click on the Clipboard looking button next to the url.
-
-    ![Clone Get Url](images/clone_geturl.png)
-
-1. Next you need to open up a terminal / command prompt
-1. In the command prompt, navigate to where you want to store your source code at.  
-1. Then run the following command to create an allReady directory and download the repository onto your machine.  Make sure to replace "[Your UserName]" with your actual Github user name.
-
-        git clone http://github.com/[Your UserName]/allReady
-
-You now have the repository on your machine.  
-
-There are 2 Visual Studio solutions in the allReady\AllReadyApp directory.  
-
-1. AllReadyWebonly.sln -> This file will open just the web project files and does not include the mobile application.  Use this solution if you are not going to be working on the mobile application. 
-1. AllReadyApp.sln -> This file will open all of the allReady projects including the mobile application.  Use this file if you are going to be working on the mobile application.
-
-The first time that you open up the solution in Visual Studio, it will install the npm and bower dependencies.  This can take several minutes depending on your internet connection.  Once all of the npm and bower dependencies have been installed, you need to build the solution.  Building the solution the first time will download all of the nuget packages.  
-
-If you are building the mobile application it will take several minutes to download additional dependencies that Visual Studio needs.  
-
-Once the solution compiles successfully you are ready to start contributing.
-
-## Setup a link to the HTBox/allReady repository
-
-Before making changes to your repository, you will want to setup a reference back to the HTBox allReady repository so that you can pull changes into your forked repository.
-
-1. Open the command prompt and navigate to the allReady directory.
-1. Run the following command to setup a reference called upstream to the HTBox/allReady repository.
-
-        git remote add upstream https://github.com/HTBox/allReady.git
-
-1. Verify that it was setup successfully by running 
-
-        git remote -v         
-        
-    ![git remote -v output](images/remote-v.png)
-
-You are now ready to create a branch and start contributing.
 
 
 ## Creating a branch
