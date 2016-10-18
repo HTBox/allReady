@@ -48,10 +48,9 @@ namespace AllReady.Areas.Admin.Features.Notifications
 
         private static DateTime SevenDaysBeforeAtNoon(DateTime dateAssigned)
         {
-            //return dateAssigned.AddDays(-7).AtNoon();
             var sevenDaysBefore = dateAssigned.AddDays(-7);
-            var result = new DateTime(sevenDaysBefore.Year, sevenDaysBefore.Month, sevenDaysBefore.Day, 12, 0, 0);
-            return result;
+            var sevenDaysBeforeAtNoon = new DateTime(sevenDaysBefore.Year, sevenDaysBefore.Month, sevenDaysBefore.Day, 12, 0, 0);
+            return sevenDaysBeforeAtNoon;
         }
 
         //private DateTimeOffset SevenDaysBeforeAtNoon(DateTimeOffset dateAssigned, string campaignsTimeZoneId)

@@ -29,6 +29,5 @@ namespace AllReady.Areas.Admin.ViewModels.Request
             Map(r => r.Latitude).Name("latitude").Default(0);
             Map(r => r.Longitude).Name("longitude").Default(0);
         }
-
     }
 }

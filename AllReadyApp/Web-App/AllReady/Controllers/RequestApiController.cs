@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AllReady.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Models;
 using MediatR;
@@ -9,7 +8,7 @@ using AllReady.ViewModels.Requests;
 
 namespace AllReady.Controllers
 {
-    [Route("api/request")]
+    [Route("api/requestapi")]
     [Produces("application/json")]
     public class RequestApiController : Controller
     {
@@ -22,7 +21,6 @@ namespace AllReady.Controllers
         }
 
         [HttpPost]
-        [ExternalEndpoint]
         public async Task<IActionResult> Post([FromBody]RequestViewModel viewModel)
         {
             //validate before sending command
@@ -32,18 +30,31 @@ namespace AllReady.Controllers
             }
 
             Guid requestId;
-            if (!Guid.TryParse(viewModel.RequestId, out requestId))
+            if (!string.IsNullOrEmpty(viewModel.RequestId))
             {
-                return MapError(new AddRequestError { ProviderId = viewModel.ProviderId, Reason = "RequestId must be convertable to a Guid." });
+                if (!Guid.TryParse(viewModel.RequestId, out requestId))
+                {
+                    return MapError(new AddRequestError { ProviderId = viewModel.ProviderId, Reason = "RequestId must be convertable to a Guid." });
+                }
             }
 
-            if (!EnumCanBeMapped(viewModel.Status))
+            //TODO mgmccarthy: making the assumption here that we'll receive an empty Status for a new Request.
+            if (!string.IsNullOrEmpty(viewModel.Status))
             {
-                return MapError(new AddRequestError { ProviderId = viewModel.ProviderId, Reason = "enum string provided cannot be mapped to Request enum type." });
+                if (!EnumCanBeMapped(viewModel.Status))
+                {
+                    return MapError(new AddRequestError { ProviderId = viewModel.ProviderId, Reason = "enum string provided cannot be mapped to Request enum type." });
+                }
             }
-
+            
             var result = await _mediator.SendAsync(new AddRequestCommand { RequestViewModel = viewModel });
 
+            //TODO mgmccarthy
+            //when returning Result, the json coming back for the Status propert is the integeter value, not the enum name as a string, so this:
+            //"Status": 3,
+            //instead of this,
+            //"Status": "Canceled"
+            //is this what we want?
             return Created(string.Empty, result);
         }
 
@@ -52,10 +63,10 @@ namespace AllReady.Controllers
             RequestStatus enumStatus;
             if (Enum.TryParse(stringStatus, out enumStatus))
             {
-                return false;
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         private IActionResult MapError(AddRequestError error)

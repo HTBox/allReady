@@ -25,11 +25,9 @@ namespace AllReady.Features.Requests
 
         public async Task<Request> Handle(AddRequestCommand message)
         {
-            var address = _geocoder.Geocode(message.RequestViewModel.Address, message.RequestViewModel.City, message.RequestViewModel.State, message.RequestViewModel.Zip, string.Empty).FirstOrDefault();
             var requestId = GetRequestId(message.RequestViewModel.RequestId);
 
-            var request = await _context.Requests.SingleOrDefaultAsync(x => x.RequestId == requestId) ?? new Request();
-            request.RequestId = GetRequestId(message.RequestViewModel.RequestId);
+            var request = await _context.Requests.SingleOrDefaultAsync(x => x.RequestId == requestId) ?? new Request { RequestId = requestId };
             request.ProviderId = message.RequestViewModel.ProviderId;
             request.ProviderData = message.RequestViewModel.ProviderData;
             request.Address = message.RequestViewModel.Address;
@@ -41,10 +39,13 @@ namespace AllReady.Features.Requests
             request.State = message.RequestViewModel.State;
             request.Zip = message.RequestViewModel.Zip;
             request.Status = ConvertRequestStatusToEnum(message.RequestViewModel.Status);
-            request.Latitude = message.RequestViewModel.Latitude == 0 ? address?.Coordinates.Latitude ?? 0 : 0;
-            request.Longitude = message.RequestViewModel.Latitude == 0 ? address?.Coordinates.Longitude ?? 0 : 0;
+
+            var address = _geocoder.Geocode(message.RequestViewModel.Address, message.RequestViewModel.City, message.RequestViewModel.State, message.RequestViewModel.Zip, string.Empty).FirstOrDefault();
+            request.Latitude = message.RequestViewModel.Latitude == 0 ? address?.Coordinates.Latitude ?? 0 : message.RequestViewModel.Latitude;
+            request.Longitude = message.RequestViewModel.Latitude == 0 ? address?.Coordinates.Longitude ?? 0 : message.RequestViewModel.Latitude;
 
             _context.AddOrUpdate(request);
+            await _context.SaveChangesAsync();
 
             return request;
         }
