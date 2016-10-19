@@ -8,7 +8,7 @@ using AllReady.Services;
 using MediatR;
 using Newtonsoft.Json;
 
-namespace AllReady.Areas.Admin.Features.Notifications
+namespace AllReady.Areas.Admin.RequestConfirmationMessageSenders
 {
     public interface IDayOfRequestConfirmationMessageSender
     {
@@ -35,7 +35,7 @@ namespace AllReady.Areas.Admin.Features.Notifications
             //TODO: we only want to send messages if the itinerary is today
             var itineray = context.Itineraries.Single(x => x.Id == itineraryId);
 
-            foreach (var request in requests)
+            requests.ForEach(request =>
             {
                 var queuedSms = new QueuedSmsMessage
                 {
@@ -44,7 +44,7 @@ namespace AllReady.Areas.Admin.Features.Notifications
                 };
                 var sms = JsonConvert.SerializeObject(queuedSms);
                 storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
-            }
+            });
 
             mediator.Send(new SetRequstsToUnassignedCommand { RequestIds = requests.Select(x => x.RequestId).ToList() });
         }

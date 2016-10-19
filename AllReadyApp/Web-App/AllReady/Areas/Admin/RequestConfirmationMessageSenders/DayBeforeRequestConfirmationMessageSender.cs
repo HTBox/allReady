@@ -8,7 +8,7 @@ using AllReady.Services;
 using Hangfire;
 using Newtonsoft.Json;
 
-namespace AllReady.Areas.Admin.Features.Notifications
+namespace AllReady.Areas.Admin.RequestConfirmationMessageSenders
 {
     public interface IDayBeforeRequestConfirmationMessageSender
     {
@@ -35,7 +35,7 @@ namespace AllReady.Areas.Admin.Features.Notifications
             //TODO: mgmccarthy we only want to send messages if the itinerary is 1 or more days away from now, if it's not, return and don't process
             var itineray = context.Itineraries.Single(x => x.Id == itineraryId);
 
-            foreach (var request in requests)
+            requests.ForEach(request =>
             {
                 //TODO mgmccarthy: need to convert itineraryDate to local time of requestor
                 var queuedSms = new QueuedSmsMessage
@@ -45,7 +45,7 @@ namespace AllReady.Areas.Admin.Features.Notifications
                 };
                 var sms = JsonConvert.SerializeObject(queuedSms);
                 storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
-            }
+            });
 
             //schedule job for the day of Itinerary.Date
             //TODO: mgmccarthy: do we want to send out the "sorry you couldn't make it, we will reschedule." message in the DayOfRequestConfirmationMessageSender in the morning instead of at noon?

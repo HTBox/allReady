@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using AllReady.Areas.Admin.Features.Notifications;
+using AllReady.Areas.Admin.RequestConfirmationMessageSenders;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Controllers;
