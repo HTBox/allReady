@@ -10,19 +10,19 @@ using Microsoft.EntityFrameworkCore.Extensions.Internal;
 
 namespace AllReady.Areas.Admin.Features.Itineraries
 {
-    public class AddRequestsCommandHandler : IAsyncRequestHandler<AddRequestsCommand, bool>
+    public class AddRequestsToItineraryCommandHandler : IAsyncRequestHandler<AddRequestsToItineraryCommand, bool>
     {
         private readonly AllReadyContext _context;
         private readonly IMediator _mediator;
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        public AddRequestsCommandHandler(AllReadyContext context, IMediator mediator)
+        public AddRequestsToItineraryCommandHandler(AllReadyContext context, IMediator mediator)
         {
             _context = context;
             _mediator = mediator;
         }
 
-        public async Task<bool> Handle(AddRequestsCommand message)
+        public async Task<bool> Handle(AddRequestsToItineraryCommand message)
         {
             var itinerary = await _context.Itineraries
                .Where(x => x.Id == message.ItineraryId)

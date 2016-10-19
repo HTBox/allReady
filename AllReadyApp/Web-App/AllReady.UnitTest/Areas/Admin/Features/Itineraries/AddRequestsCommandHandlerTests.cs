@@ -8,7 +8,6 @@ using AllReady.Models;
 using MediatR;
 using Moq;
 using Xunit;
-using AddRequestsCommand = AllReady.Areas.Admin.Features.Itineraries.AddRequestsCommand;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
 {

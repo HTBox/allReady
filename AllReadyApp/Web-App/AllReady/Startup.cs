@@ -145,7 +145,9 @@ namespace AllReady
             services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
             services.AddTransient<IConvertDateTimeOffset, DateTimeOffsetConverter>();
             services.AddSingleton<IImageService, ImageService>();
-            services.AddTransient<IRequestConfirmationSmsResender, RequestConfirmationSmsResender>(); //Hangfire
+            services.AddTransient<IWeekBeforeRequestConfirmationMessageSender, WeekBeforeRequestConfirmationMessageSender>();
+            services.AddTransient<IDayBeforeRequestConfirmationMessageSender, DayBeforeRequestConfirmationMessageSender>();
+            services.AddTransient<IDayOfRequestConfirmationMessageSender, DayOfRequestConfirmationMessageSender>();
 
             services.AddTransient<SampleDataGenerator>();
 
@@ -172,6 +174,7 @@ namespace AllReady
             {
                 // this writer service will just write to the default logger
                 services.AddTransient<IQueueStorageService, FakeQueueWriterService>();
+                //services.AddTransient<IQueueStorageService, SmtpEmailSender>();
             }
 
             var containerBuilder = new ContainerBuilder();
@@ -200,8 +203,8 @@ namespace AllReady
             //Hangfire
             containerBuilder.RegisterInstance(new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"])))
                 .As<IBackgroundJobClient>();
-            //this is where the IRequestConfirmationSmsResender dependency is SUPPOSED to be registered, but I have it registered in CreateIocContainer and it seems to work fine
-            //containerBuilder.RegisterType<RequestConfirmationSmsResender>().As<IRequestConfirmationSmsResender>()
+            //this is where the IRequestConfirmationSmsSender dependency is SUPPOSED to be registered, but I have it registered in CreateIocContainer and it seems to work fine
+            //containerBuilder.RegisterType<RequestConfirmationSmsSender>().As<IRequestConfirmationSmsSender>()
             //    .WithParameter()
 
             //Populate the container with services that were previously registered

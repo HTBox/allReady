@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using AllReady.Services;
@@ -12,7 +13,7 @@ namespace AllReady.UnitTest.Features.Notifications
     {
         protected override void LoadTestData()
         {
-            var htb = new Organization()
+            var htb = new Organization
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
@@ -20,13 +21,13 @@ namespace AllReady.UnitTest.Features.Notifications
                 Campaigns = new List<Campaign>()
             };
 
-            var firePrev = new Campaign()
+            var firePrev = new Campaign
             {
                 Name = "Neighborhood Fire Prevention Days",
                 ManagingOrganization = htb
             };
 
-            var queenAnne = new Models.Event()
+            var queenAnne = new Models.Event
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
@@ -54,7 +55,7 @@ namespace AllReady.UnitTest.Features.Notifications
         }
 
         [Fact]
-        public void SendMessageToAssignedVolunteers()
+        public async Task SendMessageToAssignedVolunteers()
         {
             var command = new NotifyVolunteersCommand
             {
@@ -68,8 +69,8 @@ namespace AllReady.UnitTest.Features.Notifications
 
             var queueWriter = new Mock<IQueueStorageService>();
 
-            var handler = new NotifyVolunteersHandler(queueWriter.Object);
-            var result = handler.Handle(command);
+            var handler = new NotifyVolunteersCommandHandler(queueWriter.Object);
+            await handler.Handle(command);
 
             queueWriter.Verify(q => q.SendMessageAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
         }

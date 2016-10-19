@@ -6,10 +6,11 @@ using Newtonsoft.Json;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyVolunteersHandler : AsyncRequestHandler<NotifyVolunteersCommand>
+    public class NotifyVolunteersCommandHandler : AsyncRequestHandler<NotifyVolunteersCommand>
     {
         private readonly IQueueStorageService _storageService;
-        public NotifyVolunteersHandler(IQueueStorageService storageService)
+
+        public NotifyVolunteersCommandHandler(IQueueStorageService storageService)
         {
             _storageService = storageService;
         }

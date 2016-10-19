@@ -1,36 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using AllReady.Models;
-using AllReady.Services;
-using Newtonsoft.Json;
 using System.Linq;
+using AllReady.Extensions;
+using AllReady.Models;
 using AllReady.Models.Notifications;
+using AllReady.Services;
 using Hangfire;
+using Newtonsoft.Json;
 
 namespace AllReady.Areas.Admin.Features.Notifications
 {
-    public interface IRequestConfirmationSmsResender
+    public interface IDayBeforeRequestConfirmationMessageSender
     {
-        void ResendSms(List<Guid> requestId, int itineraryId);
+        void SendSms(List<Guid> requestIds, int itineraryId);
     }
 
-    public class RequestConfirmationSmsResender : IRequestConfirmationSmsResender
+    public class DayBeforeRequestConfirmationMessageSender : IDayBeforeRequestConfirmationMessageSender
     {
         private readonly AllReadyContext context;
         private readonly IQueueStorageService storageService;
         private readonly IBackgroundJobClient backgroundJob;
 
-        public RequestConfirmationSmsResender(AllReadyContext context, IQueueStorageService storageService, IBackgroundJobClient backgroundJob)
+        public DayBeforeRequestConfirmationMessageSender(AllReadyContext context, IQueueStorageService storageService, IBackgroundJobClient backgroundJob)
         {
             this.context = context;
             this.storageService = storageService;
             this.backgroundJob = backgroundJob;
         }
 
-        public void ResendSms(List<Guid> requestIds, int itineraryId)
+        public void SendSms(List<Guid> requestIds, int itineraryId)
         {
-            //we only want the requests that are still pending confirmation for the Itinerary they were added to
             var requests = context.Requests.Where(x => requestIds.Contains(x.RequestId) && x.Status == RequestStatus.PendingConfirmation).ToList();
+
+            //TODO: mgmccarthy we only want to send messages if the itinerary is 1 or more days away from now, if it's not, return and don't process
             var itineray = context.Itineraries.Single(x => x.Id == itineraryId);
 
             foreach (var request in requests)
@@ -45,15 +47,9 @@ namespace AllReady.Areas.Admin.Features.Notifications
                 storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
             }
 
-            //schedule job for one day before ItineraryRequets.DateAssigned for the requestIds
-            backgroundJob.Schedule<IRequestConfirmationSmsResender>(x => x.ResendSms(requestIds, itineray.Id), OneDayBeforeAtNoon(itineray.Date));
-        }
-
-        private static DateTime OneDayBeforeAtNoon(DateTime itineraryDate)
-        {
-            var oneDayBefore = itineraryDate.AddDays(-1);
-            var oneDayBeforeAtNoon = new DateTime(oneDayBefore.Year, oneDayBefore.Month, oneDayBefore.Day, 12, 0, 0);
-            return oneDayBeforeAtNoon;
+            //schedule job for the day of Itinerary.Date
+            //TODO: mgmccarthy: do we want to send out the "sorry you couldn't make it, we will reschedule." message in the DayOfRequestConfirmationMessageSender in the morning instead of at noon?
+            backgroundJob.Schedule<IDayOfRequestConfirmationMessageSender>(x => x.SendSms(requestIds, itineray.Id), itineray.Date.AtNoon());
         }
     }
 }
