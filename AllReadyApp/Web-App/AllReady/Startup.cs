@@ -200,7 +200,7 @@ namespace AllReady
             //Hangfire
             containerBuilder.RegisterInstance(new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"])))
                 .As<IBackgroundJobClient>();
-            //this is wherethe ISmsRequestConfirmationResender dependency is SUPPOSED to be registered, but I have it registered in CreateIocContainer and it seems to work fine
+            //this is where the ISmsRequestConfirmationResender dependency is SUPPOSED to be registered, but I have it registered in CreateIocContainer and it seems to work fine
             //containerBuilder.RegisterType<SmsRequestConfirmationResender>().As<ISmsRequestConfirmationResender>()
             //    .WithParameter()
 

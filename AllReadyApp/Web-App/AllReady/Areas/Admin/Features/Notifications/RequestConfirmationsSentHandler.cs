@@ -21,7 +21,7 @@ namespace AllReady.Areas.Admin.Features.Notifications
 
         public async Task Handle(RequestConfirmationsSent notification)
         {
-            //update the Request status to PendingConfirmation
+            //update the Request status to PendingConfirmation (this is still TDB functionality)
             var requests = await context.Requests.AsAsyncEnumerable()
                 .Where(x => notification.RequestIds.Contains(x.RequestId))
                 .ToList();
@@ -44,6 +44,8 @@ namespace AllReady.Areas.Admin.Features.Notifications
 
             intineraryRequests.ForEach(request => backgroundJob.Schedule<ISmsRequestConfirmationResender>(x =>
                 x.ResendSms(request.RequestId), SevenDaysBeforeAtNoon(request.DateAssigned)));
+            //intineraryRequests.ForEach(request => backgroundJob.Schedule<ISmsRequestConfirmationResender>(x =>
+            //    x.ResendSms(request.RequestId), TimeSpan.FromSeconds(15)));
         }
 
         private static DateTime SevenDaysBeforeAtNoon(DateTime dateAssigned)
