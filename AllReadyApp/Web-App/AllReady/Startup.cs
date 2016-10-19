@@ -145,7 +145,7 @@ namespace AllReady
             services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
             services.AddTransient<IConvertDateTimeOffset, DateTimeOffsetConverter>();
             services.AddSingleton<IImageService, ImageService>();
-            services.AddTransient<ISmsRequestConfirmationResender, SmsRequestConfirmationResender>(); //Hangfire
+            services.AddTransient<IRequestConfirmationSmsResender, RequestConfirmationSmsResender>(); //Hangfire
 
             services.AddTransient<SampleDataGenerator>();
 
@@ -200,8 +200,8 @@ namespace AllReady
             //Hangfire
             containerBuilder.RegisterInstance(new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"])))
                 .As<IBackgroundJobClient>();
-            //this is where the ISmsRequestConfirmationResender dependency is SUPPOSED to be registered, but I have it registered in CreateIocContainer and it seems to work fine
-            //containerBuilder.RegisterType<SmsRequestConfirmationResender>().As<ISmsRequestConfirmationResender>()
+            //this is where the IRequestConfirmationSmsResender dependency is SUPPOSED to be registered, but I have it registered in CreateIocContainer and it seems to work fine
+            //containerBuilder.RegisterType<RequestConfirmationSmsResender>().As<IRequestConfirmationSmsResender>()
             //    .WithParameter()
 
             //Populate the container with services that were previously registered

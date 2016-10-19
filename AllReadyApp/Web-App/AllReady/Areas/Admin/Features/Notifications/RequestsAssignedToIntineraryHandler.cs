@@ -25,29 +25,22 @@ namespace AllReady.Areas.Admin.Features.Notifications
 
         public async Task Handle(RequestsAssignedToIntinerary notification)
         {
-            var results = await context.ItineraryRequests.AsNoTracking()
-                .Include(ir => ir.Request)
-                .Where(x => notification.RequestIds.Contains(x.RequestId))
-                .Select(x => new RequestorPhoneNumberAndDateAssigned
-                {
-                    PhoneNumber = x.Request.Phone,
-                    DateAssigned = x.DateAssigned
-                })
-                .ToListAsync();
+            var requests = await context.Requests.Where(x => notification.RequestIds.Contains(x.RequestId)).ToListAsync();
+            var itinerary = await context.Itineraries.SingleAsync(x => x.Id == notification.ItineraryId);
 
-            foreach (var result in results)
+            foreach (var request in requests)
             {
-                //TODO mgmccarthy: need to convert DateAssigned to local time of requestor
+                //TODO mgmccarthy: need to convert intinerary.Date to local time of requestor
                 var queuedSms = new QueuedSmsMessage
                 {
-                    Recipient = result.PhoneNumber,
-                    Message = $@"Your request has been scheduled by allReady for {result.DateAssigned}. Please response with ""Y"" to confirm this request or ""N"" to cancel this request."
+                    Recipient = request.Phone,
+                    Message = $@"Your request has been scheduled by allReady for {itinerary.Date}. Please respond with ""Y"" to confirm this request or ""N"" to cancel this request."
                 };
                 var sms = JsonConvert.SerializeObject(queuedSms);
                 await storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
             }
 
-            await mediator.PublishAsync(new RequestConfirmationsSent { RequestIds = notification.RequestIds});
+            await mediator.PublishAsync(new RequestConfirmationsSent { ItineraryId = itinerary.Id, RequestIds = notification.RequestIds });
         }
 
         public class RequestorPhoneNumberAndDateAssigned
