@@ -22,7 +22,6 @@ namespace AllReady.Areas.Admin.Features.Notifications
 
         public async Task Handle(RequestConfirmationsSent notification)
         {
-            //update the Request status to PendingConfirmation (this is still TDB functionality)
             var requests = await context.Requests.Where(x => notification.RequestIds.Contains(x.RequestId)).ToListAsync();
             requests.ForEach(request => request.Status = RequestStatus.PendingConfirmation);
             await context.SaveChangesAsync();

@@ -25,21 +25,21 @@ namespace AllReady.Areas.Admin.Features.Notifications
 
         public async Task Handle(RequestsAssignedToIntinerary notification)
         {
-            var requests = await context.Requests.Where(x => notification.RequestIds.Contains(x.RequestId)).ToListAsync();
+            var requestorPhoneNumbers = await context.Requests.Where(x => notification.RequestIds.Contains(x.RequestId)).Select(x => x.Phone).ToListAsync();
             var itinerary = await context.Itineraries.SingleAsync(x => x.Id == notification.ItineraryId);
 
-            foreach (var request in requests)
+            requestorPhoneNumbers.ForEach(async requestorPhoneNumber => 
             {
-                //TODO mgmccarthy: need to convert intinerary.Date to local time of requestor
+                //TODO mgmccarthy: need to convert intinerary.Date to local time of the request's intinerary's campaign's timezone
                 var queuedSms = new QueuedSmsMessage
                 {
-                    Recipient = request.Phone,
+                    Recipient = requestorPhoneNumber,
                     Message = $@"Your request has been scheduled by allReady for {itinerary.Date}. Please respond with ""Y"" to confirm this request or ""N"" to cancel this request."
                 };
-                var sms = JsonConvert.SerializeObject(queuedSms);
+                var sms = await JsonConvert.SerializeObjectAsync(queuedSms);
                 await storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
-            }
-
+            });
+            
             await mediator.PublishAsync(new RequestConfirmationsSent { ItineraryId = itinerary.Id, RequestIds = notification.RequestIds });
         }
 

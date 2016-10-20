@@ -20,6 +20,7 @@ namespace AllReady.Areas.Admin.RequestConfirmationMessageSenders
         private readonly AllReadyContext context;
         private readonly IQueueStorageService storageService;
         private readonly IMediator mediator;
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
         public DayOfRequestConfirmationMessageSender(AllReadyContext context, IQueueStorageService storageService, IMediator mediator)
         {
@@ -31,21 +32,23 @@ namespace AllReady.Areas.Admin.RequestConfirmationMessageSenders
         public void SendSms(List<Guid> requestIds, int itineraryId)
         {
             var requests = context.Requests.Where(x => requestIds.Contains(x.RequestId) && x.Status == RequestStatus.PendingConfirmation).ToList();
+            var itineraryDate = context.Itineraries.Single(x => x.Id == itineraryId).Date;
 
-            //TODO: we only want to send messages if the itinerary is today
-            var itineray = context.Itineraries.Single(x => x.Id == itineraryId);
-
-            requests.ForEach(request =>
+            if (DateTimeUtcNow().Date == itineraryDate.Date)
             {
-                var queuedSms = new QueuedSmsMessage
+                //TODO mgmccarthy: need to convert intinerary.Date to local time of the request's intinerary's campaign's timezone
+                requests.ForEach(request =>
                 {
-                    Recipient = request.Phone,
-                    Message = "sorry you couldn't make it, we will reschedule."
-                };
-                var sms = JsonConvert.SerializeObject(queuedSms);
-                storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
-            });
-
+                    var queuedSms = new QueuedSmsMessage
+                    {
+                        Recipient = request.Phone,
+                        Message = "sorry you couldn't make it, we will reschedule."
+                    };
+                    var sms = JsonConvert.SerializeObject(queuedSms);
+                    storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
+                });
+            }
+            
             mediator.Send(new SetRequstsToUnassignedCommand { RequestIds = requests.Select(x => x.RequestId).ToList() });
         }
     }

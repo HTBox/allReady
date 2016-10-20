@@ -20,6 +20,7 @@ namespace AllReady.Areas.Admin.RequestConfirmationMessageSenders
         private readonly AllReadyContext context;
         private readonly IQueueStorageService storageService;
         private readonly IBackgroundJobClient backgroundJob;
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
         public WeekBeforeRequestConfirmationMessageSender(AllReadyContext context, IQueueStorageService storageService, IBackgroundJobClient backgroundJob)
         {
@@ -30,21 +31,24 @@ namespace AllReady.Areas.Admin.RequestConfirmationMessageSenders
 
         public void SendSms(List<Guid> requestIds, int itineraryId)
         {
-            var requests = context.Requests.Where(x => requestIds.Contains(x.RequestId) && x.Status == RequestStatus.PendingConfirmation).ToList();
-
-            //TODO: mgmccarthy we only want to send messages if the itinerary is 7 or more days away from now, if it's not, return and don't process
+            var requestorPhoneNumbers = context.Requests.Where(x => requestIds.Contains(x.RequestId) && x.Status == RequestStatus.PendingConfirmation).Select(x => x.Phone).ToList();
             var itinerary = context.Itineraries.Single(x => x.Id == itineraryId);
 
-            requests.ForEach(request =>
+            //don't send out this sms if it's less than 7 days away from the Itinerary.Date
+            if (DateTimeUtcNow().Date >= itinerary.Date.AddDays(-7).Date)
             {
-                var queuedSms = new QueuedSmsMessage
+                //TODO mgmccarthy: need to convert intinerary.Date to local time of the request's intinerary's campaign's timezone
+                requestorPhoneNumbers.ForEach(requestorPhoneNumber =>
                 {
-                    Recipient = request.Phone,
-                    Message = $@"Your request has been scheduled by allReady for {itinerary.Date}. Please response with ""Y"" to confirm this request or ""N"" to cancel this request."
-                };
-                var sms = JsonConvert.SerializeObject(queuedSms);
-                storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
-            });
+                    var queuedSms = new QueuedSmsMessage
+                    {
+                        Recipient = requestorPhoneNumber,
+                        Message = $@"Your request has been scheduled by allReady for {itinerary.Date}. Please response with ""Y"" to confirm this request or ""N"" to cancel this request."
+                    };
+                    var sms = JsonConvert.SerializeObject(queuedSms);
+                    storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
+                });
+            }
 
             //schedule job for one day before Itinerary.Date
             backgroundJob.Schedule<IDayBeforeRequestConfirmationMessageSender>(x => x.SendSms(requestIds, itinerary.Id), itinerary.Date.AddDays(-1).AtNoon());
