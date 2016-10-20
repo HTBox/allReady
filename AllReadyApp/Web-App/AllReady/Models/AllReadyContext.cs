@@ -151,7 +151,7 @@ namespace AllReady.Models
 
     private void Map(EntityTypeBuilder<Skill> builder)
     {
-      builder.HasOne(s => s.ParentSkill);
+      builder.HasOne(s => s.ParentSkill).WithMany(s => s.ChildSkills).HasForeignKey(s => s.ParentSkillId);
       builder.Ignore(s => s.HierarchicalName);
     }
 
