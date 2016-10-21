@@ -15,12 +15,9 @@ namespace AllReady.Areas.Admin.Features.Requests
 
         protected override void HandleCore(SetRequstsToUnassignedCommand message)
         {
-            var requests = context.Requests.Where(x => message.RequestIds.Contains(x.RequestId));
-            foreach (var request in requests)
-            {
-                request.Status = RequestStatus.Unassigned;
-            }
-
+            var requests = context.Requests.Where(x => message.RequestIds.Contains(x.RequestId)).ToList();
+            requests.ForEach(request => request.Status = RequestStatus.Unassigned);
+            
             var intineraryRequests = context.ItineraryRequests.Where(x => message.RequestIds.Contains(x.RequestId));
             context.ItineraryRequests.RemoveRange(intineraryRequests);
 

@@ -10,11 +10,6 @@ using Newtonsoft.Json;
 
 namespace AllReady.Areas.Admin.RequestConfirmationMessageSenders
 {
-    public interface IWeekBeforeRequestConfirmationMessageSender
-    {
-        void SendSms(List<Guid> requestIds, int itineraryId);
-    }
-
     public class WeekBeforeRequestConfirmationMessageSender : IWeekBeforeRequestConfirmationMessageSender
     {
         private readonly AllReadyContext context;
@@ -34,10 +29,12 @@ namespace AllReady.Areas.Admin.RequestConfirmationMessageSenders
             var requestorPhoneNumbers = context.Requests.Where(x => requestIds.Contains(x.RequestId) && x.Status == RequestStatus.PendingConfirmation).Select(x => x.Phone).ToList();
             var itinerary = context.Itineraries.Single(x => x.Id == itineraryId);
 
-            //don't send out this sms if it's less than 7 days away from the Itinerary.Date
+            //don't send out messages if DateTime.UtcNow is less than 7 days away from the Itinerary.Date. 
+            //This can happen if a request is added to an itinereary less than 7 days away from the itinerary's date
+            //Hangfire will execute the job immediately when the scheduled time has already passed
             if (DateTimeUtcNow().Date >= itinerary.Date.AddDays(-7).Date)
             {
-                //TODO mgmccarthy: need to convert intinerary.Date to local time of the request's intinerary's campaign's timezone
+                //TODO mgmccarthy: need to convert intinerary.Date to local time of the request's intinerary's campaign's timezoneid
                 requestorPhoneNumbers.ForEach(requestorPhoneNumber =>
                 {
                     var queuedSms = new QueuedSmsMessage
@@ -53,5 +50,10 @@ namespace AllReady.Areas.Admin.RequestConfirmationMessageSenders
             //schedule job for one day before Itinerary.Date
             backgroundJob.Schedule<IDayBeforeRequestConfirmationMessageSender>(x => x.SendSms(requestIds, itinerary.Id), itinerary.Date.AddDays(-1).AtNoon());
         }
+    }
+
+    public interface IWeekBeforeRequestConfirmationMessageSender
+    {
+        void SendSms(List<Guid> requestIds, int itineraryId);
     }
 }

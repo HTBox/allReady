@@ -10,11 +10,6 @@ using Newtonsoft.Json;
 
 namespace AllReady.Areas.Admin.RequestConfirmationMessageSenders
 {
-    public interface IDayBeforeRequestConfirmationMessageSender
-    {
-        void SendSms(List<Guid> requestIds, int itineraryId);
-    }
-
     public class DayBeforeRequestConfirmationMessageSender : IDayBeforeRequestConfirmationMessageSender
     {
         private readonly AllReadyContext context;
@@ -34,7 +29,9 @@ namespace AllReady.Areas.Admin.RequestConfirmationMessageSenders
             var requests = context.Requests.Where(x => requestIds.Contains(x.RequestId) && x.Status == RequestStatus.PendingConfirmation).ToList();
             var itinerary = context.Itineraries.Single(x => x.Id == itineraryId);
 
-            //don't send out this sms if it's less than 7 days away from the Itinerary.Date
+            //don't send out messages if DateTime.UtcNow is less than 1 days away from the Itinerary.Date. 
+            //This can happen if a request is added to an itinereary less than 7 days away from the itinerary's date
+            //Hangfire will execute the job immediately when the scheduled time has already passed
             if (DateTimeUtcNow().Date >= itinerary.Date.AddDays(-1).Date)
             {
                 //TODO mgmccarthy: need to convert intinerary.Date to local time of the request's intinerary's campaign's timezone
@@ -50,9 +47,12 @@ namespace AllReady.Areas.Admin.RequestConfirmationMessageSenders
                 });
             }
             
-            //schedule job for the day of Itinerary.Date
-            //TODO: mgmccarthy: do we want to send out the "sorry you couldn't make it, we will reschedule." message in the DayOfRequestConfirmationMessageSender in the morning instead of at noon?
             backgroundJob.Schedule<IDayOfRequestConfirmationMessageSender>(x => x.SendSms(requestIds, itinerary.Id), itinerary.Date.AtNoon());
         }
+    }
+
+    public interface IDayBeforeRequestConfirmationMessageSender
+    {
+        void SendSms(List<Guid> requestIds, int itineraryId);
     }
 }

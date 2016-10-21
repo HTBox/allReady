@@ -10,11 +10,6 @@ using Newtonsoft.Json;
 
 namespace AllReady.Areas.Admin.RequestConfirmationMessageSenders
 {
-    public interface IDayOfRequestConfirmationMessageSender
-    {
-        void SendSms(List<Guid> requestIds, int itineraryId);
-    }
-
     public class DayOfRequestConfirmationMessageSender : IDayOfRequestConfirmationMessageSender
     {
         private readonly AllReadyContext context;
@@ -51,5 +46,10 @@ namespace AllReady.Areas.Admin.RequestConfirmationMessageSenders
             
             mediator.Send(new SetRequstsToUnassignedCommand { RequestIds = requests.Select(x => x.RequestId).ToList() });
         }
+    }
+
+    public interface IDayOfRequestConfirmationMessageSender
+    {
+        void SendSms(List<Guid> requestIds, int itineraryId);
     }
 }

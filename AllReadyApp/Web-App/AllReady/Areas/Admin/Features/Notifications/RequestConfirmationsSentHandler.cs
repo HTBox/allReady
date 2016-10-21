@@ -28,7 +28,7 @@ namespace AllReady.Areas.Admin.Features.Notifications
             
             var itinerary = await context.Itineraries.SingleAsync(x => x.Id == notification.ItineraryId);
             
-            //TODO mgmccarthy: need to convert intinerary.Date to local time of requestor
+            //TODO mgmccarthy: need to convert intinerary.Date to local time of request's intinerary's campaign's timezoneid
             backgroundJob.Schedule<IWeekBeforeRequestConfirmationMessageSender>(x => x.SendSms(notification.RequestIds, itinerary.Id), itinerary.Date.AddDays(-7).AtNoon());
         }
     }
