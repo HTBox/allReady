@@ -28,12 +28,6 @@
 
 <div class="row">
     <div class="col-md-12">
-        <a asp-action="Create" asp-controller="Request" asp-area="Admin" asp-route-eventId="@Model.EventId" class="btn btn-default">Create Request</a>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-md-12">
         <div class="tabbed-nav">
             <nav>
                 <a asp-action="Requests" asp-route-status="" class="@(@Model.CurrentPage == "All" ? "current" : "")">All Requests</a>
