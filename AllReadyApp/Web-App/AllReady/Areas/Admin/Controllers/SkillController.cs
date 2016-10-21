@@ -141,7 +141,10 @@ namespace AllReady.Areas.Admin.Controllers
                 model.ParentSelection = await _mediator.SendAsync(new SkillListQuery { OrganizationId = organizationId.Value });
             }
 
+            var descendants = model.ParentSelection.Single(x => x.Id == id).DescendantIds;
+
             model.ParentSelection = model.ParentSelection.Where(p => p.Id != model.Id); // remove self from the parent select list
+            model.ParentSelection = model.ParentSelection.Where(p => !descendants.Contains(p.Id)); // remove any descendants from the parent selection list to avoid hierarchical loops
 
             return View("Edit", model);
         }

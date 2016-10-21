@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.Areas.Admin.ViewModels.Skill
 {
@@ -13,5 +14,10 @@ namespace AllReady.Areas.Admin.ViewModels.Skill
 
         [Display(Name = "Owning organization")]
         public string OwningOrganizationName { get; set; }
+
+        /// <summary>
+        /// A list ids for all descendants of the skill
+        /// </summary>
+        public List<int> DescendantIds { get; set; }
     }
 }
