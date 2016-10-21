@@ -49,8 +49,9 @@ namespace AllReady.TagHelpers
                 var dateTimeToDisplay = Value.Value;
                 if (!string.IsNullOrEmpty(TargetTimeZoneId))
                 {
-                    _dateTimeOffsetConverter.ConvertDateTimeOffsetTo(TargetTimeZoneId, dateTimeToDisplay);
-
+                    TimeZoneInfo targetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(TargetTimeZoneId);
+                    var targetOffset = targetTimeZone.GetUtcOffset(dateTimeToDisplay);
+                    dateTimeToDisplay = dateTimeToDisplay.ToOffset(targetOffset);
                 }
                 var formattedTime = dateTimeToDisplay.ToString(Format);
                 output.Content.SetContent(formattedTime);
