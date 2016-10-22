@@ -27,7 +27,7 @@ build_script:
  - cmd: dotnet build AllReadyApp\AllReady.Core\project.json
  - cmd: dotnet publish AllReadyApp\Web-App\AllReady\project.json --output c:\Published
  - cmd: dotnet build AllReadyApp\Web-App\AllReady.UnitTest\project.json
- - cmd: dotnet build AllReadyApp\\AllReady.NotificationsWebJob\project.json
+ - cmd: dotnet build AllReadyApp\AllReady.NotificationsWebJob\project.json
  - cmd: msbuild AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj
 
 test_script:
