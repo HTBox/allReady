@@ -749,8 +749,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             return new List<SkillSummaryViewModel>
             {
-                new SkillSummaryViewModel { Id = 1, HierarchicalName = "Name", OwningOrganizationName = "Org" },
-                new SkillSummaryViewModel { Id = 2, HierarchicalName = "Name 2", OwningOrganizationName = "Org" }
+                new SkillSummaryViewModel { Id = 1, HierarchicalName = "Name", OwningOrganizationName = "Org", DescendantIds=new List<int> () },
+                new SkillSummaryViewModel { Id = 2, HierarchicalName = "Name 2", OwningOrganizationName = "Org", DescendantIds=new List<int> () }
             };
         }
 
