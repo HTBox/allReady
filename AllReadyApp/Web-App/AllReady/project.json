@@ -61,7 +61,8 @@
       "type": "build"
     },
     "linqtotwitter": "4.1.0",
-    "Geocoding.net": "3.4.0"
+    "Geocoding.net": "3.4.0",
+    "AllReady.Core": "1.0.0-*"
   },
 
   "tools": {
@@ -81,7 +82,7 @@
   "frameworks": {
     "net451": {
       "dependencies": {
-        "AllReady.Models": "1.0.0-*"
+
       },
       "frameworkAssemblies": {
         "System.Drawing": "4.0.0.0"
