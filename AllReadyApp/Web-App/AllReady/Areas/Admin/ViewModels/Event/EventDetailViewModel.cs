@@ -23,11 +23,8 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         /// </summary>
         public IList<TaskSummaryViewModel> Tasks { get; set; } = new List<TaskSummaryViewModel>();
 
-        /// <summary>
-        /// A list of the skills required from volunteers of the event being displayed
-        /// </summary>
         [Display(Name = "Required Skills")]
-        public IEnumerable<EventSkill> RequiredSkills { get; set; } = new List<EventSkill>();
+        public List<string> RequiredSkillNames { get; set; } = new List<string>();
 
         /// <summary>
         /// An enumerable of itineraries associated with the event being displayed

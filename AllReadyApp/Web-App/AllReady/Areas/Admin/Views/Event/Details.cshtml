@@ -45,15 +45,15 @@
         }
     </div>
 </div>
-@if (Model.RequiredSkills.Any())
+@if (Model.RequiredSkillNames.Any())
 {
     <div class="row">
         <div class="col-md-12">
             <h3>Required Skills</h3>
             <ul>
-                @foreach (var requiredSkill in Model.RequiredSkills)
+                @foreach (var requiredSkill in Model.RequiredSkillNames)
                 {
-                    <li><strong>@requiredSkill.Skill.HierarchicalName</strong></li>
+                    <li><strong>@requiredSkill</strong></li>
                 }
             </ul>
         </div>

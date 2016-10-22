@@ -43,8 +43,7 @@ namespace AllReady.Areas.Admin.Features.Events
                     EndDateTime = campaignEvent.EndDateTime,
                     IsLimitVolunteers = campaignEvent.IsLimitVolunteers,
                     IsAllowWaitList = campaignEvent.IsAllowWaitList,
-                    Location = campaignEvent.Location.ToEditModel(),
-                    RequiredSkills = campaignEvent.RequiredSkills,
+                    Location = campaignEvent.Location.ToEditModel(),                    
                     ImageUrl = campaignEvent.ImageUrl,
                     Tasks = campaignEvent.Tasks.Select(t => new TaskSummaryViewModel
                     {
@@ -71,6 +70,22 @@ namespace AllReady.Areas.Admin.Features.Events
                         RequestCount = i.Requests.Count
                     }).OrderBy(i => i.Date).ToList()
                 };
+
+
+                // required skills
+
+                var skillIds = campaignEvent.RequiredSkills.Select(s => s.SkillId);
+
+                var skillNames = await _context.Skills.AsNoTracking()
+                    .Include(s => s.ParentSkill)
+                    .Include(s => s.ChildSkills)
+                    .Where(s => skillIds.Contains(s.Id))
+                    .Where(s => s.HierarchicalName != Skill.InvalidHierarchy)
+                    .ToListAsync();
+
+                result.RequiredSkillNames = skillNames.Select(s => s.HierarchicalName).ToList();
+
+                // end required skills
 
                 result.NewItinerary.EventId = result.Id;
                 result.NewItinerary.Date = result.StartDateTime.DateTime;
