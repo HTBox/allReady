@@ -5,7 +5,7 @@
     "architecture": "x86"
   },
   "projects": [
-    "wrap",
-    "../../Autofac/src"
+    "../../Autofac/src",
+    "."
   ]
 }
