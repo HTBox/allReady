@@ -168,8 +168,14 @@
             <div class="row">
                 <div class="col-md-12">
                     <h3>Requests</h3>
-                    &nbsp;
                 </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="button" asp-action="Create" asp-controller="Request" asp-area="Admin" asp-route-eventId="@Model.Id" class="btn btn-default">Create Request</button>
+                </div>
+                &nbsp;
             </div>
 
             <div class="row">
