@@ -1,4 +1,4 @@
-﻿namespace AllReady.Models.Notifications
+﻿namespace AllReady.Core.Notifications
 {
     public class QueuedSmsMessage
     {

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using AllReady.Models.Notifications;
+using AllReady.Core.Notifications;
 using AllReady.Services;
 using MediatR;
 using Newtonsoft.Json;

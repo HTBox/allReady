@@ -1,6 +1,6 @@
 using System;
 
-namespace NotificationsProcessor
+namespace AllReady.NotificationsWebJob
 {
     static class EnvironmentHelper
     {
