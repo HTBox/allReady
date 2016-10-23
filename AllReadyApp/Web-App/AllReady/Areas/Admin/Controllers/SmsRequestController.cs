@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AllReady.Areas.Admin.Features.Requests;
-using AllReady.Models;
+using System.Diagnostics;
+using AllReady.Hangfire.Jobs;
 using Hangfire;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Areas.Admin.Controllers
@@ -27,41 +24,20 @@ namespace AllReady.Areas.Admin.Controllers
             //if the requestor is confirming the request "Y", Enqueue changeRequestStatus.To(RequestStatus.Assigned, requestId)
             //if the requestor is canceling the request "N", Enqueue changeRequestStatus.To(RequestStatus.Assigned, requestId)
             //jobClient.Enqueue(() => changeRequestStatus.To(RequestStatus.Assigned, requestId));
+
+            DateTime dateTime;
+            string message;
+            //30 seconds from now
+            //dateTime = DateTimeOffset.Now.Date.AddSeconds(30);
+            //message = "this should execute in 30 seconds";
+
+            //yesterday
+            dateTime = DateTimeOffset.Now.Date.AddDays(-1);
+            message = "this should execute immediately";
+
+            //I just proved that scheduling a job in the past results in it being executed immediately
+            jobClient.Schedule(() => Debug.WriteLine(message), dateTime);
             return Ok();
-        }
-    }
-
-    public interface IChangeRequestStatus
-    {
-        void To(RequestStatus requestStatus, Guid requestId);
-    }
-
-    public class ChangeRequestStatues : IChangeRequestStatus
-    {
-        private readonly AllReadyContext context;
-        private readonly IMediator mediator;
-
-        public ChangeRequestStatues(AllReadyContext context, IMediator mediator)
-        {
-            this.context = context;
-            this.mediator = mediator;
-        }
-
-        public void To(RequestStatus requestStatus, Guid requestId)
-        {
-            var request = context.Requests.Single(x => x.RequestId == requestId);
-            if (requestStatus == RequestStatus.Assigned)
-            {
-                request.Status = RequestStatus.Assigned;
-            }
-
-            if (requestStatus == RequestStatus.Unassigned)
-            {
-                request.Status = RequestStatus.Unassigned;
-                mediator.Send(new SetRequstsToUnassignedCommand { RequestIds = new List<Guid> { requestId } });
-            }
-
-            context.SaveChanges();
         }
     }
 }

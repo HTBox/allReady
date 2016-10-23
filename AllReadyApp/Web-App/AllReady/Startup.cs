@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using AllReady.Areas.Admin.RequestConfirmationMessageSenders;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Controllers;
 using AllReady.DataAccess;
+using AllReady.Hangfire.Jobs;
 using AllReady.Models;
 using AllReady.Providers;
 using AllReady.Providers.ExternalUserInformationProviders;
@@ -55,7 +55,8 @@ namespace AllReady
                 builder.AddUserSecrets();
 
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-                builder.AddApplicationInsightsSettings(developerMode: true);
+                //builder.AddApplicationInsightsSettings(developerMode: true);
+                builder.AddApplicationInsightsSettings(developerMode: false);
             }
             else if (env.IsStaging() || env.IsProduction())
             {
@@ -252,7 +253,7 @@ namespace AllReady
             });
 
             // Add Application Insights to the request pipeline to track HTTP request telemetry data.
-            app.UseApplicationInsightsRequestTelemetry();
+            //app.UseApplicationInsightsRequestTelemetry();
 
             // Add the following to the request pipeline only in development environment.
             if (env.IsDevelopment())
@@ -274,7 +275,7 @@ namespace AllReady
             }
 
             // Track data about exceptions from the application. Should be configured after all error handling middleware in the request pipeline.
-            app.UseApplicationInsightsExceptionTelemetry();
+            //app.UseApplicationInsightsExceptionTelemetry();
 
             // Add static files to the request pipeline.
             app.UseStaticFiles();

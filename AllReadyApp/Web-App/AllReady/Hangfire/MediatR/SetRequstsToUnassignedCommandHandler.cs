@@ -2,7 +2,7 @@
 using AllReady.Models;
 using MediatR;
 
-namespace AllReady.Areas.Admin.Features.Requests
+namespace AllReady.Hangfire.MediatR
 {
     public class SetRequstsToUnassignedCommandHandler : RequestHandler<SetRequstsToUnassignedCommand>
     {
