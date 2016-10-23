@@ -8,6 +8,7 @@ using AllReady.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -141,7 +142,7 @@ namespace AllReady.Areas.Admin.Controllers
                 model.ParentSelection = await _mediator.SendAsync(new SkillListQuery { OrganizationId = organizationId.Value });
             }
 
-            var descendants = model.ParentSelection.Single(x => x.Id == id).DescendantIds;
+            var descendants = model.ParentSelection.SingleOrDefault(x => x.Id == id)?.DescendantIds ?? new List<int>();
 
             model.ParentSelection = model.ParentSelection.Where(p => p.Id != model.Id); // remove self from the parent select list
             model.ParentSelection = model.ParentSelection.Where(p => !descendants.Contains(p.Id)); // remove any descendants from the parent selection list to avoid hierarchical loops

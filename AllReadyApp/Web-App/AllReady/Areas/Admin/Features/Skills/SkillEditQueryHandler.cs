@@ -21,7 +21,7 @@ namespace AllReady.Areas.Admin.Features.Skills
         {
             var skill = await _context.Skills.AsNoTracking()
                 .Include(s => s.ParentSkill)
-                .Include(s => s.ChildSkills).ThenInclude(cs => cs.ChildSkills)
+                .Include(s => s.ChildSkills)
                 .Include(s => s.OwningOrganization)
                 .SingleOrDefaultAsync(s => s.Id == message.Id);
 
