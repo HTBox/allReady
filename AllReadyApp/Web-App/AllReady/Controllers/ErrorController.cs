@@ -1,9 +1,4 @@
-﻿using AllReady.Features.Campaigns;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using AllReady.Features.Home;
-using AllReady.ViewModels.Home;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Controllers
 {

@@ -63,9 +63,9 @@ namespace AllReady.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult EditUser(string userId)
+        public async Task<IActionResult> EditUser(string userId)
         {
-            var user = GetUser(userId);
+            var user = await GetUser(userId);
             var organizationId = user.GetOrganizationId();
 
             var viewModel = new EditUserViewModel
@@ -91,7 +91,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             //Skill associations
-            var user = GetUser(viewModel.UserId);
+            var user = await GetUser(viewModel.UserId);
             user.AssociatedSkills.RemoveAll(usk => viewModel.AssociatedSkills == null || !viewModel.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
 
             if (viewModel.AssociatedSkills != null)
@@ -141,7 +141,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             try
             {
-                var user = GetUser(userId);
+                var user = await GetUser(userId);
                 if (user == null)
                 {
                     ViewBag.ErrorMessage = "User not found.";
@@ -171,7 +171,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             try
             {
-                var user = GetUser(userId);
+                var user = await GetUser(userId);
                 await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.SiteAdmin.ToName()));
                 return RedirectToAction(nameof(Index));
             }
@@ -188,7 +188,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             try
             {
-                var user = GetUser(userId);
+                var user = await GetUser(userId);
                 await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.ApiAccess.ToName()));
                 return RedirectToAction(nameof(Index));
             }
@@ -201,25 +201,21 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult ManageApiKeys(string userId)
+        public async Task<IActionResult> ManageApiKeys(string userId)
         {
-            var user = GetUser(userId);
-            
-            if(user.IsUserType(UserType.ApiAccess))
+            var user = await GetUser(userId);
+            if (user.IsUserType(UserType.ApiAccess))
             {
                 return View(user);
             }
-            else
-            {
-                return BadRequest("Can't manage keys for a user without the API role.");
-            }
 
+            return BadRequest("Can't manage keys for a user without the API role.");
         }
 
         [HttpGet]
         public async Task<IActionResult> GenerateToken(string userId)
         {
-            var user = GetUser(userId);
+            var user = await GetUser(userId);
             try
             {
                 var token = await _userManager.GenerateUserTokenAsync(user, "Default", TokenTypes.ApiKey);
@@ -236,21 +232,22 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult AssignOrganizationAdmin(string userId)
+        public async Task<IActionResult> AssignOrganizationAdmin(string userId)
         {
-            var user = GetUser(userId);
+            var user = await GetUser(userId);
             if (user.IsUserType(UserType.OrgAdmin) || user.IsUserType(UserType.SiteAdmin))
             {
                 return RedirectToAction(nameof(Index));
             }
 
-            var organizations = _mediator.Send(new AllOrganizationsQuery())
+            var organizations = await _mediator.SendAsync(new AllOrganizationsQuery());
+            var selectListItems = organizations
                 .OrderBy(t => t.Name)
                 .Select(t => new SelectListItem { Text = t.Name, Value = t.Id.ToString() })
                 .ToList();
 
             ViewBag.Organizations = new [] { new SelectListItem { Selected = true, Text = "<Select One>", Value = "0" }}
-                .Union(organizations);
+                .Union(selectListItems);
 
             return View(new AssignOrganizationAdminViewModel { UserId = userId });
         }
@@ -259,7 +256,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignOrganizationAdmin(AssignOrganizationAdminViewModel model)
         {
-            var user = GetUser(model.UserId);
+            var user = await GetUser(model.UserId);
             if (user == null)
             {
                 return RedirectToAction(nameof(Index));
@@ -272,7 +269,8 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                if (_mediator.Send(new AllOrganizationsQuery()).Any(t => t.Id == model.OrganizationId))
+                var organizations = await _mediator.SendAsync(new AllOrganizationsQuery());
+                if (organizations.Any(t => t.Id == model.OrganizationId))
                 {
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.OrgAdmin.ToName()));
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.Organization, model.OrganizationId.ToString()));
@@ -290,7 +288,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             try
             {
-                var user = GetUser(userId);
+                var user = await GetUser(userId);
                 await _userManager.RemoveClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.SiteAdmin.ToName()));
                 return RedirectToAction(nameof(Index));
             }
@@ -307,7 +305,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             try
             {
-                var user = GetUser(userId);
+                var user = await GetUser(userId);
                 var claims = await _userManager.GetClaimsAsync(user);
                 await _userManager.RemoveClaimAsync(user, claims.First(c => c.Type == Security.ClaimTypes.UserType));
                 await _userManager.RemoveClaimAsync(user, claims.First(c => c.Type == Security.ClaimTypes.Organization));
@@ -321,9 +319,9 @@ namespace AllReady.Areas.Admin.Controllers
             }
         }
 
-        private ApplicationUser GetUser(string userId)
+        private async Task<ApplicationUser> GetUser(string userId)
         {
-            return _mediator.Send(new UserByUserIdQuery { UserId = userId });
+            return await _mediator.SendAsync(new UserByUserIdQuery { UserId = userId });
         }
     }
 }

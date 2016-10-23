@@ -89,21 +89,17 @@ namespace AllReady.Areas.Admin.Controllers
 
         // GET: Organization/Delete/5
         [ActionName("Delete")]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            // Needs comments:  This method doesn't delete things.
-            if (id == null)
+            var viewModel = await _mediator.SendAsync(new DeleteQuery { OrgId = id });
+            if (viewModel == null)
             {
                 return NotFound();
             }
 
-            var organization = await _mediator.SendAsync(new OrganizationDetailQuery { Id = id.Value });
-            if (organization == null)
-            {
-                return NotFound();
-            }
+            viewModel.Title = $"Delete {viewModel.Name}";
 
-            return View(organization);
+            return View(viewModel);
         }
 
         // POST: Organization/Delete/5
@@ -111,8 +107,8 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _mediator.SendAsync(new DeleteOrganization { Id= id });
-            return RedirectToAction(nameof(Index));
+            await _mediator.SendAsync(new DeleteOrganization { Id = id });
+            return RedirectToAction(nameof(Index), new { area = "Admin" });
         }               
     }
 }

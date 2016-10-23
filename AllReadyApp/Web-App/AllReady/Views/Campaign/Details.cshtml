@@ -3,25 +3,35 @@
 @{
     ViewData["Title"] = Model.Name;
 }
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
+            <li>@Model.Name</li>
+        </ol>
+    </div>
+</div>
 
 <div class="row">
     <div id="col-main">
         <div class="col-md-9">
-            <h2>@if (Model.Featured)
-                {<i class="fa fa-star star-highlight" aria-hidden="true"></i>} @Model.Name</h2>
-        </div>
-        <div class="col-md-3 share-buttons">
-            <a href="mailto:?subject=Check out @Model.Name&body=Check it out at @ViewBag.AbsoluteUrl" title="Share by Email">
-                <img src="~/images/share-email.png">
-            </a>
-            <a href="http://twitter.com/intent/tweet?url=@ViewBag.AbsoluteUrl&via=htbox" title="Share via Twitter">
-                <img src="~/images/share-twitter.png" alt="Share via Twitter" />
-            </a>
-            <a href="http://www.facebook.com/sharer/sharer.php?u=@ViewBag.AbsoluteUrl" title="Share via Facebook" target="_blank">
-                <img src="~/images/share-fb.png" alt="Share via Facebook" />
-            </a>
-        </div>
+            <h2>
+                @if (Model.Featured)
+            {<i class="fa fa-star star-highlight" aria-hidden="true"></i>} @Model.Name
+        </h2>
     </div>
+    <div class="col-md-3 share-buttons">
+        <a href="mailto:?subject=Check out @Model.Name&body=Check it out at @ViewBag.AbsoluteUrl" title="Share by Email">
+            <img src="~/images/share-email.png">
+        </a>
+        <a href="http://twitter.com/intent/tweet?url=@ViewBag.AbsoluteUrl&via=htbox" title="Share via Twitter">
+            <img src="~/images/share-twitter.png" alt="Share via Twitter" />
+        </a>
+        <a href="http://www.facebook.com/sharer/sharer.php?u=@ViewBag.AbsoluteUrl" title="Share via Facebook" target="_blank">
+            <img src="~/images/share-fb.png" alt="Share via Facebook" />
+        </a>
+    </div>
+</div>
 </div>
 
 <div class="row">
@@ -50,7 +60,7 @@
             <div class="row">
                 <img src="@Model.ImageUrl" class="img-responsive" />
             </div>
-            <hr/>
+            <hr />
         }
 
         @Html.Raw(Model.FullDescription)
@@ -110,42 +120,46 @@
             <strong>No matching events.</strong>
         </div>
     </div>
-    <div class="col-md-2">
-        @if (Model.CampaignImpact != null && Model.CampaignImpact.Display)
-        {
+    @if (Model.CampaignImpact != null && Model.CampaignImpact.Display)
+    {
+        <div class="col-sm-4 col-md-3">
             @Html.Partial("_CampaignImpact")
-        }
-    </div>
-    <div class="col-md-9">
-        <div class="table-responsive">
-            <table class="table" data-bind="css: { hide: !events.filtered().length }">
-                <tr>
-                    <th><span title="Name of the event">Title</span></th>
-                    <th><span title="Description of the event">Description</span></th>
-                    <th><span title="Event Location">Location</span></th>
-                    <th><span title="Date of the event">Dates</span></th>
-                </tr>
-                <!-- ko foreach: events.filtered -->
-                <tr>
-                    <td>
-                        <a data-bind="attr: { href: '/Event/' + Id }, text: Name"></a>
-                    </td>
-                    <td>
-                        <span data-bind="text: Description"></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: Location ? Location.Summary : '' "></span>
-                    </td>
-                    <td>
-                        <span data-bind="text: displayDate()"></span>
-                    </td>
-                </tr>
-                <!-- /ko -->
-            </table>
-
         </div>
+        @Html.Raw(@"<div class=""col-sm-8 col-md-9"">") <!-- starts the events table div at partial width when displaying campaign impact-->
+    }
+    else
+    {
+        @Html.Raw(@"<div class=""col-md-12"">"); <!-- starts the events table div at full width when no campaign impact-->
+    }
+    <div class="table-responsive">
+        <table class="table" data-bind="css: { hide: !events.filtered().length }">
+            <tr>
+                <th><span title="Name of the event">Title</span></th>
+                <th><span title="Description of the event">Description</span></th>
+                <th><span title="Event Location">Location</span></th>
+                <th><span title="Date of the event">Dates</span></th>
+            </tr>
+            <!-- ko foreach: events.filtered -->
+            <tr>
+                <td>
+                    <a data-bind="attr: { href: '/Event/' + Id }, text: Name"></a>
+                </td>
+                <td>
+                    <span data-bind="text: Description"></span>
+                </td>
+                <td>
+                    <span data-bind="text: Location ? Location.Summary : '' "></span>
+                </td>
+                <td>
+                    <span data-bind="text: displayDate()"></span>
+                </td>
+            </tr>
+            <!-- /ko -->
+        </table>
     </div>
+    @Html.Raw(@"</div>"); <!-- closes the events table div -->
 </div>
+
 
 <div class="row">
     <div class="col-sm-12" data-bind="if: resources && resources.length > 0">

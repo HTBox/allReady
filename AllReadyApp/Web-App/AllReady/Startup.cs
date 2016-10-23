@@ -325,7 +325,7 @@ namespace AllReady
 
             // Add sample data and test admin accounts if specified in Config.Json.
             // for production applications, this should either be set to false or deleted.
-            if (env.IsDevelopment() || env.IsEnvironment("Staging"))
+            if (!env.IsProduction())
             {
                 context.Database.Migrate();
             }

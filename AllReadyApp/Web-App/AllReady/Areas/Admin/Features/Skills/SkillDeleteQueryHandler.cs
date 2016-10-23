@@ -10,10 +10,12 @@ namespace AllReady.Areas.Admin.Features.Skills
     public class SkillDeleteQueryHandler : IAsyncRequestHandler<SkillDeleteQuery, SkillDeleteViewModel>
     {
         private AllReadyContext _context;
+
         public SkillDeleteQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
+
         public async Task<SkillDeleteViewModel> Handle(SkillDeleteQuery message)
         {
             var skill = await _context.Skills.AsNoTracking()
@@ -25,6 +27,7 @@ namespace AllReady.Areas.Admin.Features.Skills
 
             var model = new SkillDeleteViewModel
             {
+                SkillId = skill.Id,
                 HierarchicalName = skill.HierarchicalName,
                 OwningOrganizationId = skill.OwningOrganizationId,
             };
@@ -34,7 +37,7 @@ namespace AllReady.Areas.Admin.Features.Skills
                 .Select(s => s.HierarchicalName)
                 .ToArrayAsync();
 
-            if(children != null)
+            if (children != null)
             {
                 model.ChildrenNames = children;
             }

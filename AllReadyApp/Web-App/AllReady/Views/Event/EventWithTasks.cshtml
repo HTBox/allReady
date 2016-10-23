@@ -6,6 +6,16 @@
     var userTimeZoneId = User.GetTimeZoneId();
 }
 
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId">@Model.CampaignName</a></li>
+            <li>@Model.Title</li>
+        </ol>
+    </div>
+</div>
+
 <div id="MainView">
 
     @Html.Partial("_Alert")

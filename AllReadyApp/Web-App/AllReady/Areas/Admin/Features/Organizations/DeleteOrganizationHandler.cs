@@ -7,7 +7,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
 {
     public class DeleteOrganizationHandler : AsyncRequestHandler<DeleteOrganization>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
         public DeleteOrganizationHandler(AllReadyContext context)
         {
             _context = context;
@@ -15,12 +15,9 @@ namespace AllReady.Areas.Admin.Features.Organizations
 
         protected override async Task HandleCore(DeleteOrganization message)
         {
-            var organization = await _context.Organizations.SingleOrDefaultAsync(t => t.Id == message.Id).ConfigureAwait(false);
-            if (organization != null)
-            {
-                _context.Organizations.Remove(organization);
-                await _context.SaveChangesAsync().ConfigureAwait(false);
-            }
+            var organization = await _context.Organizations.SingleAsync(t => t.Id == message.Id).ConfigureAwait(false);
+            _context.Organizations.Remove(organization);
+            await _context.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

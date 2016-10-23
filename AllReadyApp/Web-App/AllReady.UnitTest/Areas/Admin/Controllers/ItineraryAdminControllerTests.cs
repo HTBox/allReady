@@ -10,6 +10,7 @@ using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.Features.TaskSignups;
 using AllReady.Areas.Admin.ViewModels.Itinerary;
+using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Models;
@@ -17,6 +18,7 @@ using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Moq;
 using Xunit;
 
@@ -535,25 +537,41 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{id}/[Action]");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task SelectRequestsGetSendsOrganizationIdQueryWithCorrectItineraryId()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            const int intineraryId = 1;
+
+            var mediator = new Mock<IMediator>();
+
+            var sut = new ItineraryController(mediator.Object, null);
+            await sut.SelectRequests(intineraryId);
+
+            mediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == intineraryId)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task SelectRequestsGetReturnsUnauthorizedResult_WhenOrgIdIsZero()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var sut = new ItineraryController(Mock.Of<IMediator>(), null);
+
+            var result = await sut.SelectRequests(It.IsAny<int>());
+
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task SelectRequestsGetReturnsUnauthorizedResult_WhenUserIsNotOrgAdmin()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var sut = new ItineraryController(mediator.Object, null);
+            sut.MakeUserNotAnOrgAdmin();
+
+            var result = await sut.SelectRequests(It.IsAny<int>());
+
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]
@@ -708,6 +726,216 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
+        public async Task ConfirmRemoveRequestSendsOrganizationIdQueryWithCorrectIntineraryId()
+        {
+            const int intineraryId = 1;
+
+            var mediator = new Mock<IMediator>();
+
+            var sut = new ItineraryController(mediator.Object, null);
+            await sut.ConfirmRemoveRequest(intineraryId, It.IsAny<Guid>());
+
+            mediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == intineraryId)), Times.Once);
+        }
+
+        [Fact]
+        public async Task ConfirmRemoveRequestReturnsUnauthorizedResult_WhenOrgIdIsZero()
+        {
+            const int orgId = 0;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+
+            var sut = new ItineraryController(mediator.Object, null);
+            var result = await sut.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>());
+
+            Assert.IsType<UnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public async Task ConfirmRemoveRequestReturnsUnauthorizedResult_WhenUserIsNotOrgAdmin()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var sut = new ItineraryController(mediator.Object, null);
+            sut.MakeUserNotAnOrgAdmin();
+
+            var result = await sut.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>());
+
+            Assert.IsType<UnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public async Task ConfirmRemoveRequestReturnsNotFoundResult_WhenViewModelIsNull()
+        {
+            const int orgId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+
+            var sut = new ItineraryController(mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>());
+
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task ConfirmRemoveRequestSendsRequestSummaryQueryWithCorrectRequestId()
+        {
+            const int orgId = 1;
+            var requestId = Guid.NewGuid();
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+
+            var sut = new ItineraryController(mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.ConfirmRemoveRequest(It.IsAny<int>(), requestId);
+
+            mediator.Verify(x => x.SendAsync(It.Is<RequestSummaryQuery>(y => y.RequestId == requestId)));
+        }
+
+        [Fact]
+        public async Task ConfirmRemoveRequestAssignsCorrectTitleOnViewModel()
+        {
+            const int orgId = 1;
+            var requestId = Guid.NewGuid();
+            var viewModel = new RequestSummaryViewModel { Name = "ViewModelName" };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            mediator.Setup(x => x.SendAsync(It.IsAny<RequestSummaryQuery>())).ReturnsAsync(viewModel);
+
+            var sut = new ItineraryController(mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.ConfirmRemoveRequest(It.IsAny<int>(), requestId) as ViewResult;
+            var resultViewModel = result.ViewData.Model as RequestSummaryViewModel;
+
+            Assert.Equal(resultViewModel.Title, $"Remove request: {viewModel.Name}");
+        }
+
+        [Fact]
+        public async Task ConfirmRemoveRequestSetsUserIsOrgAdminToTrue_WhenUserIsOrgAdmin()
+        {
+            const int orgId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            mediator.Setup(x => x.SendAsync(It.IsAny<RequestSummaryQuery>())).ReturnsAsync(new RequestSummaryViewModel());
+
+            var sut = new ItineraryController(mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>()) as ViewResult;
+            var resultViewModel = result.ViewData.Model as RequestSummaryViewModel;
+
+            Assert.True(resultViewModel.UserIsOrgAdmin);
+        }
+
+        [Fact]
+        public async Task ConfirmRemoveRequestRetrunsCorrectViewAndViewModel()
+        {
+            const int orgId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            mediator.Setup(x => x.SendAsync(It.IsAny<RequestSummaryQuery>())).ReturnsAsync(new RequestSummaryViewModel());
+
+            var sut = new ItineraryController(mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>()) as ViewResult;
+            var resultViewModel = result.ViewData.Model as RequestSummaryViewModel;
+
+            Assert.Equal(result.ViewName, "ConfirmRemoveRequest");
+            Assert.IsType<RequestSummaryViewModel>(resultViewModel);
+        }
+
+        [Fact]
+        public void ConfirmRemoveRequestHasHttpGetAttribute()
+        {
+            var sut = new ItineraryController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void ConfirmRemoveRequestHasRouteAttributeWithTheCorrectRouteValule()
+        {
+            var sut = new ItineraryController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{requestId}");
+        }
+
+        [Fact]
+        public async Task RemoveRequestReturnsUnathorizedResult_WhenUserIsNotOrgAdmin()
+        {
+            var sut = new ItineraryController(null, null);
+            var result = await sut.RemoveRequest(new RequestSummaryViewModel { UserIsOrgAdmin = false });
+            Assert.IsType<UnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public async Task RemoveRequestSendsRemoveRequestCommandWithCorrectData()
+        {
+            var viewModel = new RequestSummaryViewModel { Id = Guid.NewGuid(), ItineraryId = 1, UserIsOrgAdmin = true };
+
+            var mediator = new Mock<IMediator>();
+            var sut = new ItineraryController(mediator.Object, null);
+
+            await sut.RemoveRequest(viewModel);
+
+            mediator.Verify(x => x.SendAsync(It.Is<RemoveRequestCommand>(y => y.RequestId == viewModel.Id && y.ItineraryId == viewModel.ItineraryId)));
+        }
+
+        [Fact]
+        public async Task RemoveRequestRedirectsToCorrectActionWithCorrrectRouteValues()
+        {
+            var viewModel = new RequestSummaryViewModel { ItineraryId = 1, UserIsOrgAdmin = true };
+
+            var mediator = new Mock<IMediator>();
+            var sut = new ItineraryController(mediator.Object, null);
+
+            var result = await sut.RemoveRequest(viewModel) as RedirectToActionResult;
+
+            var routeValueDictionary = new RouteValueDictionary { ["id"] = viewModel.ItineraryId };
+
+            Assert.Equal(result.ActionName, "Details");
+            Assert.Equal(result.RouteValues, routeValueDictionary);
+        }
+
+        [Fact]
+        public void RemoveRequestHasHttpPostAttribute()
+        {
+            var sut = new ItineraryController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.RemoveRequest(It.IsAny<RequestSummaryViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void RemoveRequestHasValidateAntiForgeryTokenAttribute()
+        {
+            var sut = new ItineraryController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.RemoveRequest(It.IsAny<RequestSummaryViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void RemoveRequestHasRouteAttributeWithCorrectRouteValue()
+        {
+            var sut = new ItineraryController(null, null);
+            var attribute = sut.GetAttributesOn(x => x.RemoveRequest(It.IsAny<RequestSummaryViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{requestId}");
+        }
+
+        [Fact]
         public async Task ConfirmRemoveTeamMemberSendsOrganizationIdQueryWithTheCorrectItineraryId()
         {
             const int itineraryId = 1;
@@ -722,7 +950,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task ConfirmRemoveTeamMemberReturnsHttpUnauthorizedWhenOrganizationIdIsZero()
+        public async Task ConfirmRemoveTeamMemberReturnsHttpUnauthorized_WhenOrganizationIdIsZero()
         {
             var itineraryId = It.IsAny<int>();
             var taskSignupId = It.IsAny<int>();
@@ -736,7 +964,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task ConfirmRemoveTeamMemberReturnsHttpUnauthorizedWhenUserIsNotOrgAdmin()
+        public async Task ConfirmRemoveTeamMemberReturnsHttpUnauthorized_WhenUserIsNotOrgAdmin()
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
@@ -765,7 +993,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task ConfirmRemoveTeamMemberReturnsHttpNotFoundWhenTaskSignupSummaryModelIsNull()
+        public async Task ConfirmRemoveTeamMemberReturnsHttpNotFound_WhenTaskSignupSummaryModelIsNull()
         {
             const int orgId = 1;
 
@@ -817,83 +1045,55 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task RemoveTeamMemberSendsOrganizationIdQueryWithCorrectIntineraryId()
-        {
-            const int itineraryId = 1;
-            var mockMediator = new Mock<IMediator>();
-
-            var sut = new ItineraryController(mockMediator.Object, null);
-            
-            await sut.RemoveTeamMember(itineraryId, It.IsAny<int>());
-
-            mockMediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == itineraryId)), Times.Once);
-        }
-
-        [Fact]
-        public async Task RemoveTeamMemberReturnsHttpUnauthorizedWhenOrganizationIdIsZero()
-        {
-            var itineraryId = It.IsAny<int>();
-            var taskSignupId = It.IsAny<int>();
-
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
-
-            var sut = new ItineraryController(mockMediator.Object, null);
-
-            Assert.IsType<UnauthorizedResult>(await sut.RemoveTeamMember(itineraryId, taskSignupId));
-        }
-
-        [Fact]
         public async Task RemoveTeamMemberReturnsHttpUnauthorizedWhenUserIsNotOrgAdmin()
         {
+            var viewModel = new TaskSignupSummaryViewModel { UserIsOrgAdmin = false };
+
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
             var sut = new ItineraryController(mockMediator.Object, null);
-            sut.MakeUserNotAnOrgAdmin();
 
-            Assert.IsType<UnauthorizedResult>(await sut.RemoveTeamMember(It.IsAny<int>(), It.IsAny<int>()));
+            Assert.IsType<UnauthorizedResult>(await sut.RemoveTeamMember(viewModel));
         }
 
         [Fact]
-        public async Task RemoveTeamMemberSendsRemoveTeamMemberCommandWithCorrectTaskSignupIdWhenOrganizationIsNotZero_AndUserIsOrgAdmin()
+        public async Task RemoveTeamMemberSendsRemoveTeamMemberCommandWithCorrectTaskSignupId_WhenOrganizationIsNotZero_AndUserIsOrgAdmin()
         {
             const int taskSignupId = 1;
-            const int orgId = 1;
+
+            var viewModel = new TaskSignupSummaryViewModel { TaskSignupId = taskSignupId, UserIsOrgAdmin = true };
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
             var sut = new ItineraryController(mockMediator.Object, null);
-            sut.MakeUserAnOrgAdmin(orgId.ToString());
 
-            await sut.RemoveTeamMember(It.IsAny<int>(), taskSignupId);
+            await sut.RemoveTeamMember(viewModel);
 
             mockMediator.Verify(x => x.SendAsync(It.Is<RemoveTeamMemberCommand>(y => y.TaskSignupId == taskSignupId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task RemoveTeamMemberRedirectsToCorrectActionWithCorrectRouteValuesWhenOrganizationIdIsNotZero_AndUserIsOrgAdmin()
+        [Fact]
+        public async Task RemoveTeamMemberRedirectsToCorrectActionWithCorrectRouteValues_WhenOrganizationIdIsNotZero_AndUserIsOrgAdmin()
         {
-            const int orgId = 1;
+            const int intineraryId = 1;
+            var viewModel = new TaskSignupSummaryViewModel { ItineraryId = intineraryId, UserIsOrgAdmin = true };
+            var routeValueDictionary = new RouteValueDictionary { ["id"] = viewModel.ItineraryId };
 
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            var mediator = new Mock<IMediator>();
 
-            var sut = new ItineraryController(mockMediator.Object, null);
-            sut.MakeUserAnOrgAdmin(orgId.ToString());
-
-            await sut.RemoveTeamMember(It.IsAny<int>(), It.IsAny<int>());
-
-            //TODO: this assertion does not assert what the title of this unit test says it does. Please fix to assert that the redirect action and route values are correct
-            //mockMediator.Verify(x => x.SendAsync(It.Is<RemoveTeamMemberCommand>(y => y.TaskSignupId == taskSignupId)), Times.Once);
+            var sut = new ItineraryController(mediator.Object, null);
+            var result = await sut.RemoveTeamMember(viewModel) as RedirectToActionResult;
+                       
+            Assert.Equal(result.ActionName, nameof(ItineraryController.Details));
+            Assert.Equal(result.RouteValues, routeValueDictionary);
         }
 
         [Fact]
         public void RemoveTeamMemberHasHttpPostAttribute()
         {
             var sut = new ItineraryController(null, null);
-            var attribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<TaskSignupSummaryViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -901,7 +1101,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void RemoveTeamMemberHasValidateAntiForgeryTokenAttribute()
         {
             var sut = new ItineraryController(null, null);
-            var attribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<TaskSignupSummaryViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -909,7 +1109,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void RemoveTeamMemberHasRouteAttributeWithCorrectRoute()
         {
             var sut = new ItineraryController(null, null);
-            var routeAttribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
+            var routeAttribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<TaskSignupSummaryViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}");
         }
