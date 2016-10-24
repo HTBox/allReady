@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Notifications
 {
-    public class RequestConfirmationsSent : IAsyncNotification
+    public class InitialRequestConfirmationsSent : IAsyncNotification
     {
         public int ItineraryId { get; set; }
         public List<Guid> RequestIds { get; set; }
