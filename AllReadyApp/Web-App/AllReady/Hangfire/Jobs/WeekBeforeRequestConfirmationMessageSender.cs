@@ -28,28 +28,32 @@ namespace AllReady.Hangfire.Jobs
         public void SendSms(List<Guid> requestIds, int itineraryId)
         {
             var requestorPhoneNumbers = context.Requests.Where(x => requestIds.Contains(x.RequestId) && x.Status == RequestStatus.PendingConfirmation).Select(x => x.Phone).ToList();
-            var itinerary = context.Itineraries.Single(x => x.Id == itineraryId);
 
-            //don't send out messages if DateTime.UtcNow is less than 7 days away from the Itinerary.Date. 
+            //don't send out messages if "now" is less than 7 days away from the Itinerary.Date.
             //This can happen if a request is added to an itinereary less than 7 days away from the itinerary's date
-            //Hangfire will execute the job immediately when the scheduled time has already passed
-            if (DateTimeUtcNow().Date >= itinerary.Date.AddDays(-7).Date)
+            if (requestorPhoneNumbers.Count > 0)
             {
-                //TODO mgmccarthy: need to convert intinerary.Date to local time of the request's intinerary's campaign's timezoneid
-                requestorPhoneNumbers.ForEach(requestorPhoneNumber =>
+                var itinerary = context.Itineraries.Single(x => x.Id == itineraryId);
+                var totalDays = (itinerary.Date.Date - DateTimeUtcNow().Date).TotalDays;
+                if (totalDays >= 7)
                 {
-                    var queuedSms = new QueuedSmsMessage
+                    //TODO mgmccarthy: need to convert intinerary.Date to local time of the request's intinerary's campaign's timezoneid. Waiting on the final word for how we'll store DateTime, as well as Issue #1386
+                    requestorPhoneNumbers.ForEach(requestorPhoneNumber =>
                     {
-                        Recipient = requestorPhoneNumber,
-                        Message = $@"Your request has been scheduled by allReady for {itinerary.Date}. Please response with ""Y"" to confirm this request or ""N"" to cancel this request."
-                    };
-                    var sms = JsonConvert.SerializeObject(queuedSms);
-                    storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
-                });
-            }
+                        var queuedSms = new QueuedSmsMessage
+                        {
+                            Recipient = requestorPhoneNumber,
+                            Message = $@"Your request has been scheduled by allReady for {itinerary.Date}. Please response with ""Y"" to confirm this request or ""N"" to cancel this request."
+                        };
+                        var sms = JsonConvert.SerializeObject(queuedSms);
+                        storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
+                    });
+                }
 
-            //schedule job for one day before Itinerary.Date
-            backgroundJob.Schedule<IDayBeforeRequestConfirmationMessageSender>(x => x.SendSms(requestIds, itinerary.Id), itinerary.Date.AddDays(-1).AtNoon());
+                //schedule job for one day before Itinerary.Date
+                backgroundJob.Schedule<IDayBeforeRequestConfirmationMessageSender>(x => x.SendSms(requestIds, itinerary.Id), itinerary.Date.AddDays(-1).AtNoon());
+                //backgroundJob.Schedule<IDayBeforeRequestConfirmationMessageSender>(x => x.SendSms(requestIds, itinerary.Id), itinerary.Date.AddDays(-1));
+            }
         }
     }
 

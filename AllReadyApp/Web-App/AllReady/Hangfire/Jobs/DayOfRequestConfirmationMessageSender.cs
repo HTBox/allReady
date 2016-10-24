@@ -32,7 +32,7 @@ namespace AllReady.Hangfire.Jobs
 
             if (DateTimeUtcNow().Date == itineraryDate.Date)
             {
-                //TODO mgmccarthy: need to convert intinerary.Date to local time of the request's intinerary's campaign's timezone
+                //TODO mgmccarthy: need to convert intinerary.Date to local time of the request's intinerary's campaign's timezoneid. Waiting on the final word for how we'll store DateTime, as well as Issue #1386
                 requests.ForEach(request =>
                 {
                     var queuedSms = new QueuedSmsMessage

@@ -31,11 +31,11 @@ namespace AllReady.Hangfire.Jobs
             var itinerary = context.Itineraries.Single(x => x.Id == itineraryId);
 
             //don't send out messages if DateTime.UtcNow is less than 1 days away from the Itinerary.Date. 
-            //This can happen if a request is added to an itinereary less than 7 days away from the itinerary's date
-            //Hangfire will execute the job immediately when the scheduled time has already passed
-            if (DateTimeUtcNow().Date >= itinerary.Date.AddDays(-1).Date)
+            //This can happen if a request is added to an itinereary less than 1 days away from the itinerary's date
+            var result = (itinerary.Date.Date - DateTimeUtcNow().Date).TotalDays;
+            if (result >= 1)
             {
-                //TODO mgmccarthy: need to convert intinerary.Date to local time of the request's intinerary's campaign's timezone
+                //TODO mgmccarthy: need to convert intinerary.Date to local time of the request's intinerary's campaign's timezoneid. Waiting on the final word for how we'll store DateTime, as well as Issue #1386
                 requests.ForEach(request =>
                 {
                     var queuedSms = new QueuedSmsMessage
