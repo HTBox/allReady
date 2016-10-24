@@ -33,11 +33,10 @@ namespace AllReady.Hangfire.Jobs
             //This can happen if a request is added to an itinereary less than 7 days away from the itinerary's date
             if (requestorPhoneNumbers.Count > 0)
             {
+                //TODO mgmccarthy: need to convert intinerary.Date to local time of the request's intinerary's campaign's timezoneid. Waiting on the final word for how we'll store DateTime, as well as Issue #1386
                 var itinerary = context.Itineraries.Single(x => x.Id == itineraryId);
-                var totalDays = (itinerary.Date.Date - DateTimeUtcNow().Date).TotalDays;
-                if (totalDays >= 7)
+                if ((itinerary.Date.Date - DateTimeUtcNow().Date).TotalDays >= 7)
                 {
-                    //TODO mgmccarthy: need to convert intinerary.Date to local time of the request's intinerary's campaign's timezoneid. Waiting on the final word for how we'll store DateTime, as well as Issue #1386
                     requestorPhoneNumbers.ForEach(requestorPhoneNumber =>
                     {
                         var queuedSms = new QueuedSmsMessage
@@ -52,7 +51,6 @@ namespace AllReady.Hangfire.Jobs
 
                 //schedule job for one day before Itinerary.Date
                 backgroundJob.Schedule<IDayBeforeRequestConfirmationMessageSender>(x => x.SendSms(requestIds, itinerary.Id), itinerary.Date.AddDays(-1).AtNoon());
-                //backgroundJob.Schedule<IDayBeforeRequestConfirmationMessageSender>(x => x.SendSms(requestIds, itinerary.Id), itinerary.Date.AddDays(-1));
             }
         }
     }
