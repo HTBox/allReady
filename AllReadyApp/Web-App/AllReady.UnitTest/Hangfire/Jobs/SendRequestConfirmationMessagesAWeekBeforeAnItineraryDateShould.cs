@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         [Fact]
         public void NotSendRequestConfirmations_WhenRequestIdsMatchExistingRequests_AndThoseRequestsDoNotHaveAStatusOfPendingConfirmation()
         {
-            var request = new Request { RequestId = Guid.NewGuid() };
+            var request = new Request { RequestId = Guid.NewGuid(), Status = RequestStatus.Assigned };
 
             var smsSender = new Mock<ISmsSender>();
 

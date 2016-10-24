@@ -40,6 +40,7 @@ namespace AllReady.Hangfire.Jobs
                 }
 
                 //schedule job for day of Itinerary.Date
+                //TODO mgmccarthy: do we want to schedule the day of message for noon, or earlier so the requestor knows not to expect us?
                 backgroundJob.Schedule<ISendRequestConfirmationMessagesTheDayOfAnItineraryDate>(x => x.SendSms(requestIds, itinerary.Id), itinerary.Date.AtNoon());
             }
         }
