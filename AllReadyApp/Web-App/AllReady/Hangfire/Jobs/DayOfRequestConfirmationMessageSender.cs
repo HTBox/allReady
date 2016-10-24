@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace AllReady.Hangfire.Jobs
 {
-    public class DayOfRequestConfirmationMessageSender : IDayOfRequestConfirmationMessageSender
+    public class SendRequestConfirmationMessagesTheDayOfAnItineraryDate : ISendRequestConfirmationMessagesTheDayOfAnItineraryDate
     {
         private readonly AllReadyContext context;
         private readonly IQueueStorageService storageService;
@@ -18,7 +18,7 @@ namespace AllReady.Hangfire.Jobs
 
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        public DayOfRequestConfirmationMessageSender(AllReadyContext context, IQueueStorageService storageService, IMediator mediator)
+        public SendRequestConfirmationMessagesTheDayOfAnItineraryDate(AllReadyContext context, IQueueStorageService storageService, IMediator mediator)
         {
             this.context = context;
             this.storageService = storageService;
@@ -49,7 +49,7 @@ namespace AllReady.Hangfire.Jobs
         }
     }
 
-    public interface IDayOfRequestConfirmationMessageSender
+    public interface ISendRequestConfirmationMessagesTheDayOfAnItineraryDate
     {
         void SendSms(List<Guid> requestIds, int itineraryId);
     }

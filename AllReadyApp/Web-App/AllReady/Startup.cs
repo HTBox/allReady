@@ -146,9 +146,9 @@ namespace AllReady
             services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
             services.AddTransient<IConvertDateTimeOffset, DateTimeOffsetConverter>();
             services.AddSingleton<IImageService, ImageService>();
-            services.AddTransient<IWeekBeforeRequestConfirmationMessageSender, WeekBeforeRequestConfirmationMessageSender>();
-            services.AddTransient<IDayBeforeRequestConfirmationMessageSender, DayBeforeRequestConfirmationMessageSender>();
-            services.AddTransient<IDayOfRequestConfirmationMessageSender, DayOfRequestConfirmationMessageSender>();
+            services.AddTransient<ISendRequestConfirmationMessagesAWeekBeforeAnItineraryDate, SendRequestConfirmationMessagesAWeekBeforeAnItineraryDate>();
+            services.AddTransient<ISendRequestConfirmationMessagesADayBeforeAnItineraryDate, SendRequestConfirmationMessagesADayBeforeAnItineraryDate>();
+            services.AddTransient<ISendRequestConfirmationMessagesTheDayOfAnItineraryDate, SendRequestConfirmationMessagesTheDayOfAnItineraryDate>();
 
             services.AddTransient<SampleDataGenerator>();
 

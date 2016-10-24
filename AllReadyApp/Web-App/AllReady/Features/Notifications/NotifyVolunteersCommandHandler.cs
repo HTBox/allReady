@@ -17,8 +17,6 @@ namespace AllReady.Features.Notifications
 
         protected override async Task HandleCore(NotifyVolunteersCommand message)
         {
-            // TODO: both SMS and email sent to the same email service?
-
             // push messages to azure
             foreach (var recipient in message.ViewModel.SmsRecipients)
             {
