@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using AllReady.Core.Notifications;
 using AllReady.Features.Notifications;
-using AllReady.Models.Notifications;
 using MediatR;
 using Newtonsoft.Json;
 

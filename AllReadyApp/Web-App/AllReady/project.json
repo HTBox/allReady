@@ -87,10 +87,6 @@
   "frameworks": {
     "net451": {
       "dependencies": {
-        "AllReady.Models": {
-          "target": "project"
-        }
-
       },
       "frameworkAssemblies": {
         "System.Drawing": "4.0.0.0"
