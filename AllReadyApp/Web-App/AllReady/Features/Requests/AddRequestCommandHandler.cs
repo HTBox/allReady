@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Extensions;
 using AllReady.Models;
 using MediatR;
 using Geocoding;
@@ -8,70 +9,61 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Requests
 {
-    public class AddRequestCommandHandler : IAsyncRequestHandler<AddRequestCommand, AddRequestError>
+    public class AddRequestCommandHandler : IAsyncRequestHandler<AddRequestCommand, Request>
     {
-        private readonly AllReadyContext _dataContext;
+        private readonly AllReadyContext _context;
         private readonly IGeocoder _geocoder;
 
-        public AddRequestCommandHandler(AllReadyContext dataContext, IGeocoder geocoder)
+        public Func<Guid> NewRequestId = () => Guid.NewGuid();
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
+
+        public AddRequestCommandHandler(AllReadyContext context, IGeocoder geocoder)
         {
-            _dataContext = dataContext;
+            _context = context;
             _geocoder = geocoder;
         }
 
-        public async Task<AddRequestError> Handle(AddRequestCommand message)
+        public async Task<Request> Handle(AddRequestCommand message)
         {
-            AddRequestError error = null;
-            if (message.Request == null)
-            {
-                throw new InvalidOperationException("Request property is required.");
-            }
+            var requestId = GetRequestId(message.RequestViewModel.RequestId);
 
-            var request = message.Request;
+            var request = await _context.Requests.SingleOrDefaultAsync(x => x.RequestId == requestId) ?? new Request { RequestId = requestId };
+            request.ProviderId = message.RequestViewModel.ProviderId;
+            request.ProviderData = message.RequestViewModel.ProviderData;
+            request.Address = message.RequestViewModel.Address;
+            request.City = message.RequestViewModel.City;
+            request.DateAdded = DateTimeUtcNow();
+            request.Email = message.RequestViewModel.Email;
+            request.Name = message.RequestViewModel.Name;
+            request.Phone = message.RequestViewModel.Phone;
+            request.State = message.RequestViewModel.State;
+            request.Zip = message.RequestViewModel.Zip;
+            request.Status = ConvertRequestStatusToEnum(message.RequestViewModel.Status);
 
-            try
-            {
-                //todo: I'm not sure if this logic is going to be correct, as this allows an update of status to existing requests.
-                //I added this because the red cross is passing in current status.
-                string providerId = request?.ProviderId;
-                Request entity = await _dataContext.Requests.FirstOrDefaultAsync(x => x.ProviderId == providerId);
+            var address = _geocoder.Geocode(message.RequestViewModel.Address, message.RequestViewModel.City, message.RequestViewModel.State, message.RequestViewModel.Zip, string.Empty).FirstOrDefault();
+            request.Latitude = message.RequestViewModel.Latitude == 0 ? address?.Coordinates.Latitude ?? 0 : message.RequestViewModel.Latitude;
+            request.Longitude = message.RequestViewModel.Latitude == 0 ? address?.Coordinates.Longitude ?? 0 : message.RequestViewModel.Latitude;
 
-                if (entity == null)
-                {
-                    request.RequestId = Guid.NewGuid();
-                    //If lat/long not provided, use geocoding API to get them
-                    if (request.Latitude == 0 && request.Longitude == 0)
-                    {
-                        //Assume the first returned address is correct
-                        var address = _geocoder.Geocode(request.Address, request.City, request.State, request.Zip, string.Empty)
-                            .FirstOrDefault();
-                        request.Latitude = address?.Coordinates.Latitude ?? 0;
-                        request.Longitude = address?.Coordinates.Longitude ?? 0;
-                    }
-                    entity = request;
-                    _dataContext.Requests.Add(entity);
-                }
-                else
-                {
-                    entity.Status = request.Status;
-                }
+            _context.AddOrUpdate(request);
+            await _context.SaveChangesAsync();
 
-                await _dataContext.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-                // FRAGILE: no other Handlers trap errors, TODO: let this handler throw like the others?
-                error = new AddRequestError
-                {
-                    ProviderId = request?.ProviderId ?? "No ProviderId.",
-                    Reason = "Failed to add request."
-                };
-
-                //todo: Logging for this error
-            }
-
-            return error;
+            //TODO mgmccarthy: find out if/why we need to return the entire Request back to the caller. I would rather us return the RequestId
+            return request;
         }
 
+        private Guid GetRequestId(string requestId)
+        {
+            if (string.IsNullOrEmpty(requestId))
+            {
+                return NewRequestId();
+            }
+
+            return Guid.Parse(requestId);
+        }
+
+        private static RequestStatus ConvertRequestStatusToEnum(string stringRequestStatus)
+        {
+            return (RequestStatus) Enum.Parse(typeof(RequestStatus), stringRequestStatus);
+        }
     }
 }

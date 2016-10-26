@@ -1,17 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using AllReady.Core.Notifications;
 using AllReady.Features.Notifications;
 using MediatR;
+using Newtonsoft.Json;
 
 namespace AllReady.Services
 {
     public class AuthMessageSender : IEmailSender, ISmsSender
     {
         private readonly IMediator _mediator;
+        private readonly IQueueStorageService _storageService;
 
-        public AuthMessageSender(IMediator mediator)
+        public AuthMessageSender(IMediator mediator, IQueueStorageService storageService)
         {
             _mediator = mediator;
+            _storageService = storageService;
         }
 
         public Task SendEmailAsync(string email, string subject, string message)
@@ -30,18 +34,23 @@ namespace AllReady.Services
             return _mediator.SendAsync(command);
         }
 
-        public Task SendSmsAsync(string number, string message)
+        public async Task SendSmsAsync(string phoneNumber, string message)
         {
-            var command = new NotifyVolunteersCommand
+            var queuedSms = new QueuedSmsMessage
             {
-                ViewModel = new NotifyVolunteersViewModel
-                {
-                    SmsMessage = message,
-                    SmsRecipients = new List<string> { number },
-                }
+                Recipient = phoneNumber,
+                Message = message
             };
+            var sms = JsonConvert.SerializeObject(queuedSms);
+            await _storageService.SendMessageAsync(QueueStorageService.Queues.SmsQueue, sms);
+        }
 
-            return _mediator.SendAsync(command);
+        public async Task SendSmsAsync(List<string> phoneNumbers, string message)
+        {
+            foreach (var phoneNumber in phoneNumbers)
+            {
+                await SendSmsAsync(phoneNumber, message);
+            }
         }
     }
 
@@ -52,6 +61,7 @@ namespace AllReady.Services
 
     public interface ISmsSender
     {
-        Task SendSmsAsync(string number, string message);
+        Task SendSmsAsync(string phoneNumber, string message);
+        Task SendSmsAsync(List<string> phoneNumbers, string message);
     }
 }

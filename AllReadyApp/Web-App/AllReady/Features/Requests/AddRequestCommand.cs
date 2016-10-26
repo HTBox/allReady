@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using AllReady.Models;
+﻿using AllReady.Models;
+using AllReady.ViewModels.Requests;
 using MediatR;
 
 namespace AllReady.Features.Requests
 {
-    public class AddRequestCommand : IAsyncRequest<AddRequestError>
+    public class AddRequestCommand : IAsyncRequest<Request>
     {
-        public Request Request { get; set; }
+        public RequestViewModel RequestViewModel { get; set; }
     }
 }

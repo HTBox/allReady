@@ -6,18 +6,17 @@ using Newtonsoft.Json;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyVolunteersHandler : AsyncRequestHandler<NotifyVolunteersCommand>
+    public class NotifyVolunteersCommandHandler : AsyncRequestHandler<NotifyVolunteersCommand>
     {
         private readonly IQueueStorageService _storageService;
-        public NotifyVolunteersHandler(IQueueStorageService storageService)
+
+        public NotifyVolunteersCommandHandler(IQueueStorageService storageService)
         {
             _storageService = storageService;
         }
 
         protected override async Task HandleCore(NotifyVolunteersCommand message)
         {
-            // TODO: both SMS and email sent to the same email service?
-
             // push messages to azure
             foreach (var recipient in message.ViewModel.SmsRecipients)
             {

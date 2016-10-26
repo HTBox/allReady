@@ -5,6 +5,7 @@ using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Controllers;
 using AllReady.DataAccess;
+using AllReady.Hangfire.Jobs;
 using AllReady.Models;
 using AllReady.Providers;
 using AllReady.Providers.ExternalUserInformationProviders;
@@ -29,6 +30,9 @@ using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Geocoding;
 using Geocoding.Google;
+using Hangfire;
+using Hangfire.Dashboard;
+using Hangfire.SqlServer;
 
 namespace AllReady
 {
@@ -51,7 +55,8 @@ namespace AllReady
                 builder.AddUserSecrets();
 
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-                builder.AddApplicationInsightsSettings(developerMode: true);
+                //builder.AddApplicationInsightsSettings(developerMode: true);
+                builder.AddApplicationInsightsSettings(developerMode: false);
             }
             else if (env.IsStaging() || env.IsProduction())
             {
@@ -118,6 +123,9 @@ namespace AllReady
             services.AddMvc().AddJsonOptions(options =>
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
+            //Hangfire
+            services.AddHangfire(configuration => configuration.UseSqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"]));
+
             // configure IoC support
             var container = CreateIoCContainer(services);
             return container.Resolve<IServiceProvider>();
@@ -138,6 +146,10 @@ namespace AllReady
             services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
             services.AddTransient<IConvertDateTimeOffset, DateTimeOffsetConverter>();
             services.AddSingleton<IImageService, ImageService>();
+            services.AddTransient<ISendRequestConfirmationMessagesAWeekBeforeAnItineraryDate, SendRequestConfirmationMessagesAWeekBeforeAnItineraryDate>();
+            services.AddTransient<ISendRequestConfirmationMessagesADayBeforeAnItineraryDate, SendRequestConfirmationMessagesADayBeforeAnItineraryDate>();
+            services.AddTransient<ISendRequestConfirmationMessagesTheDayOfAnItineraryDate, SendRequestConfirmationMessagesTheDayOfAnItineraryDate>();
+
             services.AddTransient<SampleDataGenerator>();
 
             if (Configuration["Geocoding:EnableGoogleGeocodingService"] == "true")
@@ -146,6 +158,11 @@ namespace AllReady
                 //need to override this setting in your user secrets or env vars.
                 //Visit https://developers.google.com/maps/documentation/geocoding/get-api-key to get a free standard usage API key
                 services.AddSingleton<IGeocoder>(new GoogleGeocoder(Configuration["Geocoding:GoogleGeocodingApiKey"]));
+            }
+            else
+            {
+                //implement null object pattern to protect against IGeocoder not being passed a legit reference at runtime b/c of the above conditional
+                services.AddSingleton<IGeocoder>(new NullObjectGeocoder());
             }
 
             if (Configuration["Data:Storage:EnableAzureQueueService"] == "true")
@@ -158,6 +175,7 @@ namespace AllReady
             {
                 // this writer service will just write to the default logger
                 services.AddTransient<IQueueStorageService, FakeQueueWriterService>();
+                //services.AddTransient<IQueueStorageService, SmtpEmailSender>();
             }
 
             var containerBuilder = new ContainerBuilder();
@@ -183,6 +201,13 @@ namespace AllReady
             containerBuilder.RegisterType<MicrosoftAndFacebookExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Facebook");
             containerBuilder.RegisterType<ExternalUserInformationProviderFactory>().As<IExternalUserInformationProviderFactory>();
 
+            //Hangfire
+            containerBuilder.RegisterInstance(new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"])))
+                .As<IBackgroundJobClient>();
+            //this is where the IRequestConfirmationSmsSender dependency is SUPPOSED to be registered, but I have it registered in CreateIocContainer and it seems to work fine
+            //containerBuilder.RegisterType<RequestConfirmationSmsSender>().As<IRequestConfirmationSmsSender>()
+            //    .WithParameter()
+
             //Populate the container with services that were previously registered
             containerBuilder.Populate(services);
 
@@ -191,8 +216,7 @@ namespace AllReady
         }
 
         // Configure is called after ConfigureServices is called.
-        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context,
-            IConfiguration configuration)
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context, IConfiguration configuration)
         {
             // Put first to avoid issues with OPTIONS when calling from Angular/Browser.  
             app.UseCors("allReady");
@@ -229,7 +253,7 @@ namespace AllReady
             });
 
             // Add Application Insights to the request pipeline to track HTTP request telemetry data.
-            app.UseApplicationInsightsRequestTelemetry();
+            //app.UseApplicationInsightsRequestTelemetry();
 
             // Add the following to the request pipeline only in development environment.
             if (env.IsDevelopment())
@@ -251,7 +275,7 @@ namespace AllReady
             }
 
             // Track data about exceptions from the application. Should be configured after all error handling middleware in the request pipeline.
-            app.UseApplicationInsightsExceptionTelemetry();
+            //app.UseApplicationInsightsExceptionTelemetry();
 
             // Add static files to the request pipeline.
             app.UseStaticFiles();
@@ -292,7 +316,7 @@ namespace AllReady
 
                 app.UseMicrosoftAccountAuthentication(options);
             }
-            //TODO: mgmccarthy: working on getting email from Twitter
+
             //http://www.bigbrainintelligence.com/Post/get-users-email-address-from-twitter-oauth-ap
             if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
             {
@@ -315,6 +339,13 @@ namespace AllReady
 
                 app.UseGoogleAuthentication(options);
             }
+
+            //Hangfire
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                Authorization = new List<DashboardAuthorizationFilter>()
+            });
+            app.UseHangfireServer();
 
             // Add MVC to the request pipeline.
             app.UseMvc(routes =>
@@ -339,6 +370,15 @@ namespace AllReady
             {
                 await sampleData.CreateAdminUser();
             }
+        }
+    }
+
+    public class DashboardAuthorizationFilter : IDashboardAuthorizationFilter
+    {
+        //TODO mgmccarthy: we need real implelentation to authorize useres to see the Hangfire dashboard, right now, anyone can go to the dashboard
+        public bool Authorize(DashboardContext context)
+        {
+            return true;
         }
     }
 }

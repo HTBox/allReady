@@ -6,11 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.Features.Notifications;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
 {
-    public class AddRequestsCommandHandlerShould : InMemoryContextTest
+    public class AddRequestsToItineraryCommandHandlerShould : InMemoryContextTest
     {
         private Itinerary _theItinerary;
         private Request _assignedRequest;
@@ -39,7 +40,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Context.Requests.Add(_assignedRequest);
             Context.Requests.Add(_notAssignedRequest);
             Context.SaveChanges();
-
         }
 
         [Fact]
@@ -47,32 +47,32 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         {
             var mockMediator = new Mock<IMediator>();
 
-            var handler = new AddRequestsCommandHandler(Context, mockMediator.Object);
-            bool succeded = await handler.Handle(new AddRequestsCommand { ItineraryId = 7 });
+            var handler = new AddRequestsToItineraryCommandHandler(Context, mockMediator.Object);
+            var succeded = await handler.Handle(new AddRequestsToItineraryCommand { ItineraryId = 7 });
 
             Assert.False(succeded);
             Assert.Empty(Context.ItineraryRequests);
         }
 
-        [Fact()]
+        [Fact]
         public async Task AbortOnNotFoundRequests()
         {
             var mockMediator = new Mock<IMediator>();
 
-            var handler = new AddRequestsCommandHandler(Context, mockMediator.Object);
-            bool succeded = await handler.Handle(new AddRequestsCommand { ItineraryId = _theItinerary.Id, RequestIdsToAdd = new List<string> { "7" } });
+            var handler = new AddRequestsToItineraryCommandHandler(Context, mockMediator.Object);
+            var succeded = await handler.Handle(new AddRequestsToItineraryCommand { ItineraryId = _theItinerary.Id, RequestIdsToAdd = new List<string> { "7" } });
 
             Assert.False(succeded);
             Assert.Empty(Context.ItineraryRequests);
         }
 
-        [Fact()]
+        [Fact]
         public async Task NotAlterTheAlreadyAssignedRequests()
         {
             var mockMediator = new Mock<IMediator>();
 
-            var handler = new AddRequestsCommandHandler(Context, mockMediator.Object);
-            bool succeded = await handler.Handle(new AddRequestsCommand
+            var handler = new AddRequestsToItineraryCommandHandler(Context, mockMediator.Object);
+            var succeded = await handler.Handle(new AddRequestsToItineraryCommand
             {
                 ItineraryId = _theItinerary.Id,
                 RequestIdsToAdd = new List<string> { _assignedRequest.RequestId.ToString() }
@@ -82,13 +82,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Assert.Empty(Context.ItineraryRequests);
         }
 
-        [Fact()]
+        [Fact]
         public async Task AssignRequestsToTheItinerary()
         {
             var mockMediator = new Mock<IMediator>();
 
-            var handler = new AddRequestsCommandHandler(Context, mockMediator.Object);
-            bool succeded = await handler.Handle(new AddRequestsCommand
+            var handler = new AddRequestsToItineraryCommandHandler(Context, mockMediator.Object);
+            var succeded = await handler.Handle(new AddRequestsToItineraryCommand
             {
                 ItineraryId = _theItinerary.Id,
                 RequestIdsToAdd = new List<string> { _notAssignedRequest.RequestId.ToString() }
@@ -100,7 +100,22 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Assert.Equal(1, Context.ItineraryRequests.First().OrderIndex);
             Assert.Equal(_theItinerary.Id, Context.ItineraryRequests.First().ItineraryId);
             Assert.Equal(_notAssignedRequest.RequestId, Context.ItineraryRequests.First().RequestId);
+        }
 
+        [Fact]
+        public async Task PublishRequestsAssignedToIntinerary_WithTheCorrectParameters()
+        {
+            var mockMediator = new Mock<IMediator>();
+            var message = new AddRequestsToItineraryCommand
+            {
+                ItineraryId = _theItinerary.Id,
+                RequestIdsToAdd = new List<string> {_notAssignedRequest.RequestId.ToString()}
+            };
+
+            var handler = new AddRequestsToItineraryCommandHandler(Context, mockMediator.Object);
+            await handler.Handle(message);
+
+            mockMediator.Verify(x => x.PublishAsync(It.Is<RequestsAssignedToIntinerary>(y => y.ItineraryId == message.ItineraryId)));
         }
 
         [Fact]
@@ -110,8 +125,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Context.ItineraryRequests.Add(new ItineraryRequest { OrderIndex = 1, ItineraryId = _theItinerary.Id });
             Context.SaveChanges();
 
-            var handler = new AddRequestsCommandHandler(Context, mockMediator.Object);
-            bool succeded = await handler.Handle(new AddRequestsCommand
+            var handler = new AddRequestsToItineraryCommandHandler(Context, mockMediator.Object);
+            var succeded = await handler.Handle(new AddRequestsToItineraryCommand
             {
                 ItineraryId = _theItinerary.Id,
                 RequestIdsToAdd = new List<string> { _notAssignedRequest.RequestId.ToString() }
