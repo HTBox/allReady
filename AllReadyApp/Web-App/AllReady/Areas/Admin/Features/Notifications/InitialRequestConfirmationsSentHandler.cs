@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Extensions;
 using AllReady.Hangfire.Jobs;
@@ -29,7 +30,12 @@ namespace AllReady.Areas.Admin.Features.Notifications
             var itinerary = await context.Itineraries.SingleAsync(x => x.Id == notification.ItineraryId);
             
             //TODO mgmccarthy: need to convert intinerary.Date to local time of request's intinerary's campaign's timezoneid
-            backgroundJob.Schedule<ISendRequestConfirmationMessagesAWeekBeforeAnItineraryDate>(x => x.SendSms(notification.RequestIds, itinerary.Id), itinerary.Date.AddDays(-7).AtNoon());
+            backgroundJob.Schedule<ISendRequestConfirmationMessagesAWeekBeforeAnItineraryDate>(x => x.SendSms(notification.RequestIds, itinerary.Id), SevenDaysBefore(itinerary.Date));
+        }
+
+        private static DateTime SevenDaysBefore(DateTime intineraryDate)
+        {
+            return intineraryDate.Date.AddDays(-7).AtNoon();
         }
     }
 }

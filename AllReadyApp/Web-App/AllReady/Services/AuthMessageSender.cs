@@ -61,7 +61,7 @@ namespace AllReady.Services
 
     public interface ISmsSender
     {
-        Task SendSmsAsync(string phoneNumber, string messagee);
-        Task SendSmsAsync(List<string> phoneNumbers, string messagee);
+        Task SendSmsAsync(string phoneNumber, string message);
+        Task SendSmsAsync(List<string> phoneNumbers, string message);
     }
 }
