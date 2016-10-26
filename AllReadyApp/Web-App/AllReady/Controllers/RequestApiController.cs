@@ -14,7 +14,6 @@ namespace AllReady.Controllers
     public class RequestApiController : Controller
     {
         private readonly IMediator _mediator;
-        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
         public RequestApiController(IMediator mediator)
         {
@@ -69,7 +68,7 @@ namespace AllReady.Controllers
 
         private IActionResult MapError(AddRequestError error)
         {
-            //TODO mgmccarthy: I don't see anywhere this is set, so I commented it out
+            //TODO mgmccarthy: I don't where .IsInternal is set set, so I commented it out
             //if (error.IsInternal)
             //{
             //    return StatusCode(500, error);

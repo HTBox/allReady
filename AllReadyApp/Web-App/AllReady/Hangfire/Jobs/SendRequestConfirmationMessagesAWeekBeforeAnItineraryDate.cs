@@ -40,13 +40,18 @@ namespace AllReady.Hangfire.Jobs
                 }
 
                 //schedule job for one day before Itinerary.Date
-                backgroundJob.Schedule<ISendRequestConfirmationMessagesADayBeforeAnItineraryDate>(x => x.SendSms(requestIds, itinerary.Id), itinerary.Date.AddDays(-1).AtNoon());
+                backgroundJob.Schedule<ISendRequestConfirmationMessagesADayBeforeAnItineraryDate>(x => x.SendSms(requestIds, itinerary.Id), OneDayBefore(itinerary.Date));
             }
         }
 
         private bool TodayIsEqualToOrGreaterThanSevenDaysBefore(DateTime itineraryDate)
         {
             return (itineraryDate.Date - DateTimeUtcNow().Date).TotalDays >= 7;
+        }
+
+        private static DateTime OneDayBefore(DateTime intineraryDate)
+        {
+            return intineraryDate.Date.AddDays(-1).AtNoon();
         }
     }
 
