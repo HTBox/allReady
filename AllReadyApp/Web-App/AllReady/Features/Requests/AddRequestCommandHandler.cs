@@ -47,6 +47,7 @@ namespace AllReady.Features.Requests
             _context.AddOrUpdate(request);
             await _context.SaveChangesAsync();
 
+            //TODO mgmccarthy: find out if/why we need to return the entire Request back to the caller. I would rather us return the RequestId
             return request;
         }
 
