@@ -14,6 +14,7 @@ namespace AllReady.Areas.Admin.ViewModels.Request
             // set defaults
             Map(r => r.RequestId).Default(Guid.NewGuid());
             Map(r => r.Status).Default(RequestStatus.Unassigned);
+            Map(r => r.Source).Default(RequestSource.Csv);
 
             // map from Red Cross data
             Map(r => r.Name).Name("name");

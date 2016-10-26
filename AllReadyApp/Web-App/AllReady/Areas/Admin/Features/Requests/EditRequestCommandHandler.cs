@@ -19,7 +19,7 @@ namespace AllReady.Areas.Admin.Features.Requests
         {
             var request = await _context.Requests
                 .Include(l => l.Event)
-                .SingleOrDefaultAsync(t => t.RequestId == message.RequestModel.Id).ConfigureAwait(false) ?? _context.Add(new Request()).Entity;
+                .SingleOrDefaultAsync(t => t.RequestId == message.RequestModel.Id).ConfigureAwait(false) ?? _context.Add(new Request { Source = RequestSource.Manual }).Entity;
 
             request.EventId = message.RequestModel.EventId;
             request.Address = message.RequestModel.Address;
