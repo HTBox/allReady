@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AllReady.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Models;
 using MediatR;
@@ -22,6 +23,7 @@ namespace AllReady.Controllers
 
         //TODO mgmccarthy: why do we need a strongly typed error to return to the caller?  Is there a requirement for this? I didn't touch the AddRequestError b/c it was there in the original PR #1111
         [HttpPost]
+        [ExternalEndpoint]
         public async Task<IActionResult> Post([FromBody]RequestViewModel viewModel)
         {
             //validate before sending command
