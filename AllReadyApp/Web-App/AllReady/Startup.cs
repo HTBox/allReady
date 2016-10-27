@@ -58,6 +58,7 @@ namespace AllReady
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
                 builder.AddApplicationInsightsSettings(developerMode: true);
 
+                //checks for Hangfire db in Server=(localdb)\\MSSQLLocalDB and if it doesn't exist, it creates it. If it does exist, it does nothing
                 CheckForHangfireDatabaseAndCreateIfItDoesNotExist();
             }
             else if (env.IsStaging() || env.IsProduction())
@@ -92,7 +93,7 @@ namespace AllReady
             services.AddApplicationInsightsTelemetry(Configuration);
 
             // Add Entity Framework services to the services container.
-            var ef = services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+            services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
 
             services.Configure<AzureStorageSettings>(Configuration.GetSection("Data:Storage"));
             services.Configure<DatabaseSettings>(Configuration.GetSection("Data:DefaultConnection"));
@@ -206,9 +207,6 @@ namespace AllReady
             //Hangfire
             containerBuilder.RegisterInstance(new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"])))
                 .As<IBackgroundJobClient>();
-            //this is where the IRequestConfirmationSmsSender dependency is SUPPOSED to be registered, but I have it registered in CreateIocContainer and it seems to work fine
-            //containerBuilder.RegisterType<RequestConfirmationSmsSender>().As<IRequestConfirmationSmsSender>()
-            //    .WithParameter()
 
             //Populate the container with services that were previously registered
             containerBuilder.Populate(services);
