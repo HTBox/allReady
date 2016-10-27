@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Globalization;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
@@ -55,8 +56,9 @@ namespace AllReady
                 builder.AddUserSecrets();
 
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-                //builder.AddApplicationInsightsSettings(developerMode: true);
-                builder.AddApplicationInsightsSettings(developerMode: false);
+                builder.AddApplicationInsightsSettings(developerMode: true);
+
+                CheckForHangfireDatabaseAndCreateIfItDoesNotExist();
             }
             else if (env.IsStaging() || env.IsProduction())
             {
@@ -340,7 +342,6 @@ namespace AllReady
                 app.UseGoogleAuthentication(options);
             }
 
-            //Hangfire
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
                 Authorization = new List<DashboardAuthorizationFilter>()
@@ -369,6 +370,23 @@ namespace AllReady
             if (Configuration["SampleData:InsertTestUsers"] == "true")
             {
                 await sampleData.CreateAdminUser();
+            }
+        }
+
+        private static void CheckForHangfireDatabaseAndCreateIfItDoesNotExist()
+        {
+            using (var sqlConnection = new SqlConnection("Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;MultipleActiveResultsets=true;"))
+            {
+                sqlConnection.Open();
+                using (var sqlCmd = new SqlCommand("select count(*) from master.dbo.sysdatabases where name=\'Hangfire\'", sqlConnection))
+                {
+                    var result = (int)sqlCmd.ExecuteScalar();
+                    if (result == 0)
+                    {
+                        sqlCmd.CommandText = "CREATE DATABASE Hangfire";
+                        sqlCmd.ExecuteScalar();
+                    }
+                }
             }
         }
     }
