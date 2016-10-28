@@ -48,8 +48,8 @@ namespace AllReady.Controllers
                     return MapError(new AddRequestError { ProviderId = viewModel.ProviderId, Reason = "enum string provided cannot be mapped to Request enum type." });
                 }
             }
-            
-            var result = await _mediator.SendAsync(new AddRequestCommand { RequestViewModel = viewModel });
+
+            var result = await _mediator.SendAsync(new AddRequestCommand { RequestViewModel = viewModel, Source = RequestSource.Api });
 
             //TODO mgmccarthy: I'm not too sure why we have to return the entire result. I'd rather just return a 200 OK Http status or return the RequestId so the requestor can correlate a request back to our system when sending us updates
             return Created(string.Empty, result);

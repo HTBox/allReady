@@ -13,7 +13,7 @@ namespace AllReady.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
+                .HasAnnotation("ProductVersion", "1.0.1")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("AllReady.Models.AllReadyTask", b =>
@@ -478,6 +478,8 @@ namespace AllReady.Migrations
 
                     b.Property<string>("ProviderId");
 
+                    b.Property<int>("Source");
+
                     b.Property<string>("State");
 
                     b.Property<int>("Status");
@@ -861,7 +863,7 @@ namespace AllReady.Migrations
                         .HasForeignKey("OwningOrganizationId");
 
                     b.HasOne("AllReady.Models.Skill", "ParentSkill")
-                        .WithMany()
+                        .WithMany("ChildSkills")
                         .HasForeignKey("ParentSkillId");
                 });
 

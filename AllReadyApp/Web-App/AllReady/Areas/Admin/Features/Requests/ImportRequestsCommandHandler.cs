@@ -23,6 +23,9 @@ namespace AllReady.Areas.Admin.Features.Requests
 
             foreach (var request in message.Requests)
             {
+                request.Source = RequestSource.Csv;
+                request.Status = RequestStatus.Unassigned;
+
                 // todo: do basic data validation
                 if (!_context.Requests.Any(r => r.ProviderId == request.ProviderId))
                 {

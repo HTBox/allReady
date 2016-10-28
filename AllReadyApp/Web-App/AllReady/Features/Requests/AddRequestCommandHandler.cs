@@ -42,7 +42,8 @@ namespace AllReady.Features.Requests
 
             var address = _geocoder.Geocode(message.RequestViewModel.Address, message.RequestViewModel.City, message.RequestViewModel.State, message.RequestViewModel.Zip, string.Empty).FirstOrDefault();
             request.Latitude = message.RequestViewModel.Latitude == 0 ? address?.Coordinates.Latitude ?? 0 : message.RequestViewModel.Latitude;
-            request.Longitude = message.RequestViewModel.Latitude == 0 ? address?.Coordinates.Longitude ?? 0 : message.RequestViewModel.Latitude;
+            request.Longitude = message.RequestViewModel.Longitude == 0 ? address?.Coordinates.Longitude ?? 0 : message.RequestViewModel.Longitude;
+            request.Source = message.Source;
 
             _context.AddOrUpdate(request);
             await _context.SaveChangesAsync();
