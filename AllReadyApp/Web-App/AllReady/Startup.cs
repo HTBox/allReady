@@ -90,7 +90,7 @@ namespace AllReady
             services.AddApplicationInsightsTelemetry(Configuration);
 
             // Add Entity Framework services to the services container.
-            var ef = services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+            services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
 
             services.Configure<AzureStorageSettings>(Configuration.GetSection("Data:Storage"));
             services.Configure<DatabaseSettings>(Configuration.GetSection("Data:DefaultConnection"));
@@ -193,7 +193,7 @@ namespace AllReady
                 var c = ctx.Resolve<IComponentContext>();
                 return t => (IEnumerable<object>)c.Resolve(typeof(IEnumerable<>).MakeGenericType(t));
             });
-
+           
             //ExternalUserInformationProviderFactory registration
             containerBuilder.RegisterType<TwitterExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Twitter");
             containerBuilder.RegisterType<GoogleExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Google");
@@ -202,11 +202,8 @@ namespace AllReady
             containerBuilder.RegisterType<ExternalUserInformationProviderFactory>().As<IExternalUserInformationProviderFactory>();
 
             //Hangfire
-            containerBuilder.RegisterInstance(new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"])))
+            containerBuilder.Register(icomponentcontext => new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"])))
                 .As<IBackgroundJobClient>();
-            //this is where the IRequestConfirmationSmsSender dependency is SUPPOSED to be registered, but I have it registered in CreateIocContainer and it seems to work fine
-            //containerBuilder.RegisterType<RequestConfirmationSmsSender>().As<IRequestConfirmationSmsSender>()
-            //    .WithParameter()
 
             //Populate the container with services that were previously registered
             containerBuilder.Populate(services);
@@ -253,7 +250,7 @@ namespace AllReady
             });
 
             // Add Application Insights to the request pipeline to track HTTP request telemetry data.
-            //app.UseApplicationInsightsRequestTelemetry();
+            app.UseApplicationInsightsRequestTelemetry();
 
             // Add the following to the request pipeline only in development environment.
             if (env.IsDevelopment())
@@ -275,7 +272,7 @@ namespace AllReady
             }
 
             // Track data about exceptions from the application. Should be configured after all error handling middleware in the request pipeline.
-            //app.UseApplicationInsightsExceptionTelemetry();
+            app.UseApplicationInsightsExceptionTelemetry();
 
             // Add static files to the request pipeline.
             app.UseStaticFiles();
@@ -340,6 +337,12 @@ namespace AllReady
                 app.UseGoogleAuthentication(options);
             }
 
+            //call Migrate here to force the creation of the AllReady schema so Hangfire can create its schema under AllReady database
+            if (!env.IsProduction())
+            {
+                context.Database.Migrate();
+            }
+
             //Hangfire
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
@@ -356,11 +359,6 @@ namespace AllReady
 
             // Add sample data and test admin accounts if specified in Config.Json.
             // for production applications, this should either be set to false or deleted.
-            if (!env.IsProduction())
-            {
-                context.Database.Migrate();
-            }
-
             if (Configuration["SampleData:InsertSampleData"] == "true")
             {
                 sampleData.InsertTestData();
