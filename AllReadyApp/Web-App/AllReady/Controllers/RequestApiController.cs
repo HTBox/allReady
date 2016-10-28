@@ -49,7 +49,7 @@ namespace AllReady.Controllers
                 }
             }
 
-            var result = await _mediator.SendAsync(new AddRequestCommand { RequestViewModel = viewModel, Source = RequestSource.Api });
+            var result = await _mediator.SendAsync(new AddApiRequestCommand { RequestViewModel = viewModel });
 
             //TODO mgmccarthy: I'm not too sure why we have to return the entire result. I'd rather just return a 200 OK Http status or return the RequestId so the requestor can correlate a request back to our system when sending us updates
             return Created(string.Empty, result);
