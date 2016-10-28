@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Globalization;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
@@ -55,8 +56,10 @@ namespace AllReady
                 builder.AddUserSecrets();
 
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-                //builder.AddApplicationInsightsSettings(developerMode: true);
-                builder.AddApplicationInsightsSettings(developerMode: false);
+                builder.AddApplicationInsightsSettings(developerMode: true);
+
+                //checks for Hangfire db in Server=(localdb)\\MSSQLLocalDB and if it doesn't exist, it creates it. If it does exist, it does nothing
+                CheckForHangfireDatabaseAndCreateIfItDoesNotExist();
             }
             else if (env.IsStaging() || env.IsProduction())
             {
@@ -90,7 +93,7 @@ namespace AllReady
             services.AddApplicationInsightsTelemetry(Configuration);
 
             // Add Entity Framework services to the services container.
-            var ef = services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+            services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
 
             services.Configure<AzureStorageSettings>(Configuration.GetSection("Data:Storage"));
             services.Configure<DatabaseSettings>(Configuration.GetSection("Data:DefaultConnection"));
@@ -204,9 +207,6 @@ namespace AllReady
             //Hangfire
             containerBuilder.RegisterInstance(new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"])))
                 .As<IBackgroundJobClient>();
-            //this is where the IRequestConfirmationSmsSender dependency is SUPPOSED to be registered, but I have it registered in CreateIocContainer and it seems to work fine
-            //containerBuilder.RegisterType<RequestConfirmationSmsSender>().As<IRequestConfirmationSmsSender>()
-            //    .WithParameter()
 
             //Populate the container with services that were previously registered
             containerBuilder.Populate(services);
@@ -340,7 +340,6 @@ namespace AllReady
                 app.UseGoogleAuthentication(options);
             }
 
-            //Hangfire
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
                 Authorization = new List<DashboardAuthorizationFilter>()
@@ -369,6 +368,23 @@ namespace AllReady
             if (Configuration["SampleData:InsertTestUsers"] == "true")
             {
                 await sampleData.CreateAdminUser();
+            }
+        }
+
+        private static void CheckForHangfireDatabaseAndCreateIfItDoesNotExist()
+        {
+            using (var sqlConnection = new SqlConnection("Server=(localdb)\\MSSQLLocalDB;Integrated Security=true;MultipleActiveResultsets=true;"))
+            {
+                sqlConnection.Open();
+                using (var sqlCmd = new SqlCommand("select count(*) from master.dbo.sysdatabases where name=\'Hangfire\'", sqlConnection))
+                {
+                    var result = (int)sqlCmd.ExecuteScalar();
+                    if (result == 0)
+                    {
+                        sqlCmd.CommandText = "CREATE DATABASE Hangfire";
+                        sqlCmd.ExecuteScalar();
+                    }
+                }
             }
         }
     }
