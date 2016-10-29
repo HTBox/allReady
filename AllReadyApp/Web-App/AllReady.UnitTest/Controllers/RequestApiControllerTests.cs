@@ -66,7 +66,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new RequestApiController(mediator.Object);
             await sut.Post(viewModel);
 
-            mediator.Verify(x => x.SendAsync(It.Is<AddRequestCommand>((y => y.RequestViewModel == viewModel))));
+            mediator.Verify(x => x.SendAsync(It.Is<AddApiRequestCommand>((y => y.RequestViewModel == viewModel))));
         }
 
         [Fact]

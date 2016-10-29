@@ -23,6 +23,6 @@
         /// <summary>
         /// Manually created via admin UI
         /// </summary>
-        Manual = 3
+        UI = 3
     }
 }
