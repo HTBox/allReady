@@ -32,7 +32,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 {
                     Text = string.Concat(x.User.Email, " : ", x.Task.Name),
                     Value = x.Id.ToString()
-                }).ToListAsync().ConfigureAwait(false);
+                }).ToListAsync();
         }
     }
 }

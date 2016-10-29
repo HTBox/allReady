@@ -148,7 +148,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task CreateReturnsHttpBadRequestWhenModelIsNull()
         {
             var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
-            Assert.IsType<BadRequestResult>(await sut.Create(null).ConfigureAwait(false));
+            Assert.IsType<BadRequestResult>(await sut.Create(null));
         }
 
         [Fact]
@@ -178,7 +178,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(null);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
-            Assert.IsType<BadRequestResult>(await sut.Create(It.IsAny<ItineraryEditViewModel>()).ConfigureAwait(false));
+            Assert.IsType<BadRequestResult>(await sut.Create(It.IsAny<ItineraryEditViewModel>()));
         }
 
         [Fact]

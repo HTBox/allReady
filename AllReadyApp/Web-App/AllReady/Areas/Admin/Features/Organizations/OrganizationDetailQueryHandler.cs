@@ -26,8 +26,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
                 .Include(u => u.Users)
                 .Include(c => c.OrganizationContacts).ThenInclude(tc => tc.Contact)
                 .Where(ten => ten.Id == message.Id)
-                .SingleOrDefaultAsync()
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync();
 
             if (t == null)
             {

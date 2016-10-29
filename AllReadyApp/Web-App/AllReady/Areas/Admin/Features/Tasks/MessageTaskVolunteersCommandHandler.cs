@@ -49,7 +49,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 }
             };
 
-            await _mediator.SendAsync(command).ConfigureAwait(false);
+            await _mediator.SendAsync(command);
         }
     }
 }

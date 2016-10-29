@@ -21,8 +21,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
                 .Include(i => i.Event.Campaign)
                 .Where(i => i.Id == message.ItineraryId)
                 .Select(i => i.Event.Campaign.ManagingOrganizationId)
-                .FirstOrDefaultAsync()
-                .ConfigureAwait(false);
+                .FirstOrDefaultAsync();
         }
     }
 }

@@ -19,7 +19,7 @@ namespace AllReady.Areas.Admin.Features.Requests
         {
             var request = await _context.Requests
                 .Include(l => l.Event).ThenInclude(rec => rec.Campaign).ThenInclude(rec => rec.ManagingOrganization)
-                .SingleOrDefaultAsync(t => t.RequestId == message.Id).ConfigureAwait(false);
+                .SingleOrDefaultAsync(t => t.RequestId == message.Id);
 
             if (request == null)
                 return null;

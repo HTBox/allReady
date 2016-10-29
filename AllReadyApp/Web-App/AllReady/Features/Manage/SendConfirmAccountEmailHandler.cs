@@ -15,9 +15,8 @@ namespace AllReady.Features.Manage
 
         protected override async Task HandleCore(SendConfirmAccountEmail message)
         {
-            await emailSender.SendEmailAsync(message.Email, "Confirm your allReady account", 
-                $"Please confirm your allReady account by clicking this link: <a href=\"{message.CallbackUrl}\">link</a>")
-                .ConfigureAwait(false);
+            await emailSender.SendEmailAsync(message.Email, "Confirm your allReady account",
+                $"Please confirm your allReady account by clicking this link: <a href=\"{message.CallbackUrl}\">link</a>");
         }
     }
 }

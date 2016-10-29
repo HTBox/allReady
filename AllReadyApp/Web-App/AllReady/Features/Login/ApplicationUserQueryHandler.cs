@@ -21,8 +21,7 @@ namespace AllReady.Features.Login
                 .AsNoTracking()
                 .Include(a => a.Claims)
                 .Include(a => a.Roles)
-                .SingleOrDefaultAsync(a => a.NormalizedUserName == normalizedUserName)
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync(a => a.NormalizedUserName == normalizedUserName);
              return user;
         }
     }

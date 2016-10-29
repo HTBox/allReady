@@ -23,8 +23,7 @@ namespace AllReady.Areas.Admin.Features.Users
                 .Where(u => u.Id == message.UserId)
                 .Include(u => u.AssociatedSkills).ThenInclude(us => us.Skill)
                 .Include(u => u.Claims)
-                .SingleOrDefaultAsync()
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync();
 
             var organizationId = user.GetOrganizationId();
 
@@ -35,7 +34,7 @@ namespace AllReady.Areas.Admin.Features.Users
                 AssociatedSkills = user.AssociatedSkills,
                 IsOrganizationAdmin = user.IsUserType(UserType.OrgAdmin),
                 IsSiteAdmin = user.IsUserType(UserType.SiteAdmin),
-                Organization = organizationId != null ? await _context.Organizations.FirstAsync(t=>t.Id == organizationId.Value).ConfigureAwait(false) : null
+                Organization = organizationId != null ? await _context.Organizations.FirstAsync(t=>t.Id == organizationId.Value) : null
             };
 
             return viewModel;

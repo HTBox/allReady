@@ -37,7 +37,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                 Featured = c.Featured
             });
 
-            return await viewModel.ToListAsync().ConfigureAwait(false);
+            return await viewModel.ToListAsync();
         }
     }
 }

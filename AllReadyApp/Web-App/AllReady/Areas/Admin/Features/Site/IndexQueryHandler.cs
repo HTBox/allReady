@@ -23,7 +23,6 @@ namespace AllReady.Areas.Admin.Features.Site
                 Users = await _context.Users
                     .OrderBy(u => u.UserName)
                     .ToListAsync()
-                    .ConfigureAwait(false)
             };
         }
     }

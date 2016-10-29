@@ -15,9 +15,8 @@ namespace AllReady.Areas.Admin.Features.Site
 
         protected override async Task HandleCore(SendAccountApprovalEmail message)
         {
-            await emailSender.SendEmailAsync(message.Email, "Account Approval", 
-                $"Your account has been approved by an administrator. Please <a href=\"{message.CallbackUrl}\">Click here to Log in</a>")
-                .ConfigureAwait(false);
+            await emailSender.SendEmailAsync(message.Email, "Account Approval",
+                $"Your account has been approved by an administrator. Please <a href=\"{message.CallbackUrl}\">Click here to Log in</a>");
         }
     }
 }

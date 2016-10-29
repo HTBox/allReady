@@ -55,8 +55,7 @@ namespace AllReady.Areas.Admin.Features.Events
                 .Include(a => a.Campaign).ThenInclude(a => a.ManagingOrganization)
                 .Include(a => a.RequiredSkills).ThenInclude(s => s.Skill).ThenInclude(s => s.ParentSkill)
                 .Include(a => a.Location)
-                .SingleOrDefaultAsync(a => a.Id == message.EventId)
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync(a => a.Id == message.EventId);
         }
     }
 }

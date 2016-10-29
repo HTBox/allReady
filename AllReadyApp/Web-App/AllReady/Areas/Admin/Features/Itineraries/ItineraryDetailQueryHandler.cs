@@ -56,7 +56,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                         Latitude = r.Request.Latitude
                     }).ToList()
                 })
-                .SingleOrDefaultAsync().ConfigureAwait(false);
+                .SingleOrDefaultAsync();
 
             if (itineraryDetails == null) return null;
 

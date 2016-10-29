@@ -15,9 +15,8 @@ namespace AllReady.Features.Admin
 
         protected override async Task HandleCore(SendApproveOrganizationUserAccountEmail message)
         {
-            await emailSender.SendEmailAsync(message.DefaultAdminUsername, "Approve organization user account", 
-                $"Please approve this account by clicking this <a href=\"{message.CallbackUrl}\">link</a>")
-                .ConfigureAwait(false);
+            await emailSender.SendEmailAsync(message.DefaultAdminUsername, "Approve organization user account",
+                $"Please approve this account by clicking this <a href=\"{message.CallbackUrl}\">link</a>");
         }
     }
 }

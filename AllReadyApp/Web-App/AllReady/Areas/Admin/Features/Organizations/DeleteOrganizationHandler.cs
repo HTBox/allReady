@@ -15,9 +15,9 @@ namespace AllReady.Areas.Admin.Features.Organizations
 
         protected override async Task HandleCore(DeleteOrganization message)
         {
-            var organization = await _context.Organizations.SingleAsync(t => t.Id == message.Id).ConfigureAwait(false);
+            var organization = await _context.Organizations.SingleAsync(t => t.Id == message.Id);
             _context.Organizations.Remove(organization);
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+            await _context.SaveChangesAsync();
         }
     }
 }

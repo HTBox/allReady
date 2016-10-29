@@ -22,7 +22,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         protected override async Task HandleCore(AssignTaskCommand message)
         {
-            var task = await _context.Tasks.SingleAsync(c => c.Id == message.TaskId).ConfigureAwait(false);
+            var task = await _context.Tasks.SingleAsync(c => c.Id == message.TaskId);
 
             var taskSignups = new List<TaskSignup>();
 
@@ -50,16 +50,13 @@ namespace AllReady.Areas.Admin.Features.Tasks
             var taskSignupsToRemove = task.AssignedVolunteers.Where(taskSignup => message.UserIds.All(uid => uid != taskSignup.User.Id)).ToList();
             taskSignupsToRemove.ForEach(taskSignup => task.AssignedVolunteers.Remove(taskSignup));
 
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+            await _context.SaveChangesAsync();
 
             await _mediator.PublishAsync(new TaskAssignedToVolunteersNotification
             {
                 TaskId = message.TaskId,
                 NewlyAssignedVolunteers = taskSignups.Select(x => x.User.Id).ToList()
-            })
-            .ConfigureAwait(false);
-        }
-
-        
+            });
+        }        
     }
 }

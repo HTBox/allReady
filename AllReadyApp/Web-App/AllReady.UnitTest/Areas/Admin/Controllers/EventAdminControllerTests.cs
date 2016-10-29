@@ -266,7 +266,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditPostReturnsBadRequestResult_WhenEventIsNull()
         {
             var sut = new EventController(null, Mock.Of<IMediator>(), null);
-            Assert.IsType<BadRequestResult>(await sut.Edit(It.IsAny<EventEditViewModel>(), It.IsAny<IFormFile>()).ConfigureAwait(false));
+            Assert.IsType<BadRequestResult>(await sut.Edit(It.IsAny<EventEditViewModel>(), It.IsAny<IFormFile>()));
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -393,7 +393,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new EventController(null, mediator.Object, null);
             sut.MakeUserNotAnOrgAdmin();
 
-            Assert.IsType<UnauthorizedResult>(await sut.Delete(It.IsAny<int>()).ConfigureAwait(false));
+            Assert.IsType<UnauthorizedResult>(await sut.Delete(It.IsAny<int>()));
         }
 
         [Fact]
@@ -443,7 +443,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new EventController(null, mediator.Object, null);
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
-            var result = (ViewResult) await sut.Delete(It.IsAny<int>()).ConfigureAwait(false);
+            var result = (ViewResult) await sut.Delete(It.IsAny<int>());
             var resultModel = result.ViewData.Model;
 
             Assert.IsType<DeleteViewModel>(resultModel);

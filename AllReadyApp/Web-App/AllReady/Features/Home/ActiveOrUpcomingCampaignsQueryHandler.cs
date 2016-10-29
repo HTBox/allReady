@@ -33,8 +33,7 @@ namespace AllReady.Features.Home
                     EndDate = campaign.EndDateTime
                 })
                 .OrderBy(campaign => campaign.EndDate)
-                .ToListAsync()
-                .ConfigureAwait(false);
+                .ToListAsync();
         }
     }
 }

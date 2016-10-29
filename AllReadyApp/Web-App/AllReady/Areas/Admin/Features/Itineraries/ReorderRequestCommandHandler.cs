@@ -22,7 +22,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 .Include(r => r.Request)
                 .Where(r => r.ItineraryId == message.ItineraryId)
                 .OrderBy(r => r.OrderIndex)
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync();
 
             var requestToMove = itineraryRequests.FirstOrDefault(r => r.RequestId == message.RequestId);
            
@@ -47,7 +47,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 requestToMove.OrderIndex++;
             }
 
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+            await _context.SaveChangesAsync();
 
             return true;
         }

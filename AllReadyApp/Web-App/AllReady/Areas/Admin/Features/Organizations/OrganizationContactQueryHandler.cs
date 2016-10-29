@@ -23,8 +23,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
                 .AsNoTracking()
                 .Include(l => l.Location).ThenInclude(pc => pc.PostalCode)
                 .Include(oc => oc.OrganizationContacts).ThenInclude(c => c.Contact)
-                .SingleOrDefaultAsync(o => o.Id == message.OrganizationId)
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync(o => o.Id == message.OrganizationId);
 
             if (organization == null)
             {

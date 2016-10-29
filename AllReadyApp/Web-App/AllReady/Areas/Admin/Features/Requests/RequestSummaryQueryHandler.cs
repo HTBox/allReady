@@ -31,7 +31,7 @@ namespace AllReady.Areas.Admin.Features.Requests
                             State = x.State,
                             Status = x.Status
                         })
-                .FirstOrDefaultAsync().ConfigureAwait(false);
+                .FirstOrDefaultAsync();
         }
     }
 }

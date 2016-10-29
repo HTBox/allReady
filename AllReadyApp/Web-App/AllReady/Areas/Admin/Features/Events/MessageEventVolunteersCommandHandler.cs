@@ -50,7 +50,7 @@ namespace AllReady.Areas.Admin.Features.Events
                 }
             };
 
-            await _mediator.SendAsync(command).ConfigureAwait(false);
+            await _mediator.SendAsync(command);
         }
     }
 }

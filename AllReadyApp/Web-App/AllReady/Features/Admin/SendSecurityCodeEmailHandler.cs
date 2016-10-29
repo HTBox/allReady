@@ -15,8 +15,7 @@ namespace AllReady.Features.Admin
 
         protected override async Task HandleCore(SendSecurityCodeEmail message)
         {
-            await emailSender.SendEmailAsync(message.Email, "Security Code", $"Your security code is: {message.Token}")
-                .ConfigureAwait(false);
+            await emailSender.SendEmailAsync(message.Email, "Security Code", $"Your security code is: {message.Token}");
         }
     }
 }
