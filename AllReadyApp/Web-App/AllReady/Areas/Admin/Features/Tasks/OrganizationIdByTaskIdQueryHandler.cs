@@ -19,8 +19,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             var task = await _context.Tasks
                 .AsNoTracking()
                 .Include(t => t.Organization)
-                .SingleAsync(t => t.Id == message.TaskId)
-                .ConfigureAwait(false);
+                .SingleAsync(t => t.Id == message.TaskId);
 
             return task.Organization.Id;
         }

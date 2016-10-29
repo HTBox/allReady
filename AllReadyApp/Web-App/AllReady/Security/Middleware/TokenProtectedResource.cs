@@ -42,8 +42,8 @@ namespace AllReady.Security.Middleware
                 var apiUser = headers.FirstOrDefault(h => h.Key == "ApiUser").Value;
                 var token = headers.FirstOrDefault(h => h.Key == "ApiToken").Value;
 
-                var user = await manager.FindByNameAsync(apiUser).ConfigureAwait(false);
-                var authorized = await manager.VerifyUserTokenAsync(user, "Default", "api-request-injest", token).ConfigureAwait(false);
+                var user = await manager.FindByNameAsync(apiUser);
+                var authorized = await manager.VerifyUserTokenAsync(user, "Default", "api-request-injest", token);
 
                 if (!authorized)
                 {

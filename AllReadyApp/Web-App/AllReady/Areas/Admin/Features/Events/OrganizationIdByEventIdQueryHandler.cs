@@ -19,8 +19,7 @@ namespace AllReady.Areas.Admin.Features.Events
             var @event = await _context.Events.AsNoTracking()
                 .Include(e => e.Campaign)
                 .ThenInclude(c => c.ManagingOrganization)
-                .SingleAsync(t => t.Id == message.EventId)
-                .ConfigureAwait(false);
+                .SingleAsync(t => t.Id == message.EventId);
 
             return @event.Campaign.ManagingOrganization.Id;
         }

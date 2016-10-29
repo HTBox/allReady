@@ -24,13 +24,11 @@ namespace AllReady.Features.Notifications
             var taskSignup = await _context.TaskSignups
                 .AsNoTracking()
                 .Include(x => x.User)
-                .SingleAsync(ts => ts.Id == notification.TaskSignupId)
-                .ConfigureAwait(false);
+                .SingleAsync(ts => ts.Id == notification.TaskSignupId);
 
             var itinerary = await _context.Itineraries
                 .AsNoTracking()
-                .SingleAsync(x => x.Id == notification.ItineraryId)
-                .ConfigureAwait(false);
+                .SingleAsync(x => x.Id == notification.ItineraryId);
 
             var emailAddress = taskSignup.User.Email;
             var phoneNumber = taskSignup.User.PhoneNumber;
@@ -53,7 +51,7 @@ namespace AllReady.Features.Notifications
             notifyVolunteersViewModel.EmailMessage = emailMessage;
             notifyVolunteersViewModel.HtmlMessage = emailMessage;
 
-            await _mediator.SendAsync(new NotifyVolunteersCommand { ViewModel = notifyVolunteersViewModel }).ConfigureAwait(false);
+            await _mediator.SendAsync(new NotifyVolunteersCommand { ViewModel = notifyVolunteersViewModel });
         }
     }
 }

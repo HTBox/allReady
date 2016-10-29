@@ -20,7 +20,7 @@ namespace AllReady.Areas.Admin.Features.Events
             if (@event != null)
             {
                 _context.Events.Remove(@event);
-                await _context.SaveChangesAsync().ConfigureAwait(false);
+                await _context.SaveChangesAsync();
             }
         }
     }

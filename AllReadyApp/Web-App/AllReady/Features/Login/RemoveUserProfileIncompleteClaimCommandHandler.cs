@@ -17,11 +17,11 @@ namespace AllReady.Features.Login
         protected override async Task HandleCore(RemoveUserProfileIncompleteClaimCommand message)
         {
             //Going directly to the database here to remove the claim instead of using the UserManager because the user isn't always logged in (eg. when confirming email address)
-            var existingClaim = await _context.UserClaims.SingleOrDefaultAsync(u => u.UserId == message.UserId && u.ClaimType == Security.ClaimTypes.ProfileIncomplete).ConfigureAwait(false);
+            var existingClaim = await _context.UserClaims.SingleOrDefaultAsync(u => u.UserId == message.UserId && u.ClaimType == Security.ClaimTypes.ProfileIncomplete);
             if (existingClaim != null)
             {
                 _context.Remove(existingClaim);
-                await _context.SaveChangesAsync().ConfigureAwait(false);
+                await _context.SaveChangesAsync();
             }
         }
     }

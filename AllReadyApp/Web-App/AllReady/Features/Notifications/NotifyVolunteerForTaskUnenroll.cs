@@ -19,8 +19,7 @@ namespace AllReady.Features.Notifications
 
         public async Task Handle(UserUnenrolls notification)
         {
-            var taskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQuery { TaskId = notification.TaskId, UserId = notification.UserId })
-                .ConfigureAwait(false);
+            var taskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQuery { TaskId = notification.TaskId, UserId = notification.UserId });
 
             if (taskInfo == null)
             {
@@ -56,7 +55,7 @@ namespace AllReady.Features.Notifications
                 }
             };
 
-            await _mediator.SendAsync(command).ConfigureAwait(false);
+            await _mediator.SendAsync(command);
         }
     }
 }

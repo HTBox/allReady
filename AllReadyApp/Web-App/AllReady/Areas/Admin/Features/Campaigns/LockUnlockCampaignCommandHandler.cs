@@ -17,13 +17,12 @@ namespace AllReady.Areas.Admin.Features.Campaigns
         protected override async Task HandleCore(LockUnlockCampaignCommand message)
         {
             var campaign = await _context.Campaigns
-                .SingleOrDefaultAsync(c => c.Id == message.CampaignId)
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync(c => c.Id == message.CampaignId);
 
             if (campaign != null)
             {
                 campaign.Locked = !campaign.Locked;
-                await _context.SaveChangesAsync().ConfigureAwait(false);
+                await _context.SaveChangesAsync();
             }
         }
     }

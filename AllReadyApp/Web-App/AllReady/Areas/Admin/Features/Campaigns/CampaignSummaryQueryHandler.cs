@@ -28,8 +28,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                 .Include(mt => mt.ManagingOrganization)
                 .Include(l => l.Location)
                 .Include(c => c.CampaignContacts).ThenInclude(tc => tc.Contact)
-                .SingleOrDefaultAsync(c => c.Id == message.CampaignId)
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync(c => c.Id == message.CampaignId);
 
             if (campaign != null)
             {
@@ -55,7 +54,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
                 if (!campaign.CampaignContacts.Any())// Include isn't including
                 {
-                    campaign.CampaignContacts = await _context.CampaignContacts.Include(c => c.Contact).Where(cc => cc.CampaignId == campaign.Id).ToListAsync().ConfigureAwait(false);
+                    campaign.CampaignContacts = await _context.CampaignContacts.Include(c => c.Contact).Where(cc => cc.CampaignId == campaign.Id).ToListAsync();
                 }
 
                 if (campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)

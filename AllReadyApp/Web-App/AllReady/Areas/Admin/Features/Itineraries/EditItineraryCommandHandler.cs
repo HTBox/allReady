@@ -25,7 +25,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 itinerary.Date = message.Itinerary.Date;
                 itinerary.EventId = message.Itinerary.EventId;
                 
-                await _context.SaveChangesAsync().ConfigureAwait(false);
+                await _context.SaveChangesAsync();
 
                 return itinerary.Id;
             }
@@ -39,8 +39,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
         private async Task<Itinerary> GetItinerary(EditItineraryCommand message)
         {
             return await _context.Itineraries
-                .SingleOrDefaultAsync(c => c.Id == message.Itinerary.Id)
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync(c => c.Id == message.Itinerary.Id);
         }
     }
 }

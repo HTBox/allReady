@@ -19,8 +19,7 @@ namespace AllReady.Areas.Admin.Features.Events
         {
             return await _context.Events.Where(a => a.Id == message.EventId)
                 .Select(a => a.Campaign.ManagingOrganizationId)
-                .FirstOrDefaultAsync()
-                .ConfigureAwait(false);
+                .FirstOrDefaultAsync();
         }
     }
 }

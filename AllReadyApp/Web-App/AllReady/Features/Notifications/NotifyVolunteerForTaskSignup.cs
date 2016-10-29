@@ -19,8 +19,7 @@ namespace AllReady.Features.Notifications
 
         public async Task Handle(VolunteerSignedUpNotification notification)
         {
-            var taskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQuery { TaskId = notification.TaskId, UserId = notification.UserId })
-                .ConfigureAwait(false);
+            var taskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQuery { TaskId = notification.TaskId, UserId = notification.UserId });
 
             var emailRecipient = taskInfo?.Volunteer.Email;
 
@@ -52,7 +51,7 @@ namespace AllReady.Features.Notifications
                 }
             };
 
-            await _mediator.SendAsync(command).ConfigureAwait(false);
+            await _mediator.SendAsync(command);
         }
     }
 }

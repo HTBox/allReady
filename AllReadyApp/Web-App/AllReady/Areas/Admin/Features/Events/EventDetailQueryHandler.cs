@@ -95,8 +95,7 @@ namespace AllReady.Areas.Admin.Features.Events
                     .Where(rec => rec.EventId == message.EventId)
                     .GroupBy(rec => rec.Status)
                     .Select(g => new { Status = g.Key, Count = g.Count() })
-                    .ToListAsync()
-                    .ConfigureAwait(false);
+                    .ToListAsync();
 
                 foreach (var req in requests)
                 {
@@ -144,8 +143,7 @@ namespace AllReady.Areas.Admin.Features.Events
                 .Include(a => a.Location)
                 .Include(a => a.Itineraries).ThenInclude(a => a.TeamMembers)
                 .Include(a => a.Itineraries).ThenInclude(a => a.Requests)
-                .SingleOrDefaultAsync(a => a.Id == message.EventId)
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync(a => a.Id == message.EventId);
         }
     }
 }

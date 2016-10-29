@@ -15,9 +15,8 @@ namespace AllReady.Features.Manage
 
         protected override async Task HandleCore(SendNewEmailAddressConfirmationEmail message)
         {
-            await emailSender.SendEmailAsync(message.Email, "Confirm your allReady account", 
-                $"Please confirm your new email address for your allReady account by clicking this link: <a href=\"{message.CallbackUrl}\">link</a>. Note that once confirmed your original email address will cease to be valid as your username.")
-                .ConfigureAwait(false);
+            await emailSender.SendEmailAsync(message.Email, "Confirm your allReady account",
+                $"Please confirm your new email address for your allReady account by clicking this link: <a href=\"{message.CallbackUrl}\">link</a>. Note that once confirmed your original email address will cease to be valid as your username.");
         }
     }
 }

@@ -41,7 +41,7 @@ namespace AllReady.Areas.Admin.Extensions
             }
             else
             {
-                primaryContact = await _context.Contacts.SingleAsync(c => c.Id == contactId).ConfigureAwait(false);
+                primaryContact = await _context.Contacts.SingleAsync(c => c.Id == contactId);
             }
 
             if (string.IsNullOrWhiteSpace(contactInfo) && primaryCampaignContact != null)

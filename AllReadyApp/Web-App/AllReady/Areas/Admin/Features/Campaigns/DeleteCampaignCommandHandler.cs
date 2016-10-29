@@ -16,11 +16,11 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
         protected override async Task HandleCore(DeleteCampaignCommand message)
         {
-            var campaign = await _context.Campaigns.SingleOrDefaultAsync(c => c.Id == message.CampaignId).ConfigureAwait(false);
+            var campaign = await _context.Campaigns.SingleOrDefaultAsync(c => c.Id == message.CampaignId);
             if (campaign != null)
             {
                 _context.Campaigns.Remove(campaign);
-                await _context.SaveChangesAsync().ConfigureAwait(false);
+                await _context.SaveChangesAsync();
             }
         }
     }

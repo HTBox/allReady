@@ -21,7 +21,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<TaskChangeResult> Handle(TaskStatusChangeCommand message)
         {
-            var task = await GetTask(message).ConfigureAwait(false);
+            var task = await GetTask(message);
 
             if (task == null)
                 throw new InvalidOperationException($"Task {message.TaskId} does not exist");
@@ -62,10 +62,10 @@ namespace AllReady.Areas.Admin.Features.Tasks
             taskSignup.StatusDateTimeUtc = DateTime.UtcNow;
             taskSignup.StatusDescription = message.TaskStatusDescription;
 
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+            await _context.SaveChangesAsync();
 
             var notification = new TaskSignupStatusChanged { SignupId = taskSignup.Id };
-            await _mediator.PublishAsync(notification).ConfigureAwait(false);
+            await _mediator.PublishAsync(notification);
             
             return new TaskChangeResult { Status = "success", Task = task };
         }
@@ -75,8 +75,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             return await _context.Tasks
                 .Include(t => t.AssignedVolunteers).ThenInclude(ts => ts.User)
                 .Include(t => t.RequiredSkills).ThenInclude(s => s.Skill)
-                .SingleOrDefaultAsync(c => c.Id == message.TaskId)
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync(c => c.Id == message.TaskId);
         }
     }
 

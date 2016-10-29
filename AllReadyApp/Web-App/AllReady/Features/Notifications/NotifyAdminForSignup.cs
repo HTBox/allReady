@@ -32,8 +32,7 @@ namespace AllReady.Features.Notifications
             // don't let problem with notification keep us from continuing
             try
             {
-                var taskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQuery { TaskId = notification.TaskId, UserId = notification.UserId })
-                     .ConfigureAwait(false);
+                var taskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQuery { TaskId = notification.TaskId, UserId = notification.UserId });
 
                 var campaignContact = taskInfo.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
                 var adminEmail = campaignContact?.Contact.Email;
@@ -44,7 +43,7 @@ namespace AllReady.Features.Notifications
 
                 var eventLink = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Event/Details/{taskInfo.EventId}";
 
-                var task = await _context.Tasks.SingleOrDefaultAsync(t => t.Id == notification.TaskId).ConfigureAwait(false);
+                var task = await _context.Tasks.SingleOrDefaultAsync(t => t.Id == notification.TaskId);
                 if (task == null)
                 {
                     return;
@@ -88,7 +87,7 @@ namespace AllReady.Features.Notifications
                     }
                 };
 
-                await _mediator.SendAsync(command).ConfigureAwait(false);
+                await _mediator.SendAsync(command);
             }
             catch (Exception e)
             {

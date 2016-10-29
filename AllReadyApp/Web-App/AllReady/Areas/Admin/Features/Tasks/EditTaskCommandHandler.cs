@@ -21,7 +21,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<int> Handle(EditTaskCommand message)
         {
-            var task = await _context.Tasks.Include(t => t.RequiredSkills).SingleOrDefaultAsync(t => t.Id == message.Task.Id).ConfigureAwait(false) ?? new AllReadyTask();
+            var task = await _context.Tasks.Include(t => t.RequiredSkills).SingleOrDefaultAsync(t => t.Id == message.Task.Id) ?? new AllReadyTask();
 
             task.Name = message.Task.Name;
             task.Description = message.Task.Description;
@@ -48,7 +48,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             _context.AddOrUpdate(task);
 
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+            await _context.SaveChangesAsync();
 
             return task.Id;
         }
