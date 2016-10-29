@@ -29,7 +29,7 @@
       "ConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
     },
     "HangfireConnection": {
-      "ConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=Hangfire;Integrated Security=true;MultipleActiveResultsets=true;"
+      "ConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
     },
     "Storage": {
       "AzureStorage": "[storagekey]",
