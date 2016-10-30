@@ -26,6 +26,7 @@ namespace AllReady.Areas.Admin.Features.Events
             campaignEvent.Description = message.Event.Description;
             campaignEvent.EventType = message.Event.EventType;
 
+            campaignEvent.TimeZoneId = message.Event.TimeZoneId;
             campaignEvent.StartDateTime = _dateTimeOffsetConverter.ConvertDateTimeOffsetTo(message.Event.TimeZoneId, message.Event.StartDateTime, message.Event.StartDateTime.Hour, message.Event.StartDateTime.Minute);
             campaignEvent.EndDateTime = _dateTimeOffsetConverter.ConvertDateTimeOffsetTo(message.Event.TimeZoneId, message.Event.EndDateTime, message.Event.EndDateTime.Hour, message.Event.EndDateTime.Minute);
 

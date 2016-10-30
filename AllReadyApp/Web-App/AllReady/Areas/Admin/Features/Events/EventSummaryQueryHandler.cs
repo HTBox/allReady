@@ -33,7 +33,7 @@ namespace AllReady.Areas.Admin.Features.Events
                     OrganizationName = campaignEvent.Campaign.ManagingOrganization.Name,
                     Name = campaignEvent.Name,
                     Description = campaignEvent.Description,
-                    TimeZoneId = campaignEvent.Campaign.TimeZoneId,
+                    TimeZoneId = campaignEvent.TimeZoneId,
                     StartDateTime = campaignEvent.StartDateTime,
                     EndDateTime = campaignEvent.EndDateTime,
                     IsLimitVolunteers = campaignEvent.IsLimitVolunteers,

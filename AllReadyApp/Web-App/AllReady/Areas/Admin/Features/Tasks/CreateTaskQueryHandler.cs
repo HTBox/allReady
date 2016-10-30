@@ -32,7 +32,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     CampaignId = e.CampaignId,
                     CampaignName = e.Campaign.Name,
                     OrganizationId = e.Campaign.ManagingOrganizationId,
-                    TimeZoneId = e.Campaign.TimeZoneId
+                    TimeZoneId = e.TimeZoneId
                 })
                 .SingleAsync(e => e.EventId == message.EventId);
         }

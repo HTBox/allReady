@@ -37,7 +37,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     EventEndDateTime = task.Event.EndDateTime,
                     CampaignName = task.Event.Campaign.Name,
                     OrganizationId = task.Event.Campaign.ManagingOrganizationId,
-                    TimeZoneId = task.Event.Campaign.TimeZoneId
+                    TimeZoneId = task.Event.TimeZoneId
                 })
                 .SingleAsync(t => t.Id == message.TaskId);
         }

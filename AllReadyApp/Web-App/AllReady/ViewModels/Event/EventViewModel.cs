@@ -20,7 +20,6 @@ namespace AllReady.ViewModels.Event
             {
                 CampaignId = @event.Campaign.Id;
                 CampaignName = @event.Campaign.Name;
-                TimeZoneId = @event.Campaign.TimeZoneId;
                 if (@event.Campaign.ManagingOrganization != null)
                 {
                     OrganizationId = @event.Campaign.ManagingOrganization.Id;
@@ -32,6 +31,7 @@ namespace AllReady.ViewModels.Event
             Title = @event.Name;
             Description = @event.Description;
             EventType = @event.EventType;
+            TimeZoneId = @event.TimeZoneId;
             StartDateTime = @event.StartDateTime;
             EndDateTime = @event.EndDateTime;
 

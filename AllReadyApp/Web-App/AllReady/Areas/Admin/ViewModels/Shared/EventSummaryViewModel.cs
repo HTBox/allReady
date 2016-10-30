@@ -33,12 +33,14 @@ namespace AllReady.Areas.Admin.ViewModels.Shared
         public string ImageUrl { get; set; }
 
         [Display(Name = "Browse for image")]
-        public string FileUpload { get; set; }
-
-        public string TimeZoneId { get; set; }
+        public string FileUpload { get; set; }        
 
         [MaxLength(150)]
         public string Headline { get; set; }
+
+        [Display(Name = "Time Zone")]
+        [Required]
+        public string TimeZoneId { get; set; }
 
         [Display(Name = "Start Date")]
         public DateTimeOffset StartDateTime { get; set; }
