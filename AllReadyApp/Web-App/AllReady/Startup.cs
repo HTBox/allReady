@@ -33,6 +33,7 @@ using Geocoding;
 using Geocoding.Google;
 using Hangfire;
 using Hangfire.SqlServer;
+using AllReady.ModelBinding;
 
 namespace AllReady
 {
@@ -120,7 +121,11 @@ namespace AllReady
 
             // Add MVC services to the services container.
             // config add to get passed Angular failing on Options request when logging in.
-            services.AddMvc().AddJsonOptions(options =>
+            services.AddMvc(config =>
+            {
+                config.ModelBinderProviders.Insert(0, new AdjustToTimezoneModelBinderProvider());
+            })
+                .AddJsonOptions(options =>
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
             //Hangfire

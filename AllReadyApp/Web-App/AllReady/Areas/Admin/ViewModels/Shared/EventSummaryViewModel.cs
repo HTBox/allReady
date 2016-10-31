@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using AllReady.Models;
+using AllReady.ModelBinding;
 
 namespace AllReady.Areas.Admin.ViewModels.Shared
 {
@@ -43,9 +44,11 @@ namespace AllReady.Areas.Admin.ViewModels.Shared
         public string TimeZoneId { get; set; }
 
         [Display(Name = "Start Date")]
+        [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
         public DateTimeOffset StartDateTime { get; set; }
 
         [Display(Name = "End Date")]
+        [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
         public DateTimeOffset EndDateTime { get; set; }
 
         [Display(Name = "Enforce volunteer limit on tasks")]
