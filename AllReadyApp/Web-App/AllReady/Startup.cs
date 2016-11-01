@@ -5,6 +5,7 @@ using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Controllers;
 using AllReady.DataAccess;
+using AllReady.Hangfire;
 using AllReady.Hangfire.Jobs;
 using AllReady.Models;
 using AllReady.Providers;
@@ -31,7 +32,6 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Geocoding;
 using Geocoding.Google;
 using Hangfire;
-using Hangfire.Dashboard;
 using Hangfire.SqlServer;
 
 namespace AllReady
@@ -337,17 +337,14 @@ namespace AllReady
                 app.UseGoogleAuthentication(options);
             }
 
-            //call Migrate here to force the creation of the AllReady schema so Hangfire can create its schema under AllReady database
+            //call Migrate here to force the creation of the AllReady database so Hangfire can create its schema under it
             if (!env.IsProduction())
             {
                 context.Database.Migrate();
             }
 
             //Hangfire
-            app.UseHangfireDashboard("/hangfire", new DashboardOptions
-            {
-                Authorization = new List<DashboardAuthorizationFilter>()
-            });
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions { Authorization = new [] { new HangireDashboardAuthorizationFilter() }});
             app.UseHangfireServer();
 
             // Add MVC to the request pipeline.
@@ -367,16 +364,7 @@ namespace AllReady
             if (Configuration["SampleData:InsertTestUsers"] == "true")
             {
                 await sampleData.CreateAdminUser();
-            }
-        }
-    }
-
-    public class DashboardAuthorizationFilter : IDashboardAuthorizationFilter
-    {
-        //TODO mgmccarthy: we need real implelentation to authorize useres to see the Hangfire dashboard, right now, anyone can go to the dashboard
-        public bool Authorize(DashboardContext context)
-        {
-            return true;
+            }   
         }
     }
 }
