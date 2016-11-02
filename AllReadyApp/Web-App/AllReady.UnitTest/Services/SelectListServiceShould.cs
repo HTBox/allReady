@@ -4,50 +4,120 @@ using System.Linq;
 using AllReady.Models;
 using AllReady.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Moq;
 using Xunit;
+using System.Security.Claims;
 
 namespace AllReady.UnitTest.Services
 {
     public class SelectListServiceShould
     {
+        private static int _organizationId1 = 1;
+        private static string _organizationName1 = "Organization Name 1";
+
         [Fact]
-        public void GetOrganizationsTest()
+        public void GetOrganizationsForAdminUserReturnsAllOrganizationsTest()
         {
-            const int organizationId1 = 1;
-            const string OrganizationName1 = "Organization Name 1";
+            var mockSet = CreateOrganizationsInMockDataStore();
 
-            var data = new List<Organization>
-            {
-                new Organization
-                {
-                    Id = organizationId1,
-                    Name = OrganizationName1,
-                },
-                 new Organization
-                {
-                    Id = 1,
-                    Name = "Organization Name 2",
-                }
-            }.AsQueryable();
+            var mockContext = new Mock<AllReadyContext>();
+            mockContext.Setup(c => c.Organizations).Returns(mockSet.Object);
 
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, "SiteAdmin") }));
 
-            var mockSet = new Mock<DbSet<Organization>>();
-            mockSet.As<IQueryable<Organization>>().Setup(m => m.Provider).Returns(data.Provider);
-            mockSet.As<IQueryable<Organization>>().Setup(m => m.Expression).Returns(data.Expression);
-            mockSet.As<IQueryable<Organization>>().Setup(m => m.ElementType).Returns(data.ElementType);
-            mockSet.As<IQueryable<Organization>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
+            var service = new SelectListService(mockContext.Object);
+            var organizations = service.GetOrganizations( principal ).ToList();
+
+            Assert.Equal(2, organizations.Count);
+            Assert.Equal(_organizationId1.ToString(), organizations.First().Value);
+            Assert.Equal(_organizationName1, organizations.First().Text);
+        }
+
+        [Fact]
+        public void GetOrganizationsForOrgAdminUserReturnsOnlyAuthorizedOrganizationTest()
+        {
+            var mockSet = CreateOrganizationsInMockDataStore();
+
+            var mockContext = new Mock<AllReadyContext>();
+            mockContext.Setup(c => c.Organizations).Returns(mockSet.Object);
+
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {
+                new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"),
+                new Claim(AllReady.Security.ClaimTypes.Organization, _organizationId1.ToString())
+            }));
+
+            var service = new SelectListService(mockContext.Object);
+            var organizations = service.GetOrganizations(principal).ToList();
+
+            Assert.Equal(1, organizations.Count);
+            Assert.Equal(_organizationId1.ToString(), organizations.First().Value);
+            Assert.Equal(_organizationName1, organizations.First().Text);
+        }
+
+        [Fact]
+        public void GetOrganizationsForOrgAdminUserWithNoAssociatedOrgReturnsNoOrganizationsTest()
+        {
+            var mockSet = CreateOrganizationsInMockDataStore();
+
+            var mockContext = new Mock<AllReadyContext>();
+            mockContext.Setup(c => c.Organizations).Returns(mockSet.Object);
+
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {
+                new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin")
+            }));
+
+            var service = new SelectListService(mockContext.Object);
+            var organizations = service.GetOrganizations(principal).ToList();
+
+            Assert.Equal(0, organizations.Count);
+        }
+
+        [Fact]
+        public void GetOrganizationsForSimpleUserReturnsNoOrganizationsTest()
+        {
+            var mockSet = CreateOrganizationsInMockDataStore();
+
+            var mockContext = new Mock<AllReadyContext>();
+            mockContext.Setup(c => c.Organizations).Returns(mockSet.Object);
+
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {
+                new Claim(AllReady.Security.ClaimTypes.UserType, "User")
+            }));
+
+            var service = new SelectListService(mockContext.Object);
+            var organizations = service.GetOrganizations(principal).ToList();
+
+            Assert.Equal(0, organizations.Count);
+       }
+
+        [Fact]
+        public void GetOrganizationsForNoClaimsReturnsNoOrganizationsTest()
+        {
+            var mockSet = CreateOrganizationsInMockDataStore();
+
+            var mockContext = new Mock<AllReadyContext>();
+            mockContext.Setup(c => c.Organizations).Returns(mockSet.Object);
+
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[0]));
+
+            var service = new SelectListService(mockContext.Object);
+            var organizations = service.GetOrganizations(principal).ToList();
+
+            Assert.Equal(0, organizations.Count);
+        }
+
+        [Fact]
+        public void GetOrganizationsForNullClaimsReturnsNoOrganizationsTest()
+        {
+            var mockSet = CreateOrganizationsInMockDataStore();
 
             var mockContext = new Mock<AllReadyContext>();
             mockContext.Setup(c => c.Organizations).Returns(mockSet.Object);
 
             var service = new SelectListService(mockContext.Object);
-            var organizations = service.GetOrganizations().ToList();
+            var organizations = service.GetOrganizations(null).ToList();
 
-            Assert.Equal(2, organizations.Count);
-            Assert.Equal(organizationId1.ToString(), organizations.First().Value);
-            Assert.Equal(OrganizationName1, organizations.First().Text);
+            Assert.Equal(0, organizations.Count);
         }
 
         [Fact]
@@ -79,6 +149,33 @@ namespace AllReady.UnitTest.Services
             Assert.Equal(expected, skills, new SkillComparer());
             // this check makes sure the equality comparer is functioning
             Assert.NotEqual(notExpected, skills, new SkillComparer());
+        }
+
+        private static Mock<DbSet<Organization>> CreateOrganizationsInMockDataStore()
+        {
+            Mock<DbSet<Organization>> mockSet;
+
+            var data = new List<Organization>
+            {
+                new Organization
+                {
+                    Id = _organizationId1,
+                    Name = _organizationName1,
+                },
+                 new Organization
+                {
+                    Id = 2,
+                    Name = "Organization Name 2",
+                }
+            }.AsQueryable();
+
+            mockSet = new Mock<DbSet<Organization>>();
+            mockSet.As<IQueryable<Organization>>().Setup(m => m.Provider).Returns(data.Provider);
+            mockSet.As<IQueryable<Organization>>().Setup(m => m.Expression).Returns(data.Expression);
+            mockSet.As<IQueryable<Organization>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            mockSet.As<IQueryable<Organization>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
+
+            return mockSet;
         }
 
         private class SkillComparer : IEqualityComparer<Skill>
