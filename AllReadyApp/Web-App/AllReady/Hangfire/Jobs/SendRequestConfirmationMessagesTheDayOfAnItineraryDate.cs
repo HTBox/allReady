@@ -28,7 +28,7 @@ namespace AllReady.Hangfire.Jobs
             var requests = context.Requests.Where(x => requestIds.Contains(x.RequestId) && x.Status == RequestStatus.PendingConfirmation).ToList();
             if (requests.Count > 0)
             {
-                //TODO mgmccarthy: need to convert intinerary.Date to local time of the request's intinerary's campaign's timezoneid. Waiting on the final word for how we'll store DateTime, as well as Issue #1386
+                //TODO mgmccarthy: need to convert itinerary.Date to local time of the request's intinerary's campaign's timezoneid. Waiting on the final word for how we'll store DateTime, as well as Issue #1386
                 var itineraryDate = context.Itineraries.Single(x => x.Id == itineraryId).Date;
 
                 //don't send out messages if today is not the date of the Itinerary

@@ -130,7 +130,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var handler = new AddTeamMemberCommandHandler(Context, mockMediator.Object);
             await handler.Handle(query);
 
-            mockMediator.Verify(x => x.PublishAsync(It.Is<IntineraryVolunteerListUpdated>(y => y.TaskSignupId == query.TaskSignupId && y.ItineraryId == query.ItineraryId && y.UpdateType == UpdateType.VolunteerAssigned)), Times.Once);
+            mockMediator.Verify(x => x.PublishAsync(It.Is<ItineraryVolunteerListUpdated>(y => y.TaskSignupId == query.TaskSignupId && y.ItineraryId == query.ItineraryId && y.UpdateType == UpdateType.VolunteerAssigned)), Times.Once);
         }
     }
 }

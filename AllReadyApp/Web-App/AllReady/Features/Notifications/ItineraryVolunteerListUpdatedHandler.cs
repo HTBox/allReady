@@ -6,20 +6,20 @@ using Microsoft.Extensions.Options;
 
 namespace AllReady.Features.Notifications
 {
-    public class IntineraryVolunteerListUpdatedHandler : IAsyncNotificationHandler<IntineraryVolunteerListUpdated>
+    public class ItineraryVolunteerListUpdatedHandler : IAsyncNotificationHandler<ItineraryVolunteerListUpdated>
     {
         private readonly AllReadyContext _context;
         private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _generalSettings;
 
-        public IntineraryVolunteerListUpdatedHandler(AllReadyContext context, IMediator mediator, IOptions<GeneralSettings> generalSettings)
+        public ItineraryVolunteerListUpdatedHandler(AllReadyContext context, IMediator mediator, IOptions<GeneralSettings> generalSettings)
         {
             _context = context;
             _mediator = mediator;
             _generalSettings = generalSettings;
         }
 
-        public async Task Handle(IntineraryVolunteerListUpdated notification)
+        public async Task Handle(ItineraryVolunteerListUpdated notification)
         {
             var taskSignup = await _context.TaskSignups
                 .AsNoTracking()

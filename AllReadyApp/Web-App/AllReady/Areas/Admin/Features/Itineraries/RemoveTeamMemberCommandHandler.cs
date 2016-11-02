@@ -32,7 +32,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             await _context.SaveChangesAsync();
 
             await _mediator
-                .PublishAsync(new IntineraryVolunteerListUpdated { TaskSignupId = message.TaskSignupId, ItineraryId = itineraryId.Value, UpdateType = UpdateType.VolnteerUnassigned });
+                .PublishAsync(new ItineraryVolunteerListUpdated { TaskSignupId = message.TaskSignupId, ItineraryId = itineraryId.Value, UpdateType = UpdateType.VolnteerUnassigned });
 
             return true;
         }

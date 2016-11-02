@@ -29,13 +29,13 @@ namespace AllReady.Areas.Admin.Features.Notifications
             
             var itinerary = await context.Itineraries.SingleAsync(x => x.Id == notification.ItineraryId);
             
-            //TODO mgmccarthy: need to convert intinerary.Date to local time of request's intinerary's campaign's timezoneid
+            //TODO mgmccarthy: need to convert itinerary.Date to local time of request's itinerary's campaign's timezoneid
             backgroundJob.Schedule<ISendRequestConfirmationMessagesAWeekBeforeAnItineraryDate>(x => x.SendSms(notification.RequestIds, itinerary.Id), SevenDaysBefore(itinerary.Date));
         }
 
-        private static DateTime SevenDaysBefore(DateTime intineraryDate)
+        private static DateTime SevenDaysBefore(DateTime itineraryDate)
         {
-            return intineraryDate.Date.AddDays(-7).AtNoon();
+            return itineraryDate.Date.AddDays(-7).AtNoon();
         }
     }
 }
