@@ -10,13 +10,13 @@ using System.Security.Claims;
 
 namespace AllReady.UnitTest.Services
 {
-    public class SelectListServiceShould
+    public class SelectListServiceTests
     {
         private static int _organizationId1 = 1;
         private static string _organizationName1 = "Organization Name 1";
 
         [Fact]
-        public void GetOrganizationsForAdminUserReturnsAllOrganizationsTest()
+        public void GetOrganizationsForAdminUserReturnsAllOrganizations()
         {
             var mockSet = CreateOrganizationsInMockDataStore();
 
@@ -34,7 +34,7 @@ namespace AllReady.UnitTest.Services
         }
 
         [Fact]
-        public void GetOrganizationsForOrgAdminUserReturnsOnlyAuthorizedOrganizationTest()
+        public void GetOrganizationsForOrgAdminUserReturnsOnlyAuthorizedOrganization()
         {
             var mockSet = CreateOrganizationsInMockDataStore();
 
@@ -55,7 +55,7 @@ namespace AllReady.UnitTest.Services
         }
 
         [Fact]
-        public void GetOrganizationsForOrgAdminUserWithNoAssociatedOrgReturnsNoOrganizationsTest()
+        public void GetOrganizationsForOrgAdminUserWithNoAssociatedOrgReturnsNoOrganizations()
         {
             var mockSet = CreateOrganizationsInMockDataStore();
 
@@ -73,7 +73,7 @@ namespace AllReady.UnitTest.Services
         }
 
         [Fact]
-        public void GetOrganizationsForSimpleUserReturnsNoOrganizationsTest()
+        public void GetOrganizationsForSimpleUserReturnsNoOrganizations()
         {
             var mockSet = CreateOrganizationsInMockDataStore();
 
@@ -91,7 +91,7 @@ namespace AllReady.UnitTest.Services
        }
 
         [Fact]
-        public void GetOrganizationsForNoClaimsReturnsNoOrganizationsTest()
+        public void GetOrganizationsForNoClaimsReturnsNoOrganizations()
         {
             var mockSet = CreateOrganizationsInMockDataStore();
 
@@ -107,7 +107,7 @@ namespace AllReady.UnitTest.Services
         }
 
         [Fact]
-        public void GetOrganizationsForNullClaimsReturnsNoOrganizationsTest()
+        public void GetOrganizationsForNullClaimsReturnsNoOrganizations()
         {
             var mockSet = CreateOrganizationsInMockDataStore();
 
@@ -121,7 +121,7 @@ namespace AllReady.UnitTest.Services
         }
 
         [Fact]
-        public void GetSkillsTest()
+        public void GetSkills()
         {
             var data = new List<Skill>
             {
