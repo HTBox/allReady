@@ -11,12 +11,12 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
 {
-    public class RequestsAssignedToIntineraryHandlerShould : InMemoryContextTest
+    public class RequestsAssignedToItineraryHandlerShould : InMemoryContextTest
     {
         [Fact]
         public async Task SendSmsToTheCorrectPhoneNumbersWithTheCorrectMessage()
         {
-            var notification = new RequestsAssignedToIntinerary { ItineraryId = 1, RequestIds = new List<Guid> { Guid.NewGuid() }};
+            var notification = new RequestsAssignedToItinerary { ItineraryId = 1, RequestIds = new List<Guid> { Guid.NewGuid() }};
 
             var requestorPhoneNumbers = new List<string> { "111-111-1111" };
             var request = new Request { RequestId = notification.RequestIds.First(), Phone = requestorPhoneNumbers.First() };
@@ -29,7 +29,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
 
             var smsSender = new Mock<ISmsSender>();
 
-            var sut = new RequestsAssignedToIntineraryHandler(Context, smsSender.Object, Mock.Of<IMediator>());
+            var sut = new RequestsAssignedToItineraryHandler(Context, smsSender.Object, Mock.Of<IMediator>());
             await sut.Handle(notification);
 
             smsSender.Verify(x => x.SendSmsAsync(requestorPhoneNumbers, message));
@@ -38,7 +38,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
         [Fact]
         public async Task PublishInitialRequestConfirmationsSentWithCorrectValues()
         {
-            var notification = new RequestsAssignedToIntinerary { ItineraryId = 1, RequestIds = new List<Guid> { Guid.NewGuid() } };
+            var notification = new RequestsAssignedToItinerary { ItineraryId = 1, RequestIds = new List<Guid> { Guid.NewGuid() } };
 
             var request = new Request { RequestId = notification.RequestIds.First(), Phone = "111-111-1111" };
             var itinerary = new Itinerary { Id = notification.ItineraryId, Date = DateTime.UtcNow };
@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
 
             var mediator = new Mock<IMediator>();
 
-            var sut = new RequestsAssignedToIntineraryHandler(Context, Mock.Of<ISmsSender>(), mediator.Object);
+            var sut = new RequestsAssignedToItineraryHandler(Context, Mock.Of<ISmsSender>(), mediator.Object);
             await sut.Handle(notification);
 
             mediator.Verify(x => x.PublishAsync(It.Is<InitialRequestConfirmationsSent>(y => y.RequestIds == notification.RequestIds && y.ItineraryId == itinerary.Id)));

@@ -540,14 +540,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task SelectRequestsGetSendsOrganizationIdQueryWithCorrectItineraryId()
         {
-            const int intineraryId = 1;
+            const int itineraryId = 1;
 
             var mediator = new Mock<IMediator>();
 
             var sut = new ItineraryController(mediator.Object, null);
-            await sut.SelectRequests(intineraryId);
+            await sut.SelectRequests(itineraryId);
 
-            mediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == intineraryId)));
+            mediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == itineraryId)));
         }
 
         [Fact]
@@ -618,7 +618,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task AddRequestsSendsOrganizationIdQueryWithCorrectIntineraryId()
+        public async Task AddRequestsSendsOrganizationIdQueryWithCorrectItineraryId()
         {
             const int itineraryId = 1;
             var mockMediator = new Mock<IMediator>();
@@ -726,16 +726,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task ConfirmRemoveRequestSendsOrganizationIdQueryWithCorrectIntineraryId()
+        public async Task ConfirmRemoveRequestSendsOrganizationIdQueryWithCorrectItineraryId()
         {
-            const int intineraryId = 1;
+            const int itineraryId = 1;
 
             var mediator = new Mock<IMediator>();
 
             var sut = new ItineraryController(mediator.Object, null);
-            await sut.ConfirmRemoveRequest(intineraryId, It.IsAny<Guid>());
+            await sut.ConfirmRemoveRequest(itineraryId, It.IsAny<Guid>());
 
-            mediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == intineraryId)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == itineraryId)), Times.Once);
         }
 
         [Fact]
@@ -1076,8 +1076,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task RemoveTeamMemberRedirectsToCorrectActionWithCorrectRouteValues_WhenOrganizationIdIsNotZero_AndUserIsOrgAdmin()
         {
-            const int intineraryId = 1;
-            var viewModel = new TaskSignupSummaryViewModel { ItineraryId = intineraryId, UserIsOrgAdmin = true };
+            const int itineraryId = 1;
+            var viewModel = new TaskSignupSummaryViewModel { ItineraryId = itineraryId, UserIsOrgAdmin = true };
             var routeValueDictionary = new RouteValueDictionary { ["id"] = viewModel.ItineraryId };
 
             var mediator = new Mock<IMediator>();
@@ -1132,7 +1132,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task MarkCompleteSendsOrganizationIdQueryWithCorrectIntineraryId()
+        public async Task MarkCompleteSendsOrganizationIdQueryWithCorrectItineraryId()
         {
             var itineraryId = It.IsAny<int>();
             var mockMediator = new Mock<IMediator>();

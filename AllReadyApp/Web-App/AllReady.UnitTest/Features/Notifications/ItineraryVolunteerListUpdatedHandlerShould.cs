@@ -9,7 +9,7 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Notifications
 {
-    public class IntineraryVolunteerListUpdatedHandlerShould : InMemoryContextTest
+    public class ItineraryVolunteerListUpdatedHandlerShould : InMemoryContextTest
     {
         private ApplicationUser _user;
         private TaskSignup _taskSignup;
@@ -65,8 +65,8 @@ namespace AllReady.UnitTest.Features.Notifications
             var mockGeneralSettings = new Mock<IOptions<GeneralSettings>>();
             mockGeneralSettings.SetupGet(m => m.Value).Returns(new GeneralSettings { SiteBaseUrl = string.Empty });
 
-            var handler = new IntineraryVolunteerListUpdatedHandler(Context, mockMediator.Object, mockGeneralSettings.Object);
-            await handler.Handle(new IntineraryVolunteerListUpdated { TaskSignupId = 1, ItineraryId = 1 });
+            var handler = new ItineraryVolunteerListUpdatedHandler(Context, mockMediator.Object, mockGeneralSettings.Object);
+            await handler.Handle(new ItineraryVolunteerListUpdated { TaskSignupId = 1, ItineraryId = 1 });
 
             mockMediator.Verify(m => m.SendAsync(It.Is<NotifyVolunteersCommand>(command =>
                 command.ViewModel.SmsRecipients.Count == 1 &&
@@ -83,8 +83,8 @@ namespace AllReady.UnitTest.Features.Notifications
             var mockGeneralSettings = new Mock<IOptions<GeneralSettings>>();
             mockGeneralSettings.SetupGet(m => m.Value).Returns(new GeneralSettings { SiteBaseUrl = "http://localhost/" });
 
-            var handler = new IntineraryVolunteerListUpdatedHandler(Context, mockMediator.Object, mockGeneralSettings.Object);
-            await handler.Handle(new IntineraryVolunteerListUpdated { TaskSignupId = 1, ItineraryId = 1, UpdateType = UpdateType.VolunteerAssigned });
+            var handler = new ItineraryVolunteerListUpdatedHandler(Context, mockMediator.Object, mockGeneralSettings.Object);
+            await handler.Handle(new ItineraryVolunteerListUpdated { TaskSignupId = 1, ItineraryId = 1, UpdateType = UpdateType.VolunteerAssigned });
 
             mockMediator.Verify(m => m.SendAsync(It.Is<NotifyVolunteersCommand>(command =>
                 string.Equals(command.ViewModel.SmsMessage, $"You’ve been assigned to a team for {_itineraryDate} http://localhost/v") &&
@@ -100,8 +100,8 @@ namespace AllReady.UnitTest.Features.Notifications
             var mockGeneralSettings = new Mock<IOptions<GeneralSettings>>();
             mockGeneralSettings.SetupGet(m => m.Value).Returns(new GeneralSettings { SiteBaseUrl = "http://localhost/" });
 
-            var handler = new IntineraryVolunteerListUpdatedHandler(Context, mockMediator.Object, mockGeneralSettings.Object);
-            await handler.Handle(new IntineraryVolunteerListUpdated { TaskSignupId = 1, ItineraryId = 1, UpdateType = UpdateType.VolnteerUnassigned });
+            var handler = new ItineraryVolunteerListUpdatedHandler(Context, mockMediator.Object, mockGeneralSettings.Object);
+            await handler.Handle(new ItineraryVolunteerListUpdated { TaskSignupId = 1, ItineraryId = 1, UpdateType = UpdateType.VolnteerUnassigned });
 
             mockMediator.Verify(m => m.SendAsync(It.Is<NotifyVolunteersCommand>(command =>
                 string.Equals(command.ViewModel.SmsMessage, $"You’ve been unassigned from a team for {_itineraryDate} http://localhost/v") &&

@@ -18,8 +18,8 @@ namespace AllReady.Hangfire.MediatR
             var requests = context.Requests.Where(x => message.RequestIds.Contains(x.RequestId)).ToList();
             requests.ForEach(request => request.Status = RequestStatus.Unassigned);
             
-            var intineraryRequests = context.ItineraryRequests.Where(x => message.RequestIds.Contains(x.RequestId));
-            context.ItineraryRequests.RemoveRange(intineraryRequests);
+            var itineraryRequests = context.ItineraryRequests.Where(x => message.RequestIds.Contains(x.RequestId));
+            context.ItineraryRequests.RemoveRange(itineraryRequests);
 
             context.SaveChanges();
         }

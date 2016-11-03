@@ -103,7 +103,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         }
 
         [Fact]
-        public async Task PublishRequestsAssignedToIntinerary_WithTheCorrectParameters()
+        public async Task PublishRequestsAssignedToItinerary_WithTheCorrectParameters()
         {
             var mockMediator = new Mock<IMediator>();
             var message = new AddRequestsToItineraryCommand
@@ -115,7 +115,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var handler = new AddRequestsToItineraryCommandHandler(Context, mockMediator.Object);
             await handler.Handle(message);
 
-            mockMediator.Verify(x => x.PublishAsync(It.Is<RequestsAssignedToIntinerary>(y => y.ItineraryId == message.ItineraryId)));
+            mockMediator.Verify(x => x.PublishAsync(It.Is<RequestsAssignedToItinerary>(y => y.ItineraryId == message.ItineraryId)));
         }
 
         [Fact]

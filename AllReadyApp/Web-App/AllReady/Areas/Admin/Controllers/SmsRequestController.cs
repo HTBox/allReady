@@ -20,7 +20,7 @@ namespace AllReady.Areas.Admin.Controllers
         public IActionResult Index()
         {
             //get RequestId from incoming sms message
-            //we cannot look up RequestId by PhoneNumber b/c one Requestor could have multiple Requests in allReady for the same intinerary date (??? actually, need to ask project owners about this)
+            //we cannot look up RequestId by PhoneNumber b/c one Requestor could have multiple Requests in allReady for the same itinerary date (??? actually, need to ask project owners about this)
             //if the requestor is confirming the request "Y": jobClient.Enqueue(() => changeRequestStatus.To(RequestStatus.Confirmed, requestId));
             //if the requestor is canceling the request "N", jobClient.Enqueue(() => changeRequestStatus.To(RequestStatus.Unassigned, requestId));
 
