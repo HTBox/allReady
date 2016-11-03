@@ -107,20 +107,6 @@ namespace AllReady.UnitTest.Services
         }
 
         [Fact]
-        public void GetOrganizationsForNullClaimsReturnsNoOrganizations()
-        {
-            var mockSet = CreateOrganizationsInMockDataStore();
-
-            var mockContext = new Mock<AllReadyContext>();
-            mockContext.Setup(c => c.Organizations).Returns(mockSet.Object);
-
-            var service = new SelectListService(mockContext.Object);
-            var organizations = service.GetOrganizations(null).ToList();
-
-            Assert.Equal(0, organizations.Count);
-        }
-
-        [Fact]
         public void GetSkills()
         {
             var data = new List<Skill>

@@ -20,8 +20,6 @@ namespace AllReady.Services
 
         public IEnumerable<SelectListItem> GetOrganizations(ClaimsPrincipal user)
         {
-            user = SanitizeUser(user);
-
             // Default to authorizing the return of no organizations
             var listOfOrganizations = new List<SelectListItem>();
 
@@ -53,11 +51,6 @@ namespace AllReady.Services
             }
 
             return new List<SelectListItem>();
-        }
-
-        private ClaimsPrincipal SanitizeUser(ClaimsPrincipal user)
-        {
-            return (user == null) ? new ClaimsPrincipal() : user;
         }
 
         //TODO: this needs to be moved out of the SelecListService class b/c it does not return an IEnumerable<SelectListItem>
