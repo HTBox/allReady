@@ -26,7 +26,7 @@ namespace AllReady.Controllers
         {
             var allReadyRequest = ToModel(request, _mediator);
 
-            AddRequestError error = await _mediator.SendAsync(new AddRequestCommandAsync { Request = allReadyRequest });
+            AddRequestError error = await _mediator.SendAsync(new AddRequestCommand { Request = allReadyRequest });
 
             if (error != null)
             {

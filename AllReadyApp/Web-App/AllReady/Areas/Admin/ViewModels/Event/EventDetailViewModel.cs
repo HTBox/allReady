@@ -141,6 +141,39 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         /// </summary>
         public ItineraryEditViewModel NewItinerary { get; set; } = new ItineraryEditViewModel();
 
+        /// <summary>
+        /// The number of volunteers required across all tasks for the event
+        /// </summary>
+        public int VolunteersRequired { get; set; }
+
+        /// <summary>
+        /// The number of volunteers assigned to any of the event's tasks (in accepted status)
+        /// </summary>
+        public int AcceptedVolunteers { get; set; }
+
+        /// <summary>
+        /// The calculated percentage of volunteer fulfilment
+        /// </summary>
+        public string VolunteerFulfilmentPercentage
+        {
+            get
+            {
+                var percentage = 0.0;
+
+                if (VolunteersRequired > 0)
+                {
+                    percentage = ((double)AcceptedVolunteers / (double)VolunteersRequired) * 100;
+                }
+
+                return percentage.ToString("0.0");
+            }
+        }
+
+        /// <summary>
+        /// The number of tasks assigned to the event
+        /// </summary>
+        public int TaskCount => Tasks.Count;
+
         public string ItinerariesDetailsUrl { get; set; }
     }
 }

@@ -1,5 +1,5 @@
-@model AllReady.Areas.Admin.ViewModels.Campaign.CampaignSummaryViewModel
-@{ ViewData["Title"] = "Delete campaign " + Model.Name; }
+@model AllReady.Areas.Admin.ViewModels.Campaign.DeleteViewModel
+@{ ViewData["Title"] = Model.Title; }
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
@@ -35,16 +35,15 @@
                 </dd>
             </dl>
 
-            @using (Html.BeginForm()) {
+            @using (Html.BeginForm())
+            {
                 @Html.AntiForgeryToken()
-
+                <input type="hidden" asp-for="UserIsOrgAdmin" />
                 <div class="form-actions no-color">
                     <button type="submit" value="Delete" class="btn btn-default">Delete campaign</button> 
                     <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin" class="btn btn-default">Cancel</a>
                 </div>
             }
         </div>
-
     </div>
 </div>
-

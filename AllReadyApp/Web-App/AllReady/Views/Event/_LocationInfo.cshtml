@@ -1,7 +1,5 @@
-﻿@using AllReady.ViewModels
-@using AllReady.ViewModels.Event
-@using AllReady.ViewModels.Shared
-@model AllReady.ViewModels.Event.EventViewModel
+﻿@using AllReady.ViewModels.Event
+@model EventViewModel
 
 <div class="col-sm-4">
     <h3>Location</h3>
@@ -10,9 +8,9 @@
     <p>
         @Model.Location?.Address1<br />
         @if (!string.IsNullOrEmpty(Model.Location?.Address2))
-                {
+        {
             @Model.Location.Address2
-                }
+        }
         @Model.Location?.City @Model.Location?.State @Model.Location?.PostalCode
     </p>
 </div>

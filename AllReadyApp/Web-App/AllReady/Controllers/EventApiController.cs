@@ -3,6 +3,7 @@ using AllReady.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using AllReady.Features.Events;
 using AllReady.ViewModels.Event;
 using MediatR;
@@ -31,9 +32,9 @@ namespace AllReady.Controllers
         //orginial code
         [HttpGet("{id}")]
         [Produces("application/json", Type = typeof(EventViewModel))]
-        public EventViewModel Get(int id)
+        public async Task<EventViewModel> Get(int id)
         {
-            var campaignEvent = GetEventBy(id);
+            var campaignEvent = await GetEventBy(id);
             if (campaignEvent != null)
             {
                 return new EventViewModel(campaignEvent);
@@ -102,9 +103,9 @@ namespace AllReady.Controllers
         }
 
         [HttpGet("{id}/checkin")]
-        public ActionResult GetCheckin(int id)
+        public async Task<ActionResult> GetCheckin(int id)
         {
-            var campaignEvent = GetEventBy(id);
+            var campaignEvent = await GetEventBy(id);
             if (campaignEvent == null)
             {
                 return NotFound();
@@ -113,6 +114,6 @@ namespace AllReady.Controllers
             return View("NoUserCheckin", campaignEvent);
         }
 
-        private Event GetEventBy(int eventId) => _mediator.Send(new EventByIdQuery { EventId = eventId });
+        private async Task<Event> GetEventBy(int eventId) => await _mediator.SendAsync(new EventByEventIdQuery { EventId = eventId });
     }
 }

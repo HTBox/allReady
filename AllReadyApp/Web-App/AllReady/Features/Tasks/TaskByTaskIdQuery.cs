@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskByTaskIdQuery : IRequest<AllReadyTask>
+    public class TaskByTaskIdQuery : IAsyncRequest<AllReadyTask>
     {
         public int TaskId { get; set; }
     }

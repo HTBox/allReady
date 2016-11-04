@@ -64,7 +64,7 @@ namespace AllReady.Controllers
             if (ModelState.IsValid)
             {
                 // Require admin users to have a confirmed email before they can log on.
-                var user = await _mediator.SendAsync(new ApplicationUserQueryAsync { UserName = model.Email });
+                var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = model.Email });
                 if (user != null)
                 {
                     var isAdminUser = user.IsUserType(UserType.OrgAdmin) || user.IsUserType(UserType.SiteAdmin);
@@ -310,7 +310,7 @@ namespace AllReady.Controllers
 
             if (externalLoginSignInAsyncResult.Succeeded)
             {
-                var user = await _mediator.SendAsync(new ApplicationUserQueryAsync { UserName = externalUserInformation.Email });
+                var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = externalUserInformation.Email });
                 return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user, Url);
             }
             

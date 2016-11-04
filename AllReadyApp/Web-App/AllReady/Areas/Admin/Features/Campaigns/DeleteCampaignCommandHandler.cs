@@ -17,7 +17,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
         protected override async Task HandleCore(DeleteCampaignCommand message)
         {
             var campaign = await _context.Campaigns.SingleOrDefaultAsync(c => c.Id == message.CampaignId).ConfigureAwait(false);
-
             if (campaign != null)
             {
                 _context.Campaigns.Remove(campaign);

@@ -71,7 +71,17 @@ angular.module('allReady', ['ionic', 'allReady.controllers', 'Backend'])
             templateUrl: "login/login.html"
           }
         }
-      });
+      }).state("app.hours", {
+          url: "/hours",
+          views: {
+              'menuContent': {
+                  templateUrl: "hours/hours.html",
+                  controller: "HoursController"
+              }
+          }
+
+      })
+      ;
 
     $urlRouterProvider.otherwise("/app/eventlist");
     // Other individual routes are defined in respective controllers

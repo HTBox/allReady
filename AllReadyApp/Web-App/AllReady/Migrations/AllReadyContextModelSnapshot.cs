@@ -283,8 +283,6 @@ namespace AllReady.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<int>("NumberOfVolunteersRequired");
-
                     b.Property<string>("OrganizerId");
 
                     b.Property<DateTimeOffset>("StartDateTime");
@@ -548,10 +546,6 @@ namespace AllReady.Migrations
                     b.Property<string>("AdditionalInfo");
 
                     b.Property<int?>("ItineraryId");
-
-                    b.Property<string>("PreferredEmail");
-
-                    b.Property<string>("PreferredPhoneNumber");
 
                     b.Property<string>("Status");
 

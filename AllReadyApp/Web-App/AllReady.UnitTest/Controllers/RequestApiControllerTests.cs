@@ -28,7 +28,7 @@ namespace AllReady.UnitTest.Controllers
                 Reason = outReason
             };
 
-            mediator.Setup(x => x.SendAsync(It.IsAny<AddRequestCommandAsync>())).ReturnsAsync(error);
+            mediator.Setup(x => x.SendAsync(It.IsAny<AddRequestCommand>())).ReturnsAsync(error);
 
             var sut = new RequestApiController(mediator.Object);
             var result = await sut.Post(new RequestViewModel()) as BadRequestObjectResult;
@@ -43,7 +43,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task PostSendsAddRequestCommandAsyncWithCorrectData()
+        public async Task PostSendsAddRequestCommandWithCorrectData()
         {
             var mediator = new Mock<IMediator>();
             var sut = new RequestApiController(mediator.Object);
@@ -63,7 +63,7 @@ namespace AllReady.UnitTest.Controllers
 
             await sut.Post(ourViewModel);
 
-            mediator.Verify(x => x.SendAsync(It.Is<AddRequestCommandAsync>(y => y.Request.ProviderId == ourViewModel.ProviderId
+            mediator.Verify(x => x.SendAsync(It.Is<AddRequestCommand>(y => y.Request.ProviderId == ourViewModel.ProviderId
             && y.Request.Status == RequestStatus.Assigned
             && y.Request.ProviderData == ourViewModel.ProviderData
             && y.Request.State == ourViewModel.State

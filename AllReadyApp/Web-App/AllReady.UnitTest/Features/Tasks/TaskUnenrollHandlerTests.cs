@@ -17,7 +17,7 @@ namespace AllReady.UnitTest.Features.Tasks
             var mockMediator = new Mock<IMediator>();
             var message = new TaskUnenrollCommand { TaskId = 1, UserId = "abc" };
 
-            var sut = new TaskUnenrollHandlerAsync(mockMediator.Object, Context);
+            var sut = new TaskUnenrollHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
             Assert.Equal("success", result.Status);
@@ -30,7 +30,7 @@ namespace AllReady.UnitTest.Features.Tasks
             var mockMediator = new Mock<IMediator>();
             var message = new TaskUnenrollCommand { TaskId = 100, UserId = "abc" };
 
-            var sut = new TaskUnenrollHandlerAsync(mockMediator.Object, Context);
+            var sut = new TaskUnenrollHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
             Assert.Equal("failure", result.Status);
@@ -42,7 +42,7 @@ namespace AllReady.UnitTest.Features.Tasks
             var mockMediator = new Mock<IMediator>();
             var message = new TaskUnenrollCommand { TaskId = 1, UserId = "abc" };
 
-            var sut = new TaskUnenrollHandlerAsync(mockMediator.Object, Context);
+            var sut = new TaskUnenrollHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
             Assert.Equal(0, Context.TaskSignups.Count());

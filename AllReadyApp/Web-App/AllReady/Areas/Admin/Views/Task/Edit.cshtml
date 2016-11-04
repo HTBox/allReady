@@ -20,7 +20,6 @@
                 <li><a asp-controller="Task" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.Name</a></li>
                 <li>Edit</li>
             }
-            <li>Edit</li>
         </ol>
     </div>
 </div>
@@ -31,6 +30,8 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="EventId" />
         <input type="hidden" asp-for="CampaignId" />
+        <input type="hidden" asp-for="EventName" />
+        <input type="hidden" asp-for="CampaignName" />
         <input type="hidden" asp-for="TimeZoneId" />
         <input type="hidden" asp-for="OrganizationId" />
         <div class="form-group">

@@ -1,4 +1,5 @@
 ﻿using System;
+using AllReady.Providers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace AllReady.TagHelpers
@@ -9,6 +10,13 @@ namespace AllReady.TagHelpers
     [HtmlTargetElement("time", Attributes="value")]
     public class TimeTagHelper : TagHelper
     {
+        private readonly IConvertDateTimeOffset _dateTimeOffsetConverter;
+
+        public TimeTagHelper(IConvertDateTimeOffset dateTimeOffsetConverter)
+        {
+            _dateTimeOffsetConverter = dateTimeOffsetConverter;
+        }
+
         /// <summary>
         /// The DateTimeOffset value to format
         /// </summary>
@@ -41,9 +49,7 @@ namespace AllReady.TagHelpers
                 var dateTimeToDisplay = Value.Value;
                 if (!string.IsNullOrEmpty(TargetTimeZoneId))
                 {
-                    TimeZoneInfo targetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(TargetTimeZoneId);
-                    var targetOffset = targetTimeZone.GetUtcOffset(dateTimeToDisplay);
-                    dateTimeToDisplay = dateTimeToDisplay.ToOffset(targetOffset);
+                    _dateTimeOffsetConverter.ConvertDateTimeOffsetTo(TargetTimeZoneId, dateTimeToDisplay);
 
                 }
                 var formattedTime = dateTimeToDisplay.ToString(Format);

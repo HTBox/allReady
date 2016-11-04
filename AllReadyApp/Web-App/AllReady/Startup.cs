@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using AllReady.Areas.Admin.ViewModels.Validators;
+using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Controllers;
 using AllReady.DataAccess;
 using AllReady.Models;
+using AllReady.Providers;
 using AllReady.Providers.ExternalUserInformationProviders;
 using AllReady.Providers.ExternalUserInformationProviders.Providers;
 using AllReady.Security;
@@ -113,33 +115,28 @@ namespace AllReady
             services.AddMvc().AddJsonOptions(options =>
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
-
-            //register MediatR
-            //https://lostechies.com/jimmybogard/2016/07/19/mediatr-extensions-for-microsoft-dependency-injection-released/
-            services.AddMediatR(typeof(Startup));
-
             // configure IoC support
             var container = CreateIoCContainer(services);
             return container.Resolve<IServiceProvider>();
         }
 
-        private IContainer CreateIoCContainer(IServiceCollection services)
-        {
-            // todo: move these to a proper autofac module
-            // Register application services.
-            services.AddSingleton((x) => Configuration);
-            services.AddTransient<IEmailSender, AuthMessageSender>();
-            services.AddTransient<ISmsSender, AuthMessageSender>();
-            services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
-            services.AddTransient<IValidateEventDetailModels, EventEditModelValidator>();
-            services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
-            services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
-            services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
-            services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
-            services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
-            services.AddSingleton<IImageService, ImageService>();
-            //services.AddSingleton<GeoService>();
-            services.AddTransient<SampleDataGenerator>();
+    private IContainer CreateIoCContainer(IServiceCollection services)
+    {
+        // todo: move these to a proper autofac module
+        // Register application services.
+        services.AddSingleton((x) => Configuration);
+        services.AddTransient<IEmailSender, AuthMessageSender>();
+        services.AddTransient<ISmsSender, AuthMessageSender>();
+        services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
+        services.AddTransient<IValidateEventEditViewModels, EventEditViewModelValidator>();
+        services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
+        services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
+        services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
+        services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
+        services.AddTransient<IConvertDateTimeOffset, DateTimeOffsetConverter>();
+        services.AddSingleton<IImageService, ImageService>();
+        //services.AddSingleton<GeoService>();
+        services.AddTransient<SampleDataGenerator>();
 
             if (Configuration["Data:Storage:EnableAzureQueueService"] == "true")
             {
@@ -155,7 +152,19 @@ namespace AllReady
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterSource(new ContravariantRegistrationSource());
+            containerBuilder.RegisterAssemblyTypes(typeof(IMediator).Assembly).AsImplementedInterfaces();
             containerBuilder.RegisterAssemblyTypes(typeof(Startup).Assembly).AsImplementedInterfaces();
+            containerBuilder.Register<SingleInstanceFactory>(ctx =>
+            {
+                var c = ctx.Resolve<IComponentContext>();
+                return t => c.Resolve(t);
+            });
+
+            containerBuilder.Register<MultiInstanceFactory>(ctx =>
+            {
+                var c = ctx.Resolve<IComponentContext>();
+                return t => (IEnumerable<object>)c.Resolve(typeof(IEnumerable<>).MakeGenericType(t));
+            });
 
             //ExternalUserInformationProviderFactory registration
             containerBuilder.RegisterType<TwitterExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Twitter");

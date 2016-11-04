@@ -1,9 +1,5 @@
-﻿@using System.Security.Claims
-@using AllReady.Security
-@using AllReady.ViewModels
-@using AllReady.ViewModels.Event
-@using AllReady.ViewModels.Shared
-@model AllReady.ViewModels.Event.EventViewModel
+﻿@using AllReady.ViewModels.Event
+@model EventViewModel
 
     <script type="text/javascript">
         $(document).ready(function() {
@@ -21,18 +17,18 @@
                     renderBingMap('bingMap', positionCoordsList);
                 });
         });
-        var modelStuff = @Json.Serialize(new
-                         {
-                             tasks = Model.Tasks,
-                             userTasks = Model.UserTasks,
-                             eventSkills = Model.RequiredSkills,
-                             userSkills = Model.UserSkills,
-                             signupModelSeed = Model.SignupModel,
-                             eventTitle = Model.Title,
-                             isSignedIn = User.Identity.IsAuthenticated,
-                             loginUrl = "/Account/Login?ReturnUrl=/Event/" + @Model.Id
-                         });
 
+        var modelStuff = @Json.Serialize(new
+        {
+            tasks = Model.Tasks,
+            userTasks = Model.UserTasks,
+            eventSkills = Model.RequiredSkills,
+            userSkills = Model.UserSkills,
+            signupModelSeed = Model.SignupModel,
+            eventTitle = Model.Title,
+            isSignedIn = User.Identity.IsAuthenticated,
+            loginUrl = "/Account/Login?ReturnUrl=/Event/" + @Model.Id
+        });
 
     </script>
     <script type="text/javascript" src="~/js/ko.bindings.js"></script>

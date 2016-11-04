@@ -10,7 +10,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 {
     public class CampaignSummaryQueryHandler : IAsyncRequestHandler<CampaignSummaryQuery, CampaignSummaryViewModel>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
 
         public CampaignSummaryQueryHandler(AllReadyContext context)
         {

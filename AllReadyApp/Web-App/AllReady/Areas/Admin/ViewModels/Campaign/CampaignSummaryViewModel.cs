@@ -6,14 +6,10 @@ using AllReady.Models;
 
 namespace AllReady.Areas.Admin.ViewModels.Campaign
 {
-    public class CampaignSummaryViewModel: IPrimaryContactViewModel
+    public class CampaignSummaryViewModel : IPrimaryContactViewModel
     {
-        public CampaignSummaryViewModel()
-        {
-            this.CampaignImpact = new CampaignImpact();
-        }
-
         public int Id { get; set; }
+
         [Required]
         public string Name { get; set; }
 
@@ -54,7 +50,7 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
         public DateTimeOffset EndDate { get; set; }
 
-        public CampaignImpact CampaignImpact { get; set; }
+        public CampaignImpact CampaignImpact { get; set; } = new CampaignImpact();
 
         [UIHint("Location")]
         public LocationEditViewModel Location { get; set; }
@@ -79,5 +75,13 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         public bool Locked { get; set; }
 
         public bool Featured { get; set; }
+
+        private const int EVENT_DAYS_STD = 30;
+
+        // At some point an enumeration could be added to allow an admin to determine the priority
+        // of the campaign which could affect this value that would translate to the initial value for
+        // an event's End Date
+        public int DefaultEventDays => EVENT_DAYS_STD;
+
     }
 }

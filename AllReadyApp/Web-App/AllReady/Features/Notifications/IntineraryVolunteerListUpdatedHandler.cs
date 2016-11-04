@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -33,31 +32,26 @@ namespace AllReady.Features.Notifications
                 .SingleAsync(x => x.Id == notification.ItineraryId)
                 .ConfigureAwait(false);
 
-            var emailAddress = !string.IsNullOrWhiteSpace(taskSignup.PreferredEmail) ? taskSignup.PreferredEmail : taskSignup.User?.Email;
-            var phoneNumber = !string.IsNullOrWhiteSpace(taskSignup.PreferredPhoneNumber) ? taskSignup.PreferredPhoneNumber : taskSignup.User?.PhoneNumber;
-
-            if (string.IsNullOrWhiteSpace(emailAddress) && string.IsNullOrWhiteSpace(phoneNumber))
-                return;
-
+            var emailAddress = taskSignup.User.Email;
+            var phoneNumber = taskSignup.User.PhoneNumber;
             var itineraryDate = itinerary.Date;
             var volunteerDashboardLink = $"{_generalSettings.Value.SiteBaseUrl}v";
+
             var updateType = notification.UpdateType == UpdateType.VolunteerAssigned ? "assigned" : "unassigned";
             var toFrom = notification.UpdateType == UpdateType.VolunteerAssigned ? "to" : "from";
 
-            var notifyVolunteersViewModel = new NotifyVolunteersViewModel();
-            if (!string.IsNullOrWhiteSpace(phoneNumber))
+            var notifyVolunteersViewModel = new NotifyVolunteersViewModel
             {
-                notifyVolunteersViewModel.SmsMessage = $"You’ve been {updateType} {toFrom} a team for {itineraryDate} {volunteerDashboardLink}";
-                notifyVolunteersViewModel.SmsRecipients.Add(phoneNumber);
-            }
-            if (!string.IsNullOrWhiteSpace(emailAddress))
-            {
-                var emailMessage = $"The volunteer organizer has {updateType} you {toFrom} a team for {itineraryDate}. See your {volunteerDashboardLink} for more information.";
-                notifyVolunteersViewModel.Subject = $"You've been {updateType} {toFrom} a team for {itineraryDate}";
-                notifyVolunteersViewModel.EmailRecipients.Add(emailAddress);
-                notifyVolunteersViewModel.EmailMessage = emailMessage;
-                notifyVolunteersViewModel.HtmlMessage = emailMessage;
-            }
+                SmsMessage = $"You’ve been {updateType} {toFrom} a team for {itineraryDate} {volunteerDashboardLink}"
+            };
+            notifyVolunteersViewModel.SmsRecipients.Add(phoneNumber);
+
+            var emailMessage = $"The volunteer organizer has {updateType} you {toFrom} a team for {itineraryDate}. See your {volunteerDashboardLink} for more information.";
+
+            notifyVolunteersViewModel.Subject = $"You've been {updateType} {toFrom} a team for {itineraryDate}";
+            notifyVolunteersViewModel.EmailRecipients.Add(emailAddress);
+            notifyVolunteersViewModel.EmailMessage = emailMessage;
+            notifyVolunteersViewModel.HtmlMessage = emailMessage;
 
             await _mediator.SendAsync(new NotifyVolunteersCommand { ViewModel = notifyVolunteersViewModel }).ConfigureAwait(false);
         }

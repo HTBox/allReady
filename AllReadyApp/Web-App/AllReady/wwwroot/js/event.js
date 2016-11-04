@@ -69,7 +69,7 @@
 
         self.signupForTask = function (task) {
             hideAlert();
-            var vm = new SignupViewModel(signupModel, task.unassociatedSkills, task.Name, true, task);
+            var vm = new SignupViewModel(signupModel, task.unassociatedSkills, task.Name, task);
             vm.modal = HTBox.showModal({ viewModel: vm, modalId: "VolunteerModal" })
                 .onClose(taskSignupSuccess);
         };
@@ -89,7 +89,7 @@
             tasks.forEach(function(task) {
                 task.skillsWithIsUser().forEach(function(skill) {
                     if (newSkillIds.indexOf(skill.Id) >= 0) {
-                        skill.IsUserSkill(true)
+                        skill.IsUserSkill(true);
                     }
                 });
             });
@@ -194,7 +194,7 @@
         }
     };
 
-    SignupViewModel = function (signupModelSeed, unassociatedSkills, title, isTaskSignup, task) {
+    SignupViewModel = function (signupModelSeed, unassociatedSkills, title, task) {
         var self = this;
         ko.mapping.fromJS(signupModelSeed, {}, self);
         self.unassociatedSkills = unassociatedSkills;
@@ -206,16 +206,6 @@
         }
 
         self.Heading = "Volunteer for " + title;
-
-        self.PreferredEmail
-            .isRequired()
-            .validateEmail()
-            .notifyChangeFromInitialValue();
-
-        self.PreferredPhoneNumber
-           .isRequired()
-           .validatePhoneNumber()
-           .notifyChangeFromInitialValue();
 
         self.isValid = ko.computed(function () {
             var allValidatablesAreValid = true;
@@ -238,16 +228,14 @@
             dataToSend.__RequestVerificationToken = $('input[name=__RequestVerificationToken]').val();
             $.ajax({
                 type: "POST",
-                url: isTaskSignup ? '/api/task/signup' : '/api/event/signup',
+                url: "/api/task/signup",
                 data: dataToSend,
                 contentType: "application/x-www-form-urlencoded"
             }).done(function (result) {
                 self.isSubmitting(false);
                 switch (result.isSuccess) {
                     case true:
-                        if (isTaskSignup) {
-                            self.UpdatedTask = result.task;
-                        }
+                        self.UpdatedTask = result.task;
                         self.modal.close(self);
                         break;
                     case false:

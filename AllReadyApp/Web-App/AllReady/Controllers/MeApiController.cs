@@ -42,7 +42,7 @@ namespace AllReady.Controllers
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) { ReasonPhrase = "Unable to valid login information" });
             }
             // Require admin users to have a confirmed email before they can log on.
-            var user = await _mediator.SendAsync(new ApplicationUserQueryAsync { UserName = model.Email });
+            var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = model.Email });
             if (user != null)
             {
                 var isAdminUser = user.IsUserType(UserType.OrgAdmin) || user.IsUserType(UserType.SiteAdmin);

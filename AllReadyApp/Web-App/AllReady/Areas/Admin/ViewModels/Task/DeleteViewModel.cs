@@ -29,5 +29,7 @@ namespace AllReady.Areas.Admin.ViewModels.Task
         public DateTimeOffset EndDateTime { get; set; }
 
         public bool UserIsOrgAdmin { get; set; }
+
+        public string Title { get; set; }
     }
 }
