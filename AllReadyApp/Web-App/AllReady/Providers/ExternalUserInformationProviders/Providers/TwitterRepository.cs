@@ -16,6 +16,11 @@ namespace AllReady.Providers.ExternalUserInformationProviders.Providers
 
         public async Task<Account> GetTwitterAccount(string userId, string screenName)
         {
+            if (AnyTwitterAuthenticationSettingsAreNotSet())
+            {
+                return null;
+            }
+
             var authTwitter = new SingleUserAuthorizer
             {
                 CredentialStore = new SingleUserInMemoryCredentialStore
@@ -24,7 +29,6 @@ namespace AllReady.Providers.ExternalUserInformationProviders.Providers
                     ConsumerSecret = twitterAuthenticationSettings.Value.ConsumerSecret,
                     OAuthToken = twitterAuthenticationSettings.Value.OAuthToken,
                     OAuthTokenSecret = twitterAuthenticationSettings.Value.OAuthSecret,
-
                     UserID = ulong.Parse(userId),
                     ScreenName = screenName
                 }
@@ -36,10 +40,16 @@ namespace AllReady.Providers.ExternalUserInformationProviders.Providers
 
             //VERY important you explicitly keep the "== true" part of comparison. ReSharper will prompt you to remove this, and if it does, the query will not work
             var account = await (from acct in twitterCtx.Account
-                                 where (acct.Type == AccountType.VerifyCredentials) && (acct.IncludeEmail == true)
-                                 select acct).SingleOrDefaultAsync();
+                where (acct.Type == AccountType.VerifyCredentials) && (acct.IncludeEmail == true)
+                select acct).SingleOrDefaultAsync();
 
             return account;
+        }
+
+        private bool AnyTwitterAuthenticationSettingsAreNotSet()
+        {
+            return twitterAuthenticationSettings.Value.ConsumerKey == "[twitterconsumerkey]" || twitterAuthenticationSettings.Value.ConsumerSecret == "[twitterconsumersecret]" ||
+                   twitterAuthenticationSettings.Value.OAuthToken == "[twitteroauthtoken]" || twitterAuthenticationSettings.Value.OAuthSecret == "[twitteroauthsecret]";
         }
     }
 }
