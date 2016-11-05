@@ -3,10 +3,10 @@
 angular
     .module("allReady.controllers")
    
-    .controller("EventDetailsController", ["$scope", "$location", "eventDetails", function ($scope, $location, eventDetails) {
+    .controller("EventDetailsController", ["$scope", "$state", "eventDetails", function ($scope, $state, eventDetails) {
         $scope.data = eventDetails;
         $scope.doCheckin = function () {
-            $location.url("/checkin");
+            $state.go("app.checkin");
         };
         $scope.avatarUrl = function () {
             return "img/missing.png";
