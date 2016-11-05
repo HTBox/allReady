@@ -2,7 +2,7 @@
 
 angular
     .module("allReady.controllers")
-    .controller("EventListController", ["$scope", "$location", "Backend", function ($scope, $state, Backend) {
+    .controller("EventListController", ["$scope", "$state", "Backend", function ($scope, $state, Backend) {
         Backend.getEvents().then(function (result) {
             $scope.eventList = result;
         });
