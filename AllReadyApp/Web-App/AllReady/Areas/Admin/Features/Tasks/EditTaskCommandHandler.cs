@@ -28,8 +28,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
             task.Event = _context.Events.SingleOrDefault(a => a.Id == message.Task.EventId);
             task.Organization = _context.Organizations.SingleOrDefault(t => t.Id == message.Task.OrganizationId);
 
-            task.StartDateTime = _dateTimeOffsetConverter.ConvertDateTimeOffsetTo(message.Task.TimeZoneId, message.Task.StartDateTime, message.Task.StartDateTime.Hour, message.Task.StartDateTime.Minute);
-            task.EndDateTime = _dateTimeOffsetConverter.ConvertDateTimeOffsetTo(message.Task.TimeZoneId, message.Task.EndDateTime, message.Task.EndDateTime.Hour, message.Task.EndDateTime.Minute);
+            task.StartDateTime = message.Task.StartDateTime;
+            task.EndDateTime = message.Task.EndDateTime;
 
             task.NumberOfVolunteersRequired = message.Task.NumberOfVolunteersRequired;
             task.IsLimitVolunteers = task.Event.IsLimitVolunteers;

@@ -68,7 +68,7 @@
         <div class="form-group">
             <label asp-for="StartDateTime" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="StartDateTime" class="form-control datetimepicker"  />
+                <input asp-for="StartDateTime" class="form-control datetimepicker" autocomplete="off" />
                 <time-zone-name time-zone-id="@Model.TimeZoneId" class="text-muted"></time-zone-name>
                 <span asp-validation-for="StartDateTime" class="text-danger"></span>
             </div>
@@ -76,7 +76,7 @@
         <div class="form-group">
             <label asp-for="EndDateTime" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input asp-for="EndDateTime" class="form-control datetimepicker"  />
+                <input asp-for="EndDateTime" class="form-control datetimepicker" autocomplete="off"/>
                 <time-zone-name time-zone-id="@Model.TimeZoneId" class="text-muted"></time-zone-name>
                 <span asp-validation-for="EndDateTime" class="text-danger"></span>
             </div>
