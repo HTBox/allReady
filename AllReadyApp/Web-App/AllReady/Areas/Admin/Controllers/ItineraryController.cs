@@ -86,6 +86,24 @@ namespace AllReady.Areas.Admin.Controllers
             return BadRequest();
         }
 
+        [Route("Admin/Itinerary/Edit/{id}")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var itinerary = await _mediator.SendAsync(new EditItineraryQuery { ItineraryId = id });
+            if (itinerary == null)
+            {
+                return BadRequest();
+            }
+
+            if (!User.IsOrganizationAdmin(itinerary.OrganizationId))
+            {
+                return Unauthorized();
+            }
+
+            return View(itinerary);
+        }
+
+
         [HttpPost]
         [Route("Admin/Itinerary/AddTeamMember")]
         [ValidateAntiForgeryToken]

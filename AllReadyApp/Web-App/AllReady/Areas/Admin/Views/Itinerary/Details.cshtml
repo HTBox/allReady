@@ -19,9 +19,8 @@
     <div class="col-md-12">
         <h2>
             @Model.Name
-            @*<a asp-area="Admin" asp-controller="Itinerary" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
-                <a asp-area="Admin" asp-controller="Itinerary" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>*@
-        </h2>
+            <a asp-area="Admin" asp-controller="Itinerary" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
+        </h2>        
         <p>Scheduled for @Model.DisplayDate</p>
     </div>
 </div>
