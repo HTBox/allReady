@@ -323,13 +323,33 @@ namespace AllReady.Migrations
 
                     b.Property<DateTime>("Date");
 
+                    b.Property<double>("EndLatitude");
+
+                    b.Property<int?>("EndLocationId");
+
+                    b.Property<double>("EndLongitude");
+
                     b.Property<int>("EventId");
 
                     b.Property<string>("Name");
 
+                    b.Property<double>("StartLatitude");
+
+                    b.Property<int?>("StartLocationId");
+
+                    b.Property<double>("StartLongitude");
+
+                    b.Property<bool>("UseStartAddressAsEndAddress");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("EndLocationId")
+                        .IsUnique();
+
                     b.HasIndex("EventId");
+
+                    b.HasIndex("StartLocationId")
+                        .IsUnique();
 
                     b.ToTable("Itinerary");
                 });
@@ -808,10 +828,18 @@ namespace AllReady.Migrations
 
             modelBuilder.Entity("AllReady.Models.Itinerary", b =>
                 {
+                    b.HasOne("AllReady.Models.Location", "EndLocation")
+                        .WithOne()
+                        .HasForeignKey("AllReady.Models.Itinerary", "EndLocationId");
+
                     b.HasOne("AllReady.Models.Event", "Event")
                         .WithMany("Itineraries")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AllReady.Models.Location", "StartLocation")
+                        .WithOne()
+                        .HasForeignKey("AllReady.Models.Itinerary", "StartLocationId");
                 });
 
             modelBuilder.Entity("AllReady.Models.ItineraryRequest", b =>
