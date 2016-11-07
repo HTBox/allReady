@@ -91,7 +91,7 @@ namespace AllReady.DataAccess
             #endregion
 
             #region Campaign
-
+            //TODO: Campaign/Event/Task dates need to be set as a DateTimeOffset, offset to the correct timezone instead of UtcNow or DateTime.Today. 
             var firePreventionCampaign = new Campaign
             {
                 Name = "Neighborhood Fire Prevention Days",
@@ -178,6 +178,7 @@ namespace AllReady.DataAccess
                 Campaign = firePreventionCampaign,
                 StartDateTime = firePreventionCampaign.StartDateTime.AddDays(1),
                 EndDateTime = firePreventionCampaign.StartDateTime.AddMonths(2),
+                TimeZoneId = firePreventionCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 RequiredSkills = new List<EventSkill>(),
                 EventType = EventType.Itinerary,
@@ -197,6 +198,7 @@ namespace AllReady.DataAccess
                 Campaign = firePreventionCampaign,
                 StartDateTime = firePreventionCampaign.StartDateTime.AddDays(1),
                 EndDateTime = firePreventionCampaign.StartDateTime.AddMonths(2),
+                TimeZoneId = firePreventionCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
@@ -208,6 +210,7 @@ namespace AllReady.DataAccess
                 Campaign = firePreventionCampaign,
                 StartDateTime = firePreventionCampaign.StartDateTime.AddDays(1),
                 EndDateTime = firePreventionCampaign.StartDateTime.AddMonths(2),
+                TimeZoneId = firePreventionCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
@@ -219,6 +222,7 @@ namespace AllReady.DataAccess
                 Campaign = smokeDetectorCampaign,
                 StartDateTime = smokeDetectorCampaign.StartDateTime.AddDays(1),
                 EndDateTime = smokeDetectorCampaign.EndDateTime,
+                TimeZoneId = smokeDetectorCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
@@ -230,6 +234,7 @@ namespace AllReady.DataAccess
                 Campaign = smokeDetectorCampaign,
                 StartDateTime = smokeDetectorCampaign.StartDateTime.AddDays(1),
                 EndDateTime = smokeDetectorCampaign.EndDateTime,
+                TimeZoneId = smokeDetectorCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
@@ -243,6 +248,7 @@ namespace AllReady.DataAccess
                 Campaign = financialCampaign,
                 StartDateTime = new DateTime(dateTimeToday.Year, dateTimeToday.Month, dateTimeToday.Day, 8, 0, 0),
                 EndDateTime = new DateTime(dateTimeToday.Year, dateTimeToday.Month, dateTimeToday.Day, 16, 0, 0),
+                TimeZoneId = financialCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Rally,
             };
@@ -255,6 +261,7 @@ namespace AllReady.DataAccess
                 Campaign = financialCampaign,
                 StartDateTime = financialCampaign.StartDateTime.AddMonths(1).AddDays(1),
                 EndDateTime = financialCampaign.EndDateTime,
+                TimeZoneId = financialCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
@@ -267,6 +274,7 @@ namespace AllReady.DataAccess
                 Campaign = safetyKitCampaign,
                 StartDateTime = safetyKitCampaign.StartDateTime.AddDays(1),
                 EndDateTime = safetyKitCampaign.StartDateTime.AddMonths(1).AddDays(5),
+                TimeZoneId = safetyKitCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
@@ -280,6 +288,7 @@ namespace AllReady.DataAccess
                 Campaign = safetyKitCampaign,
                 StartDateTime = safetyKitCampaign.StartDateTime.AddDays(1),
                 EndDateTime = safetyKitCampaign.StartDateTime.AddMonths(1).AddDays(5),
+                TimeZoneId = safetyKitCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
@@ -292,6 +301,7 @@ namespace AllReady.DataAccess
                 Campaign = carSafeCampaign,
                 StartDateTime = carSafeCampaign.StartDateTime.AddDays(1),
                 EndDateTime = carSafeCampaign.StartDateTime.AddMonths(1).AddDays(5),
+                TimeZoneId = carSafeCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
@@ -304,6 +314,7 @@ namespace AllReady.DataAccess
                 Campaign = carSafeCampaign,
                 StartDateTime = carSafeCampaign.StartDateTime.AddDays(1),
                 EndDateTime = carSafeCampaign.StartDateTime.AddMonths(1).AddDays(5),
+                TimeZoneId = carSafeCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
@@ -316,6 +327,7 @@ namespace AllReady.DataAccess
                 Campaign = safetyKitCampaign,
                 StartDateTime = safetyKitCampaign.StartDateTime.AddDays(1),
                 EndDateTime = safetyKitCampaign.StartDateTime.AddMonths(1),
+                TimeZoneId = safetyKitCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
@@ -328,6 +340,7 @@ namespace AllReady.DataAccess
                 Campaign = escapePlanCampaign,
                 StartDateTime = escapePlanCampaign.StartDateTime.AddDays(1),
                 EndDateTime = escapePlanCampaign.StartDateTime.AddMonths(7),
+                TimeZoneId = escapePlanCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };

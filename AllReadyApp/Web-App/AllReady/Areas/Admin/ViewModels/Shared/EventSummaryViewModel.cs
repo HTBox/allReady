@@ -45,10 +45,14 @@ namespace AllReady.Areas.Admin.ViewModels.Shared
 
         [Display(Name = "Start Date")]
         [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-ddTHH:mm:ss.fff}")]
+        //What do I nee to go here to format this as a local date time when viewing it? I don't want the offset to be sent to the client because
+        //that just confuses things
         public DateTimeOffset StartDateTime { get; set; }
 
         [Display(Name = "End Date")]
         [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-ddTHH:mm:ss.fff}")]
         public DateTimeOffset EndDateTime { get; set; }
 
         [Display(Name = "Enforce volunteer limit on tasks")]

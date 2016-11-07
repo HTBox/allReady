@@ -31,12 +31,13 @@ namespace AllReady.Areas.Admin.ViewModels.Task
         public string TimeZoneId { get; set; }
 
         [Display(Name = "Start date")]
-        [DisplayFormat(ApplyFormatInEditMode =true, DataFormatString = "d")]
         [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-ddTHH:mm:ss.fff}")]
         public DateTimeOffset StartDateTime { get; set; }
 
         [Display(Name = "End date")]
         [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-ddTHH:mm:ss.fff}")]
         public DateTimeOffset EndDateTime { get; set; }
 
         [Display(Name = "Volunteers Required")]
