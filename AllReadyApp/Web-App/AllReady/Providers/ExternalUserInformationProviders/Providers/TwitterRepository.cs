@@ -53,8 +53,8 @@ namespace AllReady.Providers.ExternalUserInformationProviders.Providers
                 twitterAuthenticationSettings.Value.ConsumerSecret == "[twitterconsumersecret]" ||
                 twitterAuthenticationSettings.Value.OAuthToken == "[twitteroauthtoken]" ||
                 twitterAuthenticationSettings.Value.OAuthSecret == "[twitteroauthsecret]" ||
-                twitterAuthenticationSettings.Value.OAuthToken == string.Empty ||
-                twitterAuthenticationSettings.Value.OAuthSecret == string.Empty;
+                string.IsNullOrEmpty(twitterAuthenticationSettings.Value.OAuthToken) ||
+                string.IsNullOrEmpty(twitterAuthenticationSettings.Value.OAuthSecret);
         }
     }
 }
