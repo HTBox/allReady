@@ -14,12 +14,10 @@ namespace AllReady.Areas.Admin.Features.Campaigns
     public class EditCampaignCommandHandler : IAsyncRequestHandler<EditCampaignCommand, int>
     {
         private readonly AllReadyContext _context;
-        private readonly IConvertDateTimeOffset dateTimeOffsetsConverter;
 
-        public EditCampaignCommandHandler(AllReadyContext context, IConvertDateTimeOffset dateTimeOffsetsConverter)
+        public EditCampaignCommandHandler(AllReadyContext context)
         {
             _context = context;
-            this.dateTimeOffsetsConverter = dateTimeOffsetsConverter;
         }
 
         public async Task<int> Handle(EditCampaignCommand message)

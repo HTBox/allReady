@@ -29,7 +29,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                     Id = 2,
                     Name = "EventName",
                     CampaignId = 3,
-                    Campaign = new Campaign { Id = 3, Name = "CampaignName", TimeZoneId = "Central Standard Time" }
+                    Campaign = new Campaign { Id = 3, Name = "CampaignName", TimeZoneId = "Central Standard Time" },
+                    TimeZoneId = "Central Standard Time"
                 },
                 RequiredSkills = new List<TaskSkill> { new TaskSkill { SkillId = 4, TaskId = 1 } },
                 AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User = new ApplicationUser { Id = "UserId", UserName = "UserName" } } }
@@ -55,7 +56,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Assert.Equal(result.EventName, task.Event.Name);
             Assert.Equal(result.CampaignId, task.Event.CampaignId);
             Assert.Equal(result.CampaignName, task.Event.Campaign.Name);
-            Assert.Equal(result.TimeZoneId, task.Event.Campaign.TimeZoneId);
+            Assert.Equal(result.TimeZoneId, task.Event.TimeZoneId);
             //Assert.Equal(result.RequiredSkills, task.RequiredSkills);
             //Assert.Equal(result.AssignedVolunteers, task.AssignedVolunteers.Select(x => new VolunteerViewModel { UserId = x.User.Id, UserName = x.User.UserName, HasVolunteered = true }).ToList());
             //Assert.Equal(result.AllVolunteers, task.Event.UsersSignedUp.Select(x => new VolunteerViewModel { UserId = x.User.Id, UserName = x.User.UserName, HasVolunteered = false }).ToList());

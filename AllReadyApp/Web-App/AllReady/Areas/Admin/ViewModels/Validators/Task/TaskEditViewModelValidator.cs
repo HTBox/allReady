@@ -12,9 +12,8 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
     public class TaskEditViewModelValidator : ITaskEditViewModelValidator
     {
         private readonly IMediator _mediator;
-        private readonly IConvertDateTimeOffset _convertDateTimeOffsets;
 
-        public TaskEditViewModelValidator(IMediator mediator, IConvertDateTimeOffset convertDateTimeOffsets)
+        public TaskEditViewModelValidator(IMediator mediator)
         {
             if (mediator == null)
             {
@@ -22,7 +21,6 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
             }
 
             _mediator = mediator;
-            _convertDateTimeOffsets = convertDateTimeOffsets;
         }
 
         public async Task<List<KeyValuePair<string, string>>> Validate(EditViewModel viewModel)
