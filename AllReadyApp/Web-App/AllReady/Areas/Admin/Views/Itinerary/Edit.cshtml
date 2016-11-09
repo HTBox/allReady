@@ -22,6 +22,7 @@
 <div class="row">
     <div class="col-12">
         <form asp-controller="Itinerary" asp-action="Edit" asp-area="Admin" method="post">
+
             <div class="form-horizontal row">
                 <hr />
                 <div class="form-horizontal col-lg-6 pull-left">
@@ -44,6 +45,100 @@
                     </div>
                 </div>
             </div>
+
+            <h3>Route Optimization</h3>
+            <p>Supply a start / end address for the itinerary so that requests can be organized by an optimal route and direction informaiton can be generated.</p>
+            <hr/>
+            <h4>Start Address</h4>
+            <div class="form-horizontal row">
+                <div class="form-horizontal col-lg-6 pull-left">
+                    <div class="form-group">
+                        <label asp-for="StartAddress1" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input asp-for="StartAddress1" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="StartAddress2" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input asp-for="StartAddress2" class="form-control" />
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="StartCity" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input asp-for="StartCity" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="StartState" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input asp-for="StartState" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="StartPostalCode" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input asp-for="StartPostalCode" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="StartCountry" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input asp-for="StartCountry" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h4>End Address</h4>
+            <div class="form-group">
+                <label asp-for="UseStartAddressAsEndAddress" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    <input asp-for="UseStartAddressAsEndAddress" class="form-control" />
+                </div>
+            </div>
+            <div class="form-horizontal row">
+                <div class="form-horizontal col-lg-6 pull-left">
+                    <div class="form-group">
+                        <label asp-for="EndAddress1" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input asp-for="EndAddress1" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="EndAddress2" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input asp-for="EndAddress2" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="EndCity" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input asp-for="EndCity" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="EndState" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input asp-for="EndState" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="EndPostalCode" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input asp-for="EndPostalCode" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="EndCountry" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input asp-for="EndCountry" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
 
             <div class="row">
                 <div class="col-md-12">

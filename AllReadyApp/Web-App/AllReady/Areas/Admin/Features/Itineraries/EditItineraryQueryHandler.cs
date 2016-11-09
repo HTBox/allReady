@@ -10,30 +10,55 @@ namespace AllReady.Areas.Admin.Features.Itineraries
     public class EditItineraryQueryHandler : IAsyncRequestHandler<EditItineraryQuery, ItineraryEditViewModel>
     {
         private readonly AllReadyContext _context;
-        private readonly IMediator _mediator;
 
-        public EditItineraryQueryHandler(AllReadyContext context, IMediator mediator)
-        {
+        public EditItineraryQueryHandler(AllReadyContext context)
+        { 
             _context = context;
-            _mediator = mediator;
         }
 
         public async Task<ItineraryEditViewModel> Handle(EditItineraryQuery message)
         {
-            return await _context.Itineraries.AsNoTracking()
+            var record = await _context.Itineraries.AsNoTracking()
                 .Include(rec => rec.Event).ThenInclude(rec => rec.Campaign)
-                .Select(rec => new ItineraryEditViewModel
-                {
-                    Id = rec.Id,
-                    Name = rec.Name,
-                    Date = rec.Date,
-                    EventId = rec.EventId,
-                    OrganizationId = rec.Event.Campaign.ManagingOrganizationId,
-                    EventName = rec.Event.Name,
-                    CampaignId = rec.Event.CampaignId,
-                    CampaignName = rec.Event.Campaign.Name
-                })
-                .SingleOrDefaultAsync();
+                .Include(rec => rec.StartLocation)
+                .Include(rec => rec.EndLocation)
+                .SingleOrDefaultAsync(rec => rec.Id == message.ItineraryId);
+
+            var model = new ItineraryEditViewModel
+            {
+                Id = record.Id,
+                Name = record.Name,
+                Date = record.Date,
+                EventId = record.EventId,
+                OrganizationId = record.Event.Campaign.ManagingOrganizationId,
+                EventName = record.Event.Name,
+                CampaignId = record.Event.CampaignId,
+                CampaignName = record.Event.Campaign.Name,
+                UseStartAddressAsEndAddress = record.UseStartAddressAsEndAddress
+            };
+
+            if (record.StartLocation != null)
+            {
+                model.StartAddress1 = record.StartLocation.Address1;
+                model.StartAddress2 = record.StartLocation.Address2;
+                model.StartCity = record.StartLocation.City;
+                model.StartState = record.StartLocation.State;
+                model.StartPostalCode = record.StartLocation.PostalCode;
+                model.StartCountry = record.StartLocation.Country;
+            }
+
+            if (record.EndLocation != null)
+            {
+                model.EndAddress1 = record.EndLocation.Address1;
+                model.EndAddress2 = record.EndLocation.Address2;
+                model.EndCity = record.EndLocation.City;
+                model.EndState = record.EndLocation.State;
+                model.EndPostalCode = record.EndLocation.PostalCode;
+                model.EndCountry = record.EndLocation.Country;
+            }
+
+            return model;
         }
     }
 }
+

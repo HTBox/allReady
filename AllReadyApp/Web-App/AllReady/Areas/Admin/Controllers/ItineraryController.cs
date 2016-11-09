@@ -100,10 +100,45 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
+            ViewBag.Title = "Edit " + itinerary.Name;
             return View(itinerary);
         }
 
+        [HttpPost]
+        [Route("Admin/Itinerary/Edit/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(ItineraryEditViewModel model)
+        {
+            if (model == null)
+            {
+                return BadRequest();
+            }
 
+            var itinerary = await _mediator.SendAsync(new ItinerarySummaryQuery() { ItineraryId = model.Id });
+            if (itinerary == null)
+            {
+                return BadRequest();
+            }
+
+            if (!User.IsOrganizationAdmin(itinerary.OrganizationId))
+            {
+                return Unauthorized();
+            }
+
+            // todo - sgordon: add additional validation for address scenarios - enhance this later
+            var errors = _itineraryValidator.Validate(model, itinerary.EventSummary);
+            errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            await _mediator.SendAsync(new EditItineraryCommand { Itinerary = model });
+
+            return RedirectToAction(nameof(Details), new { area = "Admin", id = model.Id });           
+        }
+        
         [HttpPost]
         [Route("Admin/Itinerary/AddTeamMember")]
         [ValidateAntiForgeryToken]
