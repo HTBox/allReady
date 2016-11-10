@@ -249,12 +249,10 @@
                                             <span class="label label-warning" data-bind="visible: !hasAllMatchingSkills() && hasAtLeastOneMatchingSkill(), tooltip: { title: 'You have at least one of the required skills needed for this task!', placement: 'top' }">Match</span>
                                             <br/>
                                             <span data-bind="text: VolunteersRequiredText"></span>
-                                            <br/>
-                                            <span class="task-datetime" data-bind="html: DisplayDateTime"></span><br />
-                                        </div>
-                                        <div class="btn-group">
                                             <button class="btn btn-default" data-bind="visible: !IsClosed && IsAllowSignups && $root.isSignedIn, click: $root.signupForTask , attr: { href: '#signup' }">Volunteer</button>
                                             <button class="btn btn-default" data-bind="visible: !IsClosed && IsAllowSignups && !$root.isSignedIn, click: $root.confirmGoToLogin , attr: { href: '#signup' }">Volunteer</button>
+                                            <br/>
+                                            <span class="task-datetime" data-bind="html: DisplayDateTime"></span><br />
                                         </div>
                                     </div>
                                 </div>
