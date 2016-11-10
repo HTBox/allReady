@@ -2,7 +2,9 @@ angular.module('allReady.controllers', ['Backend']);
 angular.module("Backend", ['Backend']); //TODO get a better name for factory and module
 
 angular.module('allReady', ['ionic', 'allReady.controllers', 'Backend'])
-
+    .constant('ApiEndpoint', {
+        url: 'http://localhost:8100/api/'
+    })
   .run(function ($ionicPlatform) {
     $ionicPlatform.ready(function () {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard

@@ -2,11 +2,12 @@
 
 angular
     .module("Backend") //TODO get a better name for factory and module
-    .factory("Backend", ["$http", "$q", "CacheManager", function ($http, $q, CacheManager) {
+    .factory("Backend", ["$http", "$q", "CacheManager", "ApiEndpoint", function ($http, $q, CacheManager, ApiEndpoint) {
         var svc = {};
-        var protocol = "http://";
-        var domainUrl = "localhost:48408"; // TODO: Update when the site is deployed for real
-        var baseUrl = protocol + domainUrl + "/";
+        //var protocol = "http://";
+        //var domainUrl = "localhost:48408"; // TODO: Update when the site is deployed for real
+        //var baseUrl = protocol + domainUrl + "/";
+        var baseUrl = ApiEndpoint.url;
 
         svc.getEvents = function (forceWebQuery) {
             forceWebQuery = typeof forceWebQuery !== "undefined" ? forceWebQuery : false;
@@ -68,16 +69,16 @@ angular
         };
 
         svc.doLogin = function (username, password) {
-            return $http.post(baseUrl + "/api/login",
+            return $http.post(baseUrl + "api/me/login",
                 {
                     "Email": username,
                     "Password": password,
                     "RememberMe": "true"
                 }, {
-                    //headers: {
-                    //    //'Content-Type': 'application/json; charset=UTF-8'
-                    //    //'Content-Type': 'application/x-www-form-urlencoded'
-                    //}
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8'
+                        //'Content-Type': 'application/x-www-form-urlencoded'
+                    }
                 }
             ).then(function () {
                 console.log("Logged in");
