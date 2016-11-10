@@ -15,10 +15,12 @@ namespace AllReady.ViewModels.Manage
 
         [Required]
         [Display(Name = "First Name")]
+        [MaxLength(200, ErrorMessage = "Name cannot be longer than 200 characters.")]
         public string FirstName { get; set; }
 
         [Required]
         [Display(Name = "Last Name")]
+        [MaxLength(200, ErrorMessage = "Name cannot be longer than 200 characters.")]
         public string LastName { get; set; }
 
         [Display(Name = "Email Address")]
