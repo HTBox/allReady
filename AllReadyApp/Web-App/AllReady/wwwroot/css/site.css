@@ -503,6 +503,13 @@ Navigation
 .inline-form {
     display: inline-block;
 }
+
+.space:first-child{
+    margin-top:5px;
+}
+.space{
+    margin-bottom:5px;
+}
 .myevents h3 {
     margin-bottom: 20px;
 }
