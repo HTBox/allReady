@@ -24,8 +24,7 @@ namespace AllReady.Features.Tasks
                 .Include(x => x.AssignedVolunteers).ThenInclude(v => v.User)
                 .Include(x => x.RequiredSkills)
                 .Where(t => t.Id == message.TaskId)
-                .SingleOrDefaultAsync()
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync();
         }
     }
 }

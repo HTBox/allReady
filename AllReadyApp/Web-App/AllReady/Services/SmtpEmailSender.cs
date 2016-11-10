@@ -1,6 +1,6 @@
 ﻿using System.Net.Mail;
 using System.Threading.Tasks;
-using AllReady.Models.Notifications;
+using AllReady.Core.Notifications;
 using Newtonsoft.Json;
 
 namespace AllReady.Services

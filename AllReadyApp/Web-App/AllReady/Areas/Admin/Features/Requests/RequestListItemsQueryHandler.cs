@@ -69,7 +69,7 @@ namespace AllReady.Areas.Admin.Features.Requests
                 Postcode = r.Zip,
                 Status = r.Status,
                 DateAdded = r.DateAdded
-            }).ToListAsync().ConfigureAwait(false);
+            }).ToListAsync();
         }
     }
 }

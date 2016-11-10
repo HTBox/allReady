@@ -49,8 +49,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 .Include(t => t.Event.Campaign)
                 .Include(t => t.AssignedVolunteers).ThenInclude(ts => ts.User)
                 .Include(t => t.RequiredSkills).ThenInclude(ts => ts.Skill).ThenInclude(s => s.ParentSkill).ThenInclude(s => s.ParentSkill)
-                .SingleOrDefaultAsync(t => t.Id == message.TaskId)
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync(t => t.Id == message.TaskId);
         }
     }
 }

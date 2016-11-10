@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Skill;
 using AllReady.Models;
 using MediatR;
@@ -8,15 +10,18 @@ namespace AllReady.Areas.Admin.Features.Skills
 {
     public class SkillEditQueryHandler : IAsyncRequestHandler<SkillEditQuery, SkillEditViewModel>
     {
-        private AllReadyContext _context;
+        private readonly AllReadyContext _context;
+
         public SkillEditQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
+
         public async Task<SkillEditViewModel> Handle(SkillEditQuery message)
         {
             var skill = await _context.Skills.AsNoTracking()
                 .Include(s => s.ParentSkill)
+                .Include(s => s.ChildSkills)
                 .Include(s => s.OwningOrganization)
                 .SingleOrDefaultAsync(s => s.Id == message.Id);
 

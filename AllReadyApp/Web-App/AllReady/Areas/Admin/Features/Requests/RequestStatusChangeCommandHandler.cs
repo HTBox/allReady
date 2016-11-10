@@ -23,7 +23,7 @@ namespace AllReady.Areas.Admin.Features.Requests
 
             _context.Requests.Attach(req);
             _context.Entry(req).Property(x => x.Status).IsModified = true;
-            var changedCount = await _context.SaveChangesAsync().ConfigureAwait(false);
+            var changedCount = await _context.SaveChangesAsync();
 
             return changedCount > 0;
         }

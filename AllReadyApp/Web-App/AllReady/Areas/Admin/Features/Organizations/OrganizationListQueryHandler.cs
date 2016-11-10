@@ -25,8 +25,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
                 Name = t.Name,
                 WebUrl = t.WebUrl
             })
-            .ToListAsync()
-            .ConfigureAwait(false);
+            .ToListAsync();
         }
     }
 }

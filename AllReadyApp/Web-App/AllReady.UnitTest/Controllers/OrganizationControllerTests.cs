@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using AllReady.Controllers;
 using AllReady.Features.Organizations;
-using AllReady.ViewModels;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

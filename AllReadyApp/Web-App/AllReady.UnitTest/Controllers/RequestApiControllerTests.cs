@@ -1,9 +1,7 @@
-﻿using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Features.Requests;
-using AllReady.Models;
-using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -14,106 +12,73 @@ namespace AllReady.UnitTest.Controllers
 {
     public class RequestApiControllerTests
     {
-        #region Post
         [Fact]
-        public async Task PostReturnsBadRequestResultWhenAnErrorIsNotInternal()
+        public async Task PostReturnsBadRequest_WhenProviderIdIsNull()
+        {
+            var sut = new RequestApiController(Mock.Of<IMediator>());
+            var result = await sut.Post(new RequestViewModel {ProviderId = null});
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task PostReturnsBadRequest_WhenRequestIdIsNull()
+        {
+            var sut = new RequestApiController(Mock.Of<IMediator>());
+            var result = await sut.Post(new RequestViewModel {RequestId = null});
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task PostReturnsBadRequest_WhenRequestIdIsEmpty()
+        {
+            var sut = new RequestApiController(Mock.Of<IMediator>());
+            var result = await sut.Post(new RequestViewModel {RequestId = string.Empty});
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task PostReturnsBadRequest_WhenRequestIdIsNotAGuid()
+        {
+            var sut = new RequestApiController(Mock.Of<IMediator>());
+            var result = await sut.Post(new RequestViewModel {RequestId = "NotAGuid"});
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task PostReturnsBadRequest_WhenIncomingStatusCannotBeMappedToRequestStatus()
+        {
+            var sut = new RequestApiController(Mock.Of<IMediator>());
+            var result = await sut.Post(new RequestViewModel {Status = "NotMappable"});
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task PostSendsAddRequestCommandWithTheCorrectParameters()
         {
             var mediator = new Mock<IMediator>();
-            var outReason = "anythingReally";
-            var pid = "someIDValue";
-
-            var error = new AddRequestError
-            {
-                ProviderId = pid,
-                Reason = outReason
-            };
-
-            mediator.Setup(x => x.SendAsync(It.IsAny<AddRequestCommand>())).ReturnsAsync(error);
+            var viewModel = new RequestViewModel {ProviderId = "ProviderId", RequestId = Guid.NewGuid().ToString()};
 
             var sut = new RequestApiController(mediator.Object);
-            var result = await sut.Post(new RequestViewModel()) as BadRequestObjectResult;
+            await sut.Post(viewModel);
 
-            Assert.NotNull(result);
-
-            var resultObject = result.Value as AddRequestError;
-
-            Assert.NotNull(resultObject);
-            Assert.Equal(outReason, resultObject.Reason);
-            Assert.Equal(pid, resultObject.ProviderId);
+            mediator.Verify(x => x.SendAsync(It.Is<AddApiRequestCommand>((y => y.RequestViewModel == viewModel))));
         }
 
         [Fact]
-        public async Task PostSendsAddRequestCommandWithCorrectData()
+        public async Task PostReturnsCreatedResult()
         {
             var mediator = new Mock<IMediator>();
+            var viewModel = new RequestViewModel {ProviderId = "ProviderId", RequestId = Guid.NewGuid().ToString()};
+
             var sut = new RequestApiController(mediator.Object);
-            var ourViewModel = new RequestViewModel
-            {
-                ProviderId = "Crazy-Eights",
-                ProviderData = "Go-Fish",
-                Address = "Address",
-                City = "Citty",
-                State = "Sttate",
-                Zip = "ZZiipp",
-                Phone = "Fone",
-                Name = "ONAMEO",
-                Email = "ANEMAILADDRESS",
-                Status = RequestStatus.Assigned.ToString()
-            };
+            var result = await sut.Post(viewModel);
 
-            await sut.Post(ourViewModel);
-
-            mediator.Verify(x => x.SendAsync(It.Is<AddRequestCommand>(y => y.Request.ProviderId == ourViewModel.ProviderId
-            && y.Request.Status == RequestStatus.Assigned
-            && y.Request.ProviderData == ourViewModel.ProviderData
-            && y.Request.State == ourViewModel.State
-            && y.Request.Address == ourViewModel.Address
-            && y.Request.City == ourViewModel.City
-            && y.Request.Phone == ourViewModel.Phone
-            && y.Request.Zip == ourViewModel.Zip
-            && y.Request.Name == ourViewModel.Name
-            && y.Request.Email == ourViewModel.Email)), Times.Once);
-        }
-
-
-        [Fact]
-        public async Task PostReturnsHttpStatusCodeResultOf201()
-        {
-            var mediator = new Mock<IMediator>();
-            var sut = new RequestApiController(mediator.Object);
-
-            var result = await sut.Post(new RequestViewModel()) as CreatedResult;
-
-            Assert.NotNull(result);
-            Assert.Equal(result.StatusCode, 201);
-        }
-
-        [Fact]
-        public void PostHasHttpPostAttribute()
-        {
-            var sut = new RequestApiController(null);
-            var attribute = sut.GetAttributesOn(x => x.Post(It.IsAny<RequestViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
-            Assert.NotNull(attribute);
-        }
-        
-        #endregion
-
-        [Fact]
-        public void ControllerHasRouteAtttributeWithTheCorrectRoute()
-        {
-            var sut = new RequestApiController(null);
-            var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
-            Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "api/request");
-        }
-
-        [Fact]
-        public void ControllerHasProducesAtttributeWithTheCorrectContentType()
-        {
-            var sut = new RequestApiController(null);
-            var attribute = sut.GetAttributes().OfType<ProducesAttribute>().SingleOrDefault();
-            Assert.NotNull(attribute);
-            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
+            Assert.IsType<CreatedResult>(result);
         }
     }
 }

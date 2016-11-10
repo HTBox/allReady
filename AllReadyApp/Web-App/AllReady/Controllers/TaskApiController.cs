@@ -61,83 +61,6 @@ namespace AllReady.Controllers
             return Created("", allReadyTask);
         }
 
-        public async Task<AllReadyTask> ToModel(TaskViewModel taskViewModel, IMediator mediator)
-        {
-            var @event = await mediator.SendAsync(new EventByEventIdQuery { EventId = taskViewModel.EventId });
-            if (@event == null)
-            {
-                return null;
-            }
-
-            var newTask = true;
-            AllReadyTask allReadyTask;
-            if (taskViewModel.Id == 0)
-            {
-                allReadyTask = new AllReadyTask();
-            }
-            else
-            {
-                allReadyTask = await mediator.SendAsync(new TaskByTaskIdQuery { TaskId = taskViewModel.Id });
-                newTask = false;
-            }
-
-            allReadyTask.Id = taskViewModel.Id;
-            allReadyTask.Description = taskViewModel.Description;
-            allReadyTask.Event = @event;
-            allReadyTask.EndDateTime = taskViewModel.EndDateTime.UtcDateTime;
-            allReadyTask.StartDateTime = taskViewModel.StartDateTime.UtcDateTime;
-            allReadyTask.Name = taskViewModel.Name;
-            allReadyTask.RequiredSkills = allReadyTask.RequiredSkills ?? new List<TaskSkill>();
-            taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();
-            ////Remove old skills
-            //dbtask.RequiredSkills.RemoveAll(ts => !taskViewModel.RequiredSkills.Any(s => ts.SkillId == s));
-            ////Add new skills
-            //dbtask.RequiredSkills.AddRange(taskViewModel.RequiredSkills
-            //    .Where(rs => !dbtask.RequiredSkills.Any(ts => ts.SkillId == rs))
-            //    .Select(rs => new TaskSkill() { SkillId = rs, TaskId = taskViewModel.Id }));
-
-            // Workaround:  POST is bringing in empty AssignedVolunteers.  Clean this up. Discussing w/ Kiran Challa.
-            // Workaround: the if statement is superflous, and should go away once we have the proper fix referenced above.
-            if (taskViewModel.AssignedVolunteers != null)
-            {
-                var bogusAssignedVolunteers = (from assignedVolunteer in taskViewModel.AssignedVolunteers
-                                               where string.IsNullOrEmpty(assignedVolunteer.UserId)
-                                               select assignedVolunteer).ToList();
-                foreach (var bogus in bogusAssignedVolunteers)
-                {
-                    taskViewModel.AssignedVolunteers.Remove(bogus);
-                }
-            }
-            // end workaround
-
-            if (taskViewModel.AssignedVolunteers != null && taskViewModel.AssignedVolunteers.Count > 0)
-            {
-                var assignedVolunteers = taskViewModel.AssignedVolunteers.ToList();
-
-                var taskUsersList = await assignedVolunteers.ToTaskSignups(allReadyTask, _mediator);
-
-                // We may be updating an existing task
-                if (newTask || allReadyTask.AssignedVolunteers.Count == 0)
-                {
-                    allReadyTask.AssignedVolunteers = taskUsersList;
-                }
-                else
-                {
-                    // Can probably rewrite this more efficiently.
-                    foreach (var taskUsers in taskUsersList)
-                    {
-                        if (!(from entry in allReadyTask.AssignedVolunteers
-                              where entry.User.Id == taskUsers.User.Id
-                              select entry).Any())
-                        {
-                            allReadyTask.AssignedVolunteers.Add(taskUsers);
-                        }
-                    }
-                }
-            }
-            return allReadyTask;
-        }
-
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody]TaskViewModel value)
         {
@@ -281,7 +204,84 @@ namespace AllReady.Controllers
         private async Task<AllReadyTask> GetTaskBy(int taskId)
         {
             return await _mediator.SendAsync(new TaskByTaskIdQuery { TaskId = taskId });
-        }    
+        }
+
+        private async Task<AllReadyTask> ToModel(TaskViewModel taskViewModel, IMediator mediator)
+        {
+            var @event = await mediator.SendAsync(new EventByEventIdQuery { EventId = taskViewModel.EventId });
+            if (@event == null)
+            {
+                return null;
+            }
+
+            var newTask = true;
+            AllReadyTask allReadyTask;
+            if (taskViewModel.Id == 0)
+            {
+                allReadyTask = new AllReadyTask();
+            }
+            else
+            {
+                allReadyTask = await mediator.SendAsync(new TaskByTaskIdQuery { TaskId = taskViewModel.Id });
+                newTask = false;
+            }
+
+            allReadyTask.Id = taskViewModel.Id;
+            allReadyTask.Description = taskViewModel.Description;
+            allReadyTask.Event = @event;
+            allReadyTask.EndDateTime = taskViewModel.EndDateTime.UtcDateTime;
+            allReadyTask.StartDateTime = taskViewModel.StartDateTime.UtcDateTime;
+            allReadyTask.Name = taskViewModel.Name;
+            allReadyTask.RequiredSkills = allReadyTask.RequiredSkills ?? new List<TaskSkill>();
+            taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();
+            ////Remove old skills
+            //dbtask.RequiredSkills.RemoveAll(ts => !taskViewModel.RequiredSkills.Any(s => ts.SkillId == s));
+            ////Add new skills
+            //dbtask.RequiredSkills.AddRange(taskViewModel.RequiredSkills
+            //    .Where(rs => !dbtask.RequiredSkills.Any(ts => ts.SkillId == rs))
+            //    .Select(rs => new TaskSkill() { SkillId = rs, TaskId = taskViewModel.Id }));
+
+            // Workaround:  POST is bringing in empty AssignedVolunteers.  Clean this up. Discussing w/ Kiran Challa.
+            // Workaround: the if statement is superflous, and should go away once we have the proper fix referenced above.
+            if (taskViewModel.AssignedVolunteers != null)
+            {
+                var bogusAssignedVolunteers = (from assignedVolunteer in taskViewModel.AssignedVolunteers
+                                               where string.IsNullOrEmpty(assignedVolunteer.UserId)
+                                               select assignedVolunteer).ToList();
+                foreach (var bogus in bogusAssignedVolunteers)
+                {
+                    taskViewModel.AssignedVolunteers.Remove(bogus);
+                }
+            }
+            // end workaround
+
+            if (taskViewModel.AssignedVolunteers != null && taskViewModel.AssignedVolunteers.Count > 0)
+            {
+                var assignedVolunteers = taskViewModel.AssignedVolunteers.ToList();
+
+                var taskUsersList = await assignedVolunteers.ToTaskSignups(allReadyTask, _mediator);
+
+                // We may be updating an existing task
+                if (newTask || allReadyTask.AssignedVolunteers.Count == 0)
+                {
+                    allReadyTask.AssignedVolunteers = taskUsersList;
+                }
+                else
+                {
+                    // Can probably rewrite this more efficiently.
+                    foreach (var taskUsers in taskUsersList)
+                    {
+                        if (!(from entry in allReadyTask.AssignedVolunteers
+                              where entry.User.Id == taskUsers.User.Id
+                              select entry).Any())
+                        {
+                            allReadyTask.AssignedVolunteers.Add(taskUsers);
+                        }
+                    }
+                }
+            }
+            return allReadyTask;
+        }
     }
 
     public static class TaskSignupViewModelExtensions

@@ -21,6 +21,7 @@ namespace AllReady.Models
 
         [Display(Name = "Event Type")]
         public EventType EventType { get; set; }
+
         [Display(Name = "Start date")]
         public DateTimeOffset StartDateTime { get; set; }
 

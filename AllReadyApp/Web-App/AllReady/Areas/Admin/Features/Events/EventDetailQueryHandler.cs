@@ -43,8 +43,7 @@ namespace AllReady.Areas.Admin.Features.Events
                     EndDateTime = campaignEvent.EndDateTime,
                     IsLimitVolunteers = campaignEvent.IsLimitVolunteers,
                     IsAllowWaitList = campaignEvent.IsAllowWaitList,
-                    Location = campaignEvent.Location.ToEditModel(),
-                    RequiredSkills = campaignEvent.RequiredSkills,
+                    Location = campaignEvent.Location.ToEditModel(),                    
                     ImageUrl = campaignEvent.ImageUrl,
                     Tasks = campaignEvent.Tasks.Select(t => new TaskSummaryViewModel
                     {
@@ -72,6 +71,22 @@ namespace AllReady.Areas.Admin.Features.Events
                     }).OrderBy(i => i.Date).ToList()
                 };
 
+
+                // required skills
+
+                var skillIds = campaignEvent.RequiredSkills.Select(s => s.SkillId);
+
+                var skillNames = await _context.Skills.AsNoTracking()
+                    .Include(s => s.ParentSkill)
+                    .Include(s => s.ChildSkills)
+                    .Where(s => skillIds.Contains(s.Id))
+                    .Where(s => s.HierarchicalName != Skill.InvalidHierarchy)
+                    .ToListAsync();
+
+                result.RequiredSkillNames = skillNames.Select(s => s.HierarchicalName).ToList();
+
+                // end required skills
+
                 result.NewItinerary.EventId = result.Id;
                 result.NewItinerary.Date = result.StartDateTime.DateTime;
 
@@ -80,8 +95,7 @@ namespace AllReady.Areas.Admin.Features.Events
                     .Where(rec => rec.EventId == message.EventId)
                     .GroupBy(rec => rec.Status)
                     .Select(g => new { Status = g.Key, Count = g.Count() })
-                    .ToListAsync()
-                    .ConfigureAwait(false);
+                    .ToListAsync();
 
                 foreach (var req in requests)
                 {
@@ -129,8 +143,7 @@ namespace AllReady.Areas.Admin.Features.Events
                 .Include(a => a.Location)
                 .Include(a => a.Itineraries).ThenInclude(a => a.TeamMembers)
                 .Include(a => a.Itineraries).ThenInclude(a => a.Requests)
-                .SingleOrDefaultAsync(a => a.Id == message.EventId)
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync(a => a.Id == message.EventId);
         }
     }
 }

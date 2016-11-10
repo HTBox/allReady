@@ -30,8 +30,7 @@ namespace AllReady.Areas.Admin.Features.Events
                     StartDateTime = @event.StartDateTime,
                     EndDateTime = @event.EndDateTime
                 })
-                .SingleAsync(t => t.Id == message.EventId)
-                .ConfigureAwait(false);
+                .SingleAsync(t => t.Id == message.EventId);
         }
     }
 }

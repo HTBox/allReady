@@ -27,8 +27,7 @@ namespace AllReady.Features.Events
                 .Include(a => a.RequiredSkills).ThenInclude(rs => rs.Skill).ThenInclude(s => s.ParentSkill)
                 .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(tu => tu.User)
                 .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
-                .SingleOrDefaultAsync(a => a.Id == message.EventId)
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync(a => a.Id == message.EventId);
 
             if (@event == null || @event.Campaign.Locked)
             {
@@ -41,7 +40,7 @@ namespace AllReady.Features.Events
 
             if (!string.IsNullOrEmpty(message.UserId))
             {
-                applicationUser = await _context.Users.SingleOrDefaultAsync(u => u.Id == message.UserId).ConfigureAwait(false);
+                applicationUser = await _context.Users.SingleOrDefaultAsync(u => u.Id == message.UserId);
 
                 eventViewModel.UserId = message.UserId;
                 eventViewModel.UserSkills = applicationUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();

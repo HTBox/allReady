@@ -19,7 +19,10 @@
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "Microsoft.AspNetCore.Mvc": "1.0.1",
     "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.0.1",
-    "Shouldly": "2.6.0"
+    "Shouldly": "2.6.0",
+    "AllReady.Core": {
+      "target": "project"
+    }
   },
 
   "testRunner": "xunit",

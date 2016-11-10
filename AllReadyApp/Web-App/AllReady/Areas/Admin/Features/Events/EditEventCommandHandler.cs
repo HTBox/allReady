@@ -68,7 +68,7 @@ namespace AllReady.Areas.Admin.Features.Events
             campaignEvent.Headline = message.Event.Headline;
 
             _context.AddOrUpdate(campaignEvent);
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+            await _context.SaveChangesAsync();
 
             return campaignEvent.Id;
         }
@@ -78,8 +78,7 @@ namespace AllReady.Areas.Admin.Features.Events
             return await _context.Events
                 .Include(a => a.RequiredSkills)
                 .Include(a => a.Tasks)
-                .SingleOrDefaultAsync(c => c.Id == message.Event.Id)
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync(c => c.Id == message.Event.Id);
         }
     }
 }

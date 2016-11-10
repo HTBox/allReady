@@ -67,10 +67,6 @@ SET MSBUILD_PATH=%ProgramFiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe
 echo Handling ASP.NET Core Web Application deployment.
 
 :: 1. Restore nuget packages
-echo Restoring nuget packages for csproj projects (NotificationsProcessor)
-call :ExecuteCmd nuget.exe restore "%DEPLOYMENT_SOURCE%\AllReadyApp\NotificationsProcessor\packages.config" -SolutionDirectory "%DEPLOYMENT_SOURCE%\AllReadyApp" -source https://www.nuget.org/api/v2/
-IF !ERRORLEVEL! NEQ 0 goto error
-
 echo Restoring nuget packages for all project.json projects
 call :ExecuteCmd nuget.exe restore -packagesavemode nuspec
 IF !ERRORLEVEL! NEQ 0 goto error
@@ -79,18 +75,14 @@ IF !ERRORLEVEL! NEQ 0 goto error
 echo Storing Git Version Info for Runtime Display
 call :ExecuteCmd PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "(Get-Content AllReadyApp\Web-App\AllReady\version.json).replace('GITVERSION', (git rev-parse --short HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json"
 
-echo Building AllReady.Models Project (csproj)
-call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\AllReadyApp\AllReady.Models\AllReady.Models.csproj" /p:Configuration=Debug
-IF !ERRORLEVEL! NEQ 0 goto error
-
-echo Building AllReady.Models Project (project.json)
-call :ExecuteCmd dotnet build "%DEPLOYMENT_SOURCE%\AllReadyApp\wrap\AllReady.Models\project.json" --configuration Debug
+echo Building AllReady.Core Project (project.json)
+call :ExecuteCmd dotnet build "%DEPLOYMENT_SOURCE%\AllReadyApp\AllReady.Core\project.json" --configuration Debug
 IF !ERRORLEVEL! NEQ 0 goto error
 
 echo Not Building AllReady Project (it gets built with publish command)
 
-echo Building NotificationsProcessor Project (csproj)
-call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\AllReadyApp\NotificationsProcessor\NotificationsProcessor.csproj" /p:Configuration=Debug
+echo Building Web Jobs Project (project.json)
+call :ExecuteCmd dotnet build "%DEPLOYMENT_SOURCE%\AllReadyApp\AllReady.NotificationsWebJob\project.json" --configuration Debug
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 2b. Publish AllReady
@@ -98,10 +90,10 @@ echo Publishing Allready Project (project.json) which includes building it
 call :ExecuteCmd dotnet publish "%DEPLOYMENT_SOURCE%\AllReadyApp\Web-App\AllReady" --output "%DEPLOYMENT_TEMP%" --configuration Debug
 IF !ERRORLEVEL! NEQ 0 goto error
 
-:: 2c. Publish WebJobs (NotificationsProcessor)
-echo Publishing NotificationsProcessor WebJob
+:: 2c. Publish WebJobs (AllReady.NotificationsWebJob)
+echo Publishing AllReady.NotificationsWebJob WebJob
 call :ExecuteCmd mkdir "%DEPLOYMENT_TEMP%\app_data\jobs\continuous\notificationsprocessor\"
-call :ExecuteCmd xcopy /S "%DEPLOYMENT_SOURCE%\AllReadyApp\NotificationsProcessor\bin\debug" "%DEPLOYMENT_TEMP%\app_data\jobs\continuous\notificationsprocessor\"
+call :ExecuteCmd xcopy /S "%DEPLOYMENT_SOURCE%\AllReadyApp\AllReady.NotificationsWebJob\bin\debug\net451" "%DEPLOYMENT_TEMP%\app_data\jobs\continuous\notificationsprocessor\"
 
 
 :: 3. KuduSync

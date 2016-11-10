@@ -29,8 +29,7 @@ namespace AllReady.Features.Notifications
                 .Include(ts => ts.Task)
                     .ThenInclude(t => t.Event).ThenInclude(a => a.Campaign).ThenInclude(c => c.CampaignContacts).ThenInclude(cc => cc.Contact)
                 .Include(ts => ts.User)
-                .SingleAsync(ts => ts.Id == notification.SignupId)
-                .ConfigureAwait(false);
+                .SingleAsync(ts => ts.Id == notification.SignupId);
 
             var volunteer = taskSignup.User;
             var task = taskSignup.Task;
@@ -64,7 +63,7 @@ namespace AllReady.Features.Notifications
                     }
                 };
 
-                await _mediator.SendAsync(command).ConfigureAwait(false);
+                await _mediator.SendAsync(command);
             }
         }
     }

@@ -1,11 +1,8 @@
 ﻿using AllReady.Models;
 using Geocoding;
-using Geocoding.Google;
 using MediatR;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {
@@ -26,6 +23,8 @@ namespace AllReady.Areas.Admin.Features.Requests
 
             foreach (var request in message.Requests)
             {
+                request.Source = RequestSource.Csv;
+
                 // todo: do basic data validation
                 if (!_context.Requests.Any(r => r.ProviderId == request.ProviderId))
                 {

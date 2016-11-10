@@ -8,5 +8,4 @@
         public int ContactId { get; set; }
         public int /*ContactType*/ ContactType { get; set; }
     }
-
 }

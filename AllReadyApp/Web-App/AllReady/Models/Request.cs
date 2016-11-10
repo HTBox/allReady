@@ -21,6 +21,11 @@ namespace AllReady.Models
         public string Email { get; set; }
         public RequestStatus Status { get; set; } = RequestStatus.Unassigned;
 
+        /// <summary>
+        /// The source of the request
+        /// </summary>
+        public RequestSource Source { get; set; } = RequestSource.Unknown;
+
         // no support yet for spatial types
         public double Latitude { get; set; }
         public double Longitude { get; set; }

@@ -28,8 +28,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                 .Include(l => l.Location)
                 .Include(tc => tc.CampaignContacts)
                 .Include(i => i.CampaignImpact)
-                .SingleOrDefaultAsync(c => c.Id == message.Campaign.Id)
-                .ConfigureAwait(false) ?? new Campaign();
+                .SingleOrDefaultAsync(c => c.Id == message.Campaign.Id) ?? new Campaign();
 
             campaign.Name = message.Campaign.Name;
             campaign.Description = message.Campaign.Description;
@@ -53,7 +52,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
             _context.AddOrUpdate(campaign);
 
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+            await _context.SaveChangesAsync();
 
             return campaign.Id;
         }

@@ -29,6 +29,8 @@
   "cordovaPlatforms": [],
   "scripts": {
     "test": "npm run lint",
-    "lint": "node_modules/.bin/eslint --ignore-path .gitignore www scripts"
+    "lint": "node_modules/.bin/eslint --ignore-path .gitignore www scripts",
+    "ionic-serve": "ionic serve --address localhost",
+    "ionic-lab": "ionic serve --lab --address localhost"
   }
 }

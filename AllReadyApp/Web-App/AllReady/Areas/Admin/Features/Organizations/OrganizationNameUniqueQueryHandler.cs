@@ -17,8 +17,7 @@ namespace AllReady.Areas.Admin.Features.Organizations
         public async Task<bool> Handle(OrganizationNameUniqueQuery message)
         {
             var existingOrgCount = await _context.Organizations
-                .CountAsync(o => o.Name == message.OrganizationName && o.Id != message.OrganizationId)
-                .ConfigureAwait(false);
+                .CountAsync(o => o.Name == message.OrganizationName && o.Id != message.OrganizationId);
 
             return existingOrgCount <= 0;
         }

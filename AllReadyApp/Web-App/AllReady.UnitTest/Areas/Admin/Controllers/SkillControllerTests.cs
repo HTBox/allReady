@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 using AllReady.Areas.Admin.ViewModels.Skill;
 using Microsoft.AspNetCore.Routing;
+using Shouldly;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -428,6 +429,28 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
+        public async Task SkillEditGet_ReturnsEmptyParentSelection_WhenNoValidSkillsReturnedByListQuery()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillEditQuery>())).ReturnsAsync(EditSkillModel());
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillListQuery>())).ReturnsAsync(new List<SkillSummaryViewModel>());
+
+            var sut = new SkillController(mockMediator.Object);
+            var mockContext = MockControllerContextWithUser(SiteAdmin());
+            sut.ControllerContext = mockContext.Object;
+
+            // Act
+            var result = await sut.Edit(1);
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = viewResult.Model as SkillEditViewModel;
+
+            model.ParentSelection.ShouldBeEmpty();
+        }
+
+        [Fact]
         public async Task SkillEditPostForOrgAdminWithValidModelStateReturnsRedirectToAction()
         {
             // Arrange
@@ -749,8 +772,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             return new List<SkillSummaryViewModel>
             {
-                new SkillSummaryViewModel { Id = 1, HierarchicalName = "Name", OwningOrganizationName = "Org" },
-                new SkillSummaryViewModel { Id = 2, HierarchicalName = "Name 2", OwningOrganizationName = "Org" }
+                new SkillSummaryViewModel { Id = 1, HierarchicalName = "Name", OwningOrganizationName = "Org", DescendantIds = new List<int>() },
+                new SkillSummaryViewModel { Id = 2, HierarchicalName = "Name 2", OwningOrganizationName = "Org", DescendantIds = new List<int>() }
             };
         }
 

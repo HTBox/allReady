@@ -4,6 +4,8 @@ using System.Linq;
 using AllReady.Extensions;
 using AllReady.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
+using AllReady.Security;
 
 namespace AllReady.Services
 {
@@ -16,9 +18,39 @@ namespace AllReady.Services
             _context = context;
         }
 
-        public IEnumerable<SelectListItem> GetOrganizations()
+        public IEnumerable<SelectListItem> GetOrganizations(ClaimsPrincipal user)
         {
-            return _context.Organizations.Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name });
+            // Default to authorizing the return of no organizations
+            var listOfOrganizations = new List<SelectListItem>();
+
+            if (user.IsUserType(UserType.SiteAdmin))
+            {
+                listOfOrganizations = GetOrganizationsForSiteAdmin();
+            }
+            else if (user.IsUserType(UserType.OrgAdmin))
+            {
+                listOfOrganizations = GetOrganizationForOrgAdmin(user);
+            }
+
+            return listOfOrganizations;
+        }
+
+        private List<SelectListItem> GetOrganizationsForSiteAdmin()
+        {
+            return _context.Organizations.Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name }).ToList();
+        }
+
+        private List<SelectListItem> GetOrganizationForOrgAdmin(ClaimsPrincipal user)
+        {
+            int? organizationId = user.GetOrganizationId();
+            if (organizationId.HasValue)
+            {
+                return _context.Organizations.Where(o => o.Id == organizationId)
+                    .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name })
+                    .ToList();
+            }
+
+            return new List<SelectListItem>();
         }
 
         //TODO: this needs to be moved out of the SelecListService class b/c it does not return an IEnumerable<SelectListItem>

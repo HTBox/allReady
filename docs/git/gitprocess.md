@@ -205,7 +205,7 @@ git push origin issue-branch-#### -f
 
 ## Creating a Pull Request
 
-Once you are done fixing the Github issue that you are working on and are ready to submit your changes to the HTBox allReady team, you need to create a Pull Request on the Github website.  Unfortunately this is no command line option to create a pull request.
+Once you are done fixing the Github issue that you are working on and are ready to submit your changes to the HTBox allReady team, you need to create a Pull Request on the Github website.  Unfortunately there is no command line option to create a pull request.
 
 To create your pull request, navigate to your allReady repository on the Github website.  When you are on the allReady repository and viewing your issue branch, you will see a "Compare & pull request" button displayed.  Click on this button to start your pull request. 
 

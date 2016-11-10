@@ -28,8 +28,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     OrganizationId = c.ManagingOrganization.Id,
                     OrganizationName = c.ManagingOrganization.Name
                 })
-                .SingleOrDefaultAsync(c => c.Id == message.CampaignId)
-                .ConfigureAwait(false);
+                .SingleOrDefaultAsync(c => c.Id == message.CampaignId);
         }
     }
 }

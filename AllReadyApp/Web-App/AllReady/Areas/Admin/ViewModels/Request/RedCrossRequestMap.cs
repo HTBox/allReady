@@ -13,7 +13,6 @@ namespace AllReady.Areas.Admin.ViewModels.Request
 
             // set defaults
             Map(r => r.RequestId).Default(Guid.NewGuid());
-            Map(r => r.Status).Default(RequestStatus.Unassigned);
 
             // map from Red Cross data
             Map(r => r.Name).Name("name");
@@ -29,6 +28,5 @@ namespace AllReady.Areas.Admin.ViewModels.Request
             Map(r => r.Latitude).Name("latitude").Default(0);
             Map(r => r.Longitude).Name("longitude").Default(0);
         }
-
     }
 }

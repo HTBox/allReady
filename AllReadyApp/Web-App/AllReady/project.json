@@ -61,7 +61,13 @@
       "type": "build"
     },
     "linqtotwitter": "4.1.0",
-    "Geocoding.net": "3.4.0"
+    "Geocoding.net": "3.4.0",
+    "Hangfire.AspNetCore": "1.6.6",
+    "Hangfire": "1.6.6",
+    "Hangfire.Core": "1.6.6",
+    "Hangfire.SqlServer": "1.6.6",
+    "Hangfire.Autofac": "2.2.0",
+    "AllReady.Core": "1.0.0-*"
   },
 
   "tools": {
@@ -81,7 +87,6 @@
   "frameworks": {
     "net451": {
       "dependencies": {
-        "AllReady.Models": "1.0.0-*"
       },
       "frameworkAssemblies": {
         "System.Drawing": "4.0.0.0"

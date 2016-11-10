@@ -2,6 +2,11 @@ namespace AllReady.ViewModels.Requests
 {
     public class RequestViewModel
     {
+        public string RequestId { get; set; }
+        // allow for unique identifiers and mapping information
+        public string ProviderId { get; set; } // for RedCross, "serial"
+        public string ProviderData { get; set; } // for Red Cross, "assigned_rc_region"
+
         public string Name { get; set; }
         public string Address { get; set; }
         public string City { get; set; }
@@ -10,12 +15,7 @@ namespace AllReady.ViewModels.Requests
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Status { get; set; }
-
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-
-        // allow for unique identifiers and mapping information
-        public string ProviderId { get; set; }      // for RedCross, "serial"
-        public string ProviderData { get; set; }    // for Red Cross, "assigned_rc_region"
     }
 }

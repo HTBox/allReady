@@ -30,7 +30,7 @@ namespace AllReady.Features.Events
                     Task = new AllReadyTask { Id = taskSignupViewModel.TaskId },
                     User = currentUser
                 });
-                await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+                await this.dbContext.SaveChangesAsync();
             }
         }
     }

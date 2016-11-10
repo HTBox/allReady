@@ -21,7 +21,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 .Include(r => r.Itinerary)
                 .Include(r => r.Request)
                 .Where(r => r.ItineraryId == message.ItineraryId)
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync();
 
             var requestToRemove = itineraryRequests.FirstOrDefault(r => r.RequestId == message.RequestId);
 
@@ -43,7 +43,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 requestToMoveUp.OrderIndex--;
             }
 
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+            await _context.SaveChangesAsync();
         }
     }
 }

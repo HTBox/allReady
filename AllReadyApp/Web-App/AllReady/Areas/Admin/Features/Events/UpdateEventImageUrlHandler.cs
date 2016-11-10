@@ -19,7 +19,7 @@ namespace AllReady.Areas.Admin.Features.Events
             var @event = await _context.Events.SingleAsync(x => x.Id == message.EventId);
             @event.ImageUrl = message.ImageUrl;
 
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+            await _context.SaveChangesAsync();
         }
     }
 }
