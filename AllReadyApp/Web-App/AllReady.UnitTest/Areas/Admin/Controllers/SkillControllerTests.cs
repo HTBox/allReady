@@ -13,6 +13,7 @@ using AllReady.Areas.Admin.Features.Organizations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 using AllReady.Areas.Admin.ViewModels.Skill;
+using AllReady.UnitTest.Extensions;
 using Microsoft.AspNetCore.Routing;
 using Shouldly;
 
@@ -94,9 +95,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillListQuery>()), Times.Never);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void IndexHasHttpGetAttribute()
         {
+            SkillController controller = new SkillController(null);
+            var attribute = controller.GetAttributesOn(x => x.Index()).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         #endregion
@@ -170,9 +174,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(2, (result.ViewData.Model as SkillEditViewModel).ParentSelection.ToList().Count());
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void CreateGetHasHttpGetAttribute()
         {
+            SkillController controller = new SkillController(null);
+            var attribute = controller.GetAttributesOn(x => x.Create()).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact]
@@ -272,14 +279,20 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(2, (result.ViewData.Model as SkillEditViewModel).ParentSelection.ToList().Count());
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void CreatePostHasHttpPostAttribute()
         {
+            SkillController controller = new SkillController(null);
+            var attribute = controller.GetAttributesOn(x => x.Create(It.IsAny<SkillEditViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void CreatePostHasValidateAntiForgeryTokenAttribute()
         {
+            SkillController controller = new SkillController(null);
+            var attribute = controller.GetAttributesOn(x => x.Create(It.IsAny<SkillEditViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         private static SkillEditViewModel CreateSkillModel()
@@ -402,9 +415,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQuery>()), Times.Never);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void EditGetHasHttpGetAttrbitue()
         {
+            SkillController controller = new SkillController(null);
+            var attribute = controller.GetAttributesOn(x => x.Edit(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact]
@@ -471,14 +487,20 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<SkillEditCommand>()), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void EditPostHasHttpPostAttrbitue()
         {
+            SkillController controller = new SkillController(null);
+            var attribute = controller.GetAttributesOn(x => x.Edit(It.IsAny<SkillEditViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void EditPostHasValidateAntiForgeryTokenttrbitue()
         {
+            SkillController controller = new SkillController(null);
+            var attribute = controller.GetAttributesOn(x => x.Edit(It.IsAny<SkillEditViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact]
@@ -621,9 +643,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal("Delete", result.ViewName);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void DeleteHasHttpGetAttribute()
         {
+            SkillController controller = new SkillController(null);
+            var attribute = controller.GetAttributesOn(x => x.Delete(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact]
@@ -683,19 +708,29 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(routeValueDictionary, result.RouteValues);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void DeleteConfirmedHasHttpPostAttribute()
         {
+            SkillController controller = new SkillController(null);
+            var attribute = controller.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<SkillDeleteViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void DeleteConfirmedHasActionNameAttributeWithCorrerctActionName()
         {
+            SkillController controller = new SkillController(null);
+            var attribute = controller.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<SkillDeleteViewModel>())).OfType<ActionNameAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Name, "Delete");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void DeleteConfirmedHasValidateAntiForgeryTokenAttribute()
         {
+            SkillController controller = new SkillController(null);
+            var attribute = controller.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<SkillDeleteViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         #endregion
