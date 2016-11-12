@@ -33,8 +33,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     EventId = task.Event.Id,
                     EventName = task.Event.Name,
                     CampaignId = task.Event.CampaignId,
-                    EventStartDateTime = task.Event.Campaign.StartDateTime,
-                    EventEndDateTime = task.Event.Campaign.EndDateTime,
+                    EventStartDateTime = task.Event.StartDateTime,
+                    EventEndDateTime = task.Event.EndDateTime,
                     CampaignName = task.Event.Campaign.Name,
                     OrganizationId = task.Event.Campaign.ManagingOrganizationId,
                     TimeZoneId = task.Event.Campaign.TimeZoneId
