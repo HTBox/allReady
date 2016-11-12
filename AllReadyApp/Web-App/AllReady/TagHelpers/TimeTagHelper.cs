@@ -10,13 +10,6 @@ namespace AllReady.TagHelpers
     [HtmlTargetElement("time", Attributes="value")]
     public class TimeTagHelper : TagHelper
     {
-        private readonly IConvertDateTimeOffset _dateTimeOffsetConverter;
-
-        public TimeTagHelper(IConvertDateTimeOffset dateTimeOffsetConverter)
-        {
-            _dateTimeOffsetConverter = dateTimeOffsetConverter;
-        }
-
         /// <summary>
         /// The DateTimeOffset value to format
         /// </summary>

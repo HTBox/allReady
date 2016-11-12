@@ -12,7 +12,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Request;
@@ -50,9 +49,8 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-			var url = Url.Action(new UrlActionContext { Action = nameof(Details), Controller = "Itinerary", Values = new { id = id, Area = "Admin" } });//.TrimEnd('0');
-
-			viewModel.ItinerariesDetailsUrl = url;
+            var url = Url.Action("Details", "Itinerary", new { Area = "Admin", id = 0 }).TrimEnd('0');
+            viewModel.ItinerariesDetailsUrl = string.Concat(url, "{id}");
 
             return View(viewModel);
         }

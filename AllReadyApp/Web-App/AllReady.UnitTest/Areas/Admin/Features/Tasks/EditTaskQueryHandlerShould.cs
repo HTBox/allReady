@@ -37,7 +37,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                         Name = "CampaignName",
                         ManagingOrganizationId = 5,
                         TimeZoneId = "Central Standard Time"
-                    }
+                    },
+                    TimeZoneId = "Central Standard Time"
                 }
             };
 
@@ -63,11 +64,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Assert.Equal(result.EventId, task.Event.Id);
             Assert.Equal(result.EventName, task.Event.Name);
             Assert.Equal(result.CampaignId, task.Event.CampaignId);
-            Assert.Equal(result.EventStartDateTime, task.Event.StartDateTime);
-            Assert.Equal(result.EventEndDateTime, task.Event.EndDateTime);
             Assert.Equal(result.CampaignName, task.Event.Campaign.Name);
             Assert.Equal(result.OrganizationId, task.Event.Campaign.ManagingOrganizationId);
-            Assert.Equal(result.TimeZoneId, task.Event.Campaign.TimeZoneId);
+            Assert.Equal(result.TimeZoneId, task.Event.TimeZoneId);
         }
 
         [Fact]

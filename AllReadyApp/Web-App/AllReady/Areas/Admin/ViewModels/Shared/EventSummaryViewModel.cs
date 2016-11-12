@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using AllReady.Models;
+using AllReady.ModelBinding;
 
 namespace AllReady.Areas.Admin.ViewModels.Shared
 {
@@ -33,17 +34,25 @@ namespace AllReady.Areas.Admin.ViewModels.Shared
         public string ImageUrl { get; set; }
 
         [Display(Name = "Browse for image")]
-        public string FileUpload { get; set; }
-
-        public string TimeZoneId { get; set; }
+        public string FileUpload { get; set; }        
 
         [MaxLength(150)]
         public string Headline { get; set; }
 
+        [Display(Name = "Time Zone")]
+        [Required]
+        public string TimeZoneId { get; set; }
+
         [Display(Name = "Start Date")]
+        [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-ddTHH:mm:ss.fff}")]
+        //What do I nee to go here to format this as a local date time when viewing it? I don't want the offset to be sent to the client because
+        //that just confuses things
         public DateTimeOffset StartDateTime { get; set; }
 
         [Display(Name = "End Date")]
+        [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-ddTHH:mm:ss.fff}")]
         public DateTimeOffset EndDateTime { get; set; }
 
         [Display(Name = "Enforce volunteer limit on tasks")]

@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Models;
+using AllReady.ModelBinding;
 
 namespace AllReady.Areas.Admin.ViewModels.Campaign
 {
@@ -44,10 +45,12 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
 
         [Display(Name = "Start Date")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
+        [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
         public DateTimeOffset StartDate { get; set; }
 
         [Display(Name = "End Date")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
+        [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
         public DateTimeOffset EndDate { get; set; }
 
         public CampaignImpact CampaignImpact { get; set; } = new CampaignImpact();
