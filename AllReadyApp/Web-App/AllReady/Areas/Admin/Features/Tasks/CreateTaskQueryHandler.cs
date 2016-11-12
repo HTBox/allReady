@@ -27,8 +27,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     EventName = e.Name,
                     StartDateTime = e.StartDateTime,
                     EndDateTime = e.EndDateTime,
-                    EventStartDateTime = e.StartDateTime,
-                    EventEndDateTime = e.EndDateTime,
                     CampaignId = e.CampaignId,
                     CampaignName = e.Campaign.Name,
                     OrganizationId = e.Campaign.ManagingOrganizationId,
