@@ -20,12 +20,12 @@ namespace AllReady.UnitTest.ViewModels.Event
         public void SetCampaignIdCampaignNameAndTimeZoneId_WhenConstructingWithNonNullCampaign()
         {
             var campaign = new Models.Campaign { Id = 1, Name = "Campaignname", TimeZoneId = "CampaignTimeZoneId" };
-            var @event = new Models.Event { Campaign = campaign };
+            var @event = new Models.Event { Campaign = campaign, TimeZoneId = "EventTimeZoneId" };
             var sut = new EventViewModel(@event);
 
             Assert.Equal(sut.CampaignId, campaign.Id);
             Assert.Equal(sut.CampaignName, campaign.Name);
-            Assert.Equal(sut.TimeZoneId, campaign.TimeZoneId);
+            Assert.Equal(sut.TimeZoneId, @event.TimeZoneId);
         }
 
         [Fact]

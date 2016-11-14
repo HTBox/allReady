@@ -16,6 +16,7 @@
     "eslint": "^3.4.0",
     "fs-extra": "^0.30.0",
     "gulp-util": "^2.2.14",
+    "replace": "^0.3.0",
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [

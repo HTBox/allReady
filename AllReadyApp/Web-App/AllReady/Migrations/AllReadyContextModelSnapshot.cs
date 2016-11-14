@@ -287,6 +287,9 @@ namespace AllReady.Migrations
 
                     b.Property<DateTimeOffset>("StartDateTime");
 
+                    b.Property<string>("TimeZoneId")
+                        .IsRequired();
+
                     b.HasKey("Id");
 
                     b.HasIndex("CampaignId");

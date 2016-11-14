@@ -56,7 +56,6 @@
             }
             <input asp-for="CampaignId" type="hidden" />
             <input asp-for="CampaignName" type="hidden" />
-            <input asp-for="TimeZoneId" type="hidden" />
             <input asp-for="OrganizationId" type="hidden" />
             <input asp-for="OrganizationName" type="hidden" />
             <div class="form-group">
@@ -108,20 +107,25 @@
                     <span asp-validation-for="IsAllowWaitList" class="text-danger"></span>
                 </div>
             </div>*@
+            <div class="form-group">
+                <label asp-for="TimeZoneId" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <select asp-for="TimeZoneId" asp-items="SelectListService.GetTimeZones()" class="form-control"></select>
+                    <span asp-validation-for="TimeZoneId" class="text-danger"></span>
+                </div>
+            </div>
 
             <div class="form-group">
                 <label asp-for="StartDateTime" class="control-label col-md-2"></label>
                 <div class="col-md-10">
-                    <input asp-for="StartDateTime" class="form-control datetimepicker start-date-time" />
-                    <time-zone-name time-zone-id="@Model.TimeZoneId" class="text-muted"></time-zone-name><br />
+                    <input type="text" asp-for="StartDateTime" class="form-control datetimepicker start-date-time" autocomplete="off" />
                     <span asp-validation-for="StartDateTime" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">
                 <label asp-for="EndDateTime" class="control-label col-md-2"></label>
                 <div class="col-md-10">
-                    <input asp-for="EndDateTime" class="form-control datetimepicker end-date-time" />
-                    <time-zone-name time-zone-id="@Model.TimeZoneId" class="text-muted"></time-zone-name><br />
+                    <input type="text" asp-for="EndDateTime" class="form-control datetimepicker end-date-time" autocomplete="off" />
                     <span asp-validation-for="EndDateTime" class="text-danger"></span>
                 </div>
             </div>

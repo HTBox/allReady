@@ -14,12 +14,10 @@ namespace AllReady.Areas.Admin.Features.Campaigns
     public class EditCampaignCommandHandler : IAsyncRequestHandler<EditCampaignCommand, int>
     {
         private readonly AllReadyContext _context;
-        private readonly IConvertDateTimeOffset dateTimeOffsetsConverter;
 
-        public EditCampaignCommandHandler(AllReadyContext context, IConvertDateTimeOffset dateTimeOffsetsConverter)
+        public EditCampaignCommandHandler(AllReadyContext context)
         {
             _context = context;
-            this.dateTimeOffsetsConverter = dateTimeOffsetsConverter;
         }
 
         public async Task<int> Handle(EditCampaignCommand message)
@@ -37,8 +35,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.ExternalUrlText = message.Campaign.ExternalUrlText;
 
             campaign.TimeZoneId = message.Campaign.TimeZoneId;
-            campaign.StartDateTime = dateTimeOffsetsConverter.ConvertDateTimeOffsetTo(campaign.TimeZoneId, message.Campaign.StartDate);
-            campaign.EndDateTime = dateTimeOffsetsConverter.ConvertDateTimeOffsetTo(campaign.TimeZoneId, message.Campaign.EndDate, 23, 59, 59);
+            campaign.StartDateTime = message.Campaign.StartDate;
+            campaign.EndDateTime = message.Campaign.EndDate.AddDays(1).AddSeconds(-1); //Adjusted to the end of the day
 
             campaign.ManagingOrganizationId = message.Campaign.OrganizationId;
             campaign.ImageUrl = message.Campaign.ImageUrl;

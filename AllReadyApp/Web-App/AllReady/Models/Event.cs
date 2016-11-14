@@ -28,6 +28,10 @@ namespace AllReady.Models
         [Display(Name = "End date")]
         public DateTimeOffset EndDateTime { get; set; }
 
+        [Display(Name = "Time Zone")]
+        [Required]
+        public string TimeZoneId { get; set; }
+
         public Location Location { get; set; }
 
         public List<AllReadyTask> Tasks { get; set; } = new List<AllReadyTask>();
