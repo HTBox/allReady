@@ -193,16 +193,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             //Arrange
             var organizationValidatorMock = new Mock<IOrganizationEditModelValidator>();
             var errors = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("FakeProperty", "FakeError") };
-            organizationValidatorMock.Setup(o => o.Validate(It.IsAny<OrganizationEditViewModel>())).Returns(errors);
+            var organizationEditModel = new OrganizationEditViewModel {Id = 1, Name = "Test1"};
+            organizationValidatorMock.Setup(o => o.Validate(organizationEditModel)).Returns(errors);
             var sut = new OrganizationController(null, organizationValidatorMock.Object);
 
             //Act
-            var result = await sut.Edit(_organizationEditModel) as ViewResult;
+            var result = await sut.Edit(organizationEditModel) as ViewResult;
 
             //Assert
-            organizationValidatorMock.Verify(o => o.Validate(It.IsAny<OrganizationEditViewModel>()), Times.Once);
-            result.ShouldNotBeNull();
-            result.ViewData.Model.ShouldBeSameAs(_organizationEditModel);
+            organizationValidatorMock.Verify(o => o.Validate(organizationEditModel), Times.Once);
         }
 
         [Fact]
@@ -218,7 +217,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await sut.Edit(_organizationEditModel) as ViewResult;
 
             //Assert
-            result.ViewData.Model.ShouldBeSameAs(_organizationEditModel);
             result.ViewData.ModelState.ErrorCount.ShouldBe(1);
             result.ViewData.ModelState["FakeProperty"].ValidationState.ShouldBe(ModelValidationState.Invalid);
             result.ViewData.ModelState["FakeProperty"].Errors.Single().ErrorMessage.ShouldBe("FakeError");
