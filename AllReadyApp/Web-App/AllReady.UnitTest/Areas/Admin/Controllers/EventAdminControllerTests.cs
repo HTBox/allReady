@@ -8,6 +8,7 @@ using AllReady.Services;
 using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
 using Xunit;
 using System.Linq;
@@ -28,20 +29,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         //delete this line when all unit tests using it have been completed
         private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task DetailsSendsEventDetailQueryWithCorrectEventId()
-        {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
-        }
-
         [Fact]
         public async Task DetailsReturnsHttpNotFoundResult_WhenEventIsNull()
         {
-            //var mediator = new Mock<IMediator>();
-            //mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQueryAsync>())).ReturnsAsync(new CampaignSummaryViewModel());
-
-            //var sut = new EventController(null, mediator.Object, null);
             var sut = new EventController(null, Mock.Of<IMediator>(), null);
             var result = await sut.Details(It.IsAny<int>());
 
@@ -71,13 +61,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task DetailsReturnsCorrectViewModel_WhenEventIsNotNull_AndUserIsOrgAdmin()
+		public async Task DetailsReturnsCorrectViewModel_WhenEventIsNotNull_AndUserIsOrgAdmin()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
-        }
+			// delete this line when starting work on this unit test
+			await TaskFromResultZero;
+		}
 
-        [Fact]
+		[Fact]
         public void DetailsHasHttpGetAttribute()
         {
             var sut = EventControllerWithNoInjectedDependencies();
@@ -114,7 +104,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task CreateGetReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>()))
+				.ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
 
             var sut = new EventController(null, mediator.Object, null);
             sut.MakeUserNotAnOrgAdmin();
@@ -123,11 +114,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task CreateGetReturnsCorrectView_AndViewModel()
+		public async Task CreateGetReturnsCorrectView_AndViewModel()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
-        }
+			// delete this line when starting work on this unit test
+			await TaskFromResultZero;
+		}
 
         [Fact]
         public void CreateGetHasRouteAttributeWithCorrectRoute()
@@ -164,7 +155,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task CreatePostReturnsEditView_When_EventDetailsModelValidatorHasErrors()
+		public async Task CreatePostReturnsEditView_When_EventDetailsModelValidatorHasErrors()
         {
             var imageService = new Mock<IImageService>();
 

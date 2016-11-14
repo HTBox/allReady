@@ -222,17 +222,17 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-md-2 control-label">Impact Type</label>
-                    <div class="form-horizontal">
-                        @Html.DropDownListFor(model => model.CampaignImpact.ImpactType, SelectListService.GetCampaignImpactTypes(), htmlAttributes: new { @class = "form-control" })
-                    </div>
-                </div>
-                <div class="form-group">
                     <label class="col-md-2 control-label">Campaign Impact Goal</label>
                     <div class="form-horizontal">
                         <input type="text" asp-for="CampaignImpact.TextualImpactGoal" class="form-control" />
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Impact Type</label>
+                    <div class="form-horizontal">
+                        @Html.DropDownListFor(model => model.CampaignImpact.ImpactType, SelectListService.GetCampaignImpactTypes(), htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>                
                 <div id="numericImpactSection">
                     <div class="form-group">
                         <label class="col-md-2 control-label">Current Impact Level</label>

@@ -30,7 +30,6 @@ angular.module('allReady.controllers')
 
     // Perform the login action when the user submits the login form
     $scope.doLogin = function () {
-        console.log('Doing login', $scope.loginData);
         Backend.doLogin($scope.loginData.username, $scope.loginData.password).then(function (result) {
             console.log("Logged in");
             $scope.closeLogin();

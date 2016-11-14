@@ -35,7 +35,7 @@ namespace AllReady.UnitTest.TagHelpers
             System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("en-US");
             System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
 
-            TimeTagHelper tagHelper = new TimeTagHelper(Mock.Of<IConvertDateTimeOffset>());
+            TimeTagHelper tagHelper = new TimeTagHelper();
             tagHelper.Value = new DateTimeOffset(2014, 12, 25, 13, 21, 0, TimeSpan.FromHours(0));
 
             var output = GetOutput();
@@ -48,7 +48,7 @@ namespace AllReady.UnitTest.TagHelpers
         [Fact]
         public void ValueShouldBeFormattedUsingSpecifiedFormat()
         {
-            TimeTagHelper tagHelper = new TimeTagHelper(Mock.Of<IConvertDateTimeOffset>());
+            TimeTagHelper tagHelper = new TimeTagHelper();
             tagHelper.Value = new DateTimeOffset(2014, 12, 25, 13, 21, 0, TimeSpan.FromHours(0));
             tagHelper.Format = "yyyy-MM-dd";
 

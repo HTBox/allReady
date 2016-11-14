@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Models;
+using AllReady.ModelBinding;
 
 namespace AllReady.Areas.Admin.ViewModels.Task
 {
@@ -30,9 +31,13 @@ namespace AllReady.Areas.Admin.ViewModels.Task
         public string TimeZoneId { get; set; }
 
         [Display(Name = "Start date")]
+        [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-ddTHH:mm:ss.fff}")]
         public DateTimeOffset StartDateTime { get; set; }
 
         [Display(Name = "End date")]
+        [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-ddTHH:mm:ss.fff}")]
         public DateTimeOffset EndDateTime { get; set; }
 
         [Display(Name = "Volunteers Required")]
@@ -43,12 +48,6 @@ namespace AllReady.Areas.Admin.ViewModels.Task
 
         //only used for update scenarios
         public List<VolunteerViewModel> AssignedVolunteers { get; set; } = new List<VolunteerViewModel>();
-
-        //added for min/max validation on the create/edit views
-        public DateTimeOffset EventStartDateTime { get; set; }
-
-        //added for min/max validation on the create/edit views
-        public DateTimeOffset EventEndDateTime { set; get; }
 
         //used to build Cancel button url for create and edit actions
         public string CancelUrl { get; set; }

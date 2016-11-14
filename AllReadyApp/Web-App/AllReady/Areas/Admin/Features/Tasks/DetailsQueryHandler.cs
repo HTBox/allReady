@@ -33,7 +33,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 EventName = task.Event.Name,
                 CampaignId = task.Event.CampaignId,
                 CampaignName = task.Event.Campaign.Name,
-                TimeZoneId = task.Event.Campaign.TimeZoneId,
+                TimeZoneId = task.Event.TimeZoneId,
                 RequiredSkills = task.RequiredSkills,
                 AssignedVolunteers = task.AssignedVolunteers.Select(ts => new VolunteerViewModel { UserId = ts.User.Id, UserName = ts.User.UserName, HasVolunteered = true }).ToList(),
             };

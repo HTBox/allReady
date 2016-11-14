@@ -11,12 +11,10 @@ namespace AllReady.Areas.Admin.Features.Events
     public class EditEventCommandHandler : IAsyncRequestHandler<EditEventCommand, int>
     {
         private AllReadyContext _context;
-        private readonly IConvertDateTimeOffset _dateTimeOffsetConverter;
 
-        public EditEventCommandHandler(AllReadyContext context, IConvertDateTimeOffset dateTimeOffsetConverter)
+        public EditEventCommandHandler(AllReadyContext context)
         {
             _context = context;
-            _dateTimeOffsetConverter = dateTimeOffsetConverter;
         }
         public async Task<int> Handle(EditEventCommand message)
         {
@@ -26,8 +24,9 @@ namespace AllReady.Areas.Admin.Features.Events
             campaignEvent.Description = message.Event.Description;
             campaignEvent.EventType = message.Event.EventType;
 
-            campaignEvent.StartDateTime = _dateTimeOffsetConverter.ConvertDateTimeOffsetTo(message.Event.TimeZoneId, message.Event.StartDateTime, message.Event.StartDateTime.Hour, message.Event.StartDateTime.Minute);
-            campaignEvent.EndDateTime = _dateTimeOffsetConverter.ConvertDateTimeOffsetTo(message.Event.TimeZoneId, message.Event.EndDateTime, message.Event.EndDateTime.Hour, message.Event.EndDateTime.Minute);
+            campaignEvent.TimeZoneId = message.Event.TimeZoneId;
+            campaignEvent.StartDateTime = message.Event.StartDateTime;
+            campaignEvent.EndDateTime = message.Event.EndDateTime;
 
             campaignEvent.CampaignId = message.Event.CampaignId;
             

@@ -27,12 +27,10 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     EventName = e.Name,
                     StartDateTime = e.StartDateTime,
                     EndDateTime = e.EndDateTime,
-                    EventStartDateTime = e.Campaign.StartDateTime,
-                    EventEndDateTime = e.Campaign.EndDateTime,
                     CampaignId = e.CampaignId,
                     CampaignName = e.Campaign.Name,
                     OrganizationId = e.Campaign.ManagingOrganizationId,
-                    TimeZoneId = e.Campaign.TimeZoneId
+                    TimeZoneId = e.TimeZoneId
                 })
                 .SingleAsync(e => e.EventId == message.EventId);
         }

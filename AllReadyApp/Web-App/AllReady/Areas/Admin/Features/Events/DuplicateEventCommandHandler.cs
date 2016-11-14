@@ -37,6 +37,7 @@ namespace AllReady.Areas.Admin.Features.Events
                 Description = @event.Description,
                 EventType = @event.EventType,
                 StartDateTime = @event.StartDateTime,
+                TimeZoneId = @event.TimeZoneId,
                 EndDateTime = @event.EndDateTime,
                 Location = CloneLocation(@event.Location),
                 Tasks = CloneTasks(@event.Tasks).ToList(),
