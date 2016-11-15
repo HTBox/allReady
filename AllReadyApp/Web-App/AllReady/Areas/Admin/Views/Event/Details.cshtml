@@ -152,7 +152,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="@nameof(Model.NewItinerary.Date)" class="control-label">Scheduled Date</label>
-                                    <input class="form-control" id="createItineraryModal-date" asp-for="NewItinerary.Date" name="@nameof(Model.NewItinerary.Date)" value="@Model.NewItinerary.Date.ToString("yyyy-MM-dd")">
+                                    <input class="form-control" id="createItineraryModal-date" asp-for="NewItinerary.Date" name="@nameof(Model.NewItinerary.Date)" value="@DateTime.Now.ToString("yyyy-MM-dd")">
                                 </div>
                                 <div class="alert alert-danger" role="alert"></div>
                             </div>
