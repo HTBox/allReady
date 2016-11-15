@@ -22,14 +22,14 @@
                     </div>
 
                     <div class="row">
-                        <div class="form-horizontal">
+                        <div class="form-horizontal" style="padding:10px">
                             <input asp-for="SignupModel.Name" type="hidden" />
                             @if (!string.IsNullOrWhiteSpace(Model.SignupModel.Name))
                             {
                                 <div class="form-group">
                                     <label asp-for="SignupModel.Name" class="control-label col-md-4"></label>
                                     <div class="col-md-8">
-                                        <p class="form-control-static">
+                                        <p class="form-control-static" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
                                             @Model.SignupModel.Name
                                         </p>
                                     </div>

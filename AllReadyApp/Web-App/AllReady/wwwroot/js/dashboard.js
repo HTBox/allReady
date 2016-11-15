@@ -14,7 +14,6 @@
 
                 $.get("../../api/Event/" + star.format('YYYY-MM-DD') + "/" + end.format('YYYY-MM-DD'), function (result) {
                     var events = [];
-                    debugger;
                     for (var i = 0; i < result.length; i++) {
                         var event = result[i];
                         events.push({
