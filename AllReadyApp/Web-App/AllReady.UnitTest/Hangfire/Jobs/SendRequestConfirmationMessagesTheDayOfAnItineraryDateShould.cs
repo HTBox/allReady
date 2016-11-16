@@ -15,7 +15,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         [Fact]
         public void NotSendRequestConfirmations_WhenRequestIdsDoNotMatchExistingRequests()
         {
-            var request = new Request {RequestId = Guid.NewGuid()};
+            var request = new Request { RequestId = Guid.NewGuid() };
 
             var smsSender = new Mock<ISmsSender>();
 
@@ -23,7 +23,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.SaveChanges();
 
             var sut = new SendRequestConfirmationMessagesTheDayOfAnItineraryDate(Context, smsSender.Object, Mock.Of<IMediator>());
-            sut.SendSms(new List<Guid> {Guid.NewGuid()}, It.IsAny<int>());
+            sut.SendSms(new List<Guid> { Guid.NewGuid() }, It.IsAny<int>());
 
             smsSender.Verify(x => x.SendSmsAsync(It.IsAny<List<string>>(), It.IsAny<string>()), Times.Never);
         }
@@ -31,7 +31,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         [Fact]
         public void NotSendSetRequstsToUnassignedCommand_WhenRequestIdsDoNotMatchExistingRequests()
         {
-            var request = new Request {RequestId = Guid.NewGuid()};
+            var request = new Request { RequestId = Guid.NewGuid() };
 
             var mediator = new Mock<IMediator>();
 
@@ -39,7 +39,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.SaveChanges();
 
             var sut = new SendRequestConfirmationMessagesTheDayOfAnItineraryDate(Context, Mock.Of<ISmsSender>(), mediator.Object);
-            sut.SendSms(new List<Guid> {Guid.NewGuid()}, It.IsAny<int>());
+            sut.SendSms(new List<Guid> { Guid.NewGuid() }, It.IsAny<int>());
 
             mediator.Verify(x => x.Send(It.IsAny<IRequest>()), Times.Never);
         }
@@ -47,7 +47,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         [Fact]
         public void NotSendRequestConfirmations_WhenRequestIdsMatchExistingRequests_AndThoseRequestsDoNotHaveAStatusOfPendingConfirmation()
         {
-            var request = new Request {RequestId = Guid.NewGuid(), Status = RequestStatus.Assigned};
+            var request = new Request { RequestId = Guid.NewGuid(), Status = RequestStatus.Assigned };
 
             var smsSender = new Mock<ISmsSender>();
 
@@ -55,7 +55,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.SaveChanges();
 
             var sut = new SendRequestConfirmationMessagesTheDayOfAnItineraryDate(Context, smsSender.Object, Mock.Of<IMediator>());
-            sut.SendSms(new List<Guid> {request.RequestId}, It.IsAny<int>());
+            sut.SendSms(new List<Guid> { request.RequestId }, It.IsAny<int>());
 
             smsSender.Verify(x => x.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
@@ -63,7 +63,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         [Fact]
         public void NotSendSetRequstsToUnassignedCommand_WhenRequestIdsMatchExistingRequests_AndThoseRequestsDoNotHaveAStatusOfPendingConfirmation()
         {
-            var request = new Request {RequestId = Guid.NewGuid(), Status = RequestStatus.Assigned};
+            var request = new Request { RequestId = Guid.NewGuid(), Status = RequestStatus.Assigned };
 
             var mediator = new Mock<IMediator>();
 
@@ -71,51 +71,65 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.SaveChanges();
 
             var sut = new SendRequestConfirmationMessagesTheDayOfAnItineraryDate(Context, Mock.Of<ISmsSender>(), mediator.Object);
-            sut.SendSms(new List<Guid> {request.RequestId}, It.IsAny<int>());
+            sut.SendSms(new List<Guid> { request.RequestId }, It.IsAny<int>());
         }
 
         [Fact]
-        public void SendSetRequstsToUnassignedCommandWithCorrectParameters_WhenRequestIdsMatchExistingRequests_AndThoseRequestsHaveAStatusOfPendingConfirmation_AndTodayIsNotTheSameDateAsTheItineraryDate()
+        public void SendRequestConfirmationsToTheCorrectPhoneNumberWithTheCorrectMessage_WhenRequestIdsMatchExistingRequests_AndThoseRequestsHaveAStatusOfPendingConfirmation_AndTodayIsTheSameDateAsTheItineraryDate()
         {
-            var dateTimeUtcNow = DateTime.UtcNow;
-
-            var request = new Request {RequestId = Guid.NewGuid(), Status = RequestStatus.PendingConfirmation};
-            var itinerary = new Itinerary {Id = 1, Date = dateTimeUtcNow.Date.AddDays(1)};
-
-            var requestIds = new List<Guid> {request.RequestId};
-            var mediator = new Mock<IMediator>();
-
-            Context.Requests.Add(request);
-            Context.Itineraries.Add(itinerary);
-            Context.SaveChanges();
-
-            var sut = new SendRequestConfirmationMessagesTheDayOfAnItineraryDate(Context, Mock.Of<ISmsSender>(), mediator.Object) {DateTimeUtcNow = () => dateTimeUtcNow.Date};
-            sut.SendSms(requestIds, itinerary.Id);
-
-            mediator.Verify(x => x.Send(It.Is<SetRequestsToUnassignedCommand>(y => y.RequestIds.Contains(request.RequestId))));
-        }
-
-        [Fact]
-        public void SendRequestConfirmationsWithCorrectParameters_WhenRequestIdsMatchExistingRequests_AndThoseRequestsHaveAStatusOfPendingConfirmation_AndTodayIsTheSameDateAsTheItineraryDate()
-        {
-            var dateTimeUtcNow = DateTime.UtcNow;
+            var dateTimeNow = DateTime.Now;
+            var dateTimeNowUnspecified = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Unspecified);
+            var dateTimeUtcNow = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Utc);
 
             var requestorPhoneNumbers = new List<string> { "111-111-1111" };
 
+            var @event = new Event { Id = 1, TimeZoneId = "Eastern Standard Time" };
+            var itinerary = new Itinerary { Id = 1, Date = dateTimeNowUnspecified.Date, EventId = @event.Id, Event = @event };
             var request = new Request { RequestId = Guid.NewGuid(), Status = RequestStatus.PendingConfirmation, Phone = requestorPhoneNumbers[0] };
-            var itinerary = new Itinerary { Id = 1, Date = dateTimeUtcNow.Date };
 
             var requestIds = new List<Guid> { request.RequestId };
             var smsSender = new Mock<ISmsSender>();
 
             Context.Requests.Add(request);
             Context.Itineraries.Add(itinerary);
+            Context.Events.Add(@event);
             Context.SaveChanges();
 
-            var sut = new SendRequestConfirmationMessagesTheDayOfAnItineraryDate(Context, smsSender.Object, Mock.Of<IMediator>()) { DateTimeUtcNow = () => dateTimeUtcNow.Date };
+            var sut = new SendRequestConfirmationMessagesTheDayOfAnItineraryDate(Context, smsSender.Object, Mock.Of<IMediator>())
+            {
+                DateTimeUtcNow = () => dateTimeUtcNow.Date
+            };
             sut.SendSms(requestIds, itinerary.Id);
 
             smsSender.Verify(x => x.SendSmsAsync(requestorPhoneNumbers, "sorry you couldn't make it, we will reschedule."));
+        }
+
+        [Fact]
+        public void SendSetRequstsToUnassignedCommandWithCorrectParameters_WhenRequestIdsMatchExistingRequests_AndThoseRequestsHaveAStatusOfPendingConfirmation_AndTodayIsNotTheSameDateAsTheItineraryDate()
+        {
+            var dateTimeNow = DateTime.Now;
+            var dateTimeNowUnspecified = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Unspecified);
+            var dateTimeUtcNow = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Utc);
+
+            var @event = new Event { Id = 1, TimeZoneId = "Eastern Standard Time" };
+            var itinerary = new Itinerary { Id = 1, Date = dateTimeNowUnspecified.Date.AddDays(1), EventId = @event.Id, Event = @event };
+            var request = new Request { RequestId = Guid.NewGuid(), Status = RequestStatus.PendingConfirmation };
+            
+            var requestIds = new List<Guid> { request.RequestId };
+            var mediator = new Mock<IMediator>();
+
+            Context.Requests.Add(request);
+            Context.Itineraries.Add(itinerary);
+            Context.Events.Add(@event);
+            Context.SaveChanges();
+
+            var sut = new SendRequestConfirmationMessagesTheDayOfAnItineraryDate(Context, Mock.Of<ISmsSender>(), mediator.Object)
+            {
+                DateTimeUtcNow = () => dateTimeUtcNow.Date
+            };
+            sut.SendSms(requestIds, itinerary.Id);
+
+            mediator.Verify(x => x.Send(It.Is<SetRequestsToUnassignedCommand>(y => y.RequestIds.Contains(request.RequestId))));
         }
     }
 }

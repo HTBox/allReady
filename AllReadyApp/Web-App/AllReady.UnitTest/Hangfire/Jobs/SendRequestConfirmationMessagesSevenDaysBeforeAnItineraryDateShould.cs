@@ -11,7 +11,7 @@ using Xunit;
 
 namespace AllReady.UnitTest.Hangfire.Jobs
 {
-    public class SendRequestConfirmationMessagesADayBeforeAnItineraryDateShould : InMemoryContextTest
+    public class SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDateShould : InMemoryContextTest
     {
         [Fact]
         public void NotSendRequestConfirmations_WhenRequestIdsDoNotMatchExistingRequests()
@@ -23,14 +23,14 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.Requests.Add(request);
             Context.SaveChanges();
 
-            var sut = new SendRequestConfirmationMessagesADayBeforeAnItineraryDate(Context, Mock.Of<IBackgroundJobClient>(), smsSender.Object);
+            var sut = new SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate(Context, Mock.Of<IBackgroundJobClient>(), smsSender.Object);
             sut.SendSms(new List<Guid> { Guid.NewGuid() }, It.IsAny<int>());
 
             smsSender.Verify(x => x.SendSmsAsync(It.IsAny<List<string>>(), It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
-        public void NotScheduleISendRequestConfirmationMessagesTheDayOfAnItineraryDate_WhenRequestIdsDoNotMatchExistingRequests()
+        public void NotScheduleISendRequestConfirmationMessagesADayBeforeAnItineraryDate_WhenRequestIdsDoNotMatchExistingRequests()
         {
             var request = new Request { RequestId = Guid.NewGuid() };
 
@@ -39,7 +39,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.Requests.Add(request);
             Context.SaveChanges();
 
-            var sut = new SendRequestConfirmationMessagesADayBeforeAnItineraryDate(Context, backgroundJobClient.Object, Mock.Of<ISmsSender>());
+            var sut = new SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate(Context, backgroundJobClient.Object, Mock.Of<ISmsSender>());
             sut.SendSms(new List<Guid> { Guid.NewGuid() }, It.IsAny<int>());
 
             backgroundJobClient.Verify(x => x.Create(It.IsAny<Job>(), It.IsAny<EnqueuedState>()), Times.Never);
@@ -55,23 +55,23 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.Requests.Add(request);
             Context.SaveChanges();
 
-            var sut = new SendRequestConfirmationMessagesADayBeforeAnItineraryDate(Context, Mock.Of<IBackgroundJobClient>(), smsSender.Object);
+            var sut = new SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate(Context, Mock.Of<IBackgroundJobClient>(), smsSender.Object);
             sut.SendSms(new List<Guid> { request.RequestId }, It.IsAny<int>());
 
             smsSender.Verify(x => x.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
-        public void NotSendRequestConfirmations_WhenRequestIdsMatchExistingRequests_AndThoseRequestsHaveAStatusOfPendingConfirmation_AndTodayIsNotOneDayBeforeTheItineraryDate()
+        public void NotSendRequestConfirmations_WhenRequestIdsMatchExistingRequests_AndThoseRequestsHaveAStatusOfPendingConfirmation_AndTodayIsNotSevenDaysBeforeTheItineraryDate()
         {
             var dateTimeNow = DateTime.Now;
             var dateTimeNowUnspecified = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Unspecified);
             var dateTimeUtcNow = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Utc);
 
             var @event = new Event { Id = 1, TimeZoneId = "Eastern Standard Time" };
-            var itinerary = new Itinerary { Id = 1, Date = dateTimeNowUnspecified.Date, EventId = @event.Id, Event = @event };
+            var itinerary = new Itinerary { Id = 1, Date = dateTimeNowUnspecified.Date.AddDays(1), EventId = @event.Id, Event = @event };
             var request = new Request { RequestId = Guid.NewGuid(), Status = RequestStatus.PendingConfirmation };
-            
+
             var backgroundJobClient = new Mock<IBackgroundJobClient>();
             var smsSender = new Mock<ISmsSender>();
 
@@ -80,7 +80,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.Events.Add(@event);
             Context.SaveChanges();
 
-            var sut = new SendRequestConfirmationMessagesADayBeforeAnItineraryDate(Context, backgroundJobClient.Object, smsSender.Object)
+            var sut = new SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate(Context, backgroundJobClient.Object, smsSender.Object)
             {
                 DateTimeUtcNow = () => dateTimeUtcNow.Date
             };
@@ -90,7 +90,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         }
 
         [Fact]
-        public void SendRequestConfirmationsToTheCorrectPhoneNumbersWithTheCorrectMessage_WhenRequestIdsMatchExistingRequests_AndThoseRequestsArePendingConfirmation_AndTodayIsOneDaysBeforeTheItineraryDate()
+        public void SendRequestConfirmationsToTheCorrectPhoneNumbersWithTheCorrectMessage_WhenRequestIdsMatchExistingRequests_AndThoseRequestsArePendingConfirmation_AndTodayIsSevenDaysBeforeTheItineraryDate()
         {
             var dateTimeNow = DateTime.Now;
             var dateTimeNowUnspecified = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Unspecified);
@@ -99,9 +99,9 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             var requestorPhoneNumbers = new List<string> { "111-111-1111" };
 
             var @event = new Event { Id = 1, TimeZoneId = "Eastern Standard Time" };
-            var itinerary = new Itinerary { Id = 1, Date = dateTimeNowUnspecified.Date.AddDays(1), EventId = @event.Id, Event = @event };
+            var itinerary = new Itinerary { Id = 1, Date = dateTimeNowUnspecified.Date.AddDays(7), EventId = @event.Id, Event = @event };
             var request = new Request { RequestId = Guid.NewGuid(), Status = RequestStatus.PendingConfirmation, Phone = requestorPhoneNumbers[0] };
-            
+
             var requestIds = new List<Guid> { request.RequestId };
             var smsSender = new Mock<ISmsSender>();
             var backgroundJobClient = new Mock<IBackgroundJobClient>();
@@ -111,7 +111,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.Events.Add(@event);
             Context.SaveChanges();
 
-            var sut = new SendRequestConfirmationMessagesADayBeforeAnItineraryDate(Context, backgroundJobClient.Object, smsSender.Object)
+            var sut = new SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate(Context, backgroundJobClient.Object, smsSender.Object)
             {
                 DateTimeUtcNow = () => dateTimeUtcNow.Date
             };
@@ -122,14 +122,14 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         }
 
         [Fact]
-        public void ScheduleISendRequestConfirmationMessagesTheDayOfAnItineraryDateWithCorrectParameters_WhenRequestIdsMatchExistingRequests_AndThoseRequestsHaveAStatusOfPendingConfirmation_AndTodayIsLessThanOneDayBeforeTheItineraryDate()
+        public void ScheduleISendRequestConfirmationMessagesADayBeforeAnItineraryDateWithCorrectParameters_WhenRequestIdsMatchExistingRequests_AndThoseRequestsHaveAStatusOfPendingConfirmation_AndTodayIsSevenDaysBeforeTheItineraryDate()
         {
             var dateTimeNow = DateTime.Now;
             var dateTimeNowUnspecified = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Unspecified);
             var dateTimeUtcNow = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Utc);
 
             var @event = new Event { Id = 1, TimeZoneId = "Eastern Standard Time" };
-            var itinerary = new Itinerary { Id = 1, Date = dateTimeNowUnspecified.Date, EventId = @event.Id, Event = @event };
+            var itinerary = new Itinerary { Id = 1, Date = dateTimeNowUnspecified.Date.AddDays(7), EventId = @event.Id, Event = @event };
             var request = new Request { RequestId = Guid.NewGuid(), Status = RequestStatus.PendingConfirmation };
 
             var requestIds = new List<Guid> { request.RequestId };
@@ -140,18 +140,18 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.Events.Add(@event);
             Context.SaveChanges();
 
-            var sut = new SendRequestConfirmationMessagesADayBeforeAnItineraryDate(Context, backgroundJobClient.Object, Mock.Of<ISmsSender>())
+            var sut = new SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate(Context, backgroundJobClient.Object, Mock.Of<ISmsSender>())
             {
                 DateTimeUtcNow = () => dateTimeUtcNow.Date
             };
             sut.SendSms(requestIds, itinerary.Id);
 
             backgroundJobClient.Verify(x => x.Create(It.Is<Job>(job =>
-                job.Type == typeof(ISendRequestConfirmationMessagesTheDayOfAnItineraryDate) &&
-                job.Method.Name == nameof(ISendRequestConfirmationMessagesTheDayOfAnItineraryDate.SendSms) &&
+                job.Type == typeof(ISendRequestConfirmationMessagesADayBeforeAnItineraryDate) &&
+                job.Method.Name == nameof(ISendRequestConfirmationMessagesADayBeforeAnItineraryDate.SendSms) &&
                 job.Args[0] == requestIds &&
                 (int)job.Args[1] == itinerary.Id),
-                It.Is<ScheduledState>(ss => ss.EnqueueAt.Date == itinerary.Date)), Times.Once);
+                It.Is<ScheduledState>(ss => ss.EnqueueAt.Date == itinerary.Date.AddDays(-1))), Times.Once);
         }
     }
 }

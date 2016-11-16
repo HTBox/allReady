@@ -28,15 +28,15 @@ namespace AllReady.Areas.Admin.Features.Notifications
 
             var itinerary = await context.Itineraries.Include(i => i.Event).SingleAsync(x => x.Id == notification.ItineraryId);
 
-            backgroundJob.Schedule<ISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate>(x => x.SendSms(notification.RequestIds, itinerary.Id), SevenDaysBefore(itinerary.Date, itinerary.Event.TimeZoneId));
+            backgroundJob.Schedule<ISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate>(x => x.SendSms(notification.RequestIds, itinerary.Id), SevenDaysBeforeThe(itinerary.Date, itinerary.Event.TimeZoneId));
         }
 
-        private static DateTimeOffset SevenDaysBefore(DateTime itineraryDate, string eventsTimeZoneId)
+        private static DateTimeOffset SevenDaysBeforeThe(DateTime itineraryDate, string eventsTimeZoneId)
         {
-            var sevenDaysAgoAtNoon = itineraryDate.Date.AddDays(-7).AddHours(12);
+            var sevenDaysBeforeTheIntinerayDateAtNoon = itineraryDate.Date.AddDays(-7).AddHours(12);
             var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(eventsTimeZoneId);
-            var utcOffset = timeZoneInfo.GetUtcOffset(sevenDaysAgoAtNoon);
-            return new DateTimeOffset(sevenDaysAgoAtNoon, utcOffset);
+            var utcOffset = timeZoneInfo.GetUtcOffset(sevenDaysBeforeTheIntinerayDateAtNoon);
+            return new DateTimeOffset(sevenDaysBeforeTheIntinerayDateAtNoon, utcOffset);
         }
     }
 }

@@ -5,6 +5,7 @@ using AllReady.Hangfire.MediatR;
 using AllReady.Models;
 using AllReady.Services;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Hangfire.Jobs
 {
@@ -28,17 +29,24 @@ namespace AllReady.Hangfire.Jobs
             var requests = context.Requests.Where(x => requestIds.Contains(x.RequestId) && x.Status == RequestStatus.PendingConfirmation).ToList();
             if (requests.Count > 0)
             {
-                //TODO mgmccarthy: need to convert itinerary.Date to local time of the request's intinerary's campaign's timezoneid. Waiting on the final word for how we'll store DateTime, as well as Issue #1386
-                var itineraryDate = context.Itineraries.Single(x => x.Id == itineraryId).Date;
+                var itinerary = context.Itineraries.Include(i => i.Event).Single(x => x.Id == itineraryId);
 
                 //don't send out messages if today is not the date of the Itinerary
-                if (DateTimeUtcNow().Date == itineraryDate.Date)
+                if (TodayIsTheDayOfThe(itinerary.Date, itinerary.Event.TimeZoneId))
                 {
                     smsSender.SendSmsAsync(requests.Select(x => x.Phone).ToList(), "sorry you couldn't make it, we will reschedule.");
                 }
 
                 mediator.Send(new SetRequestsToUnassignedCommand { RequestIds = requests.Select(x => x.RequestId).ToList() });
             }
+        }
+
+        private bool TodayIsTheDayOfThe(DateTime itineraryDate, string eventsTimeZoneId)
+        {
+            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(eventsTimeZoneId);
+            var utcOffset = timeZoneInfo.GetUtcOffset(itineraryDate);
+            var intineraryDateConvertedToEventsTimeZone = new DateTimeOffset(itineraryDate, utcOffset);
+            return (intineraryDateConvertedToEventsTimeZone.Date - DateTimeUtcNow().Date).TotalDays == 0;
         }
     }
 
