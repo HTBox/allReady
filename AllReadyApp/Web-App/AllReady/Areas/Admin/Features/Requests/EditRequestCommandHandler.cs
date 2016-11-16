@@ -3,16 +3,20 @@ using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Geocoding;
+using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {
     public class EditRequestCommandHandler : IAsyncRequestHandler<EditRequestCommand, Guid>
     {
         private readonly AllReadyContext _context;
+        private readonly IGeocoder _geocoder;
 
-        public EditRequestCommandHandler(AllReadyContext context)
+        public EditRequestCommandHandler(AllReadyContext context, IGeocoder geocoder)
         {
             _context = context;
+            _geocoder = geocoder;
         }
 
         public async Task<Guid> Handle(EditRequestCommand message)
@@ -30,7 +34,17 @@ namespace AllReady.Areas.Admin.Features.Requests
             request.Email = message.RequestModel.Email;
             request.Phone = message.RequestModel.Phone;
 
-            // todo - longitude and latitude lookup
+            //If lat/long not provided, use geocoding API to get them
+            if (request.Latitude == 0 && request.Longitude == 0)
+            {
+                //Assume the first returned address is correct
+                var address = _geocoder.Geocode(request.Address, request.City, request.State, request.Zip, string.Empty)
+                    .FirstOrDefault();
+                request.Latitude = address?.Coordinates.Latitude ?? 0;
+                request.Longitude = address?.Coordinates.Longitude ?? 0;
+            }
+
+            _context.Requests.Add(request);
 
             await _context.SaveChangesAsync();
 
