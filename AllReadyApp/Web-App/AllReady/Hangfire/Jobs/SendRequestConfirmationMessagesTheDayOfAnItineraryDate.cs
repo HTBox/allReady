@@ -37,7 +37,7 @@ namespace AllReady.Hangfire.Jobs
                     smsSender.SendSmsAsync(requests.Select(x => x.Phone).ToList(), "sorry you couldn't make it, we will reschedule.");
                 }
 
-                mediator.Send(new SetRequstsToUnassignedCommand { RequestIds = requests.Select(x => x.RequestId).ToList() });
+                mediator.Send(new SetRequestsToUnassignedCommand { RequestIds = requests.Select(x => x.RequestId).ToList() });
             }
         }
     }

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AllReady.Extensions;
 using AllReady.Models;
 using AllReady.Services;
 using Hangfire;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Hangfire.Jobs
 {
-    public class SendRequestConfirmationMessagesAWeekBeforeAnItineraryDate : ISendRequestConfirmationMessagesAWeekBeforeAnItineraryDate
+    public class SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate : ISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate
     {
         private readonly AllReadyContext context;
         private readonly IBackgroundJobClient backgroundJob;
@@ -16,7 +16,7 @@ namespace AllReady.Hangfire.Jobs
 
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        public SendRequestConfirmationMessagesAWeekBeforeAnItineraryDate(AllReadyContext context, IBackgroundJobClient backgroundJob, ISmsSender smsSender)
+        public SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate(AllReadyContext context, IBackgroundJobClient backgroundJob, ISmsSender smsSender)
         {
             this.context = context;
             this.backgroundJob = backgroundJob;
@@ -28,34 +28,37 @@ namespace AllReady.Hangfire.Jobs
             var requestorPhoneNumbers = context.Requests.Where(x => requestIds.Contains(x.RequestId) && x.Status == RequestStatus.PendingConfirmation).Select(x => x.Phone).ToList();
             if (requestorPhoneNumbers.Count > 0)
             {
-                //TODO mgmccarthy: need to convert itinerary.Date to local time of the request's intinerary's campaign's timezoneid. Waiting on the final word for how we'll store DateTime, as well as Issue #1386
-                var itinerary = context.Itineraries.Single(x => x.Id == itineraryId);
+                var itinerary = context.Itineraries.Include(i => i.Event).Single(x => x.Id == itineraryId);
 
-                //don't send out messages if today is less than 7 days away from the Itinerary.Date.
-                //This can happen if a request is added to an itinereary less than 7 days away from the itinerary's date
-                if (TodayIsEqualToOrGreaterThanSevenDaysBefore(itinerary.Date))
+                //don't send out messages if today is not 7 days before the Itinerary.Date. This sceanrio can happen if:
+                //1. a request is added to an itinereary less than 7 days before the itinerary's date
+                //2. if the Hangfire server is offline for the period where it would have tried to process this job. Hangfire processes jobs in the "past" by default
+                if (TodayIsSevenDaysBeforeThe(itinerary.Date))
                 {
                     smsSender.SendSmsAsync(requestorPhoneNumbers,
                         $@"Your request has been scheduled by allReady for {itinerary.Date.Date}. Please response with ""Y"" to confirm this request or ""N"" to cancel this request.");
                 }
 
                 //schedule job for one day before Itinerary.Date
-                backgroundJob.Schedule<ISendRequestConfirmationMessagesADayBeforeAnItineraryDate>(x => x.SendSms(requestIds, itinerary.Id), OneDayBefore(itinerary.Date));
+                backgroundJob.Schedule<ISendRequestConfirmationMessagesADayBeforeAnItineraryDate>(x => x.SendSms(requestIds, itinerary.Id), OneDayBefore(itinerary.Date, itinerary.Event.TimeZoneId));
             }
         }
 
-        private bool TodayIsEqualToOrGreaterThanSevenDaysBefore(DateTime itineraryDate)
+        private bool TodayIsSevenDaysBeforeThe(DateTime itineraryDate)
         {
-            return (itineraryDate.Date - DateTimeUtcNow().Date).TotalDays >= 7;
+            return (itineraryDate.Date - DateTimeUtcNow().Date).TotalDays == 7;
         }
 
-        private static DateTime OneDayBefore(DateTime itineraryDate)
+        private static DateTimeOffset OneDayBefore(DateTime itineraryDate, string eventsTimeZoneId)
         {
-            return itineraryDate.Date.AddDays(-1).AtNoon();
+            var oneDayAgoAtNoon = itineraryDate.Date.AddDays(-1).AddHours(12);
+            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(eventsTimeZoneId);
+            var utcOffset = timeZoneInfo.GetUtcOffset(oneDayAgoAtNoon);
+            return new DateTimeOffset(oneDayAgoAtNoon, utcOffset);
         }
     }
 
-    public interface ISendRequestConfirmationMessagesAWeekBeforeAnItineraryDate
+    public interface ISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate
     {
         void SendSms(List<Guid> requestIds, int itineraryId);
     }

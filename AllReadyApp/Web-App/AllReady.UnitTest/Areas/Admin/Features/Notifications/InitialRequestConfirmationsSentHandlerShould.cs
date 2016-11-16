@@ -37,7 +37,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
         }
 
         [Fact]
-        public async Task ScheduleISendRequestConfirmationMessagesAWeekBeforeAnItineraryDateWithTheCorrectMethodSignatureAndTheCorrectDate()
+        public async Task ScheduleISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDateWithTheCorrectMethodSignatureAndTheCorrectDate()
         {
             var requestId = Guid.NewGuid();
             var message = new InitialRequestConfirmationsSent { ItineraryId = 1, RequestIds = new List<Guid> { requestId } };
@@ -52,8 +52,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
             await sut.Handle(message);
 
             backgroundJobClient.Verify(x => x.Create(It.Is<Job>(job =>
-                job.Type == typeof(ISendRequestConfirmationMessagesAWeekBeforeAnItineraryDate) &&
-                job.Method.Name == nameof(ISendRequestConfirmationMessagesAWeekBeforeAnItineraryDate.SendSms) &&
+                job.Type == typeof(ISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate) &&
+                job.Method.Name == nameof(ISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate.SendSms) &&
                 job.Args[0] == message.RequestIds &&
                 (int)job.Args[1] == message.ItineraryId),
                 It.Is<ScheduledState>(ss => ss.EnqueueAt.Date.AtNoon() == itinerary.Date.AddDays(-7).AtNoon())), Times.Once);

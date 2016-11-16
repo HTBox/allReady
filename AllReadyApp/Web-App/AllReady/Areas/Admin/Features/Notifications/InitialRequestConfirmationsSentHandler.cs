@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Extensions;
 using AllReady.Hangfire.Jobs;
 using AllReady.Models;
 using Hangfire;
@@ -26,16 +25,18 @@ namespace AllReady.Areas.Admin.Features.Notifications
             var requests = await context.Requests.Where(x => notification.RequestIds.Contains(x.RequestId)).ToListAsync();
             requests.ForEach(request => request.Status = RequestStatus.PendingConfirmation);
             await context.SaveChangesAsync();
-            
-            var itinerary = await context.Itineraries.SingleAsync(x => x.Id == notification.ItineraryId);
-            
-            //TODO mgmccarthy: need to convert itinerary.Date to local time of request's itinerary's campaign's timezoneid
-            backgroundJob.Schedule<ISendRequestConfirmationMessagesAWeekBeforeAnItineraryDate>(x => x.SendSms(notification.RequestIds, itinerary.Id), SevenDaysBefore(itinerary.Date));
+
+            var itinerary = await context.Itineraries.Include(i => i.Event).SingleAsync(x => x.Id == notification.ItineraryId);
+
+            backgroundJob.Schedule<ISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate>(x => x.SendSms(notification.RequestIds, itinerary.Id), SevenDaysBefore(itinerary.Date, itinerary.Event.TimeZoneId));
         }
 
-        private static DateTime SevenDaysBefore(DateTime itineraryDate)
+        private static DateTimeOffset SevenDaysBefore(DateTime itineraryDate, string eventsTimeZoneId)
         {
-            return itineraryDate.Date.AddDays(-7).AtNoon();
+            var sevenDaysAgoAtNoon = itineraryDate.Date.AddDays(-7).AddHours(12);
+            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(eventsTimeZoneId);
+            var utcOffset = timeZoneInfo.GetUtcOffset(sevenDaysAgoAtNoon);
+            return new DateTimeOffset(sevenDaysAgoAtNoon, utcOffset);
         }
     }
 }

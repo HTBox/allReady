@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AllReady.Hangfire.MediatR
 {
-    public class SetRequstsToUnassignedCommand : IRequest
+    public class SetRequestsToUnassignedCommand : IRequest
     {
         public List<Guid> RequestIds { get; set; }
     }

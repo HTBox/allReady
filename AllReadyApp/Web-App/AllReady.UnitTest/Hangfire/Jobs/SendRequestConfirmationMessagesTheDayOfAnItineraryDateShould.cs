@@ -92,7 +92,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             var sut = new SendRequestConfirmationMessagesTheDayOfAnItineraryDate(Context, Mock.Of<ISmsSender>(), mediator.Object) {DateTimeUtcNow = () => dateTimeUtcNow.Date};
             sut.SendSms(requestIds, itinerary.Id);
 
-            mediator.Verify(x => x.Send(It.Is<SetRequstsToUnassignedCommand>(y => y.RequestIds.Contains(request.RequestId))));
+            mediator.Verify(x => x.Send(It.Is<SetRequestsToUnassignedCommand>(y => y.RequestIds.Contains(request.RequestId))));
         }
 
         [Fact]

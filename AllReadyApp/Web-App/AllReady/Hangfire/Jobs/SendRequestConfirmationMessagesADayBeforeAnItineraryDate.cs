@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AllReady.Extensions;
 using AllReady.Models;
 using AllReady.Services;
 using Hangfire;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Hangfire.Jobs
 {
@@ -28,26 +28,26 @@ namespace AllReady.Hangfire.Jobs
             var requestorPhoneNumbers = context.Requests.Where(x => requestIds.Contains(x.RequestId) && x.Status == RequestStatus.PendingConfirmation).Select(x => x.Phone).ToList();
             if (requestorPhoneNumbers.Count > 0)
             {
-                //TODO mgmccarthy: need to convert itinerary.Date to local time of the request's intinerary's campaign's timezoneid. Waiting on the final word for how we'll store DateTime, as well as Issue #1386
-                var itinerary = context.Itineraries.Single(x => x.Id == itineraryId);
+                var itinerary = context.Itineraries.Include(i => i.Event).Single(x => x.Id == itineraryId);
 
-                //don't send out messages if today is less than 1 day away from the Itinerary.Date.
-                //This can happen if a request is added to an itinereary less than 1 day away from the itinerary's date
-                if (TodayIsEqualToOrGreaterThanOneDayBefore(itinerary.Date))
+                //don't send out messages if today is not 1 day before from the Itinerary.Date. This sceanrio can happen if:
+                //1. a request is added to an itinereary less than 1 day away from the itinerary's date
+                //2. if the Hangfire server is offline for the period where it would have tried to process this job. Hangfire processes jobs in the "past" by default
+                if (TodayIsOneDayBeforeThe(itinerary.Date))
                 {
                     smsSender.SendSmsAsync(requestorPhoneNumbers,
                         $@"Your request has been scheduled by allReady for {itinerary.Date.Date}. Please response with ""Y"" to confirm this request or ""N"" to cancel this request.");
                 }
 
                 //schedule job for day of Itinerary.Date
-                //TODO mgmccarthy: do we want to schedule the day of message for noon, or earlier so the requestor knows not to expect us?
-                backgroundJob.Schedule<ISendRequestConfirmationMessagesTheDayOfAnItineraryDate>(x => x.SendSms(requestIds, itinerary.Id), itinerary.Date.AtNoon());
+                //TODO: do we want to send out the "day of" message at 12 noon, or ealier in the morning to let people know who never got back to us that we're not coming?
+                backgroundJob.Schedule<ISendRequestConfirmationMessagesTheDayOfAnItineraryDate>(x => x.SendSms(requestIds, itinerary.Id), itinerary.Date.AddHours(12));
             }
         }
 
-        private bool TodayIsEqualToOrGreaterThanOneDayBefore(DateTime itineraryDate)
+        private bool TodayIsOneDayBeforeThe(DateTime itineraryDate)
         {
-            return (itineraryDate.Date - DateTimeUtcNow().Date).TotalDays >= 1;
+            return (itineraryDate.Date - DateTimeUtcNow().Date).TotalDays == 1;
         }
     }
 

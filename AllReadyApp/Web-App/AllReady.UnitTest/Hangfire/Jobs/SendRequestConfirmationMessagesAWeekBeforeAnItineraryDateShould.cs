@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.Requests.Add(request);
             Context.SaveChanges();
 
-            var sut = new SendRequestConfirmationMessagesAWeekBeforeAnItineraryDate(Context, Mock.Of<IBackgroundJobClient>(), smsSender.Object);
+            var sut = new SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate(Context, Mock.Of<IBackgroundJobClient>(), smsSender.Object);
             sut.SendSms(new List<Guid> { Guid.NewGuid() }, It.IsAny<int>());
 
             smsSender.Verify(x => x.SendSmsAsync(It.IsAny<List<string>>(), It.IsAny<string>()), Times.Never);
@@ -40,7 +40,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.Requests.Add(request);
             Context.SaveChanges();
 
-            var sut = new SendRequestConfirmationMessagesAWeekBeforeAnItineraryDate(Context, backgroundJobClient.Object, Mock.Of<ISmsSender>());
+            var sut = new SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate(Context, backgroundJobClient.Object, Mock.Of<ISmsSender>());
             sut.SendSms(new List<Guid> { Guid.NewGuid() }, It.IsAny<int>());
 
             backgroundJobClient.Verify(x => x.Create(It.IsAny<Job>(), It.IsAny<EnqueuedState>()), Times.Never);
@@ -56,7 +56,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.Requests.Add(request);
             Context.SaveChanges();
 
-            var sut = new SendRequestConfirmationMessagesAWeekBeforeAnItineraryDate(Context, Mock.Of<IBackgroundJobClient>(), smsSender.Object);
+            var sut = new SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate(Context, Mock.Of<IBackgroundJobClient>(), smsSender.Object);
             sut.SendSms(new List<Guid> { request.RequestId }, It.IsAny<int>());
 
             smsSender.Verify(x => x.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
@@ -77,7 +77,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.Itineraries.Add(itinerary);
             Context.SaveChanges();
 
-            var sut = new SendRequestConfirmationMessagesAWeekBeforeAnItineraryDate(Context, backgroundJobClient.Object, Mock.Of<ISmsSender>()) { DateTimeUtcNow = () => dateTimeUtcNow.Date };
+            var sut = new SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate(Context, backgroundJobClient.Object, Mock.Of<ISmsSender>()) { DateTimeUtcNow = () => dateTimeUtcNow.Date };
             sut.SendSms(requestIds, itinerary.Id);
 
             backgroundJobClient.Verify(x => x.Create(It.Is<Job>(job =>
@@ -103,7 +103,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.Itineraries.Add(itinerary);
             Context.SaveChanges();
 
-            var sut = new SendRequestConfirmationMessagesAWeekBeforeAnItineraryDate(Context, backgroundJobClient.Object, smsSender.Object) { DateTimeUtcNow = () => dateTimeUtcNow.Date };
+            var sut = new SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate(Context, backgroundJobClient.Object, smsSender.Object) { DateTimeUtcNow = () => dateTimeUtcNow.Date };
             sut.SendSms(new List<Guid> { request.RequestId }, itinerary.Id);
 
             smsSender.Verify(x => x.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
@@ -127,7 +127,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Context.Itineraries.Add(itinerary);
             Context.SaveChanges();
 
-            var sut = new SendRequestConfirmationMessagesAWeekBeforeAnItineraryDate(Context, backgroundJobClient.Object, smsSender.Object) { DateTimeUtcNow = () => dateTimeUtcNow.Date };
+            var sut = new SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate(Context, backgroundJobClient.Object, smsSender.Object) { DateTimeUtcNow = () => dateTimeUtcNow.Date };
             sut.SendSms(requestIds, itinerary.Id);
 
             var message = $@"Your request has been scheduled by allReady for {itinerary.Date.Date}. Please response with ""Y"" to confirm this request or ""N"" to cancel this request.";
