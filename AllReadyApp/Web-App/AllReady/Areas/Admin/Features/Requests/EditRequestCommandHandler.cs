@@ -36,7 +36,8 @@ namespace AllReady.Areas.Admin.Features.Requests
             request.Phone = message.RequestModel.Phone;
 
             //If lat/long not provided, use geocoding API to get them
-            if (request.Latitude == 0 && request.Longitude == 0)
+            //Also, always update lat/long to be safe if this is an update operation since it is unknown whether the address changed or not.
+            if ((request.Latitude == 0 && request.Longitude == 0) || request.RequestId != Guid.Empty)
             {
                 //Assume the first returned address is correct
                 var address = _geocoder.Geocode(request.Address, request.City, request.State, request.Zip, string.Empty)

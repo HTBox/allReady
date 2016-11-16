@@ -28,7 +28,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
                 Phone = "555-555-5555",
                 Email = "something@example.com",
                 State = "WA",
-                Zip = "55555"
+                Zip = "55555",
+                Latitude = 10,
+                Longitude = 10
             };
 
             Context.Requests.Add(_existingRequest);
@@ -63,7 +65,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         }
 
         [Fact]
-        public async Task AttemptToGeocodeAddressToGetLatitudeAndLongitude()
+        public async Task AlwaysGeocodeAddressWhenUpdatingExistingRequest()
         {
             var mockMediator = new Mock<IMediator>();
             var mockGeocoder = new Mock<IGeocoder>();
@@ -74,7 +76,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
             var handler = new EditRequestCommandHandler(Context, mockGeocoder.Object);
             var requestId = await handler.Handle(new EditRequestCommand
             {
-                RequestModel = new EditRequestViewModel { Address = _existingRequest.Address, City = _existingRequest.City, State = _existingRequest.State, Zip = _existingRequest.Zip }
+                RequestModel = new EditRequestViewModel { Id = _existingRequest.RequestId, Address = _existingRequest.Address, City = _existingRequest.City, State = _existingRequest.State, Zip = _existingRequest.Zip }
             });
 
             mockGeocoder.Verify(x => x.Geocode(_existingRequest.Address, _existingRequest.City, _existingRequest.State, _existingRequest.Zip, It.IsAny<string>()), Times.Once);
