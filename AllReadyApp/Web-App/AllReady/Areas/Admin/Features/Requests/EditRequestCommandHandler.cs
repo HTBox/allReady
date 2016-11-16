@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Geocoding;
 using System.Linq;
+using AllReady.Extensions;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {
@@ -44,7 +45,7 @@ namespace AllReady.Areas.Admin.Features.Requests
                 request.Longitude = address?.Coordinates.Longitude ?? 0;
             }
 
-            _context.Requests.Add(request);
+            _context.AddOrUpdate(request);
 
             await _context.SaveChangesAsync();
 
