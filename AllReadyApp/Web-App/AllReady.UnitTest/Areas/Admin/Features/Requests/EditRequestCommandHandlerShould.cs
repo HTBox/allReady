@@ -2,7 +2,6 @@
 using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Models;
 using AllReady.Providers;
-using MediatR;
 using Moq;
 using System;
 using System.Threading.Tasks;
