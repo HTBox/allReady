@@ -40,8 +40,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         [Fact]
         public async Task ReturnNewRequestIdOnSuccessfulCreation()
         {
-            var mockMediator = new Mock<IMediator>();
-
             var handler = new EditRequestCommandHandler(Context, new NullObjectGeocoder());
             var requestId = await handler.Handle(new EditRequestCommand { RequestModel = new EditRequestViewModel {  } });
 
@@ -51,11 +49,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         [Fact]
         public async Task UpdateRequestsThatAlreadyExisted()
         {
-            var mockMediator = new Mock<IMediator>();
             string expectedName = "replaced name";
 
             var handler = new EditRequestCommandHandler(Context, new NullObjectGeocoder());
-            var requestId = await handler.Handle(new EditRequestCommand
+            await handler.Handle(new EditRequestCommand
             {
                 RequestModel = new EditRequestViewModel { Id = _existingRequest.RequestId, Name = expectedName }
             });
@@ -67,14 +64,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         [Fact]
         public async Task AlwaysGeocodeAddressWhenUpdatingExistingRequest()
         {
-            var mockMediator = new Mock<IMediator>();
             var mockGeocoder = new Mock<IGeocoder>();
 
             // Because the Geocode method takes a set of strings as arguments, verify the arguments are passed in to the mock the correct order.
             mockGeocoder.Setup(g => g.Geocode(_existingRequest.Address, _existingRequest.City, _existingRequest.State, _existingRequest.Zip, It.IsAny<string>())).Returns(new List<Address>());
 
             var handler = new EditRequestCommandHandler(Context, mockGeocoder.Object);
-            var requestId = await handler.Handle(new EditRequestCommand
+            await handler.Handle(new EditRequestCommand
             {
                 RequestModel = new EditRequestViewModel { Id = _existingRequest.RequestId, Address = _existingRequest.Address, City = _existingRequest.City, State = _existingRequest.State, Zip = _existingRequest.Zip }
             });
