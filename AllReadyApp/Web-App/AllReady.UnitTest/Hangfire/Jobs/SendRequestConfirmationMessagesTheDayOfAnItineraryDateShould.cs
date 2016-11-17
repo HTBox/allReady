@@ -77,7 +77,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         [Fact]
         public void SendRequestConfirmationsToTheCorrectPhoneNumberWithTheCorrectMessage_WhenRequestIdsMatchExistingRequests_AndThoseRequestsHaveAStatusOfPendingConfirmation_AndTodayIsTheSameDateAsTheItineraryDate()
         {
-            var dateTimeNow = DateTime.Now;
+            var dateTimeNow = DateTime.Today;
             var dateTimeNowUnspecified = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Unspecified);
             var dateTimeUtcNow = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Utc);
 
@@ -107,7 +107,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         [Fact]
         public void SendSetRequstsToUnassignedCommandWithCorrectParameters_WhenRequestIdsMatchExistingRequests_AndThoseRequestsHaveAStatusOfPendingConfirmation_AndTodayIsNotTheSameDateAsTheItineraryDate()
         {
-            var dateTimeNow = DateTime.Now;
+            var dateTimeNow = DateTime.Today;
             var dateTimeNowUnspecified = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Unspecified);
             var dateTimeUtcNow = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Utc);
 

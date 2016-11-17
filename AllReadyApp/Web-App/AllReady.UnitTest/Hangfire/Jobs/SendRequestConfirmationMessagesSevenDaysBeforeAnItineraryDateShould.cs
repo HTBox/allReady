@@ -64,7 +64,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         [Fact]
         public void NotSendRequestConfirmations_WhenRequestIdsMatchExistingRequests_AndThoseRequestsHaveAStatusOfPendingConfirmation_AndTodayIsNotSevenDaysBeforeTheItineraryDate()
         {
-            var dateTimeNow = DateTime.Now;
+            var dateTimeNow = DateTime.Today;
             var dateTimeNowUnspecified = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Unspecified);
             var dateTimeUtcNow = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Utc);
 
@@ -92,7 +92,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         [Fact]
         public void SendRequestConfirmationsToTheCorrectPhoneNumbersWithTheCorrectMessage_WhenRequestIdsMatchExistingRequests_AndThoseRequestsArePendingConfirmation_AndTodayIsSevenDaysBeforeTheItineraryDate()
         {
-            var dateTimeNow = DateTime.Now;
+            var dateTimeNow = DateTime.Today;
             var dateTimeNowUnspecified = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Unspecified);
             var dateTimeUtcNow = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Utc);
 
@@ -124,7 +124,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         [Fact]
         public void ScheduleISendRequestConfirmationMessagesADayBeforeAnItineraryDateWithCorrectParameters_WhenRequestIdsMatchExistingRequests_AndThoseRequestsHaveAStatusOfPendingConfirmation_AndTodayIsSevenDaysBeforeTheItineraryDate()
         {
-            var dateTimeNow = DateTime.Now;
+            var dateTimeNow = DateTime.Today;
             var dateTimeNowUnspecified = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Unspecified);
             var dateTimeUtcNow = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Utc);
 

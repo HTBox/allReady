@@ -18,7 +18,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
         [Fact]
         public async Task UpdateRequestStatusToPendingConfirmation()
         {
-            var dateTimeNow = DateTime.Now;
+            var dateTimeNow = DateTime.Today;
             var dateTimeNowUnspecified = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Unspecified);
 
             var requestId = Guid.NewGuid();
@@ -44,7 +44,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
         [Fact]
         public async Task ScheduleISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDateWithTheCorrectMethodSignatureAndTheCorrectDate()
         {
-            var dateTimeNow = DateTime.Now;
+            var dateTimeNow = DateTime.Today;
             var dateTimeNowUnspecified = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Unspecified);
 
             var requestId = Guid.NewGuid();
