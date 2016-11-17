@@ -11,7 +11,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
         private readonly DateTimeOffset eventStartDate = new DateTimeOffset(new DateTime(2016, 1, 1));
         private readonly DateTimeOffset eventEndDate = new DateTimeOffset(new DateTime(2020, 12, 31));
 
-        [Fact(Skip = "TempSkip")]
+        [Fact]
         public void ReturnsCorrectErrorWhenDateIsLessThanParentEventStartDate()
         {
             var sut = new ItineraryEditModelValidator();
@@ -28,7 +28,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
             Assert.Equal(errors.Find(x => x.Key == "Date").Value, "Date cannot be earlier than the event start date " + eventStartDate.Date.ToString("d"));
         }
 
-        [Fact(Skip = "TempSkip")]
+        [Fact]
         public void ReturnsCorrectErrorWhenModelsDateIsGreaterThanParentEventEndDate()
         {
             var sut = new ItineraryEditModelValidator();
@@ -83,7 +83,8 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
         {
             Id = 1,
             StartDateTime = eventStartDate,
-            EndDateTime = eventEndDate
+            EndDateTime = eventEndDate,
+            TimeZoneId = "Central Standard Time"
         };
     }
 }
