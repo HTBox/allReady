@@ -26,6 +26,8 @@ namespace AllReady.Areas.Admin.Features.Requests
                 .Include(l => l.Event)
                 .SingleOrDefaultAsync(t => t.RequestId == message.RequestModel.Id) ?? _context.Add(new Request { Source = RequestSource.UI }).Entity;
 
+            bool addressChanged = DetermineIfAddressChanged(message, request);
+
             request.EventId = message.RequestModel.EventId;
             request.Address = message.RequestModel.Address;
             request.City = message.RequestModel.City;
@@ -35,9 +37,8 @@ namespace AllReady.Areas.Admin.Features.Requests
             request.Email = message.RequestModel.Email;
             request.Phone = message.RequestModel.Phone;
 
-            //If lat/long not provided, use geocoding API to get them
-            //Also, always update lat/long to be safe if this is an update operation since it is unknown whether the address changed or not.
-            if ((request.Latitude == 0 && request.Longitude == 0) || request.RequestId != Guid.Empty)
+            //If lat/long not provided or we detect the address changed, then use geocoding API to get the lat/long
+            if ((request.Latitude == 0 && request.Longitude == 0) || addressChanged)
             {
                 //Assume the first returned address is correct
                 var address = _geocoder.Geocode(request.Address, request.City, request.State, request.Zip, string.Empty)
@@ -51,6 +52,14 @@ namespace AllReady.Areas.Admin.Features.Requests
             await _context.SaveChangesAsync();
 
             return request.RequestId;
+        }
+
+        private static bool DetermineIfAddressChanged(EditRequestCommand message, Request request)
+        {
+            return request.Address  != message.RequestModel.Address
+                || request.City     != message.RequestModel.City
+                || request.State    != message.RequestModel.State
+                || request.Zip      != message.RequestModel.Zip;
         }
     }
 }

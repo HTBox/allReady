@@ -61,12 +61,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         }
 
         [Fact]
-        public async Task AlwaysGeocodeAddressWhenUpdatingExistingRequest()
+        public async Task NotUpdateGeocodeIfAddressDidntChangeWhenUpdatingExistingRequest()
         {
             var mockGeocoder = new Mock<IGeocoder>();
-
-            // Because the Geocode method takes a set of strings as arguments, verify the arguments are passed in to the mock the correct order.
-            mockGeocoder.Setup(g => g.Geocode(_existingRequest.Address, _existingRequest.City, _existingRequest.State, _existingRequest.Zip, It.IsAny<string>())).Returns(new List<Address>());
 
             var handler = new EditRequestCommandHandler(Context, mockGeocoder.Object);
             await handler.Handle(new EditRequestCommand
@@ -74,7 +71,25 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
                 RequestModel = new EditRequestViewModel { Id = _existingRequest.RequestId, Address = _existingRequest.Address, City = _existingRequest.City, State = _existingRequest.State, Zip = _existingRequest.Zip }
             });
 
-            mockGeocoder.Verify(x => x.Geocode(_existingRequest.Address, _existingRequest.City, _existingRequest.State, _existingRequest.Zip, It.IsAny<string>()), Times.Once);
+            mockGeocoder.Verify(x => x.Geocode(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateGeocodeWhenAddressChangedWhenUpdatingExistingRequest()
+        {
+            var mockGeocoder = new Mock<IGeocoder>();
+            string changedAddress = "4444 Changed Address Ln";
+
+            // Because the Geocode method takes a set of strings as arguments, actually verify the arguments are passed in to the mock in the correct order.
+            mockGeocoder.Setup(g => g.Geocode(changedAddress, _existingRequest.City, _existingRequest.State, _existingRequest.Zip, It.IsAny<string>())).Returns(new List<Address>());
+
+            var handler = new EditRequestCommandHandler(Context, mockGeocoder.Object);
+            await handler.Handle(new EditRequestCommand
+            {
+                RequestModel = new EditRequestViewModel { Id = _existingRequest.RequestId, Address = changedAddress, City = _existingRequest.City, State = _existingRequest.State, Zip = _existingRequest.Zip }
+            });
+
+            mockGeocoder.Verify(x => x.Geocode(changedAddress, _existingRequest.City, _existingRequest.State, _existingRequest.Zip, It.IsAny<string>()), Times.Once);
         }
     }
 }
