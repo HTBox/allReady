@@ -55,8 +55,8 @@ namespace AllReady.Hangfire.Jobs
 
         private static DateTimeOffset Itinerary(DateTime itineraryDate, string eventsTimeZoneId)
         {
-            var itineraryDateAtNoon = itineraryDate.Date.AddHours(12);
             var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(eventsTimeZoneId);
+            var itineraryDateAtNoon = itineraryDate.Date.AddHours(12);
             var utcOffset = timeZoneInfo.GetUtcOffset(itineraryDateAtNoon);
             return new DateTimeOffset(itineraryDateAtNoon, utcOffset);
         }

@@ -54,8 +54,8 @@ namespace AllReady.Hangfire.Jobs
 
         private static DateTimeOffset OneDayBeforeThe(DateTime itineraryDate, string eventsTimeZoneId)
         {
-            var oneDayBeforeItineraryDateAtNoon = itineraryDate.Date.AddDays(-1).AddHours(12);
             var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(eventsTimeZoneId);
+            var oneDayBeforeItineraryDateAtNoon = itineraryDate.Date.AddDays(-1).AddHours(12);
             var utcOffset = timeZoneInfo.GetUtcOffset(oneDayBeforeItineraryDateAtNoon);
             return new DateTimeOffset(oneDayBeforeItineraryDateAtNoon, utcOffset);
         }
