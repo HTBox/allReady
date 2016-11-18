@@ -164,7 +164,7 @@ namespace AllReady
             services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
             services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
             services.AddSingleton<IImageService, ImageService>();
-            services.AddTransient<ISendRequestConfirmationMessagesAWeekBeforeAnItineraryDate, SendRequestConfirmationMessagesAWeekBeforeAnItineraryDate>();
+            services.AddTransient<ISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate, SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate>();
             services.AddTransient<ISendRequestConfirmationMessagesADayBeforeAnItineraryDate, SendRequestConfirmationMessagesADayBeforeAnItineraryDate>();
             services.AddTransient<ISendRequestConfirmationMessagesTheDayOfAnItineraryDate, SendRequestConfirmationMessagesTheDayOfAnItineraryDate>();
 

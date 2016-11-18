@@ -29,7 +29,7 @@ namespace AllReady.Hangfire.Jobs
             if (requestStatus == RequestStatus.Unassigned)
             {
                 request.Status = RequestStatus.Unassigned;
-                mediator.Send(new SetRequstsToUnassignedCommand { RequestIds = new List<Guid> { requestId } });
+                mediator.Send(new SetRequestsToUnassignedCommand { RequestIds = new List<Guid> { requestId } });
             }
 
             context.SaveChanges();
