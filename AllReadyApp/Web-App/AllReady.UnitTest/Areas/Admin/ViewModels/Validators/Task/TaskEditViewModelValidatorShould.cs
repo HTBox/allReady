@@ -132,7 +132,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
         [Fact]
         public async System.Threading.Tasks.Task ReturnNoErrorForItineraryTaskWhenModelsDatesAreValid()
         {
-            var now = DateTimeOffset.Now;
+            var now = new DateTimeOffset(2016, 10, 4, 8, 0, 0, TimeSpan.FromSeconds(0));
 
             var @event = new Event { Campaign = new Campaign { TimeZoneId = "UTC", }, StartDateTime = now, EndDateTime = now.AddDays(1), TimeZoneId = "UTC", EventType = EventType.Itinerary };
 
