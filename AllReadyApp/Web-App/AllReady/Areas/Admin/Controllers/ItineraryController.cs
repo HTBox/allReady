@@ -125,6 +125,8 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
+            model.Date = itinerary.Date; // we currently don't allow the date to be changed via edit
+
             // todo - sgordon: add additional validation for address scenarios - enhance this later
             var errors = _itineraryValidator.Validate(model, itinerary.EventSummary);
             errors.ToList().ForEach(e => ModelState.AddModelError(e.Key, e.Value));
