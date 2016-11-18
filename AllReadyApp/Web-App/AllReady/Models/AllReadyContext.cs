@@ -198,6 +198,8 @@ namespace AllReady.Models
             builder.HasKey(x => x.Id);
             builder.HasMany(x => x.Requests).WithOne(x => x.Itinerary).HasForeignKey((x => x.ItineraryId));
             builder.HasMany(x => x.TeamMembers).WithOne(x => x.Itinerary).HasForeignKey(x => x.ItineraryId).IsRequired(false);
+            builder.HasOne(x => x.StartLocation);
+            builder.HasOne(x => x.EndLocation);
         }
 
         public void Map(EntityTypeBuilder<ItineraryRequest> builder)
