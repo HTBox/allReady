@@ -34,6 +34,8 @@ using Geocoding.Google;
 using Hangfire;
 using Hangfire.SqlServer;
 using AllReady.ModelBinding;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
 
 namespace AllReady
 {
@@ -117,6 +119,18 @@ namespace AllReady
             {
                 options.AddPolicy("OrgAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "OrgAdmin", "SiteAdmin"));
                 options.AddPolicy("SiteAdmin", b => b.RequireClaim(Security.ClaimTypes.UserType, "SiteAdmin"));
+            });
+
+            services.AddLocalization();
+
+            //Currently AllReady only supports en-US culture. This forces datetime and number formats to the en-US culture regardless of local culture
+            var usCulture = new CultureInfo("en-US");
+            var supportedCultures = new[] { usCulture };
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.DefaultRequestCulture = new RequestCulture(usCulture, usCulture);
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
             });
 
             // Add MVC services to the services container.
@@ -245,14 +259,6 @@ namespace AllReady
                 });
             }
 
-            // Configure the HTTP request pipeline.
-            var usCultureInfo = new CultureInfo("en-US");
-            app.UseRequestLocalization(new RequestLocalizationOptions
-            {
-                SupportedCultures = new List<CultureInfo>(new[] { usCultureInfo }),
-                SupportedUICultures = new List<CultureInfo>(new[] { usCultureInfo })
-            });
-
             // Add Application Insights to the request pipeline to track HTTP request telemetry data.
             app.UseApplicationInsightsRequestTelemetry();
 
@@ -280,6 +286,8 @@ namespace AllReady
 
             // Add static files to the request pipeline.
             app.UseStaticFiles();
+
+            app.UseRequestLocalization();
 
             // Add cookie-based authentication to the request pipeline.
             app.UseIdentity();
@@ -348,7 +356,7 @@ namespace AllReady
             }
 
             //Hangfire
-            app.UseHangfireDashboard("/hangfire", new DashboardOptions { Authorization = new [] { new HangireDashboardAuthorizationFilter() }});
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions { Authorization = new[] { new HangireDashboardAuthorizationFilter() } });
             app.UseHangfireServer();
 
             // Add MVC to the request pipeline.
