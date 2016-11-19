@@ -75,6 +75,9 @@ IF !ERRORLEVEL! NEQ 0 goto error
 echo Storing Git Version Info for Runtime Display
 call :ExecuteCmd PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "(Get-Content AllReadyApp\Web-App\AllReady\version.json).replace('GITVERSION', (git rev-parse --short HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json"
 
+echo Moving In to AllReadyApp Directory
+pushd "%DEPLOYMENT_SOURCE%\AllReadyApp"
+
 echo Building AllReady.Core Project (project.json)
 call :ExecuteCmd dotnet build "%DEPLOYMENT_SOURCE%\AllReadyApp\AllReady.Core\project.json" --configuration Debug
 IF !ERRORLEVEL! NEQ 0 goto error
@@ -89,6 +92,9 @@ IF !ERRORLEVEL! NEQ 0 goto error
 echo Publishing Allready Project (project.json) which includes building it
 call :ExecuteCmd dotnet publish "%DEPLOYMENT_SOURCE%\AllReadyApp\Web-App\AllReady" --output "%DEPLOYMENT_TEMP%" --configuration Debug
 IF !ERRORLEVEL! NEQ 0 goto error
+
+echo Moving Out of AllReadyApp Directory
+popd
 
 :: 2c. Publish WebJobs (AllReady.NotificationsWebJob)
 echo Publishing AllReady.NotificationsWebJob WebJob
