@@ -20,6 +20,7 @@ namespace AllReady.UnitTest.Features.Event
             message = new EventsByApplicationUserIdQuery() { ApplicationUserId = Guid.NewGuid().ToString() };
             @event = new Models.Event() {Organizer = new ApplicationUser() {Id = message.ApplicationUserId } };
 
+
             Context.Add(@event);
             Context.SaveChanges();
 
