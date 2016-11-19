@@ -1,4 +1,7 @@
-﻿namespace AllReady.Areas.Admin.ViewModels.Shared
+﻿using AllReady.Models;
+using System.Collections.Generic;
+
+namespace AllReady.Areas.Admin.ViewModels.Shared
 {
     public class VolunteerViewModel
     {
@@ -7,5 +10,8 @@
         public bool HasVolunteered { get; set; }
         public string Status { get; set; }
         public string AdditionalInfo { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Name { get; set; }
+        public List<UserSkill> AssociatedSkills { get; set; }
     }
 }

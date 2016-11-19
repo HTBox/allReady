@@ -60,15 +60,25 @@
                     <button type="button" id="openMessageToVolunteers" class="btn btn-primary" disabled="disabled" autocomplete="off" data-toggle="modal" data-target="#messageVolunteersModal">Message All</button>
                     <table class="table">
                         <tr>
-                            <th>
-                                Volunteer Name
-                            </th>
+                            <th>Volunteer Name</th>
+                            <th>Phone</th>
+                            <th>Skills</th>
+                            <th>E-mail</th>
                         </tr>
                         @foreach (var volunteer in Model.AssignedVolunteers)
                         {
                             <tr>
+                                <td>@volunteer.Name</td>
+                                <td>@volunteer.PhoneNumber</td>
+                                <td>
+                                    <ul>
+                                        @foreach (var associatedSkill in volunteer.AssociatedSkills)
+                                        {
+                                            <li><strong>@associatedSkill.Skill.HierarchicalName</strong></li>
+                                        }
+                                    </ul>
+                                </td>
                                 <td>@volunteer.UserName</td>
-
                             </tr>
                         }
                     </table>

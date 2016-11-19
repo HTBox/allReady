@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Models;
 using Xunit;
+using AllReady.Areas.Admin.ViewModels.Shared;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
@@ -33,7 +35,21 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                     TimeZoneId = "Central Standard Time"
                 },
                 RequiredSkills = new List<TaskSkill> { new TaskSkill { SkillId = 4, TaskId = 1 } },
-                AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User = new ApplicationUser { Id = "UserId", UserName = "UserName" } } }
+                AssignedVolunteers = new List<TaskSignup>
+                {
+                    new TaskSignup
+                    {
+                        User = new ApplicationUser
+                        {
+                            Id = "UserId",
+                            UserName = "UserName",
+                            FirstName = "FirstName",
+                            LastName = "LastName",
+                            PhoneNumber = "PhoneNumber",
+                            AssociatedSkills = new List<UserSkill> { new UserSkill { Skill = new Skill { Name = "Skill", ParentSkill = new Skill { Name = "Parent skill" } } } }
+                        }
+                    }
+                }
             };
 
             Context.Tasks.Add(task);
@@ -58,7 +74,22 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Assert.Equal(result.CampaignName, task.Event.Campaign.Name);
             Assert.Equal(result.TimeZoneId, task.Event.TimeZoneId);
             //Assert.Equal(result.RequiredSkills, task.RequiredSkills);
-            //Assert.Equal(result.AssignedVolunteers, task.AssignedVolunteers.Select(x => new VolunteerViewModel { UserId = x.User.Id, UserName = x.User.UserName, HasVolunteered = true }).ToList());
+            Assert.Equal(result.AssignedVolunteers.Count, task.AssignedVolunteers.Count);
+            for (var i = 0; i < result.AssignedVolunteers.Count; ++i)
+            {
+                var resultVolunteer = result.AssignedVolunteers[i];
+                var expectedVolunteer = task.AssignedVolunteers[i];
+                Assert.Equal(resultVolunteer.UserId, expectedVolunteer.User.Id);
+                Assert.Equal(resultVolunteer.UserName, expectedVolunteer.User.UserName);
+                Assert.True(resultVolunteer.HasVolunteered);
+                Assert.Equal(resultVolunteer.Name, expectedVolunteer.User.Name);
+                Assert.Equal(resultVolunteer.PhoneNumber, expectedVolunteer.User.PhoneNumber);
+                Assert.Equal(resultVolunteer.AssociatedSkills.Count, expectedVolunteer.User.AssociatedSkills.Count);
+                for (var j = 0; j < resultVolunteer.AssociatedSkills.Count; ++j)
+                {
+                    Assert.Equal(resultVolunteer.AssociatedSkills[j].Skill.HierarchicalName, resultVolunteer.AssociatedSkills[j].Skill.HierarchicalName);
+                }
+            }
             //Assert.Equal(result.AllVolunteers, task.Event.UsersSignedUp.Select(x => new VolunteerViewModel { UserId = x.User.Id, UserName = x.User.UserName, HasVolunteered = false }).ToList());
         }
 
