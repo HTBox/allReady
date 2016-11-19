@@ -1,30 +1,151 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.Globalization;
 using System.Linq;
 using AllReady.Areas.Admin.ViewModels.Task;
+using AllReady.UnitTest.Extensions;
 using Xunit;
 
 namespace AllReady.UnitTest.ViewModels
 {
     public class TaskSummaryModelShould
     {
-        [Fact]
-        public void ValidationShouldFail_IfNoNameIsSupplied()
+        public class Name
         {
-            var model = new TaskSummaryViewModel();
-            var result = ValidateModel(model);
+            [Fact]
+            public void ValidationShouldFail_IfNoNameIsSupplied()
+            {
+                //arrange
+                using (new CultureContext(new CultureInfo("en")))
+                {
+                    var model = new TaskSummaryViewModel();
+                    var tester = new PropertyValidationHelper<TaskSummaryViewModel>(model);
 
-            var nameError = result.Where(r => r.ErrorMessage == "The Name field is required.").FirstOrDefault();
+                    //act
+                    var result = tester.ValidateProperty(m => m.Name);
 
-            Assert.NotNull(nameError);
+                    //assert
+                    Assert.Contains("The Name field is required.", result.Select(r => r.ErrorMessage));
+                }
+            }
+
+            [Fact]
+            public void ValidationShouldSucceed_IfNameIsSupplied()
+            {
+                //arrange
+                using (new CultureContext(new CultureInfo("en")))
+                {
+                    var model = new TaskSummaryViewModel
+                    {
+                        Name = "name"
+                    };
+                    var tester = new PropertyValidationHelper<TaskSummaryViewModel>(model);
+
+                    //act
+                    var result = tester.ValidateProperty(m => m.Name);
+
+                    //assert
+                    Assert.Empty(result);
+                }
+            }
         }
 
-        private IList<ValidationResult> ValidateModel(object model)
+        public class NumberOfVolunteersRequired
         {
-            var validationResults = new List<ValidationResult>();
-            var ctx = new ValidationContext(model, null, null);
-            Validator.TryValidateObject(model, ctx, validationResults, true);
-            return validationResults;
+            [Fact]
+            public void ValidationShouldFail_IfNoNumberOfVolunteersRequiredIsSupplied()
+            {
+                //arrange
+                using (new CultureContext(new CultureInfo("en")))
+                {
+                    var model = new TaskSummaryViewModel();
+                    var tester = new PropertyValidationHelper<TaskSummaryViewModel>(model);
+
+                    //act
+                    var result = tester.ValidateProperty(m => m.NumberOfVolunteersRequired);
+
+                    //assert
+                    Assert.Contains("'Volunteers Required' must be greater than 0", result.Select(r => r.ErrorMessage));
+                }
+            }
+
+            [Fact]
+            public void ValidationShouldFail_IfNumberOfVolunteersRequiredIs0()
+            {
+                //arrange
+                using (new CultureContext(new CultureInfo("en")))
+                {
+                    var model = new TaskSummaryViewModel
+                    {
+                        NumberOfVolunteersRequired = 0
+                    };
+                    var tester = new PropertyValidationHelper<TaskSummaryViewModel>(model);
+
+                    //act
+                    var result = tester.ValidateProperty(m => m.NumberOfVolunteersRequired);
+
+                    //assert
+                    Assert.Contains("'Volunteers Required' must be greater than 0", result.Select(r => r.ErrorMessage));
+                }
+            }
+
+            [Fact]
+            public void ValidationShouldSucceed_IfNumberOfVolunteersRequiredIs1()
+            {
+                //arrange
+                using (new CultureContext(new CultureInfo("en")))
+                {
+                    var model = new TaskSummaryViewModel
+                    {
+                        NumberOfVolunteersRequired = 1
+                    };
+                    var tester = new PropertyValidationHelper<TaskSummaryViewModel>(model);
+
+                    //act
+                    var result = tester.ValidateProperty(m => m.NumberOfVolunteersRequired);
+
+                    //assert
+                    Assert.Empty(result);
+                }
+            }
+
+            [Fact]
+            public void ValidationShouldSucceed_IfNumberOfVolunteersRequiredIs100()
+            {
+                //arrange
+                using (new CultureContext(new CultureInfo("en")))
+                {
+                    var model = new TaskSummaryViewModel
+                    {
+                        NumberOfVolunteersRequired = 100
+                    };
+                    var tester = new PropertyValidationHelper<TaskSummaryViewModel>(model);
+
+                    //act
+                    var result = tester.ValidateProperty(m => m.NumberOfVolunteersRequired);
+
+                    //assert
+                    Assert.Empty(result);
+                }
+            }
+
+            [Fact]
+            public void ValidationShouldSucceed_IfNumberOfVolunteersRequiredIsIntMaxValue()
+            {
+                //arrange
+                using (new CultureContext(new CultureInfo("en")))
+                {
+                    var model = new TaskSummaryViewModel
+                    {
+                        NumberOfVolunteersRequired = int.MaxValue
+                    };
+                    var tester = new PropertyValidationHelper<TaskSummaryViewModel>(model);
+
+                    //act
+                    var result = tester.ValidateProperty(m => m.NumberOfVolunteersRequired);
+
+                    //assert
+                    Assert.Empty(result);
+                }
+            }
         }
     }
 }
