@@ -49,7 +49,7 @@
                 </div>
             </div>
         }
-        @if (Model.Campaigns != null)
+        @if (Model.Campaigns.Count() > 0)
         {
             <div class="form-group">
                 <label asp-for="Campaigns" class="control-label col-md-2"></label>
@@ -61,7 +61,7 @@
                 </div>
             </div>
         }
-        @if (Model.Events != null)
+        @if (Model.Events.Count() > 0)
         {
             <div class="form-group">
                 <label asp-for="Events" class="control-label col-md-2"></label>
@@ -73,7 +73,7 @@
                 </div>
             </div>
         }
-        @if (Model.Tasks != null)
+        @if (Model.Tasks.Count() > 0)
         {
             <div class="form-group">
                 <label asp-for="Tasks" class="control-label col-md-2"></label>
