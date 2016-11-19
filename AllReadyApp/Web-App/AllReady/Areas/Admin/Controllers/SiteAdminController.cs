@@ -18,6 +18,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using AllReady.Features.Campaigns;
+using AllReady.Features.Events;
+using AllReady.Features.Tasks;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -45,10 +48,10 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteUser(string userId)
         {
             var user = await _mediator.SendAsync(new UserQuery { UserId = userId });
-            var campaigns = new List<string> { "Campaign 1", "Campaign 2" }; //= await _mediator.SendAsync();
-            var events = new List <string> { "Event 1", "Event 2" }; ; //= await _mediator.SendAsync();
-            var tasks = new List<string> { "Task 1", "Task 2" }; ; //= await _mediator.SendAsync();
-
+            var campaigns = await _mediator.SendAsync(new CampaignByApplicationUserIdQuery() { ApplicationUserId = userId });
+            var events = await _mediator.SendAsync(new EventsByApplicationUserIdQuery() { ApplicationUserId = userId });
+            var tasks = await _mediator.SendAsync(new TasksByApplicationUserIdQuery() { ApplicationUserId = userId });
+            
             var viewModel = new DeleteUserViewModel
             {
                 UserId = userId,
@@ -56,9 +59,9 @@ namespace AllReady.Areas.Admin.Controllers
                 IsSiteAdmin = user.IsSiteAdmin,
                 OrganizationName = user.Organization?.Name,
                 IsOrganizationAdmin = user.IsOrganizationAdmin,
-                Campaigns = campaigns,
-                Events = events,
-                Tasks = tasks
+                Campaigns = campaigns.Select(x => x.Name),
+                Events = events.Select(x => x.Name),
+                Tasks = tasks.Select(x => x.Name)
             };
 
             return View(viewModel);
@@ -257,7 +260,7 @@ namespace AllReady.Areas.Admin.Controllers
                 .Select(t => new SelectListItem { Text = t.Name, Value = t.Id.ToString() })
                 .ToList();
 
-            ViewBag.Organizations = new [] { new SelectListItem { Selected = true, Text = "<Select One>", Value = "0" }}
+            ViewBag.Organizations = new[] { new SelectListItem { Selected = true, Text = "<Select One>", Value = "0" } }
                 .Union(selectListItems);
 
             return View(new AssignOrganizationAdminViewModel { UserId = userId });
@@ -272,7 +275,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
-            
+
             if (model.OrganizationId == 0)
             {
                 ModelState.AddModelError(nameof(AssignOrganizationAdminViewModel.OrganizationId), "You must pick a valid organization.");

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Tasks
 {
-    public class TasksByApplicationUserIdQueryHandler : IAsyncRequestHandler<TasksByApplicationUserIdQuery, List<TaskSignup>>
+    public class TasksByApplicationUserIdQueryHandler : IAsyncRequestHandler<TasksByApplicationUserIdQuery, List<AllReadyTask>>
     {
         private readonly AllReadyContext _context;
 
@@ -16,11 +16,14 @@ namespace AllReady.Features.Tasks
             _context = context;
         }
 
-        public async Task<List<TaskSignup>> Handle(TasksByApplicationUserIdQuery message)
+        public async Task<List<AllReadyTask>> Handle(TasksByApplicationUserIdQuery message)
         {
-            return await _context.TaskSignups.Include(x => x.User)
-                    .Where(x => x.User.Id == message.ApplicationUserId)
-                    .ToListAsync();
+            return await _context.TaskSignups
+                        .Include(x => x.User)
+                        .Include(x => x.Task)
+                        .Where(x => x.User.Id == message.ApplicationUserId)
+                        .Select(x => x.Task)
+                        .ToListAsync();
         }
     }
 }
