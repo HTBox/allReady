@@ -62,7 +62,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var errors = await validator.Validate(new EditViewModel());
 
             Assert.True(errors.Exists(x => x.Key.Equals("StartDateTime")));
-            Assert.Equal(errors.Find(x => x.Key == "StartDateTime").Value, "Start date cannot be earlier than the event start date " + @event.StartDateTime.ToString("d"));
+            Assert.Equal(errors.Find(x => x.Key == "StartDateTime").Value, String.Format("Start date cannot be earlier than the event start date {0:g}.", @event.StartDateTime));
         }
 
         [Fact]
