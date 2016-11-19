@@ -1,6 +1,10 @@
-﻿using AllReady.Models;
+﻿using System.Collections.Generic;
+using AllReady.Models;
 using System.Threading.Tasks;
+using AllReady.ExtensionWrappers;
 using AllReady.Features.Events;
+using Microsoft.EntityFrameworkCore;
+using Moq;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Event
@@ -9,10 +13,11 @@ namespace AllReady.UnitTest.Features.Event
 
     public class EventsByPostalCodeQueryHandlerShould : InMemoryContextTest
     {
-        [Fact(Skip = "Can't mock FromSql()")]
+        [Fact]
         public async Task HandleCallsEventsByPostalCodeWithCorrectPostalCodeAndDistance()
         {
-            var options = this.CreateNewContextOptions();
+            // arrange
+            var options = CreateNewContextOptions();
 
             var message = new EventsByPostalCodeQuery { PostalCode = "PostalCode", Distance = 100 };
 
@@ -22,12 +27,20 @@ namespace AllReady.UnitTest.Features.Event
                 await context.SaveChangesAsync();
             }
 
-            using (var context = new AllReadyContext(options)) {
-                var sut = new EventsByPostalCodeQueryHandler(context);
-                var events = sut.Handle(message);
+            Mock<IFromSqlWrapper> mockFromSqlWrapper = new Mock<IFromSqlWrapper>();
+            mockFromSqlWrapper.Setup(w => w.FromSql(It.IsAny<DbSet<Event>>(), It.IsAny<string>(), It.IsAny<object[]>()))
+                .Returns(new AllReadyContext(options).Events);
 
-                Assert.Equal(events.Count, 2);
+            // act
+            List<Event> events;
+            using (var context = new AllReadyContext(options)) {
+                var sut = new EventsByPostalCodeQueryHandler(context, mockFromSqlWrapper.Object);
+                events = sut.Handle(message);
             }
+
+            // Assert
+            Assert.Equal(events.Count, 2);
+            mockFromSqlWrapper.Verify(w => w.FromSql(It.IsAny<DbSet<Event>>(), "EXEC GetClosestEventsByPostalCode '{0}', {1}, {2}", message.PostalCode, 50, message.Distance), Times.Once);
         }
     }
 }
