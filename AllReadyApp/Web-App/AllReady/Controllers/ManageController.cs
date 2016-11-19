@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Features.Login;
@@ -53,6 +54,10 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(IndexViewModel model)
         {
+            // When any other button than the save button is clicked, consider it as a cancel
+            if(!String.Equals(model.Button, "Save"))
+                return RedirectToAction(nameof(Microsoft.EntityFrameworkCore.Metadata.Internal.Index));
+
             var shouldRefreshSignin = false;
 
             var user = await GetCurrentUser();
@@ -104,7 +109,7 @@ namespace AllReady.Controllers
 
             await UpdateUserProfileCompleteness(user);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Microsoft.EntityFrameworkCore.Metadata.Internal.Index));
         }
 
         [HttpPost]
@@ -201,7 +206,7 @@ namespace AllReady.Controllers
                 await _signInManager.SignInAsync(user, isPersistent: false);
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Microsoft.EntityFrameworkCore.Metadata.Internal.Index));
         }
 
         // POST: /Manage/DisableTwoFactorAuthentication
@@ -216,7 +221,7 @@ namespace AllReady.Controllers
                 await _signInManager.SignInAsync(user, isPersistent: false);
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Microsoft.EntityFrameworkCore.Metadata.Internal.Index));
         }
 
         // GET: /Account/VerifyPhoneNumber
@@ -245,7 +250,7 @@ namespace AllReady.Controllers
                 {
                     await UpdateUserProfileCompleteness(user);
                     await _signInManager.SignInAsync(user, isPersistent: false);                    
-                    return RedirectToAction(nameof(Index), new { Message = ManageMessageId.AddPhoneSuccess });
+                    return RedirectToAction(nameof(Microsoft.EntityFrameworkCore.Metadata.Internal.Index), new { Message = ManageMessageId.AddPhoneSuccess });
                 }
             }
 
@@ -266,11 +271,11 @@ namespace AllReady.Controllers
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     await UpdateUserProfileCompleteness(user);
-                    return RedirectToAction(nameof(Index), new { Message = ManageMessageId.RemovePhoneSuccess });
+                    return RedirectToAction(nameof(Microsoft.EntityFrameworkCore.Metadata.Internal.Index), new { Message = ManageMessageId.RemovePhoneSuccess });
                 }
             }
 
-            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
+            return RedirectToAction(nameof(Microsoft.EntityFrameworkCore.Metadata.Internal.Index), new { Message = ManageMessageId.Error });
         }
 
         // GET: /Manage/ChangePassword
@@ -297,7 +302,7 @@ namespace AllReady.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction(nameof(Index), new { Message = ManageMessageId.ChangePasswordSuccess });
+                    return RedirectToAction(nameof(Microsoft.EntityFrameworkCore.Metadata.Internal.Index), new { Message = ManageMessageId.ChangePasswordSuccess });
                 }
 
                 AddErrorsToModelState(result);
@@ -305,7 +310,7 @@ namespace AllReady.Controllers
                 return View(model);
             }
 
-            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
+            return RedirectToAction(nameof(Microsoft.EntityFrameworkCore.Metadata.Internal.Index), new { Message = ManageMessageId.Error });
         }
 
         // GET: /Manage/ChangeEmail
@@ -350,7 +355,7 @@ namespace AllReady.Controllers
                 return RedirectToAction(nameof(EmailConfirmationSent));                
             }
 
-            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
+            return RedirectToAction(nameof(Microsoft.EntityFrameworkCore.Metadata.Internal.Index), new { Message = ManageMessageId.Error });
         }
 
         // GET: /Manage/ConfirmNewEmail
@@ -378,7 +383,7 @@ namespace AllReady.Controllers
                 await _userManager.UpdateAsync(user);
             }
 
-            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.ChangeEmailSuccess });
+            return RedirectToAction(nameof(Microsoft.EntityFrameworkCore.Metadata.Internal.Index), new { Message = ManageMessageId.ChangeEmailSuccess });
         }
 
         [HttpPost]
@@ -406,7 +411,7 @@ namespace AllReady.Controllers
             user.PendingNewEmail = null;
             await _userManager.UpdateAsync(user);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Microsoft.EntityFrameworkCore.Metadata.Internal.Index));
         }
 
         // GET: /Manage/SetPassword
@@ -433,12 +438,12 @@ namespace AllReady.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction(nameof(Index), new { Message = ManageMessageId.SetPasswordSuccess });
+                    return RedirectToAction(nameof(Microsoft.EntityFrameworkCore.Metadata.Internal.Index), new { Message = ManageMessageId.SetPasswordSuccess });
                 }
                 AddErrorsToModelState(result);
                 return View(model);
             }
-            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
+            return RedirectToAction(nameof(Microsoft.EntityFrameworkCore.Metadata.Internal.Index), new { Message = ManageMessageId.Error });
         }
 
         //GET: /Account/Manage
