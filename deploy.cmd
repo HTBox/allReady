@@ -91,6 +91,7 @@ IF !ERRORLEVEL! NEQ 0 goto error
 :: 2b. Publish AllReady
 echo Publishing Allready Project (project.json) which includes building it
 call :ExecuteCmd dotnet publish "%DEPLOYMENT_SOURCE%\AllReadyApp\Web-App\AllReady" --output "%DEPLOYMENT_TEMP%" --configuration Debug
+copy "%DEPLOYMENT_SOURCE%\AllReadyApp\Web-App\AllReady\version.json" "%DEPLOYMENT_TEMP%\version.json" /y
 IF !ERRORLEVEL! NEQ 0 goto error
 
 echo Moving Out of AllReadyApp Directory
