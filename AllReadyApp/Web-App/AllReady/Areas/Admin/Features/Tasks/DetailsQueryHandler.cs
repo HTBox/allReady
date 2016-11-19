@@ -35,7 +35,15 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 CampaignName = task.Event.Campaign.Name,
                 TimeZoneId = task.Event.TimeZoneId,
                 RequiredSkills = task.RequiredSkills,
-                AssignedVolunteers = task.AssignedVolunteers.Select(ts => new VolunteerViewModel { UserId = ts.User.Id, UserName = ts.User.UserName, HasVolunteered = true }).ToList(),
+                AssignedVolunteers = task.AssignedVolunteers.Select(ts => new VolunteerViewModel
+                {
+                    UserId = ts.User.Id,
+                    UserName = ts.User.UserName,
+                    HasVolunteered = true,
+                    Name = ts.User.Name,
+                    PhoneNumber = ts.User.PhoneNumber,
+                    AssociatedSkills = ts.User.AssociatedSkills,
+                }).ToList(),
             };
 
             return model;
@@ -47,7 +55,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 .AsNoTracking()
                 .Include(t => t.Event)
                 .Include(t => t.Event.Campaign)
-                .Include(t => t.AssignedVolunteers).ThenInclude(ts => ts.User)
+                .Include(t => t.AssignedVolunteers).ThenInclude(ts => ts.User).ThenInclude(u => u.AssociatedSkills).ThenInclude(s => s.Skill).ThenInclude(s => s.ParentSkill).ThenInclude(s => s.ParentSkill)
                 .Include(t => t.RequiredSkills).ThenInclude(ts => ts.Skill).ThenInclude(s => s.ParentSkill).ThenInclude(s => s.ParentSkill)
                 .SingleOrDefaultAsync(t => t.Id == message.TaskId);
         }
