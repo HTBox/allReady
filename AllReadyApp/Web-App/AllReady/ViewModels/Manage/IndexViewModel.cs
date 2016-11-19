@@ -52,7 +52,5 @@ namespace AllReady.ViewModels.Manage
         public bool IsProfileComplete { get; set; }
 
         public IEnumerable<string> ProfileCompletenessWarnings { get; set; }
-
-        public string Button { get; set; }
     }
 }

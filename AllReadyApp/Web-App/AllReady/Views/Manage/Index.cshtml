@@ -203,7 +203,7 @@
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
                     <button type="submit" name="button" value="Save" class="btn btn-default" data-bind="enable: skills.isValid">Save</button>
-                    <button type="submit" name="button" value="Cancel" class="btn">Cancel</button>
+                    <a asp-controller="Manage" asp-action="Index" class="btn btn-danger">Cancel</a>
                     <span class="label label-danger" data-bind="visible: !skills.isValid()">"@Html.DisplayNameFor(m => m.AssociatedSkills)" must be unique</span>
                 </div>
             </div>

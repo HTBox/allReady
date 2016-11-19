@@ -54,10 +54,6 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(IndexViewModel model)
         {
-            // When any other button than the save button is clicked, consider it as a cancel
-            if(!String.Equals(model.Button, "Save"))
-                return RedirectToAction(nameof(Microsoft.EntityFrameworkCore.Metadata.Internal.Index));
-
             var shouldRefreshSignin = false;
 
             var user = await GetCurrentUser();
