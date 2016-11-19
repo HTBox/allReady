@@ -49,6 +49,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 UserId = userId,
                 UserName = user.UserName,
+                OrganizationName = user.Organization?.Name
             };
 
             return View(viewModel);

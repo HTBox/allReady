@@ -7,6 +7,7 @@ namespace AllReady.Areas.Admin.ViewModels.Site
         public string UserId { get; set; }
         [Display(Name = "User name")]
         public string UserName { get; set; }
-
+        [Display(Name = "Organization")]
+        public string OrganizationName { get; set; }
     }
 }
