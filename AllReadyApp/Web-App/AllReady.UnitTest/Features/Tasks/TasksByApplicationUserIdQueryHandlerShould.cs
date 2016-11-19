@@ -11,14 +11,17 @@ namespace AllReady.UnitTest.Features.Tasks
     {
         private readonly TasksByApplicationUserIdQuery message;
         private readonly Models.TaskSignup task;
+        private readonly Models.AllReadyTask alreadyTask;
         private readonly TasksByApplicationUserIdQueryHandler sut;
 
 
         public TasksByApplicationUserIdQueryHandlerShould()
         {
             message = new TasksByApplicationUserIdQuery() { ApplicationUserId = Guid.NewGuid().ToString() };
-            task = new Models.TaskSignup() { User = new ApplicationUser() { Id = message.ApplicationUserId } };
+            alreadyTask = new AllReadyTask() { Name = "name" };
+            task = new Models.TaskSignup() { User = new ApplicationUser() { Id = message.ApplicationUserId }, Task = alreadyTask };
 
+            Context.Add(alreadyTask);
             Context.Add(task);
             Context.SaveChanges();
 
@@ -37,14 +40,14 @@ namespace AllReady.UnitTest.Features.Tasks
         public async Task ReturnCorrectData()
         {
             var result = await sut.Handle(message);
-            Assert.Same(task, result.First());
+            Assert.Same(alreadyTask, result.First());
         }
 
         [Fact]
         public async Task ReturnCorrectType()
         {
             var result = await sut.Handle(message);
-            Assert.IsType<Models.TaskSignup>(result.First());
+            Assert.IsType<Models.AllReadyTask>(result.First());
         }
     }
 }

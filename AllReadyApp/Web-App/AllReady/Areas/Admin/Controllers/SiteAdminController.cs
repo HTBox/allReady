@@ -59,9 +59,9 @@ namespace AllReady.Areas.Admin.Controllers
                 IsSiteAdmin = user.IsSiteAdmin,
                 OrganizationName = user.Organization?.Name,
                 IsOrganizationAdmin = user.IsOrganizationAdmin,
-                Campaigns = campaigns.Select(x => x.Name),
-                Events = events.Select(x => x.Name),
-                Tasks = tasks.Select(x => x.Name)
+                Campaigns = campaigns?.Select(x => x.Name),
+                Events = events?.Select(x => x.Name),
+                Tasks = tasks?.Select(x => x.Name)
             };
 
             return View(viewModel);
