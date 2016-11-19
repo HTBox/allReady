@@ -69,7 +69,7 @@
                 <tr>
                     <td>
                         <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
-                        <i data-bind="visible: Featured" class="fa fa-star star-highlight" aria-hidden="true"></i>
+                        <i data-bind="visible: Featured" class="fa fa-star star-highlight" title="Featured" aria-hidden="true"></i>
                     </td>
                     <td>
                         <span data-bind="text: ManagingOrganizationName"></span>
@@ -84,6 +84,11 @@
                 </tr>
                 <!-- /ko -->
             </table>
+
+            <div data-bind="css: { hide: !featuredCampaigns }">
+                <i class="fa fa-star star-highlight" aria-hidden="true"></i>
+                Featured campaign(s)
+            </div>
         </div>
     </div>
 </div>

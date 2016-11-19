@@ -41,6 +41,7 @@
         var list = campaigns.map(function (item) { return new Campaign(item); })
 
         this.campaigns = ko.observableArray(list).filterBeforeDate("EndDate").textFilter(["Name", "Description"]);
+        this.featuredCampaigns = campaigns.filter(function (c) { return c.Featured; }).length;
         this.total = list.length;
     }
     ko.applyBindings(new CampaignsViewModel(campaigns));
