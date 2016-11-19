@@ -62,7 +62,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var errors = await validator.Validate(new EditViewModel());
 
             Assert.True(errors.Exists(x => x.Key.Equals("StartDateTime")));
-            Assert.Equal(errors.Find(x => x.Key == "StartDateTime").Value, "Start date cannot be earlier than the event start date " + @event.StartDateTime.ToString("d"));
+            Assert.Equal(errors.Find(x => x.Key == "StartDateTime").Value, String.Format("Start date cannot be earlier than the event start date {0:g}.", @event.StartDateTime));
         }
 
         [Fact]
@@ -84,7 +84,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             });
 
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
-            Assert.Equal(errors.Find(x => x.Key == "EndDateTime").Value, "End date cannot be later than the event end date " + @event.EndDateTime.ToString("d"));
+            Assert.Equal(errors.Find(x => x.Key == "EndDateTime").Value, String.Format("The end date of this task cannot be after the end date of the event {0:g}", @event.EndDateTime));
         }
 
         [Fact]
