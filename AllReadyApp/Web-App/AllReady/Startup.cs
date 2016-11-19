@@ -5,6 +5,7 @@ using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Controllers;
 using AllReady.DataAccess;
+using AllReady.ExtensionWrappers;
 using AllReady.Hangfire;
 using AllReady.Hangfire.Jobs;
 using AllReady.Models;
@@ -218,6 +219,7 @@ namespace AllReady
             containerBuilder.RegisterType<MicrosoftAndFacebookExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Microsoft");
             containerBuilder.RegisterType<MicrosoftAndFacebookExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Facebook");
             containerBuilder.RegisterType<ExternalUserInformationProviderFactory>().As<IExternalUserInformationProviderFactory>();
+            containerBuilder.RegisterType<FromSqlWrapper>().As<IFromSqlWrapper>();
 
             //Hangfire
             containerBuilder.Register(icomponentcontext => new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"])))
