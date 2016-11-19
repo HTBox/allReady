@@ -45,11 +45,20 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteUser(string userId)
         {
             var user = await _mediator.SendAsync(new UserQuery { UserId = userId });
+            var campaigns = new List<string> { "Campaign 1", "Campaign 2" }; //= await _mediator.SendAsync();
+            var events = new List <string> { "Event 1", "Event 2" }; ; //= await _mediator.SendAsync();
+            var tasks = new List<string> { "Task 1", "Task 2" }; ; //= await _mediator.SendAsync();
+
             var viewModel = new DeleteUserViewModel
             {
                 UserId = userId,
                 UserName = user.UserName,
-                OrganizationName = user.Organization?.Name
+                IsSiteAdmin = user.IsSiteAdmin,
+                OrganizationName = user.Organization?.Name,
+                IsOrganizationAdmin = user.IsOrganizationAdmin,
+                Campaigns = campaigns,
+                Events = events,
+                Tasks = tasks
             };
 
             return View(viewModel);

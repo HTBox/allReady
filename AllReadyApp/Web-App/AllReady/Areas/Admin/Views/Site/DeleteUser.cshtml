@@ -25,7 +25,13 @@
         <div class="form-group">
             <label asp-for="UserName" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <p class="form-control-static">@Model.UserName</p>
+                <p class="form-control-static">
+                    @Model.UserName 
+                    @if (Model.IsSiteAdmin)
+                    {
+                        <span class="label label-info"><span class="fa fa-user-secret"></span> (Site Admin)</span>
+                    }
+                </p>
             </div>
         </div>
         @if (!String.IsNullOrEmpty(Model.OrganizationName))
@@ -33,7 +39,49 @@
             <div class="form-group">
                 <label asp-for="OrganizationName" class="control-label col-md-2"></label>
                 <div class="col-md-10">
-                    <p class="form-control-static">@Model.OrganizationName</p>
+                    <p class="form-control-static">
+                        @Model.OrganizationName
+                        @if (Model.IsOrganizationAdmin)
+                        {
+                            <span class="label label-info"><span class="fa fa-users"></span> (Organization Admin)</span>
+                        }
+                    </p>
+                </div>
+            </div>
+        }
+        @if (Model.Campaigns != null)
+        {
+            <div class="form-group">
+                <label asp-for="Campaigns" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    @foreach (var campaign in Model.Campaigns)
+                    {
+                        <p class="form-control-static">@campaign</p>
+                    }
+                </div>
+            </div>
+        }
+        @if (Model.Events != null)
+        {
+            <div class="form-group">
+                <label asp-for="Events" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    @foreach (var allReadyEvent in Model.Events)
+                    {
+                        <p class="form-control-static">@allReadyEvent</p>
+                    }
+                </div>
+            </div>
+        }
+        @if (Model.Tasks != null)
+        {
+            <div class="form-group">
+                <label asp-for="Tasks" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    @foreach (var task in Model.Tasks)
+                    {
+                        <p class="form-control-static">@task</p>
+                    }
                 </div>
             </div>
         }
