@@ -10,7 +10,7 @@ namespace AllReady.Areas.Admin.ViewModels.Organization
         [Display(Name = "Last Name")]
         string PrimaryContactLastName { get; set; }
 
-        [Display(Name = "Phone Number")]
+        [Display(Name = "Mobile phone Number")]
         [Phone]
         string PrimaryContactPhoneNumber { get; set; }
 

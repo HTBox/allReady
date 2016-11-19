@@ -46,11 +46,11 @@ namespace AllReady.Models
 
             if (string.IsNullOrWhiteSpace(PhoneNumber))
             {
-                validationResults.Add(new ValidationResult("Add a phone number", new[] { nameof(PhoneNumber) }));
+                validationResults.Add(new ValidationResult("Add a mobile phone number", new[] { nameof(PhoneNumber) }));
             }
             else if (!PhoneNumberConfirmed)
             {
-                validationResults.Add(new ValidationResult("Confirm your phone number", new[] { nameof(PhoneNumberConfirmed) }));
+                validationResults.Add(new ValidationResult("Confirm your mobile phone number", new[] { nameof(PhoneNumberConfirmed) }));
             }
             return validationResults;
         }

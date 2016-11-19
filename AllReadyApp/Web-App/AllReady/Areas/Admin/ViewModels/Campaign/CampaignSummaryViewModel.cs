@@ -64,7 +64,7 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         [Display(Name = "Last Name")]
         public string PrimaryContactLastName { get; set; }
 
-        [Display(Name = "Phone Number")]
+        [Display(Name = "Mobile phone Number")]
         [Phone]
         public string PrimaryContactPhoneNumber { get; set; }
 
