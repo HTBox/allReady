@@ -11,9 +11,51 @@ namespace AllReady.UnitTest.ViewModels.Event
     public class EventViewModelShould
     {
         //happy path test. set up data to get all possible properties populated when EventViewModel is returned from handler
-        [Fact(Skip = "NotImplemented")]
+        //[Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ConstructEventViewModel_WithTheCorrectData()
         {
+            var campaign = new Models.Campaign { Id = 1, Name = "Campaignname", TimeZoneId = "CampaignTimeZoneId" };
+            var location = new AllReady.ViewModels.Shared.LocationViewModel { City = "Amsterdam" };
+            var skills = new List<SkillViewModel>() { new SkillViewModel { Name = "F sharp" } };
+            var userSkills = new List<SkillViewModel> { new SkillViewModel { Name = "Medic", Description = "first aid helper", HierarchicalName = "med01", Id = 1 } };
+            var signup =  new AllReady.ViewModels.Shared.TaskSignupViewModel() { Name = "task1", TaskId = 1 };
+            var @event = new Models.Event { Campaign = campaign, TimeZoneId = "EventTimeZoneId" };
+           
+            var sut = new EventViewModel(@event);
+            var task = new TaskViewModel { CampaignName = sut.CampaignName, CampaignId = sut.CampaignId, eventName = sut.Title, Name = "tasks" };
+            var tasks = new List<TaskViewModel> { task };
+          
+            sut.Description = "Testing the allReady from htbox";
+            sut.EndDateTime = DateTimeOffset.Now.AddDays(3650);
+            sut.EventType = EventType.Rally;
+            sut.HasPrivacyPolicy = false;
+            sut.Headline = "the Already test campaing";
+            sut.Id = 1;
+            sut.ImageUrl = "http://www.htbox.org/";
+            sut.IsAllowWaitList = false;
+            sut.IsClosed = false;
+            sut.IsLimitVolunteers = true;
+            sut.Location = location;
+            sut.OrganizationId = 1;
+            sut.OrganizationName = "TestOrg";
+            sut.RequiredSkills = skills;
+            sut.SignupModel = signup;
+            sut.StartDateTime = DateTimeOffset.Now.AddDays(365);
+            sut.Tasks = tasks;
+            sut.TimeZoneId = "US Mountain Standard Time";
+            sut.Title = "Test Event";
+            sut.UserId = "99";
+            sut.UserSkills = userSkills;
+            sut.UserTasks = tasks;
+
+            Assert.Equal(sut.CampaignId, campaign.Id);
+            Assert.Equal(sut.CampaignName, campaign.Name);
+            Assert.Equal(sut.Location, location);
+            Assert.Equal(sut.UserSkills, userSkills);
+            Assert.Equal(sut.UserTasks, tasks);
+            Assert.Equal(sut.SignupModel, signup);
+            Assert.Equal(sut.RequiredSkills, skills);
         }
 
         [Fact]
@@ -31,7 +73,7 @@ namespace AllReady.UnitTest.ViewModels.Event
         [Fact]
         public void SetOrganizationIdAndOrganizationName_WhenConstructingWithNonNullCampaignAndNonNullManagingOrganization()
         {
-            var campaign = new Models.Campaign { ManagingOrganization = new Organization { Id = 1, Name = "OrgName" }};
+            var campaign = new Models.Campaign { ManagingOrganization = new Organization { Id = 1, Name = "OrgName" } };
             var @event = new Models.Event { Campaign = campaign };
             var sut = new EventViewModel(@event);
 
@@ -51,7 +93,7 @@ namespace AllReady.UnitTest.ViewModels.Event
         [Fact]
         public void SetHasPrivacyPolicyToTrue_WhenEventsCampaignsOrganizationsPrivacyPolicyIsNotNullOrEmpty_AndConstructingWithNonNullCampaignAndNonNullManagingOrganization()
         {
-            var @event = new Models.Event { Campaign = new Models.Campaign { ManagingOrganization = new Organization { PrivacyPolicy = "PrivacyPolicy" }}};
+            var @event = new Models.Event { Campaign = new Models.Campaign { ManagingOrganization = new Organization { PrivacyPolicy = "PrivacyPolicy" } } };
             var sut = new EventViewModel(@event);
 
             Assert.True(sut.HasPrivacyPolicy);
@@ -96,7 +138,7 @@ namespace AllReady.UnitTest.ViewModels.Event
         [Fact]
         public void SetTasksToListOfTaskViewModelsInAscendingOrderByStartDateTime_WhenEventsTasksAreNotNull()
         {
-            var @event = new Models.Event { Tasks = new List<AllReadyTask> { new AllReadyTask { StartDateTime = DateTimeOffset.UtcNow.AddDays(2)}, new AllReadyTask { StartDateTime = DateTimeOffset.UtcNow.AddDays(1) }}};
+            var @event = new Models.Event { Tasks = new List<AllReadyTask> { new AllReadyTask { StartDateTime = DateTimeOffset.UtcNow.AddDays(2) }, new AllReadyTask { StartDateTime = DateTimeOffset.UtcNow.AddDays(1) } } };
             var sut = new EventViewModel(@event);
 
             Assert.IsType<List<TaskViewModel>>(sut.Tasks);
@@ -114,7 +156,7 @@ namespace AllReady.UnitTest.ViewModels.Event
         [Fact]
         public void SetRequiredSkillsToListOfSkillViewModelsForEventsRequiredSkills_WhenEventsRequiredSkillsIsNotNull()
         {
-            var @event = new Models.Event { RequiredSkills = new List<EventSkill> { new EventSkill { Skill = new Skill() }, new EventSkill { Skill = new Skill() }}};
+            var @event = new Models.Event { RequiredSkills = new List<EventSkill> { new EventSkill { Skill = new Skill() }, new EventSkill { Skill = new Skill() } } };
             var sut = new EventViewModel(@event);
 
             Assert.IsType<List<SkillViewModel>>(sut.RequiredSkills);
