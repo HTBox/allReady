@@ -9,7 +9,7 @@ namespace AllReady.UnitTest.Features.Event
 
     public class EventsByPostalCodeQueryHandlerShould : InMemoryContextTest
     {
-        [Fact(Skip = "Can't mock FromSql()")]
+        [Fact]
         public async Task HandleCallsEventsByPostalCodeWithCorrectPostalCodeAndDistance()
         {
             var options = this.CreateNewContextOptions();
