@@ -467,8 +467,7 @@ Navigation
 }
 
 .task-panel .btn-group {
-    float: right;
-    margin-top: -32px;
+    margin-top: 10px;
 }
 
     .task-panel .btn-group > .btn {
