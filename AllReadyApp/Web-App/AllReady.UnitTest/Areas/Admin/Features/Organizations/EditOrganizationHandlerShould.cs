@@ -10,7 +10,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 {
     public class EditOrganizationHandlerShould : InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task AddOrganization()
         {
             // Arrange
