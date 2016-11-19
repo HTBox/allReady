@@ -35,7 +35,7 @@ namespace AllReady.Areas.Admin.ViewModels.Request
         public string Zip { get; set; }
 
         [Required]
-        [Phone(ErrorMessage = "Invalid Phone Number")]
+        [Phone(ErrorMessage = "Invalid Mobile phone Number")]
         public string Phone { get; set; }
 
         [EmailAddress(ErrorMessage = "Invalid Email Address")]

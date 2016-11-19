@@ -40,8 +40,8 @@ namespace AllReady.Controllers
                 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
                 : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
                 : message == ManageMessageId.Error ? ERROR_OCCURRED
-                : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
-                : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
+                : message == ManageMessageId.AddPhoneSuccess ? "Your mobile phone number was added."
+                : message == ManageMessageId.RemovePhoneSuccess ? "Your mobile phone number was removed."
                 : "";
 
             var user = await GetCurrentUser();
@@ -223,7 +223,7 @@ namespace AllReady.Controllers
         [HttpGet]
         public IActionResult VerifyPhoneNumber(string phoneNumber)
         {
-            // Send an SMS to verify the phone number
+            // Send an SMS to verify the mobile phone number
             return phoneNumber == null ? View(ERROR_VIEW) : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
 
@@ -250,7 +250,7 @@ namespace AllReady.Controllers
             }
 
             // If we got this far, something failed, redisplay the form
-            ModelState.AddModelError(string.Empty, "Failed to verify phone number");
+            ModelState.AddModelError(string.Empty, "Failed to verify mobile phone number");
             return View(model);
         }
 

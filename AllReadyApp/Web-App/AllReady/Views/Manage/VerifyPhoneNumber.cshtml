@@ -1,14 +1,14 @@
 ﻿@using AllReady.ViewModels.Manage
 @model AllReady.ViewModels.Manage.VerifyPhoneNumberViewModel
 @{
-    ViewData["Title"] = "Verify Phone Number";
+    ViewData["Title"] = "Verify Mobile Phone Number";
 }
 
 <h2>@ViewData["Title"].</h2>
 
 <form asp-controller="Manage" asp-action="VerifyPhoneNumber" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
     <input asp-for="PhoneNumber" type="hidden" />
-    <h4>Add a phone number.</h4>
+    <h4>Add a mobile phone number.</h4>
     <h5>@ViewData["Status"]</h5>
     <hr />
     <div asp-validation-summary="All" class="text-danger"></div>

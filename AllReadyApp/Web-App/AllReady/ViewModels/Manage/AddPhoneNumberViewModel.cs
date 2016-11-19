@@ -6,7 +6,7 @@ namespace AllReady.ViewModels.Manage
     {
         [Required]
         [Phone]
-        [Display(Name = "Phone number")]
+        [Display(Name = "Mobile phone number")]
         public string PhoneNumber { get; set; }
     }
 }

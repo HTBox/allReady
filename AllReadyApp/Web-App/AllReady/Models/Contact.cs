@@ -13,7 +13,7 @@ namespace AllReady.Models
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
-        [Display(Name = "Phone Number")]
+        [Display(Name = "Mobile phone Number")]
         public string PhoneNumber { get; set; }
         
         [EmailAddress]
