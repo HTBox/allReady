@@ -15,6 +15,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Shouldly;
 using Xunit;
 using DeleteTaskCommand = AllReady.Features.Tasks.DeleteTaskCommand;
 using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
@@ -335,7 +336,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task Register_ReturnsCorrectJson_WhenApiResult_IsSuccess()
         {
-            const string taskSignUpResultStatus = TaskSignupResult.SUCCESS;
+            const SignUpResult taskSignUpResultStatus = SignUpResult.Success;
             var model = new TaskSignupViewModel();
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.Is<TaskSignupCommand>(y => y.TaskSignupModel == model)))
@@ -352,14 +353,14 @@ namespace AllReady.UnitTest.Controllers
             var successStatus = jsonResult.GetValueForProperty<bool>("isSuccess");
             var taskModel = jsonResult.GetValueForProperty<TaskViewModel>("task");
 
-            Assert.True(successStatus);
-            Assert.NotNull(taskModel);
+			successStatus.ShouldBeTrue();
+			taskModel.ShouldNotBeNull();
         }
 
         [Fact]
         public async Task Register_ReturnsCorrectJson_WhenEventNotFound()
         {
-            const string taskSignUpResultStatus = TaskSignupResult.FAILURE_EVENTNOTFOUND;
+            const SignUpResult taskSignUpResultStatus = SignUpResult.FailureEventNotFound;
 
             var model = new TaskSignupViewModel();
             var mediator = new Mock<IMediator>();
@@ -376,16 +377,16 @@ namespace AllReady.UnitTest.Controllers
             var successStatus = jsonResult.GetValueForProperty<bool>("isSuccess");
             var errors = jsonResult.GetValueForProperty<string[]>("errors");
 
-            Assert.False(successStatus);
-            Assert.NotNull(errors);
-            Assert.Equal(1, errors.Count());
-            Assert.Equal("Signup failed - The event could not be found", errors[0]);
+			successStatus.ShouldBeFalse();
+            errors.ShouldNotBeNull();
+            errors.Count().ShouldBe(1);
+            errors[0].ShouldBe("Signup failed - The event could not be found");
         }
 
         [Fact]
         public async Task Register_ReturnsCorrectJson_WhenTaskNotFound()
         {
-            const string taskSignUpResultStatus = TaskSignupResult.FAILURE_TASKNOTFOUND;
+            const SignUpResult taskSignUpResultStatus = SignUpResult.FailureTaskNotFound;
 
             var model = new TaskSignupViewModel();
             var mediator = new Mock<IMediator>();
@@ -402,16 +403,16 @@ namespace AllReady.UnitTest.Controllers
             var successStatus = jsonResult.GetValueForProperty<bool>("isSuccess");
             var errors = jsonResult.GetValueForProperty<string[]>("errors");
 
-            Assert.False(successStatus);
-            Assert.NotNull(errors);
-            Assert.Equal(1, errors.Count());
-            Assert.Equal("Signup failed - The task could not be found", errors[0]);
+            successStatus.ShouldBeFalse();
+            errors.ShouldNotBeNull();
+            errors.Count().ShouldBe(1);
+			errors[0].ShouldBe("Signup failed - The task could not be found");
         }
 
         [Fact]
         public async Task Register_ReturnsCorrectJson_WhenTaskIsClosed()
         {
-            const string taskSignUpResultStatus = TaskSignupResult.FAILURE_CLOSEDTASK;
+            const SignUpResult taskSignUpResultStatus = SignUpResult.FailureClosedTask;
 
             var model = new TaskSignupViewModel();
             var mediator = new Mock<IMediator>();
@@ -428,10 +429,10 @@ namespace AllReady.UnitTest.Controllers
             var successStatus = jsonResult.GetValueForProperty<bool>("isSuccess");
             var errors = jsonResult.GetValueForProperty<string[]>("errors");
 
-            Assert.False(successStatus);
-            Assert.NotNull(errors);
-            Assert.Equal(1, errors.Count());
-            Assert.Equal("Signup failed - Task is closed", errors[0]);
+			successStatus.ShouldBeFalse();
+			errors.ShouldNotBeNull();
+			errors.Count().ShouldBe(1);
+			errors[0].ShouldBe("Signup failed - Task is closed");
         }
 
         [Fact]

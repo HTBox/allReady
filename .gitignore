@@ -230,3 +230,5 @@ FakesAssemblies/
 config.development.json
 *.orig
 bower_components
+*.ncrunchproject
+*.ncrunchsolution

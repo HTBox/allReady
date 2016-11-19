@@ -1,12 +1,12 @@
 ﻿using AllReady.Features.Tasks;
 using AllReady.Models;
-using AllReady.ViewModels;
 using MediatR;
 using Moq;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.ViewModels.Shared;
+using Shouldly;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Tasks
@@ -22,8 +22,8 @@ namespace AllReady.UnitTest.Features.Tasks
             var sut = new TaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(TaskSignupResult.FAILURE_CLOSEDTASK, result.Status);
-            Assert.Equal(0, Context.TaskSignups.Count());
+            result.Status.ShouldBe(SignUpResult.FailureClosedTask);
+            Context.TaskSignups.Count().ShouldBe(0);
         }
 
         [Fact]
@@ -35,9 +35,9 @@ namespace AllReady.UnitTest.Features.Tasks
             var sut = new TaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(TaskSignupResult.FAILURE_EVENTNOTFOUND, result.Status);
-            Assert.Equal(0, Context.TaskSignups.Count());
-        }
+			result.Status.ShouldBe(SignUpResult.FailureEventNotFound);
+			Context.TaskSignups.Count().ShouldBe(0);
+		}
 
         [Fact]
         public async Task Result_ShouldBe_TaskNotFound_IfTaskIdDoesNotExist()
@@ -48,9 +48,9 @@ namespace AllReady.UnitTest.Features.Tasks
             var sut = new TaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(TaskSignupResult.FAILURE_TASKNOTFOUND, result.Status);
-            Assert.Equal(0, Context.TaskSignups.Count());
-        }
+			result.Status.ShouldBe(SignUpResult.FailureTaskNotFound);
+			Context.TaskSignups.Count().ShouldBe(0);
+		}
 
         [Fact]
         public async Task Result_ShouldBe_Success_IfTaskIsNotClosed()
@@ -61,9 +61,9 @@ namespace AllReady.UnitTest.Features.Tasks
             var sut = new TaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(TaskSignupResult.SUCCESS, result.Status);
-            Assert.Equal(1, Context.TaskSignups.Count());
-        }
+			result.Status.ShouldBe(SignUpResult.Success);
+			Context.TaskSignups.Count().ShouldBe(1);
+		}
 
         protected override void LoadTestData()
         {

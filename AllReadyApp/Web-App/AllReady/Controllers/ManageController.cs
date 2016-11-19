@@ -35,11 +35,11 @@ namespace AllReady.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(ManageMessageId? message = null)
         {
-            ViewData[STATUS_MESSAGE] =
+            ViewData[StatusMessage] =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
                 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
                 : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
-                : message == ManageMessageId.Error ? ERROR_OCCURRED
+                : message == ManageMessageId.Error ? ErrorOccurred
                 : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
@@ -133,7 +133,7 @@ namespace AllReady.Controllers
         {
             var user = GetCurrentUser();
             var linkedAccounts = await _userManager.GetLoginsAsync(user);
-            ViewData[SHOW_REMOVE_BUTTON] = await _userManager.HasPasswordAsync(user) || linkedAccounts.Count > 1;
+            ViewData[ShowRemoveButton] = await _userManager.HasPasswordAsync(user) || linkedAccounts.Count > 1;
             return View(linkedAccounts);
         }
 
@@ -224,7 +224,7 @@ namespace AllReady.Controllers
         public IActionResult VerifyPhoneNumber(string phoneNumber)
         {
             // Send an SMS to verify the phone number
-            return phoneNumber == null ? View(ERROR_VIEW) : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
+            return phoneNumber == null ? View(ErrorView) : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
 
         // POST: /Account/VerifyPhoneNumber
@@ -359,13 +359,13 @@ namespace AllReady.Controllers
         {
             if (token == null)
             {
-                return View(ERROR_VIEW);
+                return View(ErrorView);
             }
 
             var user = GetCurrentUser();
             if (user == null)
             {
-                return View(ERROR_VIEW);
+                return View(ErrorView);
             }
 
             var result = await _userManager.ChangeEmailAsync(user, user.PendingNewEmail, token);
@@ -389,7 +389,7 @@ namespace AllReady.Controllers
 
             if(string.IsNullOrEmpty(user.PendingNewEmail))
             {
-                return View(ERROR_VIEW);
+                return View(ErrorView);
             }
 
             await BuildCallbackUrlAndSendNewEmailAddressConfirmationEmail(user, user.PendingNewEmail);
@@ -445,22 +445,22 @@ namespace AllReady.Controllers
         [HttpGet]
         public async Task<IActionResult> ManageLogins(ManageMessageId? message = null)
         {
-            ViewData[STATUS_MESSAGE] =
+            ViewData[StatusMessage] =
                 message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
                 : message == ManageMessageId.AddLoginSuccess ? "The external login was added."
-                : message == ManageMessageId.Error ? ERROR_OCCURRED
+                : message == ManageMessageId.Error ? ErrorOccurred
                 : "";
 
             var user = GetCurrentUser();
             if (user == null)
             {
-                return View(ERROR_VIEW);
+                return View(ErrorView);
             }
 
             var userLogins = await _userManager.GetLoginsAsync(user);
             var otherLogins = _signInManager.GetExternalAuthenticationSchemes().Where(auth => userLogins.All(ul => auth.AuthenticationScheme != ul.LoginProvider)).ToList();
 
-            ViewData[SHOW_REMOVE_BUTTON] = user.PasswordHash != null || userLogins.Count > 1;
+            ViewData[ShowRemoveButton] = user.PasswordHash != null || userLogins.Count > 1;
 
             return View(new ManageLoginsViewModel
             {
@@ -475,7 +475,7 @@ namespace AllReady.Controllers
         public IActionResult LinkLogin(string provider)
         {
             // Request a redirect to the external login provider to link a login for the current user
-            var redirectUrl = Url.Action(new UrlActionContext { Action = nameof(LinkLoginCallback), Controller = MANAGE_CONTROLLER });
+            var redirectUrl = Url.Action(new UrlActionContext { Action = nameof(LinkLoginCallback), Controller = ManageControllerName });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, _userManager.GetUserId(User));
             return new ChallengeResult(provider, properties);
         }
@@ -487,7 +487,7 @@ namespace AllReady.Controllers
             var user = GetCurrentUser();
             if (user == null)
             {
-                return View(ERROR_VIEW);
+                return View(ErrorView);
             }
 
             var info = await _signInManager.GetExternalLoginInfoAsync(_userManager.GetUserId(User));
@@ -505,7 +505,7 @@ namespace AllReady.Controllers
         private async Task BuildCallbackUrlAndSendNewEmailAddressConfirmationEmail(ApplicationUser applicationUser, string userEmail)
         {
             var token = await _userManager.GenerateChangeEmailTokenAsync(applicationUser, userEmail);
-            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = MANAGE_CONTROLLER, Values = new { token = token },
+            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = ManageControllerName, Values = new { token = token },
                 Protocol = HttpContext.Request.Scheme
             });
             await _mediator.SendAsync(new SendNewEmailAddressConfirmationEmail { Email = userEmail, CallbackUrl = callbackUrl });
@@ -553,16 +553,16 @@ namespace AllReady.Controllers
         }
 
         //ViewData Constants
-        private const string SHOW_REMOVE_BUTTON = "ShowRemoveButton";
-        private const string STATUS_MESSAGE = "StatusMessage";
+        private const string ShowRemoveButton = "ShowRemoveButton";
+        private const string StatusMessage = "StatusMessage";
 
         //Message Constants
-        private const string ERROR_OCCURRED = "An error has occurred.";
+        private const string ErrorOccurred = "An error has occurred.";
 
         //Controller Names
-        private const string MANAGE_CONTROLLER = "Manage";
+        private const string ManageControllerName = "Manage";
 
         //View Names
-        private const string ERROR_VIEW = "Error";
+        private const string ErrorView = "Error";
     }
 }

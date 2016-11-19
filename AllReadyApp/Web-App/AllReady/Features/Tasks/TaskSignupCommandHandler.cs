@@ -36,18 +36,18 @@ namespace AllReady.Features.Tasks
 
             if (@event == null)
             {
-                return new TaskSignupResult { Status = TaskSignupResult.FAILURE_EVENTNOTFOUND };
+                return new TaskSignupResult { Status = SignUpResult.FailureEventNotFound };
             }
 
             var task = @event.Tasks.SingleOrDefault(t => t.Id == model.TaskId);
             if (task == null)
             {
-                return new TaskSignupResult { Status = TaskSignupResult.FAILURE_TASKNOTFOUND };
+                return new TaskSignupResult { Status = SignUpResult.FailureTaskNotFound };
             }
 
             if (task.IsClosed)
             {
-                return new TaskSignupResult { Status = TaskSignupResult.FAILURE_CLOSEDTASK };
+                return new TaskSignupResult { Status = SignUpResult.FailureClosedTask };
             }
 
             // If somehow the user has already been signed up for the task, don't sign them up again
@@ -81,7 +81,7 @@ namespace AllReady.Features.Tasks
             await _mediator.PublishAsync(new VolunteerSignedUpNotification { UserId = model.UserId, TaskId = task.Id })
                 .ConfigureAwait(false);
 
-            return new TaskSignupResult {Status = "success", Task = task};
+            return new TaskSignupResult {Status = SignUpResult.Success, Task = task};
         }
     }
 }
