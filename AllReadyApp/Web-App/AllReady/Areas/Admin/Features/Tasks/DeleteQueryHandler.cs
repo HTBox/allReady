@@ -21,6 +21,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             return await _context.Tasks
                 .AsNoTracking()
                 .Include(t => t.Event.Campaign)
+                .Include(t => t.Attachments)
                 .Select(task => new DeleteViewModel
                 {
                     Id = task.Id,

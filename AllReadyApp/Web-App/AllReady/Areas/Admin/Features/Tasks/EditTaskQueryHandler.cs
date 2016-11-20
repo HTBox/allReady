@@ -21,6 +21,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             return await _context.Tasks.AsNoTracking()
                 .Include(t => t.Event).ThenInclude(a => a.Campaign)
                 .Include(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
+                .Include(t => t.Attachments)
                 .Select(task => new EditViewModel
                 {
                     Id = task.Id,

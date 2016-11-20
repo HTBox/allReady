@@ -35,9 +35,27 @@ namespace AllReady.Areas.Admin.Controllers
                 return NotFound();
             }
 
+            viewModel.Attachments.ForEach(SetDownloadUrl);
+
             return View(viewModel);
         }
 
+        /// <summary>Allows the user to download a file attachment</summary>
+        /// <param name="id">The ID of the file attachment</param>
+        /// <returns>A FileContentResult</returns>
+        [HttpGet]
+        [Route("Admin/Task/Attachment/{id}")]
+        public async Task<IActionResult> Attachment(int id)
+        {
+            var viewModel = await _mediator.SendAsync(new DownloadAttachmentQuery { AttachmentId = id });
+            if (viewModel == null)
+            {
+                return NotFound();
+            }
+
+            return File(viewModel.Content, viewModel.MimeType, viewModel.Name);
+        }
+        
         [HttpGet]
         [Route("Admin/Task/Create/{eventId}")]
         public async Task<IActionResult> Create(int eventId)
@@ -67,6 +85,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(Details), Controller = "Task", Values = new { eventId = viewModel.EventId, id = viewModel.Id, area = "Admin" } });
             ViewBag.Title = "Edit Task";
+            viewModel.Attachments.ForEach(SetDownloadUrl);
 
             return View("Edit", viewModel);
         }
@@ -105,6 +124,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             viewModel.Title = $"Delete task {viewModel.Name}";
             viewModel.UserIsOrgAdmin = true;
+            viewModel.Attachments.ForEach(SetDownloadUrl);
 
             return View(viewModel);
         }
@@ -156,6 +176,18 @@ namespace AllReady.Areas.Admin.Controllers
             await _mediator.SendAsync(new MessageTaskVolunteersCommand { Model = viewModel });
 
             return Ok();
+        }
+
+        /// <summary>Sets the download URL on the file attachment model</summary>
+        /// <param name="viewModel">The view model</param>
+        private void SetDownloadUrl(FileAttachmentModel viewModel)
+        {
+            viewModel.DownloadUrl = Url.Action(new UrlActionContext
+            {
+                Action = nameof(TaskController.Attachment),
+                Controller = "Task",
+                Values = new { id = viewModel.Id, area = "Admin" }
+            });
         }
     }
 }

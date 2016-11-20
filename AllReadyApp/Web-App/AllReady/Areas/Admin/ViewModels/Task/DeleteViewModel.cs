@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.Areas.Admin.ViewModels.Task
@@ -31,5 +32,8 @@ namespace AllReady.Areas.Admin.ViewModels.Task
         public bool UserIsOrgAdmin { get; set; }
 
         public string Title { get; set; }
+
+        /// <summary>List of file attachments</summary>
+        public List<FileAttachmentModel> Attachments { get; set; } = new List<FileAttachmentModel>();
     }
 }

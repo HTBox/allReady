@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace AllReady.Models
+﻿namespace AllReady.Models
 {
     /// <summary>
     ///     Data class responsible for keeping the attachment information.

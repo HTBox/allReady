@@ -100,6 +100,26 @@
                 </a>
             </div>
         </div>
+        <div class="form-group">
+            <label asp-for="NewAttachment" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <input type="file" name="NewAttachment.Content" />
+                <input name="NewAttachment.Name" />
+                <input name="NewAttachment.Description" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DeleteAttachments" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <div data-bind="foreach: Attachments">
+                    <div class="form-inline">
+                        <input type="checkbox" value="DeleteAttachments" data-bind="attr: { name: ControlName($index) }" />
+                        <a data-bind="href: DownloadUrl, text: Name, tooltip: { title: Description, placement: 'top' }" title="Download" />
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">

@@ -48,6 +48,21 @@
             </div>
         }
 
+        @if (Model.Attachments.Any())
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>Attachments</h3>
+                    <ul>
+                        @foreach (var attachment in Model.Attachments)
+                        {
+                            <li><a href="@attachment.DownloadUrl">@attachment.Name</a>: @attachment.Description</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+
         <h3>
             Volunteers @if (Model.NumberOfVolunteersRequired > 0)
             { <span class="text-muted">(@Model.NumberOfVolunteersRequired Required)</span> }

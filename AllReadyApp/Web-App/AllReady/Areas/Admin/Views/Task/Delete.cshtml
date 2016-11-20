@@ -47,6 +47,9 @@
                 <dd>
                     @Html.DisplayFor(model => model.EndDateTime)
                 </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.Attachments.Select(a => a.Name))
+                </dd>
             </dl>
 
             <div class="form-actions no-color">

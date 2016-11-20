@@ -44,6 +44,13 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     PhoneNumber = ts.User.PhoneNumber,
                     AssociatedSkills = ts.User.AssociatedSkills,
                 }).ToList(),
+                Attachments = task.Attachments.Select(a => new FileAttachmentModel
+                {
+                    Id = a.Id,
+                    Name = a.Name,
+                    Description = a.Description,
+                    MimeType = a.MimeType,
+                }).ToList(),
             };
 
             return model;
@@ -55,6 +62,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 .AsNoTracking()
                 .Include(t => t.Event)
                 .Include(t => t.Event.Campaign)
+                .Include(t => t.Attachments)
                 .Include(t => t.AssignedVolunteers).ThenInclude(ts => ts.User).ThenInclude(u => u.AssociatedSkills).ThenInclude(s => s.Skill).ThenInclude(s => s.ParentSkill).ThenInclude(s => s.ParentSkill)
                 .Include(t => t.RequiredSkills).ThenInclude(ts => ts.Skill).ThenInclude(s => s.ParentSkill).ThenInclude(s => s.ParentSkill)
                 .SingleOrDefaultAsync(t => t.Id == message.TaskId);

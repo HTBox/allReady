@@ -51,5 +51,14 @@ namespace AllReady.Areas.Admin.ViewModels.Task
 
         //used to build Cancel button url for create and edit actions
         public string CancelUrl { get; set; }
+
+        /// <summary>New attachment to be added</summary>
+        public FileAttachmentModel NewAttachment { get; set; }
+
+        /// <summary>List of current file attachments</summary>
+        public List<FileAttachmentModel> Attachments { get; set; } = new List<FileAttachmentModel>();
+
+        /// <summary>List of attachment IDs to delete</summary>
+        public List<int> DeleteAttachments { get; set; } = new List<int>();
     }
 }

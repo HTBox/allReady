@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using AllReady.Extensions;
 using AllReady.Providers;
+using System.IO;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
@@ -45,10 +46,47 @@ namespace AllReady.Areas.Admin.Features.Tasks
             }
 
             _context.AddOrUpdate(task);
+            
+            // Delete existing attachments
+            if (message.Task.DeleteAttachments.Count > 0)
+            {
+                var attachmentsToDelete = _context.Attachments.Include(a => a.Content).Where(a => a.Task.Id == task.Id && message.Task.DeleteAttachments.Contains(a.Id)).ToList();
+                _context.RemoveRange(attachmentsToDelete.Select(a => a.Content));
+                _context.RemoveRange(attachmentsToDelete);
+            }
+
+            // Add new attachment
+            if (message.Task.NewAttachment != null && !string.IsNullOrEmpty(message.Task.NewAttachment.Name))
+            {
+                var attachmentModel = message.Task.NewAttachment;
+                var attachment = new FileAttachment
+                {
+                    Name = attachmentModel.Name,
+                    Description = attachmentModel.Description,
+                    MimeType = GetMimeType(attachmentModel.Name),
+                    Content = new FileAttachmentContent { Bytes = attachmentModel.Content },
+                };
+                _context.Add(attachment);
+            }
 
             await _context.SaveChangesAsync();
 
             return task.Id;
+        }
+
+        /// <summary>Gets the MIME type of the given file name</summary>
+        /// <param name="fileName">The name of the file</param>
+        /// <returns>The MIME type</returns>
+        private string GetMimeType(string fileName)
+        {
+            string mimeType = "application/unknown";
+            string ext = Path.GetExtension(fileName).ToLower();
+            Microsoft.Win32.RegistryKey regKey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(ext);
+            if (regKey != null && regKey.GetValue("Content Type") != null)
+            {
+                mimeType = regKey.GetValue("Content Type").ToString();
+            }
+            return mimeType;
         }
     }
 }
