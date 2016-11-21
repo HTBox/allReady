@@ -937,7 +937,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new ItineraryController(mockMediator.Object, null);
 
-            await sut.AddRequests(itineraryId, It.IsAny<string[]>());
+            await sut.AddRequests(itineraryId, It.IsAny<List<string>>());
 
             mockMediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == itineraryId)), Times.Once);
         }
@@ -946,7 +946,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task AddRequestsReturnsHttpUnauthorizedWhenOrganizationIdIsZero()
         {
             var itineraryId = It.IsAny<int>();
-            var selectedRequests = new[] { "request1", "request2" };
+            var selectedRequests = new List<string> { "request1", "request2" };
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
@@ -960,7 +960,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task AddRequestsReturnsHttpUnauthorizedWhenUserIsNotOrgAdmin()
         {
             var itineraryId = It.IsAny<int>();
-            var selectedRequests = new[] { "request1", "request2" };
+            var selectedRequests = new List<string> { "request1", "request2" };
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
@@ -971,24 +971,24 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<UnauthorizedResult>(await sut.AddRequests(itineraryId, selectedRequests));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task AddRequestsSendsAddRequestsCommandWhenThereAreSelectedRequests()
         {
             const int orgId = 1;
 
             var itineraryId = It.IsAny<int>();
-            var selectedRequests = new[] { "request1", "request2" };
+            var selectedRequests = new List<string> { "request1", "request2" };
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddRequestsToItineraryCommand>())).ReturnsAsync(true);
 
             var sut = new ItineraryController(mockMediator.Object, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             await sut.AddRequests(itineraryId, selectedRequests);
 
-            //TODO: need a way to verify that the RequestIdsToAdd List<string> is the same as the string array selectedRequests. Only problem is that .ToList() is called on selectedRequests in the AddRequests action method, creating a new List<string>
-            //mockMediator.Verify(x => x.SendAsync(It.Is<AddRequestsCommand>(y => y.RequestIdsToAdd == selectedRequests.ToList())), Times.Once);
+            mockMediator.Verify(x => x.SendAsync(It.Is<AddRequestsToItineraryCommand>(y => y.RequestIdsToAdd.Equals(selectedRequests))), Times.Once);
         }
 
         [Fact]
@@ -997,7 +997,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int orgId = 1;
 
             var itineraryId = It.IsAny<int>();
-            var selectedRequests = new[] { "request1", "request2" };
+            var selectedRequests = new List<string> { "request1", "request2" };
 
             var mockMediator = new Mock<IMediator>();
 
@@ -1016,7 +1016,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void AddRequestsHasHttpPostAttribute()
         {
             var sut = new ItineraryController(null, null);
-            var attribute = sut.GetAttributesOn(x => x.AddRequests(It.IsAny<int>(), It.IsAny<string[]>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.AddRequests(It.IsAny<int>(), It.IsAny<List<string>>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -1024,7 +1024,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void AddRequestsHasRouteAttributeWithCorrectRoute()
         {
             var sut = new ItineraryController(null, null);
-            var routeAttribute = sut.GetAttributesOn(x => x.AddRequests(It.IsAny<int>(), It.IsAny<string[]>())).OfType<RouteAttribute>().SingleOrDefault();
+            var routeAttribute = sut.GetAttributesOn(x => x.AddRequests(It.IsAny<int>(), It.IsAny<List<string>>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{id}/[Action]");
         }
@@ -1033,7 +1033,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void AddRequestsHasValidateAntiForgeryAttribute()
         {
             var sut = new ItineraryController(null, null);
-            var routeAttribute = sut.GetAttributesOn(x => x.AddRequests(It.IsAny<int>(), It.IsAny<string[]>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var routeAttribute = sut.GetAttributesOn(x => x.AddRequests(It.IsAny<int>(), It.IsAny<List<string>>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
         }
 
