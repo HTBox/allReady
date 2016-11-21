@@ -37,8 +37,6 @@ namespace AllReady.Models
         public int? EventId { get; set; }
         public Event Event { get; set; }
 
-        public ICollection<ItineraryRequest> Itineraries { get; set; }
-
         public DateTime DateAdded { get; set; } = DateTime.UtcNow;
     }
 }
