@@ -4,16 +4,16 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {
-    public class RequestStatusChangeCommandHandler : IAsyncRequestHandler<RequestStatusChangeCommand, bool>
+    public class ChangeRequestStatusCommandHandler : IAsyncRequestHandler<ChangeRequestStatusCommand, bool>
     {
         private readonly AllReadyContext _context;
 
-        public RequestStatusChangeCommandHandler(AllReadyContext context)
+        public ChangeRequestStatusCommandHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<bool> Handle(RequestStatusChangeCommand message)
+        public async Task<bool> Handle(ChangeRequestStatusCommand message)
         {
             var req = new Request
             {

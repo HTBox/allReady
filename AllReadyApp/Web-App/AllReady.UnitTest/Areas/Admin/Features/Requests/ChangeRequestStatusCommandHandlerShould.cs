@@ -8,7 +8,7 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Requests
 {
-    public class RequestStatusChangeCommandHandlerShould : InMemoryContextTest
+    public class ChangeRequestStatusCommandHandlerShould : InMemoryContextTest
     {
         private readonly Guid _existingRequestId1 = new Guid("b0efa33c-082f-4287-b641-c96994e96c9e");
         private readonly Guid _existingRequestId2 = new Guid("9e60ede8-229a-4827-b8b7-0b13e22ab435");
@@ -41,13 +41,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         [Fact]
         public async void Handle_WithNewStatusCompletedInMessage_UpdatesRequest()
         {
-            var query = new RequestStatusChangeCommand
+            var query = new ChangeRequestStatusCommand
             {
                 RequestId = _existingRequestId1,
                 NewStatus = RequestStatus.Completed
             };
             
-            var handler = new RequestStatusChangeCommandHandler(Context);
+            var handler = new ChangeRequestStatusCommandHandler(Context);
 
             var result = await handler.Handle(query);
 
@@ -60,13 +60,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         [Fact]
         public async void Handle_WithNewStatusAssignedInMessage_UpdatesRequest()
         {
-            var query = new RequestStatusChangeCommand
+            var query = new ChangeRequestStatusCommand
             {
                 RequestId = _existingRequestId2,
                 NewStatus = RequestStatus.Assigned
             };
 
-            var handler = new RequestStatusChangeCommandHandler(Context);
+            var handler = new ChangeRequestStatusCommandHandler(Context);
 
             var result = await handler.Handle(query);
 
