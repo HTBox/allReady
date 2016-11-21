@@ -1493,7 +1493,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             await sut.MarkComplete(It.IsAny<int>(), requestId);
 
-            mockMediator.Verify(x => x.SendAsync(It.Is<RequestStatusChangeCommand>(y => y.RequestId == requestId)), Times.Once);
+            mockMediator.Verify(x => x.SendAsync(It.Is<ChangeRequestStatusCommand>(y => y.RequestId == requestId)), Times.Once);
         }
 
         [Fact]

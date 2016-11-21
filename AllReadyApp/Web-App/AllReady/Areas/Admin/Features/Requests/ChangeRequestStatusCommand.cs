@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {
-    public class RequestStatusChangeCommand : IAsyncRequest<bool>
+    public class ChangeRequestStatusCommand : IAsyncRequest<bool>
     {
         public Guid RequestId { get; set; }
         public RequestStatus NewStatus { get; set; }

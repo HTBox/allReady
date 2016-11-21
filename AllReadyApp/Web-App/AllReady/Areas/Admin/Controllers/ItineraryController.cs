@@ -334,7 +334,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             // todo: sgordon - Extend this to return success / failure message to the user
 
-            await _mediator.SendAsync(new RequestStatusChangeCommand { RequestId = requestId, NewStatus = RequestStatus.Completed});
+            await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Completed});
 
             return RedirectToAction("Details", new { id = itineraryId });
         }
@@ -353,7 +353,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             // todo: sgordon - Extend this to return success / failure message to the user
 
-            await _mediator.SendAsync(new RequestStatusChangeCommand { RequestId = requestId, NewStatus = RequestStatus.Assigned });
+            await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Assigned });
 
             return RedirectToAction("Details", new { id = itineraryId });
         }
