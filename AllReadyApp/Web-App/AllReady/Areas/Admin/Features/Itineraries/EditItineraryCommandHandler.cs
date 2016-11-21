@@ -23,7 +23,8 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
                 itinerary.Name = message.Itinerary.Name;
                 itinerary.Date = message.Itinerary.Date;
-                
+                itinerary.EventId = message.Itinerary.EventId;
+
                 if (!string.IsNullOrWhiteSpace(message.Itinerary.StartAddress1))
                 {
                     var startLocation = itinerary.StartLocation ?? _context.Add(new Location()).Entity;
