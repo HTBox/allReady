@@ -1,8 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AllReady.Attributes;
 using Microsoft.AspNetCore.Mvc;
-using AllReady.Models;
 using MediatR;
 using AllReady.Features.Requests;
 using AllReady.ViewModels.Requests;
@@ -24,43 +22,58 @@ namespace AllReady.Controllers
         [ExternalEndpoint]
         public async Task<IActionResult> Post([FromBody]RequestViewModel viewModel)
         {
-            //TODO: identify required fields on Request
+            //TODO: I'm making a guess that field validatino will return a BadRequest result instead of a 202. 
+            //Anything that could potentially take longer then simple field validation (aka, region validation) will be moved further down the pipelines to be reported back to getasmokealarm's API
+            //waiting to hear back from the getasmokealarm folks if they take specific actions from the ack from our endpoint.
 
             //validate before sending command
-            if (viewModel.ProviderId == null)
+            if (RequiredRequestFieldsAreNullOrEmpty(viewModel))
             {
-                return MapError(new AddRequestError { ProviderId = "", Reason = "No ProviderId" });
+                return BadRequest();
             }
 
+            //verify RC specific fields
             if (string.IsNullOrEmpty(viewModel.Status))
             {
-                //return error or set error in message that will delivered to their API
+                return BadRequest();
             }
 
             //we only accept the status of "new" from RC integration, the rest we ignore
-            if (!string.IsNullOrEmpty(viewModel.Status))
+            if (viewModel.Status != "new")
             {
-                if (viewModel.Status != "new")
-                {
-                    //return error or set error in the message that will delivered to their API OR drop it on the floor
-                }
+                return BadRequest();
             }
 
-            //TODO: look up the Request by ProviderId (for red cross, that's "serial") to make sure it does not already exist in the database. If it does, we don't want to process the message b/c it's not a "new" status 
+            //if we get here, the incoming request has mistakenly been labeled with the "new" status code
+            if (_mediator.Send(new RequestExistsByProviderIdQuery { RequestProviderId = viewModel.ProviderRequestId }))
+            {
+                return BadRequest();
+            }
 
-            var result = await _mediator.SendAsync(new AddApiRequestCommand { RequestViewModel = viewModel });
+            //TODO: region specific verification (this COULD be moved further down the pipeline to have the request status reported back to getasmokealarm via their API)
 
-            //TODO: return a 202 http status code with a true/false attached to the response saying we either accepted the request (true) or we didn't accept the request (false). 
-            //In order to accept a request (we currently are "serviing" that region), we'd have to add some type of region code to Organization in order to do a lookup.
-            //BUT, Tony Surma says here: https://github.com/redcross/smoke-alarm-portal/issues/196#issuecomment-238036967 
-            //that we should NOT add region code to Organzation b/c it's red cross specific... we should instead issue a token per supported region and use that to determine whether or not we can service the request
+            //TODO: waiting to hear back from getasmokealarm what data they would expect back on the ack, if they only require the 202 back and we can invoke their API downstream from this to report back whether or not we're going to accept this request.
+            await _mediator.SendAsync(new AddApiRequestCommand { ViewModel = viewModel });
+
             //https://httpstatuses.com/202
-            return Created(string.Empty, result);
+            return StatusCode(202);
         }
 
-        private IActionResult MapError(AddRequestError error)
+        private static bool RequiredRequestFieldsAreNullOrEmpty(RequestViewModel viewModel)
         {
-            return BadRequest(error);
+            if (string.IsNullOrEmpty(viewModel.ProviderRequestId) ||
+                string.IsNullOrEmpty(viewModel.Name) ||
+                string.IsNullOrEmpty(viewModel.Address) ||
+                string.IsNullOrEmpty(viewModel.City) ||
+                string.IsNullOrEmpty(viewModel.State) ||
+                string.IsNullOrEmpty(viewModel.Zip) ||
+                string.IsNullOrEmpty(viewModel.Phone) ||
+                string.IsNullOrEmpty(viewModel.Email))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

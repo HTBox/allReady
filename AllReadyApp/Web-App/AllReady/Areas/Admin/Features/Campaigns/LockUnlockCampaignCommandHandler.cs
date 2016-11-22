@@ -14,6 +14,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             _context = context;
 
         }
+
         protected override async Task HandleCore(LockUnlockCampaignCommand message)
         {
             var campaign = await _context.Campaigns

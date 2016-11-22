@@ -1,11 +1,10 @@
-﻿using AllReady.Models;
-using AllReady.ViewModels.Requests;
+﻿using AllReady.ViewModels.Requests;
 using MediatR;
 
 namespace AllReady.Features.Requests
 {
-    public class AddApiRequestCommand : IAsyncRequest<Request>
+    public class AddApiRequestCommand : IAsyncRequest
     {
-        public RequestViewModel RequestViewModel { get; set; }
+        public RequestViewModel ViewModel { get; set; }
     }
 }

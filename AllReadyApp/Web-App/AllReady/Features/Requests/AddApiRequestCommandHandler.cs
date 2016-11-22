@@ -5,11 +5,10 @@ using AllReady.Extensions;
 using AllReady.Models;
 using MediatR;
 using Geocoding;
-using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Requests
 {
-    public class AddApiRequestCommandHandler : IAsyncRequestHandler<AddApiRequestCommand, Request>
+    public class AddApiRequestCommandHandler : AsyncRequestHandler<AddApiRequestCommand>
     {
         private readonly AllReadyContext _context;
         private readonly IGeocoder _geocoder;
@@ -23,48 +22,37 @@ namespace AllReady.Features.Requests
             _geocoder = geocoder;
         }
 
-        public async Task<Request> Handle(AddApiRequestCommand message)
+        protected override async Task HandleCore(AddApiRequestCommand message)
         {
-            var requestId = GetRequestId(message.RequestViewModel.RequestId);
+            //we no longer have to check for existence of the request in our system b/c we don't accept status updates from the red cross, we only accept new requests, and since we've already
+            //validated this in the RequestApiController, we do not have to check for it here
+            //var request = await _context.Requests.SingleOrDefaultAsync(x => x.ProviderId == message.ViewModel.ProviderRequestId) ?? new Request { RequestId = NewRequestId() };
 
-            var request = await _context.Requests.SingleOrDefaultAsync(x => x.RequestId == requestId) ?? new Request { RequestId = requestId };
-            request.ProviderId = message.RequestViewModel.ProviderId;
-            request.ProviderData = message.RequestViewModel.ProviderData;
-            request.Address = message.RequestViewModel.Address;
-            request.City = message.RequestViewModel.City;
+            //TODO: I can probably move the Request creation to the controller and put the entity on the command instead of the view model mapping code below
+
+            var request = new Request { RequestId = NewRequestId() };
+            request.ProviderId = message.ViewModel.ProviderRequestId;
+            request.ProviderData = message.ViewModel.ProviderData;
+            request.Address = message.ViewModel.Address;
+            request.City = message.ViewModel.City;
             request.DateAdded = DateTimeUtcNow();
-            request.Email = message.RequestViewModel.Email;
-            request.Name = message.RequestViewModel.Name;
-            request.Phone = message.RequestViewModel.Phone;
-            request.State = message.RequestViewModel.State;
-            request.Zip = message.RequestViewModel.Zip;
-            request.Status = ConvertRequestStatusToEnum(message.RequestViewModel.Status);
+            request.Email = message.ViewModel.Email;
+            request.Name = message.ViewModel.Name;
+            request.Phone = message.ViewModel.Phone;
+            request.State = message.ViewModel.State;
+            request.Zip = message.ViewModel.Zip;
+            request.Status = RequestStatus.Unassigned;
             request.Source = RequestSource.Api;
 
-            var address = _geocoder.Geocode(message.RequestViewModel.Address, message.RequestViewModel.City, message.RequestViewModel.State, message.RequestViewModel.Zip, string.Empty).FirstOrDefault();
-            request.Latitude = message.RequestViewModel.Latitude == 0 ? address?.Coordinates.Latitude ?? 0 : message.RequestViewModel.Latitude;
-            request.Longitude = message.RequestViewModel.Longitude == 0 ? address?.Coordinates.Longitude ?? 0 : message.RequestViewModel.Longitude;
+            var address = _geocoder.Geocode(message.ViewModel.Address, message.ViewModel.City, message.ViewModel.State, message.ViewModel.Zip, string.Empty).FirstOrDefault();
+            request.Latitude = message.ViewModel.Latitude == 0 ? address?.Coordinates.Latitude ?? 0 : message.ViewModel.Latitude;
+            request.Longitude = message.ViewModel.Longitude == 0 ? address?.Coordinates.Longitude ?? 0 : message.ViewModel.Longitude;
 
             _context.AddOrUpdate(request);
+
             await _context.SaveChangesAsync();
 
-            //TODO we don't need to return a request back. What we need to do is publish a notification that a Request was added
-            return request;
-        }
-
-        private Guid GetRequestId(string requestId)
-        {
-            if (string.IsNullOrEmpty(requestId))
-            {
-                return NewRequestId();
-            }
-
-            return Guid.Parse(requestId);
-        }
-
-        private static RequestStatus ConvertRequestStatusToEnum(string stringRequestStatus)
-        {
-            return (RequestStatus) Enum.Parse(typeof(RequestStatus), stringRequestStatus);
+            //TODO: publish notification so Steve's code can pikc it up and communicate back to getasmokealarm's API
         }
     }
 }
