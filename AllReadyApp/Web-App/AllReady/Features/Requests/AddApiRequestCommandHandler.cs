@@ -48,7 +48,7 @@ namespace AllReady.Features.Requests
             _context.AddOrUpdate(request);
             await _context.SaveChangesAsync();
 
-            //TODO mgmccarthy: find out if/why we need to return the entire Request back to the caller. I would rather us return the RequestId
+            //TODO we don't need to return a request back. What we need to do is publish a notification that a Request was added
             return request;
         }
 

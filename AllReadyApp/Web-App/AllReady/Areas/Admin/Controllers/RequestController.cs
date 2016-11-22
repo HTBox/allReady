@@ -73,7 +73,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Edit/{id}")]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var model = await _mediator.SendAsync(new EditRequestQuery() { Id = id });
+            var model = await _mediator.SendAsync(new EditRequestQuery { Id = id });
 
             if (model == null)
                 return NotFound();

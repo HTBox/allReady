@@ -20,59 +20,46 @@ namespace AllReady.Controllers
             _mediator = mediator;
         }
 
-        //TODO mgmccarthy: why do we need a strongly typed error to return to the caller?  Is there a requirement for this? I didn't touch the AddRequestError b/c it was there in the original PR #1111
         [HttpPost]
         [ExternalEndpoint]
         public async Task<IActionResult> Post([FromBody]RequestViewModel viewModel)
         {
+            //TODO: identify required fields on Request
+
             //validate before sending command
             if (viewModel.ProviderId == null)
             {
                 return MapError(new AddRequestError { ProviderId = "", Reason = "No ProviderId" });
             }
 
-            if (!string.IsNullOrEmpty(viewModel.RequestId))
+            if (string.IsNullOrEmpty(viewModel.Status))
             {
-                Guid requestId;
-                if (!Guid.TryParse(viewModel.RequestId, out requestId))
+                //return error or set error in message that will delivered to their API
+            }
+
+            //we only accept the status of "new" from RC integration, the rest we ignore
+            if (!string.IsNullOrEmpty(viewModel.Status))
+            {
+                if (viewModel.Status != "new")
                 {
-                    return MapError(new AddRequestError { ProviderId = viewModel.ProviderId, Reason = "RequestId must be convertable to a Guid." });
+                    //return error or set error in the message that will delivered to their API OR drop it on the floor
                 }
             }
 
-            //TODO mgmccarthy: making the assumption here that we'll receive an empty Status for a new Request. There might be a specific status we get from the incoming request
-            if (!string.IsNullOrEmpty(viewModel.Status))
-            {
-                if (!StatusCanBeMappedToRequestStatusEnum(viewModel.Status))
-                {
-                    return MapError(new AddRequestError { ProviderId = viewModel.ProviderId, Reason = "enum string provided cannot be mapped to Request enum type." });
-                }
-            }
+            //TODO: look up the Request by ProviderId (for red cross, that's "serial") to make sure it does not already exist in the database. If it does, we don't want to process the message b/c it's not a "new" status 
 
             var result = await _mediator.SendAsync(new AddApiRequestCommand { RequestViewModel = viewModel });
 
-            //TODO mgmccarthy: I'm not too sure why we have to return the entire result. I'd rather just return a 200 OK Http status or return the RequestId so the requestor can correlate a request back to our system when sending us updates
+            //TODO: return a 202 http status code with a true/false attached to the response saying we either accepted the request (true) or we didn't accept the request (false). 
+            //In order to accept a request (we currently are "serviing" that region), we'd have to add some type of region code to Organization in order to do a lookup.
+            //BUT, Tony Surma says here: https://github.com/redcross/smoke-alarm-portal/issues/196#issuecomment-238036967 
+            //that we should NOT add region code to Organzation b/c it's red cross specific... we should instead issue a token per supported region and use that to determine whether or not we can service the request
+            //https://httpstatuses.com/202
             return Created(string.Empty, result);
-        }
-
-        private static bool StatusCanBeMappedToRequestStatusEnum(string stringStatus)
-        {
-            RequestStatus enumStatus;
-            if (Enum.TryParse(stringStatus, out enumStatus))
-            {
-                return true;
-            }
-
-            return false;
         }
 
         private IActionResult MapError(AddRequestError error)
         {
-            //TODO mgmccarthy: I don't where .IsInternal is set set, so I commented it out
-            //if (error.IsInternal)
-            //{
-            //    return StatusCode(500, error);
-            //}
             return BadRequest(error);
         }
     }
