@@ -5,6 +5,6 @@ namespace AllReady.Features.Requests
 {
     public class AddApiRequestCommand : IAsyncRequest
     {
-        public RequestViewModel ViewModel { get; set; }
+        public RequestApiViewModel ViewModel { get; set; }
     }
 }

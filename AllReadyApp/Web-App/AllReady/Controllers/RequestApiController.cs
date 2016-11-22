@@ -20,24 +20,17 @@ namespace AllReady.Controllers
 
         [HttpPost]
         [ExternalEndpoint]
-        public async Task<IActionResult> Post([FromBody]RequestViewModel viewModel)
+        public async Task<IActionResult> Post([FromBody]RequestApiViewModel viewModel)
         {
-            //TODO: I'm making a guess that field validatino will return a BadRequest result instead of a 202. 
+            //TODO: I'm making a guess that field validations will return a BadRequest result instead of a 202 using ModelBinding. Testing it with PostMan, the model bineder worked
             //Anything that could potentially take longer then simple field validation (aka, region validation) will be moved further down the pipelines to be reported back to getasmokealarm's API
             //waiting to hear back from the getasmokealarm folks if they take specific actions from the ack from our endpoint.
 
-            //validate before sending command
-            if (RequiredRequestFieldsAreNullOrEmpty(viewModel))
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-
-            //verify RC specific fields
-            if (string.IsNullOrEmpty(viewModel.Status))
-            {
-                return BadRequest();
-            }
-
+            
             //we only accept the status of "new" from RC integration, the rest we ignore
             if (viewModel.Status != "new")
             {
@@ -57,23 +50,6 @@ namespace AllReady.Controllers
 
             //https://httpstatuses.com/202
             return StatusCode(202);
-        }
-
-        private static bool RequiredRequestFieldsAreNullOrEmpty(RequestViewModel viewModel)
-        {
-            if (string.IsNullOrEmpty(viewModel.ProviderRequestId) ||
-                string.IsNullOrEmpty(viewModel.Name) ||
-                string.IsNullOrEmpty(viewModel.Address) ||
-                string.IsNullOrEmpty(viewModel.City) ||
-                string.IsNullOrEmpty(viewModel.State) ||
-                string.IsNullOrEmpty(viewModel.Zip) ||
-                string.IsNullOrEmpty(viewModel.Phone) ||
-                string.IsNullOrEmpty(viewModel.Email))
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }
