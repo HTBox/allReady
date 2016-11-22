@@ -167,6 +167,13 @@ git commit
 
 If you make a mistake in your commit message and want to cancel your commit,  press the **esc** key to exit edit mode, press the semi-colon to enter into command mode, and enter q! to exit without saving the commit.
 
+**Provide Commit Message As An Argument**
+If you're not comfortable using the vi editor, or would prefer to provide your commit message as part of the `git commit` command you can use the `-m` option followed by your commit message in quotes. For example:
+
+```
+git commit -m "Your commit message"
+```
+
 ## Sending Changes to Github
 
 Since Git is a distributed version control system, the committed changes are only stored locally until you push them to the remote repository which in this case will be Github.  When you push changes to Github, you are pushing them only to your forked repository and the HTBox/allReady repository will not be affected by your changes.
