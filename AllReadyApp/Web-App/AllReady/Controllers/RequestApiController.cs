@@ -50,6 +50,22 @@ namespace AllReady.Controllers
 
             //https://httpstatuses.com/202
             return StatusCode(202);
+
+            //for reporting errors back for the BadRequests, we should stick to Google's Json style guid for errors:
+            //https://google.github.io/styleguide/jsoncstyleguide.xml?showone=error#Reserved_Property_Names_in_the_error_object
+            //here's an example for field validation
+            //{
+            //    "error":
+            //    {
+            //        "code": 400
+            //        "message": "field validation failed",
+            //        "errors": [
+            //            { "ProvierId":"empty or null"},
+            //            { "Name":"empty or null"},
+            //            { "Email":"not valid email address"}
+            //        ]
+            //    }
+            //}
         }
     }
 }
