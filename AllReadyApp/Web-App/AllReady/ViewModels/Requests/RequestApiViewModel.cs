@@ -31,16 +31,13 @@ namespace AllReady.ViewModels.Requests
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string Email { get; set; }
 
-        //AllReady's Requeset-specific non-required fields
+        //AllReady's Request-specific non-required fields
         public double Latitude { get; set; }
         public double Longitude { get; set; }
 
         //Red Cross specific fields
-
         [Required]
         public string Status { get; set; } //we only accept "new" request status from red cross
-        
-        //an example of an rc_region value from RC is IDMT for "rc_idaho_montana"
-        public string ProviderData { get; set; } //incoming Red Cross "assigned_rc_region" field is mapped to this field. This field contains a red cross region and that region's zip code
+        public string ProviderData { get; set; } //incoming Red Cross "assigned_rc_region" field is mapped to this field. An example of an assigned_rc_region value from RC is IDMT for "rc_idaho_montana"
     }
 }

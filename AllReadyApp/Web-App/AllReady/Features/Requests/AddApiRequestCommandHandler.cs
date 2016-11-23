@@ -24,11 +24,7 @@ namespace AllReady.Features.Requests
 
         protected override async Task HandleCore(AddApiRequestCommand message)
         {
-            //we no longer have to check for existence of the request in our system b/c we don't accept status updates from the red cross, we only accept new requests, and since we've already
-            //validated this in the RequestApiController, we do not have to check for it here
-            //var request = await _context.Requests.SingleOrDefaultAsync(x => x.ProviderId == message.ViewModel.ProviderRequestId) ?? new Request { RequestId = NewRequestId() };
-
-            //TODO: I can probably move the Request creation to the controller and put the entity on the command instead of the view model mapping code below
+            //TODO mgmccarthy: I can probably move the Request creation to the controller and put the entity on the command instead of the view model mapping code below
 
             var request = new Request { RequestId = NewRequestId() };
             request.ProviderId = message.ViewModel.ProviderRequestId;
@@ -52,7 +48,7 @@ namespace AllReady.Features.Requests
 
             await _context.SaveChangesAsync();
 
-            //TODO: publish notification so Steve's code can pikc it up and communicate back to getasmokealarm's API
+            //TODO mgmccarthy: publish notification so Steve's code can pikc it up and communicate back to getasmokealarm's API
         }
     }
 }

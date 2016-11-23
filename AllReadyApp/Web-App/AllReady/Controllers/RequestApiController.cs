@@ -7,6 +7,8 @@ using AllReady.ViewModels.Requests;
 
 namespace AllReady.Controllers
 {
+    //TODO mgmccarthy: use this route when token generation and TokenProtectedResource are sorted out
+    //[Route("api/request")]
     [Route("api/requestapi")]
     [Produces("application/json")]
     public class RequestApiController : Controller
@@ -22,7 +24,7 @@ namespace AllReady.Controllers
         [ExternalEndpoint]
         public async Task<IActionResult> Post([FromBody]RequestApiViewModel viewModel)
         {
-            //TODO: I'm making a guess that field validations will return a BadRequest result instead of a 202 using ModelBinding. Testing it with PostMan, the model bineder worked
+            //TODO mgmccarthy: I'm making a guess that field validations will return a BadRequest result instead of a 202. Testing it with Postman, the model binding to enforce field validation worked
             //Anything that could potentially take longer then simple field validation (aka, region validation) will be moved further down the pipelines to be reported back to getasmokealarm's API
             //waiting to hear back from the getasmokealarm folks if they take specific actions from the ack from our endpoint.
 
@@ -43,9 +45,9 @@ namespace AllReady.Controllers
                 return BadRequest();
             }
 
-            //TODO: region specific verification (this COULD be moved further down the pipeline to have the request status reported back to getasmokealarm via their API)
+            //TODO mgmccarthy: region specific verification (this COULD be moved further down the pipeline to have the request status reported back to getasmokealarm via their API)
 
-            //TODO: waiting to hear back from getasmokealarm what data they would expect back on the ack, if they only require the 202 back and we can invoke their API downstream from this to report back whether or not we're going to accept this request.
+            //TODO mgmccarthy: waiting to hear back from getasmokealarm what data they would expect back on the ack, if they only require the 202 back and we can invoke their API downstream from this to report back whether or not we're going to accept this request.
             await _mediator.SendAsync(new AddApiRequestCommand { ViewModel = viewModel });
 
             //https://httpstatuses.com/202
