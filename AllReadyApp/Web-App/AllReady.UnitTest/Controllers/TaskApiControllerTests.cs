@@ -21,7 +21,7 @@ using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.UnitTest.Controllers
 {
-    public class TaskApiControllerTests : InMemoryContextTest
+    public class TaskApiControllerTests
     {
         #region Post
         [Fact]
@@ -480,7 +480,10 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).ReturnsAsync(new TaskUnenrollResult());
 
-            var sut = new TaskApiController(mediator.Object, null, UserManager);
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+
+            var sut = new TaskApiController(mediator.Object, null, userManager.Object);
             sut.SetFakeUser(userId);
 
             await sut.UnregisterTask(taskId);
@@ -496,7 +499,10 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).ReturnsAsync(new TaskUnenrollResult { Status = status });
 
-            var sut = new TaskApiController(mediator.Object, null, UserManager);
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(It.IsAny<string>());
+
+            var sut = new TaskApiController(mediator.Object, null, userManager.Object);
             sut.SetDefaultHttpContext();
 
             var jsonResult = await sut.UnregisterTask(It.IsAny<int>());
@@ -513,7 +519,10 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).ReturnsAsync(new TaskUnenrollResult());
 
-            var sut = new TaskApiController(mediator.Object, null, UserManager);
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(It.IsAny<string>());
+
+            var sut = new TaskApiController(mediator.Object, null, userManager.Object);
             sut.SetDefaultHttpContext();
 
             var jsonResult = await sut.UnregisterTask(It.IsAny<int>());
@@ -529,7 +538,10 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).ReturnsAsync(new TaskUnenrollResult { Task = new AllReadyTask() });
 
-            var sut = new TaskApiController(mediator.Object, null, UserManager);
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(It.IsAny<string>());
+
+            var sut = new TaskApiController(mediator.Object, null, userManager.Object);
             sut.SetDefaultHttpContext();
             
             var jsonResult = await sut.UnregisterTask(It.IsAny<int>());
