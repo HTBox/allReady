@@ -12,7 +12,7 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Events
 {
-    public class EditEventCommandHandlerShould1 : TestBase
+    public class EditEventCommandHandlerShould : TestBase
     {
         [Fact]
         public async Task EventDoesNotExist()
@@ -234,5 +234,21 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(data.Location.PhoneNumber, newLocation.PhoneNumber);
             Assert.Equal(data.Location.Name, newLocation.Name);
         }
+
+        [Fact]
+        public async Task ModelIsCreated()
+        {
+            var context = ServiceProvider.GetService<AllReadyContext>();
+
+            // Adding an event requires a campaign for a organization ID and an event to match that in the command
+            context.Campaigns.Add(new Campaign { Id = 1, TimeZoneId = "Central Standard Time" });
+            context.Events.Add(new Event { Id = 1 });
+            context.SaveChanges();
+
+            var sut = new EditEventCommandHandler(context);
+            var actual = await sut.Handle(new EditEventCommand { Event = new EventEditViewModel { CampaignId = 1, Id = 1, TimeZoneId = "Central Standard Time" } });
+            Assert.Equal(1, actual);
+        }
+
     }
 }
