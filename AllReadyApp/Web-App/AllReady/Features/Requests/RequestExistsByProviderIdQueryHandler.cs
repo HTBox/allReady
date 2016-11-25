@@ -15,7 +15,7 @@ namespace AllReady.Features.Requests
 
         public bool Handle(RequestExistsByProviderIdQuery message)
         {
-            return context.Requests.Any(x => x.ProviderId == message.RequestProviderId);
+            return context.Requests.Any(x => x.ProviderId == message.ProviderRequestId);
         }
     }
 }

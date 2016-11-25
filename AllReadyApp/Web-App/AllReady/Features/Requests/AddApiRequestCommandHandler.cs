@@ -25,7 +25,6 @@ namespace AllReady.Features.Requests
         protected override async Task HandleCore(AddApiRequestCommand message)
         {
             //TODO mgmccarthy: I can probably move the Request creation to the controller and put the entity on the command instead of the view model mapping code below
-
             var request = new Request { RequestId = NewRequestId() };
             request.ProviderId = message.ViewModel.ProviderRequestId;
             request.ProviderData = message.ViewModel.ProviderData;
@@ -48,7 +47,8 @@ namespace AllReady.Features.Requests
 
             await _context.SaveChangesAsync();
 
-            //TODO mgmccarthy: publish notification so Steve's code can pikc it up and communicate back to getasmokealarm's API
+            //TODO mgmccarthy: publish notification so Steve's code can pick it up and communicate back to getasmokealarm's API
+
         }
     }
 }

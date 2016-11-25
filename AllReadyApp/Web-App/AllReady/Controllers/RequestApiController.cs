@@ -40,7 +40,7 @@ namespace AllReady.Controllers
             }
 
             //if we get here, the incoming request has mistakenly been labeled with the "new" status code
-            if (_mediator.Send(new RequestExistsByProviderIdQuery { RequestProviderId = viewModel.ProviderRequestId }))
+            if (_mediator.Send(new RequestExistsByProviderIdQuery { ProviderRequestId = viewModel.ProviderRequestId }))
             {
                 return BadRequest();
             }
