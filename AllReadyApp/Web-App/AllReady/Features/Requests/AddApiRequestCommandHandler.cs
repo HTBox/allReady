@@ -10,16 +10,18 @@ namespace AllReady.Features.Requests
 {
     public class AddApiRequestCommandHandler : AsyncRequestHandler<AddApiRequestCommand>
     {
-        private readonly AllReadyContext _context;
-        private readonly IGeocoder _geocoder;
+        private readonly AllReadyContext context;
+        private readonly IGeocoder geocoder;
+        private readonly IMediator mediator;
 
         public Func<Guid> NewRequestId = () => Guid.NewGuid();
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        public AddApiRequestCommandHandler(AllReadyContext context, IGeocoder geocoder)
+        public AddApiRequestCommandHandler(AllReadyContext context, IGeocoder geocoder, IMediator mediator)
         {
-            _context = context;
-            _geocoder = geocoder;
+            this.context = context;
+            this.geocoder = geocoder;
+            this.mediator = mediator;
         }
 
         protected override async Task HandleCore(AddApiRequestCommand message)
@@ -39,16 +41,15 @@ namespace AllReady.Features.Requests
             request.Status = RequestStatus.Unassigned;
             request.Source = RequestSource.Api;
 
-            var address = _geocoder.Geocode(message.ViewModel.Address, message.ViewModel.City, message.ViewModel.State, message.ViewModel.Zip, string.Empty).FirstOrDefault();
+            var address = geocoder.Geocode(message.ViewModel.Address, message.ViewModel.City, message.ViewModel.State, message.ViewModel.Zip, string.Empty).FirstOrDefault();
             request.Latitude = message.ViewModel.Latitude == 0 ? address?.Coordinates.Latitude ?? 0 : message.ViewModel.Latitude;
             request.Longitude = message.ViewModel.Longitude == 0 ? address?.Coordinates.Longitude ?? 0 : message.ViewModel.Longitude;
 
-            _context.AddOrUpdate(request);
+            context.AddOrUpdate(request);
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
-            //TODO mgmccarthy: publish notification so Steve's code can pick it up and communicate back to getasmokealarm's API
-
+            await mediator.PublishAsync(new ApiRequestAddedNotification { RequestId = request.RequestId });
         }
     }
 }
