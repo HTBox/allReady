@@ -1,26 +1,83 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Features.Requests;
+using AllReady.Models;
+using AllReady.ViewModels.Requests;
+using Geocoding;
+using MediatR;
+using Moq;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Requests
 {
-    public class AddApiRequestCommandHandlerShould
+    public class AddApiRequestCommandHandlerShould : InMemoryContextTest
     {
         [Fact]
-        public void AddRequestIfItDoesNotExist()
+        public async Task AddRequest()
         {
+            var requestId = Guid.NewGuid();
+            var dateAdded = DateTime.UtcNow;
+
+            var viewModel = new RequestApiViewModel
+            {
+                ProviderRequestId = "ProviderRequestId",
+                Name = "Name",
+                Address = "Address",
+                City = "City",
+                State = "state",
+                Zip = "zip",
+                Phone = "phone",
+                Email = "email",
+                Latitude = 10,
+                Longitude = 10,
+                Status = "new",
+                ProviderData = "ProviderData"
+            };
+            
+            var message = new AddApiRequestCommand { ViewModel = viewModel };
+
+            var sut = new AddApiRequestCommandHandler(Context, Mock.Of<IGeocoder>(), Mock.Of<IMediator>())
+            {
+                NewRequestId = () => requestId,
+                DateTimeUtcNow = () => dateAdded
+            };
+            await sut.Handle(message);
+
+            var request = Context.Requests.Single(x => x.RequestId == requestId);
+
+            Assert.Equal(request.RequestId, requestId);
+            Assert.Equal(request.ProviderId, viewModel.ProviderRequestId);
+            Assert.Equal(request.ProviderData, viewModel.ProviderData);
+            Assert.Equal(request.Address, viewModel.Address);
+            Assert.Equal(request.City, viewModel.City);
+            Assert.Equal(request.DateAdded, dateAdded);
+            Assert.Equal(request.Email, viewModel.Email);
+            Assert.Equal(request.Name, viewModel.Name);
+            Assert.Equal(request.State, viewModel.State);
+            Assert.Equal(request.Zip, viewModel.Zip);
+            Assert.Equal(request.Status, RequestStatus.Unassigned);
+            Assert.Equal(request.Source, RequestSource.Api);
+            Assert.Equal(request.Latitude, viewModel.Latitude);
+            Assert.Equal(request.Longitude, viewModel.Longitude);
         }
 
         [Fact]
-        public void UpdateRequestIfItExists()
+        public async Task PublishApiRequestAddedNotificationWithTheCorrectRequestId()
         {
-        }
+            var requestId = Guid.NewGuid();
+            var message = new AddApiRequestCommand { ViewModel = new RequestApiViewModel() };
 
-        [Fact]
-        public void PublishApiRequestAddedNotificationWithTheCorrectRequestId()
-        {
+            var mediator = new Mock<IMediator>();
+
+            var sut = new AddApiRequestCommandHandler(Context, Mock.Of<IGeocoder>(), mediator.Object)
+            {
+                NewRequestId = () => requestId,
+            };
+
+            await sut.Handle(message);
+
+            mediator.Verify(x => x.PublishAsync(It.Is<ApiRequestAddedNotification>(y  => y.RequestId == requestId)), Times.Once);
         }
     }
 }

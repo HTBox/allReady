@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AllReady.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
@@ -13,11 +14,14 @@ namespace AllReady.Controllers
     [Produces("application/json")]
     public class RequestApiController : Controller
     {
-        private readonly IMediator _mediator;
+        private readonly IMediator mediator;
+
+        public Func<Guid> NewRequestId = () => Guid.NewGuid();
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
         public RequestApiController(IMediator mediator)
         {
-            _mediator = mediator;
+            this.mediator = mediator;
         }
 
         [HttpPost]
@@ -40,7 +44,7 @@ namespace AllReady.Controllers
             }
 
             //if we get here, the incoming request has mistakenly been labeled with the "new" status code
-            if (_mediator.Send(new RequestExistsByProviderIdQuery { ProviderRequestId = viewModel.ProviderRequestId }))
+            if (mediator.Send(new RequestExistsByProviderIdQuery { ProviderRequestId = viewModel.ProviderRequestId }))
             {
                 return BadRequest();
             }
@@ -48,7 +52,7 @@ namespace AllReady.Controllers
             //TODO mgmccarthy: region specific verification (this COULD be moved further down the pipeline to have the request status reported back to getasmokealarm via their API)
 
             //TODO mgmccarthy: waiting to hear back from getasmokealarm what data they would expect back on the ack, if they only require the 202 back and we can invoke their API downstream from this to report back whether or not we're going to accept this request.
-            await _mediator.SendAsync(new AddApiRequestCommand { ViewModel = viewModel });
+            await mediator.SendAsync(new AddApiRequestCommand { ViewModel = viewModel });
 
             //https://httpstatuses.com/202
             return StatusCode(202);

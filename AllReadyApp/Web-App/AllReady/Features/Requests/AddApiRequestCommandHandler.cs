@@ -27,19 +27,22 @@ namespace AllReady.Features.Requests
         protected override async Task HandleCore(AddApiRequestCommand message)
         {
             //TODO mgmccarthy: I can probably move the Request creation to the controller and put the entity on the command instead of the view model mapping code below
-            var request = new Request { RequestId = NewRequestId() };
-            request.ProviderId = message.ViewModel.ProviderRequestId;
-            request.ProviderData = message.ViewModel.ProviderData;
-            request.Address = message.ViewModel.Address;
-            request.City = message.ViewModel.City;
-            request.DateAdded = DateTimeUtcNow();
-            request.Email = message.ViewModel.Email;
-            request.Name = message.ViewModel.Name;
-            request.Phone = message.ViewModel.Phone;
-            request.State = message.ViewModel.State;
-            request.Zip = message.ViewModel.Zip;
-            request.Status = RequestStatus.Unassigned;
-            request.Source = RequestSource.Api;
+            var request = new Request
+            {
+                RequestId = NewRequestId(),
+                ProviderId = message.ViewModel.ProviderRequestId,
+                ProviderData = message.ViewModel.ProviderData,
+                Address = message.ViewModel.Address,
+                City = message.ViewModel.City,
+                DateAdded = DateTimeUtcNow(),
+                Email = message.ViewModel.Email,
+                Name = message.ViewModel.Name,
+                Phone = message.ViewModel.Phone,
+                State = message.ViewModel.State,
+                Zip = message.ViewModel.Zip,
+                Status = RequestStatus.Unassigned,
+                Source = RequestSource.Api
+            };
 
             var address = geocoder.Geocode(message.ViewModel.Address, message.ViewModel.City, message.ViewModel.State, message.ViewModel.Zip, string.Empty).FirstOrDefault();
             request.Latitude = message.ViewModel.Latitude == 0 ? address?.Coordinates.Latitude ?? 0 : message.ViewModel.Latitude;
