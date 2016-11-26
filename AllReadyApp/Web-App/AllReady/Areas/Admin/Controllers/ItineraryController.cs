@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Events;
@@ -194,7 +195,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [Route("Admin/Itinerary/{id}/[Action]")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddRequests(int id, string[] selectedRequests)
+        public async Task<IActionResult> AddRequests(int id, List<string> selectedRequests)
         {
             // todo - error handling
             var orgId = await GetOrganizationIdBy(id);
@@ -205,7 +206,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (selectedRequests.Any())
             {
-                await _mediator.SendAsync(new AddRequestsToItineraryCommand { ItineraryId = id, RequestIdsToAdd = selectedRequests.ToList() });
+                await _mediator.SendAsync(new AddRequestsToItineraryCommand { ItineraryId = id, RequestIdsToAdd = selectedRequests });
             }
 
             return RedirectToAction(nameof(Details), new { id });
