@@ -129,7 +129,7 @@
     }
     else
     {
-        @Html.Raw(@"<div class=""col-md-12"">"); <!-- starts the events table div at full width when no campaign impact-->
+        @Html.Raw(@"<div class=""col-md-12"">") <!-- starts the events table div at full width when no campaign impact-->
     }
     <div class="table-responsive">
         <table class="table" data-bind="css: { hide: !events.filtered().length }">
@@ -157,7 +157,7 @@
             <!-- /ko -->
         </table>
     </div>
-    @Html.Raw(@"</div>"); <!-- closes the events table div -->
+    @Html.Raw(@"</div>") <!-- closes the events table div -->
 </div>
 
 
