@@ -26,7 +26,7 @@ namespace AllReady.Areas.Admin.Features.Requests
                 .Include(l => l.Event)
                 .SingleOrDefaultAsync(t => t.RequestId == message.RequestModel.Id) ?? _context.Add(new Request { Source = RequestSource.UI }).Entity;
 
-            bool addressChanged = DetermineIfAddressChanged(message, request);
+            var addressChanged = DetermineIfAddressChanged(message, request);
 
             request.EventId = message.RequestModel.EventId;
             request.Address = message.RequestModel.Address;

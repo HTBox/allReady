@@ -2,78 +2,76 @@
 using System.Threading.Tasks;
 using AllReady.Attributes;
 using Microsoft.AspNetCore.Mvc;
-using AllReady.Models;
 using MediatR;
 using AllReady.Features.Requests;
 using AllReady.ViewModels.Requests;
 
 namespace AllReady.Controllers
 {
+    //TODO mgmccarthy: use this route when token generation and TokenProtectedResource are sorted out
+    //[Route("api/request")]
     [Route("api/requestapi")]
     [Produces("application/json")]
     public class RequestApiController : Controller
     {
-        private readonly IMediator _mediator;
+        private readonly IMediator mediator;
+
+        public Func<Guid> NewRequestId = () => Guid.NewGuid();
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
         public RequestApiController(IMediator mediator)
         {
-            _mediator = mediator;
+            this.mediator = mediator;
         }
 
-        //TODO mgmccarthy: why do we need a strongly typed error to return to the caller?  Is there a requirement for this? I didn't touch the AddRequestError b/c it was there in the original PR #1111
         [HttpPost]
         [ExternalEndpoint]
-        public async Task<IActionResult> Post([FromBody]RequestViewModel viewModel)
+        public async Task<IActionResult> Post([FromBody]RequestApiViewModel viewModel)
         {
-            //validate before sending command
-            if (viewModel.ProviderId == null)
+            //TODO mgmccarthy: I'm making a guess that field validations will return a BadRequest result instead of a 202. Testing it with Postman, the model binding to enforce field validation worked
+            //Anything that could potentially take longer then simple field validation (aka, region validation) will be moved further down the pipelines to be reported back to getasmokealarm's API
+            //waiting to hear back from the getasmokealarm folks if they take specific actions from the ack from our endpoint.
+
+            if (!ModelState.IsValid)
             {
-                return MapError(new AddRequestError { ProviderId = "", Reason = "No ProviderId" });
+                return BadRequest();
+            }
+            
+            //we only accept the status of "new" from RC integration, the rest we ignore
+            if (viewModel.Status != "new")
+            {
+                return BadRequest();
             }
 
-            if (!string.IsNullOrEmpty(viewModel.RequestId))
+            //if we get here, the incoming request has mistakenly been labeled with the "new" status code
+            if (mediator.Send(new RequestExistsByProviderIdQuery { ProviderRequestId = viewModel.ProviderRequestId }))
             {
-                Guid requestId;
-                if (!Guid.TryParse(viewModel.RequestId, out requestId))
-                {
-                    return MapError(new AddRequestError { ProviderId = viewModel.ProviderId, Reason = "RequestId must be convertable to a Guid." });
-                }
+                return BadRequest();
             }
 
-            //TODO mgmccarthy: making the assumption here that we'll receive an empty Status for a new Request. There might be a specific status we get from the incoming request
-            if (!string.IsNullOrEmpty(viewModel.Status))
-            {
-                if (!StatusCanBeMappedToRequestStatusEnum(viewModel.Status))
-                {
-                    return MapError(new AddRequestError { ProviderId = viewModel.ProviderId, Reason = "enum string provided cannot be mapped to Request enum type." });
-                }
-            }
+            //TODO mgmccarthy: region specific verification (this COULD be moved further down the pipeline to have the request status reported back to getasmokealarm via their API)
 
-            var result = await _mediator.SendAsync(new AddApiRequestCommand { RequestViewModel = viewModel });
+            //TODO mgmccarthy: waiting to hear back from getasmokealarm what data they would expect back on the ack, if they only require the 202 back and we can invoke their API downstream from this to report back whether or not we're going to accept this request.
+            await mediator.SendAsync(new AddApiRequestCommand { ViewModel = viewModel });
 
-            //TODO mgmccarthy: I'm not too sure why we have to return the entire result. I'd rather just return a 200 OK Http status or return the RequestId so the requestor can correlate a request back to our system when sending us updates
-            return Created(string.Empty, result);
-        }
+            //https://httpstatuses.com/202
+            return StatusCode(202);
 
-        private static bool StatusCanBeMappedToRequestStatusEnum(string stringStatus)
-        {
-            RequestStatus enumStatus;
-            if (Enum.TryParse(stringStatus, out enumStatus))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private IActionResult MapError(AddRequestError error)
-        {
-            //TODO mgmccarthy: I don't where .IsInternal is set set, so I commented it out
-            //if (error.IsInternal)
+            //for reporting errors back for the BadRequests, we should stick to Google's Json style guid for errors:
+            //https://google.github.io/styleguide/jsoncstyleguide.xml?showone=error#Reserved_Property_Names_in_the_error_object
+            //here's an example for field validation
             //{
-            //    return StatusCode(500, error);
+            //    "error":
+            //    {
+            //        "code": 400
+            //        "message": "field validation failed",
+            //        "errors": [
+            //            { "ProvierId":"empty or null"},
+            //            { "Name":"empty or null"},
+            //            { "Email":"not valid email address"}
+            //        ]
+            //    }
             //}
-            return BadRequest(error);
         }
     }
 }
