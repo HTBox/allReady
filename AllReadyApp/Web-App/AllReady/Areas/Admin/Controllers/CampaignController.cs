@@ -170,6 +170,43 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public async Task<JsonResult> DeleteCampaignImage(int campaignId)
+        {
+            if (campaignId == default(int))
+            {
+                return Json(new { status = "CampaignIdNotProvided" });
+            }
+
+            var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
+
+            if (campaign == null)
+            {
+                return Json(new { status = "NotFound" });
+            }
+
+            if (!User.IsOrganizationAdmin(campaign.OrganizationId))
+            {
+                return Json(new { status = "Unauthorized" });
+            }
+
+            if (campaign.EndDate < campaign.StartDate)
+            {
+                return Json(new { status = "DateInvalid", message = "The end date must fall on or after the start date." });
+            }
+
+            if (campaign.ImageUrl != null)
+            {
+                await _imageService.DeleteImageAsync(campaign.ImageUrl);
+                campaign.ImageUrl = null;
+                await _mediator.SendAsync(new EditCampaignCommand { Campaign = campaign });
+                return Json(new { status = "Success" });
+            }
+
+            return Json(new { status = "NothingToDelete" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> LockUnlock(int id)
         {
             if (!User.IsUserType(UserType.SiteAdmin))
