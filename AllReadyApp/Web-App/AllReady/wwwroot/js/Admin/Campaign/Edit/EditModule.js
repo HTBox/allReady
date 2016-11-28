@@ -8,6 +8,10 @@ var editModule = (function () {
         function deleteCampaignImageCallBack(e) {
             e.preventDefault();
 
+            var confirmAnswer = confirm("Are you sure you want to delete the image?");
+
+            if (!confirmAnswer) return;
+
             var campaignId = $("#Id").val();
             var antiForgeryToken = $('input[name="__RequestVerificationToken"]').val();
 
