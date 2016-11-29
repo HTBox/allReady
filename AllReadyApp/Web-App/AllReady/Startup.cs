@@ -36,6 +36,7 @@ using Hangfire.SqlServer;
 using AllReady.ModelBinding;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
+using AllReady.Services.Routing;
 
 namespace AllReady
 {
@@ -101,6 +102,7 @@ namespace AllReady
             services.Configure<SampleDataSettings>(Configuration.GetSection("SampleData"));
             services.Configure<GeneralSettings>(Configuration.GetSection("General"));
             services.Configure<TwitterAuthenticationSettings>(Configuration.GetSection("Authentication:Twitter"));
+            services.Configure<MappingSettings>(Configuration.GetSection("Mapping"));
 
             // Add Identity services to the services container.
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -222,6 +224,8 @@ namespace AllReady
             //Hangfire
             containerBuilder.Register(icomponentcontext => new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"])))
                 .As<IBackgroundJobClient>();
+
+            containerBuilder.RegisterType<GoogleOptimizeRouteService>().As<IOptimizeRouteService>().SingleInstance();
 
             //Populate the container with services that were previously registered
             containerBuilder.Populate(services);
