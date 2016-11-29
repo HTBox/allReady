@@ -32,7 +32,7 @@
       "ConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
     },
     "Storage": {
-      "AzureStorage": "UseDevelopmentStorage=true;DevelopmentStorageProxyUri=http://127.0.0.1;",
+      "AzureStorage": "[storagekey]",
       "EnableAzureQueueService": "false"
     }
   },
