@@ -54,6 +54,10 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         /// </summary>
         public int AssignedRequests { get; set; }
 
+        public int PendingConfirmationRequests { get; set; }
+
+        public int ConfirmedRequests { get; set; }
+
         /// <summary>
         /// The number of completed requests for this event
         /// </summary>
@@ -75,7 +79,7 @@ namespace AllReady.Areas.Admin.ViewModels.Event
 
                 if (TotalRequests > 0)
                 { 
-                    percentage = ((double)UnassignedRequests / (double)TotalRequests) * 100;
+                    percentage = UnassignedRequests / (double)TotalRequests * 100;
                 }
 
                 return percentage.ToString("0.0");
@@ -93,7 +97,37 @@ namespace AllReady.Areas.Admin.ViewModels.Event
 
                 if (TotalRequests > 0)
                 {
-                    percentage = ((double) AssignedRequests/(double) TotalRequests)*100;
+                    percentage = (AssignedRequests/(double) TotalRequests)*100;
+                }
+
+                return percentage.ToString("0.0");
+            }
+        }
+
+        public string PendingConfirmationPercentage
+        {
+            get
+            {
+                var percentage = 0.0;
+
+                if (TotalRequests > 0)
+                {
+                    percentage = (PendingConfirmationRequests / (double)TotalRequests) * 100;
+                }
+
+                return percentage.ToString("0.0");
+            }
+        }
+
+        public string ConfirmedPercentage
+        {
+            get
+            {
+                var percentage = 0.0;
+
+                if (TotalRequests > 0)
+                {
+                    percentage = (ConfirmedRequests / (double)TotalRequests) * 100;
                 }
 
                 return percentage.ToString("0.0");
@@ -111,7 +145,7 @@ namespace AllReady.Areas.Admin.ViewModels.Event
 
                 if (TotalRequests > 0)
                 {
-                    percentage = ((double) CompletedRequests/(double) TotalRequests)*100;
+                    percentage = (CompletedRequests/(double) TotalRequests)*100;
                 }
 
                 return percentage.ToString("0.0");
@@ -129,7 +163,7 @@ namespace AllReady.Areas.Admin.ViewModels.Event
 
                 if (TotalRequests > 0)
                 {
-                    percentage = ((double) CanceledRequests/(double) TotalRequests)*100;
+                    percentage = (CanceledRequests/(double) TotalRequests)*100;
                 }
 
                 return percentage.ToString("0.0");
@@ -162,7 +196,7 @@ namespace AllReady.Areas.Admin.ViewModels.Event
 
                 if (VolunteersRequired > 0)
                 {
-                    percentage = ((double)AcceptedVolunteers / (double)VolunteersRequired) * 100;
+                    percentage = AcceptedVolunteers / (double)VolunteersRequired * 100;
                 }
 
                 return percentage.ToString("0.0");

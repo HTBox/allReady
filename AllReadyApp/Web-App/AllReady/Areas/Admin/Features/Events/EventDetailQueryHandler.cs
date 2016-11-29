@@ -97,27 +97,38 @@ namespace AllReady.Areas.Admin.Features.Events
                     .Select(g => new { Status = g.Key, Count = g.Count() })
                     .ToListAsync();
 
-                foreach (var req in requests)
+                foreach (var request in requests)
                 {
-                    switch (req.Status)
+                    switch (request.Status)
                     {
-                        case RequestStatus.Completed:
-                            result.CompletedRequests = req.Count;
+                        case RequestStatus.Unassigned:
+                            result.UnassignedRequests = request.Count;
                             break;
                         case RequestStatus.Assigned:
-                            result.AssignedRequests = req.Count;
+                            result.AssignedRequests = request.Count;
+                            break;
+                        case RequestStatus.PendingConfirmation:
+                            result.PendingConfirmationRequests = request.Count;
+                            break;
+                        case RequestStatus.Confirmed:
+                            result.ConfirmedRequests = request.Count;
+                            break;
+                        case RequestStatus.Completed:
+                            result.CompletedRequests = request.Count;
                             break;
                         case RequestStatus.Canceled:
-                            result.CanceledRequests = req.Count;
-                            break;
-                        case RequestStatus.Unassigned:
-                            result.UnassignedRequests = req.Count;
+                            result.CanceledRequests = request.Count;
                             break;
                     }
                 }
 
-                result.TotalRequests = result.CompletedRequests + result.CanceledRequests + result.AssignedRequests +
-                                       result.UnassignedRequests;
+                result.TotalRequests = 
+                    result.UnassignedRequests +
+                    result.AssignedRequests +
+                    result.PendingConfirmationRequests +
+                    result.ConfirmedRequests +
+                    result.CompletedRequests + 
+                    result.CanceledRequests;
 
                 result.VolunteersRequired = await _context.Tasks.Where(rec => rec.EventId == result.Id).SumAsync(rec => rec.NumberOfVolunteersRequired);
 

@@ -1,5 +1,4 @@
 @using System.Threading.Tasks
-@using AllReady.Security
 
 @model AllReady.Areas.Admin.ViewModels.Event.EventRequestsViewModel
 
@@ -33,6 +32,8 @@
                 <a asp-action="Requests" asp-route-status="" class="@(@Model.CurrentPage == "All" ? "current" : "")">All Requests</a>
                 <a asp-action="Requests" asp-route-status="Unassigned" class="@(@Model.CurrentPage == "Unassigned" ? "current" : "")">Unassigned Requests</a>
                 <a asp-action="Requests" asp-route-status="Assigned" class="@(@Model.CurrentPage == "Assigned" ? "current" : "")">Assigned Requests</a>
+                <a asp-action="Requests" asp-route-status="PendingConfirmation" class="@(@Model.CurrentPage == "PendingConfirmation" ? "current" : "")">Pending Confirmation Requests</a>
+                <a asp-action="Requests" asp-route-status="Confirmed" class="@(@Model.CurrentPage == "Confirmed" ? "current" : "")">Confirmed Requests</a>
                 <a asp-action="Requests" asp-route-status="Completed" class="@(@Model.CurrentPage == "Completed" ? "current" : "")">Completed Requests</a>
                 <a asp-action="Requests" asp-route-status="Canceled" class="@(@Model.CurrentPage == "Canceled" ? "current" : "")">Canceled Requests</a>
             </nav>

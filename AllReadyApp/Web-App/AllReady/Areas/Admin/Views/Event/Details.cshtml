@@ -178,53 +178,85 @@
                 &nbsp;
             </div>
 
-            <div class="row">
-                <div class="col-md-5ths col-sm-4 col-xs-12">
-                    <a asp-action="Requests" asp-route-id="@Model.Id" class="dashboard-block-link">
-                        <div class="dashboard-block">
-                            <div class="overlay"></div>
-                            <div class="dashboard-block-main"><span class="dashboard-block-main-text">@Model.TotalRequests</span></div>
-                            <div class="dashboard-block-subtext">Total Requests</div>
-                        </div>
-                    </a>
+    <div class="row">
+        <div class="col-md-7ths col-sm-4 col-xs-12">
+            <a asp-action="Requests" asp-route-id="@Model.Id" class="dashboard-block-link">
+                <div class="dashboard-block">
+                    <div class="overlay"></div>
+                    <div class="dashboard-block-main">
+                        <span class="dashboard-block-main-text">@Model.TotalRequests</span>
+                    </div>
+                    <div class="dashboard-block-subtext">Total Requests</div>
                 </div>
-                <div class="col-md-5ths col-sm-4 col-xs-12">
-                    <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Unassigned" class="dashboard-block-link">
-                        <div class="dashboard-block">
-                            <div class="overlay"></div>
-                            <div class="dashboard-block-main"><span class="dashboard-block-main-text">@Model.UnassignedRequests</span></div>
-                            <div class="dashboard-block-subtext">@Model.UnassignedPercentage% Unassigned</div>
-                        </div>
-                    </a>
+            </a>
+        </div>
+        <div class="col-md-7ths col-sm-4 col-xs-12">
+            <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Unassigned" class="dashboard-block-link">
+                <div class="dashboard-block">
+                    <div class="overlay"></div>
+                    <div class="dashboard-block-main">
+                        <span class="dashboard-block-main-text">@Model.UnassignedRequests</span>
+                    </div>
+                    <div class="dashboard-block-subtext">@Model.UnassignedPercentage% Unassigned</div>
                 </div>
-                <div class="col-md-5ths col-sm-4 col-xs-12">
-                    <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Assigned" class="dashboard-block-link">
-                        <div class="dashboard-block">
-                            <div class="overlay"></div>
-                            <div class="dashboard-block-main"><span class="dashboard-block-main-text">@Model.AssignedRequests</span></div>
-                            <div class="dashboard-block-subtext">@Model.AssignedPercentage% Assigned</div>
-                        </div>
-                    </a>
+            </a>
+        </div>
+        <div class="col-md-7ths col-sm-4 col-xs-12">
+            <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Assigned" class="dashboard-block-link">
+                <div class="dashboard-block">
+                    <div class="overlay"></div>
+                    <div class="dashboard-block-main">
+                        <span class="dashboard-block-main-text">@Model.AssignedRequests</span>
+                    </div>
+                    <div class="dashboard-block-subtext">@Model.AssignedPercentage% Assigned</div>
                 </div>
-                <div class="col-md-5ths col-sm-4 col-xs-12">
-                    <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Completed" class="dashboard-block-link">
-                        <div class="dashboard-block">
-                            <div class="overlay"></div>
-                            <div class="dashboard-block-main"><span class="dashboard-block-main-text">@Model.CompletedRequests</span></div>
-                            <div class="dashboard-block-subtext">@Model.CompletedPercentage% Completed</div>
-                        </div>
-                    </a>
+            </a>
+        </div>
+        <div class="col-md-7ths col-sm-4 col-xs-12">
+            <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.PendingConfirmation" class="dashboard-block-link">
+                <div class="dashboard-block">
+                    <div class="overlay"></div>
+                    <div class="dashboard-block-main">
+                        <span class="dashboard-block-main-text">@Model.PendingConfirmationRequests</span>
+                    </div>
+                    <div class="dashboard-block-subtext">@Model.PendingConfirmationPercentage% Pending Confirmation</div>
                 </div>
-                <div class="col-md-5ths col-sm-4 col-xs-12">
-                    <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Canceled" class="dashboard-block-link">
-                        <div class="dashboard-block">
-                            <div class="overlay"></div>
-                            <div class="dashboard-block-main"><span class="dashboard-block-main-text">@Model.CanceledRequests</span></div>
-                            <div class="dashboard-block-subtext">@Model.CanceledPercentage% Canceled</div>
-                        </div>
-                    </a>
+            </a>
+        </div>
+        <div class="col-md-7ths col-sm-4 col-xs-12">
+            <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Confirmed" class="dashboard-block-link">
+                <div class="dashboard-block">
+                    <div class="overlay"></div>
+                    <div class="dashboard-block-main">
+                        <span class="dashboard-block-main-text">@Model.ConfirmedRequests</span>
+                    </div>
+                    <div class="dashboard-block-subtext">@Model.ConfirmedPercentage% Confirmed</div>
                 </div>
-            </div>
+            </a>
+        </div>
+        <div class="col-md-7ths col-sm-4 col-xs-12">
+            <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Completed" class="dashboard-block-link">
+                <div class="dashboard-block">
+                    <div class="overlay"></div>
+                    <div class="dashboard-block-main">
+                        <span class="dashboard-block-main-text">@Model.CompletedRequests</span>
+                    </div>
+                    <div class="dashboard-block-subtext">@Model.CompletedPercentage% Completed</div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-7ths col-sm-4 col-xs-12">
+            <a asp-action="Requests" asp-route-id="@Model.Id" asp-route-status="@RequestStatus.Canceled" class="dashboard-block-link">
+                <div class="dashboard-block">
+                    <div class="overlay"></div>
+                    <div class="dashboard-block-main">
+                        <span class="dashboard-block-main-text">@Model.CanceledRequests</span>
+                    </div>
+                    <div class="dashboard-block-subtext">@Model.CanceledPercentage% Canceled</div>
+                </div>
+            </a>
+        </div>
+    </div>
 }
 
 @section scripts {
