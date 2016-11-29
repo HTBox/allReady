@@ -17,56 +17,53 @@
                     Username
                 </th>
             </tr>
-            @foreach (var item in Model.Users)
+            @foreach (var user in Model.Users)
             {
                 <tr>
                     <td>
                         <div class="btn-toolbar">
-                            <a data-toggle="tooltip" data-placement="top" title="Edit" asp-action="EditUser" asp-controller="Site" asp-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-edit"></span></a>
-                            <a data-toggle="tooltip" data-placement="top" title="Reset Password" asp-action="ResetPassword" asp-controller="Site" asp-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-recycle"></span></a>
-                            @if (!item.IsUserType(UserType.SiteAdmin) && !item.IsUserType(UserType.OrgAdmin))
+                            <a data-toggle="tooltip" data-placement="top" title="Edit" asp-action="EditUser" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success"><span class="fa fa-edit"></span></a>
+                            <a data-toggle="tooltip" data-placement="top" title="Reset Password" asp-action="ResetPassword" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success"><span class="fa fa-recycle"></span></a>
+                            @if (!user.IsUserType(UserType.SiteAdmin) && !user.IsUserType(UserType.OrgAdmin))
                             {
-                                <a data-toggle="tooltip" data-placement="top" title="Make Site Admin" asp-action="AssignSiteAdmin" asp-controller="Site" asp-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-user-secret"></span></a>
-                                <a data-toggle="tooltip" data-placement="top" title="Make Org Admin" asp-action="AssignOrganizationAdmin" asp-controller="Site" asp-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-group"></span></a>
+                                <a data-toggle="tooltip" data-placement="top" title="Make Site Admin" asp-action="AssignSiteAdmin" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success"><span class="fa fa-user-secret"></span></a>
+                                <a data-toggle="tooltip" data-placement="top" title="Make Org Admin" asp-action="AssignOrganizationAdmin" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success"><span class="fa fa-group"></span></a>
                             }
-                            else if (item.IsUserType(UserType.SiteAdmin))
+                            else if (user.IsUserType(UserType.SiteAdmin))
                             {
-                                <a data-toggle="tooltip" data-placement="top" title="Revoke Site Admin" asp-action="RevokeSiteAdmin" asp-controller="Site" asp-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-user-secret"></span></a>
+                                <a data-toggle="tooltip" data-placement="top" title="Revoke Site Admin" asp-action="RevokeSiteAdmin" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success"><span class="fa fa-user-secret"></span></a>
                             }
-                            else if (item.IsUserType(UserType.OrgAdmin))
+                            else if (user.IsUserType(UserType.OrgAdmin))
                             {
-                                <a data-toggle="tooltip" data-placement="top" title="Revoke Org Admin" asp-action="RevokeOrganizationAdmin" asp-controller="Site" asp-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-group"></span></a>
+                                <a data-toggle="tooltip" data-placement="top" title="Revoke Org Admin" asp-action="RevokeOrganizationAdmin" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success"><span class="fa fa-group"></span></a>
                             }
-                            @if (!item.IsUserType(UserType.ApiAccess))
+                            @if (!user.IsUserType(UserType.ApiAccess))
                             {
-                                <a data-toggle="tooltip" data-placement="top" title="Allow API Access" asp-action="AssignApiAccessRole" asp-controller="Site" asp-area="Admin" asp-route-userId="@item.Id" class="btn btn-success"><span class="fa fa-exchange"></span></a>
+                                <a data-toggle="tooltip" data-placement="top" title="Allow API Access" asp-action="AssignApiAccessRole" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success"><span class="fa fa-exchange"></span></a>
+                                <a data-toggle="tooltip" data-placement="top" title="Manage Keys" asp-action="ManageApiKeys" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-warning"><span class="fa fa-key"></span></a>
                             }
-                            @if (item.IsUserType(UserType.ApiAccess))
-                            {
-                                <a data-toggle="tooltip" data-placement="top" title="Manage Keys" asp-action="ManageApiKeys" asp-controller="Site" asp-area="Admin" asp-route-userId="@item.Id" class="btn btn-warning"><span class="fa fa-key"></span></a>
-                            }
-                            <a data-toggle="tooltip" data-placement="top" title="Delete" asp-action="DeleteUser" asp-controller="Site" asp-area="Admin" asp-route-userId="@item.Id" class="btn btn-danger"><span class="fa fa-remove"></span></a>
+                            <a data-toggle="tooltip" data-placement="top" title="Delete" asp-action="DeleteUser" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-danger"><span class="fa fa-remove"></span></a>
                         </div>
                     </td>
                     <td>
-                        <a asp-action="EditUser" asp-controller="Site" asp-area="Admin" asp-route-userId="@item.Id">@item.UserName</a>
-                        @if (item.UserName == User.Identity.Name)
+                        <a asp-action="EditUser" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id">@user.UserName</a>
+                        @if (user.UserName == User.Identity.Name)
                         {
                             <span class="label label-info"><span class="fa fa-user"></span> (You)</span>
                         }
-                        @if (item.IsUserType(UserType.SiteAdmin))
+                        @if (user.IsUserType(UserType.SiteAdmin))
                         {
                             <span class="label label-warning"><span class="fa fa-user-secret"></span> Site</span>
                         }
-                        @if (item.IsUserType(UserType.OrgAdmin))
+                        @if (user.IsUserType(UserType.OrgAdmin))
                         {
                             <span class="label label-default"><span class="fa fa-users"></span> Org</span>
                         }
-                        @if (item.IsUserType(UserType.ApiAccess))
+                        @if (user.IsUserType(UserType.ApiAccess))
                         {
                             <span class="label label-default"><span class="fa fa-exchange"></span> API</span>
                         }
-                        @if(!item.EmailConfirmed)
+                        @if(!user.EmailConfirmed)
                         {
                             <span class="fa fa-exclamation-triangle text-warning" title="Email Address not confirmed"></span>
                         }

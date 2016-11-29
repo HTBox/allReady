@@ -106,7 +106,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Verify(x => x.SendAsync(It.Is<TaskByTaskIdQuery>(y => y.TaskId == model.Id)));
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task PostReturnsHttpStatusCodeResultOf201()
         {
             var model = new TaskViewModel { EventId = 1, Id = 0 };
@@ -118,9 +118,9 @@ namespace AllReady.UnitTest.Controllers
             provider.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>(), null)).Returns(true);
 
             var sut = new TaskApiController(mediator.Object, provider.Object, null);
-            var result = await sut.Post(model) as StatusCodeResult;
+            var result = await sut.Post(model) as CreatedResult;
 
-            Assert.IsType<StatusCodeResult>(result);
+            Assert.IsType<CreatedResult>(result);
             Assert.Equal(result.StatusCode, 201);
         }
 
@@ -198,7 +198,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Verify(x => x.SendAsync(It.Is<UpdateTaskCommand>(y => y.AllReadyTask == allReadyTask)), Times.Once);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task PutReturnsHttpStatusCodeResultOf204()
         {
             var allReadyTask = new AllReadyTask();
@@ -211,9 +211,9 @@ namespace AllReady.UnitTest.Controllers
             determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<AllReadyTask>(), null)).Returns(true);
 
             var sut = new TaskApiController(mediator.Object, determineIfATaskIsEditable.Object, null);
-            var result = await sut.Put(It.IsAny<int>(), model) as StatusCodeResult;
+            var result = await sut.Put(It.IsAny<int>(), model) as NoContentResult;
 
-            Assert.IsType<StatusCodeResult>(result);
+            Assert.IsType<NoContentResult>(result);
             Assert.Equal(result.StatusCode, 204);
         }
 
@@ -471,7 +471,7 @@ namespace AllReady.UnitTest.Controllers
         #endregion
 
         #region UnregisterTask
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task UnregisterTaskSendsTaskUnenrollCommandWithCorrectTaskIdAndUserId()
         {
             const string userId = "1";
@@ -480,7 +480,10 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).ReturnsAsync(new TaskUnenrollResult());
 
-            var sut = new TaskApiController(mediator.Object, null, null);
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+
+            var sut = new TaskApiController(mediator.Object, null, userManager.Object);
             sut.SetFakeUser(userId);
 
             await sut.UnregisterTask(taskId);
@@ -488,7 +491,7 @@ namespace AllReady.UnitTest.Controllers
             mediator.Verify(x => x.SendAsync(It.Is<TaskUnenrollCommand>(y => y.TaskId == taskId && y.UserId == userId)));
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task UnregisterTaskReturnsCorrectStatus()
         {
             const string status = "status";
@@ -496,7 +499,10 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).ReturnsAsync(new TaskUnenrollResult { Status = status });
 
-            var sut = new TaskApiController(mediator.Object, null, null);
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(It.IsAny<string>());
+
+            var sut = new TaskApiController(mediator.Object, null, userManager.Object);
             sut.SetDefaultHttpContext();
 
             var jsonResult = await sut.UnregisterTask(It.IsAny<int>());
@@ -507,13 +513,16 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(result, status);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task UnregisterTaskReturnsNullForTaskWhenResultTaskIsNull()
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).ReturnsAsync(new TaskUnenrollResult());
 
-            var sut = new TaskApiController(mediator.Object, null, null);
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(It.IsAny<string>());
+
+            var sut = new TaskApiController(mediator.Object, null, userManager.Object);
             sut.SetDefaultHttpContext();
 
             var jsonResult = await sut.UnregisterTask(It.IsAny<int>());
@@ -523,13 +532,16 @@ namespace AllReady.UnitTest.Controllers
             Assert.Null(result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task UnregisterTaskReturnsTaskViewModelWhenResultTaskIsNotNull()
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<TaskUnenrollCommand>())).ReturnsAsync(new TaskUnenrollResult { Task = new AllReadyTask() });
 
-            var sut = new TaskApiController(mediator.Object, null, null);
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(It.IsAny<string>());
+
+            var sut = new TaskApiController(mediator.Object, null, userManager.Object);
             sut.SetDefaultHttpContext();
             
             var jsonResult = await sut.UnregisterTask(It.IsAny<int>());

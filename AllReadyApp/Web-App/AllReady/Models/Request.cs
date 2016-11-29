@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace AllReady.Models
 {
@@ -32,12 +31,12 @@ namespace AllReady.Models
 
         // allow for unique identifiers and mapping information
         public string ProviderId { get; set; }      // for RedCross, "serial"
+
+        //TODO: mgmccarthy. We might not have to store this in the Request table
         public string ProviderData { get; set; }    // for Red Cross, "assigned_rc_region"
 
         public int? EventId { get; set; }
         public Event Event { get; set; }
-
-        public ICollection<ItineraryRequest> Itineraries { get; set; }
 
         public DateTime DateAdded { get; set; } = DateTime.UtcNow;
     }

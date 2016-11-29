@@ -53,7 +53,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task AddsNewItineraryWhenItDoesNotExist()
         {
             var query = new EditItineraryCommand {  Itinerary = new ItineraryEditViewModel

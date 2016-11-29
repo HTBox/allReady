@@ -2,13 +2,13 @@
 
 angular
     .module("Backend") //TODO get a better name for factory and module
-    .factory("HoursService", ["$http", "$q", "CacheManager", function ($http, $q, CacheManager) {
+    .factory("HoursService", [function () {
         var rootKey = "allReadyHours";
-        var svc = {};
 
-        var protocol = "http://";
-        var domainUrl = "localhost:48408"; // TODO: Update when the site is deployed for real
-        var baseUrl = protocol + domainUrl + "/";
+        return {
+          setTimeIn: setTimeIn,
+          setTimeOut: setTimeOut
+        };
 
         function getRoot() {
             var stringifiedValue = window.localStorage.getItem(rootKey);
@@ -19,21 +19,18 @@ angular
             window.localStorage.setItem(rootKey, JSON.stringify(rootObject));
         }
 
-        svc.setTimeIn = function () {
+        function setTimeIn() {
             rootKey = 'TimeIn';
 
-            var d = moment(Date.now()).utc().format('MM/DD/YYYY hh:mm')
-            saveRoot(d);
-            return d;
-        };
+            var date = moment(Date.now()).utc().format('MM/DD/YYYY hh:mm');
+            saveRoot(date);
+            return date;
+        }
 
-        svc.setTimeOut = function () {
+        function setTimeOut() {
             rootKey = 'TimeOut';
-            var d = moment(Date.now()).utc().format('MM/DD/YYYY hh:mm')
-            saveRoot(d);
-            return  d;
-        };
-
-        return svc;
-
+            var date = moment(Date.now()).utc().format('MM/DD/YYYY hh:mm');
+            saveRoot(date);
+            return  date;
+        }
 }]);

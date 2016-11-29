@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Moq;
 using Xunit;
+using System.Linq;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
 {
@@ -51,10 +52,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Date = new DateTime(2016, 07, 01)
             };
 
+            var taskSignUp = new TaskSignup { Id = 1, ItineraryId = 2, TaskId = 1 };
+
             Context.Organizations.Add(htb);
             Context.Campaigns.Add(firePrev);
             Context.Events.Add(queenAnne);
             Context.Itineraries.Add(itinerary);
+            Context.TaskSignups.Add(taskSignUp);
 
             Context.SaveChanges();
         }
@@ -106,7 +110,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             mockMediator.Verify(x => x.SendAsync(It.Is<PotentialItineraryTeamMembersQuery>(y => y.EventId == 1)), Times.Once);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task AddTeamMemberCommandHandlerPublishesItineraryVolunteerListUpdatedWhenMatchedOnTaskSignupId()
         {
             var query = new AddTeamMemberCommand
@@ -126,6 +130,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<PotentialItineraryTeamMembersQuery>())).ReturnsAsync(potentialTaskSignups);
+
+            var taskSignUp = Context.TaskSignups.Single(t => t.Id == 1);
+            Context.Entry(taskSignUp).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
 
             var handler = new AddTeamMemberCommandHandler(Context, mockMediator.Object);
             await handler.Handle(query);

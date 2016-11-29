@@ -7,9 +7,9 @@ using Xunit;
 
 namespace AllReady.UnitTest.Controllers
 {
-    public class DetermineIfATaskIsEditableShould
+    public class DetermineIfATaskIsEditableShould: InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void SiteAdminsCanEditAllReadyTasks()
         {
             var claimsPrincipal = new ClaimsPrincipal();
@@ -20,12 +20,12 @@ namespace AllReady.UnitTest.Controllers
             }));
 
             var sut = new DetermineIfATaskIsEditable();
-            var result = sut.For(claimsPrincipal, null, null);
+            var result = sut.For(claimsPrincipal, null, UserManager);
 
             Assert.True(result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void OrgAdminsCanEditAllReadyTasks()
         {
             var claimsPrincipal = new ClaimsPrincipal();
@@ -36,12 +36,12 @@ namespace AllReady.UnitTest.Controllers
             }));
 
             var sut = new DetermineIfATaskIsEditable();
-            var result = sut.For(claimsPrincipal, null, null);
+            var result = sut.For(claimsPrincipal, null, UserManager);
 
             Assert.True(result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void AllReadyTaskThatHasInstanceOfEventAndEventHasInstanceOfOrganizerAndOrganizerIdEqualsUserIdIsEditable()
         {
             const string userId = "1";
@@ -56,12 +56,12 @@ namespace AllReady.UnitTest.Controllers
             var allReadyTask = new AllReadyTask { Event = new Event { Organizer = new ApplicationUser { Id = userId }}};
 
             var sut = new DetermineIfATaskIsEditable();
-            var result = sut.For(claimsPrincipal, allReadyTask, null);
+            var result = sut.For(claimsPrincipal, allReadyTask, UserManager);
 
             Assert.True(result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void AllReadyTaskThatHasInstanceOfEventAndEventHasInstanceOfCampaignAndCampaignHasInstanceOfOrganizerAndOrganizerIdEqualsUserIdIsEditable()
         {
             const string userId = "1";
@@ -76,7 +76,7 @@ namespace AllReady.UnitTest.Controllers
             var allReadyTask = new AllReadyTask { Event = new Event { Campaign = new Campaign { Organizer = new ApplicationUser { Id = userId }}}};
 
             var sut = new DetermineIfATaskIsEditable();
-            var result = sut.For(claimsPrincipal, allReadyTask, null);
+            var result = sut.For(claimsPrincipal, allReadyTask, UserManager);
 
             Assert.True(result);
         }

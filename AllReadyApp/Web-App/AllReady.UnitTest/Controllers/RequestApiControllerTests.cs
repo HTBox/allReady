@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Features.Requests;
+using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -13,72 +13,70 @@ namespace AllReady.UnitTest.Controllers
     public class RequestApiControllerTests
     {
         [Fact]
-        public async Task PostReturnsBadRequest_WhenProviderIdIsNull()
+        public async Task PostReturnsBadRequest_WhenModelStateIsInvalid()
         {
             var sut = new RequestApiController(Mock.Of<IMediator>());
-            var result = await sut.Post(new RequestViewModel {ProviderId = null});
+            sut.AddModelStateError();
+            var result = await sut.Post(new RequestApiViewModel());
 
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsType<BadRequestResult>(result);
         }
 
         [Fact]
-        public async Task PostReturnsBadRequest_WhenRequestIdIsNull()
+        public async Task PostReturnsBadRequest_WhenStatusIsNotNew()
         {
             var sut = new RequestApiController(Mock.Of<IMediator>());
-            var result = await sut.Post(new RequestViewModel {RequestId = null});
+            var result = await sut.Post(new RequestApiViewModel { Status = "NotNew" });
 
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsType<BadRequestResult>(result);
         }
 
         [Fact]
-        public async Task PostReturnsBadRequest_WhenRequestIdIsEmpty()
+        public async Task PostSendsRequestExistsByProviderIdQueryWithCorrectProviderRequestId()
         {
-            var sut = new RequestApiController(Mock.Of<IMediator>());
-            var result = await sut.Post(new RequestViewModel {RequestId = string.Empty});
+            const string providerRequestId = "ProviderRequestId";
 
-            Assert.IsType<BadRequestObjectResult>(result);
-        }
-
-        [Fact]
-        public async Task PostReturnsBadRequest_WhenRequestIdIsNotAGuid()
-        {
-            var sut = new RequestApiController(Mock.Of<IMediator>());
-            var result = await sut.Post(new RequestViewModel {RequestId = "NotAGuid"});
-
-            Assert.IsType<BadRequestObjectResult>(result);
-        }
-
-        [Fact]
-        public async Task PostReturnsBadRequest_WhenIncomingStatusCannotBeMappedToRequestStatus()
-        {
-            var sut = new RequestApiController(Mock.Of<IMediator>());
-            var result = await sut.Post(new RequestViewModel {Status = "NotMappable"});
-
-            Assert.IsType<BadRequestObjectResult>(result);
-        }
-
-        [Fact]
-        public async Task PostSendsAddRequestCommandWithTheCorrectParameters()
-        {
             var mediator = new Mock<IMediator>();
-            var viewModel = new RequestViewModel {ProviderId = "ProviderId", RequestId = Guid.NewGuid().ToString()};
+            var sut = new RequestApiController(mediator.Object);
+            await sut.Post(new RequestApiViewModel { Status = "new", ProviderRequestId = providerRequestId });
+
+            mediator.Verify(x => x.Send(It.Is<RequestExistsByProviderIdQuery>(y => y.ProviderRequestId == providerRequestId)), Times.Once);
+        }
+
+        [Fact]
+        public async Task PostReturnsBadRequest_WhenRequestAlreadyExists()
+        {
+            const string providerRequestId = "ProviderRequestId";
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.Send(It.IsAny<RequestExistsByProviderIdQuery>())).Returns(true);
+
+            var sut = new RequestApiController(mediator.Object);
+            var result = await sut.Post(new RequestApiViewModel { Status = "new", ProviderRequestId = providerRequestId });
+
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        public async Task PostSendsAddApiRequestCommandWithCorrectViewModel()
+        {
+            var viewModel = new RequestApiViewModel { Status = "new" };
+            var mediator = new Mock<IMediator>();
 
             var sut = new RequestApiController(mediator.Object);
             await sut.Post(viewModel);
 
-            mediator.Verify(x => x.SendAsync(It.Is<AddApiRequestCommand>((y => y.RequestViewModel == viewModel))));
+            mediator.Verify(x => x.SendAsync(It.Is<AddApiRequestCommand>(y => y.ViewModel == viewModel)), Times.Once);
         }
 
         [Fact]
-        public async Task PostReturnsCreatedResult()
+        public async Task PostReturns202StatusCode()
         {
-            var mediator = new Mock<IMediator>();
-            var viewModel = new RequestViewModel {ProviderId = "ProviderId", RequestId = Guid.NewGuid().ToString()};
+            var sut = new RequestApiController(Mock.Of<IMediator>());
+            var result = await sut.Post(new RequestApiViewModel { Status = "new" }) as StatusCodeResult;
 
-            var sut = new RequestApiController(mediator.Object);
-            var result = await sut.Post(viewModel);
-
-            Assert.IsType<CreatedResult>(result);
+            Assert.IsType<StatusCodeResult>(result);
+            Assert.Equal(result.StatusCode, 202);
         }
     }
 }

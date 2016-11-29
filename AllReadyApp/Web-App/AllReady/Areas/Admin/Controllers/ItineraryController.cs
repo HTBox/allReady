@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Events;
@@ -14,6 +15,8 @@ using AllReady.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AllReady.Services.Routing;
+using System.Text;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -194,7 +197,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [Route("Admin/Itinerary/{id}/[Action]")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddRequests(int id, string[] selectedRequests)
+        public async Task<IActionResult> AddRequests(int id, List<string> selectedRequests)
         {
             // todo - error handling
             var orgId = await GetOrganizationIdBy(id);
@@ -205,7 +208,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (selectedRequests.Any())
             {
-                await _mediator.SendAsync(new AddRequestsToItineraryCommand { ItineraryId = id, RequestIdsToAdd = selectedRequests.ToList() });
+                await _mediator.SendAsync(new AddRequestsToItineraryCommand { ItineraryId = id, RequestIdsToAdd = selectedRequests });
             }
 
             return RedirectToAction(nameof(Details), new { id });
@@ -334,7 +337,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             // todo: sgordon - Extend this to return success / failure message to the user
 
-            await _mediator.SendAsync(new RequestStatusChangeCommand { RequestId = requestId, NewStatus = RequestStatus.Completed});
+            await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Completed});
 
             return RedirectToAction("Details", new { id = itineraryId });
         }
@@ -353,9 +356,26 @@ namespace AllReady.Areas.Admin.Controllers
 
             // todo: sgordon - Extend this to return success / failure message to the user
 
-            await _mediator.SendAsync(new RequestStatusChangeCommand { RequestId = requestId, NewStatus = RequestStatus.Assigned });
+            await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Assigned });
 
             return RedirectToAction("Details", new { id = itineraryId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]")]
+        public async Task<IActionResult> OptimizeRoute(int itineraryId, OptimizeRouteInputModel model)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _mediator.SendAsync(new OptimizeRouteCommand { ItineraryId = itineraryId });
+            
+            return RedirectToAction("Details", new { id = itineraryId, startAddress = model.StartAddress, endAddress = model.EndAddress });
         }
 
         private async Task<SelectItineraryRequestsViewModel> BuildSelectItineraryRequestsModel(int itineraryId, RequestSearchCriteria criteria)

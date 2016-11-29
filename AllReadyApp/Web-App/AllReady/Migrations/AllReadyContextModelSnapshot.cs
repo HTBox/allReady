@@ -340,13 +340,11 @@ namespace AllReady.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EndLocationId")
-                        .IsUnique();
+                    b.HasIndex("EndLocationId");
 
                     b.HasIndex("EventId");
 
-                    b.HasIndex("StartLocationId")
-                        .IsUnique();
+                    b.HasIndex("StartLocationId");
 
                     b.ToTable("Itinerary");
                 });
@@ -826,8 +824,8 @@ namespace AllReady.Migrations
             modelBuilder.Entity("AllReady.Models.Itinerary", b =>
                 {
                     b.HasOne("AllReady.Models.Location", "EndLocation")
-                        .WithOne()
-                        .HasForeignKey("AllReady.Models.Itinerary", "EndLocationId");
+                        .WithMany()
+                        .HasForeignKey("EndLocationId");
 
                     b.HasOne("AllReady.Models.Event", "Event")
                         .WithMany("Itineraries")
@@ -835,8 +833,8 @@ namespace AllReady.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("AllReady.Models.Location", "StartLocation")
-                        .WithOne()
-                        .HasForeignKey("AllReady.Models.Itinerary", "StartLocationId");
+                        .WithMany()
+                        .HasForeignKey("StartLocationId");
                 });
 
             modelBuilder.Entity("AllReady.Models.ItineraryRequest", b =>
@@ -847,7 +845,7 @@ namespace AllReady.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("AllReady.Models.Request", "Request")
-                        .WithMany("Itineraries")
+                        .WithMany()
                         .HasForeignKey("RequestId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

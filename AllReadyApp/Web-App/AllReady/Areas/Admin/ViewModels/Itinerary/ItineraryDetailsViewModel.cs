@@ -33,5 +33,30 @@ namespace AllReady.Areas.Admin.ViewModels.Itinerary
         public List<RequestListViewModel> Requests { get; set; } = new List<RequestListViewModel>();
 
         public string DisplayDate => Date.ToLongDateString();
+
+        /// <summary>
+        /// The display address for the itinerary start location
+        /// </summary>
+        public string StartAddress { get; set; }
+
+        /// <summary>
+        /// The display address for the itinerary end location
+        /// </summary>
+        public string EndAddress { get; set; }
+
+        /// <summary>
+        /// Indicates whether the itinerary contains the required start/end address combination in order to enable optimize and view route functions 
+        /// </summary>
+        public bool CanOptimizeAndDisplayRoute { get; set; }
+
+        /// <summary>
+        /// Indicates that the start and end address are the same
+        /// </summary>
+        public bool UseStartAddressAsEndAddress { get; set; }
+
+        /// <summary>
+        /// A URL to the bing maps site with parameters needed to generate a driving route
+        /// </summary>
+        public string BingMapUrl { get; set; }
     }
 }

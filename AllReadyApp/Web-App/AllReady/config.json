@@ -17,13 +17,16 @@
     "SiteBaseUrl": "http://localhost:48408/",
     "DefaultTimeZone": "Central Standard Time"
   },
-    "ApplicationInsights": {
-        "InstrumentationKey": "[instrumentationkey]"
-    },
-    "Geocoding": {
-        "EnableGoogleGeocodingService": "false",
-        "GoogleGeocodingApiKey": "[geocodingapikey]"
-    },
+  "ApplicationInsights": {
+    "InstrumentationKey": "[instrumentationkey]"
+  },
+  "Geocoding": {
+    "EnableGoogleGeocodingService": "false",
+    "GoogleGeocodingApiKey": "[geocodingapikey]"
+  },
+  "Mapping": {
+    "GoogleDirectionsApiKey": "[directionsapikey]"
+  },
   "Data": {
     "DefaultConnection": {
       "ConnectionString": "Server=(localdb)\\MSSQLLocalDB;Database=AllReady;Integrated Security=true;MultipleActiveResultsets=true;"
