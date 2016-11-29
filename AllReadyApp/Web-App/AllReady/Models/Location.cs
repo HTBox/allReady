@@ -24,14 +24,14 @@ namespace AllReady.Models
             {
                 var address = new StringBuilder();
 
-                if (!string.IsNullOrWhiteSpace(Address1)) address.Append(Address1).Append(",");
-                if (!string.IsNullOrWhiteSpace(Address2)) address.Append(Address2).Append(",");
-                if (!string.IsNullOrWhiteSpace(City)) address.Append(City).Append(",");
-                if (!string.IsNullOrWhiteSpace(State)) address.Append(State).Append(",");
-                if (!string.IsNullOrWhiteSpace(PostalCode)) address.Append(PostalCode).Append(",");
+                if (!string.IsNullOrWhiteSpace(Address1)) address.Append(Address1).Append(", ");
+                if (!string.IsNullOrWhiteSpace(Address2)) address.Append(Address2).Append(", ");
+                if (!string.IsNullOrWhiteSpace(City)) address.Append(City).Append(", ");
+                if (!string.IsNullOrWhiteSpace(State)) address.Append(State).Append(", ");
+                if (!string.IsNullOrWhiteSpace(PostalCode)) address.Append(PostalCode).Append(", ");
                 if (!string.IsNullOrWhiteSpace(Country)) address.Append(Country);
 
-                if (address[address.Length - 1].Equals(',')) address = address.Remove(address.Length - 1, 1);
+                if (address[address.Length - 2].Equals(',')) address = address.Remove(address.Length - 2, 2);
 
                 return address.ToString();
             }
