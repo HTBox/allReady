@@ -287,9 +287,6 @@ namespace AllReady.Migrations
 
                     b.Property<DateTimeOffset>("StartDateTime");
 
-                    b.Property<string>("TimeZoneId")
-                        .IsRequired();
-
                     b.HasKey("Id");
 
                     b.HasIndex("CampaignId");
@@ -314,44 +311,6 @@ namespace AllReady.Migrations
                     b.HasIndex("SkillId");
 
                     b.ToTable("EventSkill");
-                });
-
-            modelBuilder.Entity("AllReady.Models.FileAttachment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("ContentId");
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("MimeType")
-                        .IsRequired();
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<int?>("TaskId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ContentId");
-
-                    b.HasIndex("TaskId");
-
-                    b.ToTable("FileAttachment");
-                });
-
-            modelBuilder.Entity("AllReady.Models.FileAttachmentContent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<byte[]>("Bytes");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FileAttachmentContent");
                 });
 
             modelBuilder.Entity("AllReady.Models.Itinerary", b =>
@@ -381,11 +340,13 @@ namespace AllReady.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EndLocationId");
+                    b.HasIndex("EndLocationId")
+                        .IsUnique();
 
                     b.HasIndex("EventId");
 
-                    b.HasIndex("StartLocationId");
+                    b.HasIndex("StartLocationId")
+                        .IsUnique();
 
                     b.ToTable("Itinerary");
                 });
@@ -862,22 +823,11 @@ namespace AllReady.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("AllReady.Models.FileAttachment", b =>
-                {
-                    b.HasOne("AllReady.Models.FileAttachmentContent", "Content")
-                        .WithMany()
-                        .HasForeignKey("ContentId");
-
-                    b.HasOne("AllReady.Models.AllReadyTask", "Task")
-                        .WithMany("Attachments")
-                        .HasForeignKey("TaskId");
-                });
-
             modelBuilder.Entity("AllReady.Models.Itinerary", b =>
                 {
                     b.HasOne("AllReady.Models.Location", "EndLocation")
-                        .WithMany()
-                        .HasForeignKey("EndLocationId");
+                        .WithOne()
+                        .HasForeignKey("AllReady.Models.Itinerary", "EndLocationId");
 
                     b.HasOne("AllReady.Models.Event", "Event")
                         .WithMany("Itineraries")
@@ -885,8 +835,8 @@ namespace AllReady.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("AllReady.Models.Location", "StartLocation")
-                        .WithMany()
-                        .HasForeignKey("StartLocationId");
+                        .WithOne()
+                        .HasForeignKey("AllReady.Models.Itinerary", "StartLocationId");
                 });
 
             modelBuilder.Entity("AllReady.Models.ItineraryRequest", b =>
