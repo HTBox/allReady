@@ -18,10 +18,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using AllReady.Areas.Admin.ViewModels.Campaign;
 using AllReady.Areas.Admin.ViewModels.Shared;
+using Shouldly;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
-    public class CampaignAdminControllerTests 
+    public class CampaignAdminControllerTests
     {
         [Fact]
         public async Task IndexSendsIndexQueryWithCorrectData_WhenUserIsOrgAdmin()
@@ -90,7 +91,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
 
             // model is not null
-            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignDetailQuery>(c=>c.CampaignId == campaignId))).ReturnsAsync(new CampaignDetailViewModel { OrganizationId = organizationId, Id = campaignId }).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<CampaignDetailQuery>(c => c.CampaignId == campaignId))).ReturnsAsync(new CampaignDetailViewModel { OrganizationId = organizationId, Id = campaignId }).Verifiable();
 
             // user is org admin
             var sut = new CampaignController(mockMediator.Object, null);
@@ -106,7 +107,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CreateReturnsCorrectViewWithCorrectViewModel()
         {
             var sut = new CampaignController(Mock.Of<IMediator>(), null);
-            var view = (ViewResult) sut.Create();
+            var view = (ViewResult)sut.Create();
 
             var viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
 
@@ -159,7 +160,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task EditPostAddsCorrectKeyAndErrorMessageToModelStateWhenCampaignEndDateIsLessThanCampainStartDate()
         {
-            var campaignSummaryModel = new CampaignSummaryViewModel { OrganizationId = 1, StartDate = DateTime.Now.AddDays(1), EndDate = DateTime.Now.AddDays(-1)};
+            var campaignSummaryModel = new CampaignSummaryViewModel { OrganizationId = 1, StartDate = DateTime.Now.AddDays(1), EndDate = DateTime.Now.AddDays(-1) };
 
             var sut = new CampaignController(null, null);
             sut.MakeUserAnOrgAdmin(campaignSummaryModel.OrganizationId.ToString());
@@ -178,7 +179,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EditCampaignCommand>()))
-                .Returns((EditCampaignCommand q) => Task.FromResult<int>(newCampaignId) );
+                .Returns((EditCampaignCommand q) => Task.FromResult<int>(newCampaignId));
 
             var mockImageService = new Mock<IImageService>();
             var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
@@ -194,7 +195,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(0, validationResults.Count());
 
             var file = FormFile("image/jpeg");
-            var view = (RedirectToActionResult) await sut.Edit(model, file);
+            var view = (RedirectToActionResult)await sut.Edit(model, file);
 
             // verify the edit(add) is called
             mockMediator.Verify(mock => mock.SendAsync(It.Is<EditCampaignCommand>(c => c.Campaign.OrganizationId == organizationId)));
@@ -223,7 +224,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new CampaignController(mockMediator.Object, new Mock<IImageService>().Object);
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
-            var result = (RedirectToActionResult) await sut.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = organizationId, Id = campaignId }, null);
+            var result = (RedirectToActionResult)await sut.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = organizationId, Id = campaignId }, null);
 
             Assert.Equal(result.ActionName, "Details");
             Assert.Equal(result.RouteValues["area"], "Admin");
@@ -275,7 +276,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var file = FormFile("image/jpeg");
 
-            await sut.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = organizationId, Id = campaignId}, file);
+            await sut.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = organizationId, Id = campaignId }, file);
 
             mockImageService.Verify(mock => mock.UploadCampaignImageAsync(
                 It.Is<int>(i => i == organizationId),
@@ -306,7 +307,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 StartDate = new DateTimeOffset(new DateTime(2016, 2, 13)),
                 EndDate = new DateTimeOffset(new DateTime(2016, 2, 14)),
             };
-            
+
             await sut.Edit(campaignSummaryViewModel, file);
             mockImageService.Verify(mock => mock.DeleteImageAsync(It.Is<string>(x => x == "existingImageUrl")), Times.Once);
         }
@@ -429,6 +430,185 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await sut.DeleteConfirmed(viewModel);
 
             mediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == viewModel.Id)), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteCampaignImageReturnsJsonObjectWithStatusOfNotFound()
+        {
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(null);
+            var imageServiceMock = new Mock<IImageService>();
+            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+
+            var result = await sut.DeleteCampaignImage(It.IsAny<int>());
+
+            result.ShouldNotBeNull();
+            result.ShouldBeOfType<JsonResult>();
+
+            result.Value.GetType()
+                .GetProperty("status")
+                .GetValue(result.Value)
+                .ShouldBe("NotFound");
+        }
+
+        [Fact]
+        public async Task DeleteCampaignImageReturnsJsonObjectWithStatusOfUnauthorizedIfUserIsNotOrganizationAdmin()
+        {
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel());
+            var imageServiceMock = new Mock<IImageService>();
+            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+            sut.MakeUserNotAnOrgAdmin();
+
+            var result = await sut.DeleteCampaignImage(It.IsAny<int>());
+
+            result.Value.GetType()
+                .GetProperty("status")
+                .GetValue(result.Value)
+                .ShouldBe("Unauthorized");
+        }
+
+        [Fact]
+        public async Task DeleteCampaignSendsTheCorrectIdToCampaignSummaryQuery()
+        {
+            var mediatorMock = new Mock<IMediator>();
+            var imageServiceMock = new Mock<IImageService>();
+            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+
+            int campaignId = 2;
+
+            await sut.DeleteCampaignImage(campaignId);
+
+            mediatorMock.Verify(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>()), Times.Once);
+            mediatorMock.Verify(m => m.SendAsync(It.Is<CampaignSummaryQuery>(s => s.CampaignId == campaignId)));
+        }
+
+        [Fact]
+        public async Task DeleteCampaignImageReturnsJsonObjectWithStatusOfDateInvalidIfCampaignEndDateIsLessThanStartDate()
+        {
+            var mediatorMock = new Mock<IMediator>();
+
+            var campaignSummaryViewModel = new CampaignSummaryViewModel
+            {
+                OrganizationId = 1,
+                StartDate = DateTimeOffset.Now.AddDays(10),
+                EndDate = DateTimeOffset.Now
+            };
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(campaignSummaryViewModel);
+
+            var imageServiceMock = new Mock<IImageService>();
+
+            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+            sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
+
+            var result = await sut.DeleteCampaignImage(It.IsAny<int>());
+
+            result.Value.GetType()
+                .GetProperty("status")
+                .GetValue(result.Value)
+                .ShouldBe("DateInvalid");
+
+            result.Value.GetType()
+                .GetProperty("message")
+                .GetValue(result.Value)
+                .ShouldBe("The end date must fall on or after the start date.");
+        }
+
+        [Fact]
+        public async Task DeleteCampaignImageCallsDeleteImageAsyncWithCorrectData()
+        {
+            var mediatorMock = new Mock<IMediator>();
+
+            var campaignSummaryViewModel = new CampaignSummaryViewModel
+            {
+                OrganizationId = 1,
+                ImageUrl = "URL!"
+            };
+
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(campaignSummaryViewModel);
+
+            var imageServiceMock = new Mock<IImageService>();
+
+            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+            sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
+
+            await sut.DeleteCampaignImage(It.IsAny<int>());
+
+            imageServiceMock.Verify(i => i.DeleteImageAsync(It.Is<string>(f => f == "URL!")), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteCampaignImageCallsEditCampaignCommandWithCorrectData()
+        {
+            var mediatorMock = new Mock<IMediator>();
+
+            var campaignSummaryViewModel = new CampaignSummaryViewModel
+            {
+                OrganizationId = 1,
+                ImageUrl = "URL!"
+            };
+
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(campaignSummaryViewModel);
+
+            var imageServiceMock = new Mock<IImageService>();
+
+            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+            sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
+
+            await sut.DeleteCampaignImage(It.IsAny<int>());
+
+            mediatorMock.Verify(m => m.SendAsync(It.Is<EditCampaignCommand>(s => s.Campaign == campaignSummaryViewModel)), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteCampaignImageReturnsJsonObjectWithStatusOfSuccessIfImageDeletedSuccessfully()
+        {
+            var mediatorMock = new Mock<IMediator>();
+
+            var campaignSummaryViewModel = new CampaignSummaryViewModel
+            {
+                OrganizationId = 1,
+                ImageUrl = "URL!"
+            };
+
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(campaignSummaryViewModel);
+
+            var imageServiceMock = new Mock<IImageService>();
+
+            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+            sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
+
+            var result = await sut.DeleteCampaignImage(It.IsAny<int>());
+
+            result.Value.GetType()
+                .GetProperty("status")
+                .GetValue(result.Value)
+                .ShouldBe("Success");
+        }
+
+        [Fact]
+        public async Task DeleteCampaignImageReturnsJsonObjectWithStatusOfNothingToDeleteIfThereWasNoExistingImage()
+        {
+            var mediatorMock = new Mock<IMediator>();
+
+            var campaignSummaryViewModel = new CampaignSummaryViewModel
+            {
+                OrganizationId = 1
+            };
+
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(campaignSummaryViewModel);
+
+            var imageServiceMock = new Mock<IImageService>();
+
+            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+            sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
+
+            var result = await sut.DeleteCampaignImage(It.IsAny<int>());
+
+            result.Value.GetType()
+                .GetProperty("status")
+                .GetValue(result.Value)
+                .ShouldBe("NothingToDelete");
         }
 
         [Fact]

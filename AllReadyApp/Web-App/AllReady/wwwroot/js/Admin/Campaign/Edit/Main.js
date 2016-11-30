@@ -8,4 +8,3 @@ SystemJS.import('EditModule').then(function (editModule) {
     editModule.addDeleteCampaignImageHandler();
     editModule.checkForMobileDeviceAndShowImageDeleteButton();
 });
-
