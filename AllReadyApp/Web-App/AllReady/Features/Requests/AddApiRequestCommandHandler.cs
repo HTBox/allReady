@@ -49,7 +49,6 @@ namespace AllReady.Features.Requests
             request.Longitude = message.ViewModel.Longitude == 0 ? address?.Coordinates.Longitude ?? 0 : message.ViewModel.Longitude;
 
             context.AddOrUpdate(request);
-
             await context.SaveChangesAsync();
 
             await mediator.PublishAsync(new ApiRequestAddedNotification { RequestId = request.RequestId });

@@ -40,7 +40,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new RequestApiController(mediator.Object);
             await sut.Post(new RequestApiViewModel { Status = "new", ProviderRequestId = providerRequestId });
 
-            mediator.Verify(x => x.Send(It.Is<RequestExistsByProviderIdQuery>(y => y.ProviderRequestId == providerRequestId)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<RequestExistsByProviderIdQuery>(y => y.ProviderRequestId == providerRequestId)), Times.Once);
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Controllers
             const string providerRequestId = "ProviderRequestId";
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<RequestExistsByProviderIdQuery>())).Returns(true);
+            mediator.Setup(x => x.SendAsync(It.IsAny<RequestExistsByProviderIdQuery>())).ReturnsAsync(true);
 
             var sut = new RequestApiController(mediator.Object);
             var result = await sut.Post(new RequestApiViewModel { Status = "new", ProviderRequestId = providerRequestId });
