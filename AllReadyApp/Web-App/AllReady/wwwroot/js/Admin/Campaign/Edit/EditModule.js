@@ -1,9 +1,9 @@
 ﻿/// <reference path="../../../../lib/jquery/dist/jquery.js" />
 "use strict";
 
-var editModule = (function () {
+define("EditModule", function () {
 
-    function deleteCampaignImageButtonClick() {
+    function deleteCampaignImageButtonClickEventHandler() {
 
         function deleteCampaignImageCallBack(e) {
             e.preventDefault();
@@ -21,20 +21,32 @@ var editModule = (function () {
                 data: { __RequestVerificationToken: antiForgeryToken, campaignId: campaignId },
                 dataType: "json",
                 success: function (response) {
-
+                    
                     if (response.status === "Success") {
-
                         $("#image-panel-container").slideUp(1000);
+                        handleAlertAppearanceAndDisAppearance("alert-success", "The image deleted successfully.", ".campaign-image-status-alert");
+                    }
 
-                        $(".image-delete-success-alert").slideDown(2000, function() {
-                            $(this).slideUp(3000);
-                        });
+                    if (response.status === "NotFound") {
+                        handleAlertAppearanceAndDisAppearance("alert-warning", "There wasn't any campaign to delete the image from.", ".campaign-image-status-alert");
+                    }
+
+                    if (response.status === "Unauthorized") {
+                        handleAlertAppearanceAndDisAppearance("alert-warning", "Insufficient authorization to proceed with this task.", ".campaign-image-status-alert");
+                    }
+
+                    if (response.status === "DateInvalid") {
+                        handleAlertAppearanceAndDisAppearance("alert-warning", response.message, ".campaign-image-status-alert");
+                    }
+
+                    if (response.status === "NothingToDelete") {
+                        handleAlertAppearanceAndDisAppearance("alert-warning", "The campaign doesn't have any image to delete.", ".campaign-image-status-alert");
                     }
 
                 },
                 error: function (xhr, status, error) {
                     //console.log(xhr.responseText);
-                    //alert("message : \n" + "An error occurred, for more info check the js console" + "\n status : \n" + status + " \n error : \n" + error);
+                    handleAlertAppearanceAndDisAppearance("alert-warning", "An error has occurred, operation was unsuccessful." + "\n status : \n" + status + " \n error : \n" + error, ".campaign-image-status-alert");
                 }
             });
 
@@ -43,8 +55,31 @@ var editModule = (function () {
         $("#delete-image").on("click", deleteCampaignImageCallBack);
     }
 
+    function checkForMobileDeviceAndShowImageDeleteButton() {
+        if (/Mobi/.test(navigator.userAgent)) {
+            $("#image-wrapper button").show();
+        }
+    }
+
+    function handleAlertAppearanceAndDisAppearance(alertClass, alertMessage, selector) {
+
+        var alertElemet = $(selector);
+
+        alertElemet.addClass(alertClass);
+        alertElemet.text(alertMessage);
+
+        alertElemet.slideDown(1000, function () {
+            setTimeout(function () {
+                alertElemet.slideUp(1000, function () {
+                    alertElemet.removeClass(alertClass);
+                });
+            }, 3000);
+        });
+    }
+
     return {
-        deleteCampaignImage: deleteCampaignImageButtonClick
+        addDeleteCampaignImageHandler: deleteCampaignImageButtonClickEventHandler,
+        checkForMobileDeviceAndShowImageDeleteButton: checkForMobileDeviceAndShowImageDeleteButton
     };
 
-})();
+});

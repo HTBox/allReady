@@ -21,29 +21,10 @@
 }
 
 @section styles{
-    <style>
-        #image-wrapper {
-            display: inline-block;
-            position: relative;
-        }
-
-            #image-wrapper button {
-                display: none;
-                position: absolute;
-                top: 0;
-                right: 0;
-            }
-
-            #image-wrapper:hover img {
-                opacity: 0.5;
-            }
-
-            #image-wrapper:hover button {
-                z-index: 999;
-                display: block;
-            }
-    </style>
-
+    @if (isEdit)
+    {
+        <link href="~/css/Admin/Campaign/Edit.css" rel="stylesheet" />
+    }
 }
 
 <div class="row">
@@ -87,7 +68,6 @@
         @if (isEdit)
         {
             <input type="hidden" asp-for="Id" />
-            @*<input type="hidden" asp-for="ImageUrl" />*@
         }
         <div class="form-group">
             <label asp-for="Name" class="col-md-2 control-label"></label>
@@ -176,16 +156,8 @@
             {
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-4">
-                        
-                        <div class="alert alert-success image-delete-success-alert" style="display:none;">
-                            The image deleted successfully.
-                        </div>
 
-                        <div class="alert alert-info image-delete-info-alert"  style="display:none;">
-                            There was not image to delete.
-                        </div>
-
-                        <div class="alert alert-warning image-delete-warning-alert"  style="display:none;">
+                        <div class="alert campaign-image-status-alert" style="display:none;">
                             
                         </div>
 
@@ -196,7 +168,7 @@
                             <div class="panel-body" id="image-panel-body">
                                 <div id="image-wrapper">
                                     <button class="btn btn-danger" id="delete-image">Delete Image</button>
-                                    <img src="@Model.ImageUrl" class="img-responsive center-block"/>
+                                    <img src="@Model.ImageUrl" class="img-responsive center-block" />
                                 </div>
                             </div>
                         </div>
@@ -340,6 +312,10 @@
 
 @section scripts {
     <script src="~/js/campaignadmin.js"></script>
-    <script src="~/js/Admin/Campaign/Edit/EditModule.js"></script>
-    <script src="~/js/Admin/Campaign/Edit/Main.js"></script>
+
+    @if (isEdit)
+    {
+        <script src="~/lib/system.js/dist/system.js"></script>
+        <script src="~/js/Admin/Campaign/Edit/Main.js"></script>
+    }
 }

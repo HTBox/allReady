@@ -1,0 +1,20 @@
+﻿#image-wrapper {
+    display: inline-block;
+    position: relative;
+}
+
+#image-wrapper button {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#image-wrapper:hover img {
+    opacity: 0.5;
+}
+
+#image-wrapper:hover button {
+    z-index: 999;
+    display: block;
+}

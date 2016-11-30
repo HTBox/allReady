@@ -172,11 +172,6 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> DeleteCampaignImage(int campaignId)
         {
-            if (campaignId == default(int))
-            {
-                return Json(new { status = "CampaignIdNotProvided" });
-            }
-
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
 
             if (campaign == null)
