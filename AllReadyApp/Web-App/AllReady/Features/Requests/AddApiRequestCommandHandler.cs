@@ -51,6 +51,13 @@ namespace AllReady.Features.Requests
             context.AddOrUpdate(request);
             await context.SaveChangesAsync();
 
+            //TODO mgmccarthy: instead of using mediator here, we should instead use Hangfire to Enqueue a job that would contain the code in ApiRequestAddedNotificationHandler
+            //this allows the thread to return back to RequestApiController immediately after we've successfully written the new Request to the database, hence, 
+            //finishing the RPC from getasmokealarm's request
+            //OR
+            //we instead using Hangfire from RequestApiController to immediately return a 202 to getasmokealarm, and asynchronously create the Request and keep using the mediator
+            //for the rest of the pipeline up until getasmokealarm's API invocation through Polly in SendRequestStatusToRedCrossEndpointHandler
+            //still need to decide whic his best
             await mediator.PublishAsync(new ApiRequestAddedNotification { RequestId = request.RequestId });
         }
     }
