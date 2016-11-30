@@ -475,7 +475,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var imageServiceMock = new Mock<IImageService>();
             var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
 
-            int campaignId = 2;
+            const int campaignId = 2;
 
             await sut.DeleteCampaignImage(campaignId);
 
