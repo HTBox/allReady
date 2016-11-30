@@ -26,10 +26,6 @@ namespace AllReady.Features.Requests
 
         protected override async Task HandleCore(SendRequestStatusToGetASmokeAlarmEndpoint message)
         {
-            //test serial numbers: 
-            //CHNI-16-00030
-            //CHNI-16-00031
-
             //TODO: move to config. This value will change between "demo" and live functionality
             const string baseAddress = "https://demo.getasmokealarm.org/";
             //TODO: move to user secrets. This token will change between "demo" and live functionality
