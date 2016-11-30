@@ -29,8 +29,6 @@ namespace AllReady.UnitTest.Features.Requests
                 Zip = "zip",
                 Phone = "phone",
                 Email = "email",
-                Latitude = 10,
-                Longitude = 10,
                 Status = "new",
                 ProviderData = "ProviderData"
             };
@@ -58,8 +56,6 @@ namespace AllReady.UnitTest.Features.Requests
             Assert.Equal(request.Zip, viewModel.Zip);
             Assert.Equal(request.Status, RequestStatus.Unassigned);
             Assert.Equal(request.Source, RequestSource.Api);
-            Assert.Equal(request.Latitude, viewModel.Latitude);
-            Assert.Equal(request.Longitude, viewModel.Longitude);
         }
 
         [Fact]

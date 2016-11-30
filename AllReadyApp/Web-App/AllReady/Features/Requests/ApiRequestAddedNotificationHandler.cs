@@ -28,6 +28,7 @@ namespace AllReady.Features.Requests
 
             //TODO: onece we have looked up the ability to service the request, send a command to invoke getasmokealarm's API using Polly
             await mediator.SendAsync(new SendRequestStatusToGetASmokeAlarmEndpoint { Serial = request.ProviderId, Acceptance = true, Status = "new" });
+            //await mediator.SendAsync(new SendRequestStatusToGetASmokeAlarmEndpoint { Serial = "CHNI-16-00030", Acceptance = true, Status = "new" });
         }
     }
 }

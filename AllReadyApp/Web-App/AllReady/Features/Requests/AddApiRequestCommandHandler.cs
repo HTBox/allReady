@@ -26,7 +26,6 @@ namespace AllReady.Features.Requests
 
         protected override async Task HandleCore(AddApiRequestCommand message)
         {
-            //TODO mgmccarthy: I can probably move the Request creation to the controller and put the entity on the command instead of the view model mapping code below
             var request = new Request
             {
                 RequestId = NewRequestId(),
@@ -45,8 +44,8 @@ namespace AllReady.Features.Requests
             };
 
             var address = geocoder.Geocode(message.ViewModel.Address, message.ViewModel.City, message.ViewModel.State, message.ViewModel.Zip, string.Empty).FirstOrDefault();
-            request.Latitude = message.ViewModel.Latitude == 0 ? address?.Coordinates.Latitude ?? 0 : message.ViewModel.Latitude;
-            request.Longitude = message.ViewModel.Longitude == 0 ? address?.Coordinates.Longitude ?? 0 : message.ViewModel.Longitude;
+            request.Latitude = address?.Coordinates.Latitude ?? 0;
+            request.Longitude = address?.Coordinates.Longitude ?? 0;
 
             context.AddOrUpdate(request);
             await context.SaveChangesAsync();

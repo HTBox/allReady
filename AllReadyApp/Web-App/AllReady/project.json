@@ -68,8 +68,7 @@
     "Hangfire.SqlServer": "1.6.7",
     "Hangfire.Autofac": "2.2.0",
     "AllReady.Core": "1.0.0-*",
-    "Polly": "4.3.0",
-    "Newtonsoft.Json": "9.0.1"
+    "Polly": "4.3.0"
   },
 
   "tools": {

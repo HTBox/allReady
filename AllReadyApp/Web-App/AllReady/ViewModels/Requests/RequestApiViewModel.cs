@@ -31,10 +31,6 @@ namespace AllReady.ViewModels.Requests
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string Email { get; set; }
 
-        //AllReady's Request-specific non-required fields
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
-
         //Red Cross specific fields
         [Required]
         public string Status { get; set; } //we only accept "new" request status from red cross
