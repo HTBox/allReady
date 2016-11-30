@@ -27,7 +27,7 @@ namespace AllReady.Features.Requests
             var request = await context.Requests.SingleAsync(x => x.RequestId == notification.RequestId);
 
             //TODO: onece we have looked up the ability to service the request, send a command to invoke getasmokealarm's API using Polly
-            await mediator.SendAsync(new SendRequestStatusToRedCrossEndpoint { SerialNumber = request.ProviderId, Acceptance = true, Status = "new" });
+            await mediator.SendAsync(new SendRequestStatusToGetASmokeAlarmEndpoint { Serial = request.ProviderId, Acceptance = true, Status = "new" });
         }
     }
 }

@@ -56,7 +56,7 @@ namespace AllReady.Features.Requests
             //finishing the RPC from getasmokealarm's request
             //OR
             //we instead using Hangfire from RequestApiController to immediately return a 202 to getasmokealarm, and asynchronously create the Request and keep using the mediator
-            //for the rest of the pipeline up until getasmokealarm's API invocation through Polly in SendRequestStatusToRedCrossEndpointHandler
+            //for the rest of the pipeline up until getasmokealarm's API invocation through Polly in SendRequestStatusToGetASmokeAlarmEndpointHandler
             //still need to decide whic his best
             await mediator.PublishAsync(new ApiRequestAddedNotification { RequestId = request.RequestId });
         }

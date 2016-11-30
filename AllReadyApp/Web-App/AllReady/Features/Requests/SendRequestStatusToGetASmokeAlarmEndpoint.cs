@@ -2,9 +2,9 @@
 
 namespace AllReady.Features.Requests
 {
-    public class SendRequestStatusToRedCrossEndpoint : IAsyncRequest
+    public class SendRequestStatusToGetASmokeAlarmEndpoint : IAsyncRequest
     {
-        public string SerialNumber { get; set; }
+        public string Serial { get; set; }
         public bool Acceptance { get; set; }
         public string Status { get; set; }
     }
