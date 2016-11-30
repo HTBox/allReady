@@ -12,6 +12,8 @@ namespace AllReady.Features.Requests
     //https://www.asp.net/web-api/overview/advanced/calling-a-web-api-from-a-net-client
     public class SendRequestStatusToGetASmokeAlarmEndpointHandler : AsyncRequestHandler<SendRequestStatusToGetASmokeAlarmEndpoint>
     {
+        //http://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/
+        private static readonly HttpClient HttpClient = new HttpClient();
         private readonly ILogger<SendRequestStatusToGetASmokeAlarmEndpointHandler> logger;
 
         public SendRequestStatusToGetASmokeAlarmEndpointHandler(ILogger<SendRequestStatusToGetASmokeAlarmEndpointHandler> logger)
@@ -39,12 +41,9 @@ namespace AllReady.Features.Requests
             {
                 var response = await retryPolicy.ExecuteAsync(async () =>
                 {
-                    using (var httpClient = new HttpClient())
-                    {
-                        httpClient.BaseAddress = new Uri(baseAddress);
-                        httpClient.DefaultRequestHeaders.Add("Authorization", token);
-                        return await httpClient.PostAsJsonAsync($"api/products/{message.Serial}", json);
-                    }
+                    HttpClient.BaseAddress = new Uri(baseAddress);
+                    HttpClient.DefaultRequestHeaders.Add("Authorization", token);
+                    return await HttpClient.PostAsJsonAsync($"api/products/{message.Serial}", json);
                 });
 
                 //Throw if not a success code. (this will throw HttpRequestException). HttpClient will not throw an exception on a non-200 http status code the way WebClient did
