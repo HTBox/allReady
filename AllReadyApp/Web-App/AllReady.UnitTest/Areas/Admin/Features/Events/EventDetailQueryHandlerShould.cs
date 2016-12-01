@@ -15,7 +15,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             var seattlePostalCode = "98117";
             var seattle = new Location
             {
-                Id = 1,
                 Address1 = "123 Main Street",
                 Address2 = "Unit 2",
                 City = "Seattle",
@@ -43,39 +42,36 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
 
             var queenAnne = new Event
             {
-                Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
                 Campaign = firePrev,
                 CampaignId = firePrev.Id,
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
-                Location = new Location { Id = 1 },
+                Location = seattle,
                 RequiredSkills = new List<EventSkill>(),
                 EventType = EventType.Itinerary
             };
 
             var rallyEvent = new Event
             {
-                Id = 2,
                 Name = "Queen Anne Fire Prevention Day Rally",
                 Campaign = firePrev,
                 CampaignId = firePrev.Id,
                 StartDateTime = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
-                Location = new Location { Id = 1 },
+                Location = seattle,
                 RequiredSkills = new List<EventSkill>(),
                 EventType = EventType.Rally
             };
 
             var task1 = new AllReadyTask
             {
-                Id = 1,
                 Event = rallyEvent,
                 Name = "Task1",
                 IsLimitVolunteers = false,
                 StartDateTime = new DateTime(2016, 7, 5, 10, 0, 0).ToUniversalTime(),
                 EndDateTime = new DateTime(2016, 7, 5, 15, 0, 0).ToUniversalTime()
-            };         
+            };
 
             var request1 = new Request
             {
@@ -108,36 +104,32 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             {
                 Date = new DateTime(2015, 07, 5),
                 Name = "Itinerary1",
-                Id = 1,
-                Event = queenAnne,
-                EventId = 1
+                Event = queenAnne
             };
 
             var itinerary2 = new Itinerary
             {
                 Date = new DateTime(2016, 08, 01),
                 Name = "Itinerary2",
-                Id = 2,
-                Event = queenAnne,
-                EventId = 1
+                Event = queenAnne
             };
 
             var itineraryReq1 = new ItineraryRequest
             {
                 RequestId = request1.RequestId,
-                ItineraryId = 1
+                Itinerary = itinerary1
             };
 
             var itineraryReq2 = new ItineraryRequest
             {
                 RequestId = request2.RequestId,
-                ItineraryId = 1
+                Itinerary = itinerary1
             };
 
             var itineraryReq3 = new ItineraryRequest
             {
                 RequestId = request3.RequestId,
-                ItineraryId = 2
+                Itinerary = itinerary2
             };
 
             var user1 = new ApplicationUser
@@ -148,15 +140,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
 
             var taskSignup = new TaskSignup
             {
-                ItineraryId = 1,
                 Itinerary = itinerary1,
                 Task = task1,
             };
-
+            Context.Locations.Add(seattle);
             Context.Requests.AddRange(request1, request2, request3);
             Context.Itineraries.AddRange(itinerary1, itinerary2);
             Context.ItineraryRequests.AddRange(itineraryReq1, itineraryReq2, itineraryReq3);
-            Context.Locations.Add(seattle);
             Context.Organizations.Add(htb);
             Context.Events.Add(queenAnne);
             Context.Events.Add(rallyEvent);
@@ -167,7 +157,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Context.SaveChanges();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task EventExists()
         {
             var query = new EventDetailQuery { EventId = 1 };
@@ -176,7 +166,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.NotNull(result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task EventDoesNotExist()
         {
             var query = new EventDetailQuery();
@@ -185,7 +175,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Null(result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task EventIncludesAllLocationInformation()
         {
             var query = new EventDetailQuery { EventId = 1 };
@@ -203,7 +193,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.NotNull(result.Location?.Country);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ItineraryEventIncludesCorrectItineraryDetails()
         {
             var query = new EventDetailQuery { EventId = 1 };
