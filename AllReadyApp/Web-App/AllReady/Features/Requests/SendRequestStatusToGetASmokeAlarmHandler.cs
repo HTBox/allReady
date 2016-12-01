@@ -8,7 +8,7 @@ using Polly;
 
 namespace AllReady.Features.Requests
 {
-    public class SendRequestStatusToGetASmokeAlarmEndpointHandler : AsyncRequestHandler<SendRequestStatusToGetASmokeAlarmEndpoint>
+    public class SendRequestStatusToGetASmokeAlarmHandler : AsyncRequestHandler<SendRequestStatusToGetASmokeAlarm>
     {
         //http://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/ BUT,
         //setting HttpClient to singleton/static instance is NOT a true fix. Other work needs to be done in order for a static HttpClient to honor DNS changes
@@ -17,14 +17,14 @@ namespace AllReady.Features.Requests
         //http://byterot.blogspot.co.uk/2016/07/singleton-httpclient-dns.html
         //private static readonly HttpClient HttpClient = new HttpClient();
 
-        private readonly ILogger<SendRequestStatusToGetASmokeAlarmEndpointHandler> logger;
+        private readonly ILogger<SendRequestStatusToGetASmokeAlarmHandler> logger;
 
-        public SendRequestStatusToGetASmokeAlarmEndpointHandler(ILogger<SendRequestStatusToGetASmokeAlarmEndpointHandler> logger)
+        public SendRequestStatusToGetASmokeAlarmHandler(ILogger<SendRequestStatusToGetASmokeAlarmHandler> logger)
         {
             this.logger = logger;
         }
 
-        protected override async Task HandleCore(SendRequestStatusToGetASmokeAlarmEndpoint message)
+        protected override async Task HandleCore(SendRequestStatusToGetASmokeAlarm message)
         {
             //TODO: move to config. This value will change between "demo" and live functionality
             const string baseAddress = "https://demo.getasmokealarm.org/";

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Features.Requests
 {
-    public class AddApiRequestCommand : IAsyncRequest
+    public class ProcessApiRequestCommand : IAsyncRequest
     {
         public RequestApiViewModel ViewModel { get; set; }
     }

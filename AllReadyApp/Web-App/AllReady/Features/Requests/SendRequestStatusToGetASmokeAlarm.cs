@@ -2,7 +2,7 @@
 
 namespace AllReady.Features.Requests
 {
-    public class SendRequestStatusToGetASmokeAlarmEndpoint : IAsyncRequest
+    public class SendRequestStatusToGetASmokeAlarm : IAsyncRequest
     {
         public string Serial { get; set; }
         public bool Acceptance { get; set; }
