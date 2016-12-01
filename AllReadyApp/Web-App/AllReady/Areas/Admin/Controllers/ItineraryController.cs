@@ -15,6 +15,8 @@ using AllReady.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AllReady.Services.Routing;
+using System.Text;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -357,6 +359,23 @@ namespace AllReady.Areas.Admin.Controllers
             await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Assigned });
 
             return RedirectToAction("Details", new { id = itineraryId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]")]
+        public async Task<IActionResult> OptimizeRoute(int itineraryId, OptimizeRouteInputModel model)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _mediator.SendAsync(new OptimizeRouteCommand { ItineraryId = itineraryId });
+            
+            return RedirectToAction("Details", new { id = itineraryId, startAddress = model.StartAddress, endAddress = model.EndAddress });
         }
 
         private async Task<SelectItineraryRequestsViewModel> BuildSelectItineraryRequestsModel(int itineraryId, RequestSearchCriteria criteria)

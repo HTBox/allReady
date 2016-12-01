@@ -41,4 +41,9 @@
         public string OAuthToken { get; set; }
         public string OAuthSecret { get; set; }
     }
+
+    public class MappingSettings
+    {
+        public string GoogleDirectionsApiKey { get; set; }
+    }
 }

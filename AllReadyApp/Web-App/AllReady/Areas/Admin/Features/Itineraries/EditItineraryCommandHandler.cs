@@ -23,7 +23,11 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
                 itinerary.Name = message.Itinerary.Name;
                 itinerary.Date = message.Itinerary.Date;
-                itinerary.EventId = message.Itinerary.EventId;
+
+                if (itinerary.EventId == 0)
+                {
+                    itinerary.EventId = message.Itinerary.EventId;
+                }
 
                 if (!string.IsNullOrWhiteSpace(message.Itinerary.StartAddress1))
                 {
