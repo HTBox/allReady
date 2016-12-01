@@ -101,6 +101,7 @@ namespace AllReady
             services.Configure<EmailSettings>(Configuration.GetSection("Email"));
             services.Configure<SampleDataSettings>(Configuration.GetSection("SampleData"));
             services.Configure<GeneralSettings>(Configuration.GetSection("General"));
+            services.Configure<GetASmokeAlarmApiSettings>(Configuration.GetSection("GetASmokeAlarmApiSettings"));
             services.Configure<TwitterAuthenticationSettings>(Configuration.GetSection("Authentication:Twitter"));
             services.Configure<MappingSettings>(Configuration.GetSection("Mapping"));
 

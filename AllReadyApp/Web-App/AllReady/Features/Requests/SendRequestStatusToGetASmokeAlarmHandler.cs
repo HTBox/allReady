@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Polly;
 
 namespace AllReady.Features.Requests
@@ -18,28 +19,27 @@ namespace AllReady.Features.Requests
         //private static readonly HttpClient HttpClient = new HttpClient();
 
         private readonly ILogger<SendRequestStatusToGetASmokeAlarmHandler> logger;
+        private readonly IOptions<GetASmokeAlarmApiSettings> getASmokeAlarmApiSettings;
 
-        public SendRequestStatusToGetASmokeAlarmHandler(ILogger<SendRequestStatusToGetASmokeAlarmHandler> logger)
+        public SendRequestStatusToGetASmokeAlarmHandler(ILogger<SendRequestStatusToGetASmokeAlarmHandler> logger, IOptions<GetASmokeAlarmApiSettings> getASmokeAlarmApiSettings)
         {
             this.logger = logger;
+            this.getASmokeAlarmApiSettings = getASmokeAlarmApiSettings;
         }
 
         protected override async Task HandleCore(SendRequestStatusToGetASmokeAlarm message)
         {
-            //TODO: move to config. This value will change between "demo" and live functionality
-            const string baseAddress = "https://demo.getasmokealarm.org/";
-            //TODO: move to user secrets. This token will change between "demo" and live functionality
-            const string token = "Oht2Fug2";
-            //TODO: move to config. This we can change the number of retries per environment
-            const int retry = 5;
+            var baseAddress = getASmokeAlarmApiSettings.Value.BaseAddress;
+            var token = getASmokeAlarmApiSettings.Value.Token;
+            var retryAttempts = getASmokeAlarmApiSettings.Value.RetryAttempts;
 
             var updateRequestMessage = new { message.Acceptance, message.Status };
 
             var retryPolicy = Policy
                 .Handle<HttpRequestException>()
-                .WaitAndRetryAsync(retry, retryCount => TimeSpan.FromSeconds(retryCount * retryCount), onRetry: (exception, timeSpan, retryCount) =>
+                .WaitAndRetryAsync(retryAttempts, retryCount => TimeSpan.FromSeconds(retryCount * retryCount), onRetry: (exception, timeSpan, retryCount) =>
                 {
-                    logger.LogWarning($"Call to getasmokealarm's {baseAddress} failed for serial {message.Serial} : Retry {retryCount} out of {retry} retries : TimeSpan {timeSpan} : Ex {exception.Message}");
+                    logger.LogWarning($"Call to getasmokealarm's {baseAddress} failed for serial {message.Serial} : Retry {retryCount} out of {retryAttempts} retries : TimeSpan {timeSpan} : Ex {exception.Message}");
                 });
 
             try

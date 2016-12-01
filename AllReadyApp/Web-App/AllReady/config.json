@@ -17,6 +17,11 @@
     "SiteBaseUrl": "http://localhost:48408/",
     "DefaultTimeZone": "Central Standard Time"
   },
+  "GetASmokeAlarmApiSettings": {
+    "BaseAddress": "https://demo.getasmokealarm.org/",
+    "Token": "[getasmokealarmapisettingstoken]",
+    "RetryAttempts": 5
+  },
   "ApplicationInsights": {
     "InstrumentationKey": "[instrumentationkey]"
   },
