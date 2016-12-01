@@ -14,7 +14,7 @@ namespace AllReady.UnitTest.Features.Requests
     public class ProcessApiRequestCommandHandlerShould : InMemoryContextTest
     {
         [Fact]
-        public async Task NotAddRequestWhenMatchingEventIsNotFound()
+        public async Task AddRequest()
         {
             var requestId = Guid.NewGuid();
             var dateAdded = DateTime.UtcNow;
@@ -35,45 +35,6 @@ namespace AllReady.UnitTest.Features.Requests
             };
 
             var message = new ProcessApiRequestCommand { ViewModel = viewModel };
-
-            var sut = new ProcessApiRequestCommandHandler(Context, Mock.Of<IGeocoder>(), Mock.Of<IMediator>())
-            {
-                NewRequestId = () => requestId,
-                DateTimeUtcNow = () => dateAdded
-            };
-            await sut.Handle(message);
-
-            Assert.False(Context.Requests.Any(x => x.RequestId == requestId));
-        }
-
-        [Fact]
-        public async Task AddRequestWhenMatchingEventIsFound()
-        {
-            var requestId = Guid.NewGuid();
-            var dateAdded = DateTime.UtcNow;
-            const string postalCode = "11111";
-
-            var viewModel = new RequestApiViewModel
-            {
-                ProviderRequestId = "ProviderRequestId",
-                Status = "new",
-                Name = "Name",
-                Address = "Address",
-                City = "City",
-                State = "state",
-                Zip = postalCode,
-                Phone = "111-111-1111",
-                Email = "email@email.com",
-                ProviderData = "ProviderData"
-            };
-
-            var message = new ProcessApiRequestCommand { ViewModel = viewModel };
-            var location = new Models.Location { Id = 1, PostalCode = postalCode };
-            var @event = new Models.Event { Location = location };
-
-            Context.Locations.Add(location);
-            Context.Events.Add(@event);
-            Context.SaveChanges();
 
             var sut = new ProcessApiRequestCommandHandler(Context, Mock.Of<IGeocoder>(), Mock.Of<IMediator>())
             {
@@ -96,7 +57,6 @@ namespace AllReady.UnitTest.Features.Requests
             Assert.Equal(request.Zip, viewModel.Zip);
             Assert.Equal(request.Status, RequestStatus.Unassigned);
             Assert.Equal(request.Source, RequestSource.Api);
-            Assert.Equal(request.EventId, @event.Id);
         }
 
         [Fact]
