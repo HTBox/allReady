@@ -33,67 +33,54 @@
             </h3>
         </div>
     </div>
-    @if (Model.HasPotentialTeamMembers)
-    {
-        <div class="row">
-            <div class="col-md-12">
-                <form data-bind="submit: submitForm">
-                    <input type="hidden" asp-for="Id" />
-                    Add team member:
-                    <select asp-items="Model.PotentialTeamMembers" required  data-bind='value: SelectedTeamMember'></select>
-                    <button type="submit" class="btn btn-default submit-form" data-bind="enable: isValid() && !isSubmitting(), click: submitForm">Add</button>
-                    <i class="fa fa-spinner fa-spin" data-bind="visible: isSubmitting"></i>
-                </form>
-            </div>
+    <div class="row" style="display: none;" data-bind="visible: hasPotentialTeamMembers">
+        <div class="col-md-12">
+            <form data-bind="submit: submitForm">
+                <input type="hidden" asp-for="Id" />
+                Add team member:
+                <select required  data-bind="value: SelectedTeamMember, options: potentialTeamMembers, optionsText: 'Text', optionsValue: 'Value'"></select>
+                <button type="submit" class="btn btn-default submit-form" disabled="disabled" data-bind="enable: isValid() && !isSubmitting(), click: submitForm">Add</button>
+                <i class="fa fa-spinner fa-spin" style="display: none;" data-bind="visible: isSubmitting"></i>
+            </form>
         </div>
-    }
-    else
-    {
-        <p>There are no potential team members to add to this itinerary. There must be volunteers (for a task occuring on the same day as the itinerary) for them to be available to assign to this team.</p>
-    }
-
+    </div>
+    <p style="display: none;" data-bind="visible: !hasPotentialTeamMembers()">There are no potential team members to add to this itinerary. There must be volunteers (for a task occuring on the same day as the itinerary) for them to be available to assign to this team.</p>
     <div class="row">
         <div class="col-md-8">
             <h4>Assigned Team Members</h4>
-            @if (Model.TeamMembers.Any())
-            {
-                <table class="table">
-                    <tr>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Email
-                        </th>
-                        <th>
-                            Assigned Task
-                        </th>
-                        <th></th>
-                    </tr>
-                    @foreach (var teamMember in Model.TeamMembers)
-                    {
-                        <tr>
-                            <td>
-                                <p>@teamMember.DisplayName</p>
-                            </td>
-                            <td>
-                                <p>@teamMember.VolunteerEmail</p>
-                            </td>
-                            <td>
-                                <p>@teamMember.TaskName</p>
-                            </td>
-                            <td>
-                                <a data-toggle="tooltip" data-placement="top" title="Remove from team" asp-action="ConfirmRemoveTeamMember" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-taskSignupId="@teamMember.TaskSignupId" class="btn btn-danger"><span class="fa fa-remove"></span></a>
-                            </td>
-                        </tr>
-                    }
-                </table>
-
-            }
-            else
-            {
-                <p>There are currently no assigned team members for this itinerary.</p>
-            }
+            <table class="table" style="display: none;" data-bind="visible: hasTeamMembers">
+                <thead>
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Email
+                    </th>
+                    <th>
+                        Assigned Task
+                    </th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody data-bind="foreach: teamMembers">
+                <tr>
+                    <td>
+                        <p data-bind="text: DisplayName"></p>
+                    </td>
+                    <td>
+                        <p data-bind="text: VolunteerEmail"></p>
+                    </td>
+                    <td>
+                        <p data-bind="text: TaskName"></p>
+                    </td>
+                    <td>
+                        <a data-toggle="tooltip" data-placement="top" title="Remove from team" class="btn btn-danger" data-bind="attr: { href: '/Admin/Itinerary/' + $parent.itineraryId + '/ConfirmRemoveTeamMember/' + TaskSignupId }"><span class="fa fa-remove"></span></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <p style="display: none;" data-bind="visible: !hasTeamMembers()">There are currently no assigned team members for this itinerary.</p>
         </div>
     </div>
 </div>
@@ -206,8 +193,7 @@
         {
             itineraryId = Model.Id,
             assignedTeamMembers = Model.TeamMembers,
-            isSignedIn = User.Identity.IsAuthenticated,
-            loginUrl = "/Account/Login?ReturnUrl=/Admin/Itinerary/Details/" + Model.Id
+            potentialTeamMembers = Model.PotentialTeamMembers
         });
 </script>
     <script type="text/javascript" src="~/js/itineraryDetail.js"></script>

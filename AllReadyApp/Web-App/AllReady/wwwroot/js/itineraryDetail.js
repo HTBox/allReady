@@ -1,10 +1,18 @@
 ﻿(function (ko, $, modelData) {
 
-    function TeamViewModel(assignedTeamMembers) {
+    function TeamViewModel(itineraryId, assignedTeamMembers, potentialTeamMembers) {
         var self = this;
 
+        self.itineraryId = itineraryId;
         self.validationErrors = ko.observableArray([]);
         self.teamMembers = ko.observableArray(assignedTeamMembers);
+        self.hasTeamMembers = ko.computed(function() {
+            return self.teamMembers().length > 0;
+        });
+        self.potentialTeamMembers = ko.observableArray(potentialTeamMembers);
+        self.hasPotentialTeamMembers = ko.computed(function() {
+            return self.potentialTeamMembers().filter(x => x.Value !== "").length > 0;
+        });
 
         self.SelectedTeamMember = ko.observable().isRequired();
 
@@ -48,7 +56,7 @@
         }
     }
 
-    var teamViewModel = new TeamViewModel(modelData.assignedTeamMembers);
+    var teamViewModel = new TeamViewModel(modelData.itineraryId, modelData.assignedTeamMembers, modelData.potentialTeamMembers);
     ko.applyBindings(teamViewModel, document.getElementById("TeamView"));
 
 })(ko, jQuery, modelData);
