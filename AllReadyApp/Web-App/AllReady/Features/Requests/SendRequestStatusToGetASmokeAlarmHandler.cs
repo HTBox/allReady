@@ -53,8 +53,6 @@ namespace AllReady.Features.Requests
                         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         httpClient.DefaultRequestHeaders.Add("Authorization", token);
 
-                        //https://www.asp.net/web-api/overview/advanced/calling-a-web-api-from-a-net-client
-                        //"the PostAsJsonAsync method serializes an object to JSON and then sends the JSON payload in a POST request."
                         return await httpClient.PostAsJsonAsync($"admin/requests/status/{message.Serial}", updateRequestMessage);
                     }
                 });
