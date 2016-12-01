@@ -1,4 +1,6 @@
-﻿using AllReady.Models;
+﻿using System;
+using System.Collections.Generic;
+using AllReady.Models;
 using AllReady.Services.Routing;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +9,9 @@ using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Itineraries
 {
+    /// <summary>
+    /// Handler for <see cref="OptimizeRouteCommand"/>s
+    /// </summary>
     public class OptimizeRouteCommandHandler : AsyncRequestHandler<OptimizeRouteCommand>
     {
         private readonly AllReadyContext _context;
@@ -18,6 +23,10 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             _optimizeRouteService = optimizeRouteService;
         }
 
+        /// <summary>
+        /// Will try to reorder requests based on an optimized route from a 3rd party service. The new order will be persisted to the database
+        /// </summary>
+        /// <param name="message"></param>
         protected override async Task HandleCore(OptimizeRouteCommand message)
         {
             var requests = await _context.ItineraryRequests
@@ -27,7 +36,9 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 .Where(rec => rec.ItineraryId == message.ItineraryId)
                 .ToListAsync();
 
-            var itinerary = requests.FirstOrDefault()?.Itinerary;
+            if (!requests.Any()) return;
+
+            var itinerary = requests.First().Itinerary;
 
             if (!string.IsNullOrWhiteSpace(itinerary?.StartLocation?.FullAddress))
             {
@@ -43,11 +54,9 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 {
                     var waypoints = requests.Select(req => new OptimizeRouteWaypoint(req.Request.Longitude, req.Request.Latitude, req.RequestId)).ToList();
 
-                    if (!waypoints.Any()) return;
-
                     var optimizeResult = await _optimizeRouteService.OptimizeRoute(new OptimizeRouteCriteria(startAddress, endAddress, waypoints));
 
-                    if (optimizeResult != null && optimizeResult.RequestIds.Count == waypoints.Count)
+                    if (optimizeResult?.RequestIds != null && optimizeResult.RequestIds.Count == waypoints.Count && ValidateOptimizedRequests(waypoints, optimizeResult.RequestIds))
                     {
                         for (var i = 0; i < waypoints.Count; i++)
                         {
@@ -63,6 +72,17 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     }
                 }
             }            
+        }
+
+        /// <summary>
+        /// Validated that the request ids in both lists are the same (ignores order)
+        /// </summary>
+        /// <param name="waypoints"></param>
+        /// <param name="optimizedRequestIds"></param>
+        /// <returns></returns>
+        private static bool ValidateOptimizedRequests(IEnumerable<OptimizeRouteWaypoint> waypoints, IEnumerable<Guid> optimizedRequestIds)
+        {
+            return waypoints.Select(x => x.RequestId).Except(optimizedRequestIds).ToList().Count == 0;
         }
     }
 }
