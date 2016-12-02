@@ -104,6 +104,27 @@
         <a asp-action="SelectRequests" asp-controller="Itinerary" asp-area="Admin" class="btn btn-default">Add Requests</a>
     </div>
 </div>
+@if (Model.CanOptimizeAndDisplayRoute)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <p>
+                <br />
+                @if (Model.UseStartAddressAsEndAddress)
+                {
+                    <text>The itinerary starts and ends at @Model.StartAddress</text>
+                }
+                else
+                {
+                    <text>The itinerary starts at @Model.StartAddress and ends at @Model.EndAddress</text>
+                }
+            </p>
+            <p>
+                <a href="#" data-toggle="modal" data-target="#optimizeRouteModal">Optimize Route</a> | <a href="@Model.BingMapUrl" target="_blank" title="View driving route in Bing Maps (opens in a new window)">View Directions</a>
+            </p>
+        </div>
+    </div>
+}
 <div class="row">
     <div class="col-md-12">
         @if (Model.Requests.Any())
@@ -166,6 +187,40 @@
 </div>
 
 <div id="myMap" style="position:relative;width:100%;height:500px;"></div>
+
+<!-- Optimize Route Modal -->
+<div class="modal fade" id="optimizeRouteModal" tabindex="-1" role="dialog" aria-labelledby="optimizeRouteLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="optimizeRouteLabel">Optimize Route</h4>
+                <p>
+                    The requests will be re-ordered for the most optimal driving route using the itinerary's start/end address information.
+                </p>
+                <p>
+                    @if (Model.UseStartAddressAsEndAddress)
+                    {
+                        <text><strong>Start/End Address</strong>: @Model.StartAddress</text>
+                    }
+                    else
+                    {
+                        <text><strong>Start Address</strong>: @Model.StartAddress
+                        <br />
+                        <strong>End Address</strong>: @Model.EndAddress</text>
+                    }
+                </p>
+            </div>
+            <form asp-area="Admin" asp-controller="Itinerary" asp-action="OptimizeRoute" asp-route-itineraryId="@Model.Id" method="post">
+                <input asp-for="Id" type="hidden" />
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" id="optimizeRoute" class="btn btn-primary">Optimize</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @section scripts {
     <script type='text/javascript'
