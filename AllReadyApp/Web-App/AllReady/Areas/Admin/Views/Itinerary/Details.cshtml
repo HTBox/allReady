@@ -33,12 +33,19 @@
             </h3>
         </div>
     </div>
+    <div class="row" data-bind="visible: hasValidationErrors">
+        <div class="col-md-12">
+            <ul class="list-unstyled form-control-static" data-bind="foreach: validationErrors">
+                <li class="text-danger" data-bind="text: $data"></li>
+            </ul>
+        </div>
+    </div>
     <div class="row" style="display: none;" data-bind="visible: hasPotentialTeamMembers">
         <div class="col-md-12">
             <form data-bind="submit: submitForm">
                 <input type="hidden" asp-for="Id" />
                 Add team member:
-                <select required  data-bind="value: SelectedTeamMember, options: potentialTeamMembers, optionsText: 'Text', optionsValue: 'Value'"></select>
+                <select required  data-bind="value: selectedTeamMember, options: potentialTeamMembers, optionsText: 'Text', optionsValue: 'Value'"></select>
                 <button type="submit" class="btn btn-default submit-form" disabled="disabled" data-bind="enable: isValid() && !isSubmitting(), click: submitForm">Add</button>
                 <i class="fa fa-spinner fa-spin" style="display: none;" data-bind="visible: isSubmitting"></i>
             </form>
@@ -190,11 +197,11 @@
         }
 
         var modelData = @Json.Serialize(new
-        {
-            itineraryId = Model.Id,
-            assignedTeamMembers = Model.TeamMembers,
-            potentialTeamMembers = Model.PotentialTeamMembers
-        });
-</script>
+                        {
+                            itineraryId = Model.Id,
+                            assignedTeamMembers = Model.TeamMembers,
+                            potentialTeamMembers = Model.PotentialTeamMembers
+                        });
+    </script>
     <script type="text/javascript" src="~/js/itineraryDetail.js"></script>
 }

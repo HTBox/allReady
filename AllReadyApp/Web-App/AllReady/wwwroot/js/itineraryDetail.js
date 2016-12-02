@@ -5,16 +5,19 @@
 
         self.itineraryId = itineraryId;
         self.validationErrors = ko.observableArray([]);
+        self.hasValidationErrors = ko.computed(function() {
+            return self.validationErrors().length > 0;
+        });
         self.teamMembers = ko.observableArray(assignedTeamMembers);
         self.hasTeamMembers = ko.computed(function() {
             return self.teamMembers().length > 0;
         });
         self.potentialTeamMembers = ko.observableArray(potentialTeamMembers);
         self.hasPotentialTeamMembers = ko.computed(function() {
-            return self.potentialTeamMembers().filter(x => x.Value !== "").length > 0;
+            return self.potentialTeamMembers().filter(function(x) { return x.Value !== ""; }).length > 0;
         });
 
-        self.SelectedTeamMember = ko.observable().isRequired();
+        self.selectedTeamMember = ko.observable().isRequired();
 
         self.isValid = ko.computed(function () {
             var allValidatablesAreValid = true;
@@ -33,7 +36,7 @@
             self.isSubmitting(true);
             var dataToSend = {
                 id: modelData.itineraryId,
-                selectedTeamMember: self.SelectedTeamMember()
+                selectedTeamMember: self.selectedTeamMember()
             };
             self.validationErrors([]);
             dataToSend.__RequestVerificationToken = $('input[name=__RequestVerificationToken]').val();
@@ -44,12 +47,14 @@
                 contentType: "application/x-www-form-urlencoded"
             }).done(function(result) {
                 if (result.isSuccess) {
-                    // TODO: respond
+                    self.selectedTeamMember("");
+                    self.teamMembers(result.teamMembers);
+                    self.potentialTeamMembers(result.potentialTeamMembers);
                 } else {
                     self.validationErrors(result.errors);
                 }
-            }).fail(function(fail) {
-                console.log(fail);
+            }).fail(function(xhr) {
+                console.log(xhr);
             }).always(function() {
                 self.isSubmitting(false);
             });
