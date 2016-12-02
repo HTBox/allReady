@@ -30,7 +30,7 @@ namespace AllReady.Features.Requests
             var request = new Request
             {
                 RequestId = NewRequestId(),
-                ProviderId = message.ViewModel.ProviderRequestId,
+                ProviderRequestId = message.ViewModel.ProviderRequestId,
                 ProviderData = message.ViewModel.ProviderData,
                 Address = message.ViewModel.Address,
                 City = message.ViewModel.City,
