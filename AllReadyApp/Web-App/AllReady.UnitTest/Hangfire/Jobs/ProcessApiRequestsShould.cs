@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
 using AllReady.Features.Requests;
+using AllReady.Hangfire.Jobs;
 using AllReady.Models;
 using AllReady.ViewModels.Requests;
 using Geocoding;
@@ -9,12 +9,12 @@ using MediatR;
 using Moq;
 using Xunit;
 
-namespace AllReady.UnitTest.Features.Requests
+namespace AllReady.UnitTest.Hangfire.Jobs
 {
-    public class ProcessApiRequestCommandHandlerShould : InMemoryContextTest
+    public class ProcessApiRequestsShould : InMemoryContextTest
     {
         [Fact]
-        public async Task AddRequest()
+        public void AddRequest()
         {
             var requestId = Guid.NewGuid();
             var dateAdded = DateTime.UtcNow;
@@ -34,19 +34,17 @@ namespace AllReady.UnitTest.Features.Requests
                 ProviderData = "ProviderData"
             };
 
-            var message = new ProcessApiRequestCommand { ViewModel = viewModel };
-
-            var sut = new ProcessApiRequestCommandHandler(Context, Mock.Of<IGeocoder>(), Mock.Of<IMediator>())
+            var sut = new ProcessApiRequests(Context, Mock.Of<IMediator>(), Mock.Of<IGeocoder>())
             {
                 NewRequestId = () => requestId,
                 DateTimeUtcNow = () => dateAdded
             };
-            await sut.Handle(message);
+            sut.Process(viewModel);
 
             var request = Context.Requests.Single(x => x.RequestId == requestId);
 
             Assert.Equal(request.RequestId, requestId);
-            Assert.Equal(request.ProviderId, viewModel.ProviderRequestId);
+            Assert.Equal(request.ProviderRequestId, viewModel.ProviderRequestId);
             Assert.Equal(request.ProviderData, viewModel.ProviderData);
             Assert.Equal(request.Address, viewModel.Address);
             Assert.Equal(request.City, viewModel.City);
@@ -60,22 +58,22 @@ namespace AllReady.UnitTest.Features.Requests
         }
 
         [Fact]
-        public async Task PublishApiRequestAddedNotificationWithTheCorrectProviderRequestId()
+        public void PublishApiRequestAddedNotificationWithTheCorrectProviderRequestId()
         {
             const string providerRequestId = "ProviderRequestId";
             var requestId = Guid.NewGuid();
-            var message = new ProcessApiRequestCommand { ViewModel = new RequestApiViewModel { ProviderRequestId = providerRequestId }};
+            var viewModel = new RequestApiViewModel { ProviderRequestId = providerRequestId };
 
             var mediator = new Mock<IMediator>();
 
-            var sut = new ProcessApiRequestCommandHandler(Context, Mock.Of<IGeocoder>(), mediator.Object)
+            var sut = new ProcessApiRequests(Context, mediator.Object, Mock.Of<IGeocoder>())
             {
-                NewRequestId = () => requestId,
+                NewRequestId = () => requestId
             };
 
-            await sut.Handle(message);
+            sut.Process(viewModel);
 
-            mediator.Verify(x => x.PublishAsync(It.Is<ApiRequestProcessedNotification>(y  => y.ProviderRequestId == providerRequestId)), Times.Once);
+            mediator.Verify(x => x.Publish(It.Is<ApiRequestProcessedNotification>(y => y.ProviderRequestId == providerRequestId)), Times.Once);
         }
     }
 }

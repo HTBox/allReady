@@ -1,36 +1,30 @@
-﻿using System.Threading.Tasks;
-using AllReady.Models;
+﻿using AllReady.Models;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using AllReady.Hangfire.Jobs;
+using Hangfire;
 
 namespace AllReady.Features.Requests
 {
-    public class ApiRequestProcessedNotificationHandler : IAsyncNotificationHandler<ApiRequestProcessedNotification>
+    //TODO: the behavior of this entire class is "todo". Waiting for feedback from GASA folks
+    public class ApiRequestProcessedNotificationHandler : INotificationHandler<ApiRequestProcessedNotification>
     {
         private readonly AllReadyContext context;
-        private readonly IMediator mediator;
+        private readonly IBackgroundJobClient backgroundJobClient;
 
-        public ApiRequestProcessedNotificationHandler(AllReadyContext context, IMediator mediator)
+        public ApiRequestProcessedNotificationHandler(AllReadyContext context, IBackgroundJobClient backgroundJobClient)
         {
             this.context = context;
-            this.mediator = mediator;
+            this.backgroundJobClient = backgroundJobClient;
         }
 
-        public async Task Handle(ApiRequestProcessedNotification notification)
+        public void Handle(ApiRequestProcessedNotification notification)
         {
-            //UPDATE: this code is now up in the air b/c we're deciding how to associate incoming API Requetss into AllReady that do not involve picking an Event with a matching zip code.
-            //for now, all SendRequestStatusToGetASmokeAlarm message sent will have a value of true on them, whic means we can service the request.
-            //still waiting for feedback on whether we we'll service every Request or service none of the requests, and only change that to true when an Requst is associated with an Event in a 
-            //new UI we're talking about building
-            var request = await context.Requests.SingleOrDefaultAsync(x => x.ProviderId == notification.ProviderRequestId);
+            var request = context.Requests.SingleOrDefault(x => x.ProviderRequestId == notification.ProviderRequestId);
 
-            await mediator.SendAsync(new SendRequestStatusToGetASmokeAlarm
-            {
-                Serial = notification.ProviderRequestId,
-                Status = "new",
-                //true if we've decided to service the Request or false if we've decided we can't service it
-                Acceptance = request != null
-            });
+            //acceptance is true if we can service the Request or false if can't service it
+            //TODO mgmccarthy:for now, until we can decide which acceptance status to send GASA when we creat an API Request and asisgn it an orgId, we'll send false for everything
+            backgroundJobClient.Enqueue<ISendRequestStatusToGetASmokeAlarm>(x => x.Send(notification.ProviderRequestId, "new", false));
         }
     }
 }

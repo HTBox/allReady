@@ -67,9 +67,7 @@
     "Hangfire.Core": "1.6.7",
     "Hangfire.SqlServer": "1.6.7",
     "Hangfire.Autofac": "2.2.0",
-    "AllReady.Core": "1.0.0-*",
-    "Polly": "4.3.0"
-  },
+    "AllReady.Core": "1.0.0-*"  },
 
   "tools": {
     "Microsoft.AspNetCore.Razor.Tools": "1.0.0-preview2-final",
