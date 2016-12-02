@@ -63,7 +63,7 @@ namespace AllReady.Features.Requests
             //if an exception is thrown that is NOT part of the .Handle<TException> configured exception, Polly will throw an exception, and we will end up here
             catch (Exception ex)
             {
-                logger.LogCritical($"Call to getasmokealarm's {baseAddress} failed for serial {message.Serial} - with unhandled exception : Ex {ex.Message}");
+                logger.LogCritical($"Call to getasmokealarm's {baseAddress} failed for serial {message.Serial} - with exception : Ex {ex.Message}");
             }
         }
     }
