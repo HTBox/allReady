@@ -10,6 +10,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class TaskStatusChangeHandler : IAsyncRequestHandler<TaskStatusChangeCommand, TaskChangeResult>
     {
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
+
         private AllReadyContext _context;
         private IMediator _mediator;
 
@@ -59,7 +61,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
             }
 
             taskSignup.Status = message.TaskStatus.ToString();
-            taskSignup.StatusDateTimeUtc = DateTime.UtcNow;
+            //taskSignup.StatusDateTimeUtc = DateTime.UtcNow;
+            taskSignup.StatusDateTimeUtc = DateTimeUtcNow();
             taskSignup.StatusDescription = message.TaskStatusDescription;
 
             await _context.SaveChangesAsync();
