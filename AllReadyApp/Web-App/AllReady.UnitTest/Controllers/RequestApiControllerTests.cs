@@ -41,7 +41,7 @@ namespace AllReady.UnitTest.Controllers
             const string providerRequestId = "ProviderRequestId";
 
             var mediator = new Mock<IMediator>();
-            var sut = new RequestApiController(mediator.Object, null);
+            var sut = new RequestApiController(mediator.Object, Mock.Of<IBackgroundJobClient>());
             await sut.Post(new RequestApiViewModel { Status = "new", ProviderRequestId = providerRequestId });
 
             mediator.Verify(x => x.SendAsync(It.Is<RequestExistsByProviderIdQuery>(y => y.ProviderRequestId == providerRequestId)), Times.Once);
