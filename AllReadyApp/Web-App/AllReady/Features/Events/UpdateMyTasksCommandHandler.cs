@@ -11,18 +11,18 @@ namespace AllReady.Features.Events
         private readonly AllReadyContext dbContext;
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        public UpdateMyTasksCommandHandler(AllReadyContext DbContext)
+        public UpdateMyTasksCommandHandler(AllReadyContext dbContext)
         {
-            this.dbContext = DbContext;
+            this.dbContext = dbContext;
         }
 
         protected override async Task HandleCore(UpdateMyTasksCommand command)
         {
-            var currentUser = this.dbContext.Users.SingleOrDefault(u => u.Id == command.UserId);
+            var currentUser = dbContext.Users.SingleOrDefault(u => u.Id == command.UserId);
 
             foreach (var taskSignupViewModel in command.TaskSignups)
             {
-                this.dbContext.TaskSignups.Update(new TaskSignup {
+                dbContext.TaskSignups.Update(new TaskSignup {
                     Id = taskSignupViewModel.Id,
                     StatusDateTimeUtc = DateTimeUtcNow(),
                     StatusDescription = taskSignupViewModel.StatusDescription,
@@ -30,7 +30,7 @@ namespace AllReady.Features.Events
                     Task = new AllReadyTask { Id = taskSignupViewModel.TaskId },
                     User = currentUser
                 });
-                await this.dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
             }
         }
     }

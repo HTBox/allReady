@@ -277,7 +277,36 @@ namespace AllReady.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = "Admin", id = viewModel.CampaignId });
         }
-        
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> DeleteEventImage(int eventId)
+        {
+            var campaignEvent = await _mediator.SendAsync(new EventEditQuery { EventId = eventId });
+
+            if (campaignEvent == null)
+            {
+                return Json(new { status = "NotFound" });
+            }
+
+            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+            {
+                return Json(new { status = "Unauthorized" });
+            }
+
+            if (campaignEvent.ImageUrl != null)
+            {
+                await _imageService.DeleteImageAsync(campaignEvent.ImageUrl);
+                campaignEvent.ImageUrl = null;
+                await _mediator.SendAsync(new EditEventCommand { Event = campaignEvent });
+                return Json(new { status = "Success" });
+            }
+
+            return Json(new { status = "NothingToDelete" });
+        }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MessageAllVolunteers(MessageEventVolunteersViewModel viewModel)

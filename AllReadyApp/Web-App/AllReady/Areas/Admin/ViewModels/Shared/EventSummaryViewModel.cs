@@ -31,6 +31,7 @@ namespace AllReady.Areas.Admin.ViewModels.Shared
         [Display(Name = "Organization")]
         public string OrganizationName { get; set; }
 
+        [Display(Name = "Existing Image")]
         public string ImageUrl { get; set; }
 
         [Display(Name = "Browse for image")]

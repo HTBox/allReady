@@ -15,7 +15,6 @@ namespace AllReady.Controllers
     public class EventApiController : Controller
     {
         private readonly IMediator _mediator;
-        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
         public EventApiController(IMediator mediator)
         {

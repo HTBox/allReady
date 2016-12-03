@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AllReady.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
@@ -15,9 +14,6 @@ namespace AllReady.Controllers
     public class RequestApiController : Controller
     {
         private readonly IMediator mediator;
-
-        public Func<Guid> NewRequestId = () => Guid.NewGuid();
-        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
         public RequestApiController(IMediator mediator)
         {

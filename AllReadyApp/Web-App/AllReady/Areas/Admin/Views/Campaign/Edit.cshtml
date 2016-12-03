@@ -20,6 +20,13 @@
     }
 }
 
+@section styles{
+    @if (isEdit)
+    {
+        <link href="~/css/Admin/Campaign/Edit.css" rel="stylesheet" />
+    }
+}
+
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
@@ -43,16 +50,17 @@
 
 <form asp-controller="Campaign" asp-area="Admin" asp-action="Edit" method="post" enctype="multipart/form-data">
 
-  @if (User.IsUserType(UserType.OrgAdmin)){
-      <button type="button"
-            id="btnGetContactInfo"
-            class="btn btn-info"
-            data-toggle="modal"
-            data-target="#confirmContactModal"
-            title="Copy Contact Information from Organization">
+    @if (User.IsUserType(UserType.OrgAdmin))
+    {
+        <button type="button"
+                id="btnGetContactInfo"
+                class="btn btn-info"
+                data-toggle="modal"
+                data-target="#confirmContactModal"
+                title="Copy Contact Information from Organization">
             Copy Contact Info
-      </button>
-  }
+        </button>
+    }
 
     <div class="form-horizontal">
         <hr />
@@ -60,7 +68,6 @@
         @if (isEdit)
         {
             <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="ImageUrl" />
         }
         <div class="form-group">
             <label asp-for="Name" class="col-md-2 control-label"></label>
@@ -72,7 +79,7 @@
         <div class="form-group">
             <label asp-for="Description" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Description" class="form-control"/>
+                <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
         </div>
@@ -148,9 +155,23 @@
             @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
             {
                 <div class="form-group">
-                    <label asp-for="ImageUrl" class="col-md-2 control-label"></label>
-                    <div class="col-md-10">
-                        <img src="@Model.ImageUrl" class="img-thumbnail img-responsive col-md-4"/>
+                    <div class="col-md-offset-2 col-md-4">
+
+                        <div class="alert campaign-image-status-alert" style="display:none;">
+                            
+                        </div>
+
+                        <div class="panel panel-default" id="image-panel-container">
+                            <div class="panel-heading">
+                                <label asp-for="ImageUrl"></label>
+                            </div>
+                            <div class="panel-body" id="image-panel-body">
+                                <div id="image-wrapper">
+                                    <button class="btn btn-danger" id="delete-image">Delete Image</button>
+                                    <img src="@Model.ImageUrl" class="img-responsive center-block" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             }
@@ -232,7 +253,7 @@
                     <div class="form-horizontal">
                         @Html.DropDownListFor(model => model.CampaignImpact.ImpactType, SelectListService.GetCampaignImpactTypes(), htmlAttributes: new { @class = "form-control" })
                     </div>
-                </div>                
+                </div>
                 <div id="numericImpactSection">
                     <div class="form-group">
                         <label class="col-md-2 control-label">Current Impact Level</label>
@@ -291,4 +312,10 @@
 
 @section scripts {
     <script src="~/js/campaignadmin.js"></script>
+
+    @if (isEdit)
+    {
+        <script src="~/lib/system.js/dist/system.js"></script>
+        <script src="~/js/Admin/Campaign/Edit/Main.js"></script>
+    }
 }
