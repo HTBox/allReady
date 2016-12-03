@@ -12,8 +12,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
     {
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        private AllReadyContext _context;
-        private IMediator _mediator;
+        private readonly AllReadyContext _context;
+        private readonly IMediator _mediator;
 
         public TaskStatusChangeHandler(AllReadyContext context, IMediator mediator)
         {
@@ -61,7 +61,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
             }
 
             taskSignup.Status = message.TaskStatus.ToString();
-            //taskSignup.StatusDateTimeUtc = DateTime.UtcNow;
             taskSignup.StatusDateTimeUtc = DateTimeUtcNow();
             taskSignup.StatusDescription = message.TaskStatusDescription;
 
