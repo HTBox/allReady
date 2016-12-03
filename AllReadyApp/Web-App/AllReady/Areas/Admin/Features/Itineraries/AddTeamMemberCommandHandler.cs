@@ -27,7 +27,6 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
             if (itinerary == null)
             {
-                // todo: sgordon: enhance this with a error message so the controller can better respond to the issue
                 return false;
             }
 
