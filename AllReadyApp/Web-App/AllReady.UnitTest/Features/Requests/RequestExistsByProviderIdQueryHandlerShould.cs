@@ -11,7 +11,7 @@ namespace AllReady.UnitTest.Features.Requests
         {
             const string providerRequestId = "ProviderId";
 
-            var request = new Request { ProviderId = providerRequestId };
+            var request = new Request { ProviderRequestId = providerRequestId };
             Context.Requests.Add(request);
             Context.SaveChanges();
 

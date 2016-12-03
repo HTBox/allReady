@@ -26,7 +26,7 @@ namespace AllReady.Areas.Admin.Features.Requests
                 request.Source = RequestSource.Csv;
 
                 // todo: do basic data validation
-                if (!_context.Requests.Any(r => r.ProviderId == request.ProviderId))
+                if (!_context.Requests.Any(r => r.ProviderRequestId == request.ProviderRequestId))
                 {
                     //If lat/long not provided, use geocoding API to get them
                     if (request.Latitude == 0 && request.Longitude == 0)

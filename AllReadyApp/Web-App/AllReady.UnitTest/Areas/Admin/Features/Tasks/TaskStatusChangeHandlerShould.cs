@@ -6,7 +6,6 @@ using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 using Shouldly;
@@ -18,11 +17,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
     {
         private readonly Mock<IMediator> mediator;
         private readonly TaskStatusChangeHandler handler;
+        private readonly DateTime dateTimeUtcNow = DateTime.UtcNow;
 
         public TaskStatusChangeHandlerShould()
         {
             mediator = new Mock<IMediator>();
-            handler = new TaskStatusChangeHandler(Context, mediator.Object);
+            handler = new TaskStatusChangeHandler(Context, mediator.Object) { DateTimeUtcNow = () => dateTimeUtcNow };
         }
 
         protected override void LoadTestData()
@@ -301,7 +301,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerCompletesTaskFromAssignedStatus()
         {
-            var dateTime = DateTime.UtcNow;
             var task = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommand
@@ -320,7 +319,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             taskSignup.Task.Id.ShouldBe(command.TaskId);
             taskSignup.User.Id.ShouldBe(command.UserId);
             taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
-            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(3));
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTimeUtcNow);
         }
 
         [Fact]
@@ -376,7 +375,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerCannotCompleteTaskFromAssignedStatus()
         {
-            var dateTime = DateTime.UtcNow;
             var user = Context.Users.First();
             var task = Context.Tasks.First();
             var command = new TaskStatusChangeCommand
@@ -395,7 +393,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             taskSignup.User.Id.ShouldBe(command.UserId);
             taskSignup.Task.Id.ShouldBe(command.TaskId);
             taskSignup.StatusDescription.ShouldBe(command.TaskStatusDescription);
-            taskSignup.StatusDateTimeUtc.ShouldBe(dateTime, TimeSpan.FromSeconds(1));
+            taskSignup.StatusDateTimeUtc.ShouldBe(dateTimeUtcNow);
         }
 
         [Fact]

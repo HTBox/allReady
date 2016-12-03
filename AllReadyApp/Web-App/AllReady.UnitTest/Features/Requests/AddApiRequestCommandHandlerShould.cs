@@ -47,7 +47,7 @@ namespace AllReady.UnitTest.Features.Requests
             var request = Context.Requests.Single(x => x.RequestId == requestId);
 
             Assert.Equal(request.RequestId, requestId);
-            Assert.Equal(request.ProviderId, viewModel.ProviderRequestId);
+            Assert.Equal(request.ProviderRequestId, viewModel.ProviderRequestId);
             Assert.Equal(request.ProviderData, viewModel.ProviderData);
             Assert.Equal(request.Address, viewModel.Address);
             Assert.Equal(request.City, viewModel.City);
