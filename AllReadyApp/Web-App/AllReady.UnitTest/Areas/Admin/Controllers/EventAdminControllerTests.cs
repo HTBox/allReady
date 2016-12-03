@@ -502,6 +502,164 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(routeAttribute);
         }
 
+        [Fact]
+        public async Task DeleteEventImageReturnsJsonObjectWithStatusOfNotFound()
+        {
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<EventEditQuery>())).ReturnsAsync(null);
+            var imageServiceMock = new Mock<IImageService>();
+            var eventEditViewModelValidatorMock = new Mock<IValidateEventEditViewModels>();
+            var sut = new EventController(imageServiceMock.Object, mediatorMock.Object,  eventEditViewModelValidatorMock.Object);
+
+            var result = await sut.DeleteEventImage(It.IsAny<int>());
+
+            result.ShouldNotBeNull();
+            result.ShouldBeOfType<JsonResult>();
+
+            result.Value.GetType()
+                .GetProperty("status")
+                .GetValue(result.Value)
+                .ShouldBe("NotFound");
+        }
+
+
+        [Fact]
+        public async Task DeleteEventImageReturnsJsonObjectWithStatusOfUnauthorizedIfUserIsNotOrganizationAdmin()
+        {
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<EventEditQuery>())).ReturnsAsync(new EventEditViewModel());
+            var imageServiceMock = new Mock<IImageService>();
+            var eventEditViewModelValidatorMock = new Mock<IValidateEventEditViewModels>();
+            var sut = new EventController(imageServiceMock.Object, mediatorMock.Object, eventEditViewModelValidatorMock.Object);
+            sut.MakeUserNotAnOrgAdmin();
+
+            var result = await sut.DeleteEventImage(It.IsAny<int>());
+
+            result.Value.GetType()
+                .GetProperty("status")
+                .GetValue(result.Value)
+                .ShouldBe("Unauthorized");
+        }
+
+
+        [Fact]
+        public async Task DeleteEventSendsTheCorrectIdToEventEditQuery()
+        {
+            var mediatorMock = new Mock<IMediator>();
+            var imageServiceMock = new Mock<IImageService>();
+            var eventEditViewModelValidatorMock = new Mock<IValidateEventEditViewModels>();
+            var sut = new EventController(imageServiceMock.Object, mediatorMock.Object, eventEditViewModelValidatorMock.Object);
+
+            const int eventId = 2;
+
+            await sut.DeleteEventImage(eventId);
+
+            mediatorMock.Verify(m => m.SendAsync(It.IsAny<EventEditQuery>()), Times.Once);
+            mediatorMock.Verify(m => m.SendAsync(It.Is<EventEditQuery>(s => s.EventId == eventId)));
+        }
+
+
+        [Fact]
+        public async Task DeleteEventImageCallsDeleteImageAsyncWithCorrectData()
+        {
+            var mediatorMock = new Mock<IMediator>();
+
+            var eventEditViewModel = new EventEditViewModel
+            {
+                OrganizationId = 1,
+                ImageUrl = "URL!"
+            };
+
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<EventEditQuery>())).ReturnsAsync(eventEditViewModel);
+
+            var imageServiceMock = new Mock<IImageService>();
+            var eventEditViewModelValidatorMock = new Mock<IValidateEventEditViewModels>();
+            var sut = new EventController(imageServiceMock.Object, mediatorMock.Object, eventEditViewModelValidatorMock.Object);
+            sut.MakeUserAnOrgAdmin(eventEditViewModel.OrganizationId.ToString());
+
+            await sut.DeleteEventImage(It.IsAny<int>());
+
+            imageServiceMock.Verify(i => i.DeleteImageAsync(It.Is<string>(f => f == "URL!")), Times.Once);
+        }
+
+
+        [Fact]
+        public async Task DeleteEventImageCallsEditEventCommandWithCorrectData()
+        {
+            var mediatorMock = new Mock<IMediator>();
+
+            var eventEditViewModel = new EventEditViewModel
+            {
+                OrganizationId = 1,
+                ImageUrl = "URL!"
+            };
+
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<EventEditQuery>())).ReturnsAsync(eventEditViewModel);
+
+            var imageServiceMock = new Mock<IImageService>();
+            var eventEditViewModelValidatorMock = new Mock<IValidateEventEditViewModels>();
+            var sut = new EventController(imageServiceMock.Object, mediatorMock.Object, eventEditViewModelValidatorMock.Object);
+            sut.MakeUserAnOrgAdmin(eventEditViewModel.OrganizationId.ToString());
+
+            await sut.DeleteEventImage(It.IsAny<int>());
+
+            mediatorMock.Verify(m => m.SendAsync(It.Is<EditEventCommand>(s => s.Event == eventEditViewModel)), Times.Once);
+        }
+
+
+        [Fact]
+        public async Task DeleteEventImageReturnsJsonObjectWithStatusOfSuccessIfImageDeletedSuccessfully()
+        {
+            var mediatorMock = new Mock<IMediator>();
+
+            var eventEditViewModel = new EventEditViewModel
+            {
+                OrganizationId = 1,
+                ImageUrl = "URL!"
+            };
+
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<EventEditQuery>())).ReturnsAsync(eventEditViewModel);
+
+            var imageServiceMock = new Mock<IImageService>();
+            var eventEditViewModelValidatorMock = new Mock<IValidateEventEditViewModels>();
+            var sut = new EventController(imageServiceMock.Object, mediatorMock.Object, eventEditViewModelValidatorMock.Object);
+            sut.MakeUserAnOrgAdmin(eventEditViewModel.OrganizationId.ToString());
+
+            var result = await sut.DeleteEventImage(It.IsAny<int>());
+
+            result.Value.GetType()
+                .GetProperty("status")
+                .GetValue(result.Value)
+                .ShouldBe("Success");
+        }
+
+
+        [Fact]
+        public async Task DeleteEventImageReturnsJsonObjectWithStatusOfNothingToDeleteIfThereWasNoExistingImage()
+        {
+            var mediatorMock = new Mock<IMediator>();
+
+            var eventEditViewModel = new EventEditViewModel
+            {
+                OrganizationId = 1
+            };
+
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<EventEditQuery>())).ReturnsAsync(eventEditViewModel);
+
+            var imageServiceMock = new Mock<IImageService>();
+            var eventEditViewModelValidatorMock = new Mock<IValidateEventEditViewModels>();
+            var sut = new EventController(imageServiceMock.Object, mediatorMock.Object, eventEditViewModelValidatorMock.Object);
+            sut.MakeUserAnOrgAdmin(eventEditViewModel.OrganizationId.ToString());
+
+            var result = await sut.DeleteEventImage(It.IsAny<int>());
+
+            result.Value.GetType()
+                .GetProperty("status")
+                .GetValue(result.Value)
+                .ShouldBe("NothingToDelete");
+        }
+
+
         [Fact(Skip = "NotImplemented")]
         public async Task MessageAllVolunteersReturnsBadRequestObjectResult_WhenModelStateIsInvalid()
         {
