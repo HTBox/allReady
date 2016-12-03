@@ -72,7 +72,7 @@ namespace AllReady.UnitTest.Features.Requests
 
             var sut = new AddApiRequestCommandHandler(Context, Mock.Of<IGeocoder>(), mediator.Object)
             {
-                NewRequestId = () => requestId,
+                NewRequestId = () => requestId
             };
 
             await sut.Handle(message);

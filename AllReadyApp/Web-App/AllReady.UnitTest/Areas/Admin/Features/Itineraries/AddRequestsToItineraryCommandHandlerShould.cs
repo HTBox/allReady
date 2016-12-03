@@ -86,8 +86,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         public async Task AssignRequestsToTheItinerary()
         {
             var mockMediator = new Mock<IMediator>();
+            var dateTimeUtcNow = DateTime.UtcNow;
 
-            var handler = new AddRequestsToItineraryCommandHandler(Context, mockMediator.Object);
+            var handler = new AddRequestsToItineraryCommandHandler(Context, mockMediator.Object) { DateTimeUtcNow = () => dateTimeUtcNow };
             var succeded = await handler.Handle(new AddRequestsToItineraryCommand
             {
                 ItineraryId = _theItinerary.Id,
@@ -97,9 +98,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Assert.True(succeded);
             Assert.Equal(RequestStatus.Assigned, _notAssignedRequest.Status);
             Assert.Equal(1, Context.ItineraryRequests.Count());
-            Assert.Equal(1, Context.ItineraryRequests.First().OrderIndex);
             Assert.Equal(_theItinerary.Id, Context.ItineraryRequests.First().ItineraryId);
+            Assert.Equal(1, Context.ItineraryRequests.First().OrderIndex);
             Assert.Equal(_notAssignedRequest.RequestId, Context.ItineraryRequests.First().RequestId);
+            Assert.Equal(dateTimeUtcNow, Context.ItineraryRequests.First().DateAssigned);
         }
 
         [Fact]
