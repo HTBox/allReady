@@ -35,7 +35,8 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     {
                         Id = i.EventId,
                         StartDateTime = i.Event.StartDateTime,
-                        EndDateTime = i.Event.EndDateTime
+                        EndDateTime = i.Event.EndDateTime,
+                        TimeZoneId = i.Event.TimeZoneId
                     }
                 })
                 .SingleOrDefaultAsync();
