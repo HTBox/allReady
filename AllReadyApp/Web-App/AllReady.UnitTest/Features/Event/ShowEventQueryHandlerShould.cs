@@ -9,6 +9,8 @@ using AllReady.Features.Events;
 
 namespace AllReady.UnitTest.Features.Event
 {
+    using Event = AllReady.Models.Event;
+
     // Can't use this.Context because we're updating data and we can't have two items in Entity Framework's change tracking, see https://docs.efproject.net/en/latest/miscellaneous/testing.html#writing-tests
     public class ShowEventQueryHandlerShould : InMemoryContextTest
     {
@@ -79,7 +81,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                context.Events.Add(new Models.Event
+                context.Events.Add(new Event
                 {
                     Id = eventId,
                     Campaign = new Campaign { Locked = true }
@@ -220,9 +222,9 @@ namespace AllReady.UnitTest.Features.Event
             }
         }
 
-        private static Models.Event CreateAllReadyEventWithTasks(int eventId, ApplicationUser appUser)
+        private static Event CreateAllReadyEventWithTasks(int eventId, ApplicationUser appUser)
         {
-            return new Models.Event
+            return new Event
             {
                 Id = eventId,
                 Campaign = new Campaign { Locked = false },

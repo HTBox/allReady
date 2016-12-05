@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Features.Events;
@@ -8,17 +7,19 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Event
 {
+    using Event = AllReady.Models.Event;
+
     public class EventsByApplicationUserIdQueryHandlerShould : InMemoryContextTest
     {
         private readonly EventsByApplicationUserIdQuery message;
-        private readonly Models.Event @event;
+        private readonly Event @event;
         private readonly EventsByApplicationUserIdQueryHandler sut;
 
 
         public EventsByApplicationUserIdQueryHandlerShould()
         {
-            message = new EventsByApplicationUserIdQuery() { ApplicationUserId = Guid.NewGuid().ToString() };
-            @event = new Models.Event() {Organizer = new ApplicationUser() {Id = message.ApplicationUserId } };
+            message = new EventsByApplicationUserIdQuery { ApplicationUserId = Guid.NewGuid().ToString() };
+            @event = new Event { Organizer = new ApplicationUser {Id = message.ApplicationUserId } };
 
 
             Context.Add(@event);
@@ -45,7 +46,7 @@ namespace AllReady.UnitTest.Features.Event
         public async Task ReturnCorrectType()
         {
             var result = await sut.Handle(message);
-            Assert.IsType<Models.Event>(result.First());
+            Assert.IsType<Event>(result.First());
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AllReady.Features.Campaigns;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Models;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Campaigns
@@ -54,28 +55,28 @@ namespace AllReady.UnitTest.Features.Campaigns
 
         protected override void LoadTestData()
         {
-            var org = new Models.Organization
+            var org = new Organization
             {
                 Name = "Some Organization"
             };
 
             Context.Organizations.Add(org);
 
-            Context.Campaigns.Add(new Models.Campaign
+            Context.Campaigns.Add(new Campaign
             {
                 Name = "This is featured",
                 Featured = true,
                 ManagingOrganization = org                
             });
 
-            Context.Campaigns.Add(new Models.Campaign
+            Context.Campaigns.Add(new Campaign
             {
                 Name = "This is not featured",
                 Featured = false,
                 ManagingOrganization = org
             });
 
-            Context.Campaigns.Add(new Models.Campaign
+            Context.Campaigns.Add(new Campaign
             {
                 Name = "This is also featured",
                 Featured = true,

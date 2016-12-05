@@ -9,6 +9,8 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Notifications
 {
+    using Event = AllReady.Models.Event;
+
     public class NotifyVolunteersHandlerShould : InMemoryContextTest
     {
         protected override void LoadTestData()
@@ -27,7 +29,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 ManagingOrganization = htb
             };
 
-            var queenAnne = new Models.Event
+            var queenAnne = new Event
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
