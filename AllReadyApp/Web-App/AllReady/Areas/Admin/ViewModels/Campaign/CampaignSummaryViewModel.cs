@@ -26,7 +26,6 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         [Display(Name = "External Link Text")]
         public string ExternalUrlText { get; set; }
 
-
         [Display(Name = "Organization")]
         public int OrganizationId { get; set; }
 
@@ -85,6 +84,5 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         // of the campaign which could affect this value that would translate to the initial value for
         // an event's End Date
         public int DefaultEventDays => EVENT_DAYS_STD;
-
     }
 }

@@ -4,7 +4,7 @@ using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.UnitTest.Extensions;
 using Xunit;
 
-namespace AllReady.UnitTest.ViewModels
+namespace AllReady.UnitTest.Models
 {
     public class TaskSummaryModelShould
     {

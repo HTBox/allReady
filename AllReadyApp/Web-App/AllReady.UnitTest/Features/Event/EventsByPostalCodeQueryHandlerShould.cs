@@ -12,17 +12,19 @@ namespace AllReady.UnitTest.Features.Event
         [Fact(Skip = "Can't mock FromSql()")]
         public async Task HandleCallsEventsByPostalCodeWithCorrectPostalCodeAndDistance()
         {
-            var options = this.CreateNewContextOptions();
+            var options = CreateNewContextOptions();
 
             var message = new EventsByPostalCodeQuery { PostalCode = "PostalCode", Distance = 100 };
 
-            using (var context = new AllReadyContext(options)) {
+            using (var context = new AllReadyContext(options))
+            {
                 context.Events.Add(new Event());
                 context.Events.Add(new Event());
                 await context.SaveChangesAsync();
             }
 
-            using (var context = new AllReadyContext(options)) {
+            using (var context = new AllReadyContext(options))
+            {
                 var sut = new EventsByPostalCodeQueryHandler(context);
                 var events = sut.Handle(message);
 

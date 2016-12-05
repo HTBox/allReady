@@ -5,10 +5,11 @@ using AllReady.Features.Events;
 
 namespace AllReady.UnitTest.Features.Event
 {
-    using Event = Models.Event;
+    using Event = AllReady.Models.Event;
 
     public class EventByEventIdQueryHandlerShould : InMemoryContextTest
     {
+
         [Fact]
         public async Task CallsGetEventWithTheCorrectEventId()
         {

@@ -22,6 +22,8 @@ namespace AllReady.Areas.Admin.Controllers
     [Authorize("OrgAdmin")]
     public class EventController : Controller
     {
+        public Func<DateTime> DateTimeTodayDate = () => DateTime.Today.Date;
+
         private readonly IImageService _imageService;
         private readonly IMediator _mediator;
         private readonly IValidateEventEditViewModels _eventEditViewModelValidator;
@@ -65,18 +67,18 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var campaignEvent = new EventEditViewModel
+            var viewModel = new EventEditViewModel
             {
                 CampaignId = campaign.Id,
                 CampaignName = campaign.Name,
                 TimeZoneId = campaign.TimeZoneId,
                 OrganizationId = campaign.OrganizationId,
                 OrganizationName = campaign.OrganizationName,
-                StartDateTime = DateTime.Today.Date,
-                EndDateTime = DateTime.Today.Date
+                StartDateTime = DateTimeTodayDate(),
+                EndDateTime = DateTimeTodayDate()
             };
 
-            return View("Edit", campaignEvent);
+            return View("Edit", viewModel);
         }
 
         // POST: Event/Create

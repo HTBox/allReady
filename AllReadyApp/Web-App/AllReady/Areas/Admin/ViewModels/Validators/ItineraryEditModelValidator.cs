@@ -15,12 +15,12 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
 
             if (itineraryDateConverted.Date < eventSummary.StartDateTime.Date)
             {
-                result.Add(new KeyValuePair<string, string>(nameof(model.Date), "Date cannot be earlier than the event start date " + eventSummary.StartDateTime.Date.ToString("d")));
+                result.Add(new KeyValuePair<string, string>(nameof(model.Date), $"Date cannot be earlier than the event start date {eventSummary.StartDateTime.Date:d}"));
             }
 
             if (itineraryDateConverted.Date > eventSummary.EndDateTime.Date)
             {
-                result.Add(new KeyValuePair<string, string>(nameof(model.Date), "Date cannot be later than the event end date " + eventSummary.EndDateTime.Date.ToString("d")));
+                result.Add(new KeyValuePair<string, string>(nameof(model.Date), $"Date cannot be later than the event end date {eventSummary.EndDateTime.Date:d}"));
             }
 
             return result;

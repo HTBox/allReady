@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Features.Events;
 using AllReady.Models;
-using AllReady.Providers;
 using MediatR;
 
 namespace AllReady.Areas.Admin.ViewModels.Validators.Task
@@ -15,11 +13,6 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
 
         public TaskEditViewModelValidator(IMediator mediator)
         {
-            if (mediator == null)
-            {
-                throw new ArgumentNullException(nameof(mediator));
-            }
-
             _mediator = mediator;
         }
 
@@ -28,7 +21,6 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
             var result = new List<KeyValuePair<string, string>>();
 
             var parentEvent = await _mediator.SendAsync(new EventByEventIdQuery { EventId = viewModel.EventId });
-
 
             // Rule - End date cannot be earlier than start date
             if (viewModel.EndDateTime < viewModel.StartDateTime)
@@ -39,13 +31,13 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
             // Rule - Start date cannot be out of range of parent event
             if (viewModel.StartDateTime < parentEvent.StartDateTime)
             {
-                result.Add(new KeyValuePair<string, string>(nameof(viewModel.StartDateTime), String.Format("Start date cannot be earlier than the event start date {0:g}.", parentEvent.StartDateTime)));
+                result.Add(new KeyValuePair<string, string>(nameof(viewModel.StartDateTime), $"Start date cannot be earlier than the event start date {parentEvent.StartDateTime:g}."));
             }
 
             // Rule - End date cannot be out of range of parent event
             if (viewModel.EndDateTime > parentEvent.EndDateTime)
             {
-                result.Add(new KeyValuePair<string, string>(nameof(viewModel.EndDateTime), String.Format("The end date of this task cannot be after the end date of the event {0:g}", parentEvent.EndDateTime)));
+                result.Add(new KeyValuePair<string, string>(nameof(viewModel.EndDateTime), $"The end date of this task cannot be after the end date of the event {parentEvent.EndDateTime:g}"));
             }
 
             // Rule - Itinerary tasks must start and end on same calendar day

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
@@ -8,7 +9,6 @@ using AllReady.Services;
 using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
 using Xunit;
 using System.Linq;
@@ -113,12 +113,26 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<UnauthorizedResult>(await sut.Create(It.IsAny<int>()));
         }
 
-        [Fact(Skip = "NotImplemented")]
-		public async Task CreateGetReturnsCorrectView_AndViewModel()
+        [Fact]
+		public async Task CreateGetReturnsCorrectView_AndCorrectStartAndEndDateOnViewModel()
         {
-			// delete this line when starting work on this unit test
-			await TaskFromResultZero;
-		}
+            const int organizationId = 1;
+            var dateTimeTodayDate = DateTime.Today.Date;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>()))
+                .ReturnsAsync(new CampaignSummaryViewModel { OrganizationId = organizationId });
+
+            var sut = new EventController(null, mediator.Object, null) { DateTimeTodayDate = () => dateTimeTodayDate };
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+
+            var view = await sut.Create(It.IsAny<int>()) as ViewResult;
+            var viewModel = view.ViewData.Model as EventEditViewModel;
+
+            Assert.Equal(view.ViewName, "Edit");
+            Assert.Equal(viewModel.StartDateTime, dateTimeTodayDate);
+            Assert.Equal(viewModel.EndDateTime, dateTimeTodayDate);
+        }
 
         [Fact]
         public void CreateGetHasRouteAttributeWithCorrectRoute()

@@ -10,6 +10,8 @@ using AllReady.Models;
 
 namespace AllReady.UnitTest.Features.Notifications
 {
+    using Event = AllReady.Models.Event;
+
     public class NotifyAdminForSignupShould : InMemoryContextTest
     {
         protected override void LoadTestData()
@@ -51,7 +53,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 Contact = new Contact()
             };
 
-            var testEvent1 = new Models.Event
+            var testEvent1 = new Event
             {
                 Id = 5,
                 Name = "Test Event Name",
@@ -63,7 +65,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 RequiredSkills = new List<EventSkill>()
             };
 
-            var testEvent2 = new Models.Event
+            var testEvent2 = new Event
             {
                 Id = 7,
                 Name = "Test Event 2",
