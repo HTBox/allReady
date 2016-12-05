@@ -85,7 +85,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         [Fact]
         public async Task AssignRequestsToTheItinerary()
         {
-            var dateTimeUtcNow = DateTime.UtcNow;
             var mockMediator = new Mock<IMediator>();
             var dateTimeUtcNow = DateTime.UtcNow;
 
