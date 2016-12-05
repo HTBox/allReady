@@ -493,6 +493,8 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<int>("OrganizationId");
+
                     b.Property<string>("Phone");
 
                     b.Property<string>("ProviderData");
@@ -510,6 +512,8 @@ namespace AllReady.Migrations
                     b.HasKey("RequestId");
 
                     b.HasIndex("EventId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("Request");
                 });
@@ -883,6 +887,11 @@ namespace AllReady.Migrations
                         .WithMany("Requests")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("AllReady.Models.Organization", "Organization")
+                        .WithMany("Requests")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("AllReady.Models.Skill", b =>
