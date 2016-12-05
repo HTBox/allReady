@@ -13,6 +13,7 @@ namespace AllReady.Features.Tasks
     {
         private readonly IMediator _mediator;
         private readonly AllReadyContext _context;
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
         public TaskSignupCommandHandler(IMediator mediator, AllReadyContext context)
         {
@@ -58,7 +59,7 @@ namespace AllReady.Features.Tasks
                     Task = task,
                     User = user,
                     Status = TaskStatus.Accepted.ToString(),
-                    StatusDateTimeUtc = DateTime.UtcNow,
+                    StatusDateTimeUtc = DateTimeUtcNow(),
                     AdditionalInfo = model.AdditionalInfo
                 });
             }

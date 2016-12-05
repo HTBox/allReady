@@ -1,11 +1,12 @@
 ﻿using System;
-using AllReady.Models;
 using CsvHelper.Configuration;
 
 namespace AllReady.Areas.Admin.ViewModels.Request
 {
     public class RedCrossRequestMap : CsvClassMap<AllReady.Models.Request>
     {
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
+
         public RedCrossRequestMap()
         {
             // columns from Red Cross CSV
@@ -22,7 +23,7 @@ namespace AllReady.Areas.Admin.ViewModels.Request
             Map(r => r.Zip).Name("zip");
             Map(r => r.Phone).Name("phone");
             Map(r => r.Email).Name("email");
-            Map(r => r.DateAdded).Name("date created").Default(DateTime.UtcNow);
+            Map(r => r.DateAdded).Name("date created").Default(DateTimeUtcNow());
             Map(r => r.ProviderData).Name("region");
             Map(r => r.ProviderRequestId).Name("id");
             Map(r => r.Latitude).Name("latitude").Default(0);

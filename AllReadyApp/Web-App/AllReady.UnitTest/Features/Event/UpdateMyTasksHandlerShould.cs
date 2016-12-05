@@ -20,19 +20,22 @@ namespace AllReady.UnitTest.Features.Event
             const string userId = "1";
             var user = new ApplicationUser {Id = userId};
 
-            using (var context = new AllReadyContext(options)) {
+            using (var context = new AllReadyContext(options))
+            {
                 context.Users.Add(user);
                 await context.SaveChangesAsync();
             }
 
             var message = new UpdateMyTasksCommand { UserId =userId, TaskSignups = new List<TaskSignupViewModel>() };
 
-            using (var context = new AllReadyContext(options)) {
+            using (var context = new AllReadyContext(options))
+            {
                 var sut = new UpdateMyTasksCommandHandler(context);
                 await sut.Handle(message);
             }
 
-            using (var context = new AllReadyContext(options)) {
+            using (var context = new AllReadyContext(options))
+            {
                 var taskSignups = context.TaskSignups.Count();
                 Assert.Equal(taskSignups, 0);
             }
@@ -50,19 +53,22 @@ namespace AllReady.UnitTest.Features.Event
             var user = new ApplicationUser {Id = userId};
             var taskSignupViewModels = new List<TaskSignupViewModel> {new TaskSignupViewModel {Id = firstId}, new TaskSignupViewModel {Id = secondId}};
 
-            using (var context = new AllReadyContext(options)) {
+            using (var context = new AllReadyContext(options))
+            {
                 context.Users.Add(user);
-                context.TaskSignups.Add(new TaskSignup {Id = firstId});
-                context.TaskSignups.Add(new TaskSignup {Id = secondId});
+                context.TaskSignups.Add(new TaskSignup { Id = firstId });
+                context.TaskSignups.Add(new TaskSignup { Id = secondId });
                 await context.SaveChangesAsync();
             }
 
-            using (var context = new AllReadyContext(options)) {
-                var sut = new UpdateMyTasksCommandHandler(context) {DateTimeUtcNow = () => DateTime.UtcNow};
-                await sut.Handle(new UpdateMyTasksCommand {TaskSignups = taskSignupViewModels});
+            using (var context = new AllReadyContext(options))
+            {
+                var sut = new UpdateMyTasksCommandHandler(context) { DateTimeUtcNow = () => DateTime.UtcNow };
+                await sut.Handle(new UpdateMyTasksCommand { TaskSignups = taskSignupViewModels });
             }
 
-            using (var context = new AllReadyContext(options)) {
+            using (var context = new AllReadyContext(options))
+            {
                 var signup1 = context.TaskSignups.FirstOrDefault(x => x.Id == firstId);
                 Assert.Equal(signup1 != null, true);
                 var signup2 = context.TaskSignups.FirstOrDefault(x => x.Id == secondId);
@@ -86,19 +92,22 @@ namespace AllReady.UnitTest.Features.Event
 
             var message = new UpdateMyTasksCommand { TaskSignups = taskSignupViewModels, UserId = userId};
 
-            using (var context = new AllReadyContext(options)) {
+            using (var context = new AllReadyContext(options))
+            {
                 context.Users.Add(user);
-                context.TaskSignups.Add(new TaskSignup {Id = taskSignupId});
-                context.Tasks.Add(new AllReadyTask {Id = 1});
+                context.TaskSignups.Add(new TaskSignup { Id = taskSignupId });
+                context.Tasks.Add(new AllReadyTask { Id = 1 });
                 await context.SaveChangesAsync();
             }
 
-            using (var context = new AllReadyContext(options)) {
-                var sut = new UpdateMyTasksCommandHandler(context) {DateTimeUtcNow = () => dateTimeUtcNow};
+            using (var context = new AllReadyContext(options))
+            {
+                var sut = new UpdateMyTasksCommandHandler(context) { DateTimeUtcNow = () => dateTimeUtcNow };
                 await sut.Handle(message);
             }
 
-            using (var context = new AllReadyContext(options)) {
+            using (var context = new AllReadyContext(options))
+            {
                 var signup = context.TaskSignups.FirstOrDefault(x => x.Id == taskSignupId);
                 Assert.Equal(signup != null, true);
             }

@@ -3,7 +3,7 @@ using AllReady.Models;
 using Shouldly;
 using Xunit;
 
-namespace AllReady.UnitTest.ModelTests
+namespace AllReady.UnitTest.Models
 {
     public class SkillShould
     {
