@@ -70,6 +70,7 @@ namespace AllReady.Models
         private void Map(EntityTypeBuilder<Request> builder)
         {
             builder.HasKey(x => x.RequestId);
+            builder.HasOne(r => r.Organization).WithMany(o => o.Requests).HasForeignKey(r => r.OrganizationId);
         }
 
         private void Map(EntityTypeBuilder<CampaignImpact> builder)

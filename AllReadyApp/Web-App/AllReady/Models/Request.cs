@@ -32,5 +32,7 @@ namespace AllReady.Models
         public Event Event { get; set; }
 
         public DateTime DateAdded { get; set; } = DateTime.UtcNow;
+        public int OrganizationId { get; set; }
+        public Organization Organization { get; set; }
     }
 }
