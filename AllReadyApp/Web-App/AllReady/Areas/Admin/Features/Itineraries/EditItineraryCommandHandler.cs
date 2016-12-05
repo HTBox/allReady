@@ -53,7 +53,6 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     {
                         if (itinerary.EndLocation == itinerary.StartLocation)
                         {
-                            _context.Locations.Remove(itinerary.EndLocation);
                             itinerary.EndLocation = null;
                         }
 
