@@ -17,9 +17,11 @@ namespace AllReady.Areas.Admin.Controllers
     [Authorize("OrgAdmin")]
     public class CampaignController : Controller
     {
+        public Func<DateTime> DateTimeNow = () => DateTime.Now;
+
         private readonly IMediator _mediator;
         private readonly IImageService _imageService;
-
+        
         public CampaignController(IMediator mediator, IImageService imageService)
         {
             _mediator = mediator;
@@ -59,8 +61,8 @@ namespace AllReady.Areas.Admin.Controllers
         {
             return View("Edit", new CampaignSummaryViewModel
             {
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddMonths(1)
+                StartDate = DateTimeNow(),
+                EndDate = DateTimeNow().AddMonths(1)
             });
         }
 
