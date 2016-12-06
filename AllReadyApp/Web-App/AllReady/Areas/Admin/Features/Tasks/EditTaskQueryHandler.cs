@@ -36,7 +36,15 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     CampaignId = task.Event.CampaignId,
                     CampaignName = task.Event.Campaign.Name,
                     OrganizationId = task.Event.Campaign.ManagingOrganizationId,
-                    TimeZoneId = task.Event.TimeZoneId
+                    TimeZoneId = task.Event.TimeZoneId,
+                    Attachments = task.Attachments.Select(a => new FileAttachmentModel
+                    {
+                        Id = a.Id,
+                        Name = a.Name,
+                        Description = a.Description,
+                        MimeType = a.MimeType,
+                    }).ToList(),
+
                 })
                 .SingleAsync(t => t.Id == message.TaskId);
         }

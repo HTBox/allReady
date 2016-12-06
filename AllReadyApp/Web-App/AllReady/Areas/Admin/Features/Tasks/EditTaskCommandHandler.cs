@@ -56,16 +56,25 @@ namespace AllReady.Areas.Admin.Features.Tasks
             }
 
             // Add new attachment
-            if (message.Task.NewAttachment != null && !string.IsNullOrEmpty(message.Task.NewAttachment.Name))
+            if (message.Task.NewAttachment != null && !string.IsNullOrEmpty(message.Task.NewAttachment.FileName))
             {
                 var attachmentModel = message.Task.NewAttachment;
                 var attachment = new FileAttachment
                 {
-                    Name = attachmentModel.Name,
-                    Description = attachmentModel.Description,
-                    MimeType = GetMimeType(attachmentModel.Name),
-                    Content = new FileAttachmentContent { Bytes = attachmentModel.Content },
+                    Name = attachmentModel.FileName,
+                    Description = message.Task.NewAttachmentDescription,
+                    MimeType = attachmentModel.ContentType,
+                    Content = new FileAttachmentContent { Bytes = new byte[attachmentModel.Length] },
+                    Task = task,
                 };
+
+                using (var fileStream = attachmentModel.OpenReadStream())
+                using (var ms = new MemoryStream())
+                {
+                    fileStream.CopyTo(ms);
+                    attachment.Content.Bytes = ms.ToArray();
+                }
+
                 _context.Add(attachment);
             }
 

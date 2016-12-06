@@ -1,4 +1,5 @@
 @using AllReady.Areas.Admin.ViewModels.Task
+@using System.Linq
 @model DeleteViewModel
 @{  ViewData["Title"] = Model.Title; }
 
@@ -47,9 +48,20 @@
                 <dd>
                     @Html.DisplayFor(model => model.EndDateTime)
                 </dd>
-                <dd>
-                    @Html.DisplayFor(model => model.Attachments.Select(a => a.Name))
-                </dd>
+                @if (Model.Attachments.Any())
+                {
+                    <dt>
+                        @Html.DisplayNameFor(model => Model.Attachments)
+                    </dt>
+                    <dd>
+                        <ul>
+                            @foreach (var attachment in Model.Attachments)
+                            {
+                                <li><a href="@attachment.DownloadUrl">@attachment.Name</a>: @attachment.Description</li>
+                            }
+                        </ul>
+                    </dd>
+                }
             </dl>
 
             <div class="form-actions no-color">

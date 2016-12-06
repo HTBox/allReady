@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Models;
 using AllReady.ModelBinding;
+using Microsoft.AspNetCore.Http;
 
 namespace AllReady.Areas.Admin.ViewModels.Task
 {
@@ -44,6 +45,7 @@ namespace AllReady.Areas.Admin.ViewModels.Task
         [Range(1, int.MaxValue, ErrorMessage = "'Volunteers Required' must be greater than 0")]
         public int NumberOfVolunteersRequired { get; set; }
 
+        [Display(Name = "Required Skills")]
         public List<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();
 
         //only used for update scenarios
@@ -52,13 +54,19 @@ namespace AllReady.Areas.Admin.ViewModels.Task
         //used to build Cancel button url for create and edit actions
         public string CancelUrl { get; set; }
 
-        /// <summary>New attachment to be added</summary>
-        public FileAttachmentModel NewAttachment { get; set; }
+        /// <summary>Description of the attachment to be added</summary>
+        [Display(Name = "New Attachment Description")]
+        public string NewAttachmentDescription { get; set; }
+
+        /// <summary>New attachment file</summary>
+        [Display(Name = "Add New Attachment")]
+        public IFormFile NewAttachment { get; set; }
 
         /// <summary>List of current file attachments</summary>
         public List<FileAttachmentModel> Attachments { get; set; } = new List<FileAttachmentModel>();
 
         /// <summary>List of attachment IDs to delete</summary>
+        [Display(Name = "Attachments to Delete")]
         public List<int> DeleteAttachments { get; set; } = new List<int>();
     }
 }

@@ -33,6 +33,13 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     Name = task.Name,
                     StartDateTime = task.StartDateTime,
                     EndDateTime = task.EndDateTime,
+                    Attachments = task.Attachments.Select(a => new FileAttachmentModel
+                    {
+                        Id = a.Id,
+                        Name = a.Name,
+                        Description = a.Description,
+                        MimeType = a.MimeType,
+                    }).ToList(),
                 })
                 .SingleAsync(t => t.Id == message.TaskId);
         }

@@ -53,22 +53,22 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
             }
             
             // Rule - Attachments are optional
-            if (viewModel.NewAttachment != null && !string.IsNullOrEmpty(viewModel.NewAttachment.Name))
+            if (viewModel.NewAttachment != null && !string.IsNullOrEmpty(viewModel.NewAttachment.FileName))
             {
                 // Rule - New attachment must have content
-                if (viewModel.NewAttachment.Content == null || viewModel.NewAttachment.Content.Length == 0)
+                if (viewModel.NewAttachment == null || viewModel.NewAttachment.Length == 0)
                 {
                     result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), "The attachment is empty"));
                 }
 
                 // Rule - New attachment must have a maximum size
-                if (viewModel.NewAttachment.Content.Length > MaxAttachmentBytes)
+                if (viewModel.NewAttachment.Length > MaxAttachmentBytes)
                 {
                     result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), "The attachment has an invalid extension. Allowed file types are :" + string.Join(", ", AllowedFileExtensions)));
                 }
 
                 // Rule - Attachment must be a document or an image
-                string ext = Path.GetExtension(viewModel.NewAttachment.Name).ToLower();
+                string ext = Path.GetExtension(viewModel.NewAttachment.FileName).ToLower();
                 if (!AllowedFileExtensions.Contains(ext))
                 {
                     result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), "The attachment has an invalid extension. Allowed file types are :" + string.Join(", ", AllowedFileExtensions)));

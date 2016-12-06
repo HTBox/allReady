@@ -23,7 +23,7 @@
 </div>
 <h2>@ViewBag.Title</h2>
 
-<form asp-controller="Task" asp-action="Edit">
+<form asp-controller="Task" asp-action="Edit" enctype="multipart/form-data">
     <div class="form-horizontal">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="EventId" />
@@ -103,19 +103,26 @@
         <div class="form-group">
             <label asp-for="NewAttachment" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input type="file" name="NewAttachment.Content" />
-                <input name="NewAttachment.Name" />
-                <input name="NewAttachment.Description" />
+                <input asp-for="NewAttachment" class="form-control" type="file">
+                <span asp-validation-for="NewAttachment" class="text-danger"></span>
+            </div>
+
+            <label asp-for="NewAttachmentDescription" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <input asp-for="NewAttachmentDescription" class="form-control">
+                <span asp-validation-for="NewAttachmentDescription" class="text-danger"></span>
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" data-bind="visible: attachments().length">
             <label asp-for="DeleteAttachments" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <div data-bind="foreach: Attachments">
+                <div data-bind="foreach: attachments">
                     <div class="form-inline">
-                        <input type="checkbox" value="DeleteAttachments" data-bind="attr: { name: ControlName($index) }" />
-                        <a data-bind="href: DownloadUrl, text: Name, tooltip: { title: Description, placement: 'top' }" title="Download" />
+                        <input type="checkbox" name="DeleteAttachments" data-bind="attr: { value: $data.Id }" />
+                        <a data-bind="attr: { href: DownloadUrl }, tooltip: { title: Description, placement: 'top' }" href="" target="_blank">
+                            <span data-bind="text: Name"> </span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -133,9 +140,9 @@
 
 @section scripts {
     <script type="text/javascript">
-        (function (ko, $, requiredSkills, availableSkills) {
+        (function (ko, $, requiredSkills, availableSkills, attachments) {
 
-            function AdminTaskViewModel(requiredSkills, availableSkills) {
+            function AdminTaskViewModel(requiredSkills, availableSkills, attachments) {
 
                 function RequiredSkillObservable(skillModel) {
                     var ret = ko.utils.extend({}, skillModel);
@@ -154,6 +161,7 @@
                 var self = this;
                 this.requiredSkills = ko.observableArray(requiredSkills).uniqueValidator("Id");
                 this.availableSkills = ko.observableArray(availableSkills);
+                this.attachments = ko.observableArray(attachments);
                 this.addSkill = function() {
                     self.requiredSkills.push(RequiredSkillObservable());
                 };
@@ -162,9 +170,10 @@
                 };
             }
 
-            ko.applyBindings(new AdminTaskViewModel(requiredSkills, availableSkills));
+            ko.applyBindings(new AdminTaskViewModel(requiredSkills, availableSkills, attachments));
         })(ko, $,
             @Json.Serialize(Model.RequiredSkills.Select(rs => new { Id = rs.SkillId })),
-            @Json.Serialize(SelectListService.GetSkills()));
+            @Json.Serialize(SelectListService.GetSkills()),
+            @Json.Serialize(Model.Attachments));
     </script>
 }
