@@ -13,6 +13,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
     {
         private readonly AllReadyContext _context;
         private readonly IMediator _mediator;
+        public Func<DateTime> 
+            DateTimeUtcNow = () => DateTime.UtcNow;
 
         public AssignTaskCommandHandler(AllReadyContext context, IMediator mediator)
         {
@@ -39,7 +41,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     User = user,
                     AdditionalInfo = string.Empty,
                     Status = TaskStatus.Assigned.ToString(),
-                    StatusDateTimeUtc = DateTime.UtcNow
+                    StatusDateTimeUtc = DateTimeUtcNow()
                 };
 
                 task.AssignedVolunteers.Add(taskSignup);

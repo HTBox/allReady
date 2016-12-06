@@ -7,12 +7,14 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Notifications
 {
+    using Event = AllReady.Models.Event;
+
     public class TaskDetailForNotificationQueryHandlerShould : InMemoryContextTest
     {
         private ApplicationUser _user1;
         private Organization _htb;
         private Campaign _firePrev;
-        private Models.Event _queenAnne;
+        private Event _queenAnne;
         private Contact _contact1;
         private AllReadyTask _task1;
 
@@ -59,7 +61,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             _htb.Campaigns.Add(_firePrev);
 
-            _queenAnne = new Models.Event
+            _queenAnne = new Event
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",

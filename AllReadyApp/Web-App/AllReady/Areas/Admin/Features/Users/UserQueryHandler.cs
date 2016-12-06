@@ -25,17 +25,25 @@ namespace AllReady.Areas.Admin.Features.Users
                 .Include(u => u.Claims)
                 .SingleOrDefaultAsync();
 
-            var organizationId = user.GetOrganizationId();
+            EditUserViewModel viewModel = null;
 
-            var viewModel = new EditUserViewModel
+            if (user != null)
             {
-                UserId = message.UserId,
-                UserName = user.UserName,
-                AssociatedSkills = user.AssociatedSkills,
-                IsOrganizationAdmin = user.IsUserType(UserType.OrgAdmin),
-                IsSiteAdmin = user.IsUserType(UserType.SiteAdmin),
-                Organization = organizationId != null ? await _context.Organizations.FirstAsync(t=>t.Id == organizationId.Value) : null
-            };
+                var organizationId = user.GetOrganizationId();
+
+                viewModel = new EditUserViewModel
+                {
+                    UserId = message.UserId,
+                    UserName = user.UserName,
+                    AssociatedSkills = user.AssociatedSkills,
+                    IsOrganizationAdmin = user.IsUserType(UserType.OrgAdmin),
+                    IsSiteAdmin = user.IsUserType(UserType.SiteAdmin),
+                    Organization =
+                        organizationId != null
+                            ? await _context.Organizations.FirstAsync(t => t.Id == organizationId.Value)
+                            : null
+                };
+            }
 
             return viewModel;
         }

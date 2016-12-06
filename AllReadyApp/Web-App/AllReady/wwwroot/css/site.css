@@ -1,4 +1,16 @@
-﻿body {
+﻿/*Helpers*/
+
+.margin-1 {
+    margin-bottom: 10px;
+}
+.margin-2 {
+    margin-bottom: 20px;
+}
+.margin-3 {
+    margin-bottom: 30px;
+}
+
+body {
     margin: 0;
     padding: 0;
     font-family: sans-serif;
@@ -14,6 +26,7 @@
     color: #fff;5th
     padding-bottom: 20px;
     margin-top: -20px;
+    margin-bottom: 20px;
 }
 
 /* Set widths on the form inputs since otherwise they're 100% wide */
@@ -347,6 +360,23 @@ Navigation
 /* Some overrides for Bootstrap classes */
 .table {
     margin-top: 20px;
+}
+
+/*Jumbotron*/
+.jumbotron {
+    
+}
+.jumbotron > *:first-child {
+    margin-top: 0;
+}
+
+/*Panel lister*/
+.panel-lister {
+    border-color: #ccc;
+}
+
+.panel-lister-thumb {
+    height: 80px;
 }
 
 /* Login page */

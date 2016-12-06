@@ -6,112 +6,102 @@
 }
 
 <div class="row logo-background">
-    <div class="col-md-12">
+    <div class="container">
         <div class="center"><img src="~/images/Web-Logo.png" alt="Logo image for the project" class="img-responsive center-block" /></div>
         <h3 class="text-center sub-title">Get connected. Work together. Be prepared.</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="container">
+        <h2 class="margin-3">Active/Upcoming Campaigns</h2>
     </div>
 </div>
 
 @if (Model.HasFeaturedCampaign)
 {
     <div class="row">
-        <div class="col-md-10 col-md-offset-1">
-            <div class="featured-campaign">
+        <div class="container">
+            <div class="jumbotron">
+                <h2>
+                    <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                    Featured
+                </h2>
                 <div class="row">
-                    <div class="col-md-12">
-                        <h2>Featured Campaign</h2>
+                    <div class="@(string.IsNullOrEmpty(Model.FeaturedCampaign.ImageUrl) ? "col-md-9" : "col-md-12")">
+                        <h3>
+                            <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.FeaturedCampaign.Id">
+                                @Model.FeaturedCampaign.Title  
+                            </a>
+                        </h3>
+                        @if(!string.IsNullOrEmpty(Model.FeaturedCampaign.Headline))
+                        {
+                            <p><strong>@Model.FeaturedCampaign.Headline</strong></p>
+                        }
+                        <h4>Managed by @Model.FeaturedCampaign.OrganizationName</h4>
+                        <p>@Model.FeaturedCampaign.Description</p>
+                        <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.FeaturedCampaign.Id" class="btn btn-primary btn-lg">
+                            View
+                        </a>
                     </div>
-                </div>
-                <div class="row">
-                    <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.FeaturedCampaign.Id">
-                        @if (!string.IsNullOrEmpty(Model.FeaturedCampaign.ImageUrl))
-                        {
-                            <div class="col-md-3">
+                    @if (string.IsNullOrEmpty(Model.FeaturedCampaign.ImageUrl))
+                    {
+                        <div class="col-md-3 hidden-xs hidden-sm">
+                            <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.FeaturedCampaign.Id">
                                 <img src="@Model.FeaturedCampaign.ImageUrl" class="img-responsive" />
-                            </div>
-                                <div class="col-md-9">
-                                    <h3>@Model.FeaturedCampaign.Title</h3>
-                                    @if(!string.IsNullOrEmpty(Model.FeaturedCampaign.Headline))
-                                    {
-                                        <p><strong>@Model.FeaturedCampaign.Headline</strong></p>
-                                    }
-                                    <h4>Managed by @Model.FeaturedCampaign.OrganizationName</h4>
-                                    <p>@Model.FeaturedCampaign.Description</p>
-                                </div>
-                        }
-                        else
-                        {
-                            <div class="col-md-12">
-                                <h3>@Model.FeaturedCampaign.Title</h3>
-                                @if (!string.IsNullOrEmpty(Model.FeaturedCampaign.Headline))
-                                {
-                                    <p><strong>@Model.FeaturedCampaign.Headline</strong></p>
-                                }
-                                <h4>Managed by @Model.FeaturedCampaign.OrganizationName</h4>
-                                <p>@Model.FeaturedCampaign.Description</p>
-                            </div>
-                        }
-                    </a>
+                            </a>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
     </div>
 }
-else
-{
-    <div class="row">
-        <div class="col-md-12">
-            <h2>Active/Upcoming Campaigns</h2>
-        </div>
-    </div>
-
-    <div class="row">
+<div class="row">
+    <div class="container">
         @if (Model.ActiveOrUpcomingCampaigns.Count == 0)
         {
             <div class="text-center">
                 <div class="alert alert-warning" role="alert">
-                    <strong>No matching campaigns.</strong>
+                    <strong>No matching campaigns...</strong>
                 </div>
             </div>
         }
         else
         {
-            <div class="col-md-12">
-                <div id="campaignGrid" class="table-responsive">
-                    <table class="table">
-                        <tr>
-                            <th></th>
-                            <th><span title="Name of the campaign">Title</span></th>
-                            <th><span title="Description of the campaign">Description</span></th>
-                            <th><span title="Date of the campaign">Dates</span></th>
-                        </tr>
-                        @foreach (var campaign in Model.ActiveOrUpcomingCampaigns)
-                        {
-                            <tr>
-                                <td>
-                                    <img src="@campaign.ImageUrl" class="img-responsive" />
-                                </td>
-                                <td>
-                                    @Html.ActionLink(campaign.Name, "Details", "Campaign", new { campaign.Id })
-                                </td>
-                                <td>
-                                    <span>@campaign.Description</span>
-                                </td>
-                                <td>
-                                    <span><time value=@campaign.StartDate format="dddd, MMMM d yyyy"></time> - <time value=@campaign.EndDate format="dddd, MMMM d yyyy"></time></span>
-                                </td>
-                            </tr>
-                        }
-                    </table>
+            @foreach (var campaign in Model.ActiveOrUpcomingCampaigns)
+            {
+                <div class="panel panel-lister">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="@(string.IsNullOrEmpty(campaign.ImageUrl) ? "col-md-9" : "col-md-12")">
+                                <h4>
+                                    <a asp-controller="Campaign" asp-action="Details" asp-route-id="@campaign.Id">
+                                        @campaign.Name 
+                                    </a>
+                                </h4>
+                                <p>
+                                    <time value=@campaign.StartDate format="dddd, MMMM d yyyy"></time> - <time value=@campaign.EndDate format="dddd, MMMM d yyyy"></time>
+                                </p>
+                                <p>@campaign.Description</p>
+                                <a asp-controller="Campaign" asp-action="Details" asp-route-id="@campaign.Id" class="btn btn-primary">
+                                    View
+                                </a>
+                            </div>
+                            @if (string.IsNullOrEmpty(campaign.ImageUrl))
+                            {
+                                <div class="col-md-3 hidden-xs hidden-sm text-center">
+                                    <a asp-controller="Campaign" asp-action="Details" asp-route-id="@campaign.Id">
+                                        <img src="@campaign.ImageUrl" class="panel-lister-thumb" />
+                                    </a>
+                                </div>
+                            }
+                        </div>   
+                    </div>
                 </div>
-            </div>
-        }
+            }
+        }   
     </div>
-}
+</div>
 
 
-<div class="row">
-    <div class="col-md-12">
-        <a class="btn btn-success" asp-controller="campaign" asp-action="index">View All Campaigns</a>
-    </div>
-</div>    

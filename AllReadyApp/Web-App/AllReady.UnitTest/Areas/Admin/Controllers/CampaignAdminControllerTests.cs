@@ -106,13 +106,26 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CreateReturnsCorrectViewWithCorrectViewModel()
         {
-            var sut = new CampaignController(Mock.Of<IMediator>(), null);
-            var view = (ViewResult)sut.Create();
+            var sut = new CampaignController(null, null);
+            var view = (ViewResult) sut.Create();
 
             var viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
 
             Assert.Equal(view.ViewName, "Edit");
             Assert.NotNull(viewModel);
+        }
+
+        [Fact]
+        public void CreateReturnsCorrectDataOnViewModel()
+        {
+            var dateTimeNow = DateTime.Now;
+
+            var sut = new CampaignController(null, null) { DateTimeNow = () => dateTimeNow };
+            var view = (ViewResult)sut.Create();
+            var viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
+
+            Assert.Equal(viewModel.StartDate, dateTimeNow);
+            Assert.Equal(viewModel.EndDate, dateTimeNow.AddMonths(1));
         }
 
         [Fact]

@@ -6,7 +6,7 @@ using AllReady.Features.Events;
 
 namespace AllReady.UnitTest.Features.Event
 {
-    using Event = Models.Event;
+    using Event = AllReady.Models.Event;
 
     public class GetMyTasksQueryHandlerShould : InMemoryContextTest
     {
@@ -19,24 +19,18 @@ namespace AllReady.UnitTest.Features.Event
             const string userId = "9D0929AC-BE6A-4A0B-A758-6C6FC31A8C47";
             var message = new GetMyTasksQuery { EventId = eventId, UserId = userId };
 
-            using (var context = new AllReadyContext(options)) {
-                context.TaskSignups.Add(new TaskSignup {
-                    User = new ApplicationUser {
-                        Id = userId
-                    },
-                    Task = new AllReadyTask {
-                        Event = new Event {
-                            Id = eventId,
-                            Campaign = new Campaign {
-                                Locked = false
-                            }
-                        }
-                    }
+            using (var context = new AllReadyContext(options))
+            {
+                context.TaskSignups.Add(new TaskSignup
+                {
+                    User = new ApplicationUser { Id = userId },
+                    Task = new AllReadyTask { Event = new Event { Id = eventId, Campaign = new Campaign { Locked = false }}}
                 });
                 await context.SaveChangesAsync();
             }
 
-            using (var context = new AllReadyContext(options)) {
+            using (var context = new AllReadyContext(options))
+            {
                 var sut = new GetMyTasksQueryHandler(context);
                 var response = sut.Handle(message);
 

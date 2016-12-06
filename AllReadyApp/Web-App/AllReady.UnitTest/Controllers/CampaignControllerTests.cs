@@ -140,21 +140,6 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<CampaignViewModel>(result.ViewData.Model);
         }
 
-        public class CampaignControllerForDetailsActionMethod : CampaignController
-        {
-            private readonly string urlEncodedValue;
-
-            public CampaignControllerForDetailsActionMethod(IMediator mediator, string urlEncodedValue = null) : base(mediator)
-            {
-                this.urlEncodedValue = urlEncodedValue;
-            }
-
-            protected override string UrlEncode(string value)
-            {
-                return urlEncodedValue;
-            }
-        }
-
         [Fact]
         public async Task LocationMapReturnsHttpNotFoundWhenCampaignIsNull()
         {
@@ -343,6 +328,21 @@ namespace AllReady.UnitTest.Controllers
             var httpGetAttribute = sut.GetAttributesOn(x => x.Get(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(httpGetAttribute);
             Assert.Equal(httpGetAttribute.Template, "{id}");
+        }
+
+        public class CampaignControllerForDetailsActionMethod : CampaignController
+        {
+            private readonly string urlEncodedValue;
+
+            public CampaignControllerForDetailsActionMethod(IMediator mediator, string urlEncodedValue = null) : base(mediator)
+            {
+                this.urlEncodedValue = urlEncodedValue;
+            }
+
+            protected override string UrlEncode(string value)
+            {
+                return urlEncodedValue;
+            }
         }
     }
 }

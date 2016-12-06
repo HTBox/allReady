@@ -1,6 +1,5 @@
 ﻿using AllReady.Features.Tasks;
 using AllReady.Models;
-using AllReady.ViewModels;
 using MediatR;
 using Moq;
 using System;
@@ -11,6 +10,8 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Tasks
 {
+    using Event = AllReady.Models.Event;
+
     public class TaskSignupHandlerShould : InMemoryContextTest
     {
         [Fact]
@@ -69,7 +70,7 @@ namespace AllReady.UnitTest.Features.Tasks
         {
             Context.Users.Add(new ApplicationUser { Id = "abc" });
 
-            var campaignEvent = new Models.Event { Id = 1, Name = "Some Event" };
+            var campaignEvent = new Event { Id = 1, Name = "Some Event" };
             Context.Events.Add(campaignEvent);
 
             Context.Tasks.Add(new AllReadyTask { Id = 1, Name = "Closed Task", EndDateTime = DateTime.UtcNow.AddDays(-100), Event = campaignEvent });

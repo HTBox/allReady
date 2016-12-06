@@ -3,7 +3,6 @@ using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Features.Events;
 using AllReady.Models;
-using AllReady.Providers;
 using MediatR;
 using Moq;
 using Xunit;
