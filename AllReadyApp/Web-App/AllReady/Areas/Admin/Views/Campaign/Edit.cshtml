@@ -48,245 +48,393 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-controller="Campaign" asp-area="Admin" asp-action="Edit" method="post" enctype="multipart/form-data">
 
-    @if (User.IsUserType(UserType.OrgAdmin))
-    {
-        <button type="button"
-                id="btnGetContactInfo"
-                class="btn btn-info"
-                data-toggle="modal"
-                data-target="#confirmContactModal"
-                title="Copy Contact Information from Organization">
-            Copy Contact Info
-        </button>
-    }
 
-    <div class="form-horizontal">
-        <hr />
-        <div asp-validation-summary="All" class="text-danger"></div>
-        @if (isEdit)
-        {
-            <input type="hidden" asp-for="Id" />
-        }
-        <div class="form-group">
-            <label asp-for="Name" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Description" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Headline" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Headline" class="form-control" />
-                <span asp-validation-for="Headline" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="control-label col-md-2">
-                <label asp-for="FullDescription"></label>
-                <p><cite>This formatted text will be used as your landing page content</cite></p>
-            </div>
-            <div class="col-md-10">
-                <textarea asp-for="FullDescription" class="form-control wysiwyg" rows="6"></textarea>
-                <span asp-validation-for="FullDescription" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="control-label col-md-2">
-                <label asp-for="ExternalUrl"></label>
-                <p><cite>Optional link to an outside page</cite></p>
-            </div>
-            <div class="col-md-10">
-                <input asp-for="ExternalUrl" class="form-control" />
-                <span asp-validation-for="ExternalUrl" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="ExternalUrlText" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="ExternalUrlText" class="form-control" />
-                <span asp-validation-for="ExternalUrlText" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="TimeZoneId" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <select asp-for="TimeZoneId" asp-items="SelectListService.GetTimeZones()" class="form-control"></select>
-                <span asp-validation-for="TimeZoneId" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="StartDate" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="StartDate" class="form-control datepicker" />
-                <span asp-validation-for="StartDate" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="EndDate" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="EndDate" class="form-control datepicker" />
-                <span asp-validation-for="EndDate" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="OrganizationId" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.OrganizationId, SelectListService.GetOrganizations(User), htmlAttributes: new { @class = "form-control" })
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Featured" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input type="checkbox" asp-for="Featured" />
-                <span asp-validation-for="Featured" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-horizontal">
-            @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#publish">Publish/Save</a></li>
+    <li><a data-toggle="tab" href="#preview">Preview</a></li>
+</ul>
+
+<div class="tab-content">
+
+    <div id="publish" class="tab-pane fade in active">
+
+        <form asp-controller="Campaign" asp-area="Admin" asp-action="Edit" method="post" enctype="multipart/form-data">
+
+            @if (User.IsUserType(UserType.OrgAdmin))
             {
+                <button type="button"
+                        id="btnGetContactInfo"
+                        class="btn btn-info"
+                        data-toggle="modal"
+                        data-target="#confirmContactModal"
+                        title="Copy Contact Information from Organization">
+                    Copy Contact Info
+                </button>
+            }
+
+            <div class="form-horizontal">
+
+                <div asp-validation-summary="All" class="text-danger"></div>
+                @if (isEdit)
+                {
+                    <input type="hidden" asp-for="Id" />
+                }
                 <div class="form-group">
-                    <div class="col-md-offset-2 col-md-4">
+                    <label asp-for="Name" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <input asp-for="Description" class="form-control" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Headline" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <input asp-for="Headline" class="form-control" />
+                        <span asp-validation-for="Headline" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="control-label col-md-2">
+                        <label asp-for="FullDescription"></label>
+                        <p>
+                            <cite>This formatted text will be used as your landing page content</cite>
+                        </p>
+                    </div>
+                    <div class="col-md-10">
+                        <textarea asp-for="FullDescription" class="form-control wysiwyg" rows="10"></textarea>
+                        <span asp-validation-for="FullDescription" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="control-label col-md-2">
+                        <label asp-for="ExternalUrl"></label>
+                        <p>
+                            <cite>Optional link to an outside page</cite>
+                        </p>
+                    </div>
+                    <div class="col-md-10">
+                        <input asp-for="ExternalUrl" class="form-control" />
+                        <span asp-validation-for="ExternalUrl" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ExternalUrlText" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <input asp-for="ExternalUrlText" class="form-control" />
+                        <span asp-validation-for="ExternalUrlText" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TimeZoneId" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <select asp-for="TimeZoneId" asp-items="SelectListService.GetTimeZones()" class="form-control"></select>
+                        <span asp-validation-for="TimeZoneId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="StartDate" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <input asp-for="StartDate" class="form-control datepicker" />
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EndDate" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <input asp-for="EndDate" class="form-control datepicker" />
+                        <span asp-validation-for="EndDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="OrganizationId" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        @Html.DropDownListFor(model => model.OrganizationId, SelectListService.GetOrganizations(User), htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Featured" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <input type="checkbox" asp-for="Featured" />
+                        <span asp-validation-for="Featured" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-horizontal">
+                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                    {
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-4">
 
-                        <div class="alert campaign-image-status-alert" style="display:none;">
-                            
-                        </div>
+                                <div class="alert campaign-image-status-alert" style="display: none;">
 
-                        <div class="panel panel-default" id="image-panel-container">
-                            <div class="panel-heading">
-                                <label asp-for="ImageUrl"></label>
+                                </div>
+
+                                <div class="panel panel-default" id="image-panel-container">
+                                    <div class="panel-heading">
+                                        <label asp-for="ImageUrl"></label>
+                                    </div>
+                                    <div class="panel-body" id="image-panel-body">
+                                        <div id="image-wrapper">
+                                            <button class="btn btn-danger" id="delete-image">Delete Image</button>
+                                            <img src="@Model.ImageUrl" class="img-responsive center-block" />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="panel-body" id="image-panel-body">
-                                <div id="image-wrapper">
-                                    <button class="btn btn-danger" id="delete-image">Delete Image</button>
-                                    <img src="@Model.ImageUrl" class="img-responsive center-block" />
+                        </div>
+                    }
+                    <div class="form-group">
+                        <label asp-for="FileUpload" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <div class="col-md-10">
+                                    <input type="file" asp-for="FileUpload" class="control-label col-md-4" />
+                                    @*<button type="submit" class="btn col-md-1">Upload</button>*@
+                                    <span asp-validation-for="FileUpload" class="text-danger col-md-12"></span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            }
-            <div class="form-group">
-                <label asp-for="FileUpload" class="col-md-2 control-label"></label>
-                <div class="col-md-10">
-                    <div class="form-group">
-                        <div class="col-md-10">
-                            <input type="file" asp-for="FileUpload" class="control-label col-md-4" />
-                            @*<button type="submit" class="btn col-md-1">Upload</button>*@
-                            <span asp-validation-for="FileUpload" class="text-danger col-md-12"></span>
-                        </div>
+                <h3>Location</h3>
+                @Html.EditorFor(m => m.Location)
+                <h3>Primary Contact</h3>
+                <div class="form-group">
+                    <label asp-for="PrimaryContactFirstName" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <input asp-for="PrimaryContactFirstName" class="form-control" />
+                        <span asp-validation-for="PrimaryContactFirstName" class="text-danger"></span>
                     </div>
                 </div>
-            </div>
-        </div>
-        <h3>Location</h3>
-        @Html.EditorFor(m => m.Location)
-        <h3>Primary Contact</h3>
-        <div class="form-group">
-            <label asp-for="PrimaryContactFirstName" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="PrimaryContactFirstName" class="form-control" />
-                <span asp-validation-for="PrimaryContactFirstName" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="PrimaryContactLastName" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="PrimaryContactLastName" class="form-control" />
-                <span asp-validation-for="PrimaryContactLastName" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="PrimaryContactPhoneNumber" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="PrimaryContactPhoneNumber" class="form-control" />
-                <span asp-validation-for="PrimaryContactPhoneNumber" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="PrimaryContactEmail" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="PrimaryContactEmail" class="form-control" />
-                <span asp-validation-for="PrimaryContactEmail" class="text-danger"></span>
-            </div>
-        </div>
+                <div class="form-group">
+                    <label asp-for="PrimaryContactLastName" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <input asp-for="PrimaryContactLastName" class="form-control" />
+                        <span asp-validation-for="PrimaryContactLastName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PrimaryContactPhoneNumber" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <input asp-for="PrimaryContactPhoneNumber" class="form-control" />
+                        <span asp-validation-for="PrimaryContactPhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PrimaryContactEmail" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <input asp-for="PrimaryContactEmail" class="form-control" />
+                        <span asp-validation-for="PrimaryContactEmail" class="text-danger"></span>
+                    </div>
+                </div>
 
-        @if (isEdit)
-        {
-            <input type="hidden" asp-for="CampaignImpact.Id" />
-            <h3>Campaign Impact Goal</h3>
-            <div class="row">
-                <div class="col-md-5">
-                    <div class="alert alert-warning">
-                        <p><strong>Define your campaign's impact in a way that will inspire people to help you reach those goals.</strong></p>
-                        <p>
-                            If you choose <em>numeric</em> as an impact type, then a "thermometer" will be displayed on the landing page
-                            showing the current progress of the campaign as you update the current impact level.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group">
-                    <label class="col-md-2 control-label">Display Impact Goal</label>
-                    <div class="form-horizontal">
-                        <input type="checkbox" asp-for="CampaignImpact.Display" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2 control-label">Campaign Impact Goal</label>
-                    <div class="form-horizontal">
-                        <input type="text" asp-for="CampaignImpact.TextualImpactGoal" class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2 control-label">Impact Type</label>
-                    <div class="form-horizontal">
-                        @Html.DropDownListFor(model => model.CampaignImpact.ImpactType, SelectListService.GetCampaignImpactTypes(), htmlAttributes: new { @class = "form-control" })
-                    </div>
-                </div>
-                <div id="numericImpactSection">
-                    <div class="form-group">
-                        <label class="col-md-2 control-label">Current Impact Level</label>
-                        <div class="form-horizontal">
-                            <input type="text" asp-for="CampaignImpact.CurrentImpactLevel" class="form-control" />
-                            <span class="help-block">
-                                <em>
-                                    This value is the current number of x achieved to reach the Numeric Impact Goal value.<br />
-                                    Ideally less than or equal to Numeric Impact Goal, but there may be certain scenarios where it's greater.
-                                </em>
-                            </span>
+                @if (isEdit)
+                {
+                    <input type="hidden" asp-for="CampaignImpact.Id" />
+                    <h3>Campaign Impact Goal</h3>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="alert alert-warning">
+                                <p>
+                                    <strong>Define your campaign's impact in a way that will inspire people to help you reach those goals.</strong>
+                                </p>
+                                <p>
+                                    If you choose <em>numeric</em> as an impact type, then a "thermometer" will be displayed on the landing page
+                                    showing the current progress of the campaign as you update the current impact level.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-md-2 control-label">Numeric Impact Goal</label>
-                        <div class="form-horizontal">
-                            <input type="text" asp-for="CampaignImpact.NumericImpactGoal" class="form-control" />
-                            <span class="help-block">
-                                <em>This value is the number of x to reach the goal.</em>
-                            </span>
+                    <div class="row">
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Display Impact Goal</label>
+                            <div class="form-horizontal">
+                                <input type="checkbox" asp-for="CampaignImpact.Display" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Campaign Impact Goal</label>
+                            <div class="form-horizontal">
+                                <input type="text" asp-for="CampaignImpact.TextualImpactGoal" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Impact Type</label>
+                            <div class="form-horizontal">
+                                @Html.DropDownListFor(model => model.CampaignImpact.ImpactType, SelectListService.GetCampaignImpactTypes(), htmlAttributes: new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div id="numericImpactSection">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Current Impact Level</label>
+                                <div class="form-horizontal">
+                                    <input type="text" asp-for="CampaignImpact.CurrentImpactLevel" class="form-control" />
+                                    <span class="help-block">
+                                        <em>
+                                            This value is the current number of x achieved to reach the Numeric Impact Goal value.<br />
+                                            Ideally less than or equal to Numeric Impact Goal, but there may be certain scenarios where it's greater.
+                                        </em>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">Numeric Impact Goal</label>
+                                <div class="form-horizontal">
+                                    <input type="text" asp-for="CampaignImpact.NumericImpactGoal" class="form-control" />
+                                    <span class="help-block">
+                                        <em>This value is the number of x to reach the goal.</em>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                }
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" value="@actionTitle" class="btn btn-default">@actionTitle</button>
+                    <a href="@cancelUrl" class="btn btn-default">Cancel</a>
                 </div>
             </div>
-        }
+        </form>
+
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <button type="submit" value="@actionTitle" class="btn btn-default">@actionTitle</button>
-            <a href="@cancelUrl" class="btn btn-default">Cancel</a>
-        </div>
+
+    <div id="preview" class="tab-pane fade col-md-8">
+
+        <table class="table table-responsive col-sm-offset-3 col-md-offset-2" id="campaign-preview-table">
+
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td><label asp-for="Name" class="col-md-4 control-label"></label></td>
+                    <td>@Model.Name</td>
+                </tr>
+
+                <tr>
+                    <td><label asp-for="Description" class="col-md-4 control-label"></label></td>
+                    <td>@Model.Description</td>
+                </tr>
+
+                <tr>
+                    <td><label asp-for="Headline" class="col-md-4 control-label"></label></td>
+                    <td>@Model.Headline</td>
+                </tr>
+                <tr>
+                    <td><label asp-for="FullDescription" class="col-md-4 control-label"></label></td>
+                    <td>@Model.FullDescription</td>
+                </tr>
+
+                <tr>
+                    <td><label asp-for="ExternalUrl" class="col-md-4 control-label"></label></td>
+                    <td>@Model.ExternalUrl</td>
+                </tr>
+
+                <tr>
+                    <td><label asp-for="ExternalUrlText" class="col-md-4 control-label"></label></td>
+                    <td>@Model.ExternalUrlText</td>
+                </tr>
+
+                <tr>
+                    <td><label asp-for="TimeZoneId" class="col-md-4 control-label"></label></td>
+                    <td>@Model.TimeZoneId</td>
+                </tr>
+
+                <tr>
+                    <td><label asp-for="StartDate" class="col-md-4 control-label"></label></td>
+                    <td>@Model.StartDate</td>
+                </tr>
+
+                <tr>
+                    <td><label asp-for="EndDate" class="col-md-4 control-label"></label></td>
+                    <td>@Model.EndDate</td>
+                </tr>
+
+                <tr>
+                    <td><label asp-for="OrganizationId" class="col-md-4 control-label"></label></td>
+                    <td>@Model.OrganizationId</td>
+                </tr>
+
+                <tr>
+                    <td><label asp-for="Featured" class="col-md-4 control-label"></label></td>
+                    <td>@Model.Featured</td>
+                </tr>
+
+                <tr>
+                    <td><label asp-for="ImageUrl" class="col-md-4 control-label"></label></td>
+                    <td>@Model.ImageUrl</td>
+                </tr>
+
+                <tr>
+                    <td><label asp-for="PrimaryContactFirstName" class="col-md-4 control-label"></label></td>
+                    <td>@Model.PrimaryContactFirstName</td>
+                </tr>
+
+                <tr>
+                    <td><label asp-for="PrimaryContactLastName" class="col-md-4 control-label"></label></td>
+                    <td>@Model.PrimaryContactLastName</td>
+                </tr>
+
+                <tr>
+                    <td><label asp-for="PrimaryContactPhoneNumber" class="col-md-4 control-label"></label></td>
+                    <td>@Model.PrimaryContactPhoneNumber</td>
+                </tr>
+
+                <tr>
+                    <td><label asp-for="PrimaryContactEmail" class="col-md-4 control-label"></label></td>
+                    <td>@Model.PrimaryContactEmail</td>
+                </tr>
+
+                <tr>
+                    <td><label class="col-md-4 control-label">Display Impact Goal</label></td>
+                    <td>Display Impact Goal</td>
+                </tr>
+
+                <tr>
+                    <td><label class="col-md-4 control-label">Campaign Impact Goal</label></td>
+                    <td>Campaign Impact Goal</td>
+                </tr>
+
+                <tr>
+                    <td><label class="col-md-4 control-label">Impact Type</label></td>
+                    <td>Impact Type</td>
+                </tr>
+
+                <tr>
+                    <td><label class="col-md-4 control-label">Current Impact Level</label></td>
+                    <td>Current Impact Level</td>
+                </tr>
+
+                <tr>
+                    <td><label class="col-md-4 control-label">Numeric Impact Goal</label></td>
+                    <td>Numeric Impact Goal</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
     </div>
-</form>
+
+</div>
+
+
+
+
 
 <div class="modal fade" id="confirmContactModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
     <div class="modal-dialog">
