@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Requests
 {
-    public class RequestExistsByProviderIdQueryHandler : IRequestHandler<RequestExistsByProviderIdQuery, bool>
+    public class RequestExistsByProviderIdQueryHandler : IAsyncRequestHandler<RequestExistsByProviderIdQuery, bool>
     {
         private readonly AllReadyContext context;
 
@@ -13,9 +14,9 @@ namespace AllReady.Features.Requests
             this.context = context;
         }
 
-        public bool Handle(RequestExistsByProviderIdQuery message)
+        public async Task<bool> Handle(RequestExistsByProviderIdQuery message)
         {
-            return context.Requests.Any(x => x.ProviderRequestId == message.ProviderRequestId);
+            return await context.Requests.AnyAsync(x => x.ProviderRequestId == message.ProviderRequestId);
         }
     }
 }

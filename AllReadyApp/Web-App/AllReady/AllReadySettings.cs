@@ -12,6 +12,13 @@
         public string DefaultTimeZone { get; set; }
     }
 
+    public class GetASmokeAlarmApiSettings
+    {
+        public string BaseAddress { get; set; }
+        public string Token { get; set; }
+        public int RetryAttempts { get; set; }
+    }
+
     public class DatabaseSettings
     {
         public string ConnectionString { get; set; }
