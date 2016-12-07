@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AllReady.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using AllReady.Features.Requests;
+using AllReady.Hangfire.Jobs;
 using AllReady.ViewModels.Requests;
+using Hangfire;
 
 namespace AllReady.Controllers
 {
@@ -14,9 +17,11 @@ namespace AllReady.Controllers
     public class RequestApiController : Controller
     {
         private readonly IMediator mediator;
+        private readonly IBackgroundJobClient backgroundjobClient;
 
-        public RequestApiController(IMediator mediator)
+        public RequestApiController(IMediator mediator, IBackgroundJobClient backgroundjobClient)
         {
+            this.backgroundjobClient = backgroundjobClient;
             this.mediator = mediator;
         }
 
@@ -24,31 +29,25 @@ namespace AllReady.Controllers
         [ExternalEndpoint]
         public async Task<IActionResult> Post([FromBody]RequestApiViewModel viewModel)
         {
-            //TODO mgmccarthy: I'm making a guess that field validations will return a BadRequest result instead of a 202. Testing it with Postman, the model binding to enforce field validation worked
-            //Anything that could potentially take longer then simple field validation (aka, region validation) will be moved further down the pipelines to be reported back to getasmokealarm's API
-            //waiting to hear back from the getasmokealarm folks if they take specific actions from the ack from our endpoint.
-
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-            
-            //we only accept the status of "new" from RC integration, the rest we ignore
+
+            //we can only accept the requests with the status of "new" from getasmokealarm
             if (viewModel.Status != "new")
             {
                 return BadRequest();
             }
 
-            //if we get here, the incoming request has mistakenly been labeled with the "new" status code
-            if (mediator.Send(new RequestExistsByProviderIdQuery { ProviderRequestId = viewModel.ProviderRequestId }))
+            //if we get here, the incoming request is already in our database with a matching ProviderId ("serial" field for getasmokealarm) and the request was sent with a status of "new"
+            if (await mediator.SendAsync(new RequestExistsByProviderIdQuery { ProviderRequestId = viewModel.ProviderRequestId }))
             {
                 return BadRequest();
             }
 
-            //TODO mgmccarthy: region specific verification (this COULD be moved further down the pipeline to have the request status reported back to getasmokealarm via their API)
-
-            //TODO mgmccarthy: waiting to hear back from getasmokealarm what data they would expect back on the ack, if they only require the 202 back and we can invoke their API downstream from this to report back whether or not we're going to accept this request.
-            await mediator.SendAsync(new AddApiRequestCommand { ViewModel = viewModel });
+            //this returns control to the caller immediately so the client is not left locked while we figure out if we can service the request
+            backgroundjobClient.Enqueue<IProcessApiRequests>(x => x.Process(viewModel));
 
             //https://httpstatuses.com/202
             return StatusCode(202);

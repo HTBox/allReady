@@ -101,6 +101,7 @@ namespace AllReady
             services.Configure<EmailSettings>(Configuration.GetSection("Email"));
             services.Configure<SampleDataSettings>(Configuration.GetSection("SampleData"));
             services.Configure<GeneralSettings>(Configuration.GetSection("General"));
+            services.Configure<GetASmokeAlarmApiSettings>(Configuration.GetSection("GetASmokeAlarmApiSettings"));
             services.Configure<TwitterAuthenticationSettings>(Configuration.GetSection("Authentication:Twitter"));
             services.Configure<MappingSettings>(Configuration.GetSection("Mapping"));
 
@@ -166,9 +167,13 @@ namespace AllReady
             services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
             services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
             services.AddSingleton<IImageService, ImageService>();
+
+            //Hangfire jobs
             services.AddTransient<ISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate, SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate>();
             services.AddTransient<ISendRequestConfirmationMessagesADayBeforeAnItineraryDate, SendRequestConfirmationMessagesADayBeforeAnItineraryDate>();
             services.AddTransient<ISendRequestConfirmationMessagesTheDayOfAnItineraryDate, SendRequestConfirmationMessagesTheDayOfAnItineraryDate>();
+            services.AddTransient<IProcessApiRequests, ProcessApiRequests>();
+            services.AddTransient<ISendRequestStatusToGetASmokeAlarm, SendRequestStatusToGetASmokeAlarm>();
 
             services.AddTransient<SampleDataGenerator>();
 
