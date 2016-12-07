@@ -11,8 +11,7 @@ namespace AllReady.Migrations
             migrationBuilder.AddColumn<int>(
                 name: "OrganizationId",
                 table: "Request",
-                nullable: false,
-                defaultValue: 0);
+                nullable: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Request_OrganizationId",
