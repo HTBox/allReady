@@ -79,6 +79,7 @@
                 @if (isEdit)
                 {
                     <input type="hidden" asp-for="Id" />
+                    <input type="hidden" id="is-edit" value="@isEdit" />
                 }
                 <div class="form-group">
                     <label asp-for="Name" class="col-md-2 control-label"></label>
@@ -356,5 +357,5 @@
         SystemJS.import('Main');
     </script>
 
-    }
+
 }
