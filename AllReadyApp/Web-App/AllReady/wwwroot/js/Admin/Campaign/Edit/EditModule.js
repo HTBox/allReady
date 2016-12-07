@@ -121,21 +121,23 @@ define("EditModule", function () {
 
 
 
+            if ($("#is-edit").val() === "True") {
 
-            $("#display-impact-goal-td").text($("#CampaignImpact_Display").is(":checked") === true ? "Yes" : "No");
-            $("#campaign-impact-goal-td").text($("#CampaignImpact_TextualImpactGoal").val());
+                $("#display-impact-goal-td").text($("#CampaignImpact_Display").is(":checked") === true ? "Yes" : "No");
+                $("#campaign-impact-goal-td").text($("#CampaignImpact_TextualImpactGoal").val());
 
-            $("#impact-type-td").text($("#CampaignImpact_ImpactType :selected").text());
-            var currentImpactLevelTd = $("#current-impact-level-td");
-            var numericImpactGoalTd = $("#numeric-impact-goal-td");
-            currentImpactLevelTd.closest("tr").hide();
-            numericImpactGoalTd.closest("tr").hide();
+                $("#impact-type-td").text($("#CampaignImpact_ImpactType :selected").text());
+                var currentImpactLevelTd = $("#current-impact-level-td");
+                var numericImpactGoalTd = $("#numeric-impact-goal-td");
+                currentImpactLevelTd.closest("tr").hide();
+                numericImpactGoalTd.closest("tr").hide();
 
-            if ($("#CampaignImpact_ImpactType").val() === "0") {
-                currentImpactLevelTd.closest("tr").show();
-                numericImpactGoalTd.closest("tr").show();
-                currentImpactLevelTd.text($("#CampaignImpact_CurrentImpactLevel").val());
-                numericImpactGoalTd.text($("#CampaignImpact_NumericImpactGoal").val());
+                if ($("#CampaignImpact_ImpactType").val() === "0") {
+                    currentImpactLevelTd.closest("tr").show();
+                    numericImpactGoalTd.closest("tr").show();
+                    currentImpactLevelTd.text($("#CampaignImpact_CurrentImpactLevel").val());
+                    numericImpactGoalTd.text($("#CampaignImpact_NumericImpactGoal").val());
+                }
             }
 
         });
