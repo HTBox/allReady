@@ -1,10 +1,9 @@
-﻿SystemJS.config({
-    baseURL: '/js/Admin/Campaign/Edit',
-    defaultJSExtensions: true
-});
+﻿"use strict";
 
-SystemJS.import('EditModule').then(function (editModule) {
+define("Main", ["EditModule"], function (editModule) {
 
     editModule.addDeleteCampaignImageHandler();
     editModule.checkForMobileDeviceAndShowImageDeleteButton();
+    editModule.addPopulatePreviewTableHandler();
+
 });
