@@ -121,7 +121,7 @@ define("EditModule", function () {
 
 
 
-            if ($("#is-edit").val() === "True") {
+            if ($("#is-edit").val() === "true") {
 
                 $("#display-impact-goal-td").text($("#CampaignImpact_Display").is(":checked") === true ? "Yes" : "No");
                 $("#campaign-impact-goal-td").text($("#CampaignImpact_TextualImpactGoal").val());
