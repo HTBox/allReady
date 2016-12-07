@@ -79,6 +79,7 @@
                 @if (isEdit)
                 {
                     <input type="hidden" asp-for="Id" />
+                    <input type="hidden" id="is-edit" value="@isEdit" />
                 }
                 <div class="form-group">
                     <label asp-for="Name" class="col-md-2 control-label"></label>
@@ -322,56 +323,56 @@
 
                 <tr>
                     <td><label asp-for="Name" class="col-md-4 control-label"></label></td>
-                    <td id="name-td">@Model.Name</td>
+                    <td id="name-td"></td>
                 </tr>
 
                 <tr>
                     <td><label asp-for="Description" class="col-md-4 control-label"></label></td>
-                    <td id="description-td">@Model.Description</td>
+                    <td id="description-td"></td>
                 </tr>
 
                 <tr>
                     <td><label asp-for="Headline" class="col-md-4 control-label"></label></td>
-                    <td id="headline-td">@Model.Headline</td>
+                    <td id="headline-td"></td>
                 </tr>
                 <tr>
                     <td><label asp-for="FullDescription" class="col-md-4 control-label"></label></td>
-                    <td id="full-description-td">@Model.FullDescription</td>
+                    <td id="full-description-td"></td>
                 </tr>
 
                 <tr>
                     <td><label asp-for="ExternalUrl" class="col-md-4 control-label"></label></td>
-                    <td id="external-url-td">@Model.ExternalUrl</td>
+                    <td id="external-url-td"></td>
                 </tr>
 
                 <tr>
                     <td><label asp-for="ExternalUrlText" class="col-md-4 control-label"></label></td>
-                    <td id="external-url-text-td">@Model.ExternalUrlText</td>
+                    <td id="external-url-text-td"></td>
                 </tr>
 
                 <tr>
                     <td><label asp-for="TimeZoneId" class="col-md-4 control-label"></label></td>
-                    <td id="timezoneid-td">@Model.TimeZoneId</td>
+                    <td id="timezoneid-td"></td>
                 </tr>
 
                 <tr>
                     <td><label asp-for="StartDate" class="col-md-4 control-label"></label></td>
-                    <td id="start-date-td">@Model.StartDate</td>
+                    <td id="start-date-td"></td>
                 </tr>
 
                 <tr>
                     <td><label asp-for="EndDate" class="col-md-4 control-label"></label></td>
-                    <td id="end-date-td">@Model.EndDate</td>
+                    <td id="end-date-td"></td>
                 </tr>
 
                 <tr>
                     <td><label asp-for="OrganizationId" class="col-md-4 control-label"></label></td>
-                    <td id="organizationid-td">@Model.OrganizationId</td>
+                    <td id="organizationid-td"></td>
                 </tr>
 
                 <tr>
                     <td><label asp-for="Featured" class="col-md-4 control-label"></label></td>
-                    <td id="featured-td">@Model.Featured</td>
+                    <td id="featured-td"></td>
                 </tr>
 
                 @if (Model.ImageUrl != null)
@@ -386,74 +387,76 @@
 
                 <tr>
                     <td><label asp-for="@Model.Location.Address1" class="col-md-4 control-label"></label></td>
-                    <td id="address1-td">@Model.Location.Address1</td>
+                    <td id="address1-td"></td>
                 </tr>
                 <tr>
                     <td><label asp-for="@Model.Location.Address2" class="col-md-4 control-label"></label></td>
-                    <td id="address2-td">@Model.Location.Address2</td>
+                    <td id="address2-td"></td>
                 </tr>
                 <tr>
                     <td><label asp-for="@Model.Location.City" class="col-md-4 control-label"></label></td>
-                    <td id="city-td">@Model.Location.City</td>
+                    <td id="city-td"></td>
                 </tr>
                 <tr>
                     <td><label asp-for="@Model.Location.State" class="col-md-4 control-label"></label></td>
-                    <td id="state-td">@Model.Location.State</td>
+                    <td id="state-td"></td>
                 </tr>
                 <tr>
                     <td><label asp-for="@Model.Location.PostalCode" class="col-md-4 control-label"></label></td>
-                    <td id="postalCode-td">@Model.Location.PostalCode</td>
+                    <td id="postalCode-td"></td>
                 </tr>
                 <tr>
                     <td><label asp-for="@Model.Location.Country" class="col-md-4 control-label"></label></td>
-                    <td id="country-td">@Model.Location.Country</td>
+                    <td id="country-td"></td>
                 </tr>
 
 
                 <tr>
                     <td><label asp-for="PrimaryContactFirstName" class="col-md-4 control-label"></label></td>
-                    <td id="primary-contact-firstname-td">@Model.PrimaryContactFirstName</td>
+                    <td id="primary-contact-firstname-td"></td>
                 </tr>
 
                 <tr>
                     <td><label asp-for="PrimaryContactLastName" class="col-md-4 control-label"></label></td>
-                    <td id="primary-contact-lastname-td">@Model.PrimaryContactLastName</td>
+                    <td id="primary-contact-lastname-td"></td>
                 </tr>
 
                 <tr>
                     <td><label asp-for="PrimaryContactPhoneNumber" class="col-md-4 control-label"></label></td>
-                    <td id="primary-contact-phone-number-td">@Model.PrimaryContactPhoneNumber</td>
+                    <td id="primary-contact-phone-number-td"></td>
                 </tr>
 
                 <tr>
                     <td><label asp-for="PrimaryContactEmail" class="col-md-4 control-label"></label></td>
-                    <td id="primary-contact-email-td">@Model.PrimaryContactEmail</td>
+                    <td id="primary-contact-email-td"></td>
                 </tr>
+                @if (isEdit)
+                {
+                    <tr>
+                        <td><label class="col-md-4 control-label">Display Impact Goal</label></td>
+                        <td id="display-impact-goal-td"></td>
+                    </tr>
 
-                <tr>
-                    <td><label class="col-md-4 control-label">Display Impact Goal</label></td>
-                    <td id="display-impact-goal-td">Display Impact Goal</td>
-                </tr>
+                    <tr>
+                        <td><label class="col-md-4 control-label">Campaign Impact Goal</label></td>
+                        <td id="campaign-impact-goal-td"></td>
+                    </tr>
 
-                <tr>
-                    <td><label class="col-md-4 control-label">Campaign Impact Goal</label></td>
-                    <td id="campaign-impact-goal-td">Campaign Impact Goal</td>
-                </tr>
+                    <tr>
+                        <td><label class="col-md-4 control-label">Impact Type</label></td>
+                        <td id="impact-type-td"></td>
+                    </tr>
 
-                <tr>
-                    <td><label class="col-md-4 control-label">Impact Type</label></td>
-                    <td id="impact-type-td">Impact Type</td>
-                </tr>
+                    <tr style="display:none;">
+                        <td><label class="col-md-4 control-label">Current Impact Level</label></td>
+                        <td id="current-impact-level-td"></td>
+                    </tr>
 
-                <tr style="display:none;">
-                    <td><label class="col-md-4 control-label">Current Impact Level</label></td>
-                    <td id="current-impact-level-td">Current Impact Level</td>
-                </tr>
-
-                <tr style="display:none;">
-                    <td><label class="col-md-4 control-label">Numeric Impact Goal</label></td>
-                    <td id="numeric-impact-goal-td">Numeric Impact Goal</td>
-                </tr>
+                    <tr style="display:none;">
+                        <td><label class="col-md-4 control-label">Numeric Impact Goal</label></td>
+                        <td id="numeric-impact-goal-td"></td>
+                    </tr>
+                }
 
             </tbody>
 
@@ -492,18 +495,17 @@
 @section scripts {
     <script src="~/js/campaignadmin.js"></script>
 
-    @if (isEdit)
-    {
-        <script src="~/lib/system.js/dist/system.js"></script>
 
-        <script>
-            SystemJS.config({
-                baseURL: '/js/Admin/Campaign/Edit',
-                defaultJSExtensions: true
-            });
+    <script src="~/lib/system.js/dist/system.js"></script>
 
-            SystemJS.import('Main');
-        </script>
+    <script>
+        SystemJS.config({
+            baseURL: '/js/Admin/Campaign/Edit',
+            defaultJSExtensions: true
+        });
 
-    }
+        SystemJS.import('Main');
+    </script>
+
+
 }
