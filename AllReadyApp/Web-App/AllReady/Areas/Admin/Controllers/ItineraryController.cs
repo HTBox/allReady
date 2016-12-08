@@ -52,6 +52,37 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [Route("Admin/Itinerary/Details/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Details(int id, string requestKeywords, RequestStatus? requestStatus)
+        {
+            var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery {ItineraryId = id});
+            if (itinerary == null)
+            {
+                return NotFound();
+            }
+
+            if (!User.IsOrganizationAdmin(itinerary.OrganizationId))
+            {
+                return Unauthorized();
+            }
+
+            var filteredRequests = await _mediator.SendAsync(new RequestListItemsQuery
+            {
+                Criteria = new RequestSearchCriteria
+                {
+                    ItineraryId = itinerary.Id,
+                    Keywords = requestKeywords,
+                    Status = requestStatus
+                }
+            });
+
+            itinerary.Requests = filteredRequests;
+
+            return View("Details", itinerary);
+        }
+
+        [HttpPost]
         [Route("Admin/Itinerary/Create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ItineraryEditViewModel model)
@@ -141,9 +172,9 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new EditItineraryCommand { Itinerary = model });
 
-            return RedirectToAction(nameof(Details), new { area = "Admin", id = model.Id });           
+            return RedirectToAction(nameof(Details), new { area = "Admin", id = model.Id });
         }
-        
+
         [HttpPost]
         [Route("Admin/Itinerary/AddTeamMember")]
         [ValidateAntiForgeryToken]
@@ -294,7 +325,7 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> RemoveRequest(RequestSummaryViewModel viewModel)
         {
             if(!viewModel.UserIsOrgAdmin)
-            { 
+            {
                 return Unauthorized();
             }
 
@@ -388,7 +419,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             var result = await _mediator.SendAsync(new OptimizeRouteCommand { ItineraryId = itineraryId });
-            
+
             return RedirectToAction("Details", new { id = itineraryId, startAddress = model.StartAddress, endAddress = model.EndAddress });
         }
 

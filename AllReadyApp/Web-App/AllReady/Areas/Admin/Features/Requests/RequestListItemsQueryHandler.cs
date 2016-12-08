@@ -42,6 +42,11 @@ namespace AllReady.Areas.Admin.Features.Requests
                 results = results.Where(r => r.EventId == message.Criteria.EventId.Value);
             }
 
+            if (message.Criteria.ItineraryId.HasValue)
+            {
+                results = results.Where(r => r.Itineraries.Any(i => i.ItineraryId == message.Criteria.ItineraryId.Value));
+            }
+
             if (message.Criteria.Status.HasValue)
             {
                 results = results.Where(r => r.Status == message.Criteria.Status); ;

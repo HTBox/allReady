@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace AllReady.Models
 {
@@ -35,5 +36,7 @@ namespace AllReady.Models
 
         public int? OrganizationId { get; set; }
         public Organization Organization { get; set; }
+
+        public ICollection<ItineraryRequest> Itineraries { get; set; }
     }
 }
