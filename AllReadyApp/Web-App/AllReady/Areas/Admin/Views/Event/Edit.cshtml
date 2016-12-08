@@ -59,6 +59,7 @@
             @if (isEdit)
             {
                 <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="ImageUrl" id="image-url-input" />
             }
             <input asp-for="CampaignId" type="hidden" />
             <input asp-for="CampaignName" type="hidden" />
@@ -261,7 +262,15 @@
     @if (isEdit)
     {
         <script src="~/lib/system.js/dist/system.js"></script>
-        <script src="~/js/Admin/Event/Edit/Main.js"></script>
+
+        <script>
+            SystemJS.config({
+                baseURL: '/js/Admin/Event/Edit',
+                defaultJSExtensions: true
+            });
+
+            SystemJS.import('Main');
+        </script>
     }
 
     <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>

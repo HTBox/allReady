@@ -56,6 +56,12 @@ namespace AllReady.Areas.Admin.Controllers
             return View(viewModel);
         }
 
+        [HttpPost]
+        public PartialViewResult CampaignPreview(CampaignSummaryViewModel campaign, IFormFile fileUpload)
+        {
+            return PartialView("_CampaignPreview", campaign);
+        }
+
         // GET: Campaign/Create
         public IActionResult Create()
         {
