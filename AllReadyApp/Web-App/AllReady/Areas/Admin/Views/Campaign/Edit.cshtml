@@ -76,10 +76,12 @@
             <div class="form-horizontal">
 
                 <div asp-validation-summary="All" class="text-danger"></div>
+                <input type="hidden" asp-for="OrganizationName" id="organization-name-input" value="@Model.OrganizationName" />
+
                 @if (isEdit)
                 {
                     <input type="hidden" asp-for="Id" />
-                    <input type="hidden" id="is-edit" value="true" />
+                    <input type="hidden" asp-for="ImageUrl" id="image-url-input" />
                 }
                 <div class="form-group">
                     <label asp-for="Name" class="col-md-2 control-label"></label>
