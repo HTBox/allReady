@@ -1,10 +1,8 @@
-﻿SystemJS.config({
-    baseURL: '/js/Admin/Event/Edit',
-    defaultJSExtensions: true
-});
+﻿"use strict";
 
-SystemJS.import('EditModule').then(function (editModule) {
+define("Main", ["EditModule"], function (editModule) {
 
     editModule.addDeleteEventImageHandler();
     editModule.checkForMobileDeviceAndShowImageDeleteButton();
+
 });
