@@ -34,6 +34,8 @@ namespace AllReady.Hangfire.Jobs
                 var request = new Request
                 {
                     RequestId = NewRequestId(),
+                    //TODO mgmccarthy: this is hard-coded for now to 1, which is HTBox Org's Id in dev b/c SampleDataGenerator always creates it first. We'll need something more robust when we go to production.
+                    OrganizationId = 1,
                     ProviderRequestId = viewModel.ProviderRequestId,
                     ProviderData = viewModel.ProviderData,
                     Address = viewModel.Address,
