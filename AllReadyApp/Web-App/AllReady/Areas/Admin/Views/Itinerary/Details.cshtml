@@ -127,7 +127,8 @@
         </div>
     </div>
 }
-<form method="post" action="@Url.Action("Details", "Itinerary", new { area="Admin" })#requests" class="form-horizontal">
+<form method="post" action="@Url.Action("Details", "Itinerary", new {area = "Admin"})#requests" class="form-horizontal">
+    @Html.AntiForgeryToken()
     <div class="row">
         <label class="col-md-1 control-label">Filter:</label>
         <div class="col-md-2">
@@ -197,7 +198,7 @@
         else
         {
             <br />
-            <p>There are currently no assigned requests for this itinerary</p>
+            <p>No requests to show</p>
         }
     </div>
 </div>
