@@ -7,17 +7,19 @@ namespace AllReady.Hangfire.Jobs
 {
     public class SendRequestStatusToGetASmokeAlarm : ISendRequestStatusToGetASmokeAlarm
     {
+        private readonly IOptions<GetASmokeAlarmApiSettings> getASmokeAlarmApiSettings;
         private static HttpClient httpClient;
 
         public SendRequestStatusToGetASmokeAlarm(IOptions<GetASmokeAlarmApiSettings> getASmokeAlarmApiSettings)
         {
+            this.getASmokeAlarmApiSettings = getASmokeAlarmApiSettings;
             CreateStaticHttpClient(getASmokeAlarmApiSettings);
         }
 
         public void Send(string serial, string status, bool acceptance)
         {
             var updateRequestMessage = new { acceptance, status };
-            var response = httpClient.PostAsJsonAsync($"admin/requests/status/{serial}", updateRequestMessage).Result;
+            var response = httpClient.PostAsJsonAsync($"{getASmokeAlarmApiSettings.Value.BaseAddress}admin/requests/status/{serial}", updateRequestMessage).Result;
 
             //throw HttpRequestException if response is not a success code.
             response.EnsureSuccessStatusCode();
@@ -27,10 +29,10 @@ namespace AllReady.Hangfire.Jobs
         {
             if (httpClient == null)
             {
-                httpClient = new HttpClient { BaseAddress = new Uri(getASmokeAlarmApiSettings.Value.BaseAddress)};
+                //TODO mgmccarthy: the one drawback to setting HttpClient to static is when the authentication token changes. I THINK we would need to reload the web appliation for the changes to take place?
+                httpClient = new HttpClient();
                 httpClient.DefaultRequestHeaders.Accept.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                //TODO mgmccarthy: the one drawback here is if GASA were to give us a new authorization token, we'd have to reload the web app to get it to update b/c this is now static
                 httpClient.DefaultRequestHeaders.Add("Authorization", getASmokeAlarmApiSettings.Value.Token);
             }
         }
