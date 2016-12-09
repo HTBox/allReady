@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using AllReady.Extensions;
 using AllReady.Features.Requests;
 using AllReady.Models;
 using AllReady.ViewModels.Requests;
@@ -34,6 +33,8 @@ namespace AllReady.Hangfire.Jobs
                 var request = new Request
                 {
                     RequestId = NewRequestId(),
+                    //TODO mgmccarthy: this is hard-coded for now to 1, which is HTBox Org's Id in dev b/c SampleDataGenerator always creates it first. We'll need something more robust when we go to production.
+                    OrganizationId = 1,
                     ProviderRequestId = viewModel.ProviderRequestId,
                     ProviderData = viewModel.ProviderData,
                     Address = viewModel.Address,
@@ -53,7 +54,7 @@ namespace AllReady.Hangfire.Jobs
                 request.Latitude = address?.Coordinates.Latitude ?? 0;
                 request.Longitude = address?.Coordinates.Longitude ?? 0;
 
-                context.AddOrUpdate(request);
+                context.Add(request);
                 context.SaveChanges();
 
                 mediator.Publish(new ApiRequestProcessedNotification { ProviderRequestId = viewModel.ProviderRequestId });
