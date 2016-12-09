@@ -7,30 +7,32 @@ namespace AllReady.Hangfire.Jobs
 {
     public class SendRequestStatusToGetASmokeAlarm : ISendRequestStatusToGetASmokeAlarm
     {
-        private readonly IOptions<GetASmokeAlarmApiSettings> getASmokeAlarmApiSettings;
-        private static readonly HttpClient HttpClient = new HttpClient();
+        private static HttpClient httpClient;
 
         public SendRequestStatusToGetASmokeAlarm(IOptions<GetASmokeAlarmApiSettings> getASmokeAlarmApiSettings)
         {
-            this.getASmokeAlarmApiSettings = getASmokeAlarmApiSettings;
+            CreateStaticHttpClient(getASmokeAlarmApiSettings);
         }
 
         public void Send(string serial, string status, bool acceptance)
         {
-            var baseAddress = getASmokeAlarmApiSettings.Value.BaseAddress;
-            var token = getASmokeAlarmApiSettings.Value.Token;
-
             var updateRequestMessage = new { acceptance, status };
-
-            HttpClient.BaseAddress = new Uri(baseAddress);
-            HttpClient.DefaultRequestHeaders.Accept.Clear();
-            HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            HttpClient.DefaultRequestHeaders.Add("Authorization", token);
-
-            var response = HttpClient.PostAsJsonAsync($"admin/requests/status/{serial}", updateRequestMessage).Result;
+            var response = httpClient.PostAsJsonAsync($"admin/requests/status/{serial}", updateRequestMessage).Result;
 
             //throw HttpRequestException if response is not a success code.
             response.EnsureSuccessStatusCode();
+        }
+
+        private void CreateStaticHttpClient(IOptions<GetASmokeAlarmApiSettings> getASmokeAlarmApiSettings)
+        {
+            if (httpClient == null)
+            {
+                httpClient = new HttpClient { BaseAddress = new Uri(getASmokeAlarmApiSettings.Value.BaseAddress)};
+                httpClient.DefaultRequestHeaders.Accept.Clear();
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                //TODO mgmccarthy: the one drawback here is if GASA were to give us a new authorization token, we'd have to reload the web app to get it to update b/c this is now static
+                httpClient.DefaultRequestHeaders.Add("Authorization", getASmokeAlarmApiSettings.Value.Token);
+            }
         }
     }
 
