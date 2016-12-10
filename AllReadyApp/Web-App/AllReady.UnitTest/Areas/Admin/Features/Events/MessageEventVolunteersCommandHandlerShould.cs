@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true };
             Context.Users.Add(user2);
 
-            var task = new AllReadyTask
+            var theTask = new AllReadyTask
             {
                 Id = 1,
                 Name = "Task 1",
@@ -60,13 +60,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             {
                 Id = 1,
                 User = user1,
-                Task = task
+                Task = theTask
             };
 
             htb.Campaigns.Add(firePrev);            
             Context.Organizations.Add(htb);
             Context.Events.Add(queenAnne);
-            Context.Tasks.Add(task);
+            Context.Tasks.Add(theTask);
             Context.TaskSignups.Add(taskSignup);
 
             Context.SaveChanges();

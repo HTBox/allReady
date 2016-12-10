@@ -76,11 +76,11 @@ namespace AllReady.UnitTest.Tasks
         {
             var mediator = new Mock<IMediator>();
 
-            var task = Context.Tasks.First();
+            var theTask = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommand
             {
-                TaskId = task.Id,
+                TaskId = theTask.Id,
                 UserId = user.Id,
                 TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus.Accepted
             };

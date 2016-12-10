@@ -18,25 +18,25 @@ namespace AllReady.Features.Notifications
         {
             TaskDetailForNotificationModel result = null;
 
-            var task = await GetTask(message);
+            var theTask = await GetTask(message);
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == message.UserId);
             
-            if (task != null && user != null)
+            if (theTask != null && user != null)
             {
                 result = new TaskDetailForNotificationModel
                 {
-                    TaskId = task.Id,
-                    TaskName = task.Name,
-                    EventId = task.EventId,
-                    EventType = task.Event.EventType,
-                    EventName = task.Event.Name,
-                    CampaignName = task.Event.Campaign.Name,
-                    CampaignContacts = task.Event.Campaign.CampaignContacts,
+                    TaskId = theTask.Id,
+                    TaskName = theTask.Name,
+                    EventId = theTask.EventId,
+                    EventType = theTask.Event.EventType,
+                    EventName = theTask.Event.Name,
+                    CampaignName = theTask.Event.Campaign.Name,
+                    CampaignContacts = theTask.Event.Campaign.CampaignContacts,
                     Volunteer = user,
-                    Description = task.Description,
-                    NumberOfVolunteersRequired = task.NumberOfVolunteersRequired,
-                    TaskStartDate = task.StartDateTime,
-                    NumberOfVolunteersSignedUp = task.NumberOfUsersSignedUp
+                    Description = theTask.Description,
+                    NumberOfVolunteersRequired = theTask.NumberOfVolunteersRequired,
+                    TaskStartDate = theTask.StartDateTime,
+                    NumberOfVolunteersSignedUp = theTask.NumberOfUsersSignedUp
                 };
             }
 
