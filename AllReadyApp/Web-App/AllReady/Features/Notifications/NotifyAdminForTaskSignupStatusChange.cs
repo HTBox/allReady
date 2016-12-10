@@ -32,8 +32,8 @@ namespace AllReady.Features.Notifications
                 .SingleAsync(ts => ts.Id == notification.SignupId);
 
             var volunteer = taskSignup.User;
-            var theTask = taskSignup.Task;
-            var campaignEvent = theTask.Event;
+            var @task = taskSignup.Task;
+            var campaignEvent = @task.Event;
             var campaign = campaignEvent.Campaign;
 
             var campaignContact = campaign.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
@@ -48,7 +48,7 @@ namespace AllReady.Features.Notifications
                 var message = $@"A volunteer's status has changed for a task.
                     Volunteer: {volunteer.Name} ({volunteer.Email})
                     New status: {taskSignup.Status}
-                    Task: {theTask.Name} {link}
+                    Task: {@task.Name} {link}
                     Event: {campaignEvent.Name}
                     Campaign: {campaign.Name}";
 

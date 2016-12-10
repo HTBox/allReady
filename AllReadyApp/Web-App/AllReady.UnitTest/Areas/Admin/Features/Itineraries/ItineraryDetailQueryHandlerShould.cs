@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Date = new DateTime(2016, 07, 01)
             };
 
-            var theTask = new AllReadyTask
+            var @task = new AllReadyTask
             {
                 Id = 1,
                 Event = queenAnne,
@@ -68,7 +68,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             {
                 Id = 1,
                 User = user,
-                Task = theTask,
+                Task = @task,
                 Itinerary = itinerary
             };
 
@@ -90,7 +90,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Context.Campaigns.Add(firePrev);
             Context.Events.Add(queenAnne);
             Context.Itineraries.Add(itinerary);
-            Context.Tasks.Add(theTask);
+            Context.Tasks.Add(@task);
             Context.Users.Add(user);
             Context.Requests.Add(request);
             Context.ItineraryRequests.Add(itineraryReq);
