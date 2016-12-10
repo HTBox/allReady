@@ -58,7 +58,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var @event = new Event { Id = 3 };
             var organization = new Organization { Id = 4 };
-            var task = new AllReadyTask
+            var theTask = new AllReadyTask
             {
                 Id = 2,
                 Name = "TaskName",
@@ -72,14 +72,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Database.EnsureDeleted();
             Context.Events.Add(@event);
             Context.Organizations.Add(organization);
-            Context.Tasks.Add(task);
+            Context.Tasks.Add(theTask);
             Context.SaveChanges();
 
             var message = new EditTaskCommand
             {
                 Task = new EditViewModel
                 {
-                    Id = task.Id,
+                    Id = theTask.Id,
                     Name = "TaskNameUpdated",
                     Description = "TaskDescriptionUpdated",
                     EventId = @event.Id,

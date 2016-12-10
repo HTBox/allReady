@@ -35,9 +35,9 @@ namespace AllReady.UnitTest.Features.Tasks
             }
 
             using (var context = new AllReadyContext(options)) {
-                var task = context.Tasks.Include(t => t.RequiredSkills).FirstOrDefault(t => t.Id == taskId);
-                Assert.NotNull(task);
-                Assert.Equal(task.RequiredSkills.Count, 0);
+                var theTask = context.Tasks.Include(t => t.RequiredSkills).FirstOrDefault(t => t.Id == taskId);
+                Assert.NotNull(theTask);
+                Assert.Equal(theTask.RequiredSkills.Count, 0);
             }
         }
     }

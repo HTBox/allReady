@@ -52,7 +52,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             htb.Campaigns.Add(firePrev);            
             Context.Organizations.Add(htb);
             
-            var task = new AllReadyTask
+            var theTask = new AllReadyTask
             {
                 Event = queenAnne,
                 Description = "Description of a very important task",
@@ -60,13 +60,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 EndDateTime = DateTime.Now.AddDays(1),
                 StartDateTime = DateTime.Now.AddDays(-3)
             };
-            queenAnne.Tasks.Add(task);
+            queenAnne.Tasks.Add(theTask);
             Context.Events.Add(queenAnne);
 
             var taskSignups = new List<TaskSignup>
             {
-                new TaskSignup { Task = task, User = user1 },
-                new TaskSignup { Task = task, User = user2 }
+                new TaskSignup { Task = theTask, User = user1 },
+                new TaskSignup { Task = theTask, User = user2 }
             };
             Context.TaskSignups.AddRange(taskSignups);
 
