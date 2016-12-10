@@ -77,10 +77,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             };
 
             Context.Add(volunteer);
-            Context.Add(task);
+            Context.Add(theTask);
             Context.SaveChanges();
 
-            var message = new AssignTaskCommand { TaskId = task.Id, UserIds = new List<string> { volunteer.Id } };
+            var message = new AssignTaskCommand { TaskId = theTask.Id, UserIds = new List<string> { volunteer.Id } };
             await sut.Handle(message);
 
             mediator.Verify(b => b.PublishAsync(It.Is<TaskAssignedToVolunteersNotification>(notification =>
