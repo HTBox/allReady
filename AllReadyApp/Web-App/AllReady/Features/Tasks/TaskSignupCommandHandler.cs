@@ -40,23 +40,23 @@ namespace AllReady.Features.Tasks
                 return new TaskSignupResult { Status = TaskSignupResult.FAILURE_EVENTNOTFOUND };
             }
 
-            var theTask = @event.Tasks.SingleOrDefault(t => t.Id == model.TaskId);
-            if (theTask == null)
+            var @task = @event.Tasks.SingleOrDefault(t => t.Id == model.TaskId);
+            if (@task == null)
             {
                 return new TaskSignupResult { Status = TaskSignupResult.FAILURE_TASKNOTFOUND };
             }
 
-            if (theTask.IsClosed)
+            if (@task.IsClosed)
             {
                 return new TaskSignupResult { Status = TaskSignupResult.FAILURE_CLOSEDTASK };
             }
 
             // If somehow the user has already been signed up for the task, don't sign them up again
-            if (theTask.AssignedVolunteers.All(taskSignup => taskSignup.User.Id != user.Id))
+            if (@task.AssignedVolunteers.All(taskSignup => taskSignup.User.Id != user.Id))
             {
-                theTask.AssignedVolunteers.Add(new TaskSignup
+                @task.AssignedVolunteers.Add(new TaskSignup
                 {
-                    Task = theTask,
+                    Task = @task,
                     User = user,
                     Status = TaskStatus.Accepted.ToString(),
                     StatusDateTimeUtc = DateTimeUtcNow(),
@@ -67,7 +67,7 @@ namespace AllReady.Features.Tasks
             //Add selected new skills (if any) to the current user
             if (model.AddSkillIds.Count > 0)
             {
-                var skillsToAdd = theTask.RequiredSkills
+                var skillsToAdd = @task.RequiredSkills
                     .Where(taskSkill => model.AddSkillIds.Contains(taskSkill.SkillId))
                     .Select(taskSkill => new UserSkill { SkillId = taskSkill.SkillId, UserId = user.Id });
 
@@ -79,9 +79,9 @@ namespace AllReady.Features.Tasks
             await _context.SaveChangesAsync();
 
             //Notify admins of a new volunteer
-            await _mediator.PublishAsync(new VolunteerSignedUpNotification { UserId = model.UserId, TaskId = theTask.Id });
+            await _mediator.PublishAsync(new VolunteerSignedUpNotification { UserId = model.UserId, TaskId = @task.Id });
 
-            return new TaskSignupResult {Status = "success", Task = theTask};
+            return new TaskSignupResult {Status = "success", Task = @task};
         }
     }
 }

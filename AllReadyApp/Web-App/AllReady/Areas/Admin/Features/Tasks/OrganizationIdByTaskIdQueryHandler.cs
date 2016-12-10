@@ -16,12 +16,12 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<int> Handle(OrganizationIdByTaskIdQuery message)
         {
-            var theTask = await _context.Tasks
+            var @task = await _context.Tasks
                 .AsNoTracking()
                 .Include(t => t.Organization)
                 .SingleAsync(t => t.Id == message.TaskId);
 
-            return theTask.Organization.Id;
+            return @task.Organization.Id;
         }
     }
 }

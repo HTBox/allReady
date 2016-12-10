@@ -23,12 +23,12 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<TaskChangeResult> Handle(TaskStatusChangeCommand message)
         {
-            var theTask = await GetTask(message);
+            var @task = await GetTask(message);
 
-            if (theTask == null)
+            if (@task == null)
                 throw new InvalidOperationException($"Task {message.TaskId} does not exist");
 
-            var taskSignup = theTask.AssignedVolunteers.SingleOrDefault(c => c.User.Id == message.UserId);
+            var taskSignup = @task.AssignedVolunteers.SingleOrDefault(c => c.User.Id == message.UserId);
             if (taskSignup == null)
                 throw new InvalidOperationException($"Sign-up for user {message.UserId} does not exist");
 
@@ -69,7 +69,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             var notification = new TaskSignupStatusChanged { SignupId = taskSignup.Id };
             await _mediator.PublishAsync(notification);
             
-            return new TaskChangeResult { Status = "success", Task = theTask };
+            return new TaskChangeResult { Status = "success", Task = @task };
         }
 
         private async Task<AllReadyTask> GetTask(TaskStatusChangeCommand message)
