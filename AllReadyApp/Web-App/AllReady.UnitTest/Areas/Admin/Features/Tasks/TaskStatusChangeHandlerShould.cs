@@ -93,12 +93,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         protected TaskStatusChangeCommand CreateCommand(TaskStatus status, string description = "")
         {
             var user = Context.Users.First();
-            var task = Context.Tasks.First();
+            var theTask = Context.Tasks.First();
 
             return new TaskStatusChangeCommand
             {
                 UserId = user.Id,
-                TaskId = task.Id,
+                TaskId = theTask.Id,
                 TaskStatus = status,
                 TaskStatusDescription = description ?? string.Empty
             };
@@ -107,14 +107,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerAssignedTask()
         {
-            var task = Context.Tasks.First();
+            var theTask = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommand
             {
-                TaskId = task.Id,
+                TaskId = theTask.Id,
                 UserId = user.Id,
                 TaskStatus = TaskStatus.Assigned,
-                TaskStatusDescription = $"Assign {task.Name} to {user.UserName}"
+                TaskStatusDescription = $"Assign {theTask.Name} to {user.UserName}"
             };
             await handler.Handle(command);
 
@@ -129,14 +129,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerAcceptsTaskFromAssignedStatus()
         {
-            var task = Context.Tasks.First();
+            var theTask = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommand
             {
-                TaskId = task.Id,
+                TaskId = theTask.Id,
                 UserId = user.Id,
                 TaskStatus = TaskStatus.Accepted,
-                TaskStatusDescription = $"{user.UserName} has accepted the task {task.Name}"
+                TaskStatusDescription = $"{user.UserName} has accepted the task {theTask.Name}"
             };
             await handler.Handle(command);
 
@@ -155,14 +155,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             taskSignup.Status = TaskStatus.CanNotComplete.ToString();
             await Context.SaveChangesAsync();
 
-            var task = Context.Tasks.First();
+            var theTask = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommand
             {
-                TaskId = task.Id,
+                TaskId = theTask.Id,
                 UserId = user.Id,
                 TaskStatus = TaskStatus.Accepted,
-                TaskStatusDescription = $"{user.UserName} accepted task {task.Name}"
+                TaskStatusDescription = $"{user.UserName} accepted task {theTask.Name}"
             };
 
             await handler.Handle(command);
@@ -182,14 +182,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             taskSignup.Status = TaskStatus.Completed.ToString();
             await Context.SaveChangesAsync();
 
-            var task = Context.Tasks.First();
+            var theTask = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommand
             {
-                TaskId = task.Id,
+                TaskId = theTask.Id,
                 UserId = user.Id,
                 TaskStatus = TaskStatus.Accepted,
-                TaskStatusDescription = $"{user.UserName} accepted task {task.Name}"
+                TaskStatusDescription = $"{user.UserName} accepted task {theTask.Name}"
             };
 
             await handler.Handle(command);
@@ -221,14 +221,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerRejectsTask()
         {
-            var task = Context.Tasks.First();
+            var theTask = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommand
             {
-                TaskId = task.Id,
+                TaskId = theTask.Id,
                 UserId = user.Id,
                 TaskStatus = TaskStatus.Rejected,
-                TaskStatusDescription = $"{user.UserName} rejected task {task.Name}"
+                TaskStatusDescription = $"{user.UserName} rejected task {theTask.Name}"
             };
             await handler.Handle(command);
 
@@ -279,14 +279,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             taskSignup.Status = TaskStatus.Accepted.ToString();
             await Context.SaveChangesAsync();
 
-            var task = Context.Tasks.First();
+            var theTask = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommand
             {
-                TaskId = task.Id,
+                TaskId = theTask.Id,
                 UserId = user.Id,
                 TaskStatus = TaskStatus.Completed,
-                TaskStatusDescription = $"{user.UserName} completed {task.Name}"
+                TaskStatusDescription = $"{user.UserName} completed {theTask.Name}"
             };
             await handler.Handle(command);
 
@@ -301,14 +301,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerCompletesTaskFromAssignedStatus()
         {
-            var task = Context.Tasks.First();
+            var theTask = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommand
             {
-                TaskId = task.Id,
+                TaskId = theTask.Id,
                 UserId = user.Id,
                 TaskStatus = TaskStatus.Completed,
-                TaskStatusDescription = $"{user.UserName} completed task {task.Name}"
+                TaskStatusDescription = $"{user.UserName} completed task {theTask.Name}"
             };
 
             await handler.Handle(command);
@@ -353,14 +353,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             taskSignup.Status = TaskStatus.Accepted.ToString();
             await Context.SaveChangesAsync();
 
-            var task = Context.Tasks.First();
+            var theTask = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new TaskStatusChangeCommand
             {
-                TaskId = task.Id,
+                TaskId = theTask.Id,
                 UserId = user.Id,
                 TaskStatus = TaskStatus.CanNotComplete,
-                TaskStatusDescription = $"{user.UserName} cannot complete {task.Name}"
+                TaskStatusDescription = $"{user.UserName} cannot complete {theTask.Name}"
             };
             await handler.Handle(command);
 
@@ -376,13 +376,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         public async Task VolunteerCannotCompleteTaskFromAssignedStatus()
         {
             var user = Context.Users.First();
-            var task = Context.Tasks.First();
+            var theTask = Context.Tasks.First();
             var command = new TaskStatusChangeCommand
             {
-                TaskId = task.Id,
+                TaskId = theTask.Id,
                 UserId = user.Id,
                 TaskStatus = TaskStatus.CanNotComplete,
-                TaskStatusDescription = $"{user.UserName} cannot complete task {task.Name}"
+                TaskStatusDescription = $"{user.UserName} cannot complete task {theTask.Name}"
             };
 
             await handler.Handle(command);

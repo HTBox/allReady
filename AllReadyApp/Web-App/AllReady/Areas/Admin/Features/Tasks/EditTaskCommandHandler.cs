@@ -19,36 +19,36 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<int> Handle(EditTaskCommand message)
         {
-            var task = await _context.Tasks.Include(t => t.RequiredSkills).SingleOrDefaultAsync(t => t.Id == message.Task.Id) ?? new AllReadyTask();
+            var theTask = await _context.Tasks.Include(t => t.RequiredSkills).SingleOrDefaultAsync(t => t.Id == message.Task.Id) ?? new AllReadyTask();
 
-            task.Name = message.Task.Name;
-            task.Description = message.Task.Description;
-            task.Event = _context.Events.SingleOrDefault(a => a.Id == message.Task.EventId);
-            task.Organization = _context.Organizations.SingleOrDefault(t => t.Id == message.Task.OrganizationId);
+            theTask.Name = message.Task.Name;
+            theTask.Description = message.Task.Description;
+            theTask.Event = _context.Events.SingleOrDefault(a => a.Id == message.Task.EventId);
+            theTask.Organization = _context.Organizations.SingleOrDefault(t => t.Id == message.Task.OrganizationId);
 
-            task.StartDateTime = message.Task.StartDateTime;
-            task.EndDateTime = message.Task.EndDateTime;
+            theTask.StartDateTime = message.Task.StartDateTime;
+            theTask.EndDateTime = message.Task.EndDateTime;
 
-            task.NumberOfVolunteersRequired = message.Task.NumberOfVolunteersRequired;
-            task.IsLimitVolunteers = task.Event.IsLimitVolunteers;
-            task.IsAllowWaitList = task.Event.IsAllowWaitList;
+            theTask.NumberOfVolunteersRequired = message.Task.NumberOfVolunteersRequired;
+            theTask.IsLimitVolunteers = theTask.Event.IsLimitVolunteers;
+            theTask.IsAllowWaitList = theTask.Event.IsAllowWaitList;
 
-            if (task.Id > 0)
+            if (theTask.Id > 0)
             {
-                var taskSkillsToRemove = _context.TaskSkills.Where(ts => ts.TaskId == task.Id && (message.Task.RequiredSkills == null || message.Task.RequiredSkills.All(ts1 => ts1.SkillId != ts.SkillId)));
+                var taskSkillsToRemove = _context.TaskSkills.Where(ts => ts.TaskId == theTask.Id && (message.Task.RequiredSkills == null || message.Task.RequiredSkills.All(ts1 => ts1.SkillId != ts.SkillId)));
                 _context.TaskSkills.RemoveRange(taskSkillsToRemove);
             }
 
             if (message.Task.RequiredSkills != null)
             {
-                task.RequiredSkills.AddRange(message.Task.RequiredSkills.Where(mt => task.RequiredSkills.All(ts => ts.SkillId != mt.SkillId)));
+                theTask.RequiredSkills.AddRange(message.Task.RequiredSkills.Where(mt => theTask.RequiredSkills.All(ts => ts.SkillId != mt.SkillId)));
             }
 
-            _context.AddOrUpdate(task);
+            _context.AddOrUpdate(theTask);
 
             await _context.SaveChangesAsync();
 
-            return task.Id;
+            return theTask.Id;
         }
     }
 }
