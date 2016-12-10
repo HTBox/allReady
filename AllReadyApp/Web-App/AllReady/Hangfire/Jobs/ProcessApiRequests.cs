@@ -49,8 +49,10 @@ namespace AllReady.Hangfire.Jobs
                     Source = RequestSource.Api
                 };
 
-                //TODO mgmccarthy: since GASA is not sending us Lat/Long, can we get rid of this code?
+
+                //this is a web service call
                 var address = geocoder.Geocode(viewModel.Address, viewModel.City, viewModel.State, viewModel.Zip, string.Empty).FirstOrDefault();
+
                 request.Latitude = address?.Coordinates.Latitude ?? 0;
                 request.Longitude = address?.Coordinates.Longitude ?? 0;
 
