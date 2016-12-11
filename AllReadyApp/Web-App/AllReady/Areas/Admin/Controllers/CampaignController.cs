@@ -205,7 +205,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         public async Task<IActionResult> Publish(int id)
         {
-            var viewModel = await _mediator.SendAsync(new DeleteViewModelQuery { CampaignId = id });
+            var viewModel = await _mediator.SendAsync(new PublishViewModelQuery { CampaignId = id });
             if (viewModel == null)
             {
                 return NotFound();
@@ -225,14 +225,14 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Campaign/Publish/5
         [HttpPost, ActionName("Publish")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PublishConfirmed(DeleteViewModel viewModel)
+        public async Task<IActionResult> PublishConfirmed(PublishViewModel viewModel)
         {
             if (!viewModel.UserIsOrgAdmin)
             {
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new DeleteCampaignCommand { CampaignId = viewModel.Id });
+            await _mediator.SendAsync(new PublishCampaignCommand { CampaignId = viewModel.Id });
 
             return RedirectToAction(nameof(Index), new { area = "Admin" });
         }

@@ -67,6 +67,8 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
 
         public bool Featured { get; set; }
 
+        public bool Published { get; set; }
+
         public class EventList
         {
             public int Id { get; set; }
