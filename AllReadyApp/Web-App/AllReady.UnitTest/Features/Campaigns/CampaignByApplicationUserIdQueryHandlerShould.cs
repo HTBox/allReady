@@ -17,7 +17,7 @@ namespace AllReady.UnitTest.Features.Campaigns
         public CampaignByApplicationUserIdQueryHandlerShould()
         {
             message = new CampaignByApplicationUserIdQuery() { ApplicationUserId = Guid.NewGuid().ToString() };
-            campaign = new Campaign {  Organizer  =  new ApplicationUser() { Id = message.ApplicationUserId } };
+            campaign = new Campaign {  Organizer  =  new ApplicationUser() { Id = message.ApplicationUserId }, Published = true };
 
             Context.Add(campaign);
             Context.SaveChanges();

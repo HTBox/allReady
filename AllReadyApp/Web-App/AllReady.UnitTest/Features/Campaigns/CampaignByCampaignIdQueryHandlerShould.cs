@@ -14,7 +14,7 @@ namespace AllReady.UnitTest.Features.Campaigns
         public CampaignByCampaignIdQueryHandlerShould()
         {
             message = new CampaignByCampaignIdQuery { CampaignId = 1 };
-            campaign = new Campaign { Id = message.CampaignId };
+            campaign = new Campaign { Id = message.CampaignId, Published = true };
 
             Context.Add(campaign);
             Context.SaveChanges();
