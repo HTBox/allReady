@@ -38,7 +38,7 @@ namespace AllReady.Hangfire.Jobs
         }
     }
 
-    public interface ISendRequestStatusToGetASmokeAlarm : IHangfireJob
+    public interface ISendRequestStatusToGetASmokeAlarm
     {
         void Send(string serial, string status, bool acceptance);
     }

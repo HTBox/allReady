@@ -169,14 +169,6 @@ namespace AllReady
             services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
             services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
             services.AddSingleton<IImageService, ImageService>();
-
-            ////Hangfire jobs
-            //services.AddTransient<ISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate, SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate>();
-            //services.AddTransient<ISendRequestConfirmationMessagesADayBeforeAnItineraryDate, SendRequestConfirmationMessagesADayBeforeAnItineraryDate>();
-            //services.AddTransient<ISendRequestConfirmationMessagesTheDayOfAnItineraryDate, SendRequestConfirmationMessagesTheDayOfAnItineraryDate>();
-            //services.AddTransient<IProcessApiRequests, ProcessApiRequests>();
-            //services.AddTransient<ISendRequestStatusToGetASmokeAlarm, SendRequestStatusToGetASmokeAlarm>();
-
             services.AddTransient<SampleDataGenerator>();
 
             if (Configuration["Geocoding:EnableGoogleGeocodingService"] == "true")
@@ -232,14 +224,13 @@ namespace AllReady
             containerBuilder.Register(icomponentcontext => new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"])))
                 .As<IBackgroundJobClient>();
 
-            //auto-register Hangfire jobs
+            //auto-register Hangfire jobs by convention
+            //http://docs.autofac.org/en/latest/register/scanning.html
             var assembly = Assembly.GetExecutingAssembly();
             containerBuilder
                 .RegisterAssemblyTypes(assembly)
-                .AssignableTo<IHangfireJob>()
-                .AsImplementedInterfaces()
-                //.InstancePerRequest();
-                .InstancePerDependency();
+                .Where(t => t.Namespace == "AllReady.Hangfire.Jobs" && t.IsInterface)
+                .AsImplementedInterfaces();
 
             containerBuilder.RegisterType<GoogleOptimizeRouteService>().As<IOptimizeRouteService>().SingleInstance();
 
@@ -247,15 +238,6 @@ namespace AllReady
             containerBuilder.Populate(services);
 
             var container = containerBuilder.Build();
-
-            //var result = container.ComponentRegistry.Registrations;
-            //var isRegistered1 = container.IsRegistered(typeof(IHangfireJob));
-            //var isRegistered2 = container.IsRegistered(typeof(IProcessApiRequests));
-            //var isRegistered3 = container.IsRegistered(typeof(ProcessApiRequests));
-            //var isRegistered4 = container.IsRegistered(typeof(IOptimizeRouteService));
-            //var isRegistered5 = container.IsRegistered(typeof(GoogleOptimizeRouteService));
-            //var allRegistrations = container.ComponentRegistry.Registrations;
-
             return container;
         }
 

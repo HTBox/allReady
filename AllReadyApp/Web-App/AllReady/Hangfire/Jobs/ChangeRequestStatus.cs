@@ -36,7 +36,7 @@ namespace AllReady.Hangfire.Jobs
         }
     }
 
-    public interface IChangeRequestStatus : IHangfireJob
+    public interface IChangeRequestStatus
     {
         void To(RequestStatus requestStatus, Guid requestId);
     }

@@ -50,7 +50,7 @@ namespace AllReady.Hangfire.Jobs
         }
     }
 
-    public interface ISendRequestConfirmationMessagesTheDayOfAnItineraryDate : IHangfireJob
+    public interface ISendRequestConfirmationMessagesTheDayOfAnItineraryDate
     {
         void SendSms(List<Guid> requestIds, int itineraryId);
     }
