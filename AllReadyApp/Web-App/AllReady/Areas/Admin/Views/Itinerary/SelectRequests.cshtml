@@ -29,7 +29,7 @@
                 <button type="submit" class="btn btn-default submit-form">Filter</button>
             </form>
         </div>
-        <div>
+        <div id="selectRequestsList">
             <form asp-area="Admin" asp-controller="Itinerary" asp-action="AddRequests">
                 <div class="row">
                     <div class="col-md-12">
@@ -43,6 +43,7 @@
                         @if (Model.Requests.Count > 0)
                         {
                             <table class="table">
+                                <thead>
                                 <tr>
                                     <th></th>
                                     <th>Request Name</th>
@@ -51,19 +52,17 @@
                                     <th>Postcode</th>
                                     <th>Date Added</th>
                                 </tr>
-                                @foreach (var req in Model.Requests)
-                                {
+                                </thead>
+                                <tbody data-bind="foreach: requests">
                                     <tr>
-                                        <td>
-                                            <input type="checkbox" name="selectedRequests" value="@req.Id" @Html.Raw(req.IsSelected) ? "checked" : "" ) />
-                                        </td>
-                                        <td>@req.Name</td>
-                                        <td>@req.Address</td>
-                                        <td>@req.City</td>
-                                        <td>@req.Postcode</td>
-                                        <td>@req.DateAdded</td>
+                                        <td><input type="checkbox" name="selectedRequests" data-bind="value: Id, checked: selected" /></td>
+                                        <td data-bind="text: Name"></td>
+                                        <td data-bind="text: Address"></td>
+                                        <td data-bind="text: City"></td>
+                                        <td data-bind="text: Postcode"></td>
+                                        <td data-bind="text: DateAddedString"></td>
                                     </tr>
-                                }
+                                </tbody>
                             </table>
                         }
                         else
@@ -83,24 +82,9 @@
 </div>
 
 @section scripts {
-    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
     <script type="text/javascript">
-        ///<reference path="~/wwwroot/js/site.js" />
-        $(document).ready(function () {
-            setBingMapHeight();
-            renderBingMap("bingMap", getLocationsFromModelRequests());
-        });
-
-        function setBingMapHeight(){
-            $("#bingMap").height(($(window).height() * 0.6));
-        }
-
-        function getLocationsFromModelRequests() {
-            var locations = [];
-            @foreach (var request in Model.Requests){
-                @:locations.push({ latitude: @request.Latitude, longitude: @request.Longitude });
-            }
-            return locations;
-        }
+        var modelData = @Json.Serialize(new {requests = Model.Requests});
     </script>
+    <script src="~/js/itinerarySelectRequests.js"></script>
+    <script type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?branch=release&callback=initializeMap'></script>
 }

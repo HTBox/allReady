@@ -3,5 +3,7 @@
     public class RequestSelectViewModel : RequestListViewModel
     {
         public bool IsSelected { get; set; }
+
+        public string DateAddedString => DateAdded.ToShortDateString();
     }
 }
