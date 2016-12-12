@@ -64,7 +64,7 @@ namespace AllReady.Hangfire.Jobs
         }
     }
 
-    public interface IProcessApiRequests
+    public interface IProcessApiRequests : IHangfireJob
     {
         void Process(RequestApiViewModel viewModel);
     }

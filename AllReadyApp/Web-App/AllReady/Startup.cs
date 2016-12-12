@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Controllers;
@@ -157,7 +159,7 @@ namespace AllReady
         {
             // todo: move these to a proper autofac module
             // Register application services.
-            services.AddSingleton((x) => Configuration);
+            services.AddSingleton(x => Configuration);
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
@@ -168,12 +170,12 @@ namespace AllReady
             services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
             services.AddSingleton<IImageService, ImageService>();
 
-            //Hangfire jobs
-            services.AddTransient<ISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate, SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate>();
-            services.AddTransient<ISendRequestConfirmationMessagesADayBeforeAnItineraryDate, SendRequestConfirmationMessagesADayBeforeAnItineraryDate>();
-            services.AddTransient<ISendRequestConfirmationMessagesTheDayOfAnItineraryDate, SendRequestConfirmationMessagesTheDayOfAnItineraryDate>();
-            services.AddTransient<IProcessApiRequests, ProcessApiRequests>();
-            services.AddTransient<ISendRequestStatusToGetASmokeAlarm, SendRequestStatusToGetASmokeAlarm>();
+            ////Hangfire jobs
+            //services.AddTransient<ISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate, SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate>();
+            //services.AddTransient<ISendRequestConfirmationMessagesADayBeforeAnItineraryDate, SendRequestConfirmationMessagesADayBeforeAnItineraryDate>();
+            //services.AddTransient<ISendRequestConfirmationMessagesTheDayOfAnItineraryDate, SendRequestConfirmationMessagesTheDayOfAnItineraryDate>();
+            //services.AddTransient<IProcessApiRequests, ProcessApiRequests>();
+            //services.AddTransient<ISendRequestStatusToGetASmokeAlarm, SendRequestStatusToGetASmokeAlarm>();
 
             services.AddTransient<SampleDataGenerator>();
 
@@ -230,12 +232,30 @@ namespace AllReady
             containerBuilder.Register(icomponentcontext => new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"])))
                 .As<IBackgroundJobClient>();
 
+            //auto-register Hangfire jobs
+            var assembly = Assembly.GetExecutingAssembly();
+            containerBuilder
+                .RegisterAssemblyTypes(assembly)
+                .AssignableTo<IHangfireJob>()
+                .AsImplementedInterfaces()
+                //.InstancePerRequest();
+                .InstancePerDependency();
+
             containerBuilder.RegisterType<GoogleOptimizeRouteService>().As<IOptimizeRouteService>().SingleInstance();
 
             //Populate the container with services that were previously registered
             containerBuilder.Populate(services);
 
             var container = containerBuilder.Build();
+
+            //var result = container.ComponentRegistry.Registrations;
+            //var isRegistered1 = container.IsRegistered(typeof(IHangfireJob));
+            //var isRegistered2 = container.IsRegistered(typeof(IProcessApiRequests));
+            //var isRegistered3 = container.IsRegistered(typeof(ProcessApiRequests));
+            //var isRegistered4 = container.IsRegistered(typeof(IOptimizeRouteService));
+            //var isRegistered5 = container.IsRegistered(typeof(GoogleOptimizeRouteService));
+            //var allRegistrations = container.ComponentRegistry.Registrations;
+
             return container;
         }
 
