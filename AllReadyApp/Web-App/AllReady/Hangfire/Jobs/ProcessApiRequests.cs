@@ -26,7 +26,7 @@ namespace AllReady.Hangfire.Jobs
 
         public void Process(RequestApiViewModel viewModel)
         {
-            //since this is job code now, it needs to be idempotent, this could be re-tried by Hangire if it fails
+            //since this is Hangfire job code, it needs to be idempotent, this could be re-tried if there is a failure
             var requestExists = context.Requests.Any(x => x.ProviderRequestId == viewModel.ProviderRequestId);
             if (!requestExists)
             {
@@ -49,17 +49,15 @@ namespace AllReady.Hangfire.Jobs
                     Source = RequestSource.Api
                 };
 
-
-                //this is a web service call
+                //FYI, this is a web service call
                 var address = geocoder.Geocode(viewModel.Address, viewModel.City, viewModel.State, viewModel.Zip, string.Empty).FirstOrDefault();
-
                 request.Latitude = address?.Coordinates.Latitude ?? 0;
                 request.Longitude = address?.Coordinates.Longitude ?? 0;
 
                 context.Add(request);
                 context.SaveChanges();
 
-                mediator.Publish(new ApiRequestProcessedNotification { ProviderRequestId = viewModel.ProviderRequestId });
+                mediator.Publish(new ApiRequestProcessedNotification { RequestId = request.RequestId });
             }   
         }
     }
