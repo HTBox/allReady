@@ -44,14 +44,14 @@
                         {
                             <table class="table">
                                 <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Request Name</th>
-                                    <th>Address</th>
-                                    <th>City</th>
-                                    <th>Postcode</th>
-                                    <th>Date Added</th>
-                                </tr>
+                                    <tr>
+                                        <th></th>
+                                        <th>Request Name</th>
+                                        <th>Address</th>
+                                        <th>City</th>
+                                        <th>Postcode</th>
+                                        <th>Date Added</th>
+                                    </tr>
                                 </thead>
                                 <tbody data-bind="foreach: requests">
                                     <tr>
@@ -78,10 +78,14 @@
     <div class="col-xs-12 col-md-6">
         <h3>Map</h3>
         <div id="bingMap"></div>
-        <div>
-            <button type="button" class="btn btn-default" data-bind="click: doLasso, visible: canLasso">Lasso</button>
+        <div data-bind="visible: spacialMathReady && drawingToolsReady" style="display: none;">
+            <button type="button" class="btn btn-default" data-bind="click: doLasso, visible: canLasso">Draw Selection</button>
             <button type="button" class="btn btn-primary" data-bind="click: completeLasso, visible: isDrawing">Done</button>
             <button type="button" class="btn btn-danger" data-bind="click: cancelLasso, visible: isDrawing">Cancel</button>
+            <div class="alert alert-info" data-bind="visible: isDrawing">
+                Click on the map to select points to surround your route.  Double-click to complete the shape.
+                You can move selected points after completing the shape.  Select "Done" to make the selection.
+            </div>
         </div>
     </div>
 </div>

@@ -5,16 +5,6 @@
 
         self._map = map;
 
-        self._pinClicked = function (pin, request, e) {
-            if (self.isDrawing()) {
-                e.handled = false;
-                return false;
-            }
-
-            request.selected(!request.selected());
-            return true;
-        };
-
         var requestsWithPins = requests.map(function (request) {
             var pushpin = null;
             request.selected = ko.observable(request.IsSelected);
@@ -26,7 +16,7 @@
                 });
                 setPushpinState(pushpin, request.IsSelected);
                 Microsoft.Maps.Events.addHandler(pushpin, "click", function(e) {
-                    self._pinClicked(pushpin, request, e);
+                    pinClicked(pushpin, request, e);
                 });
                 map.entities.push(pushpin);
                 request.selected.subscribe(function(newValue) {
@@ -89,6 +79,16 @@
             drawingTools.finish(function() {
                 self.isDrawing(false);
             });
+        }
+
+        function pinClicked(pin, request, e) {
+            if (self.isDrawing()) {
+                e.handled = false;
+                return false;
+            }
+
+            request.selected(!request.selected());
+            return true;
         }
 
         function setPushpinState(pushpin, selected) {
