@@ -106,7 +106,7 @@
                 <p><cite>Optional link to an outside page</cite></p>
             </div>
             <div class="col-md-10">
-                <input asp-for="ExternalUrl" class="form-control" />
+                <input asp-for="ExternalUrl" class="form-control" placeholder="e.g. http://www.htbox.org" title="Please supply the full URL including the protocol http:// or https://" data-toggle="tooltip" />
                 <span asp-validation-for="ExternalUrl" class="text-danger"></span>
             </div>
         </div>
@@ -318,4 +318,10 @@
         <script src="~/lib/system.js/dist/system.js"></script>
         <script src="~/js/Admin/Campaign/Edit/Main.js"></script>
     }
+
+    <script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+    </script>
 }
