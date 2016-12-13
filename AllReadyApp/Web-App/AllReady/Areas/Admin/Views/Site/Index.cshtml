@@ -53,7 +53,7 @@
                                             <div class="modal-body">
                                                 <div class="row">
                                                     <div class="col-xs-12 btn-group-vertical">
-                                                        <a data-toggle="tooltip" data-placement="top" title="Edit" asp-action="EditUser" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success">Edit</a>
+                                                        <a data-toggle="tooltip" data-placement="top" title="Manage Skills" asp-action="EditUser" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success">Manage Skills</a>
                                                         <a data-toggle="tooltip" data-placement="top" title="Reset Password" asp-action="ResetPassword" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success">Reset Password</a>
                                                         @if (!user.IsUserType(UserType.SiteAdmin) && !user.IsUserType(UserType.OrgAdmin))
                                                         {
