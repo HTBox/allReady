@@ -24,7 +24,7 @@ namespace AllReady.Areas.Admin.Features.Requests
             var requests = message.ImportRequestViewModels.Select(viewModel => new Request
             {
                 RequestId = NewRequestId(),
-                ProviderRequestId = viewModel.ProviderRequestId,
+                ProviderRequestId = viewModel.Id,
                 ProviderData = viewModel.ProviderData,
                 Address = viewModel.Address,
                 City = viewModel.City,
@@ -36,21 +36,23 @@ namespace AllReady.Areas.Admin.Features.Requests
                 Zip = viewModel.Zip,
                 Status = RequestStatus.Unassigned,
                 Source = RequestSource.Csv
-            });
+            }).ToList();
             
             context.Requests.AddRange(requests);
-            context.SaveChanges();
 
-            //TODO: meh, having to call geocoder here for each incoming request is going to be expensive, and could be seen as a denial of service attack again google maps. go async on this one using IAsyncGeocoder and/or use azure storage/Hangfire?
-            //If lat/long not provided, use geocoding API to get them
-            //        if (request.Latitude == 0 && request.Longitude == 0)
-            //        {
-            //            //Assume the first returned address is correct
-            //            var address = _geocoder.Geocode(request.Address, request.City, request.State, request.Zip, string.Empty)
-            //                .FirstOrDefault();
-            //            request.Latitude = address?.Coordinates.Latitude ?? 0;
-            //            request.Longitude = address?.Coordinates.Longitude ?? 0;
-            //        }
+            //TODO: eventually move IGeocoder invocations to async using azure. Issue #1626 and #1639
+            foreach (var request in requests)
+            {
+                if (request.Latitude == 0 && request.Longitude == 0)
+                {
+                    //Assume the first returned address is correct
+                    var address = geocoder.Geocode(request.Address, request.City, request.State, request.Zip, string.Empty).FirstOrDefault();
+                    request.Latitude = address?.Coordinates.Latitude ?? 0;
+                    request.Longitude = address?.Coordinates.Longitude ?? 0;
+                }
+            }
+
+            context.SaveChanges();
         }
     }
 }

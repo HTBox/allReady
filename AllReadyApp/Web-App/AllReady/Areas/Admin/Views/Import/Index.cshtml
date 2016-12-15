@@ -4,24 +4,42 @@
     ViewData["Title"] = "Import Data";
 }
 
-@if (@Model.ImportSuccess)
-    {
+@if (Model.ImportSuccess)
+{
     <div class="alert alert-success">
         <strong>Success!</strong> Your file has been uploaded.
     </div>
 }
 
-@if (@Model.ImportErrors.Count > 0)
+@if (Model.ImportErrors.Count > 0)
 {
     <div class="alert alert-danger">
-        There were errors encountered during the import. Please fix the errors in the csv you're trying upload, and upload the file again.
+        There were errors encountered during the import.
         <p></p>
-        
-        @foreach (var error in @Model.ImportErrors)
+
+        @foreach (var importError in Model.ImportErrors)
         {
-            <div>- @error</div>
+            <div>- @importError</div>
         }
-        
+    </div>
+}
+
+@if (Model.ValidationErrors.Count > 0)
+{
+    <div class="alert alert-danger">
+        There were validation errors encountered during the import. Please fix the errors in the csv you're trying upload, and try again.
+        <ul>
+        @foreach (var validationError in Model.ValidationErrors)
+        {
+            <li>@string.Format($"row : {validationError.ProviderRequestId}")</li>
+            <ul>
+                @foreach (var error in validationError.Errors)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        }
+        </ul>
     </div>
 }
 

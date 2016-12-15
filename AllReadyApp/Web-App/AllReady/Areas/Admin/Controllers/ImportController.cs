@@ -39,20 +39,14 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index(IndexViewModel viewModel)
         {
-            //so far, tested:
-            //happy path
-            //still need to test all validations then make a decision on whether or not to still use the index view or create a new view for the "confirmation"
-
             List<ImportRequestViewModel> requestsToImport;
 
-            //if (file == null)
             if (viewModel.File == null)
             {
-                viewModel.ImportErrors.Add(new ValidationResult("please select a file to upload."));
+                viewModel.ImportErrors.Add("please select a file to upload.");
                 return View(viewModel);
             }
 
-            //using (var stream = file.OpenReadStream())
             using (var stream = viewModel.File.OpenReadStream())
             {
                 using (var reader = new StreamReader(stream))
@@ -62,28 +56,32 @@ namespace AllReady.Areas.Admin.Controllers
                     csvReader.Configuration.RegisterClassMap<RedCrossRequestMap>();
                     requestsToImport = csvReader.GetRecords<ImportRequestViewModel>().ToList();
 
-                    //field validations
                     if (requestsToImport.Count == 0)
                     {
-                        viewModel.ImportErrors.Add(new ValidationResult("you uploaded and empty file. Please try again"));
+                        viewModel.ImportErrors.Add("you uploaded an empty file.");
                         return View(viewModel);
+                    }
+
+                    var duplicateProviderRequestIds = mediator.Send(new DuplicateProviderRequestIdsQuery { ProviderRequestIds = requestsToImport.Select(x => x.Id).ToList() });
+                    if (duplicateProviderRequestIds.Count > 0)
+                    {
+                        viewModel.ImportErrors.Add($"These id's already exist in the system. Please remove them from the CSV and try again: {string.Join(", ", duplicateProviderRequestIds)}");
                     }
 
                     foreach (var reqeustToImport in requestsToImport)
                     {
-                        Validator.TryValidateObject(reqeustToImport, new ValidationContext(reqeustToImport, null, null), viewModel.ImportErrors, true);
-                    }
-
-                    //business validations
-                    var duplicateProviderRequestIds = mediator.Send(new DuplicateProviderRequestIdsQuery { ProviderRequestIds = requestsToImport.Select(x => x.ProviderRequestId).ToList() });
-                    if (duplicateProviderRequestIds.Count > 0)
-                    {
-                        viewModel.ImportErrors.Add(new ValidationResult($"These ProviderRequestIds already exist in the system. Please remove them from the CSV and try again: {string.Join(", ", duplicateProviderRequestIds)}"));
+                        var validationResults = new List<ValidationResult>();
+                        if (!Validator.TryValidateObject(reqeustToImport, new ValidationContext(reqeustToImport, null, null), validationResults, true))
+                        {
+                            var newValidationError = new IndexViewModel.ValidationError { ProviderRequestId = string.IsNullOrEmpty(reqeustToImport.Id) ? "id value is blank" : reqeustToImport.Id };
+                            newValidationError.Errors.AddRange(validationResults);
+                            viewModel.ValidationErrors.Add(newValidationError);
+                        }
                     }
                 }
             }
 
-            if (viewModel.ImportErrors.Count == 0)
+            if (viewModel.ImportErrors.Count == 0 && viewModel.ValidationErrors.Count == 0)
             {
                 mediator.Send(new ImportRequestsCommand { ImportRequestViewModels = requestsToImport.ToList() });
                 logger.LogDebug($"{User.Identity.Name} imported file {viewModel.File.Name}");

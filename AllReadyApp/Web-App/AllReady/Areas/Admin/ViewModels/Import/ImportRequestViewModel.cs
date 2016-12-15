@@ -4,9 +4,9 @@ namespace AllReady.Areas.Admin.ViewModels.Import
 {
     public class ImportRequestViewModel
     {
-        //the providers unique identifier for this Request (aka, they're internal primary key)
+        //maps to our Request.ProviderRequestId field
         [Required]
-        public string ProviderRequestId { get; set; }
+        public string Id { get; set; }
 
         //AllReady's Request-specific required fields
         [Required]

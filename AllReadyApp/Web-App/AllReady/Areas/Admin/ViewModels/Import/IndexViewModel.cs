@@ -6,8 +6,15 @@ namespace AllReady.Areas.Admin.ViewModels.Import
 {
     public class IndexViewModel
     {
-        public List<ValidationResult> ImportErrors { get; set; } =  new List<ValidationResult>();
         public IFormFile File { get; set; }
+        public List<string> ImportErrors { get; set; } = new List<string>();
+        public List<ValidationError> ValidationErrors { get; set; } = new List<ValidationError>();
         public bool ImportSuccess { get; set; }
+
+        public class ValidationError
+        {
+            public string ProviderRequestId { get; set; }
+            public List<ValidationResult> Errors { get; set; } = new List<ValidationResult>();
+        }
     }
 }
