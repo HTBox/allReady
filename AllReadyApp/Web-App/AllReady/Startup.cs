@@ -37,8 +37,8 @@ using Hangfire;
 using Hangfire.SqlServer;
 using AllReady.ModelBinding;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.Extensions.Options;
 using AllReady.Services.Routing;
+using CsvHelper;
 
 namespace AllReady
 {
@@ -169,6 +169,7 @@ namespace AllReady
             services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
             services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
             services.AddSingleton<IImageService, ImageService>();
+            services.AddSingleton<ICsvFactory, CsvFactory>();
             services.AddTransient<SampleDataGenerator>();
 
             if (Configuration["Geocoding:EnableGoogleGeocodingService"] == "true")

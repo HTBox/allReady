@@ -22,12 +22,14 @@ namespace AllReady.Areas.Admin.Controllers
     public class ImportController : Controller
     {
         private readonly ILogger<ImportController> logger;
+        private readonly ICsvFactory csvFactory;
         private readonly IMediator mediator;
 
-        public ImportController(IMediator mediator, ILogger<ImportController> logger)
+        public ImportController(IMediator mediator, ILogger<ImportController> logger, ICsvFactory csvFactory)
         {
             this.mediator = mediator;
             this.logger = logger;
+            this.csvFactory = csvFactory;
         }
 
         public IActionResult Index()
@@ -39,7 +41,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index(IndexViewModel viewModel)
         {
-            List<ImportRequestViewModel> requestsToImport;
+            List<ImportRequestViewModel> importRequestViewModels;
 
             if (viewModel.File == null)
             {
@@ -51,24 +53,25 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 using (var reader = new StreamReader(stream))
                 {
-                    var csvReader = new CsvReader(reader);
+                    var csvReader = csvFactory.CreateReader(reader);
                     csvReader.Configuration.WillThrowOnMissingField = false;
                     csvReader.Configuration.RegisterClassMap<RedCrossRequestMap>();
-                    requestsToImport = csvReader.GetRecords<ImportRequestViewModel>().ToList();
+                    importRequestViewModels = csvReader.GetRecords<ImportRequestViewModel>().ToList();
 
-                    if (requestsToImport.Count == 0)
+                    if (importRequestViewModels.Count == 0)
                     {
                         viewModel.ImportErrors.Add("you uploaded an empty file.");
                         return View(viewModel);
                     }
 
-                    var duplicateProviderRequestIds = mediator.Send(new DuplicateProviderRequestIdsQuery { ProviderRequestIds = requestsToImport.Select(x => x.Id).ToList() });
+                    var duplicateProviderRequestIds = mediator.Send(new DuplicateProviderRequestIdsQuery { ProviderRequestIds = importRequestViewModels.Select(x => x.Id).ToList() });
                     if (duplicateProviderRequestIds.Count > 0)
                     {
                         viewModel.ImportErrors.Add($"These id's already exist in the system. Please remove them from the CSV and try again: {string.Join(", ", duplicateProviderRequestIds)}");
+                        return View(viewModel);
                     }
 
-                    foreach (var reqeustToImport in requestsToImport)
+                    foreach (var reqeustToImport in importRequestViewModels)
                     {
                         var validationResults = new List<ValidationResult>();
                         if (!Validator.TryValidateObject(reqeustToImport, new ValidationContext(reqeustToImport, null, null), validationResults, true))
@@ -83,7 +86,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (viewModel.ImportErrors.Count == 0 && viewModel.ValidationErrors.Count == 0)
             {
-                mediator.Send(new ImportRequestsCommand { ImportRequestViewModels = requestsToImport.ToList() });
+                mediator.Send(new ImportRequestsCommand { ImportRequestViewModels = importRequestViewModels.ToList() });
                 logger.LogDebug($"{User.Identity.Name} imported file {viewModel.File.Name}");
                 viewModel.ImportSuccess = true;
             }
