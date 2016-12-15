@@ -4,7 +4,6 @@
     ViewData["Title"] = "Import Data";
 }
 
-@*@if (ViewBag.ImportSuccess == true)*@
 @if (@Model.ImportSuccess)
     {
     <div class="alert alert-success">
@@ -12,7 +11,6 @@
     </div>
 }
 
-@*@if (ViewBag.ImportErrors.Count > 0)*@
 @if (@Model.ImportErrors.Count > 0)
 {
     <div class="alert alert-danger">

@@ -48,8 +48,6 @@ namespace AllReady.Areas.Admin.Controllers
             //if (file == null)
             if (viewModel.File == null)
             {
-                //validationErrors.Add(new ValidationResult("please select a file to upload."));
-                //ViewBag.ImportErrors = validationErrors;
                 viewModel.ImportErrors.Add(new ValidationResult("please select a file to upload."));
                 return View(viewModel);
             }
@@ -67,15 +65,12 @@ namespace AllReady.Areas.Admin.Controllers
                     //field validations
                     if (requestsToImport.Count == 0)
                     {
-                        //validationErrors.Add(new ValidationResult("you uploaded and empty file. Please try again"));
-                        //ViewBag.ImportErrors = validationErrors;
                         viewModel.ImportErrors.Add(new ValidationResult("you uploaded and empty file. Please try again"));
-                        return View();
+                        return View(viewModel);
                     }
 
                     foreach (var reqeustToImport in requestsToImport)
                     {
-                        //Validator.TryValidateObject(reqeustToImport, new ValidationContext(reqeustToImport, null, null), validationErrors, true);
                         Validator.TryValidateObject(reqeustToImport, new ValidationContext(reqeustToImport, null, null), viewModel.ImportErrors, true);
                     }
 
@@ -83,49 +78,19 @@ namespace AllReady.Areas.Admin.Controllers
                     var duplicateProviderRequestIds = mediator.Send(new DuplicateProviderRequestIdsQuery { ProviderRequestIds = requestsToImport.Select(x => x.ProviderRequestId).ToList() });
                     if (duplicateProviderRequestIds.Count > 0)
                     {
-                        //validationErrors.Add(new ValidationResult($"These ProviderRequestIds already exist in the system. Please remove them from the CSV and try again: {string.Join(", ", duplicateProviderRequestIds)}"));
                         viewModel.ImportErrors.Add(new ValidationResult($"These ProviderRequestIds already exist in the system. Please remove them from the CSV and try again: {string.Join(", ", duplicateProviderRequestIds)}"));
                     }
                 }
             }
 
-            //if (validationErrors.Count == 0)
-            //{
-            //    mediator.Send(new ImportRequestsCommand { ImportRequestViewModels = requestsToImport.ToList() });
-            //    //logger.LogDebug($"{User.Identity.Name} imported file {file.Name}");
-            //    logger.LogDebug($"{User.Identity.Name} imported file {viewModel.File.Name}");
-            //    ViewBag.ImportSuccess = true;
-            //    ViewBag.ImportErrors = validationErrors;
-            //}
-            //else
-            //{
-            //    ViewBag.ImportErrors = validationErrors; 
-            //}
-
             if (viewModel.ImportErrors.Count == 0)
             {
                 mediator.Send(new ImportRequestsCommand { ImportRequestViewModels = requestsToImport.ToList() });
-                //logger.LogDebug($"{User.Identity.Name} imported file {file.Name}");
                 logger.LogDebug($"{User.Identity.Name} imported file {viewModel.File.Name}");
-                //ViewBag.ImportSuccess = true;
-                //ViewBag.ImportErrors = validationErrors;
                 viewModel.ImportSuccess = true;
-            }
-            else
-            {
-                //ViewBag.ImportErrors = validationErrors;
             }
 
             return View(viewModel);
         }
-
-        //[HttpGet]
-        //public IActionResult Confirmation(IFormFile file)
-        //{
-        //    return View();
-        //<div class="alert alert-success">
-        //    <strong>Success!</strong> Your file has been uploaded.
-        //</div>
-        //}
     }
 }
