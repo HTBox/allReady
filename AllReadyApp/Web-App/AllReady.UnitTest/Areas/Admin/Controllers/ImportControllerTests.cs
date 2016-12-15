@@ -121,36 +121,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void IndexPostDoesNotSendImportRequestsCommand_WhenThereAreImportErrors()
-        {
-        }
-
-        [Fact]
-        public void IndexPostDoesNotLogMessage_WhenThereAreImportErrors()
-        {
-        }
-
-        [Fact]
-        public void IndexPostDoesNotSetImportSuccessToTrue_WhenThereAreImportErrors()
-        {
-        }
-
-        [Fact]
-        public void IndexPostDoesNotSendImportRequestsCommand_WhenThereAreValidationErrorsErrors()
-        {
-        }
-
-        [Fact]
-        public void IndexPostDoesNotLogMessage_WhenThereAreValidationErrorsErrors()
-        {
-        }
-
-        [Fact]
-        public void IndexPostDoesNotSetImportSuccessToTrue_WhenThereAreValidationErrorsErrors()
-        {
-        }
-
-        [Fact]
         public void IndexPostSendsImportRequestsCommandWithTheCorrectViewModel()
         {
         }
@@ -164,5 +134,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void IndexPostAssignsImportSuccessToTrueWhenImportSucceeds()
         {
         }
+
+        //has [HttpPost] and [ValidateAntiForgeryToken] attbributes
     }
 }
