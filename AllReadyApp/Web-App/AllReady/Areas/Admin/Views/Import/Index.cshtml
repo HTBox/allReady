@@ -1,11 +1,29 @@
-﻿@{
+﻿@model AllReady.Areas.Admin.ViewModels.Import.IndexViewModel
+
+@{
     ViewData["Title"] = "Import Data";
 }
 
-@if (ViewBag.ImportSuccess == true)
-{
+@*@if (ViewBag.ImportSuccess == true)*@
+@if (@Model.ImportSuccess)
+    {
     <div class="alert alert-success">
         <strong>Success!</strong> Your file has been uploaded.
+    </div>
+}
+
+@*@if (ViewBag.ImportErrors.Count > 0)*@
+@if (@Model.ImportErrors.Count > 0)
+{
+    <div class="alert alert-danger">
+        There were errors encountered during the import. Please fix the errors in the csv you're trying upload, and upload the file again.
+        <p></p>
+        
+        @foreach (var error in @Model.ImportErrors)
+        {
+            <div>- @error</div>
+        }
+        
     </div>
 }
 
