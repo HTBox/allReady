@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 using System.Linq;
+using Microsoft.Extensions.Logging.Internal;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -186,7 +187,40 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void IndexPostAssignsImportSuccessToTrueWhenImportSucceeds()
+        public void IndexPostLogsCorrectMessage_WhenImportSucceeds()
+        {
+            const string userName = "UserName";
+            const string fileName = "FileName";
+
+            var importRequestViewModels = new List<ImportRequestViewModel>
+            {
+                new ImportRequestViewModel { Id =  "Id", Name = "Name", Address = "Address", City = "City", Email = "email@email.com", Phone = "111-111-1111", State = "State", Zip = "Zip" }
+            };
+
+            var iFormFile = new Mock<IFormFile>();
+            var csvFactory = new Mock<ICsvFactory>();
+            var csvReader = new Mock<ICsvReader>();
+            var mediator = new Mock<IMediator>();
+            var logger = new Mock<ILogger<ImportController>>();
+
+            iFormFile.Setup(x => x.OpenReadStream()).Returns(new MemoryStream());
+            iFormFile.Setup(x => x.Name).Returns(fileName);
+            csvFactory.Setup(x => x.CreateReader(It.IsAny<TextReader>())).Returns(csvReader.Object);
+            csvReader.Setup(x => x.Configuration).Returns(new CsvConfiguration());
+            csvReader.Setup(x => x.GetRecords<ImportRequestViewModel>()).Returns(importRequestViewModels);
+            mediator.Setup(x => x.Send(It.IsAny<DuplicateProviderRequestIdsQuery>())).Returns(new List<string>());
+
+            var sut = new ImportController(mediator.Object, logger.Object, csvFactory.Object);
+            sut.SetFakeUserName(userName);
+            sut.Index(new IndexViewModel { File = iFormFile.Object });
+
+            logger.Verify(m => m.Log(LogLevel.Information, It.IsAny<EventId>(),
+            It.Is<FormattedLogValues>(v => v.ToString() == $"{userName} imported file {fileName}"),
+            null, It.IsAny<Func<object, Exception, string>>()), Times.Once);
+        }
+
+        [Fact]
+        public void IndexPostAssignsImportSuccessToTrue_WhenImportSucceeds()
         {
             var importRequestViewModels = new List<ImportRequestViewModel>
             {
