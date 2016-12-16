@@ -23,7 +23,7 @@ namespace AllReady.Features.Campaigns
                 .ThenInclude(a => a.Location)
                 .Include(x => x.Location)
                 .Include(x => x.ParticipatingOrganizations)
-                .SingleOrDefaultAsync(x => x.Id == message.CampaignId);
+                .SingleOrDefaultAsync(x => x.Published && x.Id == message.CampaignId);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace AllReady.Features.Campaigns
                    .Include(x => x.ManagingOrganization)
                    .Include(x => x.Events)
                    .Include(x => x.ParticipatingOrganizations)
-                   .Where(c => !c.Locked)
+                   .Where(c => !c.Locked && c.Published)
                    .ToViewModel()
                    .ToList();
         }

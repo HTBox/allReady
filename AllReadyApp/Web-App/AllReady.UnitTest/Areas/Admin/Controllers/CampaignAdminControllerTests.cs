@@ -367,6 +367,74 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
+        public async Task PublishSendsPublishQueryWithCorrectCampaignId()
+        {
+            const int organizationId = 99;
+            const int campaignId = 100;
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<PublishViewModelQuery>(c => c.CampaignId == campaignId))).ReturnsAsync(new PublishViewModel { Id = campaignId, OrganizationId = organizationId });
+
+            var sut = new CampaignController(mockMediator.Object, null);
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+            await sut.Publish(campaignId);
+
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<PublishViewModelQuery>(c => c.CampaignId == campaignId)), Times.Once);
+        }
+
+        [Fact]
+        public async Task PublishReturnsHttpNotFoundResultWhenCampaignIsNotFound()
+        {
+            CampaignController sut;
+            MockMediatorCampaignSummaryQuery(out sut);
+            Assert.IsType<NotFoundResult>(await sut.Publish(It.IsAny<int>()));
+        }
+
+        [Fact]
+        public async Task PublishReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<PublishViewModelQuery>())).ReturnsAsync(new PublishViewModel());
+
+            var sut = new CampaignController(mediator.Object, null);
+            sut.MakeUserNotAnOrgAdmin();
+
+            Assert.IsType<UnauthorizedResult>(await sut.Publish(It.IsAny<int>()));
+        }
+
+        [Fact]
+        public async Task PublishReturnsCorrectViewWhenUserIsOrgAdmin()
+        {
+            const int organizationId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<PublishViewModelQuery>())).ReturnsAsync(new PublishViewModel { OrganizationId = organizationId });
+
+            var sut = new CampaignController(mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+
+            Assert.IsType<ViewResult>(await sut.Publish(It.IsAny<int>()));
+        }
+
+        [Fact]
+        public async Task PublishReturnsCorrectViewModelWhenUserIsOrgAdmin()
+        {
+            const int organizationId = 99;
+            const int campaignId = 100;
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.Is<PublishViewModelQuery>(c => c.CampaignId == campaignId))).ReturnsAsync(new PublishViewModel { Id = campaignId, OrganizationId = organizationId });
+
+            var sut = new CampaignController(mockMediator.Object, null);
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+
+            var view = (ViewResult)await sut.Publish(campaignId);
+            var viewModel = (PublishViewModel)view.ViewData.Model;
+
+            Assert.Equal(viewModel.Id, campaignId);
+        }
+
+        [Fact]
         public async Task DeleteSendsDeleteQueryWithCorrectCampaignId()
         {
             const int organizationId = 99;
@@ -432,17 +500,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var viewModel = (DeleteViewModel)view.ViewData.Model;
 
             Assert.Equal(viewModel.Id, campaignId);
-        }
-
-        public async Task DeleteConfirmedSendsDeleteCampaignCommandWithCorrectCampaignId()
-        {
-            var viewModel = new DeleteViewModel { Id = 1 };
-
-            var mediator = new Mock<IMediator>();
-            var sut = new CampaignController(mediator.Object, null);
-            await sut.DeleteConfirmed(viewModel);
-
-            mediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == viewModel.Id)), Times.Once);
         }
 
         [Fact]
@@ -624,6 +681,20 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .ShouldBe("NothingToDelete");
         }
 
+        [Fact(Skip ="Broken Test")]
+        public async Task DeleteConfirmedSendsDeleteCampaignCommandWithCorrectCampaignId()
+        {
+            var viewModel = new DeleteViewModel {Id = 1 , OrganizationId = 1};
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(a => a.SendAsync(It.IsAny<DeleteCampaignCommand>())).Verifiable();
+            var sut = new CampaignController(mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(viewModel.OrganizationId.ToString());
+            await sut.DeleteConfirmed(viewModel);
+
+            mediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == viewModel.Id)), Times.Once);
+        }
+
         [Fact]
         public async Task DetailConfirmedReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
         {
@@ -687,6 +758,84 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var sut = CreateCampaignControllerWithNoInjectedDependencies();
             var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact(Skip = "Broken Test")]
+        public async Task PublishConfirmedSendsPublishCampaignCommandWithCorrectCampaignId()
+        {
+            var viewModel = new PublishViewModel { Id = 1 };
+
+            var mediator = new Mock<IMediator>();
+            var sut = new CampaignController(mediator.Object, null);
+            await sut.PublishConfirmed(viewModel);
+
+            mediator.Verify(mock => mock.SendAsync(It.Is<PublishCampaignCommand>(i => i.CampaignId == viewModel.Id)), Times.Once);
+        }
+
+        [Fact]
+        public async Task PublishConfirmedReturnsHttpUnauthorizedResultWhenUserIsNotOrgAdmin()
+        {
+            var sut = new CampaignController(Mock.Of<IMediator>(), null);
+            Assert.IsType<UnauthorizedResult>(await sut.PublishConfirmed(new PublishViewModel { UserIsOrgAdmin = false }));
+        }
+
+        [Fact]
+        public async Task PublishConfirmedSendsPublishCampaignCommandWithCorrectCampaignIdWhenUserIsOrgAdmin()
+        {
+            const int organizationId = 1;
+
+            var mockMediator = new Mock<IMediator>();
+
+            var viewModel = new PublishViewModel { Id = 100, UserIsOrgAdmin = true };
+
+            var sut = new CampaignController(mockMediator.Object, null);
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+
+            await sut.PublishConfirmed(viewModel);
+
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<PublishCampaignCommand>(i => i.CampaignId == viewModel.Id)), Times.Once);
+        }
+
+        [Fact]
+        public async Task PublishConfirmedRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsOrgAdmin()
+        {
+            const int organizationId = 1;
+
+            var viewModel = new PublishViewModel { Id = 100, UserIsOrgAdmin = true };
+
+            var sut = new CampaignController(Mock.Of<IMediator>(), null);
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+
+            var routeValues = new Dictionary<string, object> { ["area"] = "Admin" };
+
+            var result = await sut.PublishConfirmed(viewModel) as RedirectToActionResult;
+            Assert.Equal(result.ActionName, nameof(CampaignController.Index));
+            Assert.Equal(result.RouteValues, routeValues);
+        }
+
+        [Fact]
+        public void PublishConfirmedHasHttpPostAttribute()
+        {
+            var sut = CreateCampaignControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.PublishConfirmed(It.IsAny<PublishViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void PublishConfirmedHasActionNameAttributeWithCorrectName()
+        {
+            var sut = CreateCampaignControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.PublishConfirmed(It.IsAny<PublishViewModel>())).OfType<ActionNameAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Name, "Publish");
+        }
+
+        [Fact]
+        public void PublishConfirmedHasValidateAntiForgeryTokenAttribute()
+        {
+            var sut = CreateCampaignControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.PublishConfirmed(It.IsAny<PublishViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 

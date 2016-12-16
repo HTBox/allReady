@@ -146,6 +146,8 @@ namespace AllReady.Migrations
 
                     b.Property<string>("OrganizerId");
 
+                    b.Property<bool>("Published");
+
                     b.Property<DateTimeOffset>("StartDateTime");
 
                     b.Property<string>("TimeZoneId")
@@ -493,7 +495,7 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int?>("OrganizationId");
 
                     b.Property<string>("Phone");
 
@@ -890,8 +892,7 @@ namespace AllReady.Migrations
 
                     b.HasOne("AllReady.Models.Organization", "Organization")
                         .WithMany("Requests")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("OrganizationId");
                 });
 
             modelBuilder.Entity("AllReady.Models.Skill", b =>

@@ -21,7 +21,7 @@ namespace AllReady.Features.Campaigns
         {
             return await _context.Campaigns
                 .Include(x => x.Organizer)
-                .Where(x => x.Organizer.Id == message.ApplicationUserId)
+                .Where(x => x.Published && x.Organizer.Id == message.ApplicationUserId)
                 .ToListAsync();
         }
     }

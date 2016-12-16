@@ -78,6 +78,8 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
 
         public bool Featured { get; set; }
 
+        public bool Published { get; set; }
+
         private const int EVENT_DAYS_STD = 30;
 
         // At some point an enumeration could be added to allow an admin to determine the priority
