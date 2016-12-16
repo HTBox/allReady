@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Controllers;
 using AllReady.DataAccess;
 using AllReady.Hangfire;
-using AllReady.Hangfire.Jobs;
 using AllReady.Models;
 using AllReady.Providers;
 using AllReady.Providers.ExternalUserInformationProviders;
