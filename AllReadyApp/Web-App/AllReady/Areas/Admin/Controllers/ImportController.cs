@@ -87,7 +87,7 @@ namespace AllReady.Areas.Admin.Controllers
             if (viewModel.ImportErrors.Count == 0 && viewModel.ValidationErrors.Count == 0)
             {
                 mediator.Send(new ImportRequestsCommand { ImportRequestViewModels = importRequestViewModels.ToList() });
-                logger.LogDebug($"{User.Identity.Name} imported file {viewModel.File.Name}");
+                logger.LogInformation($"{User.Identity.Name} imported file {viewModel.File.Name}");
                 viewModel.ImportSuccess = true;
             }
 
