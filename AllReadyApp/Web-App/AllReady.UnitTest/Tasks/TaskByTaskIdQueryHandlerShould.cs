@@ -22,9 +22,9 @@ namespace AllReady.UnitTest.Tasks
 
             using (var context = new AllReadyContext(options)) {
                 var sut = new TaskByTaskIdQueryHandler(context);
-                var task = await sut.Handle(message);
+                var @task = await sut.Handle(message);
 
-                Assert.Equal(task.Id, taskId);
+                Assert.Equal(@task.Id, taskId);
             }
         }
     }

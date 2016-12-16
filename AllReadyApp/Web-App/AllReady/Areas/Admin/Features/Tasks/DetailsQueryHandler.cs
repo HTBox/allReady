@@ -19,23 +19,23 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<DetailsViewModel> Handle(DetailsQuery message)
         {
-            var task = await GetTask(message);
+            var @task = await GetTask(message);
 
             var model = new DetailsViewModel
             {
-                Id = task.Id,
-                Name = task.Name,
-                Description = task.Description,
-                StartDateTime = task.StartDateTime,
-                EndDateTime = task.EndDateTime,
-                NumberOfVolunteersRequired = task.NumberOfVolunteersRequired,
-                EventId = task.Event.Id,
-                EventName = task.Event.Name,
-                CampaignId = task.Event.CampaignId,
-                CampaignName = task.Event.Campaign.Name,
-                TimeZoneId = task.Event.TimeZoneId,
-                RequiredSkills = task.RequiredSkills,
-                AssignedVolunteers = task.AssignedVolunteers.Select(ts => new VolunteerViewModel
+                Id = @task.Id,
+                Name = @task.Name,
+                Description = @task.Description,
+                StartDateTime = @task.StartDateTime,
+                EndDateTime = @task.EndDateTime,
+                NumberOfVolunteersRequired = @task.NumberOfVolunteersRequired,
+                EventId = @task.Event.Id,
+                EventName = @task.Event.Name,
+                CampaignId = @task.Event.CampaignId,
+                CampaignName = @task.Event.Campaign.Name,
+                TimeZoneId = @task.Event.TimeZoneId,
+                RequiredSkills = @task.RequiredSkills,
+                AssignedVolunteers = @task.AssignedVolunteers.Select(ts => new VolunteerViewModel
                 {
                     UserId = ts.User.Id,
                     UserName = ts.User.UserName,
