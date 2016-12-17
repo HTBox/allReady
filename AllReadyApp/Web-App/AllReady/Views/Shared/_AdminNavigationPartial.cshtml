@@ -1,5 +1,4 @@
-﻿@using System.Security.Claims
-@using AllReady.Security
+﻿@using AllReady.Security
 
 @if (User.IsUserType(UserType.SiteAdmin) || User.IsUserType(UserType.OrgAdmin))
 {
@@ -26,5 +25,4 @@
             }
         </ul>
     </li>
-
 }

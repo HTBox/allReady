@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Controllers;
 using AllReady.DataAccess;
 using AllReady.Hangfire;
-using AllReady.Hangfire.Jobs;
 using AllReady.Models;
 using AllReady.Providers;
 using AllReady.Providers.ExternalUserInformationProviders;
@@ -37,8 +35,8 @@ using Hangfire;
 using Hangfire.SqlServer;
 using AllReady.ModelBinding;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.Extensions.Options;
 using AllReady.Services.Routing;
+using CsvHelper;
 
 namespace AllReady
 {
@@ -169,6 +167,7 @@ namespace AllReady
             services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
             services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
             services.AddSingleton<IImageService, ImageService>();
+            services.AddSingleton<ICsvFactory, CsvFactory>();
             services.AddTransient<SampleDataGenerator>();
 
             if (Configuration["Geocoding:EnableGoogleGeocodingService"] == "true")
