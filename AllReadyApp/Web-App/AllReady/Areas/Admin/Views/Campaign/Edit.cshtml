@@ -169,6 +169,13 @@
                         <span asp-validation-for="Featured" class="text-danger"></span>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label asp-for="Published" class="col-md-2 control-label"></label>
+                    <div class="col-md-10">
+                        <input type="checkbox" asp-for="Published" />
+                        <span asp-validation-for="Published" class="text-danger"></span>
+                    </div>
+                </div>
                 <div class="form-horizontal">
                     @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
                     {
