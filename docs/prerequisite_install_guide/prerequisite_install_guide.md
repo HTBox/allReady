@@ -761,7 +761,17 @@ To install the Tools for Apache Cordova, we need to add additional features to t
 
 1. Once the install is completed, you may be asked to restart.  When you are ready to restart the computer click on the restart button
 
-    ![intall done need to restart](images/taco-11-restart.png)    
+    ![intall done need to restart](images/taco-11-restart.png)
+    
+1. You will also need to add the Android SDK tools directories to your system path environment variable.  Open the Environment Variables dialog, find and click PATH under the System Variables section and click Edit...
+
+    ![edit path environment variable](images/taco-12-edit-path.png)
+    
+1. In the Edit environment variable dialog, click the New button to add a new entry to the list of path values.  In the new box that appears after the last existing entry, type **C:\Program Files (x86)\android\android-sdk\tools** and hit Enter.  
+
+    ![add paths](images/taco-13-add-paths.png)
+    
+   Repeat this step to also add **C:\Program Files (x86)\android\android-sdk\platform-tools** to the path.  Once done, click OK.  Click OK in the Environment Variables dialog to save the changes.
 
 #### NPM Task Runner
 
