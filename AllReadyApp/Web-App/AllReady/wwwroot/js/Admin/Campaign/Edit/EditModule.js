@@ -21,9 +21,10 @@ define("EditModule", function () {
                 data: { __RequestVerificationToken: antiForgeryToken, campaignId: campaignId },
                 dataType: "json",
                 success: function (response) {
-                    
+
                     if (response.status === "Success") {
                         $("#image-panel-container").slideUp(1000);
+                        $("#image-url-input").remove();
                         handleAlertAppearanceAndDisAppearance("alert-success", "The image deleted successfully.", ".campaign-image-status-alert");
                     }
 
@@ -77,9 +78,27 @@ define("EditModule", function () {
         });
     }
 
+    function populatePreviewTableOnTabClickEventHandler() {
+
+        $("a[href='#preview-tab']").on('show.bs.tab', function (e) {
+
+            var $organizationName = $("#OrganizationId :selected").text();
+            $("#organization-name-input").val($organizationName);
+            var $formData = $("#campaign-form").serialize();
+
+            $.post("/Admin/Campaign/CampaignPreview", $formData, function (response, textStatus, jqXHR) {
+                $("#preview-table-container").html(response);
+                $("#full-description-td").html(tinyMCE.activeEditor.getContent({ format: 'raw' }));
+            }, "HTML");
+
+        });
+
+    }
+
     return {
         addDeleteCampaignImageHandler: deleteCampaignImageButtonClickEventHandler,
-        checkForMobileDeviceAndShowImageDeleteButton: checkForMobileDeviceAndShowImageDeleteButton
+        checkForMobileDeviceAndShowImageDeleteButton: checkForMobileDeviceAndShowImageDeleteButton,
+        addPopulatePreviewTableHandler: populatePreviewTableOnTabClickEventHandler
     };
 
 });

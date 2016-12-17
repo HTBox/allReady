@@ -1,0 +1,184 @@
+﻿@using AllReady.Security
+@model AllReady.Areas.Admin.ViewModels.Campaign.CampaignSummaryViewModel
+@inject AllReady.Services.ISelectListService SelectListService
+
+@{
+    var isEdit = Model != null && Model.Id > 0;
+}
+
+<table class="table table-responsive col-sm-offset-3 col-md-offset-2" id="campaign-preview-table">
+
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        <tr>
+            <td><label asp-for="Name" class="col-md-4 control-label"></label></td>
+            <td>@Model.Name</td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="Description" class="col-md-4 control-label"></label></td>
+            <td>@Model.Description</td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="Headline" class="col-md-4 control-label"></label></td>
+            <td>@Model.Headline</td>
+        </tr>
+        <tr>
+            <td><label asp-for="FullDescription" class="col-md-4 control-label"></label></td>
+            <td id="full-description-td">@Html.Raw(Model.FullDescription)</td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="ExternalUrl" class="col-md-4 control-label"></label></td>
+            <td><a href="@Model.ExternalUrl">@Model.ExternalUrl</a></td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="ExternalUrlText" class="col-md-4 control-label"></label></td>
+            <td>@Model.ExternalUrlText</td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="TimeZoneId" class="col-md-4 control-label"></label></td>
+            <td>@Model.TimeZoneId</td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="StartDate" class="col-md-4 control-label"></label></td>
+            <td>@Model.StartDate</td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="EndDate" class="col-md-4 control-label"></label></td>
+            <td>@Model.EndDate</td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="OrganizationId" class="col-md-4 control-label"></label></td>
+            <td>@Model.OrganizationName</td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="Featured" class="col-md-4 control-label"></label></td>
+            <td>@(Model.Featured == true ? "Yes" : "No")</td>
+        </tr>
+
+        @if (Model.ImageUrl != null)
+        {
+            <tr>
+                <td><label asp-for="ImageUrl" class="col-md-4 control-label"></label></td>
+                <td>
+                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                    {
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-4">
+
+                                <div class="alert campaign-image-status-alert" style="display: none;">
+
+                                </div>
+
+                                <div class="panel panel-default" id="image-panel-container">
+                                    <div class="panel-heading">
+                                       
+                                    </div>
+                                    <div class="panel-body" id="image-panel-body">
+                                        <div id="image-wrapper">
+                                            <img src="@Model.ImageUrl" class="img-responsive center-block" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </td>
+            </tr>
+        }
+
+
+
+        <tr>
+            <td><label asp-for="@Model.Location.Address1" class="col-md-4 control-label"></label></td>
+            <td>@Model.Location.Address1</td>
+        </tr>
+        <tr>
+            <td><label asp-for="@Model.Location.Address2" class="col-md-4 control-label"></label></td>
+            <td>@Model.Location.Address2</td>
+        </tr>
+        <tr>
+            <td><label asp-for="@Model.Location.City" class="col-md-4 control-label"></label></td>
+            <td>@Model.Location.City</td>
+        </tr>
+        <tr>
+            <td><label asp-for="@Model.Location.State" class="col-md-4 control-label"></label></td>
+            <td>@Model.Location.State</td>
+        </tr>
+        <tr>
+            <td><label asp-for="@Model.Location.PostalCode" class="col-md-4 control-label"></label></td>
+            <td>@Model.Location.PostalCode</td>
+        </tr>
+        <tr>
+            <td><label asp-for="@Model.Location.Country" class="col-md-4 control-label"></label></td>
+            <td>@Model.Location.Country</td>
+        </tr>
+
+
+        <tr>
+            <td><label asp-for="PrimaryContactFirstName" class="col-md-4 control-label"></label></td>
+            <td>@Model.PrimaryContactFirstName</td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="PrimaryContactLastName" class="col-md-4 control-label"></label></td>
+            <td>@Model.PrimaryContactLastName</td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="PrimaryContactPhoneNumber" class="col-md-4 control-label"></label></td>
+            <td>@Model.PrimaryContactPhoneNumber</td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="PrimaryContactEmail" class="col-md-4 control-label"></label></td>
+            <td>@Model.PrimaryContactEmail</td>
+        </tr>
+        @if (isEdit)
+        {
+            <tr>
+                <td><label class="col-md-4 control-label">Display Impact Goal</label></td>
+                <td>@(Model.CampaignImpact.Display == true ? "Yes" : "No")</td>
+            </tr>
+
+            <tr>
+                <td><label class="col-md-4 control-label">Campaign Impact Goal</label></td>
+                <td>@Model.CampaignImpact.TextualImpactGoal</td>
+            </tr>
+
+            <tr>
+                <td><label class="col-md-4 control-label">Impact Type</label></td>
+                <td>@Model.CampaignImpact.ImpactType</td>
+            </tr>
+                    @if (Model.CampaignImpact.ImpactType == ImpactType.Numeric)
+                    {
+                        <tr>
+                            <td><label class="col-md-4 control-label">Current Impact Level</label></td>
+                            <td>@Model.CampaignImpact.CurrentImpactLevel</td>
+                        </tr>
+
+                        <tr>
+                            <td><label class="col-md-4 control-label">Numeric Impact Goal</label></td>
+                            <td>@Model.CampaignImpact.NumericImpactGoal</td>
+                        </tr>
+                    }
+        }
+
+    </tbody>
+
+</table>

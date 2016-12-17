@@ -24,6 +24,7 @@ define("EditModule", function () {
                     
                     if (response.status === "Success") {
                         $("#image-panel-container").slideUp(1000);
+                        $("#image-url-input").remove();
                         handleAlertAppearanceAndDisAppearance("alert-success", "The image deleted successfully.", ".event-image-status-alert");
                     }
 

@@ -56,6 +56,13 @@ namespace AllReady.Areas.Admin.Controllers
             return View(viewModel);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public PartialViewResult CampaignPreview(CampaignSummaryViewModel campaign, IFormFile fileUpload)
+        {
+            return PartialView("_CampaignPreview", campaign);
+        }
+
         // GET: Campaign/Create
         public IActionResult Create()
         {
