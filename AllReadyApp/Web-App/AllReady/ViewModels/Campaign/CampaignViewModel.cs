@@ -38,6 +38,8 @@ namespace AllReady.ViewModels.Campaign
             Location = campaign.Location;
             Featured = campaign.Featured;
             Headline = campaign.Headline;
+            Published = campaign.Published;
+
         }
 
         public int Id { get; set; }
@@ -97,6 +99,7 @@ namespace AllReady.ViewModels.Campaign
 
         public string Headline { get; set; }
         public bool HasHeadline => !string.IsNullOrEmpty(Headline);
+        public bool Published { get; set; }
     }
 
     public static class CampaignViewModelExtensions

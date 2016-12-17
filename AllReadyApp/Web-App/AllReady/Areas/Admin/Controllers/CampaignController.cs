@@ -202,6 +202,41 @@ namespace AllReady.Areas.Admin.Controllers
             return Json(new { status = "NothingToDelete" });
         }
 
+
+        public async Task<IActionResult> Publish(int id)
+        {
+            var viewModel = await _mediator.SendAsync(new PublishViewModelQuery { CampaignId = id });
+            if (viewModel == null)
+            {
+                return NotFound();
+            }
+
+            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
+            {
+                return Unauthorized();
+            }
+
+            viewModel.Title = $"Publish campaign {viewModel.Name}";
+            viewModel.UserIsOrgAdmin = true;
+
+            return View(viewModel);
+        }
+
+        // POST: Campaign/Publish/5
+        [HttpPost, ActionName("Publish")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PublishConfirmed(PublishViewModel viewModel)
+        {
+            if (!viewModel.UserIsOrgAdmin)
+            {
+                return Unauthorized();
+            }
+
+            await _mediator.SendAsync(new PublishCampaignCommand { CampaignId = viewModel.Id });
+
+            return RedirectToAction(nameof(Index), new { area = "Admin" });
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LockUnlock(int id)

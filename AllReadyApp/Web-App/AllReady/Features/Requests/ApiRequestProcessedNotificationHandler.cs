@@ -19,11 +19,11 @@ namespace AllReady.Features.Requests
 
         public void Handle(ApiRequestProcessedNotification notification)
         {
-            //TODO mgmccarthy: insert code here that will determine whether or not we can service the request
-            var request = context.Requests.SingleOrDefault(x => x.ProviderRequestId == notification.ProviderRequestId);
+            //TODO mgmccarthy: insert the list of regions here for v1 launch that will allow us to determine if we can service the request or not
 
+            var request = context.Requests.SingleOrDefault(x => x.RequestId == notification.RequestId);
             //acceptance is true if we can service the Request or false if can't service it
-            backgroundJobClient.Enqueue<ISendRequestStatusToGetASmokeAlarm>(x => x.Send(notification.ProviderRequestId, "new", true));
+            backgroundJobClient.Enqueue<ISendRequestStatusToGetASmokeAlarm>(x => x.Send(request.ProviderRequestId, "new", true));
         }
     }
 }

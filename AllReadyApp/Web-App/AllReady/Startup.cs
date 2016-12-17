@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Controllers;
@@ -157,7 +159,7 @@ namespace AllReady
         {
             // todo: move these to a proper autofac module
             // Register application services.
-            services.AddSingleton((x) => Configuration);
+            services.AddSingleton(x => Configuration);
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
@@ -167,14 +169,6 @@ namespace AllReady
             services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
             services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
             services.AddSingleton<IImageService, ImageService>();
-
-            //Hangfire jobs
-            services.AddTransient<ISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate, SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate>();
-            services.AddTransient<ISendRequestConfirmationMessagesADayBeforeAnItineraryDate, SendRequestConfirmationMessagesADayBeforeAnItineraryDate>();
-            services.AddTransient<ISendRequestConfirmationMessagesTheDayOfAnItineraryDate, SendRequestConfirmationMessagesTheDayOfAnItineraryDate>();
-            services.AddTransient<IProcessApiRequests, ProcessApiRequests>();
-            services.AddTransient<ISendRequestStatusToGetASmokeAlarm, SendRequestStatusToGetASmokeAlarm>();
-
             services.AddTransient<SampleDataGenerator>();
 
             if (Configuration["Geocoding:EnableGoogleGeocodingService"] == "true")
@@ -229,6 +223,14 @@ namespace AllReady
             //Hangfire
             containerBuilder.Register(icomponentcontext => new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"])))
                 .As<IBackgroundJobClient>();
+
+            //auto-register Hangfire jobs by convention
+            //http://docs.autofac.org/en/latest/register/scanning.html
+            var assembly = Assembly.GetExecutingAssembly();
+            containerBuilder
+                .RegisterAssemblyTypes(assembly)
+                .Where(t => t.Namespace == "AllReady.Hangfire.Jobs" && t.IsInterface)
+                .AsImplementedInterfaces();
 
             containerBuilder.RegisterType<GoogleOptimizeRouteService>().As<IOptimizeRouteService>().SingleInstance();
 

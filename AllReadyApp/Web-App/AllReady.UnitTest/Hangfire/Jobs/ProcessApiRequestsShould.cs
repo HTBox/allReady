@@ -58,13 +58,36 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Assert.Equal(request.Source, RequestSource.Api);
         }
 
-        [Fact]
-        public void PublishApiRequestAddedNotificationWithTheCorrectProviderRequestId()
+        [Fact(Skip = "NotImplemented")]
+        public void AssignCorrectValuesToRequestsLatitiudeAndLongitudeWhenIGeocoderReturnedAdressIsNull()
         {
-            const string providerRequestId = "ProviderRequestId";
-            var requestId = Guid.NewGuid();
-            var viewModel = new RequestApiViewModel { ProviderRequestId = providerRequestId };
+        }
 
+        [Fact(Skip = "NotImplemented")]
+        public void AssignCorrectValuesToRequestsLatitiudeAndLongitudeWhenIGeocoderReturnedAdressIsNotNull()
+        {
+        }
+
+        [Fact]
+        public void InvokeIGeocoderWithTheCorrectParameters()
+        {
+            var requestId = Guid.NewGuid();
+            var geoCoder = new Mock<IGeocoder>();
+            var viewModel = new RequestApiViewModel { Address = "address", City = "city", State = "state", Zip = "zip" };
+            var sut = new ProcessApiRequests(Context, Mock.Of<IMediator>(), geoCoder.Object)
+            {
+                NewRequestId = () => requestId
+            };
+
+            sut.Process(viewModel);
+
+            geoCoder.Verify(x => x.Geocode(viewModel.Address, viewModel.City, viewModel.State, viewModel.Zip, string.Empty), Times.Once);
+        }
+
+        [Fact]
+        public void PublishApiRequestAddedNotificationWithTheCorrectRequestId()
+        {
+            var requestId = Guid.NewGuid();
             var mediator = new Mock<IMediator>();
 
             var sut = new ProcessApiRequests(Context, mediator.Object, Mock.Of<IGeocoder>())
@@ -72,9 +95,9 @@ namespace AllReady.UnitTest.Hangfire.Jobs
                 NewRequestId = () => requestId
             };
 
-            sut.Process(viewModel);
+            sut.Process(new RequestApiViewModel());
 
-            mediator.Verify(x => x.Publish(It.Is<ApiRequestProcessedNotification>(y => y.ProviderRequestId == providerRequestId)), Times.Once);
+            mediator.Verify(x => x.Publish(It.Is<ApiRequestProcessedNotification>(y => y.RequestId == requestId)), Times.Once);
         }
     }
 }

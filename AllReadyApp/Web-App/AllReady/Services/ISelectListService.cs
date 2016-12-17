@@ -10,6 +10,7 @@ namespace AllReady.Services
         IEnumerable<SelectListItem> GetOrganizations(ClaimsPrincipal user);
         IEnumerable<Skill> GetSkills();
         IEnumerable<SelectListItem> GetCampaignImpactTypes();
+        IEnumerable<SelectListItem> GetRequestTypes();
         IEnumerable<SelectListItem> GetTimeZones();
     }
 }

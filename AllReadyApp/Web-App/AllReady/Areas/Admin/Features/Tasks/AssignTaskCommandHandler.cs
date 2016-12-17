@@ -24,33 +24,33 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         protected override async Task HandleCore(AssignTaskCommand message)
         {
-            var task = await _context.Tasks.SingleAsync(c => c.Id == message.TaskId);
+            var @task = await _context.Tasks.SingleAsync(c => c.Id == message.TaskId);
 
             var taskSignups = new List<TaskSignup>();
 
             //New Items, if not in collection add them, save that list for the pub-event
             foreach (var userId in message.UserIds)
             {
-                var taskSignup = task.AssignedVolunteers.SingleOrDefault(a => a.User.Id == userId);
+                var taskSignup = @task.AssignedVolunteers.SingleOrDefault(a => a.User.Id == userId);
                 if (taskSignup != null) continue;
 
                 var user = await _context.Users.SingleAsync(u => u.Id == userId);
                 taskSignup = new TaskSignup
                 {
-                    Task = task,
+                    Task = @task,
                     User = user,
                     AdditionalInfo = string.Empty,
                     Status = TaskStatus.Assigned.ToString(),
                     StatusDateTimeUtc = DateTimeUtcNow()
                 };
 
-                task.AssignedVolunteers.Add(taskSignup);
+                @task.AssignedVolunteers.Add(taskSignup);
                 taskSignups.Add(taskSignup);
             }
 
             //Remove task signups where the the user id is not included in the current list of assigned user id's
-            var taskSignupsToRemove = task.AssignedVolunteers.Where(taskSignup => message.UserIds.All(uid => uid != taskSignup.User.Id)).ToList();
-            taskSignupsToRemove.ForEach(taskSignup => task.AssignedVolunteers.Remove(taskSignup));
+            var taskSignupsToRemove = @task.AssignedVolunteers.Where(taskSignup => message.UserIds.All(uid => uid != taskSignup.User.Id)).ToList();
+            taskSignupsToRemove.ForEach(taskSignup => @task.AssignedVolunteers.Remove(taskSignup));
 
             await _context.SaveChangesAsync();
 

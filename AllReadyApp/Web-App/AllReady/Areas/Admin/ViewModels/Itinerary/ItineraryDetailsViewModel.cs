@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AllReady.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AllReady.Areas.Admin.ViewModels.Itinerary
@@ -58,5 +59,9 @@ namespace AllReady.Areas.Admin.ViewModels.Itinerary
         /// A URL to the bing maps site with parameters needed to generate a driving route
         /// </summary>
         public string BingMapUrl { get; set; }
+
+        public string RequestKeywords { get; set; }
+
+        public RequestStatus? RequestStatus { get; set; }
     }
 }

@@ -122,7 +122,8 @@ namespace AllReady.DataAccess
                 EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(1), _centralTimeZone),
                 CampaignImpact = smokeDetectorCampaignImpact,
                 TimeZoneId = "Central Standard Time",
-                Location = GetRandom(locations)
+                Location = GetRandom(locations),
+                Published = true
             };
             organization.Campaigns.Add(smokeDetectorCampaign);
 
@@ -133,7 +134,8 @@ namespace AllReady.DataAccess
                 TimeZoneId = "Central Standard Time",
                 StartDateTime =  AdjustToTimezone(DateTime.Today.AddMonths(-1), _centralTimeZone),
                 EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(1), _centralTimeZone),
-                Location = GetRandom(locations)
+                Location = GetRandom(locations),
+                 Published = true
             };
             organization.Campaigns.Add(financialCampaign);
 
@@ -144,7 +146,8 @@ namespace AllReady.DataAccess
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-1), _centralTimeZone),
                 EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(2), _centralTimeZone),
-                Location = GetRandom(locations)
+                Location = GetRandom(locations),
+                Published = true
             };
             organization.Campaigns.Add(safetyKitCampaign);
 
@@ -155,7 +158,8 @@ namespace AllReady.DataAccess
                 TimeZoneId = "Central Standard Time",
                 StartDateTime =  AdjustToTimezone(DateTime.Today.AddMonths(-1), _centralTimeZone),
                 EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(2), _centralTimeZone),
-                Location = GetRandom(locations)
+                Location = GetRandom(locations),
+                Published = true
             };
             organization.Campaigns.Add(carSafeCampaign);
 
@@ -166,7 +170,8 @@ namespace AllReady.DataAccess
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-6), _centralTimeZone),
                 EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(6), _centralTimeZone),
-                Location = GetRandom(locations)
+                Location = GetRandom(locations),
+                Published = true
             };
             organization.Campaigns.Add(escapePlanCampaign);
 
