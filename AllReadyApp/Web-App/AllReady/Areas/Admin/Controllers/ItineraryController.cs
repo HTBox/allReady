@@ -329,6 +329,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
+            //TODO: reanme to SetRequestToUnassigned
             await _mediator.SendAsync(new RemoveRequestCommand { RequestId = viewModel.Id, ItineraryId = viewModel.ItineraryId });
 
             return RedirectToAction(nameof(Details), new { id = viewModel.ItineraryId });
@@ -380,8 +381,6 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            // todo: sgordon - Extend this to return success / failure message to the user
-
             await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Completed});
 
             return RedirectToAction("Details", new { id = itineraryId });
@@ -398,8 +397,6 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return Unauthorized();
             }
-
-            // todo: sgordon - Extend this to return success / failure message to the user
 
             await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Assigned });
 
