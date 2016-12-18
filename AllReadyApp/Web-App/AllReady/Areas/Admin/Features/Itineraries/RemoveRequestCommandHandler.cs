@@ -49,7 +49,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
             await context.SaveChangesAsync();
 
-            //TODO mgmccarthy: my guess here is that the installer did not get to this Request, and now the Request is no longer assigned?
+            //TODO mgmccarthy: my guess here is that the installer did not get to this Request, and now the Request is no longer assigned to the Itinerary?
             //also, not too sure how to report this status back to GASA. Waiting to hear back from them
             await mediator.PublishAsync(new RequestStatusChangedNotification { RequestId = message.RequestId, OldStatus = requestStatus, NewStatus = RequestStatus.Unassigned });
         }

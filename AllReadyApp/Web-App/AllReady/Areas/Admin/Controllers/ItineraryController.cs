@@ -329,7 +329,6 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            //TODO: reanme to SetRequestToUnassigned
             await _mediator.SendAsync(new RemoveRequestCommand { RequestId = viewModel.Id, ItineraryId = viewModel.ItineraryId });
 
             return RedirectToAction(nameof(Details), new { id = viewModel.ItineraryId });
