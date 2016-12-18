@@ -20,12 +20,14 @@ namespace AllReady.Areas.Admin.Features.Requests
 
         public async Task Handle(RequestStatusChangedNotification notification)
         {
-            if (await context.Requests.AnyAsync(x => x.RequestId == notification.RequestId && x.Source == RequestSource.Api))
+            var request = await context.Requests.SingleOrDefaultAsync(x => notification.RequestId == x.RequestId && x.Source == RequestSource.Api);
+            if (request != null)
             {
                 if (notification.NewStatus == RequestStatus.Completed || notification.NewStatus == RequestStatus.Canceled || notification.NewStatus == RequestStatus.Assigned || notification.NewStatus == RequestStatus.Unassigned)
                 {
                     var gasaStatus = string.Empty;
                     var acceptance = false;
+
                     switch (notification.NewStatus)
                     {
                         case RequestStatus.Completed:
@@ -40,16 +42,12 @@ namespace AllReady.Areas.Admin.Features.Requests
                             gasaStatus = "in progress";
                             acceptance = true;
                             break;
-                        //???
+                        //TODO mgmccarthy: this is a guess until I hear back from GASA
                         case RequestStatus.Unassigned:
                             gasaStatus = "new";
-                            acceptance = false;
                             break;
-                        //???
                     }
 
-                    var request = await context.Requests.SingleAsync(x => notification.RequestId == x.RequestId && x.Source == RequestSource.Api);
-                    //backgroundJobClient.Enqueue<ISendRequestStatusToGetASmokeAlarm>(x => x.Send(request.ProviderRequestId, gasaStatus, true));
                     backgroundJobClient.Enqueue<ISendRequestStatusToGetASmokeAlarm>(x => x.Send(request.ProviderRequestId, gasaStatus, acceptance));
                 }
             }
