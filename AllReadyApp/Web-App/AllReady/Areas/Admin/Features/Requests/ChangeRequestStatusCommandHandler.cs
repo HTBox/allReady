@@ -1,31 +1,30 @@
 ﻿using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {
-    public class ChangeRequestStatusCommandHandler : IAsyncRequestHandler<ChangeRequestStatusCommand, bool>
+    public class ChangeRequestStatusCommandHandler : AsyncRequestHandler<ChangeRequestStatusCommand>
     {
-        private readonly AllReadyContext _context;
+        private readonly AllReadyContext context;
+        private readonly IMediator mediator;
 
-        public ChangeRequestStatusCommandHandler(AllReadyContext context)
+        public ChangeRequestStatusCommandHandler(AllReadyContext context, IMediator mediator)
         {
-            _context = context;
+            this.context = context;
+            this.mediator = mediator;
         }
 
-        public async Task<bool> Handle(ChangeRequestStatusCommand message)
+        protected override async Task HandleCore(ChangeRequestStatusCommand message)
         {
-            var req = new Request
-            {
-                RequestId = message.RequestId,
-                Status = message.NewStatus
-            };
+            var request = await context.Requests.SingleAsync(x => x.RequestId == message.RequestId);
+            var requestStatus = request.Status;
 
-            _context.Requests.Attach(req);
-            _context.Entry(req).Property(x => x.Status).IsModified = true;
-            var changedCount = await _context.SaveChangesAsync();
+            request.Status = message.NewStatus;
+            await context.SaveChangesAsync();
 
-            return changedCount > 0;
+            await mediator.PublishAsync(new RequestStatusChangedNotification { RequestId = message.RequestId, OldStatus = requestStatus, NewStatus = message.NewStatus });
         }
     }
 }

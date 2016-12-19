@@ -15,8 +15,6 @@ using AllReady.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AllReady.Services.Routing;
-using System.Text;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -380,8 +378,6 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            // todo: sgordon - Extend this to return success / failure message to the user
-
             await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Completed});
 
             return RedirectToAction("Details", new { id = itineraryId });
@@ -398,8 +394,6 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return Unauthorized();
             }
-
-            // todo: sgordon - Extend this to return success / failure message to the user
 
             await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Assigned });
 

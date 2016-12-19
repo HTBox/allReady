@@ -53,6 +53,40 @@ namespace AllReady.UnitTest.Features.Campaigns
             Assert.Null(result);
         }
 
+
+        [Fact]
+        public async Task ReturnNullIfFeaturedCampaignIsNotMarkedAsPublished()
+        {
+            // clear the test data of all campaigns
+            var allCampaigns = Context.Campaigns.ToList();
+            Context.RemoveRange(allCampaigns);
+            Context.SaveChanges();
+
+            var org = new Organization
+            {
+                Name = "Some Organization"
+            };
+
+            Context.Campaigns.Add(new Campaign
+            {
+                Name = "This is featured but not published",
+                Featured = true,
+                ManagingOrganization = org,
+                Published = false
+            });
+
+
+
+            // Arrange
+            var handler = new FeaturedCampaignQueryHandler(Context);
+
+            // Act
+            var result = await handler.Handle(new FeaturedCampaignQuery());
+
+            // Assert
+            Assert.Null(result);
+        }
+
         protected override void LoadTestData()
         {
             var org = new Organization
@@ -66,21 +100,24 @@ namespace AllReady.UnitTest.Features.Campaigns
             {
                 Name = "This is featured",
                 Featured = true,
-                ManagingOrganization = org                
+                ManagingOrganization = org,
+                Published = true         
             });
 
             Context.Campaigns.Add(new Campaign
             {
                 Name = "This is not featured",
                 Featured = false,
-                ManagingOrganization = org
+                ManagingOrganization = org,
+                Published = true
             });
 
             Context.Campaigns.Add(new Campaign
             {
                 Name = "This is also featured",
                 Featured = true,
-                ManagingOrganization = org
+                ManagingOrganization = org,
+                Published = true
             });
 
             Context.SaveChanges();

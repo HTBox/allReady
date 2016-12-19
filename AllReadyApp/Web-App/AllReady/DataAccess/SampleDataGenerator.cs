@@ -15,7 +15,7 @@ namespace AllReady.DataAccess
         private readonly SampleDataSettings _settings;
         private readonly GeneralSettings _generalSettings;
         private readonly UserManager<ApplicationUser> _userManager;
-        private TimeZoneInfo _centralTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+        private readonly TimeZoneInfo _centralTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
 
         public SampleDataGenerator(AllReadyContext context, IOptions<SampleDataSettings> options, IOptions<GeneralSettings> generalSettings, UserManager<ApplicationUser> userManager)
         {
@@ -100,7 +100,8 @@ namespace AllReady.DataAccess
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = AdjustToTimezone(DateTimeOffset.Now.AddMonths(-1), _centralTimeZone),
                 EndDateTime = AdjustToTimezone(DateTimeOffset.Now.AddMonths(3), _centralTimeZone),
-                Location = GetRandom(locations)
+                Location = GetRandom(locations),
+                Published = true
             };
             organization.Campaigns.Add(firePreventionCampaign);
 
@@ -423,15 +424,18 @@ namespace AllReady.DataAccess
             var username2 = $"{_settings.DefaultUsername}2.com";
             var username3 = $"{_settings.DefaultUsername}3.com";
 
-            var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone, PhoneNumber = "111-111-1111" };
+            var user1 = new ApplicationUser { FirstName = "FirstName1", LastName = "LastName1", UserName = username1, Email = username1, EmailConfirmed = true,
+                TimeZoneId = _generalSettings.DefaultTimeZone, PhoneNumber = "111-111-1111" };
             _userManager.CreateAsync(user1, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user1);
 
-            var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone, PhoneNumber = "222-222-2222" };
+            var user2 = new ApplicationUser { FirstName = "FirstName2", LastName = "LastName2", UserName = username2, Email = username2, EmailConfirmed = true,
+                TimeZoneId = _generalSettings.DefaultTimeZone, PhoneNumber = "222-222-2222" };
             _userManager.CreateAsync(user2, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user2);
 
-            var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone, PhoneNumber = "333-333-3333" };
+            var user3 = new ApplicationUser { FirstName = "FirstName3", LastName = "LastName3", UserName = username3, Email = username3, EmailConfirmed = true,
+                TimeZoneId = _generalSettings.DefaultTimeZone, PhoneNumber = "333-333-3333" };
             _userManager.CreateAsync(user3, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user3);
             #endregion
@@ -450,7 +454,7 @@ namespace AllReady.DataAccess
             _context.TaskSignups.AddRange(taskSignups);
             #endregion
 
-            #region TennatContacts
+            #region OrganizationContacts
             organization.OrganizationContacts.Add(new OrganizationContact { Contact = contacts.First(), Organization = organization, ContactType = 1 /*Primary*/ });
             #endregion
 
@@ -563,6 +567,8 @@ namespace AllReady.DataAccess
             {
                 user = new ApplicationUser
                 {
+                    FirstName = "FirstName4",
+                    LastName = "LastName4",
                     UserName = _settings.DefaultAdminUsername,
                     Email = _settings.DefaultAdminUsername,
                     TimeZoneId = _generalSettings.DefaultTimeZone,
@@ -574,6 +580,8 @@ namespace AllReady.DataAccess
 
                 var user2 = new ApplicationUser
                 {
+                    FirstName = "FirstName5",
+                    LastName = "LastName5",
                     UserName = _settings.DefaultOrganizationUsername,
                     Email = _settings.DefaultOrganizationUsername,
                     TimeZoneId = _generalSettings.DefaultTimeZone,
@@ -587,6 +595,8 @@ namespace AllReady.DataAccess
 
                 var user3 = new ApplicationUser
                 {
+                    FirstName = "FirstName5",
+                    LastName = "LastName5",
                     UserName = _settings.DefaultUsername,
                     Email = _settings.DefaultUsername,
                     TimeZoneId = _generalSettings.DefaultTimeZone,

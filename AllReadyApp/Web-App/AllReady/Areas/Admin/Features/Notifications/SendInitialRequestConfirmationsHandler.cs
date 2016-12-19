@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Notifications
 {
-    public class RequestsAssignedToItineraryHandler : IAsyncNotificationHandler<RequestsAssignedToItinerary>
+    public class SendInitialRequestConfirmationsHandler : IAsyncNotificationHandler<RequestsAssignedToItinerary>
     {
         private readonly AllReadyContext context;
         private readonly ISmsSender smsSender;
         private readonly IMediator mediator;
 
-        public RequestsAssignedToItineraryHandler(AllReadyContext context, ISmsSender smsSender, IMediator mediator)
+        public SendInitialRequestConfirmationsHandler(AllReadyContext context, ISmsSender smsSender, IMediator mediator)
         {
             this.context = context;
             this.smsSender = smsSender;
