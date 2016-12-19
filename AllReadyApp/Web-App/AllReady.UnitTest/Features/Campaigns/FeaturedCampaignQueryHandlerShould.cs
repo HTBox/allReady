@@ -66,21 +66,24 @@ namespace AllReady.UnitTest.Features.Campaigns
             {
                 Name = "This is featured",
                 Featured = true,
-                ManagingOrganization = org                
+                ManagingOrganization = org,
+                Published = true         
             });
 
             Context.Campaigns.Add(new Campaign
             {
                 Name = "This is not featured",
                 Featured = false,
-                ManagingOrganization = org
+                ManagingOrganization = org,
+                Published = true
             });
 
             Context.Campaigns.Add(new Campaign
             {
                 Name = "This is also featured",
                 Featured = true,
-                ManagingOrganization = org
+                ManagingOrganization = org,
+                Published = true
             });
 
             Context.SaveChanges();
