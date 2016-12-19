@@ -1,9 +1,9 @@
 ﻿using AllReady.Features.Campaigns;
+using AllReady.Features.Home;
+using AllReady.ViewModels.Home;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using AllReady.Features.Home;
-using AllReady.ViewModels.Home;
 
 namespace AllReady.Controllers
 {
@@ -23,6 +23,12 @@ namespace AllReady.Controllers
                 FeaturedCampaign = await mediator.SendAsync(new FeaturedCampaignQuery()),
                 ActiveOrUpcomingCampaigns = await mediator.SendAsync(new ActiveOrUpcomingCampaignsQuery())
             };
+
+            if (model.HasFeaturedCampaign)
+            {
+                var indexOfFeaturedCampaign = model.ActiveOrUpcomingCampaigns.FindIndex(s => s.Id == model.FeaturedCampaign.Id);
+                model.ActiveOrUpcomingCampaigns.RemoveAt(indexOfFeaturedCampaign);
+            }
 
             return View(model);
         }
