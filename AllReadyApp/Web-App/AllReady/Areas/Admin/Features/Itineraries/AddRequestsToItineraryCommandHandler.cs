@@ -26,11 +26,8 @@ namespace AllReady.Areas.Admin.Features.Itineraries
         {
             var itinerary = await _context.Itineraries
                .Where(x => x.Id == message.ItineraryId)
-               .Select(x => new
-               {
-                   Id = x.Id,
-                   Name = x.Name
-               }).SingleOrDefaultAsync();
+               .Select(x => new { x.Id, x.Name})
+               .SingleOrDefaultAsync();
 
             if (itinerary == null)
             {

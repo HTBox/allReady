@@ -11,7 +11,7 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
 {
-    public class RequestsAssignedToItineraryHandlerShould : InMemoryContextTest
+    public class SendInitialRequestConfirmationsShould : InMemoryContextTest
     {
         [Fact]
         public async Task SendSmsToTheCorrectPhoneNumbersWithTheCorrectMessage()
@@ -29,7 +29,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
 
             var smsSender = new Mock<ISmsSender>();
 
-            var sut = new RequestsAssignedToItineraryHandler(Context, smsSender.Object, Mock.Of<IMediator>());
+            var sut = new SendInitialRequestConfirmationsHandler(Context, smsSender.Object, Mock.Of<IMediator>());
             await sut.Handle(notification);
 
             smsSender.Verify(x => x.SendSmsAsync(requestorPhoneNumbers, message));
@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
 
             var mediator = new Mock<IMediator>();
 
-            var sut = new RequestsAssignedToItineraryHandler(Context, Mock.Of<ISmsSender>(), mediator.Object);
+            var sut = new SendInitialRequestConfirmationsHandler(Context, Mock.Of<ISmsSender>(), mediator.Object);
             await sut.Handle(notification);
 
             mediator.Verify(x => x.PublishAsync(It.Is<InitialRequestConfirmationsSent>(y => y.RequestIds == notification.RequestIds && y.ItineraryId == itinerary.Id)));
