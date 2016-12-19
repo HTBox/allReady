@@ -4,13 +4,34 @@ using Shouldly;
 using System;
 using System.Threading.Tasks;
 using Xunit;
+using System.Linq;
 
 namespace AllReady.UnitTest.Features.Home
 {
     public class ActiveOrUpcomingCampaignsQueryHandlerShould : InMemoryContextTest
     {
+        private static string NotPublished = "Not published";
+        private static string Expired = "Expired";
+        private static string Locked = "Locked";
+
+        private static DateTime Now = new DateTime(2016, 12, 01, 10, 00, 00);
+
         [Fact]
-        public async Task NotReturnUnPublishedCampaigns()
+        public async Task ReturnExpectedNumberOfCampaigns()
+        {
+            // Arrange
+            var handler = new ActiveOrUpcomingCampaignsQueryHandler(Context, Now);
+
+            // Act
+            var result = await handler.Handle(new ActiveOrUpcomingCampaignsQuery());
+
+            // Assert
+            result.ShouldNotBeNull();
+            result.Count.ShouldBe(4);
+        }
+
+        [Fact]
+        public async Task NotIncludeAnyExpiredCampaigns()
         {
             // Arrange
             var handler = new ActiveOrUpcomingCampaignsQueryHandler(Context);
@@ -20,7 +41,35 @@ namespace AllReady.UnitTest.Features.Home
 
             // Assert
             result.ShouldNotBeNull();
-            result.Count.ShouldBe(2);
+            result.Any(x => x.Name == Expired).ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task NotIncludeAnyUnPublishedCampaigns()
+        {
+            // Arrange
+            var handler = new ActiveOrUpcomingCampaignsQueryHandler(Context);
+
+            // Act
+            var result = await handler.Handle(new ActiveOrUpcomingCampaignsQuery());
+
+            // Assert
+            result.ShouldNotBeNull();
+            result.Any(x => x.Name == NotPublished).ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task NotIncludeAnyLockedCampaigns()
+        {
+            // Arrange
+            var handler = new ActiveOrUpcomingCampaignsQueryHandler(Context);
+
+            // Act
+            var result = await handler.Handle(new ActiveOrUpcomingCampaignsQuery());
+
+            // Assert
+            result.ShouldNotBeNull();
+            result.Any(x => x.Name == Locked).ShouldBeFalse();
         }
 
         protected override void LoadTestData()
@@ -34,32 +83,83 @@ namespace AllReady.UnitTest.Features.Home
 
             Context.Campaigns.Add(new Campaign
             {
-                Name = "This is published",
+                Name = "This is published and in the future",
                 Featured = false,
                 ManagingOrganization = org,
                 Published = true,
-                StartDateTime = DateTime.UtcNow.AddDays(1),
-                EndDateTime = DateTime.UtcNow.AddDays(10)
+                StartDateTime = Now.AddDays(1),
+                EndDateTime = Now.AddDays(10)
             });
 
             Context.Campaigns.Add(new Campaign
             {
-                Name = "This is also published",
+                Name = "This is also published and in the future",
                 Featured = false,
                 ManagingOrganization = org,
                 Published = true,
-                StartDateTime = DateTime.UtcNow.AddDays(1),
-                EndDateTime = DateTime.UtcNow.AddDays(10)
+                StartDateTime = Now.AddDays(1),
+                EndDateTime = Now.AddDays(10)
             });
 
             Context.Campaigns.Add(new Campaign
             {
-                Name = "This is not published",
+                Name = NotPublished,
                 Featured = false,
                 ManagingOrganization = org,
                 Published = false,
-                StartDateTime = DateTime.UtcNow.AddDays(1),
-                EndDateTime = DateTime.UtcNow.AddDays(10)
+                StartDateTime = Now.AddDays(1),
+                EndDateTime = Now.AddDays(10)
+            });
+
+            Context.Campaigns.Add(new Campaign
+            {
+                Name = "This is published and started",
+                Featured = false,
+                ManagingOrganization = org,
+                Published = true,
+                StartDateTime = Now.AddDays(-1),
+                EndDateTime = Now.AddDays(10)
+            });
+
+            Context.Campaigns.Add(new Campaign
+            {
+                Name = Expired,
+                Featured = false,
+                ManagingOrganization = org,
+                Published = true,
+                StartDateTime = Now.AddDays(-10),
+                EndDateTime = Now.AddDays(-1)
+            });
+
+            Context.Campaigns.Add(new Campaign
+            {
+                Name = "This is published and active for the test date",
+                Featured = false,
+                ManagingOrganization = org,
+                Published = true,
+                StartDateTime = new DateTime(2016, 12, 01, 00, 00, 00),
+                EndDateTime = new DateTime(2016, 12, 01, 23, 59, 59)
+            });
+
+            Context.Campaigns.Add(new Campaign
+            {
+                Name = Expired, //one minute before the current date
+                Featured = false,
+                ManagingOrganization = org,
+                Published = true,
+                StartDateTime = Now.AddDays(-10),
+                EndDateTime = new DateTime(2016, 11, 30, 23, 59, 59)
+        });
+
+            Context.Campaigns.Add(new Campaign
+            {
+                Name = Locked,
+                Featured = false,
+                ManagingOrganization = org,
+                Published = true,
+                StartDateTime = Now.AddDays(-2),
+                EndDateTime = Now.AddDays(5),
+                Locked = true
             });
 
             Context.SaveChanges();
