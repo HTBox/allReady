@@ -2,78 +2,48 @@
 using System.Linq;
 using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Models;
-using Microsoft.EntityFrameworkCore;
-using Shouldly;
+using MediatR;
+using Moq;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Requests
 {
     public class ChangeRequestStatusCommandHandlerShould : InMemoryContextTest
     {
-        //private readonly Guid _existingRequestId1 = new Guid("b0efa33c-082f-4287-b641-c96994e96c9e");
-        //private readonly Guid _existingRequestId2 = new Guid("9e60ede8-229a-4827-b8b7-0b13e22ab435");
+        [Fact]
+        public async void UpdateTheRequestWithTheCorrectStatus()
+        {
+            var request = new Request { RequestId = Guid.NewGuid(), Status = RequestStatus.Unassigned };
+            Context.Requests.Add(request);
+            Context.SaveChanges();
 
-        //protected override void LoadTestData()
-        //{
-        //    var req1 = new Request
-        //    {
-        //        RequestId = _existingRequestId1,
-        //        Name = "New Request 1",
-        //        Status = RequestStatus.Assigned
-        //    };
+            var message = new ChangeRequestStatusCommand { RequestId = request.RequestId, NewStatus = RequestStatus.Assigned };
 
-        //    var req2= new Request
-        //    {
-        //        RequestId = _existingRequestId2,
-        //        Name = "New Request 2",
-        //        Status = RequestStatus.Completed
-        //    };
+            var sut = new ChangeRequestStatusCommandHandler(Context, Mock.Of<IMediator>());
+            await sut.Handle(message);
 
-        //    Context.Requests.Add(req1);
-        //    Context.Requests.Add(req2);
-        //    Context.SaveChanges();
+            var newStatus = Context.Requests.Single(x => x.RequestId == request.RequestId).Status;
+            Assert.Equal(newStatus, request.Status);
+        }
 
-        //    // We must do this so that the context change tracker is not already tracking the item when we come to attach it from out subject under test
-        //    Context.Entry(req1).State = EntityState.Detached;
-        //    Context.Entry(req2).State = EntityState.Detached;
-        //}
+        [Fact]
+        public async void PublishRequestStatusChangedNotificationWithTheCorrectDataOnTheMessage()
+        {
+            const RequestStatus originalRequestStatus = RequestStatus.Unassigned;
+            var originalRequest = new Request { RequestId = Guid.NewGuid(), Status = originalRequestStatus };
+            Context.Requests.Add(originalRequest);
+            Context.SaveChanges();
 
-        //[Fact]
-        //public async void Handle_WithNewStatusCompletedInMessage_UpdatesRequest()
-        //{
-        //    var query = new ChangeRequestStatusCommand
-        //    {
-        //        RequestId = _existingRequestId1,
-        //        NewStatus = RequestStatus.Completed
-        //    };
-            
-        //    var handler = new ChangeRequestStatusCommandHandler(Context);
+            var message = new ChangeRequestStatusCommand { RequestId = originalRequest.RequestId, NewStatus = RequestStatus.Assigned };
 
-        //    var result = await handler.Handle(query);
+            var mediator = new Mock<IMediator>();
 
-        //    var requestToValidate = Context.Requests.First(rec => rec.RequestId == _existingRequestId1);
-            
-        //    requestToValidate.Status.ShouldBe(RequestStatus.Completed);
-        //    result.ShouldBeTrue();
-        //}
+            var sut = new ChangeRequestStatusCommandHandler(Context, mediator.Object);
+            await sut.Handle(message);
 
-        //[Fact]
-        //public async void Handle_WithNewStatusAssignedInMessage_UpdatesRequest()
-        //{
-        //    var query = new ChangeRequestStatusCommand
-        //    {
-        //        RequestId = _existingRequestId2,
-        //        NewStatus = RequestStatus.Assigned
-        //    };
-
-        //    var handler = new ChangeRequestStatusCommandHandler(Context);
-
-        //    var result = await handler.Handle(query);
-
-        //    var requestToValidate = Context.Requests.First(rec => rec.RequestId == _existingRequestId2);
-
-        //    requestToValidate.Status.ShouldBe(RequestStatus.Assigned);
-        //    result.ShouldBeTrue();
-        //}
+            mediator.Verify(x => x.PublishAsync(It.Is<RequestStatusChangedNotification>(y => y.RequestId == originalRequest.RequestId &&
+                y.OldStatus == originalRequestStatus &&
+                y.NewStatus == message.NewStatus)));
+        }
     }
 }
