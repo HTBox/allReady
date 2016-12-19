@@ -100,7 +100,8 @@ namespace AllReady.DataAccess
                 TimeZoneId = "Central Standard Time",
                 StartDateTime = AdjustToTimezone(DateTimeOffset.Now.AddMonths(-1), _centralTimeZone),
                 EndDateTime = AdjustToTimezone(DateTimeOffset.Now.AddMonths(3), _centralTimeZone),
-                Location = GetRandom(locations)
+                Location = GetRandom(locations),
+                Published = true
             };
             organization.Campaigns.Add(firePreventionCampaign);
 

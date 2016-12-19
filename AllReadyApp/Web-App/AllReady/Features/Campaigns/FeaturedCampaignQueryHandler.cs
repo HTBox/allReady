@@ -19,7 +19,7 @@ namespace AllReady.Features.Campaigns
         public async Task<CampaignSummaryViewModel> Handle(FeaturedCampaignQuery message)
         {
             return await _context.Campaigns.AsNoTracking()
-                .Where(c => c.Featured)
+                .Where(c => c.Featured && c.Published)
                 .Include(c => c.ManagingOrganization)
                 .Select(c => new CampaignSummaryViewModel
                 {
