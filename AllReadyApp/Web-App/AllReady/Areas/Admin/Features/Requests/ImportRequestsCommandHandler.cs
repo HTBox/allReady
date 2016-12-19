@@ -25,6 +25,7 @@ namespace AllReady.Areas.Admin.Features.Requests
             {
                 RequestId = NewRequestId(),
                 ProviderRequestId = viewModel.Id,
+                EventId = message.EventId,
                 ProviderData = viewModel.ProviderData,
                 Address = viewModel.Address,
                 City = viewModel.City,

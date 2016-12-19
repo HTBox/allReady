@@ -6,6 +6,7 @@ namespace AllReady.Areas.Admin.Features.Requests
 {
     public class ImportRequestsCommand : IRequest
     {
+        public int EventId { get; set; }
         public List<ImportRequestViewModel> ImportRequestViewModels { get; set; }
     }
 }
