@@ -1,20 +1,17 @@
 ﻿using AllReady.Controllers;
 using AllReady.Features.Campaigns;
+using AllReady.Features.Home;
+using AllReady.ViewModels.Home;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Shouldly;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using AllReady.Features.Home;
 using Xunit;
 
 namespace AllReady.UnitTest.Controllers
 {
-    using System.Collections.Generic;
-
-    using AllReady.ViewModels.Home;
-
-    using Shouldly;
-
     public class HomeControllerTests
     {
         [Fact]
