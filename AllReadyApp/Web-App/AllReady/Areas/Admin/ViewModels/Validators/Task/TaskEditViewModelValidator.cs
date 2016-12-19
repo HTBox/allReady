@@ -1,18 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Features.Events;
 using AllReady.Models;
 using MediatR;
+using System.IO;
 
 namespace AllReady.Areas.Admin.ViewModels.Validators.Task
 {
     public class TaskEditViewModelValidator : ITaskEditViewModelValidator
     {
+        private static readonly IList<string> AllowedFileExtensions = new List<string> { ".png", ".jpg", ".doc", ".docx", ".xls", ".xlsx", ".pdf" };
+        private const int MaxAttachmentBytes = 2 * 1024 * 1024; // 2MB
+
         private readonly IMediator _mediator;
 
         public TaskEditViewModelValidator(IMediator mediator)
         {
+            if (mediator == null)
+            {
+                throw new ArgumentNullException(nameof(mediator));
+            }
+
             _mediator = mediator;
         }
 
@@ -38,6 +48,29 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
             if (viewModel.EndDateTime > parentEvent.EndDateTime)
             {
                 result.Add(new KeyValuePair<string, string>(nameof(viewModel.EndDateTime), $"The end date of this task cannot be after the end date of the event {parentEvent.EndDateTime:g}"));
+            }
+            
+            // Rule - Attachments are optional
+            if (viewModel.NewAttachment != null && !string.IsNullOrEmpty(viewModel.NewAttachment.FileName))
+            {
+                // Rule - New attachment must have content
+                if (viewModel.NewAttachment == null || viewModel.NewAttachment.Length == 0)
+                {
+                    result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), "The attachment is empty"));
+                }
+
+                // Rule - New attachment must have a maximum size
+                if (viewModel.NewAttachment.Length > MaxAttachmentBytes)
+                {
+                    result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), "The attachment has an invalid extension. Allowed file types are :" + string.Join(", ", AllowedFileExtensions)));
+                }
+
+                // Rule - Attachment must be a document or an image
+                string ext = Path.GetExtension(viewModel.NewAttachment.FileName).ToLower();
+                if (!AllowedFileExtensions.Contains(ext))
+                {
+                    result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), "The attachment has an invalid extension. Allowed file types are :" + string.Join(", ", AllowedFileExtensions)));
+                }
             }
 
             // Rule - Itinerary tasks must start and end on same calendar day
