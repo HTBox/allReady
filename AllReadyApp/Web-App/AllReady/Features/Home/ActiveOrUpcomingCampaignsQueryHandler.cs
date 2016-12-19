@@ -12,17 +12,16 @@ namespace AllReady.Features.Home
     public class ActiveOrUpcomingCampaignsQueryHandler : IAsyncRequestHandler<ActiveOrUpcomingCampaignsQuery, List<ActiveOrUpcomingCampaign>>
     {
         private readonly AllReadyContext _context;
-        private readonly DateTime? _dateTimeForTesting;
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        public ActiveOrUpcomingCampaignsQueryHandler(AllReadyContext context, DateTime? dateTime = null)
+        public ActiveOrUpcomingCampaignsQueryHandler(AllReadyContext context)
         {
             _context = context;
-            _dateTimeForTesting = dateTime;
         }
 
         public async Task<List<ActiveOrUpcomingCampaign>> Handle(ActiveOrUpcomingCampaignsQuery message)
         {
-            var now = _dateTimeForTesting ?? DateTime.UtcNow;
+            var now = DateTimeUtcNow();
 
             return await _context.Campaigns
                 .AsNoTracking()
