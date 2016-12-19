@@ -21,6 +21,7 @@ namespace AllReady.Areas.Admin.Features.Site
             return new IndexViewModel
             {
                 Users = await _context.Users
+                    .Include(u => u.Claims)
                     .OrderBy(u => u.UserName)
                     .ToListAsync()
             };
