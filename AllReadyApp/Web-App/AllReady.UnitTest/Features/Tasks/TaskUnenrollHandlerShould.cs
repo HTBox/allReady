@@ -9,6 +9,8 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Tasks
 {
+    using Event = AllReady.Models.Event;
+
     public class TaskUnenrollHandlerShould : InMemoryContextTest
     {
         [Fact]
@@ -53,13 +55,13 @@ namespace AllReady.UnitTest.Features.Tasks
             var user = new ApplicationUser { Id = "abc" };
             Context.Users.Add(user);
 
-            var campaignEvent = new Models.Event { Id = 1, Name = "Some Event" };
+            var campaignEvent = new Event { Id = 1, Name = "Some Event" };
             Context.Events.Add(campaignEvent);
 
-            var task = new AllReadyTask { Id = 1, Name = "Some Task", EndDateTime = DateTime.UtcNow.AddDays(100), Event = campaignEvent };
-            Context.Tasks.Add(task);
+            var @task = new AllReadyTask { Id = 1, Name = "Some Task", EndDateTime = DateTime.UtcNow.AddDays(100), Event = campaignEvent };
+            Context.Tasks.Add(@task);
            
-            Context.TaskSignups.Add(new TaskSignup { Task = task, User = user });
+            Context.TaskSignups.Add(new TaskSignup { Task = @task, User = user });
         
             Context.SaveChanges();
         }

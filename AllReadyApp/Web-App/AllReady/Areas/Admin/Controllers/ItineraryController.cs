@@ -52,6 +52,37 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [Route("Admin/Itinerary/Details/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Details(int id, string requestKeywords, RequestStatus? requestStatus)
+        {
+            var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery {ItineraryId = id});
+            if (itinerary == null)
+            {
+                return NotFound();
+            }
+
+            if (!User.IsOrganizationAdmin(itinerary.OrganizationId))
+            {
+                return Unauthorized();
+            }
+
+            var filteredRequests = await _mediator.SendAsync(new RequestListItemsQuery
+            {
+                Criteria = new RequestSearchCriteria
+                {
+                    ItineraryId = itinerary.Id,
+                    Keywords = requestKeywords,
+                    Status = requestStatus
+                }
+            });
+
+            itinerary.Requests = filteredRequests;
+
+            return View("Details", itinerary);
+        }
+
+        [HttpPost]
         [Route("Admin/Itinerary/Create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ItineraryEditViewModel model)
@@ -141,18 +172,14 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new EditItineraryCommand { Itinerary = model });
 
-            return RedirectToAction(nameof(Details), new { area = "Admin", id = model.Id });           
+            return RedirectToAction(nameof(Details), new { area = "Admin", id = model.Id });
         }
-        
+
         [HttpPost]
         [Route("Admin/Itinerary/AddTeamMember")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddTeamMember(int id, int selectedTeamMember)
         {
-            // todo: sgordon: This is not a very elegant at the moment as a failure would redirect without any feedback to the user
-            // this flow should be reviews and enhanced in a future PR using knockout to send and handle the error messaging on the details page
-            // for the purpose of the upcoming red cross testing I chose to leave this since a failure here would be an edge case
-
             var orgId = await GetOrganizationIdBy(id);
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
@@ -161,12 +188,30 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (id == 0 || selectedTeamMember == 0)
             {
-                return RedirectToAction("Details", new { id });
+                return Json(new
+                {
+                    isSuccess = false,
+                    errors = new[] {"Invalid selection."}
+                });
             }
 
-            var isSuccess = await _mediator.SendAsync(new AddTeamMemberCommand { ItineraryId = id, TaskSignupId = selectedTeamMember });
+            bool isSuccess = await _mediator.SendAsync(new AddTeamMemberCommand { ItineraryId = id, TaskSignupId = selectedTeamMember });
+            if (!isSuccess)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    errors = new[] {"Invalid itinerary."}
+                });
+            }
 
-            return RedirectToAction("Details", new { id });
+            var detail = await _mediator.SendAsync(new ItineraryDetailQuery {ItineraryId = id});
+            return Json(new
+            {
+                isSuccess = true,
+                teamMembers = detail.TeamMembers,
+                potentialTeamMembers = detail.PotentialTeamMembers
+            });
         }
 
         [HttpGet]
@@ -280,7 +325,7 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> RemoveRequest(RequestSummaryViewModel viewModel)
         {
             if(!viewModel.UserIsOrgAdmin)
-            { 
+            {
                 return Unauthorized();
             }
 
@@ -374,7 +419,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             var result = await _mediator.SendAsync(new OptimizeRouteCommand { ItineraryId = itineraryId });
-            
+
             return RedirectToAction("Details", new { id = itineraryId, startAddress = model.StartAddress, endAddress = model.EndAddress });
         }
 

@@ -38,6 +38,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Name = campaign.Name,
                     Description = campaign.Description,
                     Featured = campaign.Featured,
+                    Published = campaign.Published,
                     FullDescription = campaign.FullDescription,
                     ExternalUrl = campaign.ExternalUrl,
                     ExternalUrlText = campaign.ExternalUrlText,

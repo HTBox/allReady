@@ -10,8 +10,10 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class TaskStatusChangeHandler : IAsyncRequestHandler<TaskStatusChangeCommand, TaskChangeResult>
     {
-        private AllReadyContext _context;
-        private IMediator _mediator;
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
+
+        private readonly AllReadyContext _context;
+        private readonly IMediator _mediator;
 
         public TaskStatusChangeHandler(AllReadyContext context, IMediator mediator)
         {
@@ -21,12 +23,12 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<TaskChangeResult> Handle(TaskStatusChangeCommand message)
         {
-            var task = await GetTask(message);
+            var @task = await GetTask(message);
 
-            if (task == null)
+            if (@task == null)
                 throw new InvalidOperationException($"Task {message.TaskId} does not exist");
 
-            var taskSignup = task.AssignedVolunteers.SingleOrDefault(c => c.User.Id == message.UserId);
+            var taskSignup = @task.AssignedVolunteers.SingleOrDefault(c => c.User.Id == message.UserId);
             if (taskSignup == null)
                 throw new InvalidOperationException($"Sign-up for user {message.UserId} does not exist");
 
@@ -59,7 +61,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             }
 
             taskSignup.Status = message.TaskStatus.ToString();
-            taskSignup.StatusDateTimeUtc = DateTime.UtcNow;
+            taskSignup.StatusDateTimeUtc = DateTimeUtcNow();
             taskSignup.StatusDescription = message.TaskStatusDescription;
 
             await _context.SaveChangesAsync();
@@ -67,7 +69,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             var notification = new TaskSignupStatusChanged { SignupId = taskSignup.Id };
             await _mediator.PublishAsync(notification);
             
-            return new TaskChangeResult { Status = "success", Task = task };
+            return new TaskChangeResult { Status = "success", Task = @task };
         }
 
         private async Task<AllReadyTask> GetTask(TaskStatusChangeCommand message)

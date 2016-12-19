@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Controllers;
 using AllReady.DataAccess;
 using AllReady.Hangfire;
-using AllReady.Hangfire.Jobs;
 using AllReady.Models;
 using AllReady.Providers;
 using AllReady.Providers.ExternalUserInformationProviders;
@@ -35,8 +35,8 @@ using Hangfire;
 using Hangfire.SqlServer;
 using AllReady.ModelBinding;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.Extensions.Options;
 using AllReady.Services.Routing;
+using CsvHelper;
 
 namespace AllReady
 {
@@ -101,6 +101,7 @@ namespace AllReady
             services.Configure<EmailSettings>(Configuration.GetSection("Email"));
             services.Configure<SampleDataSettings>(Configuration.GetSection("SampleData"));
             services.Configure<GeneralSettings>(Configuration.GetSection("General"));
+            services.Configure<GetASmokeAlarmApiSettings>(Configuration.GetSection("GetASmokeAlarmApiSettings"));
             services.Configure<TwitterAuthenticationSettings>(Configuration.GetSection("Authentication:Twitter"));
             services.Configure<MappingSettings>(Configuration.GetSection("Mapping"));
 
@@ -156,7 +157,7 @@ namespace AllReady
         {
             // todo: move these to a proper autofac module
             // Register application services.
-            services.AddSingleton((x) => Configuration);
+            services.AddSingleton(x => Configuration);
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
@@ -166,10 +167,7 @@ namespace AllReady
             services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
             services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
             services.AddSingleton<IImageService, ImageService>();
-            services.AddTransient<ISendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate, SendRequestConfirmationMessagesSevenDaysBeforeAnItineraryDate>();
-            services.AddTransient<ISendRequestConfirmationMessagesADayBeforeAnItineraryDate, SendRequestConfirmationMessagesADayBeforeAnItineraryDate>();
-            services.AddTransient<ISendRequestConfirmationMessagesTheDayOfAnItineraryDate, SendRequestConfirmationMessagesTheDayOfAnItineraryDate>();
-
+            services.AddSingleton<ICsvFactory, CsvFactory>();
             services.AddTransient<SampleDataGenerator>();
 
             if (Configuration["Geocoding:EnableGoogleGeocodingService"] == "true")
@@ -224,6 +222,14 @@ namespace AllReady
             //Hangfire
             containerBuilder.Register(icomponentcontext => new BackgroundJobClient(new SqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"])))
                 .As<IBackgroundJobClient>();
+
+            //auto-register Hangfire jobs by convention
+            //http://docs.autofac.org/en/latest/register/scanning.html
+            var assembly = Assembly.GetExecutingAssembly();
+            containerBuilder
+                .RegisterAssemblyTypes(assembly)
+                .Where(t => t.Namespace == "AllReady.Hangfire.Jobs" && t.IsInterface)
+                .AsImplementedInterfaces();
 
             containerBuilder.RegisterType<GoogleOptimizeRouteService>().As<IOptimizeRouteService>().SingleInstance();
 

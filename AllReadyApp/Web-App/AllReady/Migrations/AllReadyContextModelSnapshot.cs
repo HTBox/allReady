@@ -146,6 +146,8 @@ namespace AllReady.Migrations
 
                     b.Property<string>("OrganizerId");
 
+                    b.Property<bool>("Published");
+
                     b.Property<DateTimeOffset>("StartDateTime");
 
                     b.Property<string>("TimeZoneId")
@@ -493,11 +495,13 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<int?>("OrganizationId");
+
                     b.Property<string>("Phone");
 
                     b.Property<string>("ProviderData");
 
-                    b.Property<string>("ProviderId");
+                    b.Property<string>("ProviderRequestId");
 
                     b.Property<int>("Source");
 
@@ -510,6 +514,8 @@ namespace AllReady.Migrations
                     b.HasKey("RequestId");
 
                     b.HasIndex("EventId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("Request");
                 });
@@ -883,6 +889,10 @@ namespace AllReady.Migrations
                         .WithMany("Requests")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("AllReady.Models.Organization", "Organization")
+                        .WithMany("Requests")
+                        .HasForeignKey("OrganizationId");
                 });
 
             modelBuilder.Entity("AllReady.Models.Skill", b =>

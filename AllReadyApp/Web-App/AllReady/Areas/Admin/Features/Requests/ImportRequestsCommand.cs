@@ -1,11 +1,11 @@
-﻿using AllReady.Models;
-using MediatR;
+﻿using MediatR;
 using System.Collections.Generic;
+using AllReady.Areas.Admin.ViewModels.Import;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {
-    public class ImportRequestsCommand : IRequest<IEnumerable<ImportRequestError>>
+    public class ImportRequestsCommand : IRequest
     {
-        public List<Request> Requests { get; set; }
+        public List<ImportRequestViewModel> ImportRequestViewModels { get; set; }
     }
 }

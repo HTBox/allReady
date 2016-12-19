@@ -106,11 +106,11 @@ namespace AllReady.ViewModels.Task
         [Display(Name = "Ending time")]
         public DateTimeOffset EndDateTime { get; set; }
 
-        public bool IsUserSignedUpForTask { get; private set; }
+        public bool IsUserSignedUpForTask { get; }
 
         public List<TaskSignupViewModel> AssignedVolunteers { get; set; } = new List<TaskSignupViewModel>();
 
-        public bool IsClosed { get; private set; } = false;
+        public bool IsClosed { get; private set; }
      
         public int AcceptedVolunteerCount => AssignedVolunteers?.Where(v => v.Status == "Accepted").Count() ?? 0;
         public bool IsLimitVolunteers { get; set; } = true;
@@ -138,8 +138,10 @@ namespace AllReady.ViewModels.Task
         private string GetDisplayDate()
         {
             if (StartDateTime.Date == EndDateTime.Date)
+            {
                 return $"{StartDateTime:dddd, MMMM dd, yyyy} from {StartDateTime:t} - {EndDateTime:t}";
-
+            }
+            
             return $"{StartDateTime:dddd, MMMM dd, yyyy} at {StartDateTime:t} to {EndDateTime:dddd, MMMM dd, yyyy} at {EndDateTime:t}";
         }
 

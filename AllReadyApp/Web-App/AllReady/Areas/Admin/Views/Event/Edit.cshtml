@@ -22,6 +22,13 @@
     }
 }
 
+@section styles{
+    @if (isEdit)
+    {
+        <link href="~/css/Admin/Event/Edit.css" rel="stylesheet" />
+    }
+}
+
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
@@ -52,7 +59,7 @@
             @if (isEdit)
             {
                 <input type="hidden" asp-for="Id" />
-                <input type="hidden" asp-for="ImageUrl" />
+                <input type="hidden" asp-for="ImageUrl" id="image-url-input" />
             }
             <input asp-for="CampaignId" type="hidden" />
             <input asp-for="CampaignName" type="hidden" />
@@ -98,15 +105,15 @@
 
             <!-- Uncomment this code when wait list functionality is completed -->
             @*@{
-                var displaySetting = Model.IsLimitVolunteers ? "" : "style=display:none";
-            }
-            <div id="IsAllowWaitListControl" class="form-group" @displaySetting>
-                <label asp-for="IsAllowWaitList" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="IsAllowWaitList" type="checkbox" class="form-control" />
-                    <span asp-validation-for="IsAllowWaitList" class="text-danger"></span>
-                </div>
-            </div>*@
+                    var displaySetting = Model.IsLimitVolunteers ? "" : "style=display:none";
+                }
+                <div id="IsAllowWaitListControl" class="form-group" @displaySetting>
+                    <label asp-for="IsAllowWaitList" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <input asp-for="IsAllowWaitList" type="checkbox" class="form-control" />
+                        <span asp-validation-for="IsAllowWaitList" class="text-danger"></span>
+                    </div>
+                </div>*@
             <div class="form-group">
                 <label asp-for="TimeZoneId" class="col-md-2 control-label"></label>
                 <div class="col-md-10">
@@ -201,18 +208,32 @@
                 </div>
             </div>
         </div>
+
         <div class="col-lg-6 pull-right">
             <div id="bingMap" style="position: relative"></div>
         </div>
 
-        <h2>Image</h2>
         <div class="form-horizontal col-lg-6 pull-left">
             @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
             {
                 <div class="form-group">
-                    <div class="col-md-2">&nbsp;</div>
-                    <div class="col-md-10">
-                        <img src="@Model.ImageUrl" class="img-thumbnail img-responsive col-md-4" />
+                    <div class="col-md-offset-2 col-md-8">
+
+                        <div class="alert event-image-status-alert" style="display:none;">
+
+                        </div>
+
+                        <div class="panel panel-default" id="image-panel-container">
+                            <div class="panel-heading">
+                                <label asp-for="ImageUrl"></label>
+                            </div>
+                            <div class="panel-body" id="image-panel-body">
+                                <div id="image-wrapper">
+                                    <button class="btn btn-danger" id="delete-image">Delete Image</button>
+                                    <img src="@Model.ImageUrl" class="img-responsive center-block" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             }
@@ -237,8 +258,24 @@
 
 
 @section scripts {
-    <script src="~/js/eventmap.js"></script>
+    @*<script src="~/js/eventmap.js"></script>*@
+    @if (isEdit)
+    {
+        <script src="~/lib/system.js/dist/system.js"></script>
+
+        <script>
+            SystemJS.config({
+                baseURL: '/js/Admin/Event/Edit',
+                defaultJSExtensions: true
+            });
+
+            SystemJS.import('Main');
+        </script>
+    }
+
     <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+
+
     <script type="text/javascript">
         $(".start-date-time")
             .focusout(function() {

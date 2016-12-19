@@ -70,6 +70,18 @@ namespace AllReady.Services
             };
         }
 
+        public IEnumerable<SelectListItem> GetRequestTypes()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem {Text = RequestStatus.Assigned.GetDisplayName(), Value = ((int)RequestStatus.Assigned).ToString()},
+                new SelectListItem {Text = RequestStatus.Canceled.GetDisplayName(), Value = ((int)RequestStatus.Canceled).ToString()},
+                new SelectListItem {Text = RequestStatus.Completed.GetDisplayName(), Value = ((int)RequestStatus.Completed).ToString()},
+                new SelectListItem {Text = RequestStatus.Confirmed.GetDisplayName(), Value = ((int)RequestStatus.Confirmed).ToString()},
+                new SelectListItem {Text = RequestStatus.PendingConfirmation.GetDisplayName(), Value = ((int)RequestStatus.PendingConfirmation).ToString()},
+            };
+        }
+
         public IEnumerable<SelectListItem> GetTimeZones()
         {
             return TimeZoneInfo.GetSystemTimeZones().Select(t => new SelectListItem { Value = t.Id, Text = t.DisplayName });

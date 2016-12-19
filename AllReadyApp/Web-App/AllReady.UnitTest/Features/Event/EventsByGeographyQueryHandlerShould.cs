@@ -1,5 +1,4 @@
 ﻿using AllReady.Models;
-using Moq;
 using Xunit;
 using System.Threading.Tasks;
 using AllReady.Features.Events;

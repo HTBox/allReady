@@ -66,5 +66,7 @@ namespace AllReady.Models
         /// The html for an organization specific privacy policy
         /// </summary>
         public string PrivacyPolicy { get; set; }
+
+        public List<Request> Requests{ get; set; }
     }
 }

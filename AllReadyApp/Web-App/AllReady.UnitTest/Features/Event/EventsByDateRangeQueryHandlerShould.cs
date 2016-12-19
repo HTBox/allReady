@@ -6,6 +6,8 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Event
 {
+    using Event = AllReady.Models.Event;
+
     public class EventsByDateRangeQueryHandlerShould : InMemoryContextTest
     {
         [Fact]
@@ -44,15 +46,15 @@ namespace AllReady.UnitTest.Features.Event
             Assert.Equal(5, result[2].Id);
         }
 
-        private static List<Models.Event> GetEvents(DateTimeOffset may, DateTimeOffset june)
+        private static List<Event> GetEvents(DateTimeOffset may, DateTimeOffset june)
         {
-            var inRange = new Models.Event { StartDateTime = may, EndDateTime = june };
-            var startBeforeRangeEndsInRange = new Models.Event { StartDateTime = may.AddMonths(-1), EndDateTime = june };
-            var startInRangeEndsAfterRange = new Models.Event { StartDateTime = may, EndDateTime = june.AddMonths(1) };
-            var startsAndEndsAfterRange = new Models.Event { StartDateTime = may.AddMonths(2), EndDateTime = june.AddMonths(2) };
-            var startsAndEndsBeforRange = new Models.Event { StartDateTime = may.AddMonths(-2), EndDateTime = june.AddMonths(-2) };
+            var inRange = new Event { StartDateTime = may, EndDateTime = june };
+            var startBeforeRangeEndsInRange = new Event { StartDateTime = may.AddMonths(-1), EndDateTime = june };
+            var startInRangeEndsAfterRange = new Event { StartDateTime = may, EndDateTime = june.AddMonths(1) };
+            var startsAndEndsAfterRange = new Event { StartDateTime = may.AddMonths(2), EndDateTime = june.AddMonths(2) };
+            var startsAndEndsBeforRange = new Event { StartDateTime = may.AddMonths(-2), EndDateTime = june.AddMonths(-2) };
 
-            var events = new List<Models.Event>
+            var events = new List<Event>
             {
                 startsAndEndsBeforRange,
                 startBeforeRangeEndsInRange,
@@ -65,11 +67,10 @@ namespace AllReady.UnitTest.Features.Event
 
         protected override void LoadTestData()
         {
-            var ev = new Models.Event { Name = "Some Event" };
+            var ev = new Event { Name = "Some Event" };
 
             var dbSet = Context.Events;
             dbSet.Add(ev);
-
 
             Context.SaveChanges();
         }

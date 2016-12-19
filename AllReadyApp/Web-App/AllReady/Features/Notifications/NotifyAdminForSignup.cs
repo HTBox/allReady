@@ -43,20 +43,20 @@ namespace AllReady.Features.Notifications
 
                 var eventLink = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Event/Details/{taskInfo.EventId}";
 
-                var task = await _context.Tasks.SingleOrDefaultAsync(t => t.Id == notification.TaskId);
-                if (task == null)
+                var @task = await _context.Tasks.SingleOrDefaultAsync(t => t.Id == notification.TaskId);
+                if (@task == null)
                 {
                     return;
                 }
 
-                var taskLink = $"View task: http://{_options.Value.SiteBaseUrl}/Admin/task/Details/{task.Id}";
-                var taskSignup = task.AssignedVolunteers.FirstOrDefault(t => t.User.Id == taskInfo.Volunteer.Id);
+                var taskLink = $"View task: http://{_options.Value.SiteBaseUrl}/Admin/task/Details/{@task.Id}";
+                var taskSignup = @task.AssignedVolunteers.FirstOrDefault(t => t.User.Id == taskInfo.Volunteer.Id);
 
                 //set for task signup
                 var volunteerEmail = taskInfo.Volunteer.Email;
                 var volunteerPhoneNumber = taskInfo.Volunteer.PhoneNumber;
                 var volunteerComments = !string.IsNullOrWhiteSpace(taskSignup?.AdditionalInfo) ? taskSignup.AdditionalInfo : string.Empty;
-                var remainingRequiredVolunteersPhrase = $"{task.NumberOfUsersSignedUp}/{task.NumberOfVolunteersRequired}";
+                var remainingRequiredVolunteersPhrase = $"{@task.NumberOfUsersSignedUp}/{@task.NumberOfVolunteersRequired}";
                 const string typeOfSignupPhrase = "a task";
 
                 var subject = $"A volunteer has signed up for {typeOfSignupPhrase}";
@@ -66,7 +66,7 @@ namespace AllReady.Features.Notifications
                 message.AppendLine();
                 message.AppendLine($"   Campaign: {taskInfo.CampaignName}");
                 message.AppendLine($"   Event: {taskInfo.EventName} ({eventLink})");
-                message.AppendLine($"   Task: {task.Name} ({taskLink})");
+                message.AppendLine($"   Task: {@task.Name} ({taskLink})");
                 message.AppendLine($"   Remaining/Required Volunteers: {remainingRequiredVolunteersPhrase}");
                 message.AppendLine();
                 message.AppendLine($"   Volunteer Name: {taskInfo.Volunteer.Name}");
@@ -74,7 +74,7 @@ namespace AllReady.Features.Notifications
                 message.AppendLine($"   Volunteer PhoneNumber: {volunteerPhoneNumber}");
                 message.AppendLine($"   Volunteer Comments: {volunteerComments}");
                 message.AppendLine();
-                message.AppendLine(GetTaskSkillsInfo(task, taskInfo.Volunteer));
+                message.AppendLine(GetTaskSkillsInfo(@task, taskInfo.Volunteer));
 
                 var command = new NotifyVolunteersCommand
                 {

@@ -8,23 +8,25 @@ using Xunit;
 
 namespace AllReady.UnitTest.ViewModels.Event
 {
+    using Campaign = AllReady.Models.Campaign;
+    using Event = AllReady.Models.Event;
+
     public class EventViewModelShould
     {
         //happy path test. set up data to get all possible properties populated when EventViewModel is returned from handler
-        //[Fact(Skip = "NotImplemented")]
         [Fact]
         public void ConstructEventViewModel_WithTheCorrectData()
         {
-            var campaign = new Models.Campaign { Id = 1, Name = "Campaignname", TimeZoneId = "CampaignTimeZoneId" };
+            var campaign = new Campaign { Id = 1, Name = "Campaignname", TimeZoneId = "CampaignTimeZoneId" };
             var location = new AllReady.ViewModels.Shared.LocationViewModel { City = "Amsterdam" };
-            var skills = new List<SkillViewModel>() { new SkillViewModel { Name = "F sharp" } };
+            var skills = new List<SkillViewModel> { new SkillViewModel { Name = "F sharp" } };
             var userSkills = new List<SkillViewModel> { new SkillViewModel { Name = "Medic", Description = "first aid helper", HierarchicalName = "med01", Id = 1 } };
-            var signup =  new AllReady.ViewModels.Shared.TaskSignupViewModel() { Name = "task1", TaskId = 1 };
-            var @event = new Models.Event { Campaign = campaign, TimeZoneId = "EventTimeZoneId" };
+            var signup =  new AllReady.ViewModels.Shared.TaskSignupViewModel { Name = "task1", TaskId = 1 };
+            var @event = new Event { Campaign = campaign, TimeZoneId = "EventTimeZoneId" };
            
             var sut = new EventViewModel(@event);
-            var task = new TaskViewModel { CampaignName = sut.CampaignName, CampaignId = sut.CampaignId, eventName = sut.Title, Name = "tasks" };
-            var tasks = new List<TaskViewModel> { task };
+            var @task = new TaskViewModel { CampaignName = sut.CampaignName, CampaignId = sut.CampaignId, eventName = sut.Title, Name = "tasks" };
+            var tasks = new List<TaskViewModel> { @task };
           
             sut.Description = "Testing the allReady from htbox";
             sut.EndDateTime = DateTimeOffset.Now.AddDays(3650);
@@ -61,8 +63,8 @@ namespace AllReady.UnitTest.ViewModels.Event
         [Fact]
         public void SetCampaignIdCampaignNameAndTimeZoneId_WhenConstructingWithNonNullCampaign()
         {
-            var campaign = new Models.Campaign { Id = 1, Name = "Campaignname", TimeZoneId = "CampaignTimeZoneId" };
-            var @event = new Models.Event { Campaign = campaign, TimeZoneId = "EventTimeZoneId" };
+            var campaign = new Campaign { Id = 1, Name = "Campaignname", TimeZoneId = "CampaignTimeZoneId" };
+            var @event = new Event { Campaign = campaign, TimeZoneId = "EventTimeZoneId" };
             var sut = new EventViewModel(@event);
 
             Assert.Equal(sut.CampaignId, campaign.Id);
@@ -73,8 +75,8 @@ namespace AllReady.UnitTest.ViewModels.Event
         [Fact]
         public void SetOrganizationIdAndOrganizationName_WhenConstructingWithNonNullCampaignAndNonNullManagingOrganization()
         {
-            var campaign = new Models.Campaign { ManagingOrganization = new Organization { Id = 1, Name = "OrgName" } };
-            var @event = new Models.Event { Campaign = campaign };
+            var campaign = new Campaign { ManagingOrganization = new Organization { Id = 1, Name = "OrgName" } };
+            var @event = new Event { Campaign = campaign };
             var sut = new EventViewModel(@event);
 
             Assert.Equal(sut.OrganizationId, campaign.ManagingOrganization.Id);
@@ -84,7 +86,7 @@ namespace AllReady.UnitTest.ViewModels.Event
         [Fact]
         public void SetHasPrivacyPolicyToFalse_WhenEventsCampaignsOrganizationsPrivacyPolicyIsNullOrEmpty_AndConstructingWithNonNullCampaignAndNonNullManagingOrganization()
         {
-            var @event = new Models.Event { Campaign = new Models.Campaign { ManagingOrganization = new Organization() } };
+            var @event = new Event { Campaign = new Campaign { ManagingOrganization = new Organization() } };
             var sut = new EventViewModel(@event);
 
             Assert.False(sut.HasPrivacyPolicy);
@@ -93,7 +95,7 @@ namespace AllReady.UnitTest.ViewModels.Event
         [Fact]
         public void SetHasPrivacyPolicyToTrue_WhenEventsCampaignsOrganizationsPrivacyPolicyIsNotNullOrEmpty_AndConstructingWithNonNullCampaignAndNonNullManagingOrganization()
         {
-            var @event = new Models.Event { Campaign = new Models.Campaign { ManagingOrganization = new Organization { PrivacyPolicy = "PrivacyPolicy" } } };
+            var @event = new Event { Campaign = new Campaign { ManagingOrganization = new Organization { PrivacyPolicy = "PrivacyPolicy" } } };
             var sut = new EventViewModel(@event);
 
             Assert.True(sut.HasPrivacyPolicy);
@@ -103,7 +105,7 @@ namespace AllReady.UnitTest.ViewModels.Event
         public void SetLocationToNewLocationViewModelWithCorrectData_WhenEventsLocationIsNotNull_AndConstructingWithNonNullCampaignAndNonNullManagingOrganization()
         {
             var location = new Location { Address1 = "Address1", Address2 = "Address2", City = "City", State = "State", PostalCode = "PostalCode", Country = "Country" };
-            var @event = new Models.Event { Location = location };
+            var @event = new Event { Location = location };
             var sut = new EventViewModel(@event);
 
             Assert.Equal(sut.Location.Address1, location.Address1);
@@ -117,28 +119,28 @@ namespace AllReady.UnitTest.ViewModels.Event
         [Fact]
         public void SetLocationToNull_WhenEventsLocationIstNull_AndConstructingWithNonNullCampaignAndNonNullManagingOrganization()
         {
-            var sut = new EventViewModel(new Models.Event());
+            var sut = new EventViewModel(new Event());
             Assert.Null(sut.Location);
         }
 
         [Fact]
         public void SetIsClosedToTrue_WhenEventsEndDateTimeIsLessThanDateTimeOffsetUtcNow()
         {
-            var sut = new EventViewModel(new Models.Event { EndDateTime = DateTimeOffset.MinValue });
+            var sut = new EventViewModel(new Event { EndDateTime = DateTimeOffset.MinValue });
             Assert.True(sut.IsClosed);
         }
 
         [Fact]
         public void SetIsClosedToFalse_WhenEventsEndDateTimeIsGreaterThanDateTimeOffsetUtcNow()
         {
-            var sut = new EventViewModel(new Models.Event { EndDateTime = DateTimeOffset.MaxValue });
+            var sut = new EventViewModel(new Event { EndDateTime = DateTimeOffset.MaxValue });
             Assert.False(sut.IsClosed);
         }
 
         [Fact]
         public void SetTasksToListOfTaskViewModelsInAscendingOrderByStartDateTime_WhenEventsTasksAreNotNull()
         {
-            var @event = new Models.Event { Tasks = new List<AllReadyTask> { new AllReadyTask { StartDateTime = DateTimeOffset.UtcNow.AddDays(2) }, new AllReadyTask { StartDateTime = DateTimeOffset.UtcNow.AddDays(1) } } };
+            var @event = new Event { Tasks = new List<AllReadyTask> { new AllReadyTask { StartDateTime = DateTimeOffset.UtcNow.AddDays(2) }, new AllReadyTask { StartDateTime = DateTimeOffset.UtcNow.AddDays(1) } } };
             var sut = new EventViewModel(@event);
 
             Assert.IsType<List<TaskViewModel>>(sut.Tasks);
@@ -148,7 +150,7 @@ namespace AllReady.UnitTest.ViewModels.Event
         [Fact]
         public void SetTasksToEmptyListOfTaskViewModels_WhenEventsTasksAreNull()
         {
-            var sut = new EventViewModel(new Models.Event());
+            var sut = new EventViewModel(new Event());
             Assert.IsType<List<TaskViewModel>>(sut.Tasks);
             Assert.True(sut.Tasks.Count == 0);
         }
@@ -156,7 +158,7 @@ namespace AllReady.UnitTest.ViewModels.Event
         [Fact]
         public void SetRequiredSkillsToListOfSkillViewModelsForEventsRequiredSkills_WhenEventsRequiredSkillsIsNotNull()
         {
-            var @event = new Models.Event { RequiredSkills = new List<EventSkill> { new EventSkill { Skill = new Skill() }, new EventSkill { Skill = new Skill() } } };
+            var @event = new Event { RequiredSkills = new List<EventSkill> { new EventSkill { Skill = new Skill() }, new EventSkill { Skill = new Skill() } } };
             var sut = new EventViewModel(@event);
 
             Assert.IsType<List<SkillViewModel>>(sut.RequiredSkills);
@@ -166,7 +168,7 @@ namespace AllReady.UnitTest.ViewModels.Event
         [Fact]
         public void SetRequiredSkillsToNull_WhenEventsRequiredSkillsIsNull()
         {
-            var sut = new EventViewModel(new Models.Event { RequiredSkills = null });
+            var sut = new EventViewModel(new Event { RequiredSkills = null });
             Assert.Null(sut.RequiredSkills);
         }
     }

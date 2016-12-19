@@ -50,6 +50,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Location = campaign.Location.ToModel(),
                     Locked = campaign.Locked,
                     Featured = campaign.Featured,
+                    Published = campaign.Published,
                     Events = campaign.Events.Select(a => new CampaignDetailViewModel.EventList
                     {
                         Id = a.Id,

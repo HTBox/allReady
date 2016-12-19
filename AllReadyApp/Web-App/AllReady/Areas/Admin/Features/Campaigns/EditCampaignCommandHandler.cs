@@ -46,6 +46,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.Location = campaign.Location.UpdateModel(message.Campaign.Location);
 
             campaign.Featured = message.Campaign.Featured;
+            campaign.Published = message.Campaign.Published;
             campaign.Headline = message.Campaign.Headline;
 
             _context.AddOrUpdate(campaign);

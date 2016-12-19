@@ -8,6 +8,8 @@ using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.UnitTest.Features.Notifications
 {
+    using Event = AllReady.Models.Event;
+
     public class EventDetailQueryHandlerShould : InMemoryContextTest
     {
         public EventDetailQueryHandlerShould()
@@ -25,7 +27,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 ManagingOrganization = org
             };
 
-            var campaignEvent = new Models.Event
+            var campaignEvent = new Event
             {
                 Id = 1,
                 Name = "Event",

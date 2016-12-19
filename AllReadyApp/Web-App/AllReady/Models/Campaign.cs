@@ -76,5 +76,6 @@ namespace AllReady.Models
         public bool Locked { get; set; }
 
         public bool Featured { get; set; }
+        public bool Published { get; set; }
     }
 }

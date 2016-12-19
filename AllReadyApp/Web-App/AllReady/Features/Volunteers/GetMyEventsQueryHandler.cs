@@ -12,6 +12,7 @@ namespace AllReady.Features.Volunteers
     public class GetMyEventsQueryHandler : IAsyncRequestHandler<GetMyEventsQuery, MyEventsListerViewModel>
     {
         private AllReadyContext _context;
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
         public GetMyEventsQueryHandler(AllReadyContext context)
         {
@@ -38,8 +39,6 @@ namespace AllReady.Features.Volunteers
                     OrganizationName = rec.Task.Event.Campaign.ManagingOrganization.Name      
                 })
                 .ToListAsync();
-
-            var distinctEvents = taskSignups.Select(t => t.EventId).Distinct();
 
             var results = new List<MyEventsListerItem>();
 
@@ -75,12 +74,12 @@ namespace AllReady.Features.Volunteers
 
             return new MyEventsListerViewModel
             {
-                CurrentEvents = results.Where(r => r.StartDate.UtcDateTime < DateTime.UtcNow && r.EndDate.UtcDateTime > DateTime.UtcNow)
-                                        .OrderBy(r => r.StartDate.UtcDateTime).ThenByDescending(r => r.EndDate.UtcDateTime),
-                FutureEvents = results.Where(r => r.StartDate.UtcDateTime > DateTime.UtcNow)
-                                        .OrderBy(r => r.StartDate.UtcDateTime).ThenByDescending(r => r.EndDate.UtcDateTime),
-                PastEvents = results.Where(r => r.EndDate.UtcDateTime < DateTime.UtcNow)
-                                        .OrderBy(r => r.StartDate.UtcDateTime).ThenByDescending(r => r.EndDate.UtcDateTime),
+                CurrentEvents = results.Where(r => r.StartDate.UtcDateTime < DateTimeUtcNow() && r.EndDate.UtcDateTime > DateTimeUtcNow())
+                    .OrderBy(r => r.StartDate.UtcDateTime).ThenByDescending(r => r.EndDate.UtcDateTime),
+                FutureEvents = results.Where(r => r.StartDate.UtcDateTime > DateTimeUtcNow())
+                    .OrderBy(r => r.StartDate.UtcDateTime).ThenByDescending(r => r.EndDate.UtcDateTime),
+                PastEvents = results.Where(r => r.EndDate.UtcDateTime < DateTimeUtcNow())
+                    .OrderBy(r => r.StartDate.UtcDateTime).ThenByDescending(r => r.EndDate.UtcDateTime),
             };
         }
     }
