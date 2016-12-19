@@ -15,8 +15,6 @@ using AllReady.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AllReady.Services.Routing;
-using System.Text;
 
 namespace AllReady.Areas.Admin.Controllers
 {
