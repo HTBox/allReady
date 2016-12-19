@@ -33,14 +33,15 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            var organizationId = User.GetOrganizationId();
             //TODO mgmccarthy: pending confirmation of filtering Event's by org for a SiteAdmin or allowing access to all Events
+            //var organizationId = User.GetOrganizationId();
             //if (organizationId == null)
             //{
             //    return Unauthorized();
             //}
+            //var viewModel = mediator.Send(new IndexQuery { OrganizationId = organizationId });
 
-            var viewModel = mediator.Send(new IndexQuery { OrganizationId = organizationId });
+            var viewModel = mediator.Send(new IndexQuery { OrganizationId = null });
             return View(viewModel);
         }
 
