@@ -22,7 +22,7 @@ namespace AllReady.Features.Home
         {
             return await _context.Campaigns
                 .AsNoTracking()
-                .Where(campaign => campaign.EndDateTime.UtcDateTime.Date > DateTime.UtcNow.Date && !campaign.Locked)
+                .Where(campaign => campaign.EndDateTime.UtcDateTime.Date > DateTime.UtcNow.Date && !campaign.Locked && campaign.Published)
                 .Select(campaign => new ActiveOrUpcomingCampaign
                 {
                     Id = campaign.Id,
