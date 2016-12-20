@@ -21,11 +21,9 @@ namespace AllReady.Features.Home
 
         public async Task<List<ActiveOrUpcomingCampaign>> Handle(ActiveOrUpcomingCampaignsQuery message)
         {
-            var now = DateTimeUtcNow();
-
             return await _context.Campaigns
                 .AsNoTracking()
-                .Where(campaign => campaign.EndDateTime.UtcDateTime.Date >= now.Date && !campaign.Locked && campaign.Published)
+                .Where(campaign => campaign.EndDateTime.UtcDateTime.Date >= DateTimeUtcNow().Date && !campaign.Locked && campaign.Published)
                 .Select(campaign => new ActiveOrUpcomingCampaign
                 {
                     Id = campaign.Id,
