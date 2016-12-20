@@ -81,7 +81,7 @@ function addRequestPins(bingMap, requestData) {
         locations.push(location);
         var order = index + 1;
         var pin = new Microsoft.Maps.Pushpin(location, { title: data.name, color: data.color, text: order.toString() });
-        bingMap.entities.push(pin);        
+        bingMap.entities.push(pin);
     });
     var rect = Microsoft.Maps.LocationRect.fromLocations(locations);
     bingMap.setView({ bounds: rect, padding: 80 });
@@ -92,7 +92,7 @@ function setMapCenterAndZoom(bingMap, microsoftMapsLocations) {
     options.zoom = 10;
     if (microsoftMapsLocations.length === 1) {
         options.center = microsoftMapsLocations[0];
-    } else {
+    } else if(microsoftMapsLocations.length > 1) {
         options.bounds = Microsoft.Maps.LocationRect.fromLocations(microsoftMapsLocations);
         options.padding = 50;
     }
