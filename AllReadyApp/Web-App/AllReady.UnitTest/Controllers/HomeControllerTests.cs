@@ -1,10 +1,13 @@
 ﻿using AllReady.Controllers;
 using AllReady.Features.Campaigns;
+using AllReady.Features.Home;
+using AllReady.ViewModels.Home;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Shouldly;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using AllReady.Features.Home;
 using Xunit;
 
 namespace AllReady.UnitTest.Controllers
@@ -42,6 +45,34 @@ namespace AllReady.UnitTest.Controllers
             var result = (ViewResult)await sut.Index();
 
             Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task IndexFiltersOutFeaturedCampaignFromListOfUpcomingCampaings()
+        {
+            var mockMediator = new Mock<IMediator>();
+            var featuredCampaign = new CampaignSummaryViewModel
+            {
+                Id = 1,
+                Title = "Featured campaign",
+                Description = "This is a featured campaign"
+            };
+
+            mockMediator.Setup(s => s.SendAsync(It.IsAny<FeaturedCampaignQuery>()))
+                        .ReturnsAsync(featuredCampaign);
+
+            mockMediator.Setup(s => s.SendAsync(It.IsAny<ActiveOrUpcomingCampaignsQuery>()))
+                        .ReturnsAsync(new List<ActiveOrUpcomingCampaign>
+                        {
+                            new ActiveOrUpcomingCampaign { Id = featuredCampaign.Id, Name = featuredCampaign.Title, Description = featuredCampaign.Description },
+                            new ActiveOrUpcomingCampaign { Id = 2, Name = "Not a featured campaign", Description = "This is not a featured campaign" }
+                        });
+
+            var sut = new HomeController(mockMediator.Object);
+            var result = ((ViewResult)await sut.Index()).Model as IndexViewModel;
+
+            result.ShouldNotBeNull();
+            result.ActiveOrUpcomingCampaigns.ShouldNotContain(c => c.Id == featuredCampaign.Id);
         }
 
         [Fact]
