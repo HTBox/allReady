@@ -10,14 +10,14 @@ namespace AllReady.UnitTest.Features.Home
 {
     public class ActiveOrUpcomingCampaignsQueryHandlerShould : InMemoryContextTest
     {
-        private static string NotPublished = "Not published";
-        private static string Expired = "Expired";
-        private static string Locked = "Locked";
+        private const string NotPublished = "Not published";
+        private const string Expired = "Expired";
+        private const string Locked = "Locked";
 
         private static DateTime DateTimeUtcNow = new DateTime(2016, 12, 01, 10, 00, 00, DateTimeKind.Utc);
 
         [Fact]
-        public async Task ReturnExpectedNumberOfCampaigns()
+        public async Task ReturnCampaignsWhoseEndDateTimeIsGreaterThanOrEqualToToday()
         {
             // Arrange
             var handler = new ActiveOrUpcomingCampaignsQueryHandler(Context) { DateTimeUtcNow = () => DateTimeUtcNow };
@@ -137,8 +137,8 @@ namespace AllReady.UnitTest.Features.Home
                 Featured = false,
                 ManagingOrganization = org,
                 Published = true,
-                StartDateTime = new DateTime(2016, 12, 01, 00, 00, 00),
-                EndDateTime = new DateTime(2016, 12, 01, 23, 59, 59)
+                StartDateTime = new DateTime(2016, 12, 01, 00, 00, 00, DateTimeKind.Utc),
+                EndDateTime = new DateTime(2016, 12, 01, 23, 59, 59, DateTimeKind.Utc)
             });
 
             Context.Campaigns.Add(new Campaign
