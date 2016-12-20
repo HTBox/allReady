@@ -14,20 +14,24 @@ namespace AllReady.UnitTest.Features.Home
         private const string Expired = "Expired";
         private const string Locked = "Locked";
 
-        private static DateTime DateTimeUtcNow = new DateTime(2016, 12, 01, 10, 00, 00, DateTimeKind.Utc);
+        private static DateTime DateTimeUtcTestDate = new DateTime(2016, 12, 01, 10, 00, 00, DateTimeKind.Utc);
+        private static readonly DateTimeOffset DateTimeOffsetNow = new DateTimeOffset(DateTimeUtcTestDate);
 
         [Fact]
         public async Task ReturnCampaignsWhoseEndDateTimeIsGreaterThanOrEqualToToday()
         {
             // Arrange
-            var handler = new ActiveOrUpcomingCampaignsQueryHandler(Context) { DateTimeUtcNow = () => DateTimeUtcNow };
+            var handler = new ActiveOrUpcomingCampaignsQueryHandler(Context)
+            {
+                DateTimeOffsetUtcNow = () => DateTimeOffsetNow
+            };
 
             // Act
             var result = await handler.Handle(new ActiveOrUpcomingCampaignsQuery());
 
             // Assert
             result.ShouldNotBeNull();
-            result.Count.ShouldBe(5);
+            result.Count.ShouldBe(4);
         }
 
         [Fact]
@@ -87,8 +91,8 @@ namespace AllReady.UnitTest.Features.Home
                 Featured = false,
                 ManagingOrganization = org,
                 Published = true,
-                StartDateTime = DateTimeUtcNow.AddDays(1),
-                EndDateTime = DateTimeUtcNow.AddDays(10)
+                StartDateTime = DateTimeUtcTestDate.AddDays(1),
+                EndDateTime = DateTimeUtcTestDate.AddDays(10)
             });
 
             Context.Campaigns.Add(new Campaign
@@ -97,8 +101,8 @@ namespace AllReady.UnitTest.Features.Home
                 Featured = false,
                 ManagingOrganization = org,
                 Published = true,
-                StartDateTime = DateTimeUtcNow.AddDays(1),
-                EndDateTime = DateTimeUtcNow.AddDays(10)
+                StartDateTime = DateTimeUtcTestDate.AddDays(1),
+                EndDateTime = DateTimeUtcTestDate.AddDays(10)
             });
 
             Context.Campaigns.Add(new Campaign
@@ -107,8 +111,8 @@ namespace AllReady.UnitTest.Features.Home
                 Featured = false,
                 ManagingOrganization = org,
                 Published = false,
-                StartDateTime = DateTimeUtcNow.AddDays(1),
-                EndDateTime = DateTimeUtcNow.AddDays(10)
+                StartDateTime = DateTimeUtcTestDate.AddDays(1),
+                EndDateTime = DateTimeUtcTestDate.AddDays(10)
             });
 
             Context.Campaigns.Add(new Campaign
@@ -117,8 +121,8 @@ namespace AllReady.UnitTest.Features.Home
                 Featured = false,
                 ManagingOrganization = org,
                 Published = true,
-                StartDateTime = DateTimeUtcNow.AddDays(-1),
-                EndDateTime = DateTimeUtcNow.AddDays(10)
+                StartDateTime = DateTimeUtcTestDate.AddDays(-1),
+                EndDateTime = DateTimeUtcTestDate.AddDays(10)
             });
 
             Context.Campaigns.Add(new Campaign
@@ -127,8 +131,8 @@ namespace AllReady.UnitTest.Features.Home
                 Featured = false,
                 ManagingOrganization = org,
                 Published = true,
-                StartDateTime = DateTimeUtcNow.AddDays(-10),
-                EndDateTime = DateTimeUtcNow.AddDays(-1)
+                StartDateTime = DateTimeUtcTestDate.AddDays(-10),
+                EndDateTime = DateTimeUtcTestDate.AddDays(-1)
             });
 
             Context.Campaigns.Add(new Campaign
@@ -147,7 +151,7 @@ namespace AllReady.UnitTest.Features.Home
                 Featured = false,
                 ManagingOrganization = org,
                 Published = true,
-                StartDateTime = DateTimeUtcNow.AddDays(-10),
+                StartDateTime = DateTimeUtcTestDate.AddDays(-10),
                 EndDateTime = new DateTime(2016, 11, 30, 23, 59, 59)
         });
 
@@ -157,8 +161,8 @@ namespace AllReady.UnitTest.Features.Home
                 Featured = false,
                 ManagingOrganization = org,
                 Published = true,
-                StartDateTime = DateTimeUtcNow.AddDays(-2),
-                EndDateTime = DateTimeUtcNow.AddDays(5),
+                StartDateTime = DateTimeUtcTestDate.AddDays(-2),
+                EndDateTime = DateTimeUtcTestDate.AddDays(5),
                 Locked = true
             });
 
