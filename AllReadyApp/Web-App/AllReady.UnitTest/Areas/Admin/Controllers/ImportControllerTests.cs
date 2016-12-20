@@ -29,10 +29,36 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.Send(It.IsAny<IndexQuery>())).Returns(new IndexViewModel());
 
             var sut = new ImportController(mediator.Object, null, null);
+            sut.MakeUserASiteAdmin();
             var result = sut.Index() as ViewResult;
 
             Assert.IsType<IndexViewModel>(result.Model);
             Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public void IndexGetSendsIndexQuery_WithCorrectOrganizationIdWhenUserIsAnOrgAdmin()
+        {
+            const int organizationId = 99;
+            var mediator = new Mock<IMediator>();
+
+            var sut = new ImportController(mediator.Object, null, null);
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+            sut.Index();
+
+            mediator.Verify(x => x.Send(It.Is<IndexQuery>(y => y.OrganizationId == organizationId)), Times.Once);
+        }
+
+        [Fact]
+        public void IndexGetSendsIndexQuery_WithCorrectOrganizationIdWhenUserIsNotanOrgAdmin()
+        {
+            var mediator = new Mock<IMediator>();
+
+            var sut = new ImportController(mediator.Object, null, null);
+            sut.MakeUserASiteAdmin();
+            sut.Index();
+
+            mediator.Verify(x => x.Send(It.Is<IndexQuery>(y => y.OrganizationId == null)), Times.Once);
         }
 
         [Fact]
