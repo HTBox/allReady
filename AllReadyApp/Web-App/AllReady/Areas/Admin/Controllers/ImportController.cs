@@ -12,6 +12,7 @@ using AllReady.Areas.Admin.Features.Import;
 using AllReady.Areas.Admin.ViewModels.Import;
 using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Features.Requests;
+using AllReady.Models;
 using AllReady.Security;
 
 namespace AllReady.Areas.Admin.Controllers
@@ -33,6 +34,24 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
+            var query = new IndexQuery();
+
+            if (User.IsUserType(UserType.OrgAdmin))
+            {
+                var organizationId = User.GetOrganizationId();
+                if (organizationId != null)
+                {
+                    if (User.IsOrganizationAdmin(organizationId.Value))
+                    {
+                        query.OrganizationId = organizationId;
+                    }
+                }
+            }
+
+            //var viewModel = mediator.Send(new IndexQuery { OrganizationId = null });
+            var viewModel = mediator.Send(query);
+            return View(viewModel);
+
             //TODO mgmccarthy: pending confirmation of filtering Event's by org for a SiteAdmin or allowing access to all Events
             //var organizationId = User.GetOrganizationId();
             //if (organizationId == null)
@@ -40,9 +59,9 @@ namespace AllReady.Areas.Admin.Controllers
             //    return Unauthorized();
             //}
             //var viewModel = mediator.Send(new IndexQuery { OrganizationId = organizationId });
-
-            var viewModel = mediator.Send(new IndexQuery { OrganizationId = null });
-            return View(viewModel);
+            //if (User.IsUserType(UserType.SiteAdmin))
+            //{
+            //}
         }
 
         [HttpPost]

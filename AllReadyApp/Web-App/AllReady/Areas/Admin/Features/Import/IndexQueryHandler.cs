@@ -4,6 +4,7 @@ using AllReady.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace AllReady.Areas.Admin.Features.Import
 {
@@ -18,11 +19,17 @@ namespace AllReady.Areas.Admin.Features.Import
 
         public IndexViewModel Handle(IndexQuery message)
         {
+            var events = context.Events as IQueryable<Event>;
+            if (message.OrganizationId != null)
+            {
+                events = events.Where(x => x.Campaign.ManagingOrganization.Id == message.OrganizationId.Value);
+            }
+
+            var eventsWithCampaign = events.Include(e => e.Campaign);
+
             var viewModel = new IndexViewModel
             {
-                //TODO mgmccarthy: pending confirmation of filtering Event's by org for a SiteAdmin or allowing access to all Events
-                Events = context.Events.Include(e => e.Campaign)
-                .Select(@event => new SelectListItem
+                Events = eventsWithCampaign.Select(@event => new SelectListItem
                 {
                     Value = @event.Id.ToString(),
                     Text = $"{@event.Campaign.ManagingOrganization.Name} > {@event.Campaign.Name} > {@event.Name}"
