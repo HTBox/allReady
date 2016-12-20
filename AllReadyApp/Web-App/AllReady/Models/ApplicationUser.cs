@@ -25,6 +25,17 @@ namespace AllReady.Models
 
         public string PendingNewEmail { get; set; }
 
+        #region Navigational Properties
+
+        // Navigational Properties used for EF mapping and relationship navigation
+
+        /// <summary>
+        /// A collection of the notifications sent regarding to this user
+        /// </summary>
+        public ICollection<Notification> Notifications { get; set; }
+
+        #endregion
+
         public IEnumerable<ValidationResult> ValidateProfileCompleteness()
         {
             List<ValidationResult> validationResults = new List<ValidationResult>();

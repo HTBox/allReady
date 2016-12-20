@@ -33,6 +33,7 @@ namespace AllReady.Models
         public DbSet<Request> Requests { get; set; }
         public DbSet<Itinerary> Itineraries { get; set; }
         public DbSet<ItineraryRequest> ItineraryRequests { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -65,6 +66,7 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<Request>());
             Map(modelBuilder.Entity<Itinerary>());
             Map(modelBuilder.Entity<ItineraryRequest>());
+            Map(modelBuilder.Entity<Notification>());
         }
 
         private void Map(EntityTypeBuilder<Request> builder)
@@ -207,5 +209,17 @@ namespace AllReady.Models
             builder.HasKey(x => new { x.ItineraryId, x.RequestId });
         }
 
+        public void Map(EntityTypeBuilder<Notification> builder)
+        {
+            builder.HasKey(x => x.Id);
+            builder.HasOne(x => x.Request).WithMany(x => x.Notifications).HasForeignKey((x => x.RequestId)).IsRequired(false);
+            builder.HasOne(x => x.User).WithMany(x => x.Notifications).HasForeignKey(x => x.UserId).IsRequired(false);
+
+            builder.Property(a => a.MessageType).IsRequired().HasMaxLength(75);
+            builder.Property(a => a.Method).IsRequired().HasMaxLength(10);
+            builder.Property(a => a.SentDateTime).IsRequired();
+            builder.Property(a => a.Email).HasMaxLength(150);
+            builder.Property(a => a.PhoneNumber).HasMaxLength(50);
+        }
     }
 }
