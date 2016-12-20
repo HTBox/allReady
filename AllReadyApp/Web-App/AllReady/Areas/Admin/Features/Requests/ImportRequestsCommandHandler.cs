@@ -25,6 +25,7 @@ namespace AllReady.Areas.Admin.Features.Requests
             {
                 RequestId = NewRequestId(),
                 ProviderRequestId = viewModel.Id,
+                EventId = message.EventId,
                 ProviderData = viewModel.ProviderData,
                 Address = viewModel.Address,
                 City = viewModel.City,
@@ -40,7 +41,7 @@ namespace AllReady.Areas.Admin.Features.Requests
             
             context.Requests.AddRange(requests);
 
-            //TODO: eventually move IGeocoder invocations to async using azure. Issue #1626 and #1639
+            //TODO mgmccarthy: eventually move IGeocoder invocations to async using azure. Issue #1626 and #1639
             foreach (var request in requests)
             {
                 if (request.Latitude == 0 && request.Longitude == 0)
