@@ -45,8 +45,11 @@ namespace AllReady.Features.Notifications
         /// <summary>
         /// Creates a new <see cref="NotificationSentMessage"/> for an Email Message
         /// </summary>
-        public static NotificationSentMessage EmailMessage(NotificationMessageType messageType, Guid? RequestId = null, string userId = null, bool responseRequired = false, string email = null)
+        public static NotificationSentMessage EmailMessage(NotificationMessageType messageType, string email, Guid? RequestId = null, string userId = null, bool responseRequired = false)
         {
+            if (string.IsNullOrEmpty(email))
+                throw new ArgumentNullException(nameof(email));
+
             return new NotificationSentMessage
             {
                 Method = NotificationMethod.Email,
