@@ -4,7 +4,6 @@ using AllReady.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 
 namespace AllReady.Areas.Admin.Features.Import
 {

@@ -12,13 +12,12 @@ using AllReady.Areas.Admin.Features.Import;
 using AllReady.Areas.Admin.ViewModels.Import;
 using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Features.Requests;
-using AllReady.Models;
 using AllReady.Security;
 
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("SiteAdmin")]
+    [Authorize("OrgAdmin")]
     public class ImportController : Controller
     {
         private readonly ILogger<ImportController> logger;
@@ -36,32 +35,13 @@ namespace AllReady.Areas.Admin.Controllers
         {
             var query = new IndexQuery();
 
-            if (User.IsUserType(UserType.OrgAdmin))
+            if (User.IsOrganizationAdmin())
             {
-                var organizationId = User.GetOrganizationId();
-                if (organizationId != null)
-                {
-                    if (User.IsOrganizationAdmin(organizationId.Value))
-                    {
-                        query.OrganizationId = organizationId;
-                    }
-                }
+                query.OrganizationId = User.GetOrganizationId();
             }
 
-            //var viewModel = mediator.Send(new IndexQuery { OrganizationId = null });
             var viewModel = mediator.Send(query);
             return View(viewModel);
-
-            //TODO mgmccarthy: pending confirmation of filtering Event's by org for a SiteAdmin or allowing access to all Events
-            //var organizationId = User.GetOrganizationId();
-            //if (organizationId == null)
-            //{
-            //    return Unauthorized();
-            //}
-            //var viewModel = mediator.Send(new IndexQuery { OrganizationId = organizationId });
-            //if (User.IsUserType(UserType.SiteAdmin))
-            //{
-            //}
         }
 
         [HttpPost]
