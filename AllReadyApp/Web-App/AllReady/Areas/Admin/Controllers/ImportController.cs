@@ -8,17 +8,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Linq;
+using AllReady.Areas.Admin.Features.Import;
 using AllReady.Areas.Admin.ViewModels.Import;
 using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Features.Requests;
+using AllReady.Security;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    //assumptions made:
-    //this is an all or nothing operation, meaning that if one or more rows of the import fails, the entire import fails
-    //this is not an add or update operation. we only handle new requests (inserts) via this UI
     [Area("Admin")]
-    [Authorize("SiteAdmin")]
+    [Authorize("OrgAdmin")]
     public class ImportController : Controller
     {
         private readonly ILogger<ImportController> logger;
@@ -34,7 +33,15 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            return View(new IndexViewModel());
+            var query = new IndexQuery();
+
+            if (User.IsOrganizationAdmin())
+            {
+                query.OrganizationId = User.GetOrganizationId();
+            }
+
+            var viewModel = mediator.Send(query);
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -43,9 +50,18 @@ namespace AllReady.Areas.Admin.Controllers
         {
             List<ImportRequestViewModel> importRequestViewModels;
 
+            if (viewModel.EventId == 0)
+            {
+                viewModel.ImportErrors.Add("please select an Event.");
+            }
+
             if (viewModel.File == null)
             {
                 viewModel.ImportErrors.Add("please select a file to upload.");
+            }
+
+            if (viewModel.ImportErrors.Count > 0)
+            {
                 return View(viewModel);
             }
 
@@ -86,7 +102,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (viewModel.ImportErrors.Count == 0 && viewModel.ValidationErrors.Count == 0)
             {
-                mediator.Send(new ImportRequestsCommand { ImportRequestViewModels = importRequestViewModels.ToList() });
+                mediator.Send(new ImportRequestsCommand { EventId = viewModel.EventId, ImportRequestViewModels = importRequestViewModels.ToList() });
                 logger.LogInformation($"{User.Identity.Name} imported file {viewModel.File.Name}");
                 viewModel.ImportSuccess = true;
             }

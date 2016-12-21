@@ -20,9 +20,8 @@
             @if (User.IsUserType(UserType.SiteAdmin))
             {
                 <li @(isAdmin && controllerName == "Site" ? " class=active" : "")><a asp-area="Admin" asp-controller="Site" asp-action="Index">Site Admin</a></li>
-                <li class="divider"></li>
-                <li @(isAdmin && controllerName == "Import" ? " class=active" : "")><a asp-area="Admin" asp-controller="Import" asp-action="Index">Import Data</a></li>
             }
+            <li @(isAdmin && controllerName == "Import" ? " class=active" : "")><a asp-area="Admin" asp-controller="Import" asp-action="Index">Import Data</a></li>
         </ul>
     </li>
 }
