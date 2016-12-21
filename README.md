@@ -38,14 +38,6 @@ Thank you for considering supporting this open source project for humanitarian s
 ##Upcoming Code-A-Thons
 We're excited to have a number of code-a-thons in the coming months where contributors new and old can get together and contribute to allReady.
 
-**Monday, December 5th 2016 (5:00pm - 8:00pm)**   
-***Brighton, UK***   
-Evening code-a-thon by employees of [Madgex Ltd](http://www.madgex.com)
-
-**Saturday, December 10th 2016 (8:30am - 4:30pm)**     
-***London, Ontario, Canada***   
-London .NET Developers is hosting another full day Humanitarian Toolbox Hackathon. Sign up at [meetup.com](https://www.meetup.com/London-NET-Developers-Group/events/235394420/) 
-
 **Monday, January 16th 2017 - Tuesday, January 17th 2017**    
 ***London, UK***  
 Join Richard Campbell and Bill Wagner at the NDC London Humanitarian Toolbox 2-day workshop. Sign up at [ndc-london.com](http://ndc-london.com/workshop/humanitarian-toolbox/)
