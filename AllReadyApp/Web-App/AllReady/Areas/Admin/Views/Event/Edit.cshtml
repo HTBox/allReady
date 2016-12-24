@@ -162,13 +162,12 @@
                     @if (Model.EventType == EventType.Rally)
                     {
                         <input asp-for="Location.Address1" class="form-control  location-address1" data-val="true" data-val-required="The Address1 field is required." type="text" />
-                        <span asp-validation-for="Location.Address1" class="text-danger col-md-10" />
-
+                        <span asp-validation-for="Location.Address1" class="text-danger col-md-10"></span>
                     }
                     else
                     {
                         <input asp-for="Location.Address1" class="form-control" />
-                        <span asp-validation-for="Location.Address1" class="text-danger col-md-10" />
+                        <span asp-validation-for="Location.Address1" class="text-danger col-md-10"></span>
                     }
                 </div>
             </div>
@@ -176,35 +175,35 @@
                 <label asp-for="Location.Address2" class="control-label col-md-2"></label>
                 <div class="col-md-10">
                     <input asp-for="Location.Address2" class="form-control" />
-                    <span asp-validation-for="Location.Address2" class="text-danger col-md-10" />
+                  <span asp-validation-for="Location.Address2" class="text-danger col-md-10"></span>
                 </div>
             </div>
             <div class="form-group">
                 <label asp-for="Location.City" class="control-label col-md-2"></label>
                 <div class="col-md-10">
                     <input asp-for="Location.City" class="form-control" />
-                    <span asp-validation-for="Location.City" class="text-danger col-md-10" />
+                    <span asp-validation-for="Location.City" class="text-danger col-md-10"></span>
                 </div>
             </div>
             <div class="form-group">
                 <label asp-for="Location.State" class="control-label col-md-2"></label>
                 <div class="col-md-10">
                     <input asp-for="Location.State" class="form-control" />
-                    <span asp-validation-for="Location.State" class="text-danger col-md-10" />
+                    <span asp-validation-for="Location.State" class="text-danger col-md-10"></span>
                 </div>
             </div>
             <div class="form-group">
                 <label asp-for="Location.PostalCode" class="control-label col-md-2"></label>
                 <div class="col-md-10">
                     <input asp-for="Location.PostalCode" class="form-control" />
-                    <span asp-validation-for="Location.PostalCode" class="text-danger col-md-10" />
+                    <span asp-validation-for="Location.PostalCode" class="text-danger col-md-10"></span>
                 </div>
             </div>
             <div class="form-group">
                 <label asp-for="Location.Country" class="control-label col-md-2"></label>
                 <div class="col-md-10">
                     <input asp-for="Location.Country" class="form-control" />
-                    <span asp-validation-for="Location.Country" class="text-danger col-md-10" />
+                    <span asp-validation-for="Location.Country" class="text-danger col-md-10"></span>
                 </div>
             </div>
         </div>
