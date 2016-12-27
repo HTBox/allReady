@@ -44,7 +44,7 @@
             <hr/>
             <h4>Start Address</h4>
             <div class="form-horizontal row">
-                <div class="form-horizontal col-lg-6 pull-left">
+                <div class="form-horizontal col-lg-7 pull-left">
                     <div class="form-group">
                         <label asp-for="StartAddress1" class="control-label col-md-2"></label>
                         <div class="col-md-10">
@@ -55,7 +55,6 @@
                         <label asp-for="StartAddress2" class="control-label col-md-2"></label>
                         <div class="col-md-10">
                             <input asp-for="StartAddress2" class="form-control" />
-
                         </div>
                     </div>
                     <div class="form-group">
@@ -85,14 +84,12 @@
                 </div>
             </div>
             <h4>End Address</h4>
-            <div class="form-group">
-                <label asp-for="UseStartAddressAsEndAddress" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="UseStartAddressAsEndAddress" class="same-start-and-end" />
-                </div>
+            <div class="checkbox">
+                <label asp-for="UseStartAddressAsEndAddress" class="control-label"></label>
+                <input asp-for="UseStartAddressAsEndAddress" class="same-start-and-end" />
             </div>
             <div class="form-horizontal row" id="end-address">
-                <div class="form-horizontal col-lg-6 pull-left">
+                <div class="form-horizontal col-lg-7 pull-left">
                     <div class="form-group">
                         <label asp-for="EndAddress1" class="control-label col-md-2"></label>
                         <div class="col-md-10">
