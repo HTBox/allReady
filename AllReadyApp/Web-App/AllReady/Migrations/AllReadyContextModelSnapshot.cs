@@ -13,7 +13,7 @@ namespace AllReady.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.1")
+                .HasAnnotation("ProductVersion", "1.0.2")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("AllReady.Models.AllReadyTask", b =>
@@ -397,6 +397,42 @@ namespace AllReady.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Location");
+                });
+
+            modelBuilder.Entity("AllReady.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Email")
+                        .HasAnnotation("MaxLength", 150);
+
+                    b.Property<string>("MessageType")
+                        .IsRequired()
+                        .HasAnnotation("MaxLength", 75);
+
+                    b.Property<string>("Method")
+                        .IsRequired()
+                        .HasAnnotation("MaxLength", 10);
+
+                    b.Property<string>("PhoneNumber")
+                        .HasAnnotation("MaxLength", 50);
+
+                    b.Property<Guid?>("RequestId");
+
+                    b.Property<bool>("ResponseRequired");
+
+                    b.Property<DateTime>("SentDateTime");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("AllReady.Models.Organization", b =>
@@ -854,9 +890,20 @@ namespace AllReady.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("AllReady.Models.Request", "Request")
-                        .WithMany()
+                        .WithMany("Itineraries")
                         .HasForeignKey("RequestId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("AllReady.Models.Notification", b =>
+                {
+                    b.HasOne("AllReady.Models.Request", "Request")
+                        .WithMany("Notifications")
+                        .HasForeignKey("RequestId");
+
+                    b.HasOne("AllReady.Models.ApplicationUser", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("AllReady.Models.Organization", b =>

@@ -37,6 +37,17 @@ namespace AllReady.Models
         public int? OrganizationId { get; set; }
         public Organization Organization { get; set; }
 
+        #region Navigational Properties
+
+        // Navigational Properties used for EF mapping and relationship navigation
+
         public ICollection<ItineraryRequest> Itineraries { get; set; }
+
+        /// <summary>
+        /// A collection of the notifications sent regarding this request
+        /// </summary>
+        public ICollection<Notification> Notifications { get; set; }
+
+        #endregion
     }
 }
