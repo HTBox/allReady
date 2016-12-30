@@ -49,11 +49,15 @@ textarea {
     padding-right: 40px;
 }
 
-a:not(.unvolunteer,.btn) {
+a:not(.unvolunteer) {
     text-decoration: none;
     color: #ab6627;
 }
 
+a:not(.btn) {
+    text-decoration: none;
+    color: #ab6627;
+}
 a:hover, a:focus {
     text-decoration: underline;
     color: #efab6c;
