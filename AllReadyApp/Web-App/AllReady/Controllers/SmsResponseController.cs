@@ -49,12 +49,12 @@ namespace AllReady.Controllers
                     switch (response)
                     {
                         case (Accepted):
-                            _changeRequestStatus.To(RequestStatus.Confirmed, requestId); // this method is not async and uses non async db access also - leaving this as is whilst we refine the requirements past v1
+                            _changeRequestStatus.To(RequestStatus.Confirmed, requestId); // this method is not async and uses non async db access also - leaving this whilst we refine the requirements past v1
                             await _smsSender.SendSmsAsync(from, "Thank you for confirming you availability.");
                             break;
 
                         case (Declined):
-                            _changeRequestStatus.To(RequestStatus.Unassigned, requestId); // this method is not async and uses non async db access also - leaving this as is whilst we refine the requirements past v1
+                            _changeRequestStatus.To(RequestStatus.Unassigned, requestId); // this method is not async and uses non async db access also - leaving this whilst we refine the requirements past v1
                             await _smsSender.SendSmsAsync(from, "We have canceled your request and once it is rescheduled you will receive further communication.");
                             break;
 
@@ -62,8 +62,6 @@ namespace AllReady.Controllers
                             // log this
                             break;
                     }
-
-                    return Ok();
                 }
                 catch (Exception)
                 {
