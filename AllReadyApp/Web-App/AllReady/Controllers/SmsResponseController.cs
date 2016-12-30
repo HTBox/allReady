@@ -1,4 +1,5 @@
-﻿using AllReady.Features.Requests;
+﻿using AllReady.Attributes;
+using AllReady.Features.Requests;
 using AllReady.Hangfire.Jobs;
 using AllReady.Models;
 using AllReady.Services;
@@ -27,6 +28,7 @@ namespace AllReady.Controllers
         }
 
         [HttpPost("smsresponse")]
+        [ExternalEndpoint]
         [AllowAnonymous]
         public async Task<IActionResult> Index(string from, string body)
         {
