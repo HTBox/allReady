@@ -347,7 +347,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.Url = GetMockUrlHelper(expectedUrl);
             await controller.EditUser(model);
 
-            mediator.Verify(m => m.SendAsync(It.Is<SendAccountApprovalEmail>(q => q.Email == user.Email && q.CallbackUrl == expectedUrl )), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<SendAccountApprovalEmailCommand>(q => q.Email == user.Email && q.CallbackUrl == expectedUrl )), Times.Once);
         }
 
         [Fact]
@@ -551,7 +551,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.Url = GetMockUrlHelper(url);
             await controller.ResetPassword(user.Id);
 
-            mediator.Verify(x => x.SendAsync(It.Is<AllReady.Areas.Admin.Features.Site.SendResetPasswordEmail>(e => e.Email == user.Email && e.CallbackUrl == url)));
+            mediator.Verify(x => x.SendAsync(It.Is<AllReady.Areas.Admin.Features.Site.SendResetPasswordEmailCommand>(e => e.Email == user.Email && e.CallbackUrl == url)));
         }
 
         [Fact]

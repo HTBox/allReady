@@ -6,16 +6,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Organizations
 {
-    public class EditOrganizationHandler : IAsyncRequestHandler<EditOrganization, int>
+    public class EditOrganizationCommandHandler : IAsyncRequestHandler<EditOrganizationCommand, int>
     {
         private readonly AllReadyContext _context;
 
-        public EditOrganizationHandler(AllReadyContext context)
+        public EditOrganizationCommandHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<int> Handle(EditOrganization message)
+        public async Task<int> Handle(EditOrganizationCommand message)
         {
             var org = await _context.Organizations
                 .Include(l => l.Location)

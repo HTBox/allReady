@@ -193,7 +193,7 @@ namespace AllReady.Areas.Admin.Controllers
                 });
             }
 
-            bool isSuccess = await _mediator.SendAsync(new AddTeamMemberCommand { ItineraryId = id, TaskSignupId = selectedTeamMember });
+            var isSuccess = await _mediator.SendAsync(new AddTeamMemberCommand { ItineraryId = id, TaskSignupId = selectedTeamMember });
             if (!isSuccess)
             {
                 return Json(new
@@ -338,13 +338,12 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> MoveRequestUp(int itineraryId, Guid requestId)
         {
             var orgId = await GetOrganizationIdBy(itineraryId);
-
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
                 return Unauthorized();
             }
 
-            var result = await _mediator.SendAsync(new ReorderRequestCommand { RequestId = requestId, ItineraryId = itineraryId, ReOrderDirection = ReorderRequestCommand.Direction.Up });
+            await _mediator.SendAsync(new ReorderRequestCommand { RequestId = requestId, ItineraryId = itineraryId, ReOrderDirection = ReorderRequestCommand.Direction.Up });
 
             return RedirectToAction("Details", new { id = itineraryId });
         }
@@ -355,13 +354,12 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> MoveRequestDown(int itineraryId, Guid requestId)
         {
             var orgId = await GetOrganizationIdBy(itineraryId);
-
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
                 return Unauthorized();
             }
 
-            var result = await _mediator.SendAsync(new ReorderRequestCommand { RequestId = requestId, ItineraryId = itineraryId, ReOrderDirection = ReorderRequestCommand.Direction.Down });
+            await _mediator.SendAsync(new ReorderRequestCommand { RequestId = requestId, ItineraryId = itineraryId, ReOrderDirection = ReorderRequestCommand.Direction.Down });
 
             return RedirectToAction("Details", new { id = itineraryId });
         }
@@ -372,7 +370,6 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> MarkComplete(int itineraryId, Guid requestId)
         {
             var orgId = await GetOrganizationIdBy(itineraryId);
-
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
                 return Unauthorized();
@@ -389,7 +386,6 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> MarkIncomplete(int itineraryId, Guid requestId)
         {
             var orgId = await GetOrganizationIdBy(itineraryId);
-
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
                 return Unauthorized();
@@ -412,7 +408,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var result = await _mediator.SendAsync(new OptimizeRouteCommand { ItineraryId = itineraryId });
+            await _mediator.SendAsync(new OptimizeRouteCommand { ItineraryId = itineraryId });
 
             return RedirectToAction("Details", new { id = itineraryId, startAddress = model.StartAddress, endAddress = model.EndAddress });
         }

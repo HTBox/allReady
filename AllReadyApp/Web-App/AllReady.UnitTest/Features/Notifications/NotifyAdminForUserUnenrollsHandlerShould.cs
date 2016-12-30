@@ -10,7 +10,7 @@ using AllReady.Models;
 
 namespace AllReady.UnitTest.Features.Notifications
 {
-    public class NotifyAdminForUserUnenrollsShould : InMemoryContextTest
+    public class NotifyAdminForUserUnenrollsHandlerShould : InMemoryContextTest
     {
         /// <summary>
         /// Verifies that an object of type NotifyVolunteersCommand 
@@ -33,11 +33,11 @@ namespace AllReady.UnitTest.Features.Notifications
             mediator.Setup(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
                 .ReturnsAsync(new Unit());
 
-            var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();
+            var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrollsHandler>>();
             var options = GetSettings();
             var notification = GetUserUnenrolls(taskId);
 
-            var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger);
+            var target = new NotifyAdminForUserUnenrollsHandler(mediator.Object, options, logger);
             await target.Handle(notification);
 
             mediator.VerifyAll();
@@ -68,11 +68,11 @@ namespace AllReady.UnitTest.Features.Notifications
             mediator.Setup(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(n => !string.IsNullOrWhiteSpace(n.ViewModel.Subject))))
                 .ReturnsAsync(new Unit());
 
-            var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();
+            var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrollsHandler>>();
             var options = GetSettings();
             var notification = GetUserUnenrolls(taskId);
 
-            var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger);
+            var target = new NotifyAdminForUserUnenrollsHandler(mediator.Object, options, logger);
             await target.Handle(notification);
 
             mediator.VerifyAll();
@@ -102,11 +102,11 @@ namespace AllReady.UnitTest.Features.Notifications
             mediator.Setup(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(n => n.ViewModel.EmailRecipients.Contains(expectedEmail))))
                 .ReturnsAsync(new Unit());
 
-            var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();
+            var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrollsHandler>>();
             var options = GetSettings();
             var notification = GetUserUnenrolls(taskId);
 
-            var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger);
+            var target = new NotifyAdminForUserUnenrollsHandler(mediator.Object, options, logger);
             await target.Handle(notification);
 
             mediator.VerifyAll();
@@ -136,12 +136,12 @@ namespace AllReady.UnitTest.Features.Notifications
             mediator.Setup(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
                 .Throws(new InvalidOperationException("Test Exception"));
 
-            var logger = new Mock<ILogger<NotifyAdminForUserUnenrolls>>();
+            var logger = new Mock<ILogger<NotifyAdminForUserUnenrollsHandler>>();
 
             var options = GetSettings();
             var notification = GetUserUnenrolls(taskId);
 
-            var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger.Object);
+            var target = new NotifyAdminForUserUnenrollsHandler(mediator.Object, options, logger.Object);
             await target.Handle(notification);
 
             logger.Verify(x => x.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(),
@@ -172,7 +172,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 .Throws(new InvalidOperationException("Test Exception"));
 
             // Setup expected logging
-            var logger = new Mock<ILogger<NotifyAdminForUserUnenrolls>>();
+            var logger = new Mock<ILogger<NotifyAdminForUserUnenrollsHandler>>();
             logger.Setup(x => x.Log(It.Is<LogLevel>(l => l == LogLevel.Error),
                 It.IsAny<EventId>(), It.IsAny<object>(), It.IsAny<Exception>(),
                         It.IsAny<Func<object, Exception, string>>()));
@@ -180,7 +180,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = GetSettings();
             var notification = GetUserUnenrolls(taskId);
 
-            var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger.Object);
+            var target = new NotifyAdminForUserUnenrollsHandler(mediator.Object, options, logger.Object);
             await target.Handle(notification);
 
             logger.VerifyAll();
@@ -209,7 +209,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 .Throws(new InvalidOperationException("Test Exception"));
 
             // Setup expected logging
-            var logger = new Mock<ILogger<NotifyAdminForUserUnenrolls>>();
+            var logger = new Mock<ILogger<NotifyAdminForUserUnenrollsHandler>>();
             logger.Setup(x => x.Log(It.IsAny<LogLevel>(),
                 It.IsAny<EventId>(), It.IsAny<object>(),
                 It.IsAny<NullReferenceException>(),
@@ -218,7 +218,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = GetSettings();
             var notification = GetUserUnenrolls(taskId);
 
-            var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger.Object);
+            var target = new NotifyAdminForUserUnenrollsHandler(mediator.Object, options, logger.Object);
             await target.Handle(notification);
 
             logger.VerifyAll();
@@ -242,11 +242,11 @@ namespace AllReady.UnitTest.Features.Notifications
                 .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
                 .ReturnsAsync(eventDetails);
 
-            var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrolls>>();
+            var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrollsHandler>>();
             var options = GetSettings();
             var notification = GetUserUnenrolls(taskId);
 
-            var target = new NotifyAdminForUserUnenrolls(mediator.Object, options, logger);
+            var target = new NotifyAdminForUserUnenrollsHandler(mediator.Object, options, logger);
             await target.Handle(notification);
 
             // Verify the action call never occurs
@@ -261,9 +261,9 @@ namespace AllReady.UnitTest.Features.Notifications
             return options;
         }
 
-        private static UserUnenrolls GetUserUnenrolls(int taskId)
+        private static UserUnenrolled GetUserUnenrolls(int taskId)
         {
-            return new UserUnenrolls { TaskId = taskId };
+            return new UserUnenrolled { TaskId = taskId };
         }
 
         private static TaskDetailForNotificationModel GetTaskDetailForNotificationModel(int taskId, int eventId)

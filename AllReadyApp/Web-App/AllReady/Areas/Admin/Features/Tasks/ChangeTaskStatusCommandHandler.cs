@@ -8,34 +8,39 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class TaskStatusChangeHandler : IAsyncRequestHandler<TaskStatusChangeCommand, TaskChangeResult>
+    public class ChangeTaskStatusCommandHandler : IAsyncRequestHandler<ChangeTaskStatusCommand, TaskChangeResult>
     {
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
         private readonly AllReadyContext _context;
         private readonly IMediator _mediator;
 
-        public TaskStatusChangeHandler(AllReadyContext context, IMediator mediator)
+        public ChangeTaskStatusCommandHandler(AllReadyContext context, IMediator mediator)
         {
             _context = context;
             _mediator = mediator;
         }
 
-        public async Task<TaskChangeResult> Handle(TaskStatusChangeCommand message)
+        public async Task<TaskChangeResult> Handle(ChangeTaskStatusCommand message)
         {
             var @task = await GetTask(message);
-
             if (@task == null)
+            {
                 throw new InvalidOperationException($"Task {message.TaskId} does not exist");
-
+            }
+            
             var taskSignup = @task.AssignedVolunteers.SingleOrDefault(c => c.User.Id == message.UserId);
             if (taskSignup == null)
+            {
                 throw new InvalidOperationException($"Sign-up for user {message.UserId} does not exist");
-
+            }
+            
             TaskStatus currentStatus;
             if (!Enum.TryParse(taskSignup.Status, out currentStatus))
+            {
                 currentStatus = TaskStatus.Assigned;
-
+            }
+            
             switch (message.TaskStatus)
             {
                 case TaskStatus.Assigned:
@@ -72,7 +77,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             return new TaskChangeResult { Status = "success", Task = @task };
         }
 
-        private async Task<AllReadyTask> GetTask(TaskStatusChangeCommand message)
+        private async Task<AllReadyTask> GetTask(ChangeTaskStatusCommand message)
         {
             return await _context.Tasks
                 .Include(t => t.AssignedVolunteers).ThenInclude(ts => ts.User)

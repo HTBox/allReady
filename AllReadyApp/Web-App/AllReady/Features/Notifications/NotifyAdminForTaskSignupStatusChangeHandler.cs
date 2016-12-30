@@ -8,13 +8,13 @@ using Microsoft.Extensions.Options;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyAdminForTaskSignupStatusChange : IAsyncNotificationHandler<TaskSignupStatusChanged>
+    public class NotifyAdminForTaskSignupStatusChangeHandler : IAsyncNotificationHandler<TaskSignupStatusChanged>
     {
         private readonly AllReadyContext _context;
         private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
         
-        public NotifyAdminForTaskSignupStatusChange(AllReadyContext context, IMediator mediator, IOptions<GeneralSettings> options)
+        public NotifyAdminForTaskSignupStatusChangeHandler(AllReadyContext context, IMediator mediator, IOptions<GeneralSettings> options)
         {
             _context = context;
             _mediator = mediator;

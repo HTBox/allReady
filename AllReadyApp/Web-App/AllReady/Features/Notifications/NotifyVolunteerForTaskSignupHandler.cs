@@ -6,12 +6,12 @@ using Microsoft.Extensions.Options;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyVolunteerForTaskSignup : IAsyncNotificationHandler<VolunteerSignedUpNotification>
+    public class NotifyVolunteerForTaskSignupHandler : IAsyncNotificationHandler<VolunteerSignedUpNotification>
     {
         private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
 
-        public NotifyVolunteerForTaskSignup(IMediator mediator, IOptions<GeneralSettings> options)
+        public NotifyVolunteerForTaskSignupHandler(IMediator mediator, IOptions<GeneralSettings> options)
         {
             _mediator = mediator;
             _options = options;

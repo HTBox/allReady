@@ -4,7 +4,6 @@ using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using AllReady.Extensions;
-using AllReady.Providers;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {

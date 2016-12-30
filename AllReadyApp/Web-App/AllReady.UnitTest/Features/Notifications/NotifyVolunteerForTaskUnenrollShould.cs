@@ -15,7 +15,7 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async Task SendTaskDetailForNotificationQueryWithCorrectParameters()
         {
-            var notification = new UserUnenrolls
+            var notification = new UserUnenrolled
             {
                 UserId = "user1@example.com",
                 TaskId = 111
@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>())).ReturnsAsync(new TaskDetailForNotificationModel());
 
-            var handler = new NotifyVolunteerForTaskUnenroll(mockMediator.Object, null);
+            var handler = new NotifyVolunteerForTaskUnenrollHandler(mockMediator.Object, null);
             await handler.Handle(notification);
 
             mockMediator.Verify(x => x.SendAsync(It.Is<TaskDetailForNotificationQuery>(n => n.TaskId == notification.TaskId && n.UserId == notification.UserId)), Times.Once);
@@ -36,8 +36,8 @@ namespace AllReady.UnitTest.Features.Notifications
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>())).ReturnsAsync(null);
 
-            var handler = new NotifyVolunteerForTaskUnenroll(mockMediator.Object, null);
-            await handler.Handle(new UserUnenrolls());
+            var handler = new NotifyVolunteerForTaskUnenrollHandler(mockMediator.Object, null);
+            await handler.Handle(new UserUnenrolled());
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
         }
@@ -48,8 +48,8 @@ namespace AllReady.UnitTest.Features.Notifications
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>())).ReturnsAsync(new TaskDetailForNotificationModel());
 
-            var handler = new NotifyVolunteerForTaskUnenroll(mockMediator.Object, null);
-            await handler.Handle(new UserUnenrolls());
+            var handler = new NotifyVolunteerForTaskUnenrollHandler(mockMediator.Object, null);
+            await handler.Handle(new UserUnenrolled());
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
         }
@@ -57,7 +57,7 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async Task NotSendNotifyVolunteersCommand_WhenVolunteerIsNull()
         {
-            var notification = new UserUnenrolls { UserId = "user1@example.com" };
+            var notification = new UserUnenrolled { UserId = "user1@example.com" };
 
             var model = new TaskDetailForNotificationModel
             {
@@ -67,7 +67,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>())).ReturnsAsync(model);
 
-            var handler = new NotifyVolunteerForTaskUnenroll(mockMediator.Object, null);
+            var handler = new NotifyVolunteerForTaskUnenrollHandler(mockMediator.Object, null);
             await handler.Handle(notification);
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
@@ -78,7 +78,7 @@ namespace AllReady.UnitTest.Features.Notifications
         {
             var userId = "user1@example.com";
 
-            var notification = new UserUnenrolls { UserId = userId };
+            var notification = new UserUnenrolled { UserId = userId };
 
             var model = new TaskDetailForNotificationModel
             {
@@ -88,7 +88,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>())).ReturnsAsync(model);
 
-            var handler = new NotifyVolunteerForTaskUnenroll(mockMediator.Object, null);
+            var handler = new NotifyVolunteerForTaskUnenrollHandler(mockMediator.Object, null);
             await handler.Handle(notification);
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
@@ -99,7 +99,7 @@ namespace AllReady.UnitTest.Features.Notifications
         {
             var userId = "user1@example.com";
 
-            var notification = new UserUnenrolls { UserId = userId };
+            var notification = new UserUnenrolled { UserId = userId };
 
             var model = new TaskDetailForNotificationModel
             {
@@ -109,7 +109,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>())).ReturnsAsync(model);
 
-            var handler = new NotifyVolunteerForTaskUnenroll(mockMediator.Object, null);
+            var handler = new NotifyVolunteerForTaskUnenrollHandler(mockMediator.Object, null);
             await handler.Handle(notification);
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
@@ -121,7 +121,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var userId = "user1@example.com";
             var userEmail = "useremail1@example.com";
             
-            var notification = new UserUnenrolls { UserId = userId };
+            var notification = new UserUnenrolled { UserId = userId };
 
             var model = new TaskDetailForNotificationModel
             {
@@ -134,7 +134,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new Mock<IOptions<GeneralSettings>>();
             options.Setup(o => o.Value).Returns(new GeneralSettings());
 
-            var handler = new NotifyVolunteerForTaskUnenroll(mockMediator.Object, options.Object);
+            var handler = new NotifyVolunteerForTaskUnenrollHandler(mockMediator.Object, options.Object);
             await handler.Handle(notification);
 
             mockMediator.Verify(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(c =>
@@ -167,7 +167,7 @@ namespace AllReady.UnitTest.Features.Notifications
             message.AppendLine();
             message.AppendLine("Thanks for letting us know that you will not be participating.");
 
-            var notification = new UserUnenrolls { UserId = userId };
+            var notification = new UserUnenrolled { UserId = userId };
 
             var model = new TaskDetailForNotificationModel
             {
@@ -185,7 +185,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new Mock<IOptions<GeneralSettings>>();
             options.Setup(o => o.Value).Returns(new GeneralSettings { SiteBaseUrl = siteBaseUrl });
 
-            var handler = new NotifyVolunteerForTaskUnenroll(mockMediator.Object, options.Object);
+            var handler = new NotifyVolunteerForTaskUnenrollHandler(mockMediator.Object, options.Object);
             await handler.Handle(notification);
 
             mockMediator.Verify(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(c =>
@@ -202,7 +202,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var userId = "user1@example.com";
             var subject = "allReady Task Un-enrollment Confirmation";
 
-            var notification = new UserUnenrolls { UserId = userId };
+            var notification = new UserUnenrolled { UserId = userId };
 
             var model = new TaskDetailForNotificationModel
             {
@@ -215,7 +215,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new Mock<IOptions<GeneralSettings>>();
             options.Setup(o => o.Value).Returns(new GeneralSettings());
 
-            var handler = new NotifyVolunteerForTaskUnenroll(mockMediator.Object, options.Object);
+            var handler = new NotifyVolunteerForTaskUnenrollHandler(mockMediator.Object, options.Object);
             await handler.Handle(notification);
 
             mockMediator.Verify(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(c =>

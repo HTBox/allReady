@@ -16,7 +16,7 @@ namespace AllReady.Features.Resource
 
         public List<Models.Resource> Handle(ResourcesByCategoryQuery message)
         {
-            return this.dataContext.Resources.Where(x => x.CategoryTag == message.Category).ToList();
+            return dataContext.Resources.Where(x => x.CategoryTag == message.Category).ToList();
         }
     }
 }

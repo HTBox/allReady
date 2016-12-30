@@ -13,16 +13,16 @@ using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
-    public class TaskStatusChangeHandlerShould : InMemoryContextTest
+    public class ChangeTaskStatusCommandHandlerShould : InMemoryContextTest
     {
         private readonly Mock<IMediator> mediator;
-        private readonly TaskStatusChangeHandler handler;
+        private readonly ChangeTaskStatusCommandHandler commandHandler;
         private readonly DateTime dateTimeUtcNow = DateTime.UtcNow;
 
-        public TaskStatusChangeHandlerShould()
+        public ChangeTaskStatusCommandHandlerShould()
         {
             mediator = new Mock<IMediator>();
-            handler = new TaskStatusChangeHandler(Context, mediator.Object) { DateTimeUtcNow = () => dateTimeUtcNow };
+            commandHandler = new ChangeTaskStatusCommandHandler(Context, mediator.Object) { DateTimeUtcNow = () => dateTimeUtcNow };
         }
 
         protected override void LoadTestData()
@@ -90,12 +90,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             await Context.SaveChangesAsync();
         }
 
-        protected TaskStatusChangeCommand CreateCommand(TaskStatus status, string description = "")
+        protected ChangeTaskStatusCommand CreateCommand(TaskStatus status, string description = "")
         {
             var user = Context.Users.First();
             var@task = Context.Tasks.First();
 
-            return new TaskStatusChangeCommand
+            return new ChangeTaskStatusCommand
             {
                 UserId = user.Id,
                 TaskId =@task.Id,
@@ -109,14 +109,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var@task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommand
+            var command = new ChangeTaskStatusCommand
             {
                 TaskId =@task.Id,
                 UserId = user.Id,
                 TaskStatus = TaskStatus.Assigned,
                 TaskStatusDescription = $"Assign {@task.Name} to {user.UserName}"
             };
-            await handler.Handle(command);
+            await commandHandler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
@@ -131,14 +131,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var@task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommand
+            var command = new ChangeTaskStatusCommand
             {
                 TaskId =@task.Id,
                 UserId = user.Id,
                 TaskStatus = TaskStatus.Accepted,
                 TaskStatusDescription = $"{user.UserName} has accepted the task {@task.Name}"
             };
-            await handler.Handle(command);
+            await commandHandler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
@@ -157,7 +157,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var@task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommand
+            var command = new ChangeTaskStatusCommand
             {
                 TaskId =@task.Id,
                 UserId = user.Id,
@@ -165,7 +165,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 TaskStatusDescription = $"{user.UserName} accepted task {@task.Name}"
             };
 
-            await handler.Handle(command);
+            await commandHandler.Handle(command);
 
             taskSignup = Context.TaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
@@ -184,7 +184,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var@task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommand
+            var command = new ChangeTaskStatusCommand
             {
                 TaskId =@task.Id,
                 UserId = user.Id,
@@ -192,7 +192,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 TaskStatusDescription = $"{user.UserName} accepted task {@task.Name}"
             };
 
-            await handler.Handle(command);
+            await commandHandler.Handle(command);
 
             taskSignup = Context.TaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
@@ -207,7 +207,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             await InitStatus(TaskStatus.Accepted);
             var command = CreateCommand(TaskStatus.Accepted, "User accepted task");
-            Should.Throw<Exception>(() => handler.Handle(command));
+            Should.Throw<Exception>(() => commandHandler.Handle(command));
         }
 
         [Fact]
@@ -215,7 +215,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             await InitStatus(TaskStatus.Rejected);
             var command = CreateCommand(TaskStatus.Accepted, "User accepted task");
-            Should.Throw<Exception>(() => handler.Handle(command));
+            Should.Throw<Exception>(() => commandHandler.Handle(command));
         }
 
         [Fact]
@@ -223,14 +223,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var @task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommand
+            var command = new ChangeTaskStatusCommand
             {
                 TaskId = @task.Id,
                 UserId = user.Id,
                 TaskStatus = TaskStatus.Rejected,
                 TaskStatusDescription = $"{user.UserName} rejected task {@task.Name}"
             };
-            await handler.Handle(command);
+            await commandHandler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifiyCommand => notifiyCommand.SignupId == taskSignup.Id)), Times.Once());
@@ -245,7 +245,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             await InitStatus(TaskStatus.Accepted);
             var command = CreateCommand(TaskStatus.Rejected, "User rejects task");
-            Should.Throw<Exception>(() => handler.Handle(command));
+            Should.Throw<Exception>(() => commandHandler.Handle(command));
         }
 
         [Fact]
@@ -253,7 +253,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             await InitStatus(TaskStatus.Rejected);
             var command = CreateCommand(TaskStatus.Rejected, "User rejects task");
-            Should.Throw<Exception>(() => handler.Handle(command));
+            Should.Throw<Exception>(() => commandHandler.Handle(command));
         }
 
         [Fact]
@@ -261,7 +261,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             await InitStatus(TaskStatus.Completed);
             var command = CreateCommand(TaskStatus.Rejected, "User rejected task");
-            Should.Throw<Exception>(() => handler.Handle(command));
+            Should.Throw<Exception>(() => commandHandler.Handle(command));
         }
 
         [Fact]
@@ -269,7 +269,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             await InitStatus(TaskStatus.CanNotComplete);
             var command = CreateCommand(TaskStatus.CanNotComplete, "User rejected task");
-            Should.Throw<Exception>(() => handler.Handle(command));
+            Should.Throw<Exception>(() => commandHandler.Handle(command));
         }
 
         [Fact]
@@ -281,14 +281,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var @task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommand
+            var command = new ChangeTaskStatusCommand
             {
                 TaskId = @task.Id,
                 UserId = user.Id,
                 TaskStatus = TaskStatus.Completed,
                 TaskStatusDescription = $"{user.UserName} completed {@task.Name}"
             };
-            await handler.Handle(command);
+            await commandHandler.Handle(command);
 
             taskSignup = Context.TaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
@@ -303,7 +303,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var @task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommand
+            var command = new ChangeTaskStatusCommand
             {
                 TaskId = @task.Id,
                 UserId = user.Id,
@@ -311,7 +311,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 TaskStatusDescription = $"{user.UserName} completed task {@task.Name}"
             };
 
-            await handler.Handle(command);
+            await commandHandler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
@@ -327,7 +327,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             await InitStatus(TaskStatus.Rejected);
             var command = CreateCommand(TaskStatus.Completed, "User completed task");
-            Should.Throw<Exception>(() => handler.Handle(command));
+            Should.Throw<Exception>(() => commandHandler.Handle(command));
         }
 
         [Fact]
@@ -335,7 +335,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             await InitStatus(TaskStatus.Completed);
             var command = CreateCommand(TaskStatus.Completed, "User completed task");
-            Should.Throw<Exception>(() => handler.Handle(command));
+            Should.Throw<Exception>(() => commandHandler.Handle(command));
         }
 
         [Fact]
@@ -343,7 +343,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             await InitStatus(TaskStatus.CanNotComplete);
             var command = CreateCommand(TaskStatus.Completed, "User completed task");
-            Should.Throw<Exception>(() => handler.Handle(command));
+            Should.Throw<Exception>(() => commandHandler.Handle(command));
         }
 
         [Fact]
@@ -355,14 +355,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var @task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommand
+            var command = new ChangeTaskStatusCommand
             {
                 TaskId = @task.Id,
                 UserId = user.Id,
                 TaskStatus = TaskStatus.CanNotComplete,
                 TaskStatusDescription = $"{user.UserName} cannot complete {@task.Name}"
             };
-            await handler.Handle(command);
+            await commandHandler.Handle(command);
 
             taskSignup = Context.TaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
@@ -377,7 +377,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var user = Context.Users.First();
             var @task = Context.Tasks.First();
-            var command = new TaskStatusChangeCommand
+            var command = new ChangeTaskStatusCommand
             {
                 TaskId = @task.Id,
                 UserId = user.Id,
@@ -385,7 +385,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 TaskStatusDescription = $"{user.UserName} cannot complete task {@task.Name}"
             };
 
-            await handler.Handle(command);
+            await commandHandler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
@@ -401,7 +401,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             await InitStatus(TaskStatus.Rejected);
             var command = CreateCommand(TaskStatus.CanNotComplete, "User cannot complete task");
-            Should.Throw<Exception>(() => handler.Handle(command));
+            Should.Throw<Exception>(() => commandHandler.Handle(command));
         }
 
         [Fact]
@@ -409,7 +409,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             await InitStatus(TaskStatus.Completed);
             var command = CreateCommand(TaskStatus.CanNotComplete, "User cannot complete task");
-            Should.Throw<Exception>(() => handler.Handle(command));
+            Should.Throw<Exception>(() => commandHandler.Handle(command));
         }
 
         [Fact]
@@ -417,7 +417,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             await InitStatus(TaskStatus.CanNotComplete);
             var command = CreateCommand(TaskStatus.CanNotComplete, "User cannot complete task");
-            Should.Throw<Exception>(() => handler.Handle(command));
+            Should.Throw<Exception>(() => commandHandler.Handle(command));
         }
 
         [Fact]
@@ -425,7 +425,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var command = CreateCommand(TaskStatus.Accepted, "User accepted task");
             command.TaskId = 90124;
-            Should.Throw<Exception>(() => handler.Handle(command));
+            Should.Throw<Exception>(() => commandHandler.Handle(command));
         }
 
         [Fact]
@@ -433,7 +433,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var command = CreateCommand(TaskStatus.Completed, "User completed task");
             command.UserId = Guid.NewGuid().ToString();
-            Should.Throw<Exception>(() => handler.Handle(command));
+            Should.Throw<Exception>(() => commandHandler.Handle(command));
         }
     }
 }

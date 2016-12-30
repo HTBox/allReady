@@ -39,8 +39,10 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             else
             {
                 if (itineraryRequests.Last().OrderIndex == requestToMove.OrderIndex)
+                {
                     return false;
-
+                }
+                
                 var requestBelow = itineraryRequests.FirstOrDefault(r => r.OrderIndex == requestToMove.OrderIndex + 1);
 
                 requestBelow.OrderIndex--;

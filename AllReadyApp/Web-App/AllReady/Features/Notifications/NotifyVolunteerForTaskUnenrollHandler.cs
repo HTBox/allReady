@@ -6,18 +6,18 @@ using Microsoft.Extensions.Options;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyVolunteerForTaskUnenroll : IAsyncNotificationHandler<UserUnenrolls>
+    public class NotifyVolunteerForTaskUnenrollHandler : IAsyncNotificationHandler<UserUnenrolled>
     {
         private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
 
-        public NotifyVolunteerForTaskUnenroll(IMediator mediator, IOptions<GeneralSettings> options)
+        public NotifyVolunteerForTaskUnenrollHandler(IMediator mediator, IOptions<GeneralSettings> options)
         {
             _mediator = mediator;
             _options = options;
         }
 
-        public async Task Handle(UserUnenrolls notification)
+        public async Task Handle(UserUnenrolled notification)
         {
             var taskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQuery { TaskId = notification.TaskId, UserId = notification.UserId });
 

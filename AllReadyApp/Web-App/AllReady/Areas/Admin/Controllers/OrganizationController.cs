@@ -77,7 +77,7 @@ namespace AllReady.Areas.Admin.Controllers
                 var isNameUnique = await _mediator.SendAsync(new OrganizationNameUniqueQuery { OrganizationName = organization.Name, OrganizationId = organization.Id });
                 if (isNameUnique)
                 {
-                    var id = await _mediator.SendAsync(new EditOrganization { Organization = organization });
+                    var id = await _mediator.SendAsync(new EditOrganizationCommand { Organization = organization });
                     return RedirectToAction(nameof(Details), new { id, area = "Admin" });
                 }
 

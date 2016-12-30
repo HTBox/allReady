@@ -6,12 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskUnenrollHandler : IAsyncRequestHandler<TaskUnenrollCommand, TaskUnenrollResult>
+    public class TaskUnenrollCommandHandler : IAsyncRequestHandler<TaskUnenrollCommand, TaskUnenrollResult>
     {
         private readonly IMediator _mediator;
         private readonly AllReadyContext _context;
 
-        public TaskUnenrollHandler(IMediator mediator, AllReadyContext context)
+        public TaskUnenrollCommandHandler(IMediator mediator, AllReadyContext context)
         {
             _mediator = mediator;
             _context = context;
@@ -32,7 +32,7 @@ namespace AllReady.Features.Tasks
 
             await _context.SaveChangesAsync();
 
-            await _mediator.PublishAsync(new UserUnenrolls { UserId = message.UserId, TaskId = taskSignUp.Task.Id });
+            await _mediator.PublishAsync(new UserUnenrolled { UserId = message.UserId, TaskId = taskSignUp.Task.Id });
 
             return new TaskUnenrollResult { Status = "success", Task = taskSignUp.Task };
         }

@@ -10,20 +10,20 @@ using Microsoft.Extensions.Options;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyAdminForUserUnenrolls : IAsyncNotificationHandler<UserUnenrolls>
+    public class NotifyAdminForUserUnenrollsHandler : IAsyncNotificationHandler<UserUnenrolled>
     {
         private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
-        private readonly ILogger<NotifyAdminForUserUnenrolls> _logger;
+        private readonly ILogger<NotifyAdminForUserUnenrollsHandler> _logger;
 
-        public NotifyAdminForUserUnenrolls(IMediator mediator, IOptions<GeneralSettings> options, ILogger<NotifyAdminForUserUnenrolls> logger)
+        public NotifyAdminForUserUnenrollsHandler(IMediator mediator, IOptions<GeneralSettings> options, ILogger<NotifyAdminForUserUnenrollsHandler> logger)
         {
             _mediator = mediator;
             _options = options;
             _logger = logger;
         }
 
-        public async Task Handle(UserUnenrolls notification)
+        public async Task Handle(UserUnenrolled notification)
         {
             // don't let problem with notification keep us from continuing
             try
