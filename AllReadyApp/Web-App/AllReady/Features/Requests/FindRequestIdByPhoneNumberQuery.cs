@@ -4,7 +4,7 @@ using System;
 namespace AllReady.Features.Requests
 {
     /// <summary>
-    /// Returns 
+    /// Returns an Id for the latest request with a matching contact phone number
     /// </summary>
     public class FindRequestIdByPhoneNumberQuery : IAsyncRequest<Guid>
     {
@@ -12,7 +12,7 @@ namespace AllReady.Features.Requests
         {
             if (string.IsNullOrWhiteSpace(phoneNumber))
             { 
-                throw new ArgumentOutOfRangeException(nameof(phoneNumber));
+                throw new ArgumentException(nameof(phoneNumber));
             }
 
             PhoneNumber = phoneNumber;
