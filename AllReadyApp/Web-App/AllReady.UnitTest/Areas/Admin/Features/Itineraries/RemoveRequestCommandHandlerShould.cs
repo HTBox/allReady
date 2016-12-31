@@ -88,7 +88,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         }
 
         [Fact]
-        public async Task RemoveItineraryRequestDoesExist()
+        public async Task RemoveItineraryRequest()
         {
             var mockMediator = new Mock<IMediator>();
 
@@ -99,65 +99,64 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         }
 
         [Fact]
-        public async Task AbortRemoveItineraryRequestDoesnotExist()
+        public async Task Return_WhenNoIntineraryRequestsAreFoundByRequestId()
         {
             var mockMediator = new Mock<IMediator>(MockBehavior.Strict);
+
             var handler = new RemoveRequestCommandHandler(Context, mockMediator.Object);
-            var succeded = await handler.Handle(new RemoveRequestCommand
+            await handler.Handle(new RemoveRequestCommand
                 { ItineraryId = 1, RequestId = new Guid("0da127ec-e4b6-44df-abd3-8a9ffa685826") });
         }
 
 
         [Fact]
-        public async Task AbortRemoveCompletedItineraryRequest()
+        public async Task Return_WhenRequestStatusIsCompleted()
         {
             var mockMediator = new Mock<IMediator>();
             
             var handler = new RemoveRequestCommandHandler(Context, mockMediator.Object);
-            var succeded = await handler.Handle(new RemoveRequestCommand
+            await handler.Handle(new RemoveRequestCommand
                 { ItineraryId = 1, RequestId = Request2Id });
             Assert.True(Context.ItineraryRequests.Any(x => x.RequestId == Request1Id));
         }
 
         [Fact]
-        public async Task RemoveItineraryRequest_ShouldMoveUpOthers()
+        public async Task ReorderIntineraryRequestsCorrectly()
         {
             var mockMediator = new Mock<IMediator>();
 
             var handler = new RemoveRequestCommandHandler(Context, mockMediator.Object);
-            var succeded = await handler.Handle(new RemoveRequestCommand
+            await handler.Handle(new RemoveRequestCommand
                 { ItineraryId = 1, RequestId = Request1Id });
             Assert.Equal(1, Context.ItineraryRequests.First(x => x.RequestId == Request2Id).OrderIndex);
             Assert.Equal(2, Context.ItineraryRequests.First(x => x.RequestId == Request3Id).OrderIndex);
         }
 
         [Fact]
-        public async Task RemoveItineraryRequest_ShouldUnassignRequest()
+        public async Task SetRequestStatusToUnassiged()
         {
             var mockMediator = new Mock<IMediator>();
 
             var handler = new RemoveRequestCommandHandler(Context, mockMediator.Object);
-            var succeded = await handler.Handle(new RemoveRequestCommand
+            await handler.Handle(new RemoveRequestCommand
                 { ItineraryId = 1, RequestId = Request1Id });
             Assert.Equal(RequestStatus.Unassigned, Context.Requests.First(x => x.RequestId == Request1Id).Status);
         }
 
 
-        // TODO: fix this unit test to be able to check that notification has correct data
-        [Fact(Skip="Need to check how to implement")]	
+        [Fact]	
         public async Task RemoveItineraryRequest_ShouldSendCorrectNotification()
         {
-            var mockMediator = new Mock<IMediator>();
-            RequestStatusChangedNotification actualNotification = null;
-            mockMediator.Setup(x => x.PublishAsync(It.IsAny<IAsyncNotification>()))
-                .Callback<IAsyncNotification>(notification => actualNotification = (RequestStatusChangedNotification)notification);
+            var oldStatus = Context.Requests.First(x => x.RequestId == Request1Id).Status;
 
+            var mockMediator = new Mock<IMediator>();
+            var message = new RemoveRequestCommand { ItineraryId = 1, RequestId = Request1Id };
             var handler = new RemoveRequestCommandHandler(Context, mockMediator.Object);
-            var succeded = await handler.Handle(new RemoveRequestCommand
-                { ItineraryId = 1, RequestId = Request1Id });
-            Assert.Equal(RequestStatus.Unassigned, actualNotification.NewStatus);
-            Assert.Equal(RequestStatus.Assigned, actualNotification.OldStatus);
-            Assert.Equal(Request1Id, actualNotification.RequestId);
+            await handler.Handle(message);
+
+            var newStatus = Context.Requests.First(x => x.RequestId == Request1Id).Status;
+
+            mockMediator.Verify(x => x.PublishAsync(It.Is<RequestStatusChangedNotification>(y => y.RequestId == message.RequestId && y.OldStatus == oldStatus && y.NewStatus == newStatus)));
         }
     }
 }
