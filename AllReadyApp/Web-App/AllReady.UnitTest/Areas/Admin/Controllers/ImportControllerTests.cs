@@ -17,6 +17,7 @@ using Xunit;
 using System.Linq;
 using AllReady.Areas.Admin.Features.Import;
 using Microsoft.Extensions.Logging.Internal;
+using System.Threading.Tasks;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -62,35 +63,35 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void IndexPostReturnsTheCorrectViewModelAndView()
+        public async Task IndexPostReturnsTheCorrectViewModelAndView()
         {
             var sut = new ImportController(null, null, null);
-            var result = sut.Index(new IndexViewModel()) as ViewResult;
+            var result = await sut.Index(new IndexViewModel()) as ViewResult;
 
             Assert.IsType<IndexViewModel>(result.Model);
             Assert.Null(result.ViewName);
         }
 
         [Fact]
-        public void IndexPostReturnsCorrectImportError_WhenEventIsNotPicked()
+        public async Task IndexPostReturnsCorrectImportError_WhenEventIsNotPicked()
         {
             var sut = new ImportController(null, null, null);
-            var result = (IndexViewModel)((ViewResult)sut.Index(new IndexViewModel())).Model;
+            var result = (IndexViewModel)((ViewResult) await sut.Index(new IndexViewModel())).Model;
 
             Assert.True(result.ImportErrors.Contains("please select an Event."));
         }
 
         [Fact]
-        public void IndexPostReturnsCorrectImportError_WhenNoFileIsUploaded()
+        public async Task IndexPostReturnsCorrectImportError_WhenNoFileIsUploaded()
         {
             var sut = new ImportController(null, null, null);
-            var result = (IndexViewModel)((ViewResult)sut.Index(new IndexViewModel())).Model;
+            var result = (IndexViewModel)((ViewResult) await sut.Index(new IndexViewModel())).Model;
 
             Assert.True(result.ImportErrors.Contains("please select a file to upload."));
         }
 
         [Fact]
-        public void IndexPostReturnsCorrectImportError_WhenUploadedFileIsEmpty()
+        public async Task IndexPostReturnsCorrectImportError_WhenUploadedFileIsEmpty()
         {
             var iFormFile = new Mock<IFormFile>();
             var csvFactory = new Mock<ICsvFactory>();
@@ -102,13 +103,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             csvReader.Setup(x => x.GetRecords<ImportRequestViewModel>()).Returns(new List<ImportRequestViewModel>());
 
             var sut = new ImportController(null, null, csvFactory.Object);
-            var result = (IndexViewModel)((ViewResult)sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object })).Model;
+            var result = (IndexViewModel)((ViewResult) await sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object })).Model;
 
             Assert.True(result.ImportErrors.Contains("you uploaded an empty file."));
         }
 
         [Fact]
-        public void IndexPostSendsDuplicateProviderRequestIdsQueryWithCorrectProviderRequestIds()
+        public async Task IndexPostSendsDuplicateProviderRequestIdsQueryWithCorrectProviderRequestIds()
         {
             const string id = "id";
             var importRequestViewModels = new List<ImportRequestViewModel> { new ImportRequestViewModel { Id = id } };
@@ -125,13 +126,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.Send(It.IsAny<DuplicateProviderRequestIdsQuery>())).Returns(new List<string>());
 
             var sut = new ImportController(mediator.Object, null, csvFactory.Object);
-            sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object });
+            await sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object });
 
             mediator.Verify(x => x.Send(It.Is<DuplicateProviderRequestIdsQuery>(y => y.ProviderRequestIds[0] == id)), Times.Once);
         }
 
         [Fact]
-        public void IndexPostReturnsCorrectImportError_WhenThereAreDuplicateProviderRequestIdsFound()
+        public async Task IndexPostReturnsCorrectImportError_WhenThereAreDuplicateProviderRequestIdsFound()
         {
             const string duplicateId = "id";
             var duplicateIds = new List<string> { duplicateId };
@@ -149,13 +150,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.Send(It.IsAny<DuplicateProviderRequestIdsQuery>())).Returns(duplicateIds);
 
             var sut = new ImportController(mediator.Object, null, csvFactory.Object);
-            var result = (IndexViewModel)((ViewResult)sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object })).Model;
+            var result = (IndexViewModel)((ViewResult) await sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object })).Model;
 
             Assert.True(result.ImportErrors.Contains($"These id's already exist in the system. Please remove them from the CSV and try again: {string.Join(", ", duplicateIds)}"));
         }
 
         [Fact]
-        public void IndexPostReturnsCorrectImportError_WhenThereAreValidationErrors()
+        public async Task IndexPostReturnsCorrectImportError_WhenThereAreValidationErrors()
         {
             var importRequestViewModels = new List<ImportRequestViewModel>
             {
@@ -174,7 +175,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.Send(It.IsAny<DuplicateProviderRequestIdsQuery>())).Returns(new List<string>());
 
             var sut = new ImportController(mediator.Object, null, csvFactory.Object);
-            var viewResult = sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object }) as ViewResult;
+            var viewResult = await sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object }) as ViewResult;
             var result = viewResult.Model as IndexViewModel;
 
             Assert.Equal(result.ValidationErrors[0].ProviderRequestId, importRequestViewModels[0].Id);
@@ -188,7 +189,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void IndexPostSendsImportRequestsCommandWithTheCorrectViewModel()
+        public async Task IndexPostSendsImportRequestsCommandWithTheCorrectViewModel()
         {
             var importRequestViewModels = new List<ImportRequestViewModel>
             {
@@ -209,9 +210,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new ImportController(mediator.Object, Mock.Of<ILogger<ImportController>>(), csvFactory.Object);
             sut.SetFakeUserName("UserName");
-            sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object });
+            await sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object });
 
-            mediator.Verify(x => x.Send(It.Is<ImportRequestsCommand>(y => 
+            mediator.Verify(x => x.SendAsync(It.Is<ImportRequestsCommand>(y => 
                 y.ImportRequestViewModels[0].Id == importRequestViewModels[0].Id &&
                 y.ImportRequestViewModels[0].Name == importRequestViewModels[0].Name &&
                 y.ImportRequestViewModels[0].Address == importRequestViewModels[0].Address &&
@@ -226,7 +227,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void IndexPostLogsCorrectMessage_WhenImportSucceeds()
+        public async Task IndexPostLogsCorrectMessage_WhenImportSucceeds()
         {
             const string userName = "UserName";
             const string fileName = "FileName";
@@ -251,7 +252,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new ImportController(mediator.Object, logger.Object, csvFactory.Object);
             sut.SetFakeUserName(userName);
-            sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object });
+            await sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object });
 
             logger.Verify(m => m.Log(LogLevel.Information, It.IsAny<EventId>(),
             It.Is<FormattedLogValues>(v => v.ToString() == $"{userName} imported file {fileName}"),
@@ -259,7 +260,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void IndexPostAssignsImportSuccessToTrue_WhenImportSucceeds()
+        public async Task IndexPostAssignsImportSuccessToTrue_WhenImportSucceeds()
         {
             var importRequestViewModels = new List<ImportRequestViewModel>
             {
@@ -280,7 +281,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new ImportController(mediator.Object, Mock.Of<ILogger<ImportController>>(), csvFactory.Object);
             sut.SetFakeUserName("UserName");
-            var result = (IndexViewModel)((ViewResult)sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object })).Model;
+            var result = (IndexViewModel)((ViewResult)await sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object })).Model;
 
             Assert.True(result.ImportSuccess);
         }

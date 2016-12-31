@@ -13,6 +13,7 @@ using AllReady.Areas.Admin.ViewModels.Import;
 using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Features.Requests;
 using AllReady.Security;
+using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -46,7 +47,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index(IndexViewModel viewModel)
+        public async Task<IActionResult> Index(IndexViewModel viewModel)
         {
             List<ImportRequestViewModel> importRequestViewModels;
 
@@ -102,7 +103,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (viewModel.ImportErrors.Count == 0 && viewModel.ValidationErrors.Count == 0)
             {
-                mediator.Send(new ImportRequestsCommand { EventId = viewModel.EventId, ImportRequestViewModels = importRequestViewModels.ToList() });
+                await mediator.SendAsync(new ImportRequestsCommand { EventId = viewModel.EventId, ImportRequestViewModels = importRequestViewModels.ToList() });
                 logger.LogInformation($"{User.Identity.Name} imported file {viewModel.File.Name}");
                 viewModel.ImportSuccess = true;
             }

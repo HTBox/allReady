@@ -9,6 +9,7 @@ using Xunit;
 using System.Linq;
 using Geocoding;
 using System.Collections.Generic;
+using Shouldly;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Requests
 {
@@ -17,6 +18,29 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         private Request _existingRequest;
         protected override void LoadTestData()
         {
+            var org = new Organization
+            {
+                Id = 1,
+                Name = "testOrg",
+            };
+
+            Context.Organizations.Add(org);
+
+            var campaign = new Campaign
+            {
+                ManagingOrganization = org
+            };
+
+            Context.Campaigns.Add(campaign);
+
+            var @event = new Event
+            {
+                Id = 1,
+                Campaign = campaign
+            };
+
+            Context.Events.Add(@event);
+
             _existingRequest = new Request
             {
                 Address = "1234 Nowhereville",
@@ -90,6 +114,17 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
             });
 
             mockGeocoder.Verify(x => x.Geocode(changedAddress, _existingRequest.City, _existingRequest.State, _existingRequest.Zip, It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task SetCorrectOrganizationId()
+        {
+            var handler = new EditRequestCommandHandler(Context, new NullObjectGeocoder());
+            var requestId = await handler.Handle(new EditRequestCommand { RequestModel = new EditRequestViewModel { EventId = 1 } });
+
+            var request = Context.Requests.Where(x => x.RequestId == requestId).FirstOrDefault();
+
+            request.OrganizationId.ShouldBe(1);
         }
     }
 }
