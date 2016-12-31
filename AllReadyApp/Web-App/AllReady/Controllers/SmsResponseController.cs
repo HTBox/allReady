@@ -1,6 +1,6 @@
-﻿using AllReady.Attributes;
+﻿using AllReady.Areas.Admin.Features.Requests;
+using AllReady.Attributes;
 using AllReady.Features.Requests;
-using AllReady.Hangfire.Jobs;
 using AllReady.Models;
 using AllReady.Services;
 using MediatR;
@@ -16,13 +16,11 @@ namespace AllReady.Controllers
         private const string Accepted = "y";
         private const string Declined = "n";
 
-        private readonly IChangeRequestStatus _changeRequestStatus;
         private readonly IMediator _mediator;
         private readonly ISmsSender _smsSender;
 
-        public SmsResponseController(IChangeRequestStatus changeRequestStatus, IMediator mediator, ISmsSender smsSender)
+        public SmsResponseController(IMediator mediator, ISmsSender smsSender)
         {
-            _changeRequestStatus = changeRequestStatus;
             _mediator = mediator;
             _smsSender = smsSender;
         }
@@ -49,12 +47,12 @@ namespace AllReady.Controllers
                     switch (response)
                     {
                         case (Accepted):
-                            _changeRequestStatus.To(RequestStatus.Confirmed, requestId); // this method is not async and uses non async db access also - leaving this whilst we refine the requirements past v1
+                            await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Confirmed });
                             await _smsSender.SendSmsAsync(from, "Thank you for confirming you availability.");
                             break;
 
                         case (Declined):
-                            _changeRequestStatus.To(RequestStatus.Unassigned, requestId); // this method is not async and uses non async db access also - leaving this whilst we refine the requirements past v1
+                            await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Unassigned });
                             await _smsSender.SendSmsAsync(from, "We have canceled your request and once it is rescheduled you will receive further communication.");
                             break;
 

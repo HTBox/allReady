@@ -1,7 +1,7 @@
-﻿using AllReady.Attributes;
+﻿using AllReady.Areas.Admin.Features.Requests;
+using AllReady.Attributes;
 using AllReady.Controllers;
 using AllReady.Features.Requests;
-using AllReady.Hangfire.Jobs;
 using AllReady.Models;
 using AllReady.Services;
 using AllReady.UnitTest.Extensions;
@@ -31,7 +31,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void Index_HasHttpPostAttribute()
         {
-            var sut = new SmsResponseController(null, null, null);
+            var sut = new SmsResponseController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Index(It.IsAny<string>(), It.IsAny<string>())).OfType<HttpPostAttribute>().SingleOrDefault();
             attribute.ShouldNotBeNull();
         }
@@ -39,7 +39,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void Index_HttpPostAttributeHasCorrectTemplate()
         {
-            var sut = new SmsResponseController(null, null, null);
+            var sut = new SmsResponseController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Index(It.IsAny<string>(), It.IsAny<string>())).OfType<HttpPostAttribute>().SingleOrDefault();
             attribute.Template.ShouldBe("smsresponse");
         }
@@ -47,7 +47,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void Index_HasExternalEndpointAttribute()
         {
-            var sut = new SmsResponseController(null, null, null);
+            var sut = new SmsResponseController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Index(It.IsAny<string>(), It.IsAny<string>())).OfType<ExternalEndpointAttribute>().SingleOrDefault();
             attribute.ShouldNotBeNull();
         }
@@ -55,7 +55,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void Index_HasAllowAnonymousAttribute()
         {
-            var sut = new SmsResponseController(null, null, null);
+            var sut = new SmsResponseController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Index(It.IsAny<string>(), It.IsAny<string>())).OfType<AllowAnonymousAttribute>().SingleOrDefault();
             attribute.ShouldNotBeNull();
         }
@@ -63,7 +63,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task Index_ReturnsBadRequestResult_WhenFromIsNull()
         {
-            var sut = new SmsResponseController(null, null, null);
+            var sut = new SmsResponseController(null, null);
             var result = await sut.Index(null, It.IsAny<string>());
             result.ShouldBeOfType(typeof(BadRequestResult));
         }
@@ -71,7 +71,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task Index_ReturnsBadRequestResult_WhenFromIsWhitespace()
         {
-            var sut = new SmsResponseController(null, null, null);
+            var sut = new SmsResponseController(null, null);
             var result = await sut.Index(" ", It.IsAny<string>());
             result.ShouldBeOfType(typeof(BadRequestResult));
         }
@@ -84,7 +84,7 @@ namespace AllReady.UnitTest.Controllers
                 .ReturnsAsync(Guid.Empty)
                 .Verifiable();
 
-            var sut = new SmsResponseController(null, mediatr.Object, null);
+            var sut = new SmsResponseController(mediatr.Object, null);
             var result = await sut.Index(GoodPhoneNumber, It.IsAny<string>());
 
             mediatr.Verify(x => x.SendAsync(It.IsAny<FindRequestIdByPhoneNumberQuery>()), Times.Once);
@@ -101,7 +101,7 @@ namespace AllReady.UnitTest.Controllers
                 .Callback<FindRequestIdByPhoneNumberQuery>(x => query = x)
                 .Verifiable();
 
-            var sut = new SmsResponseController(null, mediatr.Object, null);
+            var sut = new SmsResponseController(mediatr.Object, null);
             var result = await sut.Index(GoodPhoneNumber, It.IsAny<string>());
 
             query.PhoneNumber.ShouldBe(GoodPhoneNumber);
@@ -115,56 +115,52 @@ namespace AllReady.UnitTest.Controllers
                 .ReturnsAsync(Guid.Empty)
                 .Verifiable();
 
-            var sut = new SmsResponseController(null, mediatr.Object, null);
+            var sut = new SmsResponseController(mediatr.Object, null);
             var result = await sut.Index(GoodPhoneNumber, It.IsAny<string>());
 
             result.ShouldBeOfType(typeof(OkResult));
         }
 
         [Fact]
-        public async Task Index_CallsChangeRequestStatusTo_WithExpectedValues_WhenUppercaseConfirmBodyPosted()
+        public async Task Index_SendsChangeRequestStatusCommand_WithExpectedValues_WhenUppercaseConfirmBodyPosted()
         {
-            Guid requestId = Guid.Empty;
-            RequestStatus requestStatus = RequestStatus.PendingConfirmation;
+            ChangeRequestStatusCommand cmd = null;
 
             var mediatr = new Mock<IMediator>();
             mediatr.Setup(x => x.SendAsync(It.IsAny<FindRequestIdByPhoneNumberQuery>()))
                 .ReturnsAsync(RequestGuid);
-
-            var changeRequestStatus = new Mock<IChangeRequestStatus>();
-            changeRequestStatus.Setup(x => x.To(It.IsAny<RequestStatus>(), It.IsAny<Guid>()))
-                .Callback<RequestStatus, Guid>((x, y) => { requestStatus = x; requestId = y; })
+            mediatr.Setup(x => x.SendAsync(It.IsAny<ChangeRequestStatusCommand>()))
+                .Returns(Task.FromResult(Unit.Value))
+                .Callback<ChangeRequestStatusCommand>(x => cmd = x)
                 .Verifiable();
 
-            var sut = new SmsResponseController(changeRequestStatus.Object, mediatr.Object, Mock.Of<ISmsSender>());
+            var sut = new SmsResponseController(mediatr.Object, Mock.Of<ISmsSender>());
             await sut.Index(GoodPhoneNumber, UppercaseConfirm);
 
-            changeRequestStatus.Verify(x => x.To(It.IsAny<RequestStatus>(), It.IsAny<Guid>()), Times.Once);
-            requestId.ShouldBe(RequestGuid);
-            requestStatus.ShouldBe(RequestStatus.Confirmed);
+            mediatr.Verify(x => x.SendAsync(It.IsAny<ChangeRequestStatusCommand>()), Times.Once);
+            cmd.RequestId.ShouldBe(RequestGuid);
+            cmd.NewStatus.ShouldBe(RequestStatus.Confirmed);
         }
 
         [Fact]
-        public async Task Index_CallsChangeRequestStatusTo_WithExpectedValues_WhenLowercaseConfirmBodyPosted()
+        public async Task Index_ChangeRequestStatusCommand_WithExpectedValues_WhenLowercaseConfirmBodyPosted()
         {
-            Guid requestId = Guid.Empty;
-            RequestStatus requestStatus = RequestStatus.PendingConfirmation;
+            ChangeRequestStatusCommand cmd = null;
 
             var mediatr = new Mock<IMediator>();
             mediatr.Setup(x => x.SendAsync(It.IsAny<FindRequestIdByPhoneNumberQuery>()))
                 .ReturnsAsync(RequestGuid);
-
-            var changeRequestStatus = new Mock<IChangeRequestStatus>();
-            changeRequestStatus.Setup(x => x.To(It.IsAny<RequestStatus>(), It.IsAny<Guid>()))
-                .Callback<RequestStatus, Guid>((x, y) => { requestStatus = x; requestId = y; })
+            mediatr.Setup(x => x.SendAsync(It.IsAny<ChangeRequestStatusCommand>()))
+                .Returns(Task.FromResult(Unit.Value))
+                .Callback<ChangeRequestStatusCommand>(x => cmd = x)
                 .Verifiable();
 
-            var sut = new SmsResponseController(changeRequestStatus.Object, mediatr.Object, Mock.Of<ISmsSender>());
+            var sut = new SmsResponseController(mediatr.Object, Mock.Of<ISmsSender>());
             await sut.Index(GoodPhoneNumber, LowercaseConfirm);
 
-            changeRequestStatus.Verify(x => x.To(It.IsAny<RequestStatus>(), It.IsAny<Guid>()), Times.Once);
-            requestId.ShouldBe(RequestGuid);
-            requestStatus.ShouldBe(RequestStatus.Confirmed);
+            mediatr.Verify(x => x.SendAsync(It.IsAny<ChangeRequestStatusCommand>()), Times.Once);
+            cmd.RequestId.ShouldBe(RequestGuid);
+            cmd.NewStatus.ShouldBe(RequestStatus.Confirmed);
         }
 
         [Fact]
@@ -182,7 +178,7 @@ namespace AllReady.UnitTest.Controllers
                 .Callback<string, string>((x, y) => smsTo = x)
                 .Verifiable();
 
-            var sut = new SmsResponseController(Mock.Of<IChangeRequestStatus>(), mediatr.Object, smsSender.Object);
+            var sut = new SmsResponseController(mediatr.Object, smsSender.Object);
             await sut.Index(GoodPhoneNumber, LowercaseConfirm);
 
             smsSender.Verify(x => x.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -204,7 +200,7 @@ namespace AllReady.UnitTest.Controllers
                 .Callback<string, string>((x, y) => smsTo = x)
                 .Verifiable();
 
-            var sut = new SmsResponseController(Mock.Of<IChangeRequestStatus>(), mediatr.Object, smsSender.Object);
+            var sut = new SmsResponseController(mediatr.Object, smsSender.Object);
             await sut.Index(GoodPhoneNumber, UppercaseConfirm);
 
             smsSender.Verify(x => x.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -212,49 +208,45 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task Index_CallsChangeRequestStatusTo_WithExpectedValues_WhenUppercaseRejectBodyPosted()
+        public async Task Index_SendsChangeRequestStatusCommand_WithExpectedValues_WhenUppercaseRejectBodyPosted()
         {
-            Guid requestId = Guid.Empty;
-            RequestStatus requestStatus = RequestStatus.PendingConfirmation;
+            ChangeRequestStatusCommand cmd = null;
 
             var mediatr = new Mock<IMediator>();
             mediatr.Setup(x => x.SendAsync(It.IsAny<FindRequestIdByPhoneNumberQuery>()))
                 .ReturnsAsync(RequestGuid);
-
-            var changeRequestStatus = new Mock<IChangeRequestStatus>();
-            changeRequestStatus.Setup(x => x.To(It.IsAny<RequestStatus>(), It.IsAny<Guid>()))
-                .Callback<RequestStatus, Guid>((x, y) => { requestStatus = x; requestId = y; })
+            mediatr.Setup(x => x.SendAsync(It.IsAny<ChangeRequestStatusCommand>()))
+                .Returns(Task.FromResult(Unit.Value))
+                .Callback<ChangeRequestStatusCommand>(x => cmd = x)
                 .Verifiable();
 
-            var sut = new SmsResponseController(changeRequestStatus.Object, mediatr.Object, Mock.Of<ISmsSender>());
+            var sut = new SmsResponseController(mediatr.Object, Mock.Of<ISmsSender>());
             await sut.Index(GoodPhoneNumber, UppercaseReject);
 
-            changeRequestStatus.Verify(x => x.To(It.IsAny<RequestStatus>(), It.IsAny<Guid>()), Times.Once);
-            requestId.ShouldBe(RequestGuid);
-            requestStatus.ShouldBe(RequestStatus.Unassigned);
+            mediatr.Verify(x => x.SendAsync(It.IsAny<ChangeRequestStatusCommand>()), Times.Once);
+            cmd.RequestId.ShouldBe(RequestGuid);
+            cmd.NewStatus.ShouldBe(RequestStatus.Unassigned);
         }
 
         [Fact]
-        public async Task Index_CallsChangeRequestStatusTo_WithExpectedValues_WhenLowercaseRejectBodyPosted()
+        public async Task Index_SendsChangeRequestStatusCommand_WithExpectedValues_WhenLowercaseRejectBodyPosted()
         {
-            Guid requestId = Guid.Empty;
-            RequestStatus requestStatus = RequestStatus.PendingConfirmation;
+            ChangeRequestStatusCommand cmd = null;
 
             var mediatr = new Mock<IMediator>();
             mediatr.Setup(x => x.SendAsync(It.IsAny<FindRequestIdByPhoneNumberQuery>()))
                 .ReturnsAsync(RequestGuid);
-
-            var changeRequestStatus = new Mock<IChangeRequestStatus>();
-            changeRequestStatus.Setup(x => x.To(It.IsAny<RequestStatus>(), It.IsAny<Guid>()))
-                .Callback<RequestStatus, Guid>((x, y) => { requestStatus = x;  requestId = y; })
+            mediatr.Setup(x => x.SendAsync(It.IsAny<ChangeRequestStatusCommand>()))
+                .Returns(Task.FromResult(Unit.Value))
+                .Callback<ChangeRequestStatusCommand>(x => cmd = x)
                 .Verifiable();
 
-            var sut = new SmsResponseController(changeRequestStatus.Object, mediatr.Object, Mock.Of<ISmsSender>());
+            var sut = new SmsResponseController(mediatr.Object, Mock.Of<ISmsSender>());
             await sut.Index(GoodPhoneNumber, LowercaseReject);
 
-            changeRequestStatus.Verify(x => x.To(It.IsAny<RequestStatus>(), It.IsAny<Guid>()), Times.Once);
-            requestId.ShouldBe(RequestGuid);
-            requestStatus.ShouldBe(RequestStatus.Unassigned);
+            mediatr.Verify(x => x.SendAsync(It.IsAny<ChangeRequestStatusCommand>()), Times.Once);
+            cmd.RequestId.ShouldBe(RequestGuid);
+            cmd.NewStatus.ShouldBe(RequestStatus.Unassigned);
         }
 
         [Fact]
@@ -272,7 +264,7 @@ namespace AllReady.UnitTest.Controllers
                 .Callback<string, string>((x, y) => smsTo = x)
                 .Verifiable();
 
-            var sut = new SmsResponseController(Mock.Of<IChangeRequestStatus>(), mediatr.Object, smsSender.Object);
+            var sut = new SmsResponseController(mediatr.Object, smsSender.Object);
             await sut.Index(GoodPhoneNumber, LowercaseReject);
 
             smsSender.Verify(x => x.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -294,28 +286,26 @@ namespace AllReady.UnitTest.Controllers
                 .Callback<string, string>((x, y) => smsTo = x)
                 .Verifiable();
 
-            var sut = new SmsResponseController(Mock.Of<IChangeRequestStatus>(), mediatr.Object, smsSender.Object);
+            var sut = new SmsResponseController(mediatr.Object, smsSender.Object);
             await sut.Index(GoodPhoneNumber, UppercaseReject);
 
             smsSender.Verify(x => x.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             smsTo.ShouldBe(GoodPhoneNumber);
         }
-        
+
         [Fact]
-        public async Task Index_DoesNotCallChangeRequestStatusTo_WhenBodyDoesNotMatchAcceptedOrRejectedStrings()
+        public async Task Index_DoesNotSendChangeRequestStatusCommand_WhenBodyDoesNotMatchAcceptedOrRejectedStrings()
         {
             var mediatr = new Mock<IMediator>();
             mediatr.Setup(x => x.SendAsync(It.IsAny<FindRequestIdByPhoneNumberQuery>()))
                 .ReturnsAsync(RequestGuid);
-
-            var changeRequestStatus = new Mock<IChangeRequestStatus>();
-            changeRequestStatus.Setup(x => x.To(It.IsAny<RequestStatus>(), It.IsAny<Guid>()))
+            mediatr.Setup(x => x.SendAsync(It.IsAny<ChangeRequestStatusCommand>()))
                 .Verifiable();
 
-            var sut = new SmsResponseController(changeRequestStatus.Object, mediatr.Object, Mock.Of<ISmsSender>());
+            var sut = new SmsResponseController(mediatr.Object, Mock.Of<ISmsSender>());
             await sut.Index(GoodPhoneNumber, InvalidResponse);
 
-            changeRequestStatus.Verify(x => x.To(It.IsAny<RequestStatus>(), It.IsAny<Guid>()), Times.Never);
+            mediatr.Verify(x => x.SendAsync(It.IsAny<ChangeRequestStatusCommand>()), Times.Never);
         }
 
         [Fact]
@@ -329,7 +319,7 @@ namespace AllReady.UnitTest.Controllers
             smsSender.Setup(x => x.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .Verifiable();
 
-            var sut = new SmsResponseController(Mock.Of<IChangeRequestStatus>(), mediatr.Object, smsSender.Object);
+            var sut = new SmsResponseController(mediatr.Object, smsSender.Object);
             await sut.Index(GoodPhoneNumber, InvalidResponse);
 
             smsSender.Verify(x => x.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
@@ -342,11 +332,10 @@ namespace AllReady.UnitTest.Controllers
             mediatr.Setup(x => x.SendAsync(It.IsAny<FindRequestIdByPhoneNumberQuery>()))
                 .ReturnsAsync(RequestGuid);
 
-            var changeRequestStatus = new Mock<IChangeRequestStatus>();
-            changeRequestStatus.Setup(x => x.To(It.IsAny<RequestStatus>(), It.IsAny<Guid>()))
+            mediatr.Setup(x => x.SendAsync(It.IsAny<ChangeRequestStatusCommand>()))
                .Throws(new Exception());
 
-            var sut = new SmsResponseController(changeRequestStatus.Object, mediatr.Object, Mock.Of<ISmsSender>());
+            var sut = new SmsResponseController(mediatr.Object, Mock.Of<ISmsSender>());
             var result = await sut.Index(GoodPhoneNumber, UppercaseConfirm) as StatusCodeResult;
 
             result.ShouldNotBeNull();
