@@ -25,7 +25,6 @@ namespace AllReady.Areas.Admin.Features.Notifications
             var requestorPhoneNumbers = await context.Requests.Where(x => notification.RequestIds.Contains(x.RequestId)).Select(x => x.Phone).ToListAsync();
             var itinerary = await context.Itineraries.SingleAsync(x => x.Id == notification.ItineraryId);
 
-            //TODO mgmccarthy: need to convert itinerary.Date to local time of the request's intinerary's campaign's timezone
             await smsSender.SendSmsAsync(requestorPhoneNumbers, 
                 $@"Your request has been scheduled by allReady for {itinerary.Date.Date}. Please respond with ""Y"" to confirm this request or ""N"" to cancel this request.");
 
