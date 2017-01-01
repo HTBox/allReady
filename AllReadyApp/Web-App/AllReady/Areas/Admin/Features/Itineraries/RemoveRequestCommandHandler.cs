@@ -27,7 +27,6 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 .ToListAsync();
 
             var requestToRemove = itineraryRequests.FirstOrDefault(r => r.RequestId == message.RequestId);
-            var requestStatus = requestToRemove.Request.Status;
 
             if (requestToRemove == null || requestToRemove.Request.Status == RequestStatus.Completed)
             {
@@ -35,6 +34,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             }
 
             // Update the request status
+            var requestStatus = requestToRemove.Request.Status;
             requestToRemove.Request.Status = RequestStatus.Unassigned;
 
             // remove the request to itinerary assignment
