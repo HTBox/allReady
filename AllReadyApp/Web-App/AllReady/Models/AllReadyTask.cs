@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using AllReady.ViewModels.Task;
 
 namespace AllReady.Models
 {
@@ -31,13 +30,5 @@ namespace AllReady.Models
         public bool IsAllowSignups => !IsLimitVolunteers || !IsFull || IsAllowWaitList;
         [NotMapped]
         public bool IsClosed => EndDateTime.UtcDateTime < DateTimeOffset.UtcNow;
-    }
-
-    public static class AllReadyTaskExtenstions
-    {
-        public static TaskViewModel ToViewModel(this AllReadyTask task)
-        {
-            return new TaskViewModel(task);
-        }
     }
 }

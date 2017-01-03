@@ -27,7 +27,6 @@ namespace AllReady.Features.Events
                     Id = taskSignupViewModel.Id,
                     StatusDateTimeUtc = DateTimeUtcNow(),
                     StatusDescription = taskSignupViewModel.StatusDescription,
-                    //Status = taskSignupViewModel.Status,
                     Status = (Models.TaskStatus)Enum.Parse(typeof(Models.TaskStatus), taskSignupViewModel.Status),
                     Task = new AllReadyTask { Id = taskSignupViewModel.TaskId },
                     User = currentUser

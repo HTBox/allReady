@@ -24,7 +24,7 @@ namespace AllReady.ViewModels.Task
             if (task.Event != null)
             {
                 EventId = task.Event.Id;
-                eventName = task.Event.Name;
+                EventName = task.Event.Name;
             }
 
             if (task.Event?.Campaign != null)
@@ -86,7 +86,7 @@ namespace AllReady.ViewModels.Task
         public int EventId { get; set; }
 
         [Display(Name = "Event")]
-        public string eventName { get; set; }
+        public string EventName { get; set; }
 
         public int CampaignId { get; set; }
 
@@ -145,8 +145,7 @@ namespace AllReady.ViewModels.Task
             return $"{StartDateTime:dddd, MMMM dd, yyyy} at {StartDateTime:t} to {EndDateTime:dddd, MMMM dd, yyyy} at {EndDateTime:t}";
         }
 
-        public TaskViewModel(AllReadyTask task, bool isUserSignedupForTask)
-            : this(task)
+        public TaskViewModel(AllReadyTask task, bool isUserSignedupForTask) : this(task)
         {
             IsUserSignedUpForTask = isUserSignedupForTask;
         }

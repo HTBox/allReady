@@ -16,7 +16,7 @@ namespace AllReady.UnitTest.Tasks
     {
         protected override void LoadTestData()
         {
-            var htb = new Organization()
+            var htb = new Organization
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
@@ -24,13 +24,13 @@ namespace AllReady.UnitTest.Tasks
                 Campaigns = new List<Campaign>()
             };
 
-            var firePrev = new Campaign()
+            var firePrev = new Campaign
             {
                 Name = "Neighborhood Fire Prevention Days",
                 ManagingOrganization = htb
             };
 
-            var queenAnne = new Event()
+            var queenAnne = new Event
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
@@ -42,7 +42,7 @@ namespace AllReady.UnitTest.Tasks
                 RequiredSkills = new List<EventSkill>(),
             };
 
-            var username1 = $"blah@1.com";
+            const string username1 = "blah@1.com";
 
             var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true };
             Context.Users.Add(user1);
@@ -51,7 +51,7 @@ namespace AllReady.UnitTest.Tasks
             Context.Organizations.Add(htb);
             Context.Events.Add(queenAnne);
 
-            var newTask = new AllReadyTask()
+            var newTask = new AllReadyTask
             {
                 Event = queenAnne,
                 Description = "Description of a very important task",
@@ -61,7 +61,7 @@ namespace AllReady.UnitTest.Tasks
                 Organization = htb
             };
 
-            newTask.AssignedVolunteers.Add(new TaskSignup()
+            newTask.AssignedVolunteers.Add(new TaskSignup
             {
                 Task = newTask,
                 User = user1

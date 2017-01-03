@@ -5,6 +5,7 @@ using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
@@ -37,22 +38,22 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             switch (message.TaskStatus)
             {
-                case AllReady.Models.TaskStatus.Assigned:
+                case TaskStatus.Assigned:
                     break;
-                case AllReady.Models.TaskStatus.Accepted:
-                    if (taskSignup.Status != AllReady.Models.TaskStatus.Assigned && taskSignup.Status != AllReady.Models.TaskStatus.CanNotComplete && taskSignup.Status != AllReady.Models.TaskStatus.Completed) 
+                case TaskStatus.Accepted:
+                    if (taskSignup.Status != TaskStatus.Assigned && taskSignup.Status != TaskStatus.CanNotComplete && taskSignup.Status != TaskStatus.Completed) 
                         throw new ArgumentException("Task must be assigned before being accepted or undoing CanNotComplete or Completed");
                     break;
-                case AllReady.Models.TaskStatus.Rejected:
-                    if (taskSignup.Status != AllReady.Models.TaskStatus.Assigned)
+                case TaskStatus.Rejected:
+                    if (taskSignup.Status != TaskStatus.Assigned)
                         throw new ArgumentException("Task must be assigned before being rejected");
                     break;
-                case AllReady.Models.TaskStatus.Completed:
-                    if (taskSignup.Status != AllReady.Models.TaskStatus.Accepted && taskSignup.Status != AllReady.Models.TaskStatus.Assigned)
+                case TaskStatus.Completed:
+                    if (taskSignup.Status != TaskStatus.Accepted && taskSignup.Status != TaskStatus.Assigned)
                         throw new ArgumentException("Task must be accepted before being completed");
                     break;
-                case AllReady.Models.TaskStatus.CanNotComplete:
-                    if (taskSignup.Status != AllReady.Models.TaskStatus.Accepted && taskSignup.Status != AllReady.Models.TaskStatus.Assigned)
+                case TaskStatus.CanNotComplete:
+                    if (taskSignup.Status != TaskStatus.Accepted && taskSignup.Status != TaskStatus.Assigned)
                         throw new ArgumentException($"Task must be assigned or accepted before it can be marked as {message.TaskStatus}");
                     break;
                 default:
