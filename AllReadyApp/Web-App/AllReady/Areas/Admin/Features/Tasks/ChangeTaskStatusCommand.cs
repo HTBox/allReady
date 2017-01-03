@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AllReady.Models;
+using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
@@ -8,14 +9,5 @@ namespace AllReady.Areas.Admin.Features.Tasks
         public string UserId { get; set; }
         public TaskStatus TaskStatus { get; set; }
         public string TaskStatusDescription { get; set; }
-    }
-
-    public enum TaskStatus
-    {
-        Assigned,
-        Accepted,
-        Rejected,
-        Completed,
-        CanNotComplete
     }
 }

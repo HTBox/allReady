@@ -34,38 +34,32 @@ namespace AllReady.Areas.Admin.Features.Tasks
             {
                 throw new InvalidOperationException($"Sign-up for user {message.UserId} does not exist");
             }
-            
-            TaskStatus currentStatus;
-            if (!Enum.TryParse(taskSignup.Status, out currentStatus))
-            {
-                currentStatus = TaskStatus.Assigned;
-            }
-            
+
             switch (message.TaskStatus)
             {
-                case TaskStatus.Assigned:
+                case AllReady.Models.TaskStatus.Assigned:
                     break;
-                case TaskStatus.Accepted:
-                    if (currentStatus != TaskStatus.Assigned && currentStatus != TaskStatus.CanNotComplete && currentStatus != TaskStatus.Completed) 
+                case AllReady.Models.TaskStatus.Accepted:
+                    if (taskSignup.Status != AllReady.Models.TaskStatus.Assigned && taskSignup.Status != AllReady.Models.TaskStatus.CanNotComplete && taskSignup.Status != AllReady.Models.TaskStatus.Completed) 
                         throw new ArgumentException("Task must be assigned before being accepted or undoing CanNotComplete or Completed");
                     break;
-                case TaskStatus.Rejected:
-                    if (currentStatus != TaskStatus.Assigned)
+                case AllReady.Models.TaskStatus.Rejected:
+                    if (taskSignup.Status != AllReady.Models.TaskStatus.Assigned)
                         throw new ArgumentException("Task must be assigned before being rejected");
                     break;
-                case TaskStatus.Completed:
-                    if (currentStatus != TaskStatus.Accepted && currentStatus != TaskStatus.Assigned)
+                case AllReady.Models.TaskStatus.Completed:
+                    if (taskSignup.Status != AllReady.Models.TaskStatus.Accepted && taskSignup.Status != AllReady.Models.TaskStatus.Assigned)
                         throw new ArgumentException("Task must be accepted before being completed");
                     break;
-                case TaskStatus.CanNotComplete:
-                    if (currentStatus != TaskStatus.Accepted && currentStatus != TaskStatus.Assigned)
+                case AllReady.Models.TaskStatus.CanNotComplete:
+                    if (taskSignup.Status != AllReady.Models.TaskStatus.Accepted && taskSignup.Status != AllReady.Models.TaskStatus.Assigned)
                         throw new ArgumentException($"Task must be assigned or accepted before it can be marked as {message.TaskStatus}");
                     break;
                 default:
                     throw new ArgumentException($"Invalid sign-up status value: {message.TaskStatus}");
             }
 
-            taskSignup.Status = message.TaskStatus.ToString();
+            taskSignup.Status = message.TaskStatus;
             taskSignup.StatusDateTimeUtc = DateTimeUtcNow();
             taskSignup.StatusDescription = message.TaskStatusDescription;
 

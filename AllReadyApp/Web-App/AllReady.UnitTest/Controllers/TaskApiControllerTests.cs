@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 using DeleteTaskCommand = AllReady.Features.Tasks.DeleteTaskCommand;
-using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
+using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.UnitTest.Controllers
 {

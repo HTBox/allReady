@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.UnitTest.Tasks
 {
@@ -82,7 +83,7 @@ namespace AllReady.UnitTest.Tasks
             {
                 TaskId = @task.Id,
                 UserId = user.Id,
-                TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus.Accepted
+                TaskStatus = TaskStatus.Accepted
             };
             var handler = new ChangeTaskStatusCommandHandler(Context, mediator.Object);
             await handler.Handle(command);

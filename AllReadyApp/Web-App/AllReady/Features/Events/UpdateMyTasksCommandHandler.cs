@@ -22,11 +22,13 @@ namespace AllReady.Features.Events
 
             foreach (var taskSignupViewModel in command.TaskSignups)
             {
-                dbContext.TaskSignups.Update(new TaskSignup {
+                dbContext.TaskSignups.Update(new TaskSignup
+                {
                     Id = taskSignupViewModel.Id,
                     StatusDateTimeUtc = DateTimeUtcNow(),
                     StatusDescription = taskSignupViewModel.StatusDescription,
-                    Status = taskSignupViewModel.Status,
+                    //Status = taskSignupViewModel.Status,
+                    Status = (Models.TaskStatus)Enum.Parse(typeof(Models.TaskStatus), taskSignupViewModel.Status),
                     Task = new AllReadyTask { Id = taskSignupViewModel.TaskId },
                     User = currentUser
                 });

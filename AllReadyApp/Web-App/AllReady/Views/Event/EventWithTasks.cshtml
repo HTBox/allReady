@@ -114,7 +114,6 @@
                             <br />
                         </div>
 
-
                         @*User Tasks Accordion*@
                         <div class="col-sm-12">
                             <span class="label-warning label no-matching-tasks" data-bind="visible: !filteredUserTasks().filtered().length">No matching tasks.</span>
@@ -152,9 +151,6 @@
                                                             </li>
                                                             <li data-bind="visible: currentStatus === 'Accepted'">
                                                                 <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.confirmCannotComplete">Mark Unable to Complete</a>
-                                                                @*<a href="#" class="btn btn-default btn-sm" data-bind="click: $root.confirmUnenrollFromTask">Unable to Complete</a>*@
-                                                            </li>
-                                                            <li data-bind="visible: currentStatus === 'Accepted'">
                                                                 <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.confirmUnenrollFromTask">Unenroll</a>
                                                             </li>
                                                             <li data-bind="visible: currentStatus === 'Completed'">
