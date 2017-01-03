@@ -71,7 +71,6 @@ namespace AllReady.Areas.Admin.Features.Events
                     }).OrderBy(i => i.Date).ToList()
                 };
 
-
                 // required skills
 
                 var skillIds = campaignEvent.RequiredSkills.Select(s => s.SkillId);

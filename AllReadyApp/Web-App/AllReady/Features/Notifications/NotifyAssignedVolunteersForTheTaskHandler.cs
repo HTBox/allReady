@@ -6,12 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyAssignedVolunteersForTheTask : IAsyncNotificationHandler<TaskAssignedToVolunteersNotification>
+    public class NotifyAssignedVolunteersForTheTaskHandler : IAsyncNotificationHandler<TaskAssignedToVolunteersNotification>
     {
         private readonly AllReadyContext _context;
         private readonly IMediator _mediator;
 
-        public NotifyAssignedVolunteersForTheTask(AllReadyContext context, IMediator mediator)
+        public NotifyAssignedVolunteersForTheTaskHandler(AllReadyContext context, IMediator mediator)
         {
             _context = context;
             _mediator = mediator;

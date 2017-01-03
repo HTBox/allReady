@@ -12,14 +12,14 @@ using Microsoft.Extensions.Options;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyAdminForSignup : IAsyncNotificationHandler<VolunteerSignedUpNotification>
+    public class NotifyAdminForSignupHandler : IAsyncNotificationHandler<VolunteerSignedUpNotification>
     {
         private readonly AllReadyContext _context;
         private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
-        private readonly ILogger<NotifyAdminForUserUnenrolls> _logger;
+        private readonly ILogger<NotifyAdminForUserUnenrollsHandler> _logger;
 
-        public NotifyAdminForSignup(AllReadyContext context, IMediator mediator, IOptions<GeneralSettings> options, ILogger<NotifyAdminForUserUnenrolls> logger)
+        public NotifyAdminForSignupHandler(AllReadyContext context, IMediator mediator, IOptions<GeneralSettings> options, ILogger<NotifyAdminForUserUnenrollsHandler> logger)
         {
             _context = context;
             _mediator = mediator;

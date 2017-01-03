@@ -8,7 +8,7 @@ using AllReady.Areas.Admin.ViewModels.Organization;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 {
-    public class EditOrganizationHandlerShould : InMemoryContextTest
+    public class EditOrganizationCommandHandlerShould : InMemoryContextTest
     {
         [Fact]
         public async Task AddOrganization()
@@ -18,8 +18,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
             var orgModel = ToEditModel_Organization(org);
 
             // Act
-            var handler = new EditOrganizationHandler(Context);
-            var id = await handler.Handle(new EditOrganization { Organization = orgModel });
+            var handler = new EditOrganizationCommandHandler(Context);
+            var id = await handler.Handle(new EditOrganizationCommand { Organization = orgModel });
             var fetchedOrg = Context.Organizations.First(t => t.Id == id);
 
             // Assert

@@ -8,15 +8,15 @@ using Xunit;
 
 namespace AllReady.UnitTest.Features.Notifications
 {
-    public class NotifyAssignedVolunteersForTheTaskShould : InMemoryContextTest
+    public class NotifyAssignedVolunteersForTheTaskHandlerShould : InMemoryContextTest
     {
         private readonly Mock<IMediator> mediator;
-        private readonly NotifyAssignedVolunteersForTheTask sut;
+        private readonly NotifyAssignedVolunteersForTheTaskHandler sut;
 
-        public NotifyAssignedVolunteersForTheTaskShould()
+        public NotifyAssignedVolunteersForTheTaskHandlerShould()
         {
             mediator = new Mock<IMediator>();
-            sut = new NotifyAssignedVolunteersForTheTask(Context, mediator.Object);
+            sut = new NotifyAssignedVolunteersForTheTaskHandler(Context, mediator.Object);
         }
 
         [Fact]

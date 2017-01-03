@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using AllReady.Extensions;
 using AllReady.Models;
-using AllReady.Providers;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

@@ -16,9 +16,10 @@ namespace AllReady.Features.Tasks
 
         protected override async Task HandleCore(DeleteTaskCommand message)
         {
-            var toDelete = this.dataContext.Tasks.Where(t => t.Id == message.TaskId).SingleOrDefault();
+            var toDelete = dataContext.Tasks.SingleOrDefault(t => t.Id == message.TaskId);
 
-            if (toDelete != null) {
+            if (toDelete != null)
+            {
                 dataContext.Tasks.Remove(toDelete);
                 await dataContext.SaveChangesAsync();
             }
