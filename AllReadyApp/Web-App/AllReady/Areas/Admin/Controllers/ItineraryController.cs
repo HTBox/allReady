@@ -398,6 +398,23 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{requestId}")]
+        public async Task<IActionResult> MarkConfirmed(int itineraryId, Guid requestId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return Unauthorized();
+            }
+
+            await _mediator.SendAsync(new ChangeRequestStatusCommand {RequestId = requestId, NewStatus = RequestStatus.Confirmed});
+
+            return RedirectToAction("Details", new { id = itineraryId });
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         [Route("Admin/Itinerary/{itineraryId}/[Action]")]
         public async Task<IActionResult> OptimizeRoute(int itineraryId, OptimizeRouteInputModel model)
         {
