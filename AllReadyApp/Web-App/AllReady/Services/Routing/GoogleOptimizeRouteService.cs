@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using AllReady.Services.Routing.Models.Google;
@@ -15,13 +14,13 @@ namespace AllReady.Services.Routing
     {
         private readonly MappingSettings _mappingSettings;
         private readonly ILogger<GoogleOptimizeRouteService> _logger;
-        private static HttpClient _httpClient;
+        private static IHttpClient _httpClient;
 
-        public GoogleOptimizeRouteService(IOptions<MappingSettings> mappingSettings, ILogger<GoogleOptimizeRouteService> logger, HttpClient httpClient = null)
+        public GoogleOptimizeRouteService(IOptions<MappingSettings> mappingSettings, ILogger<GoogleOptimizeRouteService> logger, IHttpClient httpClient)
         {
             _mappingSettings = mappingSettings?.Value;
             _logger = logger;
-            _httpClient = httpClient ?? new HttpClient();
+            _httpClient = httpClient;
         }
 
         public async Task<OptimizeRouteResult> OptimizeRoute(OptimizeRouteCriteria criteria)
