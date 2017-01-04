@@ -3,6 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using AllReady.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Microsoft.Extensions.Options;
+using MediatR;
+using AllReady.ViewModels.Manage;
+using static AllReady.Controllers.ManageController;
+using AllReady.Models;
+using AllReady.UnitTest.Extensions;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using AllReady.Features.Manage;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -11,18 +23,64 @@ namespace AllReady.UnitTest.Controllers
         //delete this line when all unit tests using it have been completed
         private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task IndexGetAddsCorrectMessageToViewDataWhenMessageEqualsChangePasswordSuccess()
         {
-            // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            //Arrange
+            //Mock controller dependencies UserManager, signinmanager and IMediator, set behaviour of called methods
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(y => y.ChangePasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<String>(), It.IsAny<String>())).ReturnsAsync(IdentityResult.Success);
+
+            Microsoft.AspNetCore.Identity.SignInResult signInResult = default(Microsoft.AspNetCore.Identity.SignInResult);
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            signInManagerMock.Setup(mock => mock.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
+                .ReturnsAsync(signInResult == default(Microsoft.AspNetCore.Identity.SignInResult) ? Microsoft.AspNetCore.Identity.SignInResult.Success : signInResult);
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
+
+            var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
+            controller.SetFakeUser("userId");
+
+            var vm = new ChangePasswordViewModel { ConfirmPassword = "newpassword", NewPassword = "newpasword", OldPassword = "oldpassword" };
+
+
+            //Act
+            var result = await controller.ChangePassword(vm);
+            var resultViewModel = ((RedirectToActionResult)result);
+            var message = resultViewModel.RouteValues["Message"].ToString();
+
+            //Assert
+            Assert.Equal(ManageMessageId.ChangePasswordSuccess.ToString(), message);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task IndexGetAddsCorrectMessageToViewDataWhenMessageIdEqualsSetPasswordSuccess()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            //Arrange
+            //Mock controller dependencies UserManager, signinmanager and IMediator, set behaviour of called methods
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(y => y.AddPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<String>())).ReturnsAsync(IdentityResult.Success);
+
+            Microsoft.AspNetCore.Identity.SignInResult signInResult = default(Microsoft.AspNetCore.Identity.SignInResult);
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            signInManagerMock.Setup(mock => mock.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
+                .ReturnsAsync(signInResult == default(Microsoft.AspNetCore.Identity.SignInResult) ? Microsoft.AspNetCore.Identity.SignInResult.Success : signInResult);
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
+
+            var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
+            controller.SetFakeUser("userId");
+            var vm = new SetPasswordViewModel { NewPassword = "mynewpassword", ConfirmPassword = "mynewpassword" };
+
+            //Act
+            var result = await controller.SetPassword(vm);
+            var resultViewModel = ((RedirectToActionResult)result);
+            var message = resultViewModel.RouteValues["Message"].ToString();
+
+            //Assert
+            Assert.Equal(ManageMessageId.SetPasswordSuccess.ToString(), message);
         }
 
         [Fact(Skip = "NotImplemented")]
