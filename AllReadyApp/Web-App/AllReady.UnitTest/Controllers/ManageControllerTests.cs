@@ -115,7 +115,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal("An error has occurred.", message);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task IndexGetAddsCorrectMessageToViewDataWhenMessageIdEqualsAddPhoneSuccess()
         {
             //Arrange
@@ -138,7 +138,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal("Your mobile phone number was added.", message);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task IndexGetAddsCorrectMessageToViewDataWhenMessageIdEqualsRemovePhoneSuccess()
         {
             //Arrange
