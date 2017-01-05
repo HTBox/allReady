@@ -42,7 +42,6 @@ namespace AllReady.Areas.Admin.Features.Requests
                             gasaStatus = "in progress";
                             acceptance = true;
                             break;
-                        //TODO mgmccarthy: this is a guess until I hear back from GASA, we would end up in this switch b/c of IntineraryController.RemoveRequest
                         case RequestStatus.Unassigned:
                             gasaStatus = "new";
                             break;

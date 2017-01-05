@@ -17,7 +17,7 @@ namespace AllReady.Features.Requests
             this.backgroundJobClient = backgroundJobClient;
         }
 
-        //TODO: I'm starting to think for v1, this message/handler can go away, and we can enqueue ISendRequestStatusToGetASmokeAlarm directly from ProcessApiRequests
+        //TODO mgmccarthy: I'm starting to think for v1, this message/handler can go away, and we can enqueue ISendRequestStatusToGetASmokeAlarm directly from ProcessApiRequests
         public void Handle(ApiRequestProcessedNotification notification)
         {
             var request = context.Requests.SingleOrDefault(x => x.RequestId == notification.RequestId);

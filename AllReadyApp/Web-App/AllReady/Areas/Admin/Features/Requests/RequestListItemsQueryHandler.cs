@@ -12,7 +12,7 @@ namespace AllReady.Areas.Admin.Features.Requests
     {
         private readonly AllReadyContext _context;
 
-        public RequestListItemsQueryHandler(AllReadyContext context, IMediator mediator)
+        public RequestListItemsQueryHandler(AllReadyContext context)
         {
             _context = context;
         }

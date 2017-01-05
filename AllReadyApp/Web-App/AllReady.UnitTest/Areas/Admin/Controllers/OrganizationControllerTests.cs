@@ -257,7 +257,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var controller = new OrganizationController(mediator.Object, SuccessValidator());
             await controller.Edit(_organizationEditModel);
 
-            mediator.Verify(x => x.SendAsync(It.Is<EditOrganization>(y => y.Organization == _organizationEditModel)));
+            mediator.Verify(x => x.SendAsync(It.Is<EditOrganizationCommand>(y => y.Organization == _organizationEditModel)));
         }
 
         [Fact]
@@ -266,7 +266,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var model = new OrganizationEditViewModel();
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(y => y.SendAsync(It.IsAny<OrganizationNameUniqueQuery>())).ReturnsAsync(true);
-            mockMediator.Setup(x => x.SendAsync(It.Is<EditOrganization>(y => y.Organization == model))).ReturnsAsync(Id);
+            mockMediator.Setup(x => x.SendAsync(It.Is<EditOrganizationCommand>(y => y.Organization == model))).ReturnsAsync(Id);
 
             var controller = new OrganizationController(mockMediator.Object, SuccessValidator());
             var result = (RedirectToActionResult)await controller.Edit(model);

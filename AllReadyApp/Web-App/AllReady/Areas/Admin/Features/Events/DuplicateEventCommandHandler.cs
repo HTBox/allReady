@@ -15,8 +15,8 @@ namespace AllReady.Areas.Admin.Features.Events
         public DuplicateEventCommandHandler(AllReadyContext context)
         {
             _context = context;
-
         }
+
         public async Task<int> Handle(DuplicateEventCommand message)
         {
             var @event = await GetEvent(message.DuplicateEventModel.Id);
@@ -28,9 +28,9 @@ namespace AllReady.Areas.Admin.Features.Events
             return newEvent.Id;
         }
 
-        Event CloneEvent(Event @event)
+        private Event CloneEvent(Event @event)
         {
-            var newEvent = new Event()
+            var newEvent = new Event
             {
                 CampaignId = @event.CampaignId,
                 Name = @event.Name,
@@ -50,9 +50,9 @@ namespace AllReady.Areas.Admin.Features.Events
             return newEvent;
         }
 
-        Location CloneLocation(Location location)
+        private static Location CloneLocation(Location location)
         {
-            return new Location()
+            return new Location
             {
                 Address1 = location.Address1,
                 Address2 = location.Address2,
@@ -65,22 +65,24 @@ namespace AllReady.Areas.Admin.Features.Events
             };
         }
 
-        IEnumerable<AllReadyTask> CloneTasks(IEnumerable<AllReadyTask> tasks)
+        private IEnumerable<AllReadyTask> CloneTasks(IEnumerable<AllReadyTask> tasks)
         {
             if (tasks == null || !tasks.Any())
+            {
                 return Enumerable.Empty<AllReadyTask>();
-
+            }
+            
             return tasks.Select(task => CloneTask(task));
         }
 
-        static IEnumerable<EventSkill> CloneEventRequiredSkills(Event @event)
+        private static IEnumerable<EventSkill> CloneEventRequiredSkills(Event @event)
         {
-            return @event.RequiredSkills.Select(eventSkill => new EventSkill() { SkillId = eventSkill.SkillId });
+            return @event.RequiredSkills.Select(eventSkill => new EventSkill { SkillId = eventSkill.SkillId });
         }
 
-        AllReadyTask CloneTask(AllReadyTask task)
+        private static AllReadyTask CloneTask(AllReadyTask task)
         {
-            return new AllReadyTask()
+            return new AllReadyTask
             {
                 Name = task.Name,
                 Description = task.Description,
@@ -94,18 +96,18 @@ namespace AllReady.Areas.Admin.Features.Events
             };
         }
 
-        static IEnumerable<TaskSkill> CloneTaskRequiredSkills(AllReadyTask task)
+        private static IEnumerable<TaskSkill> CloneTaskRequiredSkills(AllReadyTask task)
         {
             return task.RequiredSkills.Select(taskSkill => new TaskSkill { SkillId = taskSkill.SkillId });
         }
 
-        void ApplyUpdates(Event @event, DuplicateEventViewModel updateModel)
+        private void ApplyUpdates(Event @event, DuplicateEventViewModel updateModel)
         {
             UpdateTasks(@event, updateModel);
             UpdateEvent(@event, updateModel);
         }
 
-        void UpdateTasks(Event @event, DuplicateEventViewModel updateModel)
+        static void UpdateTasks(Event @event, DuplicateEventViewModel updateModel)
         {
             foreach (var task in @event.Tasks)
             {
@@ -117,7 +119,7 @@ namespace AllReady.Areas.Admin.Features.Events
             }
         }
 
-        void UpdateEvent(Event newEvent, DuplicateEventViewModel model)
+        static void UpdateEvent(Event newEvent, DuplicateEventViewModel model)
         {
             newEvent.Name = model.Name;
             newEvent.Description = model.Description;
@@ -125,7 +127,7 @@ namespace AllReady.Areas.Admin.Features.Events
             newEvent.EndDateTime = model.EndDateTime;
         }
 
-        async Task<Event> GetEvent(int eventId)
+        private async Task<Event> GetEvent(int eventId)
         {
             return await _context.Events
                 .AsNoTracking()
