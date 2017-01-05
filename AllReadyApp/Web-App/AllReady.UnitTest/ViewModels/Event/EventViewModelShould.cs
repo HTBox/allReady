@@ -25,7 +25,7 @@ namespace AllReady.UnitTest.ViewModels.Event
             var @event = new Event { Campaign = campaign, TimeZoneId = "EventTimeZoneId" };
            
             var sut = new EventViewModel(@event);
-            var @task = new TaskViewModel { CampaignName = sut.CampaignName, CampaignId = sut.CampaignId, eventName = sut.Title, Name = "tasks" };
+            var @task = new TaskViewModel { CampaignName = sut.CampaignName, CampaignId = sut.CampaignId, EventName = sut.Title, Name = "tasks" };
             var tasks = new List<TaskViewModel> { @task };
           
             sut.Description = "Testing the allReady from htbox";

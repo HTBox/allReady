@@ -19,7 +19,7 @@ namespace AllReady.ViewModels.Event
         public TaskSignupViewModel(TaskSignup taskSignup)
         {
             Id = taskSignup.Id;
-            Status = taskSignup.Status;
+            Status = taskSignup.Status.ToString();
             StatusDateTimeUtc = taskSignup.StatusDateTimeUtc;
             StatusDescription = taskSignup.StatusDescription;
 

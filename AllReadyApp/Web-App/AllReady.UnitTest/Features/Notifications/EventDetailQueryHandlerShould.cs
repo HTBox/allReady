@@ -4,7 +4,7 @@ using Shouldly;
 using System;
 using System.Threading.Tasks;
 using Xunit;
-using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
+using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.UnitTest.Features.Notifications
 {
@@ -57,21 +57,21 @@ namespace AllReady.UnitTest.Features.Notifications
             {
                 User = user,
                 Task = task1,
-                Status = TaskStatus.Accepted.ToString()
+                Status = TaskStatus.Accepted
             };
 
             var taskSignup2 = new TaskSignup
             {
                 User = user2,
                 Task = task1,
-                Status = TaskStatus.Accepted.ToString()
+                Status = TaskStatus.Accepted
             };
 
             var taskSignup3 = new TaskSignup
             {
                 User = user,
                 Task = task2,
-                Status = TaskStatus.Accepted.ToString()
+                Status = TaskStatus.Accepted
             };
 
             Context.Add(campaign);

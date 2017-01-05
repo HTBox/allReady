@@ -16,7 +16,7 @@ namespace AllReady.Models
 
         public DateTime StatusDateTimeUtc { get; set; } = DateTime.UtcNow;
 
-        public string Status { get; set; }
+        public TaskStatus Status { get; set; }
 
         public string StatusDescription { get; set; }
 

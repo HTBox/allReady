@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AllReady.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.DataAccess
 {
@@ -446,7 +447,7 @@ namespace AllReady.DataAccess
             {
                 for (var j = 0; j < i; j++)
                 {
-                    taskSignups.Add(new TaskSignup { Task = task, User = users[j], Status = Areas.Admin.Features.Tasks.TaskStatus.Assigned.ToString() });
+                    taskSignups.Add(new TaskSignup { Task = task, User = users[j], Status = TaskStatus.Assigned });
                 }
 
                 i = (i + 1) % users.Count;

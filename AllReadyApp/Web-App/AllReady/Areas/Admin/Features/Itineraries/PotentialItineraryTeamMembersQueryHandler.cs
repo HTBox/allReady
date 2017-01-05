@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.Areas.Admin.Features.Itineraries
 {
@@ -25,7 +26,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 .Include(x => x.User)
                 .Include(x => x.Itinerary)
                 .Where(x => x.Task.EventId == message.EventId)
-                .Where(x => x.Status == Tasks.TaskStatus.Accepted.ToString())
+                .Where(x => x.Status == TaskStatus.Accepted)
                 .Where(x => x.Itinerary == null)
                 .Where(x => x.Task.StartDateTime.Date == message.Date)
                 .Select(x => new SelectListItem

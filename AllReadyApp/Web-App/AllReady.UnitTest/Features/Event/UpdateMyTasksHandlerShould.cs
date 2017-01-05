@@ -51,7 +51,11 @@ namespace AllReady.UnitTest.Features.Event
             const int secondId = 2;
 
             var user = new ApplicationUser {Id = userId};
-            var taskSignupViewModels = new List<TaskSignupViewModel> {new TaskSignupViewModel {Id = firstId}, new TaskSignupViewModel {Id = secondId}};
+            var taskSignupViewModels = new List<TaskSignupViewModel>
+            {
+                new TaskSignupViewModel { Id = firstId, Status = "Accepted" },
+                new TaskSignupViewModel { Id = secondId, Status = "Accepted" }
+            };
 
             using (var context = new AllReadyContext(options))
             {
@@ -87,7 +91,7 @@ namespace AllReady.UnitTest.Features.Event
             var dateTimeUtcNow = DateTime.UtcNow;
             var taskSignupViewModels = new List<TaskSignupViewModel>
             {
-                new TaskSignupViewModel { Id = taskSignupId, StatusDescription = "statusDescription1", Status = "Status1", TaskId = 1, }
+                new TaskSignupViewModel { Id = taskSignupId, StatusDescription = "statusDescription1", Status = "Accepted", TaskId = 1 }
             };
 
             var message = new UpdateMyTasksCommand { TaskSignups = taskSignupViewModels, UserId = userId};

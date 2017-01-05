@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.Tasks;
+﻿using AllReady.Models;
 
 namespace AllReady.ViewModels.Task
 {

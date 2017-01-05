@@ -7,7 +7,7 @@ using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Itinerary;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Areas.Admin.ViewModels.Task;
-using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
+using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.Areas.Admin.Features.Events
 {
@@ -57,7 +57,7 @@ namespace AllReady.Areas.Admin.Features.Events
                             UserId = assignedVolunteer.User.Id,
                             UserName = assignedVolunteer.User.UserName,
                             HasVolunteered = true,
-                            Status = assignedVolunteer.Status,
+                            Status = assignedVolunteer.Status.ToString(),
                             AdditionalInfo = assignedVolunteer.AdditionalInfo
                         }).ToList()
                     }).OrderBy(t => t.StartDateTime).ThenBy(t => t.Name).ToList(),
@@ -137,7 +137,7 @@ namespace AllReady.Areas.Admin.Features.Events
                     .Where(rec => rec.EventId == result.Id)
                     .ToListAsync();
 
-                result.AcceptedVolunteers = acceptedVolunteers.Sum(x => x.AssignedVolunteers.Where(v => v.Status == TaskStatus.Accepted.ToString()).Count());
+                result.AcceptedVolunteers = acceptedVolunteers.Sum(x => x.AssignedVolunteers.Count(v => v.Status == TaskStatus.Accepted));
             }
 
             return result;
