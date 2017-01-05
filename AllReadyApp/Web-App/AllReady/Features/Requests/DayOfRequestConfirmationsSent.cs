@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using MediatR;
 
-namespace AllReady.Hangfire.MediatR
+namespace AllReady.Features.Requests
 {
-    public class SetRequestsToUnassignedCommand : IRequest
+    public class DayOfRequestConfirmationsSent : INotification
     {
         public List<Guid> RequestIds { get; set; }
     }
