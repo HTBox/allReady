@@ -169,6 +169,7 @@ namespace AllReady
             services.AddSingleton<IImageService, ImageService>();
             services.AddSingleton<ICsvFactory, CsvFactory>();
             services.AddTransient<SampleDataGenerator>();
+            services.AddSingleton<IHttpClient, StaticHttpClient>();
 
             if (Configuration["Geocoding:EnableGoogleGeocodingService"] == "true")
             {

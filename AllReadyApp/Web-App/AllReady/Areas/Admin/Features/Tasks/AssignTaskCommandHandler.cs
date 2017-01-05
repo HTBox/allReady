@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
@@ -40,7 +41,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     Task = @task,
                     User = user,
                     AdditionalInfo = string.Empty,
-                    Status = TaskStatus.Assigned.ToString(),
+                    Status = TaskStatus.Assigned,
                     StatusDateTimeUtc = DateTimeUtcNow()
                 };
 
