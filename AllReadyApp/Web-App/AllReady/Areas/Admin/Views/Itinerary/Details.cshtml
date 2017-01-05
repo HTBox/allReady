@@ -192,9 +192,9 @@
                                 <form asp-action="MarkConfirmed" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
                                     <button type="submit" class="btn btn-success submit-form" title="Mark this request as confirmed"><span class="fa fa-thumbs-up"></span></button>
                                 </form>
-@*                                <form asp-action="MarkUnassigned" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">*@
-@*                                    <button type="submit" class="btn btn-danger submit-formm" title="Mark this request as unassigned"><span class="fa fa-ban"></span></button>*@
-@*                                </form>*@
+                                <form asp-action="MarkUnassigned" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
+                                    <button type="submit" class="btn btn-danger submit-formm" title="Mark this request as unassigned"><span class="fa fa-ban"></span></button>
+                                </form>
                             }
                             else
                             {
