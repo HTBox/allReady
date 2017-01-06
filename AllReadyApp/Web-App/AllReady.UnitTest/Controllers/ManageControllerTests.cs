@@ -168,23 +168,61 @@ namespace AllReady.UnitTest.Controllers
             await TaskFromResultZero;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task IndexGetReturnsCorrectView()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            //Arrange
+            //Mock controller dependencies UserManager, signinmanager and IMediator, set behaviour of called methods
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
+
+            var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
+            controller.SetFakeUser("userId");
+
+            //Act
+            var result = await controller.Index();
+
+            //Assert
+            Assert.IsType(typeof(ViewResult),result);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void IndexGetHasHttpGetAttribute()
         {
+            //Arrange
+            var controller = new ManageController(null, null, null);
+            //Act
+            var attribute = controller.GetAttributesOn(x => x.Index(It.IsAny<ManageMessageId>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            //Assert
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task IndexGetReturnsCorrectViewModel()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            //Arrange
+            //Mock controller dependencies UserManager, signinmanager and IMediator, set behaviour of called methods
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
+
+            var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
+            controller.SetFakeUser("userId");
+
+            var applicationUserVM = new Mock<ApplicationUser>();
+
+            //Act
+            var result = await controller.Index(ManageMessageId.RemovePhoneSuccess);
+            var resultViewModel = ((ViewResult)result);
+            var vm = (IndexViewModel)resultViewModel.ViewData.Model;
+
+            //Assert
+            Assert.IsType<IndexViewModel>(vm);
         }
 
         [Fact(Skip = "NotImplemented")]
