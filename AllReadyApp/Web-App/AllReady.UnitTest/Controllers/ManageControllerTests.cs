@@ -214,8 +214,6 @@ namespace AllReady.UnitTest.Controllers
             var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
             controller.SetFakeUser("userId");
 
-            var applicationUserVM = new Mock<ApplicationUser>();
-
             //Act
             var result = await controller.Index(ManageMessageId.RemovePhoneSuccess);
             var resultViewModel = ((ViewResult)result);
