@@ -1,4 +1,5 @@
-﻿using AllReady.Features.Campaigns;
+﻿using System;
+using AllReady.Features.Campaigns;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Models;
@@ -12,14 +13,17 @@ namespace AllReady.UnitTest.Features.Campaigns
         public async Task ReturnsSingleCampaignThatIsFeatured()
         {
             // Arrange
-            var handler = new FeaturedCampaignQueryHandler(Context);            
+            var handler = new FeaturedCampaignQueryHandler(Context)
+            {
+                DateTimeOffsetUtcNow = () => new DateTime(2017, 01, 07)
+            };
 
             // Act
             var result = await handler.Handle(new FeaturedCampaignQuery());
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("This is featured", result.Title);            
+            Assert.Equal("This is featured", result.Title);
         }
 
         [Fact]
@@ -53,7 +57,6 @@ namespace AllReady.UnitTest.Features.Campaigns
             Assert.Null(result);
         }
 
-
         [Fact]
         public async Task ReturnNullIfFeaturedCampaignIsNotMarkedAsPublished()
         {
@@ -72,11 +75,10 @@ namespace AllReady.UnitTest.Features.Campaigns
                 Name = "This is featured but not published",
                 Featured = true,
                 ManagingOrganization = org,
-                Published = false
+                Published = false,
+                EndDateTime = new DateTime(2018, 1, 1)
             });
-
-
-
+            
             // Arrange
             var handler = new FeaturedCampaignQueryHandler(Context);
 
@@ -101,7 +103,8 @@ namespace AllReady.UnitTest.Features.Campaigns
                 Name = "This is featured",
                 Featured = true,
                 ManagingOrganization = org,
-                Published = true         
+                Published = true,
+                EndDateTime = new DateTime(2018, 1, 1)
             });
 
             Context.Campaigns.Add(new Campaign
@@ -109,7 +112,8 @@ namespace AllReady.UnitTest.Features.Campaigns
                 Name = "This is not featured",
                 Featured = false,
                 ManagingOrganization = org,
-                Published = true
+                Published = true,
+                EndDateTime = new DateTime(2018, 1, 1)
             });
 
             Context.Campaigns.Add(new Campaign
@@ -117,7 +121,8 @@ namespace AllReady.UnitTest.Features.Campaigns
                 Name = "This is also featured",
                 Featured = true,
                 ManagingOrganization = org,
-                Published = true
+                Published = true,
+                EndDateTime = new DateTime(2018, 1, 1)
             });
 
             Context.SaveChanges();
