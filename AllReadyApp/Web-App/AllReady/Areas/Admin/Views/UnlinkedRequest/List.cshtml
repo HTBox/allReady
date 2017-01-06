@@ -1,6 +1,6 @@
-@using AllReady.Areas.Admin.ViewModels.Request
-@model AllReady.Areas.Admin.ViewModels.Request.UnlinkedRequestsViewModel
+@model IEnumerable<AllReady.Areas.Admin.ViewModels.UnlinkedRequests.UnlinkedRequestViewModel>
 
+@{ ViewBag.Title = "Unlinked Requests"; }
 <div class="row">
     <div class="col-md-12">
         <h2>
@@ -11,7 +11,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        @if (Model.Requests.Count > 0)
+        @if (Model.Any())
             {
             <table class="table">
                 <tr>
@@ -21,13 +21,13 @@
                     <th>Postcode</th>
                     <th>Date Added</th>
                 </tr>
-                @foreach (var req in Model.Requests)
+                @foreach (var req in Model)
                 {
                     <tr>
-                        <td><a asp-action="Edit" asp-controller="Request" asp-route-id="@req.Id">@req.Name</a></td>
+                        <td>@req.Name</td>
                         <td>@req.Address</td>
                         <td>@req.City</td>
-                        <td>@req.Postcode</td>
+                        <td>@req.Zip</td>
                         <td>@req.DateAdded</td>
                     </tr>
                 }
