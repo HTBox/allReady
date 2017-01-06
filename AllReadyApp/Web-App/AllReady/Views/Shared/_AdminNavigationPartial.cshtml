@@ -16,6 +16,10 @@
                 <li @(isAdmin && controllerName == "Organization" ? " class=active" : "")><a asp-area="Admin" asp-controller="Organization" asp-action="Index">Organizations</a></li>
             }
             <li @(isAdmin && controllerName == "Campaign" ? " class=active" : "")><a asp-area="Admin" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
+            @if (User.IsUserType(UserType.OrgAdmin))
+            {
+                <li @(isAdmin && controllerName == "UnlinkedRequest" ? " class=active" : "")><a asp-area="Admin" asp-controller="UnlinkedRequest" asp-action="List">Unlinked Requests</a></li>
+            }
             <li @(isAdmin && controllerName == "Skill" ? " class=active" : "")><a asp-area="Admin" asp-controller="Skill" asp-action="Index">Skills</a></li>
             @if (User.IsUserType(UserType.SiteAdmin))
             {
