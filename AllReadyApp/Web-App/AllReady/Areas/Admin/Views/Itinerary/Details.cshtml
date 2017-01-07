@@ -189,6 +189,9 @@
                             }
                             else if (request.Status == RequestStatus.PendingConfirmation)
                             {
+                                <form asp-action="MarkIncomplete" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
+                                    <button type="submit" class="btn btn-warning submit-form" title="Reset this request to incomplete"><span class="fa fa-ban"></span></button>
+                                </form>
                                 <form asp-action="MarkConfirmed" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
                                     <button type="submit" class="btn btn-success submit-form" title="Mark this request as confirmed"><span class="fa fa-thumbs-up"></span></button>
                                 </form>
