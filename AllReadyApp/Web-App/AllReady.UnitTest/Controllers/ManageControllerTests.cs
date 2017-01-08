@@ -323,7 +323,7 @@ namespace AllReady.UnitTest.Controllers
             var vM = new IndexViewModel { TimeZoneId = "differentTimeZoneId" };
 
             //Act
-            var result = await controller.Index(vM);
+            await controller.Index(vM);
 
             //Assert
             IEnumerable<Claim> claims = controller.User.Claims.Where(c => c.Type == AllReady.Security.ClaimTypes.TimeZoneId).ToList();
@@ -348,7 +348,7 @@ namespace AllReady.UnitTest.Controllers
             var vM = new IndexViewModel { TimeZoneId = "differentTimeZoneId" };
 
             //Act
-            var result = await controller.Index(vM);
+            await controller.Index(vM);
 
             //Assert
             userManagerMock.Verify(x => x.AddClaimAsync(user, It.Is<Claim>(c=>c.Type == AllReady.Security.ClaimTypes.TimeZoneId)), Times.Once);
