@@ -53,4 +53,11 @@
     {
         public string GoogleDirectionsApiKey { get; set; }
     }
+
+    public class TwilioSettings
+    {
+        public string Sid { get; set; }
+        public string Token { get; set; }
+        public string PhoneNo { get; set; }
+    }
 }
