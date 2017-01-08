@@ -39,7 +39,6 @@
     "WindowsAzure.Storage": "4.4.1-preview",
     "MediatR": "2.1.0",
     "Sendgrid": "6.1.0",
-    "Twilio": "4.0.3",
     "Microsoft.Extensions.Logging.Debug": "1.0.1",
     "Autofac": "4.1.0",
     "CsvHelper": "2.15.0.2",
@@ -67,7 +66,8 @@
     "Hangfire.Core": "1.6.7",
     "Hangfire.SqlServer": "1.6.7",
     "Hangfire.Autofac": "2.2.0",
-    "AllReady.Core": "1.0.0-*"  },
+    "AllReady.Core": "1.0.0-*",
+    "Twilio": "5.0.0-rca2"  },
 
   "tools": {
     "Microsoft.AspNetCore.Razor.Tools": "1.0.0-preview2-final",
