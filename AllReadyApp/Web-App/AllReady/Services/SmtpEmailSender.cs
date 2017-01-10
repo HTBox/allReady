@@ -10,40 +10,40 @@ namespace AllReady.Services
     //and change the container to use SmtpEmailSender instead of FakeQueueWriterService for IQueueStorageService in Startup.cs at this line:
     //services.AddTransient<IQueueStorageService, FakeQueueWriterService>();
     //just remember to change back to FakeQueueWriterService service before committing ;)
-    public class SmtpEmailSender : IQueueStorageService
-    {
-        public Task SendMessageAsync(string queueName, string message)
-        {
-            MailMessage mailMessage;
-            if (queueName == QueueStorageService.Queues.SmsQueue)
-            {
-                //turn sms message into email message
-                var sms = JsonConvert.DeserializeObject<QueuedSmsMessage>(message);
-                mailMessage = new MailMessage("fakesender@fakesender.com", "fakereceiver0@fakereceiver.com")
-                {
-                    Subject = "SmsMessagePretendingToBeAnEmailMessage",
-                    Body = sms.Message,
-                };
-                SendMessage(mailMessage);
-            }
-            else
-            {
-                var email = JsonConvert.DeserializeObject<QueuedEmailMessage>(message);
-                mailMessage = new MailMessage("fakeemailaddress@fakeemailaddress.com", email.Recipient)
-                {
-                    Subject = email.Subject,
-                    Body = email.Message,
-                    IsBodyHtml = true
-                };
-                SendMessage(mailMessage);
-            }
+    //public class SmtpEmailSender : IQueueStorageService
+    //{
+    //    public Task SendMessageAsync(string queueName, string message)
+    //    {
+    //        MailMessage mailMessage;
+    //        if (queueName == QueueStorageService.Queues.SmsQueue)
+    //        {
+    //            //turn sms message into email message
+    //            var sms = JsonConvert.DeserializeObject<QueuedSmsMessage>(message);
+    //            mailMessage = new MailMessage("fakesender@fakesender.com", "fakereceiver0@fakereceiver.com")
+    //            {
+    //                Subject = "SmsMessagePretendingToBeAnEmailMessage",
+    //                Body = sms.Message,
+    //            };
+    //            SendMessage(mailMessage);
+    //        }
+    //        else
+    //        {
+    //            var email = JsonConvert.DeserializeObject<QueuedEmailMessage>(message);
+    //            mailMessage = new MailMessage("fakeemailaddress@fakeemailaddress.com", email.Recipient)
+    //            {
+    //                Subject = email.Subject,
+    //                Body = email.Message,
+    //                IsBodyHtml = true
+    //            };
+    //            SendMessage(mailMessage);
+    //        }
 
-            return Task.FromResult(0);
-        }
+    //        return Task.FromResult(0);
+    //    }
 
-        protected virtual void SendMessage(MailMessage message)
-        {
-            new SmtpClient { Host = "localhost" }.Send(message);
-        }
-    }
+    //    protected virtual void SendMessage(MailMessage message)
+    //    {
+    //        new SmtpClient { Host = "localhost" }.Send(message);
+    //    }
+    //}
 }
