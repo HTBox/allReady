@@ -428,7 +428,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sutType = _sut.GetType();
 
-            var areaAttribute = sutType.CustomAttributes.First(x => x.AttributeType.Equals(attributeType));
+            var areaAttribute = sutType.GetTypeInfo().CustomAttributes.First(x => x.AttributeType == attributeType);
 
             var constructorArg = areaAttribute.ConstructorArguments.First().Value as string;
 

@@ -3,8 +3,8 @@ using System.Linq;
 using AllReady.Features.Requests;
 using AllReady.Hangfire.Jobs;
 using AllReady.Models;
+using AllReady.Services.Mapping;
 using AllReady.ViewModels.Requests;
-using Geocoding;
 using MediatR;
 using Moq;
 using Xunit;
@@ -34,7 +34,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
                 ProviderData = "ProviderData"
             };
 
-            var sut = new ProcessApiRequests(Context, Mock.Of<IMediator>(), Mock.Of<IGeocoder>())
+            var sut = new ProcessApiRequests(Context, Mock.Of<IMediator>(), Mock.Of<IGeocodeService>())
             {
                 NewRequestId = () => requestId,
                 DateTimeUtcNow = () => dateAdded
@@ -72,7 +72,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         public void InvokeIGeocoderWithTheCorrectParameters()
         {
             var requestId = Guid.NewGuid();
-            var geoCoder = new Mock<IGeocoder>();
+            var geoCoder = new Mock<IGeocodeService>();
             var viewModel = new RequestApiViewModel { Address = "address", City = "city", State = "state", Zip = "zip" };
             var sut = new ProcessApiRequests(Context, Mock.Of<IMediator>(), geoCoder.Object)
             {
@@ -81,7 +81,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
 
             sut.Process(viewModel);
 
-            geoCoder.Verify(x => x.Geocode(viewModel.Address, viewModel.City, viewModel.State, viewModel.Zip, string.Empty), Times.Once);
+            geoCoder.Verify(x => x.GetCoordinatesFromAddress(viewModel.Address, viewModel.City, viewModel.State, viewModel.Zip, string.Empty), Times.Once);
         }
 
         [Fact]
@@ -90,7 +90,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             var requestId = Guid.NewGuid();
             var mediator = new Mock<IMediator>();
 
-            var sut = new ProcessApiRequests(Context, mediator.Object, Mock.Of<IGeocoder>())
+            var sut = new ProcessApiRequests(Context, mediator.Object, Mock.Of<IGeocodeService>())
             {
                 NewRequestId = () => requestId
             };

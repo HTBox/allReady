@@ -238,14 +238,6 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(attribute.Template, "searchbylocation");
         }
 
-        [Fact]
-        public void GetQrCodeHasHttpGetAttributeWithCorrectTemplate()
-        {
-            var sut = new EventApiController(null);
-            var attribute = sut.GetAttributesOn(x => x.GetQrCode(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
-            Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "{id}/qrcode");
-        }
 
         [Fact]
         public async Task GetCheckinReturnsHttpNotFoundWhenUnableToFindEventByEventId()

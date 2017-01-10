@@ -1,7 +1,7 @@
 ﻿using AllReady.Controllers;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Linq;
+using System.Reflection;
 using AllReady.Attributes;
 using Xunit;
 
@@ -17,16 +17,14 @@ namespace AllReady.UnitTest.Controllers
         public void AllHttpPostControllerActionsShouldBeDecoratedWithValidateAntiForgeryTokenAttribute()
         {
             var allControllerTypes =
-                typeof(AccountController).Assembly.GetTypes()
+                typeof(AccountController).GetTypeInfo().Assembly.GetTypes()
                 .Where(type => typeof(Controller).IsAssignableFrom(type));
             var allControllerActions = allControllerTypes.SelectMany(type => type.GetMethods());
 
             var failingActions = allControllerActions
-                .Where(method =>
-                    Attribute.GetCustomAttribute(method, typeof(HttpPostAttribute)) != null)
-                .Where(method => Attribute.GetCustomAttribute(method, typeof(ExternalEndpointAttribute)) == null)
-                .Where(method =>
-                    Attribute.GetCustomAttribute(method, typeof(ValidateAntiForgeryTokenAttribute)) == null)
+                .Where(method => method.GetType().GetTypeInfo().GetCustomAttribute<HttpPostAttribute>() != null)
+                .Where(method => method.GetType().GetTypeInfo().GetCustomAttribute<ExternalEndpointAttribute>() != null)
+                .Where(method => method.GetType().GetTypeInfo().GetCustomAttribute<ValidateAntiForgeryTokenAttribute>() == null)
                 .ToList();
 
             var message = string.Empty;

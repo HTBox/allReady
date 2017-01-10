@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Providers.ExternalUserInformationProviders.Providers;
-using LinqToTwitter;
+using AllReady.Services.Twitter;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using Xunit;
@@ -22,7 +22,7 @@ namespace AllReady.UnitTest.Providers.ExternalUserInformationProviders.Providers
                 new Claim("urn:twitter:screenname", screenName)
             }));
 
-            var twitterRepository = new Mock<ITwitterRepository>();
+            var twitterRepository = new Mock<ITwitterService>();
 
             var sut = new TwitterExternalUserInformationProvider(twitterRepository.Object);
             await sut.GetExternalUserInformation(new ExternalLoginInfo(claimsPrincipal, null, null, null));
@@ -33,7 +33,7 @@ namespace AllReady.UnitTest.Providers.ExternalUserInformationProviders.Providers
         [Fact]
         public async Task ReturnCorrectExternalUserInformationWhenTwitterAccountIsNull()
         {
-            var sut = new TwitterExternalUserInformationProvider(Mock.Of<ITwitterRepository>());
+            var sut = new TwitterExternalUserInformationProvider(Mock.Of<ITwitterService>());
             var result = await sut.GetExternalUserInformation(new ExternalLoginInfo(new ClaimsPrincipal(), null, null, null));
 
             Assert.Null(result.Email);
@@ -44,8 +44,8 @@ namespace AllReady.UnitTest.Providers.ExternalUserInformationProviders.Providers
         [Fact]
         public async Task ReturnCorrectExternalUserInformationWhenTwitterAccountUserIsNull()
         {
-            var twitterRepository = new Mock<ITwitterRepository>();
-            twitterRepository.Setup(x => x.GetTwitterAccount(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Account());
+            var twitterRepository = new Mock<ITwitterService>();
+            twitterRepository.Setup(x => x.GetTwitterAccount(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new TwitterUserInfo());
 
             var sut = new TwitterExternalUserInformationProvider(twitterRepository.Object);
             var result = await sut.GetExternalUserInformation(new ExternalLoginInfo(new ClaimsPrincipal(), null, null, null));
@@ -60,8 +60,8 @@ namespace AllReady.UnitTest.Providers.ExternalUserInformationProviders.Providers
         {
             const string email = "email";
 
-            var twitterRepository = new Mock<ITwitterRepository>();
-            twitterRepository.Setup(x => x.GetTwitterAccount(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Account { User = new User { Email = email }});
+            var twitterRepository = new Mock<ITwitterService>();
+            twitterRepository.Setup(x => x.GetTwitterAccount(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new TwitterUserInfo {Email = email });
 
             var sut = new TwitterExternalUserInformationProvider(twitterRepository.Object);
             var result = await sut.GetExternalUserInformation(new ExternalLoginInfo(new ClaimsPrincipal(), null, null, null));
@@ -76,8 +76,8 @@ namespace AllReady.UnitTest.Providers.ExternalUserInformationProviders.Providers
         {
             const string email = "email";
 
-            var twitterRepository = new Mock<ITwitterRepository>();
-            twitterRepository.Setup(x => x.GetTwitterAccount(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Account { User = new User { Name = string.Empty, Email = email } });
+            var twitterRepository = new Mock<ITwitterService>();
+            twitterRepository.Setup(x => x.GetTwitterAccount(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new TwitterUserInfo { Email = email });
 
             var sut = new TwitterExternalUserInformationProvider(twitterRepository.Object);
             var result = await sut.GetExternalUserInformation(new ExternalLoginInfo(new ClaimsPrincipal(), null, null, null));
@@ -92,8 +92,8 @@ namespace AllReady.UnitTest.Providers.ExternalUserInformationProviders.Providers
         {
             const string email = "email";
 
-            var twitterRepository = new Mock<ITwitterRepository>();
-            twitterRepository.Setup(x => x.GetTwitterAccount(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Account { User = new User { Name = "FirstNameLastName", Email = email } });
+            var twitterRepository = new Mock<ITwitterService>();
+            twitterRepository.Setup(x => x.GetTwitterAccount(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new TwitterUserInfo { Name = "FirstNameLastName", Email = email });
 
             var sut = new TwitterExternalUserInformationProvider(twitterRepository.Object);
             var result = await sut.GetExternalUserInformation(new ExternalLoginInfo(new ClaimsPrincipal(), null, null, null));
@@ -110,8 +110,8 @@ namespace AllReady.UnitTest.Providers.ExternalUserInformationProviders.Providers
             const string firstName = "FirstName";
             const string lastName = "LastName";
 
-            var twitterRepository = new Mock<ITwitterRepository>();
-            twitterRepository.Setup(x => x.GetTwitterAccount(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new Account { User = new User { Name = $"{firstName} {lastName}", Email = email } });
+            var twitterRepository = new Mock<ITwitterService>();
+            twitterRepository.Setup(x => x.GetTwitterAccount(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new TwitterUserInfo { Name = $"{firstName} {lastName}", Email = email });
 
             var sut = new TwitterExternalUserInformationProvider(twitterRepository.Object);
             var result = await sut.GetExternalUserInformation(new ExternalLoginInfo(new ClaimsPrincipal(), null, null, null));
