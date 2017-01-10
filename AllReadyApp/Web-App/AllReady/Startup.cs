@@ -29,13 +29,13 @@ using Microsoft.Extensions.PlatformAbstractions;
 using AllReady.Security.Middleware;
 using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Geocoding;
-using Geocoding.Google;
 using Hangfire;
 using Hangfire.SqlServer;
 using AllReady.ModelBinding;
+using AllReady.Services.Mapping;
 using Microsoft.AspNetCore.Localization;
 using AllReady.Services.Routing;
+using AllReady.Services.Twitter;
 using CsvHelper;
 using AllReady.Services.Sms;
 
@@ -172,18 +172,15 @@ namespace AllReady
             services.AddSingleton<ICsvFactory, CsvFactory>();
             services.AddTransient<SampleDataGenerator>();
             services.AddSingleton<IHttpClient, StaticHttpClient>();
+            services.AddSingleton<ITwitterService, TwitterService>();
 
             if (Configuration["Geocoding:EnableGoogleGeocodingService"] == "true")
             {
-                //This setting is false by default. To enable Google geocoding you will
-                //need to override this setting in your user secrets or env vars.
-                //Visit https://developers.google.com/maps/documentation/geocoding/get-api-key to get a free standard usage API key
-                services.AddSingleton<IGeocoder>(new GoogleGeocoder(Configuration["Geocoding:GoogleGeocodingApiKey"]));
+                services.AddSingleton<IGeocodeService,GoogleGeocodeService>();
             }
             else
             {
-                //implement null object pattern to protect against IGeocoder not being passed a legit reference at runtime b/c of the above conditional
-                services.AddSingleton<IGeocoder>(new NullObjectGeocoder());
+                services.AddSingleton<IGeocodeService, FakeGeocodeService>();
             }
 
             if (Configuration["Data:Storage:EnableAzureQueueService"] == "true")
@@ -211,8 +208,8 @@ namespace AllReady
             
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterSource(new ContravariantRegistrationSource());
-            containerBuilder.RegisterAssemblyTypes(typeof(IMediator).Assembly).AsImplementedInterfaces();
-            containerBuilder.RegisterAssemblyTypes(typeof(Startup).Assembly).AsImplementedInterfaces();
+            containerBuilder.RegisterAssemblyTypes(typeof(IMediator).GetTypeInfo().Assembly).AsImplementedInterfaces();
+            containerBuilder.RegisterAssemblyTypes(typeof(Startup).GetTypeInfo().Assembly).AsImplementedInterfaces();
             containerBuilder.Register<SingleInstanceFactory>(ctx =>
             {
                 var c = ctx.Resolve<IComponentContext>();
@@ -224,7 +221,7 @@ namespace AllReady
                 var c = ctx.Resolve<IComponentContext>();
                 return t => (IEnumerable<object>)c.Resolve(typeof(IEnumerable<>).MakeGenericType(t));
             });
-           
+
             //ExternalUserInformationProviderFactory registration
             containerBuilder.RegisterType<TwitterExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Twitter");
             containerBuilder.RegisterType<GoogleExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Google");
@@ -238,10 +235,10 @@ namespace AllReady
 
             //auto-register Hangfire jobs by convention
             //http://docs.autofac.org/en/latest/register/scanning.html
-            var assembly = Assembly.GetExecutingAssembly();
+            var assembly = typeof(Startup).GetTypeInfo().Assembly;
             containerBuilder
                 .RegisterAssemblyTypes(assembly)
-                .Where(t => t.Namespace == "AllReady.Hangfire.Jobs" && t.IsInterface)
+                .Where(t => t.Namespace == "AllReady.Hangfire.Jobs" && t.GetTypeInfo().IsInterface)
                 .AsImplementedInterfaces();
 
             containerBuilder.RegisterType<GoogleOptimizeRouteService>().As<IOptimizeRouteService>().SingleInstance();
