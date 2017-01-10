@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace AllReady.ModelBinding
 {
@@ -16,7 +15,7 @@ namespace AllReady.ModelBinding
             {
                 // Look for DateTimeOffset attributes
                 var propName = context.Metadata.PropertyName;
-                var propInfo = context.Metadata.ContainerType.GetProperty(propName);
+                var propInfo = context.Metadata.ContainerType.GetTypeInfo().GetProperty(propName);
 
                 // Only one scrubber attribute can be applied to each property
                 var attribute = propInfo.GetCustomAttributes(typeof(AdjustToTimezoneAttribute), false).FirstOrDefault() as AdjustToTimezoneAttribute;
