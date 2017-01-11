@@ -53,7 +53,7 @@ namespace AllReady.Services.Twitter
 
             if (!string.IsNullOrWhiteSpace(userId))
             {
-                requestUrl.Append("user_id").Append("=").Append(userId);
+                requestUrl.Append("user_id").Append("=").Append(userId).Append("&");
             }
 
             if (!string.IsNullOrWhiteSpace(screenName))
