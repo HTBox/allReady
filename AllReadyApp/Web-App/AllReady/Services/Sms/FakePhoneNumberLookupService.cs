@@ -12,13 +12,13 @@ namespace AllReady.Services.Sms
         {
             if (Regex.Matches(phoneNumber, @"[a-zA-Z]").Count > 0)
             {
-                return Task.FromResult(PhoneNumberLookupResult.FailedLookup());
+                return Task.FromResult(PhoneNumberLookupResult.FailedLookup);
             }
 
             switch (phoneNumber)
             {
                 case "00000000":
-                    return Task.FromResult(PhoneNumberLookupResult.FailedLookup());
+                    return Task.FromResult(PhoneNumberLookupResult.FailedLookup);
 
                 case "99900000":
                     return Task.FromResult(new PhoneNumberLookupResult(phoneNumber, PhoneNumberType.Landline));

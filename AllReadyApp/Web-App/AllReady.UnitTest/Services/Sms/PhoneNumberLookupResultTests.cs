@@ -9,7 +9,7 @@ namespace AllReady.UnitTest.Services.Sms
         [Fact]
         public void FailedLookup_ReturnsExpectedPhoneNumberLookupResult()
         {
-            var sut = PhoneNumberLookupResult.FailedLookup();
+            var sut = PhoneNumberLookupResult.FailedLookup;
 
             sut.LookupFailed.ShouldBeTrue();
             sut.PhoneNumberE164.ShouldBeNull();

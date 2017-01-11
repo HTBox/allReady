@@ -46,7 +46,7 @@ namespace AllReady.Services.Sms
                 // TODO - Logging
             }
 
-            return PhoneNumberLookupResult.FailedLookup();
+            return PhoneNumberLookupResult.FailedLookup;
         }
 
         private static FetchPhoneNumberOptions BuildTwilioRequestOptions(string countryCode, Twilio.Types.PhoneNumber twilioPhoneNumber)
@@ -64,7 +64,7 @@ namespace AllReady.Services.Sms
         private static PhoneNumberLookupResult BuildPhoneNumberLookupResult(PhoneNumberResource phoneNumberResource)
         {
             if (phoneNumberResource == null)
-                return PhoneNumberLookupResult.FailedLookup();
+                return PhoneNumberLookupResult.FailedLookup;
 
             var phoneNumberType = PhoneNumberType.Unknown;
 

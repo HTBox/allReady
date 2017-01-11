@@ -19,9 +19,12 @@
             Type = type;
         }
 
-        public static PhoneNumberLookupResult FailedLookup()
+        public static PhoneNumberLookupResult FailedLookup
         {
-            return new PhoneNumberLookupResult();
+            get
+            {
+                return new PhoneNumberLookupResult();
+            }
         }
 
         /// <summary>
