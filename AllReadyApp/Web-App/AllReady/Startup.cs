@@ -37,6 +37,7 @@ using AllReady.ModelBinding;
 using Microsoft.AspNetCore.Localization;
 using AllReady.Services.Routing;
 using CsvHelper;
+using AllReady.Services.Sms;
 
 namespace AllReady
 {
@@ -103,6 +104,7 @@ namespace AllReady
             services.Configure<GeneralSettings>(Configuration.GetSection("General"));
             services.Configure<GetASmokeAlarmApiSettings>(Configuration.GetSection("GetASmokeAlarmApiSettings"));
             services.Configure<TwitterAuthenticationSettings>(Configuration.GetSection("Authentication:Twitter"));
+            services.Configure<TwilioSettings>(Configuration.GetSection("Authentication:Twilio"));
             services.Configure<MappingSettings>(Configuration.GetSection("Mapping"));
 
             // Add Identity services to the services container.
@@ -195,6 +197,16 @@ namespace AllReady
                 // this writer service will just write to the default logger
                 services.AddTransient<IQueueStorageService, FakeQueueWriterService>();
                 //services.AddTransient<IQueueStorageService, SmtpEmailSender>();
+            }
+
+            if (!string.IsNullOrEmpty(Configuration["Authentication:Twilio:Sid"]) && !string.IsNullOrEmpty(Configuration["Authentication:Twilio:Token"]))
+            {
+                services.AddSingleton<IPhoneNumberLookupService, TwilioPhoneNumberLookupService>();
+                services.AddSingleton<ITwilioWrapper, TwilioWrapper>();
+            }
+            else
+            {
+                services.AddSingleton<IPhoneNumberLookupService, FakePhoneNumberLookupService>();                
             }
 
             var containerBuilder = new ContainerBuilder();
