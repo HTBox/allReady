@@ -6,17 +6,19 @@ using Twilio.Rest.Lookups.V1;
 namespace AllReady.Services.Sms
 {
     /// <summary>
-    /// A service which wraps the Twilio REST API library to lookup phones numbers
+    /// A service which wraps the Twilio REST API library to lookup phone numbers
     /// </summary>
     public class TwilioPhoneNumberLookupService : IPhoneNumberLookupService
     {
         private readonly TwilioSettings _twilioSettings;
         private readonly TwilioRestClient _twilioClient;
+        private readonly ITwilioWrapper _twilioWrapper;
 
-        public TwilioPhoneNumberLookupService(IOptions<TwilioSettings> twilioSettings)
+        public TwilioPhoneNumberLookupService(IOptions<TwilioSettings> twilioSettings, ITwilioWrapper twilioWrapper)
         {
             _twilioSettings = twilioSettings.Value;
             _twilioClient = new TwilioRestClient(_twilioSettings.Sid, _twilioSettings.Token);
+            _twilioWrapper = twilioWrapper;
         }
 
         /// <inheritdoc />
@@ -24,6 +26,7 @@ namespace AllReady.Services.Sms
         {
             if (string.IsNullOrEmpty(countryCode))
             {
+                // we default this to US which matches what Twilio will do if it's missing
                 countryCode = "US";
             }
 
@@ -33,7 +36,7 @@ namespace AllReady.Services.Sms
 
             try
             {
-                var lookupResult = await PhoneNumberResource.FetchAsync(twilioOptions, _twilioClient);
+                var lookupResult = await _twilioWrapper.FetchPhoneNumberResource(twilioOptions, _twilioClient);
 
                 return BuildPhoneNumberLookupResult(lookupResult);
             }

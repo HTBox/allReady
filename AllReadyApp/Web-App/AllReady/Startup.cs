@@ -202,6 +202,7 @@ namespace AllReady
             if (!string.IsNullOrEmpty(Configuration["Authentication:Twilio:Sid"]) && !string.IsNullOrEmpty(Configuration["Authentication:Twilio:Token"]))
             {
                 services.AddSingleton<IPhoneNumberLookupService, TwilioPhoneNumberLookupService>();
+                services.AddSingleton<ITwilioWrapper, TwilioWrapper>();
             }
             else
             {

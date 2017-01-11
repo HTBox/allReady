@@ -5,7 +5,10 @@
     /// </summary>
     public class PhoneNumberLookupResult
     {
-        private PhoneNumberLookupResult() { }
+        private PhoneNumberLookupResult()
+        {
+            LookupFailed = true;
+        }
 
         /// <summary>
         /// Initialise a new <see cref="PhoneNumberLookupResult"/> 
@@ -31,6 +34,9 @@
         /// </summary>
         public PhoneNumberType Type { get; private set; }
 
-        public bool Failed { get; private set; }
+        /// <summary>
+        /// Indicates that the lookup failed to complete
+        /// </summary>
+        public bool LookupFailed { get; private set; }
     }
 }

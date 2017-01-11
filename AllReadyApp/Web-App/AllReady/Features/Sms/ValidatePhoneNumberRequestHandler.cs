@@ -17,7 +17,7 @@ namespace AllReady.Features.Sms
         {
             var lookupResult = await _phoneNumberLookupService.LookupNumber(request.PhoneNumber, request.CountryCode);
 
-            if (lookupResult.Failed || (request.ValidateType && lookupResult.Type != PhoneNumberType.Mobile) || string.IsNullOrEmpty(request.PhoneNumber))
+            if (lookupResult.LookupFailed || (request.ValidateType && lookupResult.Type != PhoneNumberType.Mobile) || string.IsNullOrEmpty(request.PhoneNumber))
             {
                 return new ValidatePhoneNumberResult { IsValid = false };
             }
