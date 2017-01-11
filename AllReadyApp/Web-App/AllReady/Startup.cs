@@ -193,7 +193,6 @@ namespace AllReady
             {
                 // this writer service will just write to the default logger
                 services.AddTransient<IQueueStorageService, FakeQueueWriterService>();
-                //services.AddTransient<IQueueStorageService, SmtpEmailSender>();
             }
 
             if (Configuration["Authentication:Twilio:EnableTwilio"] == "true")
