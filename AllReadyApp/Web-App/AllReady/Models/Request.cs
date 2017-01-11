@@ -37,6 +37,7 @@ namespace AllReady.Models
         public int? OrganizationId { get; set; }
         public Organization Organization { get; set; }
 
-        public ICollection<ItineraryRequest> Itineraries { get; set; }
+        public int? ItineraryId { get; set; }
+        public ItineraryRequest Itinerary { get; set; }
     }
 }
