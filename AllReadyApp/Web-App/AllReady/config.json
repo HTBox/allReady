@@ -54,9 +54,7 @@
     },
     "Twitter": {
       "ConsumerKey": "[twitterconsumerkey]",
-      "ConsumerSecret": "[twitterconsumersecret]",
-      "OAuthToken": "[twitteroauthtoken]",
-      "OAuthSecret": "[twitteroauthsecret]"
+      "ConsumerSecret": "[twitterconsumersecret]"
     },
     "MicrosoftAccount": {
       "ClientId": "[microsoftclientid]",
