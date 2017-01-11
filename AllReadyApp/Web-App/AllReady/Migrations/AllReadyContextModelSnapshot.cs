@@ -368,7 +368,8 @@ namespace AllReady.Migrations
 
                     b.HasIndex("ItineraryId");
 
-                    b.HasIndex("RequestId");
+                    b.HasIndex("RequestId")
+                        .IsUnique();
 
                     b.ToTable("ItineraryRequest");
                 });
@@ -488,6 +489,8 @@ namespace AllReady.Migrations
                     b.Property<string>("Email");
 
                     b.Property<int?>("EventId");
+
+                    b.Property<int?>("ItineraryId");
 
                     b.Property<double>("Latitude");
 
@@ -854,8 +857,8 @@ namespace AllReady.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("AllReady.Models.Request", "Request")
-                        .WithMany("Itineraries")
-                        .HasForeignKey("RequestId")
+                        .WithOne("Itinerary")
+                        .HasForeignKey("AllReady.Models.ItineraryRequest", "RequestId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
