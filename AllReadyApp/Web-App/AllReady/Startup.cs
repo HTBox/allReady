@@ -174,7 +174,7 @@ namespace AllReady
             services.AddSingleton<IHttpClient, StaticHttpClient>();
             services.AddSingleton<ITwitterService, TwitterService>();
 
-            if (Configuration["Geocoding:EnableGoogleGeocodingService"] == "true")
+            if (Configuration["Mapping:EnableGoogleGeocodingService"] == "true")
             {
                 services.AddSingleton<IGeocodeService,GoogleGeocodeService>();
             }

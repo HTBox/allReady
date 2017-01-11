@@ -104,7 +104,7 @@ namespace AllReady.Services.Mapping
             var requestUrl = new StringBuilder("https://maps.googleapis.com/maps/api/geocode/json?address=");
             requestUrl.Append(UrlEncoder.Default.Encode(address));
 
-            requestUrl.Append("&key=").Append(_mappingSettings.GoogleDirectionsApiKey);
+            requestUrl.Append("&key=").Append(_mappingSettings.GoogleMapsApiKey);
 
             return requestUrl.ToString();
         }

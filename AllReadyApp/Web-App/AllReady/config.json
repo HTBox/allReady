@@ -25,12 +25,9 @@
   "ApplicationInsights": {
     "InstrumentationKey": "[instrumentationkey]"
   },
-  "Geocoding": {
-    "EnableGoogleGeocodingService": "false",
-    "GoogleGeocodingApiKey": "[geocodingapikey]"
-  },
   "Mapping": {
-    "GoogleDirectionsApiKey": "[directionsapikey]"
+    "EnableGoogleGeocodingService": "false",
+    "GoogleMapsApiKey": "[googlemapsapikey]"
   },
   "Data": {
     "DefaultConnection": {

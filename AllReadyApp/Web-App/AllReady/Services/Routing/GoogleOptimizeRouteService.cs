@@ -27,7 +27,7 @@ namespace AllReady.Services.Routing
         {
             var requestIds = new List<Guid>();
 
-            if (!string.IsNullOrEmpty(_mappingSettings?.GoogleDirectionsApiKey))
+            if (!string.IsNullOrEmpty(_mappingSettings?.GoogleMapsApiKey))
             {
                 try
                 {
@@ -68,7 +68,7 @@ namespace AllReady.Services.Routing
                 requestUrl.Append("|").Append(waypoint.Coordinates);
             }
 
-            requestUrl.Append("&key=").Append(_mappingSettings.GoogleDirectionsApiKey);
+            requestUrl.Append("&key=").Append(_mappingSettings.GoogleMapsApiKey);
 
             return requestUrl.ToString();
         }

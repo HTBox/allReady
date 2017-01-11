@@ -49,7 +49,7 @@
 
     public class MappingSettings
     {
-        public string GoogleDirectionsApiKey { get; set; }
+        public string GoogleMapsApiKey { get; set; }
     }
 
     public class TwilioSettings
