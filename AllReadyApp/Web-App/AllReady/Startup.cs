@@ -199,16 +199,16 @@ namespace AllReady
                 //services.AddTransient<IQueueStorageService, SmtpEmailSender>();
             }
 
-            if (!string.IsNullOrEmpty(Configuration["Authentication:Twilio:Sid"]) && !string.IsNullOrEmpty(Configuration["Authentication:Twilio:Token"]))
+            if (Configuration["Authentication:Twilio:EnableTwilio"] == "true")
             {
                 services.AddSingleton<IPhoneNumberLookupService, TwilioPhoneNumberLookupService>();
                 services.AddSingleton<ITwilioWrapper, TwilioWrapper>();
             }
             else
             {
-                services.AddSingleton<IPhoneNumberLookupService, FakePhoneNumberLookupService>();                
+                services.AddSingleton<IPhoneNumberLookupService, FakePhoneNumberLookupService>();
             }
-
+            
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterSource(new ContravariantRegistrationSource());
             containerBuilder.RegisterAssemblyTypes(typeof(IMediator).Assembly).AsImplementedInterfaces();
