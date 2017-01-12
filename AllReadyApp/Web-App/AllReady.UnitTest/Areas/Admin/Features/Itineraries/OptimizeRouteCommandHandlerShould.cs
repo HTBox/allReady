@@ -17,6 +17,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
 
         private static readonly Guid Request1Id = new Guid("de4f4639-86ea-419f-96c8-509defa4d9a3");
         private static readonly Guid Request2Id = new Guid("602b3f58-c8e0-4f59-82b0-f940c1aa1caa");
+        private static readonly Guid Request3Id = new Guid("602b3f58-c8e0-4f59-82b0-f940c1aa1e4a");
+        private static readonly Guid Request4Id = new Guid("602b3f58-c8e0-4f59-82b0-f940c1aa1111");
 
         protected override void LoadTestData()
         {
@@ -67,6 +69,22 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Longitude = -5.0000
             };
 
+            var request3 = new Request
+            {
+                RequestId = Request3Id,
+                Name = "Request 3",
+                Latitude = 10.0000,
+                Longitude = -5.0000
+            };
+
+            var request4 = new Request
+            {
+                RequestId = Request4Id,
+                Name = "Request 4",
+                Latitude = 10.0000,
+                Longitude = -5.0000
+            };
+
             var itineraryRequest1 = new ItineraryRequest
             {
                 Request = request1,
@@ -76,19 +94,19 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
 
             var itineraryRequest2 = new ItineraryRequest
             {
-                Request = request1,
+                Request = request2,
                 Itinerary = itinerary2
             };
 
             var itineraryRequest3 = new ItineraryRequest
             {
-                Request = request1,
+                Request = request3,
                 Itinerary = itinerary3
             };
 
             var itineraryRequest4 = new ItineraryRequest
             {
-                Request = request2,
+                Request = request4,
                 Itinerary = itinerary1,
                 OrderIndex = 2
             };
@@ -181,7 +199,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var requests = Context.ItineraryRequests.Where(x => x.ItineraryId == 1).OrderBy(x => x.OrderIndex).ToList();
 
             requests[0].Request.Name.ShouldBe("Request 1");
-            requests[1].Request.Name.ShouldBe("Request 2");
+            requests[1].Request.Name.ShouldBe("Request 4");
         }
 
         [Fact]
@@ -199,7 +217,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var requests = Context.ItineraryRequests.Where(x => x.ItineraryId == 1).OrderBy(x => x.OrderIndex).ToList();
 
             requests[0].Request.Name.ShouldBe("Request 1");
-            requests[1].Request.Name.ShouldBe("Request 2");
+            requests[1].Request.Name.ShouldBe("Request 4");
         }
 
         [Fact]
@@ -217,7 +235,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var requests = Context.ItineraryRequests.Where(x => x.ItineraryId == 1).OrderBy(x => x.OrderIndex).ToList();
 
             requests[0].Request.Name.ShouldBe("Request 1");
-            requests[1].Request.Name.ShouldBe("Request 2");
+            requests[1].Request.Name.ShouldBe("Request 4");
         }
 
         [Fact]
@@ -225,7 +243,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         {
             var optimizeRouteService = new Mock<IOptimizeRouteService>();
             optimizeRouteService.Setup(x => x.OptimizeRoute(It.IsAny<OptimizeRouteCriteria>()))
-                .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Request2Id, Guid.Empty } })
+                .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Request4Id, Guid.Empty } })
                 .Verifiable();
 
             var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object);
@@ -235,7 +253,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var requests = Context.ItineraryRequests.Where(x => x.ItineraryId == 1).OrderBy(x => x.OrderIndex).ToList();
 
             requests.First(x => x.RequestId == Request1Id).OrderIndex.ShouldBe(1);
-            requests.First(x => x.RequestId == Request2Id).OrderIndex.ShouldBe(2);
+            requests.First(x => x.RequestId == Request4Id).OrderIndex.ShouldBe(2);
         }
 
         [Fact]
@@ -243,7 +261,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         {
             var optimizeRouteService = new Mock<IOptimizeRouteService>();
             optimizeRouteService.Setup(x => x.OptimizeRoute(It.IsAny<OptimizeRouteCriteria>()))
-                .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Request2Id, Request1Id } })
+                .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Request4Id, Request1Id } })
                 .Verifiable();
 
             var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object);
@@ -252,7 +270,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
 
             var requests = Context.ItineraryRequests.Where(x => x.ItineraryId == 1).OrderBy(x => x.OrderIndex).ToList();
 
-            requests[0].Request.Name.ShouldBe("Request 2");
+            requests[0].Request.Name.ShouldBe("Request 4");
             requests[1].Request.Name.ShouldBe("Request 1");
         }
     }
