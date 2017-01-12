@@ -72,6 +72,7 @@
       "FromEmail": "[sendgridemailsender]"
     },
     "Twilio": {
+      "EnableTwilio": "false",
       "Sid": "[twiliosid]",
       "Token": "[twiliotoken]",
       "PhoneNo": "[twilionumber]"
