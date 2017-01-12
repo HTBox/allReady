@@ -42,7 +42,7 @@ namespace AllReady.UnitTest.Controllers
             const string providerRequestId = "ProviderRequestId";
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ValidatePhoneNumberRequest>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true, PhoneNumberE164 = "0000" });
+            mediator.Setup(x => x.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true, PhoneNumberE164 = "0000" });
 
             var sut = new RequestApiController(mediator.Object, Mock.Of<IBackgroundJobClient>());
             await sut.Post(new RequestApiViewModel { Status = "new", ProviderRequestId = providerRequestId });
@@ -70,7 +70,7 @@ namespace AllReady.UnitTest.Controllers
             var viewModel = new RequestApiViewModel { Status = "new" };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ValidatePhoneNumberRequest>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true, PhoneNumberE164 = "0000" });
+            mediator.Setup(x => x.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true, PhoneNumberE164 = "0000" });
 
             var backgroundJobClient = new Mock<IBackgroundJobClient>();
 
@@ -86,7 +86,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task PostReturns202StatusCode()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ValidatePhoneNumberRequest>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true, PhoneNumberE164 = "0000" });
+            mediator.Setup(x => x.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true, PhoneNumberE164 = "0000" });
 
             var sut = new RequestApiController(mediator.Object, Mock.Of<IBackgroundJobClient>());
             var result = await sut.Post(new RequestApiViewModel { Status = "new" }) as StatusCodeResult;

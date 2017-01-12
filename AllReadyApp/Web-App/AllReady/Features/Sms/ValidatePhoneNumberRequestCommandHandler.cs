@@ -4,16 +4,16 @@ using System.Threading.Tasks;
 
 namespace AllReady.Features.Sms
 {
-    public class ValidatePhoneNumberRequestHandler : IAsyncRequestHandler<ValidatePhoneNumberRequest, ValidatePhoneNumberResult>
+    public class ValidatePhoneNumberRequestCommandHandler : IAsyncRequestHandler<ValidatePhoneNumberRequestCommand, ValidatePhoneNumberResult>
     {
         private readonly IPhoneNumberLookupService _phoneNumberLookupService;
 
-        public ValidatePhoneNumberRequestHandler(IPhoneNumberLookupService phoneNumberLookupService)
+        public ValidatePhoneNumberRequestCommandHandler(IPhoneNumberLookupService phoneNumberLookupService)
         {
             _phoneNumberLookupService = phoneNumberLookupService;
         }
 
-        public async Task<ValidatePhoneNumberResult> Handle(ValidatePhoneNumberRequest request)
+        public async Task<ValidatePhoneNumberResult> Handle(ValidatePhoneNumberRequestCommand request)
         {
             var lookupResult = await _phoneNumberLookupService.LookupNumber(request.PhoneNumber, request.CountryCode);
 

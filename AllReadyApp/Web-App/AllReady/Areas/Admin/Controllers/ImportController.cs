@@ -89,26 +89,20 @@ namespace AllReady.Areas.Admin.Controllers
                         return View(viewModel);
                     }
 
-                    //TODO: process these in one batch intead of a single messgae dispatch per request
                     var invalidPhoneNumbers = new List<string>();
                     foreach (var requestToImport in importRequestViewModels)
                     {
-                        //check for mobile phone numbers
-                        var validatePhoneNumberResult = await mediator.SendAsync(new ValidatePhoneNumberRequest { PhoneNumber = requestToImport.Phone, ValidateType = true });
+                        //validate incoming phone number on each request
+                        var validatePhoneNumberResult = await mediator.SendAsync(new ValidatePhoneNumberRequestCommand { PhoneNumber = requestToImport.Phone, ValidateType = true });
                         if (!validatePhoneNumberResult.IsValid)
                         {
                             invalidPhoneNumbers.Add(requestToImport.Phone);
                         }
-                    }
+                        else
+                        {
+                            requestToImport.Phone = validatePhoneNumberResult.PhoneNumberE164;
+                        }
 
-                    //TODO: get this code into the foreach loop below
-                    if (invalidPhoneNumbers.Count > 0)
-                    {
-                        viewModel.ImportErrors.Add($"These phone numbers are not valid mobile numbers: {string.Join(", ", invalidPhoneNumbers)}");
-                    }
-
-                    foreach (var requestToImport in importRequestViewModels)
-                    {
                         //run validations on attributes on viewmodel
                         var validationResults = new List<ValidationResult>();
                         if (!Validator.TryValidateObject(requestToImport, new ValidationContext(requestToImport, null, null), validationResults, true))
@@ -117,6 +111,11 @@ namespace AllReady.Areas.Admin.Controllers
                             newValidationError.Errors.AddRange(validationResults);
                             viewModel.ValidationErrors.Add(newValidationError);
                         }
+                    }
+
+                    if (invalidPhoneNumbers.Count > 0)
+                    {
+                        viewModel.ImportErrors.Add($"These phone numbers are not valid mobile numbers: {string.Join(", ", invalidPhoneNumbers)}");
                     }
                 }
             }
