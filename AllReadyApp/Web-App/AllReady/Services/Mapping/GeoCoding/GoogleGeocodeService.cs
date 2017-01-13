@@ -65,7 +65,10 @@ namespace AllReady.Services.Mapping.GeoCoding
                 fullAddress.Append(country).Append(",");
             }
 
-            fullAddress.Remove(fullAddress.Length - 1, 1);
+            if (fullAddress.Length > 0)
+            { 
+                fullAddress.Remove(fullAddress.Length - 1, 1);
+            }
 
             return await GetCoordinatesFromAddress(fullAddress.ToString());
         }
