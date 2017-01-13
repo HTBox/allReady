@@ -351,8 +351,8 @@ allReady uses ASP.NET Core and we need to install the tooling for .NET Core.
 
     ![Install Finished.  Click Close](images/dotnet-core-install-6-close.png)
 
-#### Update to latest 1.1 SDK
-Depending on the version installed with VS you may need to manually download the latest 1.1 SDK from [Microsoft](https://www.microsoft.com/net/download/core#/current)
+#### Update to latest 1.0.x LTS SDK
+Depending on the version installed with VS you may need to manually download the latest 1.0.x SDK from [Microsoft](https://www.microsoft.com/net/download/core#/lts)
 
 You have now finished installing all of the required software to start working on the Web Solution.  
 
