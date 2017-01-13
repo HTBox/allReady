@@ -50,7 +50,7 @@ namespace AllReady.Controllers
             }
 
             // todo - stevejgordon - add code for converting country to country code
-            var validatePhoneNumberResult = await mediator.SendAsync(new ValidatePhoneNumberRequestCommand { PhoneNumber = viewModel.Phone, ValidateType = true });
+            var validatePhoneNumberResult = await mediator.SendAsync(new ValidatePhoneNumberRequest { PhoneNumber = viewModel.Phone, ValidateType = true });
             if (!validatePhoneNumberResult.IsValid)
             {
                 return BadRequest();

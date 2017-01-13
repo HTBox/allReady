@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Requests;
@@ -7,6 +9,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Areas.Admin.ViewModels.Request;
+using AllReady.Features.Sms;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -57,7 +61,7 @@ namespace AllReady.Areas.Admin.Controllers
                 CampaignId = campaignEvent.CampaignId,
                 CampaignName = campaignEvent.CampaignName,
                 EventId = campaignEvent.Id,
-                EventName = campaignEvent.Name,
+                EventName = campaignEvent.Name
             };
 
             ViewBag.Title = CreateRequestTitle;
@@ -98,8 +102,12 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditRequestViewModel model)
         {
-            var campaignEvent = await _mediator.SendAsync(new EventSummaryQuery { EventId = model.EventId });
+            if (!ModelState.IsValid)
+            {
+                return View("Edit", model);
+            }
 
+            var campaignEvent = await _mediator.SendAsync(new EventSummaryQuery { EventId = model.EventId });
             if (campaignEvent == null)
             {
                 return BadRequest("Invalid event id");
@@ -110,8 +118,11 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            if (!ModelState.IsValid)
+            var validatePhoneNumberResult = await _mediator.SendAsync(new ValidatePhoneNumberRequest { PhoneNumber = model.Phone, ValidateType = true });
+            if (!validatePhoneNumberResult.IsValid)
             {
+                var phoneAttribute = model.GetType().GetProperties().Single(p => p.Name == nameof(model.Phone)).GetCustomAttributes(false).Cast<Attribute>().Single(a => a is PhoneAttribute) as PhoneAttribute;
+                ModelState.AddModelError(nameof(model.Phone), phoneAttribute.ErrorMessage);
                 return View("Edit", model);
             }
 
