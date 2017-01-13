@@ -1,21 +1,25 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AllReady.Services.Routing.Models.Google;
+using AllReady.Services.Mapping.Routing.Models.Google;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
-namespace AllReady.Services.Routing
+namespace AllReady.Services.Mapping.Routing
 {
+    /// <summary>
+    /// An implementation of the <see cref="IOptimizeRouteService"/> which uses the Google API
+    /// </summary>
     public class GoogleOptimizeRouteService : IOptimizeRouteService
     {
         private readonly MappingSettings _mappingSettings;
         private readonly ILogger<GoogleOptimizeRouteService> _logger;
         private static IHttpClient _httpClient;
 
+        /// <inheritdoc />
         public GoogleOptimizeRouteService(IOptions<MappingSettings> mappingSettings, ILogger<GoogleOptimizeRouteService> logger, IHttpClient httpClient)
         {
             _mappingSettings = mappingSettings?.Value;
@@ -23,6 +27,7 @@ namespace AllReady.Services.Routing
             _httpClient = httpClient;
         }
 
+        /// <inheritdoc />
         public async Task<OptimizeRouteResult> OptimizeRoute(OptimizeRouteCriteria criteria)
         {
             var requestIds = new List<Guid>();
@@ -32,7 +37,7 @@ namespace AllReady.Services.Routing
                 try
                 {
                     // todo sgordon: enhance with Polly for retries
-                    var response = await _httpClient.GetAsync(GenerateGoogleAPIUrl(criteria));
+                    var response = await _httpClient.GetAsync(GenerateGoogleApiUrl(criteria));
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -56,7 +61,7 @@ namespace AllReady.Services.Routing
             return null;
         }
 
-        private string GenerateGoogleAPIUrl(OptimizeRouteCriteria criteria)
+        private string GenerateGoogleApiUrl(OptimizeRouteCriteria criteria)
         {
             var requestUrl = new StringBuilder("https://maps.googleapis.com/maps/api/directions/json?origin=");
             requestUrl.Append(criteria.StartAddress);

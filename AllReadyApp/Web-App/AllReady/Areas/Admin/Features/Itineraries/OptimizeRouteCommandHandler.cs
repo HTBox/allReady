@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using AllReady.Models;
-using AllReady.Services.Routing;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Linq;
+using AllReady.Services.Mapping.Routing;
 
 namespace AllReady.Areas.Admin.Features.Itineraries
 {

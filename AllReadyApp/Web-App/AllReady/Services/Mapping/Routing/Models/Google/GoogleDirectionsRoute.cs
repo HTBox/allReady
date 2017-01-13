@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace AllReady.Services.Routing.Models.Google
+namespace AllReady.Services.Mapping.Routing.Models.Google
 {
     public class GoogleDirectionsRoute
     {

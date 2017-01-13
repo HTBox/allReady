@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AllReady.Features.Requests;
 using AllReady.Models;
 using AllReady.Services.Mapping;
+using AllReady.Services.Mapping.GeoCoding;
 using AllReady.ViewModels.Requests;
 using MediatR;
 

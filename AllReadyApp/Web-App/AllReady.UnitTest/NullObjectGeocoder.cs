@@ -1,5 +1,7 @@
 ﻿using AllReady.Services.Mapping;
 using System.Threading.Tasks;
+using AllReady.Services.Mapping.GeoCoding;
+using AllReady.Services.Mapping.GeoCoding.Models;
 
 namespace AllReady.UnitTest
 {

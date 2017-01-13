@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using AllReady.Services.Mapping;
+using AllReady.Services.Mapping.GeoCoding;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {

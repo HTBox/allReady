@@ -1,24 +1,33 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using AllReady.Services.Routing.Models.Google;
+using AllReady.Services.Mapping.GeoCoding.Models;
+using AllReady.Services.Mapping.GeoCoding.Models.Google;
+using AllReady.Services.Mapping.Routing.Models.Google;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System.Linq;
 
-namespace AllReady.Services.Mapping
+namespace AllReady.Services.Mapping.GeoCoding
 {
+    /// <summary>
+    /// An implementation of the Geocode Service which uses the Google API
+    /// </summary>
     public class GoogleGeocodeService : IGeocodeService
     {
         private readonly IHttpClient _httpClient;
         private readonly MappingSettings _mappingSettings;
 
+        /// <summary>
+        /// Initialises a new instance of the <see cref="GoogleGeocodeService"/>
+        /// </summary>
         public GoogleGeocodeService(IHttpClient httpClient, IOptions<MappingSettings> mappingSettings)
         {
             _httpClient = httpClient;
             _mappingSettings = mappingSettings?.Value;
         }
 
+        /// <inheritdoc />
         public async Task<Coordinates> GetCoordinatesFromAddress(string address)
         {
             var requestUrl = GenerateGoogleAPIUrl(address);
@@ -26,6 +35,7 @@ namespace AllReady.Services.Mapping
             return await ProcessRequest(requestUrl);
         }
 
+        /// <inheritdoc />
         public async Task<Coordinates> GetCoordinatesFromAddress(string address, string city, string state, string postalCode, string country)
         {
             var fullAddress = new StringBuilder();

@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Xunit;
 using System.Linq;
 using AllReady.Services.Mapping;
+using AllReady.Services.Mapping.GeoCoding;
+using AllReady.Services.Mapping.GeoCoding.Models;
 using Shouldly;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Requests

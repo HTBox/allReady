@@ -1,20 +1,22 @@
 ﻿using System;
-using Newtonsoft.Json;
 
-namespace AllReady.Services.Mapping
+namespace AllReady.Services.Mapping.GeoCoding.Models
 {
     /// <summary>
-    /// 
+    /// Represents world position coordinates - latitude and longitude
     /// </summary>
     /// <remarks>Trimmed down version of GeoCoding.net class - https://github.com/chadly/Geocoding.net/blob/netcore/src/Geocoding.Core/Location.cs </remarks>
     public class Coordinates
     {
-        private double latitude;
-        private double longitude;
+        private double _latitude;
+        private double _longitude;
         
+        /// <summary>
+        /// The latitude of the coordinate pair
+        /// </summary>
         public virtual double Latitude
         {
-            get { return latitude; }
+            get { return _latitude; }
             set
             {
                 if (value < -90 || value > 90)
@@ -23,13 +25,16 @@ namespace AllReady.Services.Mapping
                 if (double.IsNaN(value))
                     throw new ArgumentException("Latitude must be a valid number.", "Latitude");
 
-                latitude = value;
+                _latitude = value;
             }
         }
 
+        /// <summary>
+        /// The longitude of the coordinate pair
+        /// </summary>
         public virtual double Longitude
         {
-            get { return longitude; }
+            get { return _longitude; }
             set
             {
                 if (value < -180 || value > 180)
@@ -38,7 +43,7 @@ namespace AllReady.Services.Mapping
                 if (double.IsNaN(value))
                     throw new ArgumentException("Longitude must be a valid number.", "Longitude");
 
-                longitude = value;
+                _longitude = value;
             }
         }
 
@@ -47,25 +52,28 @@ namespace AllReady.Services.Mapping
         {
         }
 
+        /// <summary>
+        /// Initializes a new <see cref="Coordinates"/> object from the lat and long values
+        /// </summary>
         public Coordinates(double latitude, double longitude)
         {
             Latitude = latitude;
             Longitude = longitude;
         }
 
+        /// <summary>
+        /// Initializes a new <see cref="Coordinates"/> object from the lat and long values
+        /// </summary>
         public Coordinates(string latitude, string longitude)
         {
             double latitudeOut;
-            double longitudeOut;
+            if (!double.TryParse(latitude, out latitudeOut)) return;
 
-            if (double.TryParse(latitude, out latitudeOut))
-            {
-                if (double.TryParse(longitude, out longitudeOut))
-                {
-                    Latitude = latitudeOut;
-                    Longitude = longitudeOut;
-                }
-            }
+            double longitudeOut;
+            if (!double.TryParse(longitude, out longitudeOut)) return;
+
+            Latitude = latitudeOut;
+            Longitude = longitudeOut;
         }
 
         public override bool Equals(object obj)
@@ -88,7 +96,7 @@ namespace AllReady.Services.Mapping
 
         public override string ToString()
         {
-            return string.Format("{0}, {1}", latitude, longitude);
+            return string.Format("{0}, {1}", _latitude, _longitude);
         }
     }
 }
