@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Features.Sms;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -78,9 +77,10 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(Guid id)
         {
             var model = await _mediator.SendAsync(new EditRequestQuery { Id = id });
-
             if (model == null)
+            {
                 return NotFound();
+            }
 
             if (!User.IsOrganizationAdmin(model.OrganizationId))
             {
@@ -107,13 +107,13 @@ namespace AllReady.Areas.Admin.Controllers
                 return View("Edit", model);
             }
 
-            var campaignEvent = await _mediator.SendAsync(new EventSummaryQuery { EventId = model.EventId });
-            if (campaignEvent == null)
+            var @event = await _mediator.SendAsync(new EventSummaryQuery { EventId = model.EventId });
+            if (@event == null)
             {
                 return BadRequest("Invalid event id");
             }
 
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+            if (!User.IsOrganizationAdmin(@event.OrganizationId))
             {
                 return Unauthorized();
             }
