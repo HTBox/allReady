@@ -4,6 +4,7 @@
 
   "buildOptions": {
     "warningsAsErrors": true,
+    "copyToOutput": { "includeFiles": [ "./Services/Routing/mock_Geocoded_waypoints.json" ] },
     "nowarn": [ "0618" ]
   },
 
