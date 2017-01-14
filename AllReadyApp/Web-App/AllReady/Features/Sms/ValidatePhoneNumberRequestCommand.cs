@@ -2,7 +2,7 @@
 
 namespace AllReady.Features.Sms
 {
-    public class ValidatePhoneNumberRequest : IAsyncRequest<ValidatePhoneNumberResult>
+    public class ValidatePhoneNumberRequestCommand : IAsyncRequest<ValidatePhoneNumberResult>
     {
         public string PhoneNumber { get; set; }
         public string CountryCode { get; set; }

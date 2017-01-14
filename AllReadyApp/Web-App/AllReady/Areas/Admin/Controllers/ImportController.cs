@@ -14,6 +14,7 @@ using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Features.Requests;
 using AllReady.Security;
 using System.Threading.Tasks;
+using AllReady.Features.Sms;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -88,15 +89,33 @@ namespace AllReady.Areas.Admin.Controllers
                         return View(viewModel);
                     }
 
-                    foreach (var reqeustToImport in importRequestViewModels)
+                    var invalidPhoneNumbers = new List<string>();
+                    foreach (var requestToImport in importRequestViewModels)
                     {
-                        var validationResults = new List<ValidationResult>();
-                        if (!Validator.TryValidateObject(reqeustToImport, new ValidationContext(reqeustToImport, null, null), validationResults, true))
+                        //validate incoming phone number on each request
+                        var validatePhoneNumberResult = await mediator.SendAsync(new ValidatePhoneNumberRequestCommand { PhoneNumber = requestToImport.Phone, ValidateType = true });
+                        if (!validatePhoneNumberResult.IsValid)
                         {
-                            var newValidationError = new IndexViewModel.ValidationError { ProviderRequestId = string.IsNullOrEmpty(reqeustToImport.Id) ? "id value is blank" : reqeustToImport.Id };
+                            invalidPhoneNumbers.Add(requestToImport.Phone);
+                        }
+                        else
+                        {
+                            requestToImport.Phone = validatePhoneNumberResult.PhoneNumberE164;
+                        }
+
+                        //run validations on attributes on viewmodel
+                        var validationResults = new List<ValidationResult>();
+                        if (!Validator.TryValidateObject(requestToImport, new ValidationContext(requestToImport, null, null), validationResults, true))
+                        {
+                            var newValidationError = new IndexViewModel.ValidationError { ProviderRequestId = string.IsNullOrEmpty(requestToImport.Id) ? "id value is blank" : requestToImport.Id };
                             newValidationError.Errors.AddRange(validationResults);
                             viewModel.ValidationErrors.Add(newValidationError);
                         }
+                    }
+
+                    if (invalidPhoneNumbers.Count > 0)
+                    {
+                        viewModel.ImportErrors.Add($"These phone numbers are not valid mobile numbers: {string.Join(", ", invalidPhoneNumbers)}");
                     }
                 }
             }
