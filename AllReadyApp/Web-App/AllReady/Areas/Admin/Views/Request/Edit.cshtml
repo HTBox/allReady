@@ -14,8 +14,8 @@
             }
             else
             {
-                <li><a asp-controller="Task" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.Name</a></li>
-                <li>Edit</li>
+                <li><a asp-controller="Event" asp-action="Requests" asp-route-id="@Model.EventId" asp-area="Admin">Requests</a></li>
+                <li>Edit @Model.Name</li>
             }
         </ol>
     </div>
