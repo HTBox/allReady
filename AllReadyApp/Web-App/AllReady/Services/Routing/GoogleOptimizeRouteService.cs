@@ -27,33 +27,28 @@ namespace AllReady.Services.Routing
         {
             var requestIds = new List<Guid>();
 
-            if (!string.IsNullOrEmpty(_mappingSettings?.GoogleDirectionsApiKey))
+            try
             {
-                try
+                // todo sgordon: enhance with Polly for retries
+                var response = await _httpClient.GetAsync(GenerateGoogleAPIUrl(criteria));
+
+                if (response.IsSuccessStatusCode)
                 {
-                    // todo sgordon: enhance with Polly for retries
-                    var request = GenerateGoogleAPIUrl(criteria);
-                    var response = await _httpClient.GetAsync(request);
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<GoogleDirectionsResponse>(content);
 
-                    if (response.IsSuccessStatusCode)
+                    if (result.Status == GoogleDirectionsResponse.OkStatus)
                     {
-                        var content = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<GoogleDirectionsResponse>(content);
+                        requestIds.AddRange(result.Routes.SelectMany(r => r.WaypointOrder).Select(waypointIndex => criteria.Waypoints[waypointIndex].RequestId));
 
-                        if (result.Status == GoogleDirectionsResponse.OkStatus)
-                        {
-                            requestIds.AddRange(result.Routes.SelectMany(r => r.WaypointOrder).Select(waypointIndex => criteria.Waypoints[waypointIndex].RequestId));
-
-                            return new OptimizeRouteResult { RequestIds = requestIds, Distance = result.TotalDistance, Duration = result.TotalDuration };
-                        }
+                        return new OptimizeRouteResult { RequestIds = requestIds, Distance = result.TotalDistance, Duration = result.TotalDuration };
                     }
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Failure to contact Google Directions API - {ex}");
-                }
             }
-
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failure to contact Google Directions API - {ex}");
+            }
             return null;
         }
 

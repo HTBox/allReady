@@ -51,5 +51,4 @@ namespace AllReady.Services.Mapping.Routing
         /// A list of waypoints to be optimized for the route
         /// </summary>
         public List<OptimizeRouteWaypoint> Waypoints { get; }
-    }
 }
