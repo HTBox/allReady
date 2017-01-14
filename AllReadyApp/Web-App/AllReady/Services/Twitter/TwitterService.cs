@@ -37,11 +37,6 @@ namespace AllReady.Services.Twitter
                 return null;
             }
 
-            if (string.IsNullOrEmpty(_credentials))
-            {
-                return null;
-            }
-
             var bearerToken = await RequestBearerToken();
 
             if (string.IsNullOrEmpty(bearerToken))
@@ -61,14 +56,30 @@ namespace AllReady.Services.Twitter
                 requestUrl.Append("screen_name").Append("=").Append(screenName);
             }
 
+            if (requestUrl.ToString().EndsWith("&"))
+                requestUrl.Remove(requestUrl.Length - 1, 1);
+
             var request = new HttpRequestMessage(HttpMethod.Get, requestUrl.ToString());
             request.Headers.TryAddWithoutValidation("Authorization", string.Concat("Bearer ", bearerToken));
 
-            var response = await _httpClient.SendAsync(request);
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<TwitterResponse>(content);
+            try
+            {
+                var response = await _httpClient.SendAsync(request);
 
-            return new TwitterUserInfo { Email = result.Email, Name = result.Name };
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var twitterResponse = JsonConvert.DeserializeObject<TwitterResponse>(content);
+
+                    return new TwitterUserInfo { Name = twitterResponse.Name };
+                }
+            }
+            catch
+            {
+                // todo - logging
+            }
+
+            return null;
         }
 
         private async Task<string> RequestBearerToken()
@@ -82,12 +93,27 @@ namespace AllReady.Services.Twitter
             var body = new FormUrlEncodedContent(values);
             request.Content = body;
 
-            var response = await _httpClient.SendAsync(request);
+            try
+            {
+                var response = await _httpClient.SendAsync(request);
 
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<TwitterResponse>(content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var twitterResponse = JsonConvert.DeserializeObject<TwitterResponse>(content);
 
-            return result.AccessToken;
+                    if (twitterResponse?.TokenType == "bearer")
+                    {
+                        return twitterResponse?.AccessToken;
+                    }
+                }
+            }
+            catch
+            {
+                // todo - logging
+            }
+
+            return null;
         }
 
         private bool AnyTwitterAuthenticationSettingsAreNotSet()
@@ -111,11 +137,17 @@ namespace AllReady.Services.Twitter
             return string.Concat("Basic ", keySecretEncoded);
         }
 
+        /// <summary>
+        /// A generalised object to use for deserialisation of twitter responses
+        /// </summary>
         private class TwitterResponse
         {
+            [JsonProperty("token_type")]
+            public string TokenType { get; set; }
+
             [JsonProperty("access_token")]
             public string AccessToken { get; set; }
-            public string Email { get; set; }
+            
             public string Name { get; set; }
         }
     }

@@ -25,8 +25,6 @@ namespace AllReady.Providers.ExternalUserInformationProviders.Providers
 
             if (twitterUser != null)
             {
-                externalUserInformation.Email = twitterUser.Email;
-
                 if (!string.IsNullOrEmpty(twitterUser.Name))
                 {
                     var array = twitterUser.Name.Split(' ');
