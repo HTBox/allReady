@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.UnitTest.Extensions
@@ -8,7 +9,7 @@ namespace AllReady.UnitTest.Extensions
     {
         public static T GetValueForProperty<T>(this JsonResult jsonResult, string propertyName)
         {
-            var property = jsonResult.Value.GetType().GetProperties().FirstOrDefault(p => string.CompareOrdinal(p.Name, propertyName) == 0);
+            var property = jsonResult.Value.GetType().GetTypeInfo().GetProperties().FirstOrDefault(p => string.CompareOrdinal(p.Name, propertyName) == 0);
             if (null == property)
                 throw new ArgumentException($"propertyName: {propertyName} not found");
 

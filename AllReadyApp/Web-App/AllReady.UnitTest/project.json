@@ -1,7 +1,6 @@
 {
   "version": "1.0.0-*",
   "description": "AllReady.UnitTests",
-  "authors": [ "mattgal" ],
 
   "buildOptions": {
     "warningsAsErrors": true,
@@ -9,25 +8,35 @@
   },
 
   "dependencies": {
-    "AllReady": {
-      "target": "project"
-    },
     "Microsoft.EntityFrameworkCore.InMemory": "1.0.2",
     "Microsoft.AspNetCore.TestHost": "1.0.1",
-    "Moq": "4.5.22",
-    "xunit": "2.2.0-beta2-build3300",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "Microsoft.AspNetCore.Mvc": "1.0.2",
     "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.0.2",
-    "Shouldly": "2.6.0",
     "AllReady.Core": {
       "target": "project"
-    }
+    },
+    "Moq": "4.6.38-alpha",
+    "xunit": "2.2.0-beta4-build3444",
+    "Shouldly": "2.8.2",
+    "AllReady": "1.0.0",
+    "Microsoft.DotNet.InternalAbstractions": "1.0.0"
   },
 
   "testRunner": "xunit",
 
-  "frameworks": {
-    "dnx46": {}
+    "frameworks": {
+      "netcoreapp1.0": {
+        "dependencies": {
+          "Microsoft.NETCore.App": {
+            "type": "platform",
+            "version": "1.0.1"
+          }
+        },
+        "imports": [
+          "dnxcore50",
+          "portable-net451+win8"
+        ]
+      }
   }
 }

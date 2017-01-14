@@ -36,6 +36,6 @@ namespace AllReady.Areas.Admin.ViewModels.Itinerary
         /// <summary>
         /// The date on which the itinerary will take place (in date long string format)
         /// </summary>
-        public string DisplayDate => Date.ToLongDateString();
+        public string DisplayDate => Date.ToString("D");
     }
 }

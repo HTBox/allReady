@@ -2,12 +2,11 @@
   "version": "1.0.0-*",
 
   "dependencies": {
+    "Microsoft.NETCore.Portable.Compatibility": "1.0.2",
     "NETStandard.Library": "1.6.0"
   },
 
   "frameworks": {
-    "net46": {
-      "dependencies": {}
-    }
+    "netstandard1.3": {}
   }
 }

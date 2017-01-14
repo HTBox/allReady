@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 using System.Linq;
+using System.Reflection;
 using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.ViewModels.Event;
@@ -531,6 +532,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             result.ShouldBeOfType<JsonResult>();
 
             result.Value.GetType()
+                .GetTypeInfo()
                 .GetProperty("status")
                 .GetValue(result.Value)
                 .ShouldBe("NotFound");
@@ -550,6 +552,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await sut.DeleteEventImage(It.IsAny<int>());
 
             result.Value.GetType()
+                .GetTypeInfo()
                 .GetProperty("status")
                 .GetValue(result.Value)
                 .ShouldBe("Unauthorized");
@@ -642,6 +645,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await sut.DeleteEventImage(It.IsAny<int>());
 
             result.Value.GetType()
+                .GetTypeInfo()
                 .GetProperty("status")
                 .GetValue(result.Value)
                 .ShouldBe("Success");
@@ -668,6 +672,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await sut.DeleteEventImage(It.IsAny<int>());
 
             result.Value.GetType()
+                .GetTypeInfo()
                 .GetProperty("status")
                 .GetValue(result.Value)
                 .ShouldBe("NothingToDelete");

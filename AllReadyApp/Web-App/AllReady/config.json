@@ -25,12 +25,9 @@
   "ApplicationInsights": {
     "InstrumentationKey": "[instrumentationkey]"
   },
-  "Geocoding": {
-    "EnableGoogleGeocodingService": "false",
-    "GoogleGeocodingApiKey": "[geocodingapikey]"
-  },
   "Mapping": {
-    "GoogleDirectionsApiKey": "[directionsapikey]"
+    "EnableGoogleGeocodingService": "false",
+    "GoogleMapsApiKey": "[googlemapsapikey]"
   },
   "Data": {
     "DefaultConnection": {
@@ -54,9 +51,7 @@
     },
     "Twitter": {
       "ConsumerKey": "[twitterconsumerkey]",
-      "ConsumerSecret": "[twitterconsumersecret]",
-      "OAuthToken": "[twitteroauthtoken]",
-      "OAuthSecret": "[twitteroauthsecret]"
+      "ConsumerSecret": "[twitterconsumersecret]"
     },
     "MicrosoftAccount": {
       "ClientId": "[microsoftclientid]",

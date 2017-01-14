@@ -2,7 +2,6 @@
 using AllReady.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using AllReady.Features.Events;
 using AllReady.ViewModels.Event;
@@ -77,27 +76,6 @@ namespace AllReady.Controllers
             campaignEvents.ForEach(campaignEvent => model.Add(new EventViewModel(campaignEvent)));
 
             return model;
-        }
-
-        [HttpGet("{id}/qrcode")]
-        public ActionResult GetQrCode(int id)
-        {
-            var barcodeWriter = new ZXing.BarcodeWriter
-            {
-                Format = ZXing.BarcodeFormat.QR_CODE,
-                Options = { Width = 200, Height = 200 }
-            };
-
-            // The QR code should point users to /api/event/{id}/checkin
-            var path = Request.Path.ToString();
-            var checkinPath = path.Substring(0, path.Length - "qrcode".Length) + "checkin";
-
-            var bitmap = barcodeWriter.Write($"https://{Request.Host}/{checkinPath}");
-            using (var stream = new MemoryStream())
-            {
-                bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                return File(stream.ToArray(), "image/png");
-            }
         }
 
         [HttpGet("{id}/checkin")]

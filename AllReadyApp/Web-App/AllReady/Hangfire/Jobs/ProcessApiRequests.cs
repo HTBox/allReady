@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Features.Requests;
 using AllReady.Models;
+using AllReady.Services.Mapping;
+using AllReady.Services.Mapping.GeoCoding;
 using AllReady.ViewModels.Requests;
-using Geocoding;
 using MediatR;
 
 namespace AllReady.Hangfire.Jobs
@@ -15,9 +17,9 @@ namespace AllReady.Hangfire.Jobs
 
         private readonly AllReadyContext context;
         private readonly IMediator mediator;
-        private readonly IGeocoder geocoder;
+        private readonly IGeocodeService geocoder;
 
-        public ProcessApiRequests(AllReadyContext context, IMediator mediator, IGeocoder geocoder)
+        public ProcessApiRequests(AllReadyContext context, IMediator mediator, IGeocodeService geocoder)
         {
             this.context = context;
             this.mediator = mediator;
@@ -50,9 +52,10 @@ namespace AllReady.Hangfire.Jobs
                 };
 
                 //this is a web service call
-                var address = geocoder.Geocode(viewModel.Address, viewModel.City, viewModel.State, viewModel.Zip, string.Empty).FirstOrDefault();
-                request.Latitude = address?.Coordinates.Latitude ?? 0;
-                request.Longitude = address?.Coordinates.Longitude ?? 0;
+                var coordinates = geocoder.GetCoordinatesFromAddress(request.Address, request.City, request.State, request.Zip, string.Empty).Result;
+
+                request.Latitude = coordinates?.Latitude ?? 0;
+                request.Longitude = coordinates?.Longitude ?? 0;
 
                 context.Add(request);
                 context.SaveChanges();

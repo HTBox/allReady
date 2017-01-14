@@ -33,7 +33,7 @@ namespace AllReady.Areas.Admin.ViewModels.Itinerary
         public List<TeamListViewModel> TeamMembers { get; set; } = new List<TeamListViewModel>();
         public List<RequestListViewModel> Requests { get; set; } = new List<RequestListViewModel>();
 
-        public string DisplayDate => Date.ToLongDateString();
+        public string DisplayDate => Date.ToString("D");
 
         /// <summary>
         /// The display address for the itinerary start location

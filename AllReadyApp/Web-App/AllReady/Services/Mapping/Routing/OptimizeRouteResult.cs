@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AllReady.Services.Routing
+namespace AllReady.Services.Mapping.Routing
 {
     /// <summary>
     /// Result of route optimization

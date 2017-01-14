@@ -6,8 +6,6 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Xunit;
 using System.Text.Encodings.Web;
-using AllReady.Providers;
-using Moq;
 
 namespace AllReady.UnitTest.TagHelpers
 {
@@ -32,11 +30,13 @@ namespace AllReady.UnitTest.TagHelpers
         [Fact]
         public void ValueShouldBeFormattedUsingDefaultFormat()
         {
-            System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("en-US");
-            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+            CultureInfo.CurrentUICulture = new CultureInfo("en-US");
+            CultureInfo.CurrentCulture = new CultureInfo("en-US");
 
-            TimeTagHelper tagHelper = new TimeTagHelper();
-            tagHelper.Value = new DateTimeOffset(2014, 12, 25, 13, 21, 0, TimeSpan.FromHours(0));
+            TimeTagHelper tagHelper = new TimeTagHelper
+            {
+                Value = new DateTimeOffset(2014, 12, 25, 13, 21, 0, TimeSpan.FromHours(0))
+            };
 
             var output = GetOutput();
             tagHelper.Process(GetContext(), output);
