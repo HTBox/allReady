@@ -43,7 +43,9 @@ namespace AllReady.Features.Notifications
             {
                 var link = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Task/Details/{taskSignup.Task.Id}";
 
-                var subject = volunteer.FirstName != null && volunteer.LastName != null ? $"{volunteer.FirstName} {volunteer.LastName}" : volunteer.Email;
+                var subject = !string.IsNullOrEmpty(volunteer.FirstName) && !string.IsNullOrEmpty(volunteer.LastName)
+                    ? $"{volunteer.FirstName} {volunteer.LastName}"
+                    : volunteer.Email;
 
                 var message = $@"A volunteer's status has changed for a task.
                     Volunteer: {volunteer.Name} ({volunteer.Email})
