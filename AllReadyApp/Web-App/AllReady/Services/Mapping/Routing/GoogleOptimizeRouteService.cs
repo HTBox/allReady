@@ -7,6 +7,7 @@ using AllReady.Services.Mapping.Routing.Models.Google;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Polly;
 
 namespace AllReady.Services.Mapping.Routing
 {
@@ -36,29 +37,46 @@ namespace AllReady.Services.Mapping.Routing
             {
                 try
                 {
-                    // todo sgordon: enhance with Polly for retries
-                    var response = await _httpClient.GetAsync(GenerateGoogleApiUrl(criteria));
-
-                    if (response.IsSuccessStatusCode)
+                    return await GetRetryPolicy().ExecuteAsync(async () =>
                     {
-                        var content = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<GoogleDirectionsResponse>(content);
+                        var googleResponse = await _httpClient.GetAsync(GenerateGoogleApiUrl(criteria));
 
-                        if (result.Status == GoogleDirectionsResponse.OkStatus)
+                        if (googleResponse.IsSuccessStatusCode)
                         {
-                            requestIds.AddRange(result.Routes.SelectMany(r => r.WaypointOrder).Select(waypointIndex => criteria.Waypoints[waypointIndex].RequestId));
+                            var content = await googleResponse.Content.ReadAsStringAsync();
+                            var result = JsonConvert.DeserializeObject<GoogleDirectionsResponse>(content);
 
-                            return new OptimizeRouteResult { RequestIds = requestIds, Distance = result.TotalDistance, Duration = result.TotalDuration };
+                            if (result.Status == GoogleDirectionsResponse.OkStatus)
+                            {
+                                requestIds.AddRange(result.Routes.SelectMany(r => r.WaypointOrder).Select(waypointIndex => criteria.Waypoints[waypointIndex].RequestId));
+
+                                return new OptimizeRouteResult { RequestIds = requestIds, Distance = result.TotalDistance, Duration = result.TotalDuration };
+                            }
                         }
-                    }
+                        else
+                        {
+                            // for now we fire an exception to force a Polly retry. We could review this later once we have logging to determine specific codes
+                            // that represent errors
+                            throw new Exception("Non success code");
+                        }                  
+
+                        return null;
+                    });
                 }
-                catch (Exception ex)
+                catch
                 {
-                    _logger.LogError($"Failure to contact Google Directions API - {ex}");
-                }
+                    // todo - handle other status codes and logging
+                }                
             }
 
             return null;
+        }
+
+        private Policy GetRetryPolicy()
+        {
+            return Policy
+                .Handle<Exception>()
+                .RetryAsync(2); // in total we will make 3 attempts
         }
 
         private string GenerateGoogleApiUrl(OptimizeRouteCriteria criteria)
