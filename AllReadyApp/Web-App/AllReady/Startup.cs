@@ -107,6 +107,7 @@ namespace AllReady
             services.Configure<TwitterAuthenticationSettings>(Configuration.GetSection("Authentication:Twitter"));
             services.Configure<TwilioSettings>(Configuration.GetSection("Authentication:Twilio"));
             services.Configure<MappingSettings>(Configuration.GetSection("Mapping"));
+            services.Configure<ApprovedRegionsSettings>(settings => settings.Enabled = false);
             services.Configure<ApprovedRegionsSettings>(Configuration.GetSection("ApprovedRegions"));
 
             // Add Identity services to the services container.
