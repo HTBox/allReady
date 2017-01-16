@@ -7,6 +7,7 @@ using AllReady.Services.Mapping;
 using AllReady.Services.Mapping.GeoCoding;
 using AllReady.ViewModels.Requests;
 using MediatR;
+using Microsoft.Extensions.Options;
 
 namespace AllReady.Hangfire.Jobs
 {
@@ -18,12 +19,14 @@ namespace AllReady.Hangfire.Jobs
         private readonly AllReadyContext context;
         private readonly IMediator mediator;
         private readonly IGeocodeService geocoder;
+        private readonly ApprovedRegionsSettings approvedRegions;
 
-        public ProcessApiRequests(AllReadyContext context, IMediator mediator, IGeocodeService geocoder)
+        public ProcessApiRequests(AllReadyContext context, IMediator mediator, IGeocodeService geocoder, IOptions<ApprovedRegionsSettings> approvedRegions)
         {
             this.context = context;
             this.mediator = mediator;
             this.geocoder = geocoder;
+            this.approvedRegions = approvedRegions.Value;
         }
 
         public void Process(RequestApiViewModel viewModel)
@@ -60,9 +63,19 @@ namespace AllReady.Hangfire.Jobs
                 context.Add(request);
                 context.SaveChanges();
 
-                mediator.Publish(new ApiRequestProcessedNotification { RequestId = request.RequestId });
-            }   
+                mediator.Publish(CreateApiRequestProcesssedNotification(request));
+            }
         }
+
+        private ApiRequestProcessedNotification CreateApiRequestProcesssedNotification(Request request)
+            => new ApiRequestProcessedNotification
+            {
+                RequestId = request.RequestId,
+                Acceptance = RequestIsFromApprovedRegion(request)
+            };
+
+        private bool RequestIsFromApprovedRegion(Request request)
+            => !approvedRegions.Enabled || approvedRegions.Regions.Contains(request.ProviderData);
     }
 
     public interface IProcessApiRequests

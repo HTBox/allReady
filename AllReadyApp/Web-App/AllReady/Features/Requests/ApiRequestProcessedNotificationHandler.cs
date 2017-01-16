@@ -22,7 +22,7 @@ namespace AllReady.Features.Requests
         {
             var request = context.Requests.SingleOrDefault(x => x.RequestId == notification.RequestId);
             //acceptance is true if we can service the Request or false if can't service it 
-            backgroundJobClient.Enqueue<ISendRequestStatusToGetASmokeAlarm>(x => x.Send(request.ProviderRequestId, "new", true));
+            backgroundJobClient.Enqueue<ISendRequestStatusToGetASmokeAlarm>(x => x.Send(request.ProviderRequestId, "new", notification.Acceptance));
         }
     }
 }

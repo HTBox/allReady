@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AllReady.Features.Requests;
 using AllReady.Hangfire.Jobs;
@@ -7,6 +8,7 @@ using AllReady.Services.Mapping;
 using AllReady.Services.Mapping.GeoCoding;
 using AllReady.ViewModels.Requests;
 using MediatR;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
@@ -35,7 +37,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
                 ProviderData = "ProviderData"
             };
 
-            var sut = new ProcessApiRequests(Context, Mock.Of<IMediator>(), Mock.Of<IGeocodeService>())
+            var sut = new ProcessApiRequests(Context, Mock.Of<IMediator>(), Mock.Of<IGeocodeService>(), Options.Create(new ApprovedRegionsSettings()))
             {
                 NewRequestId = () => requestId,
                 DateTimeUtcNow = () => dateAdded
@@ -75,7 +77,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             var requestId = Guid.NewGuid();
             var geoCoder = new Mock<IGeocodeService>();
             var viewModel = new RequestApiViewModel { Address = "address", City = "city", State = "state", Zip = "zip" };
-            var sut = new ProcessApiRequests(Context, Mock.Of<IMediator>(), geoCoder.Object)
+            var sut = new ProcessApiRequests(Context, Mock.Of<IMediator>(), geoCoder.Object, Options.Create(new ApprovedRegionsSettings()))
             {
                 NewRequestId = () => requestId
             };
@@ -91,7 +93,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             var requestId = Guid.NewGuid();
             var mediator = new Mock<IMediator>();
 
-            var sut = new ProcessApiRequests(Context, mediator.Object, Mock.Of<IGeocodeService>())
+            var sut = new ProcessApiRequests(Context, mediator.Object, Mock.Of<IGeocodeService>(), Options.Create(new ApprovedRegionsSettings()))
             {
                 NewRequestId = () => requestId
             };
@@ -99,6 +101,83 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             sut.Process(new RequestApiViewModel());
 
             mediator.Verify(x => x.Publish(It.Is<ApiRequestProcessedNotification>(y => y.RequestId == requestId)), Times.Once);
+        }
+
+        [Fact]
+        public void PublishApiRequestAddedNotificationWithTrueAcceptanceApprovedRegionsAreDisabled()
+        {
+            var mediator = new Mock<IMediator>();
+
+            var approvedRegions = Options.Create(new ApprovedRegionsSettings
+            {
+                Enabled = false
+            });
+
+            var sut = new ProcessApiRequests(Context, mediator.Object, Mock.Of<IGeocodeService>(), approvedRegions)
+            {
+                NewRequestId = () => Guid.NewGuid()
+            };
+
+            sut.Process(new RequestApiViewModel
+            {
+                ProviderData = "approved_region"
+            });
+
+            mediator.Verify(x => x.Publish(It.Is<ApiRequestProcessedNotification>(y => y.Acceptance == true)), Times.Once);
+        }
+
+        [Fact]
+        public void PublishApiRequestAddedNotificationWithTrueAcceptanceWhenInsideApprovedRegions()
+        {
+            var mediator = new Mock<IMediator>();
+
+            var approvedRegions = Options.Create(new ApprovedRegionsSettings
+            {
+                Enabled = true,
+                Regions = new List<string>
+                {
+                    "approved_region"
+                }
+            });
+
+            var sut = new ProcessApiRequests(Context, mediator.Object, Mock.Of<IGeocodeService>(), approvedRegions)
+            {
+                NewRequestId = () => Guid.NewGuid()
+            };
+
+            sut.Process(new RequestApiViewModel
+            {
+                ProviderData = "approved_region"
+            });
+
+            mediator.Verify(x => x.Publish(It.Is<ApiRequestProcessedNotification>(y => y.Acceptance == true)), Times.Once);
+        }
+
+        [Fact]
+        public void PublishApiRequestAddedNotificationWithFalseAcceptanceWhenOutsideApprovedRegions()
+        {
+            var mediator = new Mock<IMediator>();
+
+            var approvedRegions = Options.Create(new ApprovedRegionsSettings
+            {
+                Enabled = true,
+                Regions = new List<string>
+                {
+                    "approved_region"
+                }
+            });
+
+            var sut = new ProcessApiRequests(Context, mediator.Object, Mock.Of<IGeocodeService>(), approvedRegions)
+            {
+                NewRequestId = () => Guid.NewGuid()
+            };
+
+            sut.Process(new RequestApiViewModel
+            {
+                ProviderData = "non_approved_region"
+            });
+
+            mediator.Verify(x => x.Publish(It.Is<ApiRequestProcessedNotification>(y => y.Acceptance == false)), Times.Once);
         }
     }
 }
