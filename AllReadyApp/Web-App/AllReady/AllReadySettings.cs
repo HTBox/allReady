@@ -1,4 +1,6 @@
-﻿namespace AllReady
+﻿using System.Collections.Generic;
+
+namespace AllReady
 {
     public class AzureStorageSettings
     {
@@ -57,5 +59,12 @@
         public string Sid { get; set; }
         public string Token { get; set; }
         public string PhoneNo { get; set; }
+    }
+
+    public class ApprovedRegionsSettings
+    {
+        public bool ApprovedRegionsEnabled { get; set; }
+
+        public IEnumerable<string> Regions { get; set; }
     }
 }
