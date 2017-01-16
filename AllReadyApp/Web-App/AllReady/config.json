@@ -75,6 +75,17 @@
     },
     "ApprovedRegions": {
         "Enabled": true,
-        "Regions": "1,2,3"
+        "Regions": [
+            "IDMT",
+            "NDSD",
+            "KSNE",
+            "MINN",
+            "IOWA",
+            "WEMO",
+            "EAMO",
+            "WISC",
+            "CHNI",
+            "CSIL"
+        ]
     } 
 }
