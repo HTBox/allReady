@@ -479,44 +479,148 @@ namespace AllReady.UnitTest.Controllers
         {
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void AddPhoneNumberGetReturnsAView()
         {
+            //Arrange
+            var controller = new ManageController(null, null, null);
+
+            //Act
+            var view = controller.AddPhoneNumber();
+            
+            //Assert
+            Assert.NotNull(view);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task AddPhoneNumberPostReturnsTheSameViewAndModelWhenModelStateIsInvalid()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            //Arrange
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
+
+            var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
+            var invalidModel = new AddPhoneNumberViewModel {PhoneNumber = "not a number"};
+            controller.ModelState.AddModelError("PhoneNumber", "Must be a number");
+
+            //Act
+            var result = await controller.AddPhoneNumber(invalidModel);
+            var resultViewModel = ((ViewResult)result);
+            var viewModel = (AddPhoneNumberViewModel)resultViewModel.ViewData.Model;
+
+            //Assert
+            Assert.Equal("not a number", viewModel.PhoneNumber);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task AddPhoneNumberPostSendsUserByUserIdQueryWithCorrectUserIdWhenModelStateIsValid()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            //Arrange
+            var userId = "userId";
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
+
+            var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
+            controller.SetFakeUser(userId);
+
+            //Act
+            await controller.AddPhoneNumber(new AddPhoneNumberViewModel());
+
+            //Assert
+            mediator.Verify(m => m.SendAsync(It.Is<UserByUserIdQuery>(u => u.UserId == userId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task AddPhoneNumberPostInvokesGenerateChangePhoneNumberTokenAsyncWithCorrectParametersWhenModelStateIsValid()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            //Arrange
+            var userId = "userId";
+            var token = "token";
+            var user = new ApplicationUser {Id = userId};
+            var model = new AddPhoneNumberViewModel {PhoneNumber = "phone"};
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+            userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(),
+                                                                         It.IsAny<string>())).ReturnsAsync(token);
+
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
+
+            var controller = new ManageController(userManager.Object, signInManagerMock.Object, mediator.Object);
+            controller.SetFakeUser(userId);
+
+            //Act
+            await controller.AddPhoneNumber(model);
+
+            //Assert
+            userManager.Verify(x => x.GenerateChangePhoneNumberTokenAsync(It.Is<ApplicationUser>(u => u.Id == userId),
+                                                                          It.Is<string>(p => p == model.PhoneNumber)),
+                               Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task AddPhoneNumberPostSendsSendAccountSecurityTokenSmsAsyncWithCorrectDataWhenModelStateIsValid()
         {
-            //delete this liResendPhoneNumberConfirmationne when starting work on this unit test
-            await TaskFromResultZero;
+            //Arrange
+            var userId = "userId";
+            var token = "token";
+            var user = new ApplicationUser { Id = userId };
+            var model = new AddPhoneNumberViewModel { PhoneNumber = "phone" };
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+            userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(),
+                                                                         It.IsAny<string>())).ReturnsAsync(token);
+
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
+            mediator.Setup(x => x.SendAsync(It.IsAny<SendAccountSecurityTokenSms>())).ReturnsAsync(new Unit());
+
+            var controller = new ManageController(userManager.Object, signInManagerMock.Object, mediator.Object);
+            controller.SetFakeUser(userId);
+
+            //Act
+            await controller.AddPhoneNumber(model);
+
+            //Assert
+            mediator.Verify(m => m.SendAsync(It.Is<SendAccountSecurityTokenSms>(x => x.Token == token && x.PhoneNumber == model.PhoneNumber)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task AddPhonNumberPostRedirectsToCorrectActionWithCorrectRouteValuesWhenModelStateIsValid()
         {
-            //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            //Arrange
+            var userId = "userId";
+            var token = "token";
+            var user = new ApplicationUser { Id = userId };
+            var model = new AddPhoneNumberViewModel { PhoneNumber = "phone" };
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+            userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(),
+                                                                         It.IsAny<string>())).ReturnsAsync(token);
+
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
+            mediator.Setup(x => x.SendAsync(It.IsAny<SendAccountSecurityTokenSms>())).ReturnsAsync(new Unit());
+
+            var controller = new ManageController(userManager.Object, signInManagerMock.Object, mediator.Object);
+            controller.SetFakeUser(userId);
+
+            //Act
+            var result = await controller.AddPhoneNumber(model) as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("VerifyPhoneNumber", result.ActionName);
         }
 
         [Fact(Skip = "NotImplemented")]
