@@ -71,7 +71,7 @@ namespace AllReady.Models
 
         public Location Location { get; set; }
 
-        public List<CampaignContact> CampaignContacts { get; set; }
+        public List<CampaignContact> CampaignContacts { get; set; } = new List<CampaignContact>();
 
         public bool Locked { get; set; }
 
