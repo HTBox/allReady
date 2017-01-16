@@ -65,6 +65,6 @@ namespace AllReady
     {
         public bool Enabled { get; set; }
 
-        public IEnumerable<string> Regions { get; set; }
+        public List<string> Regions { get; set; }
     }
 }
