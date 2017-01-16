@@ -63,7 +63,7 @@ namespace AllReady
 
     public class ApprovedRegionsSettings
     {
-        public bool ApprovedRegionsEnabled { get; set; }
+        public bool Enabled { get; set; }
 
         public IEnumerable<string> Regions { get; set; }
     }
