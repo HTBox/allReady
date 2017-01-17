@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Controllers;
@@ -39,6 +40,7 @@ using Microsoft.AspNetCore.Localization;
 using AllReady.Services.Twitter;
 using CsvHelper;
 using AllReady.Services.Sms;
+using Microsoft.AspNetCore.Authentication.Twitter;
 
 namespace AllReady
 {
@@ -353,6 +355,17 @@ namespace AllReady
                 {
                     ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"],
                     ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"]
+                    ,
+                    Events = new TwitterEvents()
+                    {
+
+                        OnRemoteFailure = ctx =>
+                        {
+                            ctx.Response.Redirect("/Account/Login");
+                            ctx.HandleResponse();
+                            return Task.FromResult(0);
+                        }
+                    }
                 };
 
                 app.UseTwitterAuthentication(options);
