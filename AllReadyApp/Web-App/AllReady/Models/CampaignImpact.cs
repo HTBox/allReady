@@ -5,6 +5,8 @@ namespace AllReady.Models
     public class CampaignImpact
     {
         public int Id { get; set; }
+        public int CampaignId { get; set; }
+        public Campaign Campaign { get; set; }
 
         public ImpactType ImpactType { get; set; }
         /// <summary>

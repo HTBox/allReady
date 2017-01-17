@@ -116,8 +116,6 @@ namespace AllReady.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("CampaignImpactId");
-
                     b.Property<string>("Description");
 
                     b.Property<DateTimeOffset>("EndDateTime");
@@ -155,8 +153,6 @@ namespace AllReady.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CampaignImpactId");
-
                     b.HasIndex("LocationId");
 
                     b.HasIndex("ManagingOrganizationId");
@@ -192,6 +188,8 @@ namespace AllReady.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("CampaignId");
+
                     b.Property<int>("CurrentImpactLevel");
 
                     b.Property<bool>("Display");
@@ -203,6 +201,8 @@ namespace AllReady.Migrations
                     b.Property<string>("TextualImpactGoal");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CampaignId");
 
                     b.ToTable("CampaignImpact");
                 });
@@ -758,10 +758,6 @@ namespace AllReady.Migrations
 
             modelBuilder.Entity("AllReady.Models.Campaign", b =>
                 {
-                    b.HasOne("AllReady.Models.CampaignImpact", "CampaignImpact")
-                        .WithMany()
-                        .HasForeignKey("CampaignImpactId");
-
                     b.HasOne("AllReady.Models.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId");
@@ -791,6 +787,14 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.Contact")
                         .WithMany("CampaignContacts")
                         .HasForeignKey("ContactId1");
+                });
+
+            modelBuilder.Entity("AllReady.Models.CampaignImpact", b =>
+                {
+                    b.HasOne("AllReady.Models.Campaign", "Campaign")
+                        .WithMany("CampaignImpacts")
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("AllReady.Models.CampaignSponsors", b =>

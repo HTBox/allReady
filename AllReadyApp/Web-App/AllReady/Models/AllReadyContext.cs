@@ -76,6 +76,7 @@ namespace AllReady.Models
 
         private void Map(EntityTypeBuilder<CampaignImpact> builder)
         {
+            builder.HasOne(c => c.Campaign);
             builder.Ignore(c => c.PercentComplete);
         }
 
@@ -167,7 +168,7 @@ namespace AllReady.Models
         private void Map(EntityTypeBuilder<Campaign> builder)
         {
             builder.HasOne(c => c.ManagingOrganization);
-            builder.HasOne(c => c.CampaignImpact);
+            builder.HasMany(c => c.CampaignImpacts);
             builder.HasMany(c => c.Events);
             builder.HasOne(t => t.Location);
             builder.HasMany(t => t.CampaignContacts);

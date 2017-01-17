@@ -5,7 +5,6 @@ using AllReady.Areas.Admin.Models;
 using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Extensions;
 using AllReady.Models;
-using AllReady.Providers;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +24,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             var campaign = await _context.Campaigns
                 .Include(l => l.Location)
                 .Include(tc => tc.CampaignContacts)
-                .Include(i => i.CampaignImpact)
+                .Include(i => i.CampaignImpacts)
                 .SingleOrDefaultAsync(c => c.Id == message.Campaign.Id) ?? new Campaign();
 
             campaign.Name = message.Campaign.Name;
@@ -42,7 +41,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.ImageUrl = message.Campaign.ImageUrl;
 
             CreateUpdateOrDeleteCampaignPrimaryContact(campaign, message.Campaign);
-            campaign.CampaignImpact = campaign.CampaignImpact.UpdateModel(message.Campaign.CampaignImpact);
+            CreateUpdateOrDeleteCampaignImpacts(campaign, message.Campaign.CampaignImpacts);
             campaign.Location = campaign.Location.UpdateModel(message.Campaign.Location);
 
             campaign.Featured = message.Campaign.Featured;
@@ -54,6 +53,24 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             await _context.SaveChangesAsync();
 
             return campaign.Id;
+        }
+
+        private void CreateUpdateOrDeleteCampaignImpacts(Campaign campaign, IList<CampaignImpact> editModelCampaignImpacts)
+        {
+            var originalCampaignImpacts = campaign.CampaignImpacts ?? (campaign.CampaignImpacts = new List<CampaignImpact>());
+            originalCampaignImpacts.RemoveAll(original => !editModelCampaignImpacts.Select(c => c.Id).Contains(original.Id));
+
+            foreach (var editModel in editModelCampaignImpacts)
+            {
+                var originalImpact = (editModel.Id == 0 ? null : originalCampaignImpacts.FirstOrDefault(i => i.Id == editModel.Id)) ?? new CampaignImpact();
+                if (originalImpact.Id == 0)
+                {
+                    originalCampaignImpacts.Add(originalImpact);
+                    originalImpact.Campaign = campaign;
+                    originalImpact.CampaignId = campaign.Id;
+                }
+                originalImpact.UpdateModel(editModel);
+            }
         }
 
         private void CreateUpdateOrDeleteCampaignPrimaryContact(Campaign campaign, IPrimaryContactViewModel contactModel)

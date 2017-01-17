@@ -123,7 +123,7 @@ namespace AllReady.DataAccess
                 ManagingOrganization = organization,
                 StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-1), _timeZone),
                 EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(1), _timeZone),
-                CampaignImpact = smokeDetectorCampaignImpact,
+                CampaignImpacts = new List<CampaignImpact> { smokeDetectorCampaignImpact },
                 TimeZoneId = _timeZone.Id,
                 Location = GetRandom(locations),
                 Published = true
