@@ -17,6 +17,26 @@
     </div>
 </div>
 
+@if (Model.OptimizeRouteStatus != null)
+{
+    <div class="row">
+        <div class="col-md-12">
+            @if (!Model.OptimizeRouteStatus.IsSuccess)
+            {
+                <div class="alert alert-danger">
+                    <strong>Failure!</strong> @Model.OptimizeRouteStatus.StatusMessage
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success">
+                    <strong>Success!</strong> @Model.OptimizeRouteStatus.StatusMessage
+                </div>
+            }
+        </div>
+    </div>
+}
+
 <div class="row">
     <div class="col-md-12">
         <h2>
@@ -47,7 +67,7 @@
             <form data-bind="submit: submitForm">
                 <input type="hidden" asp-for="Id" />
                 Add team member:
-                <select required  data-bind="value: selectedTeamMember, options: potentialTeamMembers, optionsText: 'Text', optionsValue: 'Value'"></select>
+                <select required data-bind="value: selectedTeamMember, options: potentialTeamMembers, optionsText: 'Text', optionsValue: 'Value'"></select>
                 <button type="submit" class="btn btn-default submit-form" disabled="disabled" data-bind="enable: isValid() && !isSubmitting(), click: submitForm">Add</button>
                 <i class="fa fa-spinner fa-spin" style="display: none;" data-bind="visible: isSubmitting"></i>
             </form>
@@ -59,34 +79,34 @@
             <h4>Assigned Team Members</h4>
             <table class="table" style="display: none;" data-bind="visible: hasTeamMembers">
                 <thead>
-                <tr>
-                    <th>
-                        Name
-                    </th>
-                    <th>
-                        Email
-                    </th>
-                    <th>
-                        Assigned Task
-                    </th>
-                    <th></th>
-                </tr>
+                    <tr>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Email
+                        </th>
+                        <th>
+                            Assigned Task
+                        </th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody data-bind="foreach: teamMembers">
-                <tr>
-                    <td>
-                        <p data-bind="text: DisplayName"></p>
-                    </td>
-                    <td>
-                        <p data-bind="text: VolunteerEmail"></p>
-                    </td>
-                    <td>
-                        <p data-bind="text: TaskName"></p>
-                    </td>
-                    <td>
-                        <a data-toggle="tooltip" data-placement="top" title="Remove from team" class="btn btn-danger" data-bind="attr: { href: '/Admin/Itinerary/' + $parent.itineraryId + '/ConfirmRemoveTeamMember/' + TaskSignupId }"><span class="fa fa-remove"></span></a>
-                    </td>
-                </tr>
+                    <tr>
+                        <td>
+                            <p data-bind="text: DisplayName"></p>
+                        </td>
+                        <td>
+                            <p data-bind="text: VolunteerEmail"></p>
+                        </td>
+                        <td>
+                            <p data-bind="text: TaskName"></p>
+                        </td>
+                        <td>
+                            <a data-toggle="tooltip" data-placement="top" title="Remove from team" class="btn btn-danger" data-bind="attr: { href: '/Admin/Itinerary/' + $parent.itineraryId + '/ConfirmRemoveTeamMember/' + TaskSignupId }"><span class="fa fa-remove"></span></a>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
             <p style="display: none;" data-bind="visible: !hasTeamMembers()">There are currently no assigned team members for this itinerary.</p>
@@ -107,7 +127,7 @@
     </div>
 </div>
 @if (Model.CanOptimizeAndDisplayRoute)
-{
+            {
     <div class="row">
         <div class="col-md-12">
             <p>
@@ -132,7 +152,7 @@
     <div class="row">
         <label class="col-md-1 control-label">Filter:</label>
         <div class="col-md-2">
-            <input type="text" asp-for="RequestKeywords" class="form-control"/>
+            <input type="text" asp-for="RequestKeywords" class="form-control" />
         </div>
         <div class="col-md-2">
             <select asp-for="RequestStatus" asp-items="@SelectListService.GetRequestTypes().AddNullOptionToFront("<All>")" class="form-control"></select>
@@ -229,7 +249,7 @@
                 </p>
                 <p>
                     @if (Model.UseStartAddressAsEndAddress)
-{
+                    {
                         <text><strong>Start/End Address</strong>: @Model.StartAddress</text>
                     }
                     else
@@ -257,26 +277,26 @@
             async defer></script>
     <script type='text/javascript'>
         function GetMap() {
-        renderRequestsMap("myMap", getLocationsFromModelRequests());
-    };
+            renderRequestsMap("myMap", getLocationsFromModelRequests());
+        };
 
-    function getLocationsFromModelRequests() {
-        var requestData = [];
-        @foreach (var request in Model.Requests){
+        function getLocationsFromModelRequests() {
+            var requestData = [];
+            @foreach (var request in Model.Requests){
                 @:var reqData = {lat:@request.Latitude, long:@request.Longitude, name:'@request.Name', color:'blue'};
 
                 if (request.Status == RequestStatus.Completed)
                 {
                     @:reqData.color = 'green';
-                }
+                                                                                                }
 
                 if (request.Status == RequestStatus.Canceled)
                 {
                     @:reqData.color = 'red';
-                }
+                                                                                                }
 
                 @:requestData.push(reqData);
-            }
+                                                                                            }
             return requestData;
         }
 
