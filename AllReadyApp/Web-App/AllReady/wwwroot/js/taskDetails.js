@@ -36,8 +36,8 @@ var HTBox;
                         $('.alert-info', form).hide();
                         var errorSection = $('.alert-danger', form);
                         var errorMessage = '';
-                        if (error.responseText) {
-                            var errorInfo = error.responseText;
+                        if (error.responseJSON) {
+                            var errorInfo = error.responseJSON;
                             if (errorInfo.Subject && errorInfo.Subject.length > 0) {
                                 errorMessage += errorInfo.Subject[0] + '<br/>';
                             }
