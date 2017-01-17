@@ -26,11 +26,13 @@ namespace AllReady.Controllers
         private readonly IMediator _mediator;
         private readonly IExternalUserInformationProviderFactory _externalUserInformationProviderFactory;
         private readonly IRedirectAccountControllerRequests _redirectAccountControllerRequests;
+        private readonly string _externalCookieScheme;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IOptions<GeneralSettings> generalSettings,
+            IOptions<IdentityCookieOptions> identityCookieOptions,
             IMediator mediator,
             IExternalUserInformationProviderFactory externalUserInformationProviderFactory,
             IRedirectAccountControllerRequests redirectAccountControllerRequests
@@ -42,13 +44,16 @@ namespace AllReady.Controllers
             _mediator = mediator;
             _externalUserInformationProviderFactory = externalUserInformationProviderFactory;
             _redirectAccountControllerRequests = redirectAccountControllerRequests;
+            _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
         }
 
         // GET: /Account/Login
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login(string returnUrl = null)
+        public async Task<IActionResult> Login(string returnUrl = null)
         {
+            //Ensure we remove any pre-existing external cookie to ensure clean login (https://github.com/aspnet/Templates/pull/662)
+            await HttpContext.Authentication.SignOutAsync(_externalCookieScheme);
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
