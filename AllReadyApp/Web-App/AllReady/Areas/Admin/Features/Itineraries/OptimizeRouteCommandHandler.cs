@@ -65,19 +65,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     }
                     else
                     {
-                        for (var i = 0; i < waypoints.Count; i++)
-                        {
-                            var itineraryRequest = requests.SingleOrDefault(r => r.RequestId == optimizeResult.RequestIds[i]);
-
-                            if (itineraryRequest != null)
-                            {
-                                itineraryRequest.OrderIndex = i + 1;
-                            }
-                        }
-
-                        await _context.SaveChangesAsync();
-
-                        SetOptimizeCache(message.UserId, message.ItineraryId, new OptimizeRouteResultStatus { StatusMessage = "Route optimized" });
+                        await ReOrderRequests(waypoints, requests, optimizeResult, message);
                     }
                 }
                 else
@@ -85,6 +73,23 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     SetOptimizeCache(message.UserId, message.ItineraryId, OptimizeRouteResult.FailedOptimizeRouteResult("Route optimization failed").Status);
                 }
             }
+        }
+
+        private async Task ReOrderRequests(List<OptimizeRouteWaypoint> waypoints, List<ItineraryRequest> requests, OptimizeRouteResult optimizeResult, OptimizeRouteCommand message)
+        {
+            for (var i = 0; i < waypoints.Count; i++)
+            {
+                var itineraryRequest = requests.SingleOrDefault(r => r.RequestId == optimizeResult.RequestIds[i]);
+
+                if (itineraryRequest != null)
+                {
+                    itineraryRequest.OrderIndex = i + 1;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            SetOptimizeCache(message.UserId, message.ItineraryId, new OptimizeRouteResultStatus { StatusMessage = "Route optimized" });
         }
 
         private async Task<List<ItineraryRequest>> GetRequests(int itineraryId)
