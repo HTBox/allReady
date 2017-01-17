@@ -43,7 +43,7 @@ namespace AllReady.Features.Notifications
             {
                 var link = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Task/Details/{taskSignup.Task.Id}";
 
-                var subject = !string.IsNullOrEmpty(volunteer.FirstName) && !string.IsNullOrEmpty(volunteer.LastName)
+                var subject = volunteer.FirstName != null && volunteer.LastName != null
                     ? $"{volunteer.FirstName} {volunteer.LastName}"
                     : volunteer.Email;
 
