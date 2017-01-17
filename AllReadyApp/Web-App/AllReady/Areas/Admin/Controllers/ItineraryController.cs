@@ -15,6 +15,8 @@ using AllReady.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AllReady.Features.Users;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -24,11 +26,13 @@ namespace AllReady.Areas.Admin.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IItineraryEditModelValidator _itineraryValidator;
+        private readonly IMemoryCache _cache;
 
-        public ItineraryController(IMediator mediator, IItineraryEditModelValidator itineraryValidator)
+        public ItineraryController(IMediator mediator, IItineraryEditModelValidator itineraryValidator, IMemoryCache memoryCache)
         {
             _mediator = mediator;
             _itineraryValidator = itineraryValidator;
+            _cache = memoryCache;
         }
 
         [HttpGet]
@@ -40,6 +44,10 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
+            var userId = await _mediator.SendAsync(new GetUserIdCommand { User = User });
+
+            itinerary.OptimizeRouteStatus = _mediator.Send(new OptimizeRouteResultFromCacheQuery { UserId = userId, ItineraryId = id });
 
             if (!User.IsOrganizationAdmin(itinerary.OrganizationId))
             {
@@ -54,7 +62,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Details(int id, string requestKeywords, RequestStatus? requestStatus)
         {
-            var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery {ItineraryId = id});
+            var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = id });
             if (itinerary == null)
             {
                 return NotFound();
@@ -189,7 +197,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Json(new
                 {
                     isSuccess = false,
-                    errors = new[] {"Invalid selection."}
+                    errors = new[] { "Invalid selection." }
                 });
             }
 
@@ -199,11 +207,11 @@ namespace AllReady.Areas.Admin.Controllers
                 return Json(new
                 {
                     isSuccess = false,
-                    errors = new[] {"Invalid itinerary."}
+                    errors = new[] { "Invalid itinerary." }
                 });
             }
 
-            var detail = await _mediator.SendAsync(new ItineraryDetailQuery {ItineraryId = id});
+            var detail = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = id });
             return Json(new
             {
                 isSuccess = true,
@@ -305,16 +313,16 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var  viewModel = await _mediator.SendAsync(new RequestSummaryQuery { RequestId = requestId });
+            var viewModel = await _mediator.SendAsync(new RequestSummaryQuery { RequestId = requestId });
             if (viewModel == null)
             {
                 return NotFound();
             }
 
-            viewModel.Title =$"Remove request: {viewModel.Name}";
+            viewModel.Title = $"Remove request: {viewModel.Name}";
             viewModel.UserIsOrgAdmin = true;
 
-            return View("ConfirmRemoveRequest",  viewModel);
+            return View("ConfirmRemoveRequest", viewModel);
         }
 
         [HttpPost]
@@ -322,7 +330,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Itinerary/{itineraryId}/[Action]/{requestId}")]
         public async Task<IActionResult> RemoveRequest(RequestSummaryViewModel viewModel)
         {
-            if(!viewModel.UserIsOrgAdmin)
+            if (!viewModel.UserIsOrgAdmin)
             {
                 return Unauthorized();
             }
@@ -375,7 +383,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Completed});
+            await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Completed });
 
             return RedirectToAction("Details", new { id = itineraryId });
         }
@@ -407,8 +415,8 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new ChangeRequestStatusCommand {RequestId = requestId, NewStatus = RequestStatus.Confirmed});
-            return RedirectToAction("Details", new {id = itineraryId});
+            await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Confirmed });
+            return RedirectToAction("Details", new { id = itineraryId });
         }
 
         [HttpPost]
@@ -422,8 +430,8 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new ChangeRequestStatusCommand {RequestId = requestId, NewStatus = RequestStatus.Unassigned});
-            return RedirectToAction("Details", new {id = itineraryId});
+            await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Unassigned });
+            return RedirectToAction("Details", new { id = itineraryId });
         }
 
         [HttpPost]
@@ -438,7 +446,9 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new OptimizeRouteCommand { ItineraryId = itineraryId });
+            var userId = await _mediator.SendAsync(new GetUserIdCommand { User = User });
+
+            await _mediator.SendAsync(new OptimizeRouteCommand { ItineraryId = itineraryId, UserId = userId });
 
             return RedirectToAction("Details", new { id = itineraryId, startAddress = model.StartAddress, endAddress = model.EndAddress });
         }
