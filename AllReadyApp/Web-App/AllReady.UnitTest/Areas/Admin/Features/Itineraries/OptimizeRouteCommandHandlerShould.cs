@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AllReady.Services.Mapping.Routing;
 using Shouldly;
 using Xunit;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
 {
@@ -130,7 +131,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var optimizeRouteService = new Mock<IOptimizeRouteService>();
             optimizeRouteService.Setup(x => x.OptimizeRoute(It.IsAny<OptimizeRouteCriteria>())).Verifiable();
 
-            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object);
+            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, Mock.Of<IMemoryCache>());
 
             await sut.Handle(new OptimizeRouteCommand { ItineraryId = 200 });
 
@@ -143,7 +144,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var optimizeRouteService = new Mock<IOptimizeRouteService>();
             optimizeRouteService.Setup(x => x.OptimizeRoute(It.IsAny<OptimizeRouteCriteria>())).Verifiable();
 
-            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object);
+            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, Mock.Of<IMemoryCache>());
 
             await sut.Handle(new OptimizeRouteCommand { ItineraryId = 2 });
 
@@ -156,7 +157,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var optimizeRouteService = new Mock<IOptimizeRouteService>();
             optimizeRouteService.Setup(x => x.OptimizeRoute(It.IsAny<OptimizeRouteCriteria>())).Verifiable();
 
-            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object);
+            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, Mock.Of<IMemoryCache>());
 
             await sut.Handle(new OptimizeRouteCommand { ItineraryId = 3 });
 
@@ -174,7 +175,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 .Callback<OptimizeRouteCriteria>(x => criteria = x)
                 .Verifiable();
 
-            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object);
+            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, Mock.Of<IMemoryCache>());
 
             await sut.Handle(new OptimizeRouteCommand { ItineraryId = 1 });
 
@@ -192,7 +193,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 .ReturnsAsync(null)
                 .Verifiable();
 
-            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object);
+            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, Mock.Of<IMemoryCache>());
 
             await sut.Handle(new OptimizeRouteCommand { ItineraryId = 1 });
 
@@ -210,7 +211,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 .ReturnsAsync(new OptimizeRouteResult())
                 .Verifiable();
 
-            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object);
+            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, Mock.Of<IMemoryCache>());
 
             await sut.Handle(new OptimizeRouteCommand { ItineraryId = 1 });
 
@@ -228,7 +229,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Guid.NewGuid() } })
                 .Verifiable();
 
-            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object);
+            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, Mock.Of<IMemoryCache>());
 
             await sut.Handle(new OptimizeRouteCommand { ItineraryId = 1 });
 
@@ -246,7 +247,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Request4Id, Guid.Empty } })
                 .Verifiable();
 
-            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object);
+            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, Mock.Of<IMemoryCache>());
 
             await sut.Handle(new OptimizeRouteCommand { ItineraryId = 1 });
 
@@ -264,7 +265,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Request4Id, Request1Id } })
                 .Verifiable();
 
-            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object);
+            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, Mock.Of<IMemoryCache>());
 
             await sut.Handle(new OptimizeRouteCommand { ItineraryId = 1 });
 
