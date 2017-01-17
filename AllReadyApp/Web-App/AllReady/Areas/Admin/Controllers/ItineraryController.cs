@@ -16,7 +16,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Features.Users;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -26,13 +25,11 @@ namespace AllReady.Areas.Admin.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IItineraryEditModelValidator _itineraryValidator;
-        private readonly IMemoryCache _cache;
 
-        public ItineraryController(IMediator mediator, IItineraryEditModelValidator itineraryValidator, IMemoryCache memoryCache)
+        public ItineraryController(IMediator mediator, IItineraryEditModelValidator itineraryValidator)
         {
             _mediator = mediator;
             _itineraryValidator = itineraryValidator;
-            _cache = memoryCache;
         }
 
         [HttpGet]
@@ -45,7 +42,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var userId = await _mediator.SendAsync(new GetUserIdCommand { User = User });
+            var userId = await _mediator.SendAsync(new GetUserIdQuery { User = User });
 
             itinerary.OptimizeRouteStatus = _mediator.Send(new OptimizeRouteResultFromCacheQuery { UserId = userId, ItineraryId = id });
 
@@ -446,11 +443,11 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var userId = await _mediator.SendAsync(new GetUserIdCommand { User = User });
+            var userId = await _mediator.SendAsync(new GetUserIdQuery { User = User });
 
             await _mediator.SendAsync(new OptimizeRouteCommand { ItineraryId = itineraryId, UserId = userId });
 
-            return RedirectToAction("Details", new { id = itineraryId, startAddress = model.StartAddress, endAddress = model.EndAddress });
+            return RedirectToAction("Details", new { id = itineraryId });
         }
 
         private async Task<SelectItineraryRequestsViewModel> BuildSelectItineraryRequestsModel(int itineraryId, RequestSearchCriteria criteria)

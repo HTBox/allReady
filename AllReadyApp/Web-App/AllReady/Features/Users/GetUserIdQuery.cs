@@ -3,7 +3,7 @@ using System.Security.Claims;
 
 namespace AllReady.Features.Users
 {
-    public class GetUserIdCommand : IAsyncRequest<string>
+    public class GetUserIdQuery : IAsyncRequest<string>
     {
         public ClaimsPrincipal User { get; set; }
     }

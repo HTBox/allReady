@@ -51,13 +51,11 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
                 var optimizeResult = await _optimizeRouteService.OptimizeRoute(new OptimizeRouteCriteria(addresses.StartAddress, addresses.EndAddress, waypoints));
 
-                if (!string.IsNullOrEmpty(message.UserId) && optimizeResult != null && !optimizeResult.Status.IsSuccess)
+                if (optimizeResult != null && !optimizeResult.Status.IsSuccess)
                 {
                     SetOptimizeCache(message.UserId, message.ItineraryId, optimizeResult.Status);
-                    return;
                 }
-
-                if (optimizeResult?.RequestIds != null && ValidateOptimizedRequests(waypoints, optimizeResult.RequestIds))
+                else if (optimizeResult?.RequestIds != null && ValidateOptimizedRequests(waypoints, optimizeResult.RequestIds))
                 {
                     var originalRequestIds = waypoints.Select(x => x.RequestId);
 
@@ -79,10 +77,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
                         await _context.SaveChangesAsync();
 
-                        if (!string.IsNullOrEmpty(message.UserId))
-                        {
-                            SetOptimizeCache(message.UserId, message.ItineraryId, new OptimizeRouteResultStatus { StatusMessage = "Route optimized" });
-                        }
+                        SetOptimizeCache(message.UserId, message.ItineraryId, new OptimizeRouteResultStatus { StatusMessage = "Route optimized" });
                     }
                 }
                 else
@@ -133,9 +128,12 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
         private void SetOptimizeCache(string userId, int itineraryId, OptimizeRouteResultStatus message)
         {
-            var cacheEntryOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(1));
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var cacheEntryOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(1));
 
-            _cache.Set(string.Concat(CacheKeys.OptimizeRouteResultCache, userId, itineraryId), message, cacheEntryOptions);
+                _cache.Set(string.Concat(CacheKeys.OptimizeRouteResultCache, userId, itineraryId), message, cacheEntryOptions);
+            }
         }
 
         /// <summary>
@@ -146,7 +144,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
         /// <returns></returns>
         private static bool ValidateOptimizedRequests(IEnumerable<OptimizeRouteWaypoint> waypoints, IEnumerable<Guid> optimizedRequestIds)
         {
-            return optimizedRequestIds.Count() == waypoints.Count() && 
+            return optimizedRequestIds.Count() == waypoints.Count() &&
                 waypoints.Select(x => x.RequestId).Except(optimizedRequestIds).ToList().Count == 0;
         }
     }
