@@ -16,7 +16,7 @@ namespace AllReady.DataAccess
         private readonly SampleDataSettings _settings;
         private readonly GeneralSettings _generalSettings;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly TimeZoneInfo _centralTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+        private readonly TimeZoneInfo _centralTimeZone = TimeZoneInfo.Local;
 
         public SampleDataGenerator(AllReadyContext context, IOptions<SampleDataSettings> options, IOptions<GeneralSettings> generalSettings, UserManager<ApplicationUser> userManager)
         {
