@@ -72,5 +72,18 @@
       "Token": "[twiliotoken]",
       "PhoneNo": "[twilionumber]"
     }
-  }
+  },  
+    "ApprovedRegions": {
+      "Enabled": true,
+      "Regions": ["IDMT",
+        "NDSD",
+        "KSNE",
+        "MINN",
+        "IOWA",
+        "WEMO",
+        "EAMO",
+        "WISC",
+        "CHNI",
+        "CSIL"]
+  } 
 }
