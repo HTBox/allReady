@@ -35,7 +35,7 @@ namespace AllReady.Features.Notifications
                 var taskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQuery { TaskId = notification.TaskId, UserId = notification.UserId });
 
                 var campaignContact = taskInfo.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
-                var adminEmail = campaignContact?.Contact.Email;
+                var adminEmail = campaignContact?.Contact?.Email;
                 if (string.IsNullOrWhiteSpace(adminEmail))
                 {
                     return;
