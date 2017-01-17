@@ -6,15 +6,22 @@
     <title>@ViewData["Title"] - allReady</title>
     <link href='https://fonts.googleapis.com/css?family=Roboto:300,100' rel='stylesheet' type='text/css' />
     <environment names="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/css/tether.css" />
+        <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/bootstrap/3.0.0/css/bootstrap.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css" />
-        <link rel="stylesheet" href="~/lib/bootstrap-toggle/css/bootstrap-toggle.css" />
-        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
-        <link rel="stylesheet" href="~/lib/bootstrap-tagsinput/src/bootstrap-tagsinput.css" />
+        <link rel="stylesheet" href="//gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.css"
+              asp-fallback-href="~/lib/bootstrap-toggle/css/bootstrap-toggle.css" />
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.9.1/fullcalendar.css" />
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.css"
+              asp-fallback-href="~/lib/font-awesome/css/font-awesome.css" />
+        <!-- This css file is not included in Staging and Production. - Removed from here.
+        <link rel="stylesheet" href="~/lib/bootstrap-tagsinput/src/bootstrap-tagsinput.css" /> -->
         <link rel="stylesheet" href="~/css/site.css" />
-        <link rel="stylesheet" href="~/lib/fullcalendar/dist/fullcalendar.css" />
+
     </environment>
     <environment names="Staging,Production">
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/css/tether.css" />
         <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/bootstrap/3.0.0/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
@@ -75,24 +82,44 @@
     @await Html.PartialAsync("_Footer")
     @await Html.PartialAsync("_Version")
     <environment names="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="~/lib/bootstrap-toggle/js/bootstrap-toggle.js"></script>
-        <script src="~/lib/knockout/dist/knockout.js"></script>
-        <script src="~/lib/moment/moment.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.js"></script>
+        <script src="//ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.js">
+        </script>
+        <script src="//ajax.aspnetcdn.com/ajax/knockout/knockout-3.3.0.js"></script>
+        <script src="//ajax.aspnetcdn.com/ajax/bootstrap/3.0.0/bootstrap.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.js">
+        </script>
+        <script src="//gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"
+                asp-fallback-src="~/lib/bootstrap-toggle/js/bootstrap-toggle.js">
+        </script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.js"
+                asp-fallback-src="~/lib/moment/moment.js">
+        </script>
         <script src="~/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
-        <script src="~/lib/tota11y/build/tota11y.js"></script>
-        <script src="~/lib/tinymce/tinymce.js"></script>
-        <script src="~/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput.js"></script>
-        <script src="~/lib/d3/d3.js"></script>
-        <script src="~/lib/jquery.maskedinput/dist/jquery.maskedinput.js"></script>
-        <script src="~/lib/fullcalendar/dist/fullcalendar.js"></script>
+        <script src="//ajax.aspnetcdn.com/ajax/bootstrap-touch-carousel/0.8.0/js/bootstrap-touch-carousel.js"
+                asp-fallback-src="~/lib/bootstrap-touch-carousel/dist/js/bootstrap-touch-carousel.js">
+        </script>
+        <script src="//cdn.tinymce.com/4/tinymce.js"
+                asp-fallback-src="~/lib/tinymce/tinymce.js">
+        </script>
+        <script src="//d3js.org/d3.v3.js"
+                asp-fallback-src="~/lib/d3/d3.js">
+        </script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"
+                asp-fallback-src="~/lib/jquery.maskedinput/dist/jquery.maskedinput.js">
+        </script>
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.9.1/fullcalendar.min.js"
+                asp-fallback-src="~/lib/fullcalendar/dist/fullcalendar.js">
+        </script>
     </environment>
     <environment names="Staging,Production">
         <script src="//ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.min.js"
                 asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
                 asp-fallback-test="window.jQuery">
         </script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.js"></script>
         <script src="//ajax.aspnetcdn.com/ajax/knockout/knockout-3.3.0.js"></script>
         <script src="//ajax.aspnetcdn.com/ajax/bootstrap/3.0.0/bootstrap.min.js"
                 asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
