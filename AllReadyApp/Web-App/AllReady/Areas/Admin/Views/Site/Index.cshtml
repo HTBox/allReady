@@ -73,6 +73,9 @@
                                                         @if (!user.IsUserType(UserType.ApiAccess))
                                                         {
                                                             <a data-toggle="tooltip" data-placement="top" title="Allow API Access" asp-action="AssignApiAccessRole" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success">Allow API Access</a>
+                                                        }
+                                                        else
+                                                        {
                                                             <a data-toggle="tooltip" data-placement="top" title="Manage Keys" asp-action="ManageApiKeys" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-warning">Manage Keys</a>
                                                         }
                                                     </div>
