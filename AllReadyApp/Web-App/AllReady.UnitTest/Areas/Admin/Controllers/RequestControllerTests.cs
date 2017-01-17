@@ -10,8 +10,8 @@ using AllReady.Features.Sms;
 using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
 using Shouldly;
 using Xunit;
@@ -211,14 +211,53 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { Id = eventId, OrganizationId = orgId });
-            mediator.Setup(mock => mock.SendAsync(It.IsAny<ValidatePhoneNumberRequest>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true, PhoneNumberE164 = model.Phone });
+            mediator.Setup(mock => mock.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true, PhoneNumberE164 = model.Phone });
 
             var sut = new RequestController(mediator.Object);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             await sut.Edit(model);
 
-            mediator.Verify(x => x.SendAsync(It.Is<ValidatePhoneNumberRequest>(y => y.PhoneNumber == model.Phone && y.ValidateType)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<ValidatePhoneNumberRequestCommand>(y => y.PhoneNumber == model.Phone && y.ValidateType)), Times.Once);
+        }
+
+        [Fact]
+        public async Task EditPost_AddsCorrectErrorToModelState_WhenPhoneNumberValidationFails()
+        {
+            const int eventId = 1;
+            const int orgId = 1;
+            var model = new EditRequestViewModel { EventId = eventId, Phone = "111-111-1111" };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { Id = eventId, OrganizationId = orgId });
+            mediator.Setup(mock => mock.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = false });
+
+            var sut = new RequestController(mediator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.Edit(model) as ViewResult;
+            Assert.Equal(result.ViewData.ModelState.ErrorCount, 1);
+            Assert.Equal(result.ViewData.ModelState[nameof(model.Phone)].ValidationState, ModelValidationState.Invalid);
+            Assert.Equal(result.ViewData.ModelState[nameof(model.Phone)].Errors.Single().ErrorMessage, "Unable to validate phone number");
+        }
+
+        [Fact]
+        public async Task EditPost_ReturnsCorrectViewAndViewModel_WhenPhoneNumberValidationFails()
+        {
+            const int eventId = 1;
+            const int orgId = 1;
+            var model = new EditRequestViewModel { EventId = eventId, Phone = "111-111-1111" };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { Id = eventId, OrganizationId = orgId });
+            mediator.Setup(mock => mock.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = false });
+
+            var sut = new RequestController(mediator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.Edit(model) as ViewResult;
+            Assert.Equal(result.ViewName, "Edit");
+            Assert.IsType<EditRequestViewModel>(result.Model);
         }
 
         [Fact]
@@ -230,7 +269,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(viewModel);
-            mediator.Setup(mock => mock.SendAsync(It.IsAny<ValidatePhoneNumberRequest>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true });
+            mediator.Setup(mock => mock.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true });
 
             var sut = new RequestController(mediator.Object);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
@@ -243,7 +282,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task EditPost_ReturnsRedirectToAction_WhenModelStateIsValue_AndEventIsNotNull_AndUserIsOrgAdmin_AndPhoneNumberIsValid()
+        public async Task EditPost_ReturnsRedirectToActionWithTheCorrectAcitonAndControllerName_WhenModelStateIsValid_AndEventIsNotNull_AndUserIsOrgAdmin_AndPhoneNumberIsValid()
         {
             const int eventId = 1;
             const int orgId = 1;
@@ -251,7 +290,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(viewModel);
-            mediator.Setup(mock => mock.SendAsync(It.IsAny<ValidatePhoneNumberRequest>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true });
+            mediator.Setup(mock => mock.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true });
 
             var sut = new RequestController(mediator.Object);
             sut.MakeUserAnOrgAdmin(orgId.ToString());

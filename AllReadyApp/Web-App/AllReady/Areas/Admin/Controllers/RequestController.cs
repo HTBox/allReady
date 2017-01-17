@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Requests;
@@ -118,11 +116,10 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var validatePhoneNumberResult = await _mediator.SendAsync(new ValidatePhoneNumberRequest { PhoneNumber = model.Phone, ValidateType = true });
+            var validatePhoneNumberResult = await _mediator.SendAsync(new ValidatePhoneNumberRequestCommand { PhoneNumber = model.Phone, ValidateType = true });
             if (!validatePhoneNumberResult.IsValid)
             {
-                var phoneAttribute = model.GetType().GetProperties().Single(p => p.Name == nameof(model.Phone)).GetCustomAttributes(false).Cast<Attribute>().Single(a => a is PhoneAttribute) as PhoneAttribute;
-                ModelState.AddModelError(nameof(model.Phone), phoneAttribute.ErrorMessage);
+                ModelState.AddModelError(nameof(model.Phone), "Unable to validate phone number");
                 return View("Edit", model);
             }
 
