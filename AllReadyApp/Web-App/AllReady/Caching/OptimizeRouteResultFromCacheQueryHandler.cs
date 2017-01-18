@@ -18,9 +18,11 @@ namespace AllReady.Areas.Admin.Features.Itineraries
         {
             OptimizeRouteResultStatus optimizeResultMessage = null;
 
-            if (_cache.TryGetValue(string.Concat(CacheKeys.OptimizeRouteResultCache, message.UserId, message.ItineraryId), out optimizeResultMessage))
+            var cacheKey = CacheKeyBuilder.BuildOptimizeRouteCacheKey(message.UserId, message.ItineraryId);
+
+            if (_cache.TryGetValue(cacheKey, out optimizeResultMessage))
             {
-                _cache.Remove(string.Concat(CacheKeys.OptimizeRouteResultCache, message.UserId, message.ItineraryId));
+                _cache.Remove(cacheKey);
             }
 
             return optimizeResultMessage;

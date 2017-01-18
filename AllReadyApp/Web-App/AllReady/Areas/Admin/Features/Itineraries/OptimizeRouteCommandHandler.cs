@@ -29,7 +29,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
         }
 
         /// <summary>
-        /// Will try to reorder requests based on an optimized route from a 3rd party service. The new order will be persisted to the database
+        /// Reorders requests based on an optimized route from a 3rd party service. The new order will be persisted to the database
         /// </summary>
         /// <param name="message"></param>
         protected override async Task HandleCore(OptimizeRouteCommand message)
@@ -43,34 +43,33 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
             var itinerary = requests.First().Itinerary;
 
-            var addresses = new AddressContainer(itinerary);
-
-            if (addresses.HasAddresses)
+            if (itinerary.HasAddresses)
             {
                 var waypoints = requests.Select(req => new OptimizeRouteWaypoint(req.Request.Longitude, req.Request.Latitude, req.RequestId)).ToList();
 
-                var optimizeResult = await _optimizeRouteService.OptimizeRoute(new OptimizeRouteCriteria(addresses.StartAddress, addresses.EndAddress, waypoints));
+                var optimizeResult = await _optimizeRouteService.OptimizeRoute(new OptimizeRouteCriteria(itinerary.StartAddress, itinerary.EndAddress, waypoints));
 
-                if (optimizeResult != null && !optimizeResult.Status.IsSuccess)
+                if (!optimizeResult.Status.IsSuccess)
                 {
                     SetOptimizeCache(message.UserId, message.ItineraryId, optimizeResult.Status);
                 }
-                else if (optimizeResult?.RequestIds != null && ValidateOptimizedRequests(waypoints, optimizeResult.RequestIds))
+                else if (ValidateOptimizedRequests(waypoints, optimizeResult.RequestIds))
                 {
                     var originalRequestIds = waypoints.Select(x => x.RequestId);
 
                     if (originalRequestIds.SequenceEqual(optimizeResult.RequestIds))
                     {
-                        SetOptimizeCache(message.UserId, message.ItineraryId, new OptimizeRouteResultStatus { StatusMessage = "Route already most optimal" });
+                        SetOptimizeCache(message.UserId, message.ItineraryId, new OptimizeRouteResultStatus { StatusMessage = OptimizeRouteStatusMessages.AlreadyOptimized });
                     }
                     else
                     {
                         await ReOrderRequests(waypoints, requests, optimizeResult, message);
+                        SetOptimizeCache(message.UserId, message.ItineraryId, new OptimizeRouteResultStatus { StatusMessage = OptimizeRouteStatusMessages.OptimizeSucess });
                     }
                 }
                 else
                 {
-                    SetOptimizeCache(message.UserId, message.ItineraryId, OptimizeRouteResult.FailedOptimizeRouteResult("Route optimization failed").Status);
+                    SetOptimizeCache(message.UserId, message.ItineraryId, OptimizeRouteResult.FailedOptimizeRouteResult(OptimizeRouteStatusMessages.GeneralOptimizeFailure).Status);
                 }
             }
         }
@@ -88,8 +87,6 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             }
 
             await _context.SaveChangesAsync();
-
-            SetOptimizeCache(message.UserId, message.ItineraryId, new OptimizeRouteResultStatus { StatusMessage = "Route optimized" });
         }
 
         private async Task<List<ItineraryRequest>> GetRequests(int itineraryId)
@@ -103,41 +100,13 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 .ToListAsync();
         }
 
-        private class AddressContainer
-        {
-            public AddressContainer(Itinerary itinerary)
-            {
-                if (!string.IsNullOrWhiteSpace(itinerary?.StartLocation?.FullAddress))
-                {
-                    StartAddress = itinerary.StartLocation.FullAddress;
-                    EndAddress = itinerary.EndLocation?.FullAddress;
-
-                    if (itinerary.UseStartAddressAsEndAddress)
-                    {
-                        EndAddress = StartAddress;
-                    }
-                }
-            }
-
-            public string StartAddress { get; private set; }
-            public string EndAddress { get; private set; }
-
-            public bool HasAddresses
-            {
-                get
-                {
-                    return (!string.IsNullOrWhiteSpace(StartAddress) && !string.IsNullOrWhiteSpace(EndAddress));
-                }
-            }
-        }
-
         private void SetOptimizeCache(string userId, int itineraryId, OptimizeRouteResultStatus message)
         {
             if (!string.IsNullOrEmpty(userId))
             {
                 var cacheEntryOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(1));
 
-                _cache.Set(string.Concat(CacheKeys.OptimizeRouteResultCache, userId, itineraryId), message, cacheEntryOptions);
+                _cache.Set(CacheKeyBuilder.BuildOptimizeRouteCacheKey(userId, itineraryId), message, cacheEntryOptions);
             }
         }
 
