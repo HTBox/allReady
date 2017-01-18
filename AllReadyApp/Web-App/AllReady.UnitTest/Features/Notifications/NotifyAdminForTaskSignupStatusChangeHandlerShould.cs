@@ -40,36 +40,6 @@ namespace AllReady.UnitTest.Features.Notifications
         }
 
         [Fact]
-        public async void UsesUserEmailAsSubjectWhenFirstAndLastNameAreNulls()
-        {
-            const int taskSignupId = 1001;
-            const int taskId = 12314;
-            const string email = "kmad@allready.com";
-            const string userEmail = "damk@allready.com";
-
-            var mediator = new Mock<IMediator>();
-            NotifyVolunteersViewModel viewModel = null;
-            mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-                .ReturnsAsync(new Unit())
-                .Callback<IAsyncRequest>(request => viewModel = ((NotifyVolunteersCommand)request).ViewModel);
-
-            var options = new Mock<IOptions<GeneralSettings>>();
-            options.Setup(o => o.Value).Returns(new GeneralSettings { SiteBaseUrl = "allready.com" });
-
-            var notification = new TaskSignupStatusChanged { SignupId = taskSignupId };
-
-            var context = Context;
-            var taskSignup = CreateTaskSignup(taskSignupId, taskId, email, userMail: userEmail);
-            context.TaskSignups.Add(taskSignup);
-            context.SaveChanges();
-
-            var target = new NotifyAdminForTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
-            await target.Handle(notification);
-
-            viewModel.Subject.ShouldBe($"{userEmail}");
-        }
-
-        [Fact]
         public async void UsesUserFirstAndLastNameAsSubjectWhenProvided()
         {
             const int taskSignupId = 1001;
