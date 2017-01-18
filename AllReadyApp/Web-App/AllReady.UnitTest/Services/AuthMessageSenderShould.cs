@@ -52,7 +52,6 @@ namespace AllReady.UnitTest.Services
             var mediatorMock = new Mock<IMediator>();
             mediatorMock.Setup(mock => mock.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
                 .ReturnsAsync(new Unit())
-                //.Returns(Task.FromResult(new Unit()))
                 .Verifiable();
             return mediatorMock;
         }

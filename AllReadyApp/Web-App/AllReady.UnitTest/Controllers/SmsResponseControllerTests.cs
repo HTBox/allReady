@@ -137,22 +137,14 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task Index_ChangeRequestStatusCommand_WithExpectedValues_WhenLowercaseConfirmBodyPosted()
         {
-            ChangeRequestStatusCommand cmd = null;
-
             var mediatr = new Mock<IMediator>();
             mediatr.Setup(x => x.SendAsync(It.IsAny<FindRequestIdByPhoneNumberQuery>()))
                 .ReturnsAsync(RequestGuid);
-            mediatr.Setup(x => x.SendAsync(It.IsAny<ChangeRequestStatusCommand>()))
-                .Returns(Task.FromResult(Unit.Value))
-                .Callback<ChangeRequestStatusCommand>(x => cmd = x)
-                .Verifiable();
 
             var sut = new SmsResponseController(mediatr.Object, Mock.Of<ISmsSender>());
             await sut.Index(GoodPhoneNumber, LowercaseConfirm);
 
-            mediatr.Verify(x => x.SendAsync(It.IsAny<ChangeRequestStatusCommand>()), Times.Once);
-            cmd.RequestId.ShouldBe(RequestGuid);
-            cmd.NewStatus.ShouldBe(RequestStatus.Confirmed);
+            mediatr.Verify(x => x.SendAsync(It.Is<ChangeRequestStatusCommand>(y => y.RequestId == RequestGuid && y.NewStatus == RequestStatus.Confirmed)), Times.Once);
         }
 
         [Fact]
@@ -171,25 +163,18 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task Index_SendsSmsSendAsync_WithExpectedPhoneNumber_WhenUppercaseConfirmBodyPosted()
+        public async Task Index_InvokesSmsSendAsync_WithExpectedPhoneNumber_WhenUppercaseConfirmBodyPosted()
         {
-            string smsTo = null;
-
             var mediatr = new Mock<IMediator>();
             mediatr.Setup(x => x.SendAsync(It.IsAny<FindRequestIdByPhoneNumberQuery>()))
                 .ReturnsAsync(RequestGuid);
 
             var smsSender = new Mock<ISmsSender>();
-            smsSender.Setup(x => x.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.FromResult<object>(null))
-                .Callback<string, string>((x, y) => smsTo = x)
-                .Verifiable();
 
             var sut = new SmsResponseController(mediatr.Object, smsSender.Object);
             await sut.Index(GoodPhoneNumber, UppercaseConfirm);
 
-            smsSender.Verify(x => x.SendSmsAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-            smsTo.ShouldBe(GoodPhoneNumber);
+            smsSender.Verify(x => x.SendSmsAsync(GoodPhoneNumber, "Thank you for confirming you availability."), Times.Once);
         }
 
         [Fact]
