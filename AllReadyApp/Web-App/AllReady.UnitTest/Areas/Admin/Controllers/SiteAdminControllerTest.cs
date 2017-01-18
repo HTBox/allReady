@@ -273,7 +273,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId))).ReturnsAsync(user);
-            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
 
             var controller = new SiteController(userManager.Object, null, mediator.Object);
             controller.SetDefaultHttpContext();
@@ -301,10 +301,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 Email = "test@testy.com"
             };
 
-            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId)))
-                .ReturnsAsync(user);
-            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>()))
-                .Returns(() => Task.FromResult(IdentityResult.Success));
+            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId))).ReturnsAsync(user);
+            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
 
             var controller = new SiteController(userManager.Object, null, mediator.Object);
             controller.SetFakeHttpRequestSchemeTo(requestScheme);
@@ -336,10 +334,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 Email = "test@testy.com"
             };
 
-            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId)))
-                .ReturnsAsync(user);
-            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>()))
-                .Returns(() => Task.FromResult(IdentityResult.Success));
+            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId))).ReturnsAsync(user);
+            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
 
             var controller = new SiteController(userManager.Object, null, mediator.Object);
             controller.SetDefaultHttpContext();
@@ -370,8 +366,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .ReturnsAsync(user);
 
             var userManager = CreateApplicationUserMock();
-            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>()))
-                .Returns(() => Task.FromResult( IdentityResult.Failed(null)));
+            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Failed(null));
 
             var controller = new SiteController(userManager.Object, null, mediator.Object);
             var result = await controller.EditUser(model);
@@ -392,7 +387,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId))).ReturnsAsync(user);
 
             var userManager = CreateApplicationUserMock();
-            userManager.Setup(x => x.RemoveClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.RemoveClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
 
             var controller = new SiteController(userManager.Object, null, mediator.Object);
             await controller.EditUser(model);
@@ -412,7 +407,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId))).ReturnsAsync(user);
 
             var userManager = CreateApplicationUserMock();
-            userManager.Setup(x => x.RemoveClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).Returns(() => Task.FromResult(IdentityResult.Failed(null)));
+            userManager.Setup(x => x.RemoveClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Failed(null));
 
             var controller = new SiteController(userManager.Object, null, mediator.Object);
             var result = await controller.EditUser(model);
@@ -740,10 +735,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 Id = "1234"
             };
 
-            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == user.Id)))
-                .ReturnsAsync(user);
-            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>()))
-                .Returns(() => Task.FromResult(IdentityResult.Success));
+            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == user.Id))).ReturnsAsync(user);
+            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
 
             var controller = new SiteController(userManager.Object, null, mediator.Object);
             var result = (RedirectToActionResult) await controller.AssignSiteAdmin(user.Id);

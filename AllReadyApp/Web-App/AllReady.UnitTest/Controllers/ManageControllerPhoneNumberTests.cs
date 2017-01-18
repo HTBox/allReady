@@ -501,7 +501,6 @@ namespace AllReady.UnitTest.Controllers
                                                             It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
             var signInManager = MockHelper.CreateSignInManagerMock(userManager);
-            signInManager.Setup(x => x.RefreshSignInAsync(It.IsAny<ApplicationUser>())).Returns(Task.FromResult<object>(null));
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
@@ -535,8 +534,6 @@ namespace AllReady.UnitTest.Controllers
                                                             It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
             var signInManager = MockHelper.CreateSignInManagerMock(userManager);
-            signInManager.Setup(x => x.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), It.IsAny<string>()))
-                         .Returns(Task.FromResult<object>(null));
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
@@ -573,8 +570,6 @@ namespace AllReady.UnitTest.Controllers
                                                             It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
             var signInManager = MockHelper.CreateSignInManagerMock(userManager);
-            signInManager.Setup(x => x.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), It.IsAny<string>()))
-                         .Returns(Task.FromResult<object>(null));
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
@@ -728,8 +723,6 @@ namespace AllReady.UnitTest.Controllers
                                                          It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
             var signInManager = MockHelper.CreateSignInManagerMock(userManager);
-            signInManager.Setup(x => x.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), It.IsAny<string>()))
-                         .Returns(Task.FromResult<object>(null));
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
@@ -792,7 +785,6 @@ namespace AllReady.UnitTest.Controllers
                                                          It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
             var signInManager = MockHelper.CreateSignInManagerMock(userManager);
-            signInManager.Setup(x => x.RefreshSignInAsync(It.IsAny<ApplicationUser>())).Returns(Task.FromResult<object>(null));
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
@@ -823,7 +815,6 @@ namespace AllReady.UnitTest.Controllers
                                                          It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
             var signInManager = MockHelper.CreateSignInManagerMock(userManager);
-            signInManager.Setup(x => x.RefreshSignInAsync(It.IsAny<ApplicationUser>())).Returns(Task.FromResult<object>(null));
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);

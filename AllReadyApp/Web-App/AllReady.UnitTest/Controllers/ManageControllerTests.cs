@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using AllReady.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Microsoft.Extensions.Options;
 using MediatR;
 using AllReady.ViewModels.Manage;
 using static AllReady.Controllers.ManageController;
@@ -15,7 +13,6 @@ using AllReady.UnitTest.Extensions;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using AllReady.Features.Manage;
-using AllReady.Security;
 
 namespace AllReady.UnitTest.Controllers
 {

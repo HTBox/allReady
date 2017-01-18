@@ -83,7 +83,7 @@ namespace AllReady.UnitTest.Controllers
             generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = defaultTimeZone });
 
             var userManager = MockHelper.CreateUserManagerMock();
-            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Failed()));
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed());
 
             var sut = new AdminController(userManager.Object, null, null, null, generalSettings.Object);
 
@@ -107,9 +107,8 @@ namespace AllReady.UnitTest.Controllers
             generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = defaultTimeZone });
 
             var userManager = MockHelper.CreateUserManagerMock();
-            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
-            //var sut = new AdminController(userManager.Object, null, Mock.Of<IEmailSender>(), null, null, generalSettings.Object);
             var sut = new AdminController(userManager.Object, null, Mock.Of<IMediator>(), null, generalSettings.Object);
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = Mock.Of<IUrlHelper>();
@@ -131,8 +130,8 @@ namespace AllReady.UnitTest.Controllers
             generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
 
             var userManager = MockHelper.CreateUserManagerMock();
-            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
-            userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
+            userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(It.IsAny<string>());
 
             var sut = new AdminController(userManager.Object, null, Mock.Of<IMediator>(), null, generalSettings.Object);
             sut.SetFakeHttpRequestSchemeTo(requestScheme);
@@ -160,8 +159,8 @@ namespace AllReady.UnitTest.Controllers
             generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
 
             var userManager = MockHelper.CreateUserManagerMock();
-            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
-            userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
+            userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(It.IsAny<string>());
 
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(callbackUrl);
@@ -184,8 +183,8 @@ namespace AllReady.UnitTest.Controllers
             generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
 
             var userManager = MockHelper.CreateUserManagerMock();
-            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
-            userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).Returns(() => Task.FromResult(It.IsAny<string>()));
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync((IdentityResult.Success));
+            userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(It.IsAny<string>());
 
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
@@ -209,7 +208,7 @@ namespace AllReady.UnitTest.Controllers
             var identityResult = IdentityResult.Failed(new IdentityError { Description = "IdentityErrorDescription" });
 
             var userManager = MockHelper.CreateUserManagerMock();
-            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(identityResult));
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(identityResult);
 
             var sut = new AdminController(userManager.Object, null, null, null, generalSettings.Object);
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
@@ -230,7 +229,7 @@ namespace AllReady.UnitTest.Controllers
             generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
 
             var userManager = MockHelper.CreateUserManagerMock();
-            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Failed()));
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed());
 
             var sut = new AdminController(userManager.Object, null, null, null, generalSettings.Object);
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
@@ -302,8 +301,8 @@ namespace AllReady.UnitTest.Controllers
             var user = new ApplicationUser();
 
             var userManager = MockHelper.CreateUserManagerMock();
-            userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).Returns(() => Task.FromResult(user));
-            userManager.Setup(x => x.ConfirmEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Failed()));
+            userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(user);
+            userManager.Setup(x => x.ConfirmEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed());
 
             var sut = new AdminController(userManager.Object, null, null, null, null);
             await sut.ConfirmEmail(null, code);
@@ -318,8 +317,8 @@ namespace AllReady.UnitTest.Controllers
             const string userId = "1";
 
             var userManager = MockHelper.CreateUserManagerMock();
-            userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).Returns(() => Task.FromResult(new ApplicationUser { Id = userId }));
-            userManager.Setup(x => x.ConfirmEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser { Id = userId });
+            userManager.Setup(x => x.ConfirmEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
             var settings = new Mock<IOptions<SampleDataSettings>>();
             settings.Setup(x => x.Value).Returns(new SampleDataSettings());
@@ -347,8 +346,8 @@ namespace AllReady.UnitTest.Controllers
             const string callbackUrl = "callbackUrl";
 
             var userManager = MockHelper.CreateUserManagerMock();
-            userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).Returns(() => Task.FromResult(new ApplicationUser()));
-            userManager.Setup(x => x.ConfirmEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser());
+            userManager.Setup(x => x.ConfirmEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
             var settings = new Mock<IOptions<SampleDataSettings>>();
             settings.Setup(x => x.Value).Returns(new SampleDataSettings { DefaultAdminUsername = defaultAdminUserName });
@@ -371,8 +370,8 @@ namespace AllReady.UnitTest.Controllers
         public async Task ConfirmEmailReturnsCorrectViewWhenUsersConfirmationIsSuccessful()
         {
             var userManager = MockHelper.CreateUserManagerMock();
-            userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).Returns(() => Task.FromResult(new ApplicationUser()));
-            userManager.Setup(x => x.ConfirmEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser());
+            userManager.Setup(x => x.ConfirmEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
@@ -393,8 +392,8 @@ namespace AllReady.UnitTest.Controllers
         public async Task ConfirmEmailReturnsCorrectViewWhenUsersConfirmationIsUnsuccessful()
         {
             var userManager = MockHelper.CreateUserManagerMock();
-            userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).Returns(() => Task.FromResult(new ApplicationUser()));
-            userManager.Setup(x => x.ConfirmEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns(() => Task.FromResult(IdentityResult.Failed()));
+            userManager.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser());
+            userManager.Setup(x => x.ConfirmEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed());
 
             var sut = new AdminController(userManager.Object, null, null, null, null);
             var result = await sut.ConfirmEmail("userId", "code") as ViewResult;
@@ -470,7 +469,7 @@ namespace AllReady.UnitTest.Controllers
             var userManager = MockHelper.CreateUserManagerMock();
             var signInManager = MockHelper.CreateSignInManagerMock(userManager);
 
-            signInManager.Setup(x => x.GetTwoFactorAuthenticationUserAsync()).Returns(() => Task.FromResult(applicationUser));
+            signInManager.Setup(x => x.GetTwoFactorAuthenticationUserAsync()).ReturnsAsync(applicationUser);
             userManager.Setup(x => x.GetValidTwoFactorProvidersAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(new List<string>());
 
             var sut = new AdminController(userManager.Object, signInManager.Object, null, null, null);
@@ -492,7 +491,7 @@ namespace AllReady.UnitTest.Controllers
             var userManager = MockHelper.CreateUserManagerMock();
             var signInManager = MockHelper.CreateSignInManagerMock(userManager);
 
-            signInManager.Setup(x => x.GetTwoFactorAuthenticationUserAsync()).Returns(() => Task.FromResult(new ApplicationUser()));
+            signInManager.Setup(x => x.GetTwoFactorAuthenticationUserAsync()).ReturnsAsync(new ApplicationUser());
             userManager.Setup(x => x.GetValidTwoFactorProvidersAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(userFactors);
 
             var sut = new AdminController(userManager.Object, signInManager.Object, null, null, null);
