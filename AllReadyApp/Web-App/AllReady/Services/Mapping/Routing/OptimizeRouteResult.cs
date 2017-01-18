@@ -26,7 +26,7 @@ namespace AllReady.Services.Mapping.Routing
         /// <summary>
         /// A list of request ids in optimized order
         /// </summary>
-        public List<Guid> RequestIds { get; set; }
+        public List<Guid> RequestIds { get; set; } = new List<Guid>();
 
         /// <summary>
         /// The total distance in meters of the route

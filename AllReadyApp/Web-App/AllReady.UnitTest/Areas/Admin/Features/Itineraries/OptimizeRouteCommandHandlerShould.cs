@@ -9,6 +9,7 @@ using AllReady.Services.Mapping.Routing;
 using Shouldly;
 using Xunit;
 using Microsoft.Extensions.Caching.Memory;
+using AllReady.Caching;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
 {
@@ -186,30 +187,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         }
 
         [Fact]
-        public async Task NotChangeRequestOrder_WhenOptimizeRouteResultIsNull()
+        public async Task NotChangeRequestOrder_WhenOptimizeRouteResultIsNotSuccess()
         {
             var optimizeRouteService = new Mock<IOptimizeRouteService>();
             optimizeRouteService.Setup(x => x.OptimizeRoute(It.IsAny<OptimizeRouteCriteria>()))
-                .ReturnsAsync(null)
-                .Verifiable();
-
-            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, Mock.Of<IMemoryCache>());
-
-            await sut.Handle(new OptimizeRouteCommand { ItineraryId = 1 });
-
-            var requests = Context.ItineraryRequests.Where(x => x.ItineraryId == 1).OrderBy(x => x.OrderIndex).ToList();
-
-            requests[0].Request.Name.ShouldBe("Request 1");
-            requests[1].Request.Name.ShouldBe("Request 4");
-        }
-
-        [Fact]
-        public async Task NotChangeRequestOrder_WhenOptimizeRouteResultRequestIdsIsNull()
-        {
-            var optimizeRouteService = new Mock<IOptimizeRouteService>();
-            optimizeRouteService.Setup(x => x.OptimizeRoute(It.IsAny<OptimizeRouteCriteria>()))
-                .ReturnsAsync(new OptimizeRouteResult())
-                .Verifiable();
+                .ReturnsAsync(OptimizeRouteResult.FailedOptimizeRouteResult("failure"));
 
             var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, Mock.Of<IMemoryCache>());
 
@@ -226,8 +208,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         {
             var optimizeRouteService = new Mock<IOptimizeRouteService>();
             optimizeRouteService.Setup(x => x.OptimizeRoute(It.IsAny<OptimizeRouteCriteria>()))
-                .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Guid.NewGuid() } })
-                .Verifiable();
+                .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Guid.NewGuid() } });
 
             var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, Mock.Of<IMemoryCache>());
 
@@ -244,8 +225,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         {
             var optimizeRouteService = new Mock<IOptimizeRouteService>();
             optimizeRouteService.Setup(x => x.OptimizeRoute(It.IsAny<OptimizeRouteCriteria>()))
-                .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Request4Id, Guid.Empty } })
-                .Verifiable();
+                .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Request4Id, Guid.Empty } });
 
             var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, Mock.Of<IMemoryCache>());
 
@@ -262,8 +242,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         {
             var optimizeRouteService = new Mock<IOptimizeRouteService>();
             optimizeRouteService.Setup(x => x.OptimizeRoute(It.IsAny<OptimizeRouteCriteria>()))
-                .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Request4Id, Request1Id } })
-                .Verifiable();
+                .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Request4Id, Request1Id } });
 
             var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, Mock.Of<IMemoryCache>());
 
@@ -273,6 +252,100 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
 
             requests[0].Request.Name.ShouldBe("Request 4");
             requests[1].Request.Name.ShouldBe("Request 1");
+        }
+
+        [Fact]
+        public async Task SetsCorrectCacheEntry_WhenOptimizeRouteResultIsNotSuccess()
+        {
+            const string statusMsg = "failure";
+
+            var optimizeRouteService = new Mock<IOptimizeRouteService>();
+            optimizeRouteService.Setup(x => x.OptimizeRoute(It.IsAny<OptimizeRouteCriteria>()))
+                .ReturnsAsync(OptimizeRouteResult.FailedOptimizeRouteResult(statusMsg));
+
+            var cache = new MemoryCache(new MemoryCacheOptions());
+
+            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, cache);
+
+            await sut.Handle(new OptimizeRouteCommand { ItineraryId = 1, UserId = "123" });
+
+            var expectedCacheKey = CacheKeyBuilder.BuildOptimizeRouteCacheKey("123", 1);
+
+            OptimizeRouteResultStatus cachedStatus = null;
+            var keyExists = cache.TryGetValue(expectedCacheKey, out cachedStatus);
+
+            keyExists.ShouldBeTrue();
+            cachedStatus.IsSuccess.ShouldBeFalse();
+            cachedStatus.StatusMessage.ShouldBe(statusMsg);
+        }
+
+        [Fact]
+        public async Task SetsCorrectCacheEntry_WhenOptimizeRouteResultValidationFails()
+        {
+            var optimizeRouteService = new Mock<IOptimizeRouteService>();
+            optimizeRouteService.Setup(x => x.OptimizeRoute(It.IsAny<OptimizeRouteCriteria>()))
+                .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Guid.NewGuid() } });
+
+            var cache = new MemoryCache(new MemoryCacheOptions());
+
+            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, cache);
+
+            await sut.Handle(new OptimizeRouteCommand { ItineraryId = 1, UserId = "123" });
+
+            var expectedCacheKey = CacheKeyBuilder.BuildOptimizeRouteCacheKey("123", 1);
+
+            OptimizeRouteResultStatus cachedStatus = null;
+            var keyExists = cache.TryGetValue(expectedCacheKey, out cachedStatus);
+
+            keyExists.ShouldBeTrue();
+            cachedStatus.IsSuccess.ShouldBeFalse();
+            cachedStatus.StatusMessage.ShouldBe(OptimizeRouteStatusMessages.GeneralOptimizeFailure);            
+        }
+
+        [Fact]
+        public async Task SetsCorrectCacheEntry_WhenOptimizeRouteResultIsSuccess_AndRequestOrderDoesNotChange()
+        {
+            var optimizeRouteService = new Mock<IOptimizeRouteService>();
+            optimizeRouteService.Setup(x => x.OptimizeRoute(It.IsAny<OptimizeRouteCriteria>()))
+                .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Request1Id, Request4Id } });
+
+            var cache = new MemoryCache(new MemoryCacheOptions());
+
+            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, cache);
+
+            await sut.Handle(new OptimizeRouteCommand { ItineraryId = 1, UserId = "123" });
+
+            var expectedCacheKey = CacheKeyBuilder.BuildOptimizeRouteCacheKey("123", 1);
+
+            OptimizeRouteResultStatus cachedStatus = null;
+            var keyExists = cache.TryGetValue(expectedCacheKey, out cachedStatus);
+
+            keyExists.ShouldBeTrue();
+            cachedStatus.IsSuccess.ShouldBeTrue();
+            cachedStatus.StatusMessage.ShouldBe(OptimizeRouteStatusMessages.AlreadyOptimized);
+        }
+
+        [Fact]
+        public async Task SetsCorrectCacheEntry_WhenOptimizeRouteResultIsSuccess_AndRequestOrderIsUpdated()
+        {
+            var optimizeRouteService = new Mock<IOptimizeRouteService>();
+            optimizeRouteService.Setup(x => x.OptimizeRoute(It.IsAny<OptimizeRouteCriteria>()))
+                .ReturnsAsync(new OptimizeRouteResult { Distance = 10, Duration = 10, RequestIds = new List<Guid> { Request4Id, Request1Id } });
+
+            var cache = new MemoryCache(new MemoryCacheOptions());
+
+            var sut = new OptimizeRouteCommandHandler(Context, optimizeRouteService.Object, cache);
+
+            await sut.Handle(new OptimizeRouteCommand { ItineraryId = 1, UserId = "123" });
+
+            var expectedCacheKey = CacheKeyBuilder.BuildOptimizeRouteCacheKey("123", 1);
+
+            OptimizeRouteResultStatus cachedStatus = null;
+            var keyExists = cache.TryGetValue(expectedCacheKey, out cachedStatus);
+
+            keyExists.ShouldBeTrue();
+            cachedStatus.IsSuccess.ShouldBeTrue();
+            cachedStatus.StatusMessage.ShouldBe(OptimizeRouteStatusMessages.OptimizeSucess);
         }
     }
 }
