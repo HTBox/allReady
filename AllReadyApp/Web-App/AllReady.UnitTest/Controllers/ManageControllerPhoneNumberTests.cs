@@ -399,7 +399,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(phoneNumber, viewModel.PhoneNumber);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task VerifyPhoneNumberPostSendsUserByUserIdQueryWithCorrectUserId()
         {
             //Arrange
@@ -408,7 +408,7 @@ namespace AllReady.UnitTest.Controllers
             userManagerMock.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
+            mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(null);
 
             var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
             controller.SetFakeUser(userId);
