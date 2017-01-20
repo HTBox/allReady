@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Moq;
-using AllReady.Services.Routing;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
-using System.IO;
 using System.Text;
-using AllReady.Services.Routing.Models.Google;
-using Castle.Components.DictionaryAdapter;
-using Newtonsoft.Json;
+using AllReady.Services.Mapping.Routing;
+using AllReady.Services;
 
 namespace AllReady.UnitTest.Services.Routing
 {
@@ -41,7 +37,7 @@ namespace AllReady.UnitTest.Services.Routing
         [Fact]
         public async Task ReturnsOptimisedRoutes()
         {
-            var mappingSettings = new MappingSettings() { GoogleDirectionsApiKey = "somekey" };
+            var mappingSettings = new MappingSettings() { GoogleMapsApiKey = "somekey" };
             var mockedHttpClient = new Mock<IHttpClient>();
 
             var service = new GoogleOptimizeRouteService(
@@ -73,7 +69,7 @@ namespace AllReady.UnitTest.Services.Routing
         public async Task GeneratesCorrectApiCall()
         {
             string expectedApiCall = "https://maps.googleapis.com/maps/api/directions/json?origin=24%20Sussex%20Drive%20Ottawa%20ON&destination=200%20Sussex%20Drive%20Ottawa%20ON&waypoints=optimize:true|45.4,-75|46,-75|46.1,-75&key=somekey";
-            var mappingSettings = new MappingSettings() { GoogleDirectionsApiKey = "somekey" };
+            var mappingSettings = new MappingSettings() { GoogleMapsApiKey = "somekey" };
             var mockedHttpClient = new Mock<IHttpClient>();
             var service = new GoogleOptimizeRouteService(
                 Options.Create(mappingSettings),
@@ -88,7 +84,7 @@ namespace AllReady.UnitTest.Services.Routing
         [Fact]
         public async Task ReturnNull_WhenNon200Returned()
         {
-            var mappingSettings = new MappingSettings() { GoogleDirectionsApiKey = "some key" };
+            var mappingSettings = new MappingSettings() { GoogleMapsApiKey = "some key" };
             var mockedHttpClient = new Mock<IHttpClient>();
             mockedHttpClient.Setup(x => x.GetAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)));
@@ -105,7 +101,7 @@ namespace AllReady.UnitTest.Services.Routing
         [Fact]
         public async Task LogsException_WhenAnExceptionIsThrown()
         {
-            var mappingSettings = new MappingSettings() { GoogleDirectionsApiKey = "some key" };
+            var mappingSettings = new MappingSettings() { GoogleMapsApiKey = "some key" };
             var mockedLogger = new Mock<ILogger<GoogleOptimizeRouteService>>();
             var mockedHttpClient = new Mock<IHttpClient>();
             mockedHttpClient.Setup(x => x.GetAsync(It.IsAny<string>())).Throws(new TaskCanceledException());
