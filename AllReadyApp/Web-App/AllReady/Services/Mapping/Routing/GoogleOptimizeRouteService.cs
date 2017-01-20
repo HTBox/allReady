@@ -41,30 +41,24 @@ namespace AllReady.Services.Mapping.Routing
                     {
                         var googleResponse = await _httpClient.GetAsync(GenerateGoogleApiUrl(criteria));
 
-                        if (googleResponse.IsSuccessStatusCode)
+                        googleResponse.EnsureSuccessStatusCode();
+                        
+                        var content = await googleResponse.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<GoogleDirectionsResponse>(content);
+
+                        if (result.Status == GoogleDirectionsResponse.OkStatus)
                         {
-                            var content = await googleResponse.Content.ReadAsStringAsync();
-                            var result = JsonConvert.DeserializeObject<GoogleDirectionsResponse>(content);
+                            requestIds.AddRange(result.Routes.SelectMany(r => r.WaypointOrder).Select(waypointIndex => criteria.Waypoints[waypointIndex].RequestId));
 
-                            if (result.Status == GoogleDirectionsResponse.OkStatus)
-                            {
-                                requestIds.AddRange(result.Routes.SelectMany(r => r.WaypointOrder).Select(waypointIndex => criteria.Waypoints[waypointIndex].RequestId));
-
-                                return new OptimizeRouteResult { RequestIds = requestIds, Distance = result.TotalDistance, Duration = result.TotalDuration };
-                            }
+                            return new OptimizeRouteResult { RequestIds = requestIds, Distance = result.TotalDistance, Duration = result.TotalDuration };
                         }
-                        else
-                        {
-                            // for now we fire an exception to force a Polly retry. We could review this later once we have logging to determine specific codes
-                            // that represent errors
-                            throw new Exception("Non success code");
-                        }                  
-
+                        
                         return null;
                     });
                 }
-                catch
+                catch (Exception ex)
                 {
+                    _logger.LogError($"Unable to connect to Google API {ex}");
                     // todo - handle other status codes and logging
                 }                
             }
@@ -74,9 +68,12 @@ namespace AllReady.Services.Mapping.Routing
 
         private Policy GetRetryPolicy()
         {
+            // in total we will make 3 attempts
             return Policy
                 .Handle<Exception>()
-                .RetryAsync(2); // in total we will make 3 attempts
+                .RetryAsync(2,
+                    (ex, retryCount) =>
+                    _logger.LogWarning($"Unable to connect to Google Route API. Retry attempt {retryCount}. {ex}"));
         }
 
         private string GenerateGoogleApiUrl(OptimizeRouteCriteria criteria)

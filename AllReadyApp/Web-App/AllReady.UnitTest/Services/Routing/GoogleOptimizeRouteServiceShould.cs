@@ -78,7 +78,7 @@ namespace AllReady.UnitTest.Services.Routing
     
             await service.OptimizeRoute(_optimiseRouteCriteria);
 
-            mockedHttpClient.Verify(x => x.GetAsync(It.Is<string>(y => y == expectedApiCall)));
+            mockedHttpClient.Verify(x => x.GetAsync(It.Is<string>(y => y == expectedApiCall)), Times.AtLeastOnce());
         }
 
         [Fact]
