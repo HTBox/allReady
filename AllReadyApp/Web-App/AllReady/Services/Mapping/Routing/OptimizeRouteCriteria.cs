@@ -41,7 +41,7 @@ namespace AllReady.Services.Mapping.Routing
         /// The start address for the optmized route
         /// </summary>
         public string StartAddress { get; }
-    }
+
         /// <summary>
         /// The end address for the optmized route
         /// </summary>
@@ -51,4 +51,5 @@ namespace AllReady.Services.Mapping.Routing
         /// A list of waypoints to be optimized for the route
         /// </summary>
         public List<OptimizeRouteWaypoint> Waypoints { get; }
+    }
 }
