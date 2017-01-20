@@ -12,11 +12,21 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 using AllReady.Features.Sms;
+using System.Linq;
 
 namespace AllReady.UnitTest.Controllers
 {
     public class RequestApiControllerTests
     {
+        [Fact]
+        public void ControllerHasRouteAttributeWithTheCorrectTemplate()
+        {
+            var sut = new RequestApiController(null, null);
+            var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal(attribute.Template, "api/request");
+        }
+
         [Fact]
         public async Task PostReturnsBadRequest_WhenModelStateIsInvalid()
         {
