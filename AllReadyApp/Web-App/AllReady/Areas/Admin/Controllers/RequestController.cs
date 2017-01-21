@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Areas.Admin.ViewModels.Request;
+using AllReady.Features.Sms;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -57,7 +58,7 @@ namespace AllReady.Areas.Admin.Controllers
                 CampaignId = campaignEvent.CampaignId,
                 CampaignName = campaignEvent.CampaignName,
                 EventId = campaignEvent.Id,
-                EventName = campaignEvent.Name,
+                EventName = campaignEvent.Name
             };
 
             ViewBag.Title = CreateRequestTitle;
@@ -74,9 +75,10 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(Guid id)
         {
             var model = await _mediator.SendAsync(new EditRequestQuery { Id = id });
-
             if (model == null)
+            {
                 return NotFound();
+            }
 
             if (!User.IsOrganizationAdmin(model.OrganizationId))
             {
@@ -98,20 +100,26 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditRequestViewModel model)
         {
-            var campaignEvent = await _mediator.SendAsync(new EventSummaryQuery { EventId = model.EventId });
+            if (!ModelState.IsValid)
+            {
+                return View("Edit", model);
+            }
 
-            if (campaignEvent == null)
+            var @event = await _mediator.SendAsync(new EventSummaryQuery { EventId = model.EventId });
+            if (@event == null)
             {
                 return BadRequest("Invalid event id");
             }
 
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+            if (!User.IsOrganizationAdmin(@event.OrganizationId))
             {
                 return Unauthorized();
             }
 
-            if (!ModelState.IsValid)
+            var validatePhoneNumberResult = await _mediator.SendAsync(new ValidatePhoneNumberRequestCommand { PhoneNumber = model.Phone, ValidateType = true });
+            if (!validatePhoneNumberResult.IsValid)
             {
+                ModelState.AddModelError(nameof(model.Phone), "Unable to validate phone number");
                 return View("Edit", model);
             }
 
