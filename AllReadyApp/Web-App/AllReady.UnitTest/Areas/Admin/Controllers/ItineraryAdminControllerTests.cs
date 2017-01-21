@@ -1920,7 +1920,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task OptimizeRoute_SendsGetUserIdCommand_Once_WhenUserIsOrgAdmin()
+        public async Task OptimizeRoute_SendsGetUserIdQuery_Once_WhenUserIsOrgAdmin()
         {
             const int orgId = 1;
 

@@ -1,7 +1,7 @@
 ﻿using AllReady.Services.Mapping.Routing;
 using MediatR;
 
-namespace AllReady.Areas.Admin.Features.Itineraries
+namespace AllReady.Caching
 {
     public class OptimizeRouteResultFromCacheQuery : IRequest<OptimizeRouteResultStatus>
     {

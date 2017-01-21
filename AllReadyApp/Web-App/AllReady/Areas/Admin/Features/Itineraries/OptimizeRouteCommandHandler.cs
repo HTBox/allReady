@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Linq;
 using AllReady.Services.Mapping.Routing;
 using Microsoft.Extensions.Caching.Memory;
-using AllReady.Features.Users;
 using AllReady.Caching;
 
 namespace AllReady.Areas.Admin.Features.Itineraries

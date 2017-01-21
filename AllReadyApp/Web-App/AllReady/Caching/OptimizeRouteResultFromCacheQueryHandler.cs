@@ -3,7 +3,7 @@ using AllReady.Services.Mapping.Routing;
 using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace AllReady.Areas.Admin.Features.Itineraries
+namespace AllReady.Caching
 {
     public class OptimizeRouteResultFromCacheQueryHandler : IRequestHandler<OptimizeRouteResultFromCacheQuery, OptimizeRouteResultStatus>
     {
@@ -16,7 +16,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
         public OptimizeRouteResultStatus Handle(OptimizeRouteResultFromCacheQuery message)
         {
-            OptimizeRouteResultStatus optimizeResultMessage = null;
+            OptimizeRouteResultStatus optimizeResultMessage;
 
             var cacheKey = CacheKeyBuilder.BuildOptimizeRouteCacheKey(message.UserId, message.ItineraryId);
 
