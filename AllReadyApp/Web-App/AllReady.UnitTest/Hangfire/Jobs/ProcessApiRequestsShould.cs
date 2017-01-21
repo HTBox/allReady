@@ -71,7 +71,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             var geocoder = new Mock<IGeocodeService>();
             geocoder.Setup(service => service.GetCoordinatesFromAddress(It.IsAny<string>(),
                     It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(() => Task.FromResult<Coordinates>(null));
+                .ReturnsAsync(null);
 
             var sut = new ProcessApiRequests(Context, Mock.Of<IMediator>(), geocoder.Object,
                 Options.Create(new ApprovedRegionsSettings()))
@@ -97,7 +97,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             var geocoder = new Mock<IGeocodeService>();
             geocoder.Setup(service => service.GetCoordinatesFromAddress(It.IsAny<string>(),
                     It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(() => Task.FromResult(new Coordinates(latitude, longitude)));
+                .ReturnsAsync(new Coordinates(latitude, longitude));
 
             var sut = new ProcessApiRequests(Context, Mock.Of<IMediator>(), geocoder.Object,
                 Options.Create(new ApprovedRegionsSettings()))

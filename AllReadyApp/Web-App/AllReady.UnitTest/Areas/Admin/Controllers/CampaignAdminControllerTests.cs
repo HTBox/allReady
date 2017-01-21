@@ -191,8 +191,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int newCampaignId = 100;
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EditCampaignCommand>()))
-                .Returns((EditCampaignCommand q) => Task.FromResult<int>(newCampaignId));
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EditCampaignCommand>())).ReturnsAsync(newCampaignId);
 
             var mockImageService = new Mock<IImageService>();
             var sut = new CampaignController(mockMediator.Object, mockImageService.Object);

@@ -153,14 +153,14 @@ namespace AllReady.UnitTest.Controllers
                 model = new OrganizationViewModel { Id = 1, Name = "Org 1" };
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationDetailsQuery>())).Returns(() => Task.FromResult(model)).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationDetailsQuery>())).ReturnsAsync(model).Verifiable();
             controller = new OrganizationController(mockMediator.Object);
         }
 
         private static void MockMediatorOrganizationDetailsQueryNullResult(out OrganizationController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationDetailsQuery>())).Returns(() => Task.FromResult((OrganizationViewModel)null)).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationDetailsQuery>())).ReturnsAsync(null).Verifiable();
             controller = new OrganizationController(mockMediator.Object);
         }
 
@@ -169,14 +169,14 @@ namespace AllReady.UnitTest.Controllers
             if (model == null) model = new OrganizationPrivacyPolicyViewModel { OrganizationName = "Org 1", Content = null };
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationPrivacyPolicyQuery>())).Returns(() => Task.FromResult(model)).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationPrivacyPolicyQuery>())).ReturnsAsync(model).Verifiable();
             controller = new OrganizationController(mockMediator.Object);
         }
 
         private static void MockMediatorOrganizationPrivacyPolicyQueryNullResult(out OrganizationController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationPrivacyPolicyQuery>())).Returns(() => Task.FromResult((OrganizationPrivacyPolicyViewModel)null)).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationPrivacyPolicyQuery>())).ReturnsAsync(null).Verifiable();
             controller = new OrganizationController(mockMediator.Object);
         }
 
