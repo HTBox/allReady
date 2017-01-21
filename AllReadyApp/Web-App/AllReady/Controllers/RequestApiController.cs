@@ -10,9 +10,7 @@ using AllReady.Features.Sms;
 
 namespace AllReady.Controllers
 {
-    //TODO mgmccarthy: use this route when token generation and TokenProtectedResource are sorted out
-    //[Route("api/request")]
-    [Route("api/requestapi")]
+    [Route("api/request")]
     [Produces("application/json")]
     public class RequestApiController : Controller
     {

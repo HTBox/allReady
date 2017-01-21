@@ -10,8 +10,7 @@ namespace AllReady.Security.Middleware
     public static class TokenProtectedResourceExtensions
     {
         // extension method for easy wiring of middleware
-        public static IApplicationBuilder UseTokenProtection(
-            this IApplicationBuilder builder, TokenProtectedResourceOptions options)
+        public static IApplicationBuilder UseTokenProtection(this IApplicationBuilder builder, TokenProtectedResourceOptions options)
         {
             return builder.UseMiddleware<TokenProtectedResource>(options);
         }
@@ -54,6 +53,5 @@ namespace AllReady.Security.Middleware
 
             await _next(httpContext);
         }
-
     }
 }
