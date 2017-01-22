@@ -99,7 +99,31 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         }
 
         [Fact]
-        public async Task UpdateGeocodeWhenAddressChangedWhenUpdatingExistingRequest()
+        public async Task NotUpdateGeocodeWhenAddressChangedAndLatLonIsSetWhenUpdatingExistingRequest()
+        {
+            var mockGeocoder = new Mock<IGeocodeService>();
+            string changedAddress = "4444 Changed Address Ln";
+
+            var handler = new EditRequestCommandHandler(Context, mockGeocoder.Object);
+            await handler.Handle(new EditRequestCommand
+            {
+                RequestModel = new EditRequestViewModel
+                {
+                    Id = _existingRequest.RequestId,
+                    Address = changedAddress,
+                    City = _existingRequest.City,
+                    State = _existingRequest.State,
+                    Zip = _existingRequest.Zip,
+                    Latitude = 47.6,
+                    Longitude = -122.3
+                }
+            });
+
+            mockGeocoder.Verify(x => x.GetCoordinatesFromAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateGeocodeWhenAddressChangedAndLatLonNotSetWhenUpdatingExistingRequest()
         {
             var mockGeocoder = new Mock<IGeocodeService>();
             string changedAddress = "4444 Changed Address Ln";
@@ -110,7 +134,16 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
             var handler = new EditRequestCommandHandler(Context, mockGeocoder.Object);
             await handler.Handle(new EditRequestCommand
             {
-                RequestModel = new EditRequestViewModel { Id = _existingRequest.RequestId, Address = changedAddress, City = _existingRequest.City, State = _existingRequest.State, Zip = _existingRequest.Zip }
+                RequestModel = new EditRequestViewModel
+                {
+                    Id = _existingRequest.RequestId,
+                    Address = changedAddress,
+                    City = _existingRequest.City,
+                    State = _existingRequest.State,
+                    Zip = _existingRequest.Zip,
+                    Latitude = 0,
+                    Longitude = 0
+                }
             });
 
             mockGeocoder.Verify(x => x.GetCoordinatesFromAddress(changedAddress, _existingRequest.City, _existingRequest.State, _existingRequest.Zip, It.IsAny<string>()), Times.Once);
