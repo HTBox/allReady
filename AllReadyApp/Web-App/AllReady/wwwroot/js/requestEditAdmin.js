@@ -5,15 +5,32 @@
     function setLocation(latitude, longitude) {
         var location = new Microsoft.Maps.Location(latitude, longitude);
 
+        if (latitude === 0 && longitude === 0) {
+            $("#Latitude").val("");
+            $("#Longitude").val("");
+            if (pushpin) {
+                map.entities.remove(pushpin);
+                pushpin = null;
+                $("#dragMessage").hide();
+            }
+
+            return null;
+        }
+
         if (!pushpin) {
-            pushpin = new Microsoft.Maps.Pushpin(location);
-            pushpin.setOptions({ color: '#d58033' });
+            pushpin = new Microsoft.Maps.Pushpin(location, { color: '#d58033', draggable: true });
+            Microsoft.Maps.Events.addHandler(pushpin, "dragend", function (e) {
+                setLocation(e.location.latitude, e.location.longitude);
+            });
+
             map.entities.push(pushpin);
+            $("#dragMessage").show();
         }
 
         pushpin.setLocation(location);
         $("#Latitude").val(latitude);
         $("#Longitude").val(longitude);
+        return location;
     }
 
     function initializeMap() {
@@ -23,10 +40,6 @@
 
         setBingMapHeight();
         map = createBingMap("bingMap");
-
-        Microsoft.Maps.Events.addHandler(map, 'click', function(e) {
-            setLocation(e.location.latitude, e.location.longitude);
-        });
 
         if (lat !== 0 || lon !== 0) {
             setLocation(lat, lon);
@@ -48,8 +61,10 @@
     function lookupAddress(address) {
         getGeoCoordinates(address.address1, address.address2, address.city, address.state, address
             .postalCode, address.country, function(l) {
-                setMapCenterAndZoom(map, [l], 15);
-                setLocation(l.latitude, l.longitude);
+                var location = setLocation(l.latitude, l.longitude);
+                if (location !== null) {
+                    setMapCenterAndZoom(map, [location], 15);
+                }
             });
     }
 
