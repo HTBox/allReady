@@ -15,7 +15,8 @@ using AllReady.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AllReady.Features.Users;
+using AllReady.Caching;
+using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -25,11 +26,13 @@ namespace AllReady.Areas.Admin.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IItineraryEditModelValidator _itineraryValidator;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ItineraryController(IMediator mediator, IItineraryEditModelValidator itineraryValidator)
+        public ItineraryController(IMediator mediator, IItineraryEditModelValidator itineraryValidator, UserManager<ApplicationUser> userManager)
         {
             _mediator = mediator;
             _itineraryValidator = itineraryValidator;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -42,9 +45,9 @@ namespace AllReady.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var userId = await _mediator.SendAsync(new GetUserIdQuery { User = User });
+            var user = await _userManager.GetUserAsync(User);
 
-            itinerary.OptimizeRouteStatus = _mediator.Send(new OptimizeRouteResultFromCacheQuery { UserId = userId, ItineraryId = id });
+            itinerary.OptimizeRouteStatus = _mediator.Send(new OptimizeRouteResultStatusQuery(user?.Id, id));
 
             if (!User.IsOrganizationAdmin(itinerary.OrganizationId))
             {
@@ -443,9 +446,9 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var userId = await _mediator.SendAsync(new GetUserIdQuery { User = User });
+            var user = await _userManager.GetUserAsync(User);
 
-            await _mediator.SendAsync(new OptimizeRouteCommand { ItineraryId = itineraryId, UserId = userId });
+            await _mediator.SendAsync(new OptimizeRouteCommand { ItineraryId = itineraryId, UserId = user?.Id });
 
             return RedirectToAction("Details", new { id = itineraryId });
         }

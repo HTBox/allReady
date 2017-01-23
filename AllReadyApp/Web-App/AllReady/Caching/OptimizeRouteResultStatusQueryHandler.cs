@@ -5,16 +5,16 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace AllReady.Caching
 {
-    public class OptimizeRouteResultFromCacheQueryHandler : IRequestHandler<OptimizeRouteResultFromCacheQuery, OptimizeRouteResultStatus>
+    public class OptimizeRouteResultStatusQueryHandler : IRequestHandler<OptimizeRouteResultStatusQuery, OptimizeRouteResultStatus>
     {
         private readonly IMemoryCache _cache;
 
-        public OptimizeRouteResultFromCacheQueryHandler(IMemoryCache memoryCache)
+        public OptimizeRouteResultStatusQueryHandler(IMemoryCache memoryCache)
         {
             _cache = memoryCache;
         }
 
-        public OptimizeRouteResultStatus Handle(OptimizeRouteResultFromCacheQuery message)
+        public OptimizeRouteResultStatus Handle(OptimizeRouteResultStatusQuery message)
         {
             OptimizeRouteResultStatus optimizeResultMessage;
 

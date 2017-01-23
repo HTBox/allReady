@@ -62,7 +62,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     }
                     else
                     {
-                        await ReOrderRequests(waypoints, requests, optimizeResult, message);
+                        await ReOrderRequests(waypoints, requests, optimizeResult);
                         SetOptimizeCache(message.UserId, message.ItineraryId, new OptimizeRouteResultStatus { StatusMessage = OptimizeRouteStatusMessages.OptimizeSucess });
                     }
                 }
@@ -73,7 +73,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             }
         }
 
-        private async Task ReOrderRequests(List<OptimizeRouteWaypoint> waypoints, List<ItineraryRequest> requests, OptimizeRouteResult optimizeResult, OptimizeRouteCommand message)
+        private async Task ReOrderRequests(List<OptimizeRouteWaypoint> waypoints, List<ItineraryRequest> requests, OptimizeRouteResult optimizeResult)
         {
             for (var i = 0; i < waypoints.Count; i++)
             {

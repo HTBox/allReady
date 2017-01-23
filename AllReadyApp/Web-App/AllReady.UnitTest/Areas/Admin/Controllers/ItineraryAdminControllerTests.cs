@@ -23,25 +23,32 @@ using Microsoft.AspNetCore.Routing;
 using Moq;
 using Shouldly;
 using Xunit;
-using AllReady.Features.Users;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using AllReady.Caching;
+using AllReady.Services.Mapping.Routing;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
     public class ItineraryAdminControllerTests
     {
         [Fact]
-        public void ControllerHasAreaAtttributeWithTheCorrectAreaName()
+        public void Controller_HasAreaAtttribute_WithTheCorrectAreaName()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.RouteValue, "Admin");
         }
 
         [Fact]
-        public void ControllerHasAreaAuthorizeAttributeWithCorrectPolicy()
+        public void Controller_HasAreaAuthorizeAttribute_WithCorrectPolicy()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Policy, "OrgAdmin");
@@ -50,15 +57,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void DetailsGet_HasHttpGetAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
         [Fact]
-        public void DetailsGet_HasRouteAttributeWithCorrectRoute()
+        public void DetailsGet_HasRouteAttribute_WithCorrectRoute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/Details/{id}");
@@ -70,7 +77,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(null).Verifiable();
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             await sut.Details(1);
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>()), Times.Once);
@@ -82,7 +89,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(null).Verifiable();
 
-            var controller = new ItineraryController(mockMediator.Object, null);
+            var controller = new ItineraryController(mockMediator.Object, null, null);
             Assert.IsType<NotFoundResult>(await controller.Details(It.IsAny<int>()));
         }
 
@@ -92,14 +99,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(new ItineraryDetailsViewModel());
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
             sut.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<UnauthorizedResult>(await sut.Details(It.IsAny<int>()));
         }
 
         [Fact]
-        public async Task DetailsGet_ReturnsCorrectViewAndViewModelWhenEventIsNotNullAndUserIsOrgAdmin()
+        public async Task DetailsGet_ReturnsCorrectViewAndViewModel_WhenEventIsNotNullAndUserIsOrgAdmin()
         {
             const int orgId = 1;
             var viewModel = new ItineraryDetailsViewModel { OrganizationId = orgId };
@@ -107,7 +114,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(viewModel);
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await sut.Details(It.IsAny<int>()) as ViewResult;
@@ -120,9 +127,51 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
+        public async Task DetailsGet_OptimizeRouteResultStatusQuery_WithExpectedValues()
+        {
+            OptimizeRouteResultStatusQuery query = null;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(new ItineraryDetailsViewModel { OrganizationId = 1 });
+            mediator.Setup(x => x.Send(It.IsAny<OptimizeRouteResultStatusQuery>()))
+                .Returns(new OptimizeRouteResultStatus { IsSuccess = true })
+                .Callback<OptimizeRouteResultStatusQuery>(x => query = x)                
+                .Verifiable();
+
+            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            sut.MakeUserAnOrgAdmin(1.ToString());
+
+            await sut.Details(1);
+
+            mediator.Verify(x => x.Send(It.IsAny<OptimizeRouteResultStatusQuery>()), Times.Once);
+            query.ItineraryId.ShouldBe(1);
+            query.UserId.ShouldBe("123");
+        }
+
+        [Fact]
+        public async Task DetailsGet_AddsOptimizeRouteStatusToViewModel_WhenAStatusIsFoundInTheCache()
+        {
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(new ItineraryDetailsViewModel { OrganizationId = 1 });
+            mediator.Setup(x => x.Send(It.IsAny<OptimizeRouteResultStatusQuery>()))
+                .Returns(new OptimizeRouteResultStatus { IsSuccess = true, StatusMessage = "test msg" });
+
+            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            sut.MakeUserAnOrgAdmin(1.ToString());
+
+            var result = await sut.Details(It.IsAny<int>()) as ViewResult;
+
+            var resultViewModel = result.ViewData.Model as ItineraryDetailsViewModel;
+            resultViewModel.OptimizeRouteStatus.ShouldNotBeNull();
+            resultViewModel.OptimizeRouteStatus.IsSuccess.ShouldBeTrue();
+            resultViewModel.OptimizeRouteStatus.StatusMessage.ShouldBe("test msg");
+        }
+
+        [Fact]
         public void DetailsPost_HasHttpPostAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<RequestStatus?>()))
                     .OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
@@ -131,7 +180,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void DetailsPost_HasRouteAttributeWithCorrectRoute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<RequestStatus?>()))
                 .OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
@@ -144,7 +193,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(null).Verifiable();
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             await sut.Details(1, null, null);
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>()), Times.Once);
@@ -156,7 +205,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(null).Verifiable();
 
-            var controller = new ItineraryController(mockMediator.Object, null);
+            var controller = new ItineraryController(mockMediator.Object, null, null);
             Assert.IsType<NotFoundResult>(await controller.Details(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<RequestStatus?>()));
         }
 
@@ -166,7 +215,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(new ItineraryDetailsViewModel());
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             sut.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<UnauthorizedResult>(await sut.Details(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<RequestStatus?>()));
@@ -181,7 +230,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(viewModel);
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await sut.Details(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<RequestStatus?>()) as ViewResult;
@@ -207,7 +256,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(viewModel);
             mediator.Setup(x => x.SendAsync(It.IsAny<RequestListItemsQuery>())).ReturnsAsync(requestList);
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
             await sut.Details(itineraryId, keywords, status);
 
@@ -229,7 +278,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(viewModel);
             mediator.Setup(x => x.SendAsync(It.IsAny<RequestListItemsQuery>())).ReturnsAsync(filteredList);
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
             var result = await sut.Details(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<RequestStatus?>()) as ViewResult;
 
@@ -241,7 +290,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CreateHasHttpPostAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<ItineraryEditViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -249,7 +298,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CreateHasRouteAttributeWithCorrectRoute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<ItineraryEditViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/Create");
@@ -258,7 +307,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CreateHasValidateAntiForgeryAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<ItineraryEditViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
         }
@@ -266,7 +315,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task CreateReturnsHttpBadRequestWhenModelIsNull()
         {
-            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object, null);
             Assert.IsType<BadRequestResult>(await sut.Create(null));
         }
 
@@ -284,7 +333,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>()))
                 .ReturnsAsync(It.IsAny<EventSummaryViewModel>()).Verifiable();
 
-            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object, null);
             await sut.Create(model);
 
             mockMediator.Verify(x => x.SendAsync(It.Is<EventSummaryQuery>(y => y.EventId == model.EventId)), Times.Once);
@@ -296,7 +345,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(null);
 
-            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object);
+            var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object, null);
             Assert.IsType<BadRequestResult>(await sut.Create(It.IsAny<ItineraryEditViewModel>()));
         }
 
@@ -308,7 +357,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { OrganizationId = orgId });
 
-            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object);
+            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object, null);
             sut.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<UnauthorizedResult>(await sut.Create(new ItineraryEditViewModel()));
@@ -325,7 +374,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { OrganizationId = orgId });
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryCommand>())).ReturnsAsync(orgId);
 
-            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object);
+            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             Assert.IsType<OkObjectResult>(await sut.Create(new ItineraryEditViewModel()));
@@ -342,7 +391,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { OrganizationId = orgId });
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryCommand>())).ReturnsAsync(orgId);
 
-            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object);
+            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object, null);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
@@ -360,7 +409,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { OrganizationId = orgId });
 
-            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object);
+            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
             sut.AddModelStateError();
 
@@ -395,7 +444,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockValidator = new Mock<IItineraryEditModelValidator>();
             mockValidator.Setup(mock => mock.Validate(model, eventSummaryModel)).Returns(new List<KeyValuePair<string, string>>()).Verifiable();
 
-            var sut = new ItineraryController(mediator.Object, mockValidator.Object);
+            var sut = new ItineraryController(mediator.Object, mockValidator.Object, null);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
@@ -430,7 +479,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockValidator = new Mock<IItineraryEditModelValidator>();
             mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditViewModel>(), It.IsAny<EventSummaryViewModel>())).Returns(validatorError).Verifiable();
 
-            var sut = new ItineraryController(mediator.Object, mockValidator.Object);
+            var sut = new ItineraryController(mediator.Object, mockValidator.Object, null);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
@@ -460,7 +509,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockValidator = new Mock<IItineraryEditModelValidator>();
             mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditViewModel>(), It.IsAny<EventSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>()).Verifiable();
 
-            var sut = new ItineraryController(mediator.Object, mockValidator.Object);
+            var sut = new ItineraryController(mediator.Object, mockValidator.Object, null);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
@@ -490,7 +539,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockValidator = new Mock<IItineraryEditModelValidator>();
             mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditViewModel>(), It.IsAny<EventSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>()).Verifiable();
 
-            var sut = new ItineraryController(mediator.Object, mockValidator.Object);
+            var sut = new ItineraryController(mediator.Object, mockValidator.Object, null);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
@@ -505,7 +554,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void EditGet_HasRouteAttribute_WithCorrectRoute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/Edit/{id}");
@@ -517,7 +566,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryQuery>())).ReturnsAsync(null).Verifiable();
 
-            var sut = new ItineraryController(mediator.Object, Mock.Of<IItineraryEditModelValidator>());
+            var sut = new ItineraryController(mediator.Object, Mock.Of<IItineraryEditModelValidator>(), null);
             await sut.Edit(1);
 
             mediator.Verify(x => x.SendAsync(It.Is<EditItineraryQuery>(y => y.ItineraryId == 1)), Times.Once);
@@ -529,7 +578,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryQuery>())).ReturnsAsync(null);
 
-            var sut = new ItineraryController(mediator.Object, Mock.Of<IItineraryEditModelValidator>());
+            var sut = new ItineraryController(mediator.Object, Mock.Of<IItineraryEditModelValidator>(), null);
 
             Assert.IsType<BadRequestResult>(await sut.Edit(1));
         }
@@ -542,7 +591,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryQuery>())).ReturnsAsync(new ItineraryEditViewModel { OrganizationId = orgId });
 
-            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object);
+            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object, null);
             sut.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<UnauthorizedResult>(await sut.Edit(1));
@@ -556,7 +605,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryQuery>())).ReturnsAsync(new ItineraryEditViewModel { OrganizationId = orgId, Id = 100, Name = "Test" });
 
-            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object);
+            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object, null);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
@@ -574,7 +623,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void EditPost_HasValidateAntiForgeryAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<ItineraryEditViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
         }
@@ -582,14 +631,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task EditPost_ReturnsHttpBadRequestWhenModelIsNull()
         {
-            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object);
+            var sut = new ItineraryController(Mock.Of<IMediator>(), MockSuccessValidation().Object, null);
             Assert.IsType<BadRequestResult>(await sut.Edit(null));
         }
 
         [Fact]
         public void EditPost_HasRouteAttribute_WithCorrectRoute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<ItineraryEditViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/Edit/{id}");
@@ -601,7 +650,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(null).Verifiable();
 
-            var sut = new ItineraryController(mediator.Object, Mock.Of<IItineraryEditModelValidator>());
+            var sut = new ItineraryController(mediator.Object, Mock.Of<IItineraryEditModelValidator>(), null);
             await sut.Edit(new ItineraryEditViewModel { Id = 50 });
 
             mediator.Verify(x => x.SendAsync(It.Is<ItinerarySummaryQuery>(y => y.ItineraryId == 50)), Times.Once);
@@ -613,7 +662,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(null);
 
-            var sut = new ItineraryController(mediator.Object, Mock.Of<IItineraryEditModelValidator>());
+            var sut = new ItineraryController(mediator.Object, Mock.Of<IItineraryEditModelValidator>(), null);
 
             Assert.IsType<BadRequestResult>(await sut.Edit(new ItineraryEditViewModel { Id = 50 }));
         }
@@ -626,7 +675,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(new ItinerarySummaryViewModel { OrganizationId = orgId });
 
-            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object);
+            var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object, null);
             sut.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<UnauthorizedResult>(await sut.Edit(new ItineraryEditViewModel { Id = 50 }));
@@ -660,7 +709,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockValidator = new Mock<IItineraryEditModelValidator>();
             mockValidator.Setup(mock => mock.Validate(model, itinerarySummaryModel.EventSummary)).Returns(new List<KeyValuePair<string, string>>()).Verifiable();
 
-            var sut = new ItineraryController(mediator.Object, mockValidator.Object);
+            var sut = new ItineraryController(mediator.Object, mockValidator.Object, null);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
@@ -705,7 +754,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockValidator = new Mock<IItineraryEditModelValidator>();
             mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditViewModel>(), It.IsAny<EventSummaryViewModel>())).Returns(validatorError);
 
-            var sut = new ItineraryController(mediator.Object, mockValidator.Object);
+            var sut = new ItineraryController(mediator.Object, mockValidator.Object, null);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
@@ -751,7 +800,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockValidator = new Mock<IItineraryEditModelValidator>();
             mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditViewModel>(), It.IsAny<EventSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
-            var sut = new ItineraryController(mediator.Object, mockValidator.Object);
+            var sut = new ItineraryController(mediator.Object, mockValidator.Object, null);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
@@ -793,7 +842,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockValidator = new Mock<IItineraryEditModelValidator>();
             mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditViewModel>(), It.IsAny<EventSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
-            var sut = new ItineraryController(mediator.Object, mockValidator.Object);
+            var sut = new ItineraryController(mediator.Object, mockValidator.Object, null);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
@@ -813,7 +862,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void AddTeamMemberHasHttpPostAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.AddTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -821,7 +870,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void AddTeamMemberHasRouteAttributeWithCorrectRoute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.AddTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/AddTeamMember");
@@ -830,7 +879,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void AddTeamMemberHasValidateAntiForgeryAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.AddTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
         }
@@ -855,7 +904,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
             mockMediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(itineraryDetailsViewModel);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
@@ -874,7 +923,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
@@ -892,7 +941,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
@@ -912,7 +961,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.SetClaims(new List<Claim>
             {
                 new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
@@ -933,7 +982,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
             var jsonResult = await sut.AddTeamMember(itineraryId, 0) as JsonResult;
 
@@ -967,7 +1016,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
             mockMediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(itineraryDetailsViewModel);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
             var jsonResult = await sut.AddTeamMember(itineraryId, teamMemberId) as JsonResult;
 
@@ -988,7 +1037,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void SelectRequestsGetHasHttpGetAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.SelectRequests(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -996,7 +1045,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void SelectRequestsGetHasRouteAttributeWithCorrectRoute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.SelectRequests(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{id}/[Action]");
@@ -1009,7 +1058,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             await sut.SelectRequests(itineraryId);
 
             mediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == itineraryId)));
@@ -1018,7 +1067,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task SelectRequestsGetReturnsUnauthorizedResult_WhenOrgIdIsZero()
         {
-            var sut = new ItineraryController(Mock.Of<IMediator>(), null);
+            var sut = new ItineraryController(Mock.Of<IMediator>(), null, null);
 
             var result = await sut.SelectRequests(It.IsAny<int>());
 
@@ -1031,7 +1080,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             sut.MakeUserNotAnOrgAdmin();
 
             var result = await sut.SelectRequests(It.IsAny<int>());
@@ -1052,7 +1101,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<RequestListItemsQuery>())).ReturnsAsync(returnedRequests);
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(organizationId);
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var view = await sut.SelectRequests(itinerary.Id, new SelectItineraryRequestsViewModel());
@@ -1075,7 +1124,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 y.Criteria.EventId == itinerary.EventId)))
                 .ReturnsAsync(returnedRequests);
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
 
             var view = await sut.SelectRequests(itinerary.Id, itineraryRequestsModel);
 
@@ -1088,7 +1137,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int itineraryId = 1;
             var mockMediator = new Mock<IMediator>();
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
 
             await sut.AddRequests(itineraryId, It.IsAny<List<string>>());
 
@@ -1104,7 +1153,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
 
             Assert.IsType<UnauthorizedResult>(await sut.AddRequests(itineraryId, selectedRequests));
         }
@@ -1118,7 +1167,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<UnauthorizedResult>(await sut.AddRequests(itineraryId, selectedRequests));
@@ -1136,7 +1185,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AddRequestsToItineraryCommand>())).ReturnsAsync(true);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             await sut.AddRequests(itineraryId, selectedRequests);
@@ -1156,7 +1205,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await sut.AddRequests(itineraryId, selectedRequests) as RedirectToActionResult;
@@ -1168,7 +1217,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void AddRequestsHasHttpPostAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.AddRequests(It.IsAny<int>(), It.IsAny<List<string>>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -1176,7 +1225,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void AddRequestsHasRouteAttributeWithCorrectRoute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.AddRequests(It.IsAny<int>(), It.IsAny<List<string>>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{id}/[Action]");
@@ -1185,7 +1234,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void AddRequestsHasValidateAntiForgeryAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.AddRequests(It.IsAny<int>(), It.IsAny<List<string>>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
         }
@@ -1197,7 +1246,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             await sut.ConfirmRemoveRequest(itineraryId, It.IsAny<Guid>());
 
             mediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == itineraryId)), Times.Once);
@@ -1211,7 +1260,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             var result = await sut.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>());
 
             Assert.IsType<UnauthorizedResult>(result);
@@ -1223,7 +1272,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             sut.MakeUserNotAnOrgAdmin();
 
             var result = await sut.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>());
@@ -1239,7 +1288,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await sut.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>());
@@ -1256,7 +1305,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             await sut.ConfirmRemoveRequest(It.IsAny<int>(), requestId);
@@ -1275,7 +1324,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
             mediator.Setup(x => x.SendAsync(It.IsAny<RequestSummaryQuery>())).ReturnsAsync(viewModel);
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await sut.ConfirmRemoveRequest(It.IsAny<int>(), requestId) as ViewResult;
@@ -1293,7 +1342,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
             mediator.Setup(x => x.SendAsync(It.IsAny<RequestSummaryQuery>())).ReturnsAsync(new RequestSummaryViewModel());
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await sut.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>()) as ViewResult;
@@ -1311,7 +1360,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
             mediator.Setup(x => x.SendAsync(It.IsAny<RequestSummaryQuery>())).ReturnsAsync(new RequestSummaryViewModel());
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await sut.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>()) as ViewResult;
@@ -1324,7 +1373,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void ConfirmRemoveRequestHasHttpGetAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -1332,7 +1381,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void ConfirmRemoveRequestHasRouteAttributeWithTheCorrectRouteValule()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{requestId}");
@@ -1341,7 +1390,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task RemoveRequestReturnsUnathorizedResult_WhenUserIsNotOrgAdmin()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var result = await sut.RemoveRequest(new RequestSummaryViewModel { UserIsOrgAdmin = false });
             Assert.IsType<UnauthorizedResult>(result);
         }
@@ -1352,7 +1401,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var viewModel = new RequestSummaryViewModel { Id = Guid.NewGuid(), ItineraryId = 1, UserIsOrgAdmin = true };
 
             var mediator = new Mock<IMediator>();
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
 
             await sut.RemoveRequest(viewModel);
 
@@ -1365,7 +1414,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var viewModel = new RequestSummaryViewModel { ItineraryId = 1, UserIsOrgAdmin = true };
 
             var mediator = new Mock<IMediator>();
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
 
             var result = await sut.RemoveRequest(viewModel) as RedirectToActionResult;
 
@@ -1378,7 +1427,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void RemoveRequestHasHttpPostAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.RemoveRequest(It.IsAny<RequestSummaryViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -1386,7 +1435,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void RemoveRequestHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.RemoveRequest(It.IsAny<RequestSummaryViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -1394,7 +1443,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void RemoveRequestHasRouteAttributeWithCorrectRouteValue()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.RemoveRequest(It.IsAny<RequestSummaryViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{requestId}");
@@ -1407,7 +1456,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
 
             await sut.ConfirmRemoveTeamMember(itineraryId, It.IsAny<int>());
 
@@ -1423,7 +1472,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
 
             Assert.IsType<UnauthorizedResult>(await sut.ConfirmRemoveTeamMember(itineraryId, taskSignupId));
         }
@@ -1434,7 +1483,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<UnauthorizedResult>(await sut.ConfirmRemoveTeamMember(It.IsAny<int>(), It.IsAny<int>()));
@@ -1449,7 +1498,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             await sut.ConfirmRemoveTeamMember(It.IsAny<int>(), taskSignupId);
@@ -1466,7 +1515,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
             mockMediator.Setup(x => x.SendAsync(It.IsAny<TaskSignupSummaryQuery>())).ReturnsAsync(null);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             Assert.IsType<NotFoundResult>(await sut.ConfirmRemoveTeamMember(It.IsAny<int>(), It.IsAny<int>()));
@@ -1481,7 +1530,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
             mockMediator.Setup(x => x.SendAsync(It.IsAny<TaskSignupSummaryQuery>())).ReturnsAsync(new TaskSignupSummaryViewModel { TaskSignupId = It.IsAny<int>(), VolunteerEmail = "user@domain.tld", VolunteerName = "Test McTesterson" });
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await sut.ConfirmRemoveTeamMember(It.IsAny<int>(), It.IsAny<int>()) as ViewResult;
@@ -1495,7 +1544,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void ConfirmRemoveTeamMemberHasHttpGetAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.ConfirmRemoveTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -1503,7 +1552,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void ConfirmRemoveTeamMemberHasRouteAttributeWithCorrectRoute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.ConfirmRemoveTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}");
@@ -1517,7 +1566,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
 
             Assert.IsType<UnauthorizedResult>(await sut.RemoveTeamMember(viewModel));
         }
@@ -1531,7 +1580,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
 
             await sut.RemoveTeamMember(viewModel);
 
@@ -1547,7 +1596,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
 
-            var sut = new ItineraryController(mediator.Object, null);
+            var sut = new ItineraryController(mediator.Object, null, null);
             var result = await sut.RemoveTeamMember(viewModel) as RedirectToActionResult;
 
             Assert.Equal(result.ActionName, nameof(ItineraryController.Details));
@@ -1557,7 +1606,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void RemoveTeamMemberHasHttpPostAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<TaskSignupSummaryViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -1565,7 +1614,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void RemoveTeamMemberHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<TaskSignupSummaryViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -1573,7 +1622,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void RemoveTeamMemberHasRouteAttributeWithCorrectRoute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<TaskSignupSummaryViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}");
@@ -1582,7 +1631,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void MarkCompleteHasHttpPostAttribute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.MarkComplete(It.IsAny<int>(), It.IsAny<Guid>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -1590,7 +1639,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void MarkCompleteHasRouteAttributeWithCorrectRoute()
         {
-            var sut = new ItineraryController(null, null);
+            var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.MarkComplete(It.IsAny<int>(), It.IsAny<Guid>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{requestId}");
@@ -1602,7 +1651,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var itineraryId = It.IsAny<int>();
             var mockMediator = new Mock<IMediator>();
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
 
             await sut.MarkComplete(itineraryId, It.IsAny<Guid>());
 
@@ -1615,7 +1664,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
 
             Assert.IsType<UnauthorizedResult>(await sut.MarkComplete(It.IsAny<int>(), It.IsAny<Guid>()));
         }
@@ -1626,7 +1675,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<UnauthorizedResult>(await sut.MarkComplete(It.IsAny<int>(), It.IsAny<Guid>()));
@@ -1641,7 +1690,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             await sut.MarkComplete(It.IsAny<int>(), requestId);
@@ -1657,7 +1706,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await sut.MarkComplete(It.IsAny<int>(), It.IsAny<Guid>());
@@ -1672,7 +1721,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await sut.MarkComplete(It.IsAny<int>(), It.IsAny<Guid>());
@@ -1683,7 +1732,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void MarkConfirmedHasHttpPostAttribute()
         {
-            var itineraryController = new ItineraryController(null, null);
+            var itineraryController = new ItineraryController(null, null, null);
             var httpPostAttribute = itineraryController.GetAttributesOn(x => x.MarkConfirmed(It.IsAny<int>(), It.IsAny<Guid>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(httpPostAttribute);
         }
@@ -1691,7 +1740,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void MarkConfirmedHasRouteAttributeWithCorrectRoute()
         {
-            var itineraryController = new ItineraryController(null, null);
+            var itineraryController = new ItineraryController(null, null, null);
             var routeAttribute = itineraryController.GetAttributesOn(x => x.MarkConfirmed(It.IsAny<int>(), It.IsAny<Guid>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{requestId}");
@@ -1703,7 +1752,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var itineraryId = It.IsAny<int>();
             var mockMediator = new Mock<IMediator>();
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null);
+            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
             await itineraryController.MarkConfirmed(itineraryId, It.IsAny<Guid>());
 
             mockMediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == itineraryId)), Times.Once);
@@ -1715,7 +1764,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null);
+            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
             Assert.IsType<UnauthorizedResult>(await itineraryController.MarkConfirmed(It.IsAny<int>(), It.IsAny<Guid>()));
         }
 
@@ -1725,7 +1774,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null);
+            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
             itineraryController.MakeUserNotAnOrgAdmin();
             Assert.IsType<UnauthorizedResult>(await itineraryController.MarkConfirmed(It.IsAny<int>(), It.IsAny<Guid>()));
         }
@@ -1739,7 +1788,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null);
+            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
             itineraryController.MakeUserAnOrgAdmin(orgId.ToString());
 
             await itineraryController.MarkConfirmed(It.IsAny<int>(), requestId);
@@ -1755,7 +1804,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null);
+            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
             itineraryController.MakeUserAnOrgAdmin(orgId.ToString());
 
             await itineraryController.MarkConfirmed(It.IsAny<int>(), requestId);
@@ -1770,7 +1819,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null);
+            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
             itineraryController.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await itineraryController.MarkConfirmed(It.IsAny<int>(), It.IsAny<Guid>());
@@ -1785,7 +1834,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null);
+            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
             itineraryController.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await itineraryController.MarkConfirmed(It.IsAny<int>(), It.IsAny<Guid>());
@@ -1796,7 +1845,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void MarkUnassignedHasHttpPostAttribute()
         {
-            var itineraryController = new ItineraryController(null, null);
+            var itineraryController = new ItineraryController(null, null, null);
             var httpPostAttribute = itineraryController.GetAttributesOn(x => x.MarkUnassigned(It.IsAny<int>(), It.IsAny<Guid>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(httpPostAttribute);
         }
@@ -1804,7 +1853,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void MarkUnassignedHasRouteAttributeWithCorrectRoute()
         {
-            var itineraryController = new ItineraryController(null, null);
+            var itineraryController = new ItineraryController(null, null, null);
             var routeAttribute = itineraryController.GetAttributesOn(x => x.MarkUnassigned(It.IsAny<int>(), It.IsAny<Guid>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{requestId}");
@@ -1816,7 +1865,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var itineraryId = It.IsAny<int>();
             var mockMediator = new Mock<IMediator>();
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null);
+            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
             await itineraryController.MarkUnassigned(itineraryId, It.IsAny<Guid>());
             mockMediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == itineraryId)), Times.Once);
         }
@@ -1827,7 +1876,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null);
+            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
             Assert.IsType<UnauthorizedResult>(await itineraryController.MarkUnassigned(It.IsAny<int>(), It.IsAny<Guid>()));
         }
 
@@ -1837,7 +1886,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null);
+            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
             itineraryController.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<UnauthorizedResult>(await itineraryController.MarkUnassigned(It.IsAny<int>(), It.IsAny<Guid>()));
@@ -1852,7 +1901,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null);
+            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
             itineraryController.MakeUserAnOrgAdmin(orgId.ToString());
 
             await itineraryController.MarkUnassigned(It.IsAny<int>(), requestId);
@@ -1868,7 +1917,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null);
+            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
             itineraryController.MakeUserAnOrgAdmin(orgId.ToString());
 
             await itineraryController.MarkUnassigned(It.IsAny<int>(), requestId);
@@ -1883,7 +1932,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await sut.MarkUnassigned(It.IsAny<int>(), It.IsAny<Guid>());
@@ -1899,7 +1948,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await sut.MarkUnassigned(It.IsAny<int>(), It.IsAny<Guid>());
@@ -1913,26 +1962,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null);
+            var itineraryController = new ItineraryController(mockMediator.Object, null, new FakeUserManager());
             itineraryController.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<UnauthorizedResult>(await itineraryController.OptimizeRoute(It.IsAny<int>(), It.IsAny<OptimizeRouteInputModel>()));
-        }
-
-        [Fact]
-        public async Task OptimizeRoute_SendsGetUserIdQuery_Once_WhenUserIsOrgAdmin()
-        {
-            const int orgId = 1;
-
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<GetUserIdQuery>())).ReturnsAsync("123");
-
-            var sut = new ItineraryController(mockMediator.Object, null);
-            sut.MakeUserAnOrgAdmin(orgId.ToString());
-
-            await sut.OptimizeRoute(It.IsAny<int>(), new OptimizeRouteInputModel { StartAddress = "123", EndSameAsStart = true });
-            mockMediator.Verify(x => x.SendAsync(It.Is<GetUserIdQuery>(y => y.User == sut.User)), Times.Once);
         }
 
         [Fact]
@@ -1942,9 +1975,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<GetUserIdQuery>())).ReturnsAsync("123");
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, new FakeUserManager());
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             await sut.OptimizeRoute(1, new OptimizeRouteInputModel { StartAddress = "123", EndSameAsStart = true });
@@ -1959,13 +1991,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<GetUserIdQuery>())).ReturnsAsync("123");
 
-            var sut = new ItineraryController(mockMediator.Object, null);
+            var sut = new ItineraryController(mockMediator.Object, null, new FakeUserManager());
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
             var result = await sut.OptimizeRoute(itineraryId, new OptimizeRouteInputModel { StartAddress = "123", EndSameAsStart = true });
-            
+
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             redirectResult.ActionName.ShouldBe("Details");
 
@@ -1973,7 +2004,27 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             id.ShouldNotBeNull();
             id.ShouldBe(itineraryId);
         }
-        
+
+        private class FakeUserManager : UserManager<ApplicationUser>
+        {
+            public FakeUserManager()
+                : base(new Mock<IUserStore<ApplicationUser>>().Object,
+                      new Mock<IOptions<IdentityOptions>>().Object,
+                      new Mock<IPasswordHasher<ApplicationUser>>().Object,
+                      new IUserValidator<ApplicationUser>[0],
+                      new IPasswordValidator<ApplicationUser>[0],
+                      new Mock<ILookupNormalizer>().Object,
+                      new Mock<IdentityErrorDescriber>().Object,
+                      new Mock<IServiceProvider>().Object,
+                      new Mock<ILogger<UserManager<ApplicationUser>>>().Object)
+            { }
+
+            public override Task<ApplicationUser> GetUserAsync(ClaimsPrincipal user)
+            {
+                return Task.FromResult(new ApplicationUser { Id = "123" });
+            }
+        }
+
         private static Mock<IItineraryEditModelValidator> MockSuccessValidation()
         {
             var mockValidator = new Mock<IItineraryEditModelValidator>();
