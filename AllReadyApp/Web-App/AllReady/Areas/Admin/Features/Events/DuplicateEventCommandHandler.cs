@@ -65,11 +65,11 @@ namespace AllReady.Areas.Admin.Features.Events
             };
         }
 
-        private IEnumerable<AllReadyTask> CloneTasks(IEnumerable<AllReadyTask> tasks)
+        private IEnumerable<VolunteerTask> CloneTasks(IEnumerable<VolunteerTask> tasks)
         {
             if (tasks == null || !tasks.Any())
             {
-                return Enumerable.Empty<AllReadyTask>();
+                return Enumerable.Empty<VolunteerTask>();
             }
             
             return tasks.Select(task => CloneTask(task));
@@ -80,9 +80,9 @@ namespace AllReady.Areas.Admin.Features.Events
             return @event.RequiredSkills.Select(eventSkill => new EventSkill { SkillId = eventSkill.SkillId });
         }
 
-        private static AllReadyTask CloneTask(AllReadyTask task)
+        private static VolunteerTask CloneTask(VolunteerTask task)
         {
-            return new AllReadyTask
+            return new VolunteerTask
             {
                 Name = task.Name,
                 Description = task.Description,
@@ -96,7 +96,7 @@ namespace AllReady.Areas.Admin.Features.Events
             };
         }
 
-        private static IEnumerable<TaskSkill> CloneTaskRequiredSkills(AllReadyTask task)
+        private static IEnumerable<TaskSkill> CloneTaskRequiredSkills(VolunteerTask task)
         {
             return task.RequiredSkills.Select(taskSkill => new TaskSkill { SkillId = taskSkill.SkillId });
         }

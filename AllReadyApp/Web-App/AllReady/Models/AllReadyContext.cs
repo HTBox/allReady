@@ -19,7 +19,7 @@ namespace AllReady.Models
         public DbSet<EventSkill> EventSkills { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<PostalCodeGeo> PostalCodes { get; set; }
-        public DbSet<AllReadyTask> Tasks { get; set; }
+        public DbSet<VolunteerTask> Tasks { get; set; }
         public DbSet<TaskSkill> TaskSkills { get; set; }
         public DbSet<TaskSignup> TaskSignups { get; set; }
         public DbSet<Resource> Resources { get; set; }
@@ -48,7 +48,7 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<CampaignSponsors>());
             Map(modelBuilder.Entity<Event>());
             Map(modelBuilder.Entity<EventSkill>());
-            Map(modelBuilder.Entity<AllReadyTask>());
+            Map(modelBuilder.Entity<VolunteerTask>());
             Map(modelBuilder.Entity<TaskSkill>());
             Map(modelBuilder.Entity<TaskSignup>());
             Map(modelBuilder.Entity<PostalCodeGeo>());
@@ -116,7 +116,7 @@ namespace AllReady.Models
             builder.HasOne(u => u.Task).WithMany(x => x.AssignedVolunteers).HasForeignKey(x => x.TaskId);
         }
 
-        private void Map(EntityTypeBuilder<AllReadyTask> builder)
+        private void Map(EntityTypeBuilder<VolunteerTask> builder)
         {
             builder.HasOne(t => t.Event).WithMany(e => e.Tasks).HasForeignKey(t => t.EventId);
             builder.HasOne(t => t.Organization);

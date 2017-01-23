@@ -12,11 +12,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
     {
         private readonly EditTaskQuery message;
         private readonly EditTaskQueryHandler sut;
-        private readonly AllReadyTask task;
+        private readonly VolunteerTask task;
 
         public EditTaskQueryHandlerShould()
         {
-            task = new AllReadyTask
+            task = new VolunteerTask
             {
                 Id = 1,
                 Name = "Taskname",

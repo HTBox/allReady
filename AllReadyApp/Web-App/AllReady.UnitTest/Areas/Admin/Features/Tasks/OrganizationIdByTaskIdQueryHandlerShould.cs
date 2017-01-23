@@ -7,16 +7,16 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
     public class OrganizationIdByTaskIdQueryHandlerShould : InMemoryContextTest
     {
-        private readonly AllReadyTask task;
+        private readonly VolunteerTask task;
         private const int TaskId = 1;
         private const int OrganizationId = 2;
 
         public OrganizationIdByTaskIdQueryHandlerShould()
         {
-            task = new AllReadyTask { Id = TaskId, Organization = new Organization { Id = OrganizationId } };
+            task = new VolunteerTask { Id = TaskId, Organization = new Organization { Id = OrganizationId } };
 
             Context.Tasks.Add(task);
-            Context.Tasks.Add(new AllReadyTask { Id = 2 });
+            Context.Tasks.Add(new VolunteerTask { Id = 2 });
             Context.SaveChanges();
         }
 

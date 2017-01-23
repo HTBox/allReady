@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true };
             Context.Users.Add(user2);
 
-            var @task = new AllReadyTask
+            var @task = new VolunteerTask
             {
                 Id = 1,
                 Name = "Task 1",

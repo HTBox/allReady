@@ -96,7 +96,7 @@ namespace AllReady.Features.Notifications
             }
         }
 
-        private static string GetTaskSkillsInfo(AllReadyTask task, ApplicationUser volunteer)
+        private static string GetTaskSkillsInfo(VolunteerTask task, ApplicationUser volunteer)
         {
             var result = new StringBuilder();
             if (task.RequiredSkills.Count == 0)

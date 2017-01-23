@@ -201,12 +201,12 @@ namespace AllReady.Controllers
             return await GetTaskBy(taskId) != null;
         }
 
-        private async Task<AllReadyTask> GetTaskBy(int taskId)
+        private async Task<VolunteerTask> GetTaskBy(int taskId)
         {
             return await _mediator.SendAsync(new TaskByTaskIdQuery { TaskId = taskId });
         }
 
-        private async Task<AllReadyTask> ToModel(TaskViewModel taskViewModel, IMediator mediator)
+        private async Task<VolunteerTask> ToModel(TaskViewModel taskViewModel, IMediator mediator)
         {
             var @event = await mediator.SendAsync(new EventByEventIdQuery { EventId = taskViewModel.EventId });
             if (@event == null)
@@ -215,10 +215,10 @@ namespace AllReady.Controllers
             }
 
             var newTask = true;
-            AllReadyTask allReadyTask;
+            VolunteerTask allReadyTask;
             if (taskViewModel.Id == 0)
             {
-                allReadyTask = new AllReadyTask();
+                allReadyTask = new VolunteerTask();
             }
             else
             {
@@ -286,7 +286,7 @@ namespace AllReady.Controllers
 
     public static class TaskSignupViewModelExtensions
     {
-        public static async Task<List<TaskSignup>> ToTaskSignups(this List<ViewModels.Event.TaskSignupViewModel> viewModels, AllReadyTask task, IMediator mediator)
+        public static async Task<List<TaskSignup>> ToTaskSignups(this List<ViewModels.Event.TaskSignupViewModel> viewModels, VolunteerTask task, IMediator mediator)
         {
             var taskSignups = new List<TaskSignup>();
             foreach (var viewModel in viewModels)
@@ -304,12 +304,12 @@ namespace AllReady.Controllers
 
     public interface IDetermineIfATaskIsEditable
     {
-        bool For(ClaimsPrincipal user, AllReadyTask task, UserManager<ApplicationUser> userManager);
+        bool For(ClaimsPrincipal user, VolunteerTask task, UserManager<ApplicationUser> userManager);
     }
 
     public class DetermineIfATaskIsEditable : IDetermineIfATaskIsEditable
     {
-        public bool For(ClaimsPrincipal user, AllReadyTask task, UserManager<ApplicationUser> userManager)
+        public bool For(ClaimsPrincipal user, VolunteerTask task, UserManager<ApplicationUser> userManager)
         {
             var userId = userManager.GetUserId(user);
 

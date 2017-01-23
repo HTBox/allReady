@@ -62,7 +62,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Organizations.Add(htb);
             Context.Events.Add(queenAnne);
 
-            var newTask = new AllReadyTask
+            var newTask = new VolunteerTask
             {
                 Event = queenAnne,
                 Description = "Description of a very important task",

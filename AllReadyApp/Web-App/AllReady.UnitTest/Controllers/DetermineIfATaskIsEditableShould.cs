@@ -53,7 +53,7 @@ namespace AllReady.UnitTest.Controllers
                 new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), UserType.BasicUser))
             }));
 
-            var allReadyTask = new AllReadyTask { Event = new Event { Organizer = new ApplicationUser { Id = userId }}};
+            var allReadyTask = new VolunteerTask { Event = new Event { Organizer = new ApplicationUser { Id = userId }}};
 
             var sut = new DetermineIfATaskIsEditable();
             var result = sut.For(claimsPrincipal, allReadyTask, UserManager);
@@ -73,7 +73,7 @@ namespace AllReady.UnitTest.Controllers
                 new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), UserType.BasicUser))
             }));
 
-            var allReadyTask = new AllReadyTask { Event = new Event { Campaign = new Campaign { Organizer = new ApplicationUser { Id = userId }}}};
+            var allReadyTask = new VolunteerTask { Event = new Event { Campaign = new Campaign { Organizer = new ApplicationUser { Id = userId }}}};
 
             var sut = new DetermineIfATaskIsEditable();
             var result = sut.For(claimsPrincipal, allReadyTask, UserManager);

@@ -28,7 +28,7 @@ namespace AllReady.Features.Events
                     StatusDateTimeUtc = DateTimeUtcNow(),
                     StatusDescription = taskSignupViewModel.StatusDescription,
                     Status = (Models.TaskStatus)Enum.Parse(typeof(Models.TaskStatus), taskSignupViewModel.Status),
-                    Task = new AllReadyTask { Id = taskSignupViewModel.TaskId },
+                    Task = new VolunteerTask { Id = taskSignupViewModel.TaskId },
                     User = currentUser
                 });
                 await dbContext.SaveChangesAsync();

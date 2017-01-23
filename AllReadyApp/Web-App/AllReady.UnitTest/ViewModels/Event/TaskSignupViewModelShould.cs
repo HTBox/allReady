@@ -9,7 +9,7 @@ namespace AllReady.UnitTest.ViewModels.Event
         [Fact]
         public void SetTaskIdAndTaskName_WhenTaskSignupsTaskIsNotNull()
         {
-            var taskSignup = new TaskSignup { Task = new AllReadyTask { Id = 1, Name = "TaskName" } };
+            var taskSignup = new TaskSignup { Task = new VolunteerTask { Id = 1, Name = "TaskName" } };
             var sut = new TaskSignupViewModel(taskSignup);
             Assert.Equal(sut.TaskId, taskSignup.Task.Id);
             Assert.Equal(sut.TaskName, taskSignup.Task.Name);

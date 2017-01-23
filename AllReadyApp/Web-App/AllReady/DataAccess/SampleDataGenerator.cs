@@ -55,7 +55,7 @@ namespace AllReady.DataAccess
             var events = new List<Event>();
             var eventSkills = new List<EventSkill>();
             var campaigns = new List<Campaign>();
-            var tasks = new List<AllReadyTask>();
+            var tasks = new List<VolunteerTask>();
             var resources = new List<Resource>();
             var contacts = GetContacts();
             var skills = new List<Skill>();
@@ -485,12 +485,12 @@ namespace AllReady.DataAccess
             return list[rand.Next(list.Count)];
         }
 
-        private List<AllReadyTask> GetSomeTasks(Event campaignEvent, Organization organization)
+        private List<VolunteerTask> GetSomeTasks(Event campaignEvent, Organization organization)
         {
-            var value = new List<AllReadyTask>();
+            var value = new List<VolunteerTask>();
             for (var i = 0; i < 5; i++)
             {
-                value.Add(new AllReadyTask
+                value.Add(new VolunteerTask
                 {
                     Event = campaignEvent,
                     Description = "Description of a very important task # " + i,

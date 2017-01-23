@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Date = new DateTime(2016, 07, 01)
             };
 
-            var @task = new AllReadyTask
+            var @task = new VolunteerTask
             {
                 Id = 1,
                 Event = queenAnne,

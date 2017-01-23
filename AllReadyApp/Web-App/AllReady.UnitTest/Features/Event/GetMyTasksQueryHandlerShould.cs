@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Features.Event
                 context.TaskSignups.Add(new TaskSignup
                 {
                     User = new ApplicationUser { Id = userId },
-                    Task = new AllReadyTask { Event = new Event { Id = eventId, Campaign = new Campaign { Locked = false }}}
+                    Task = new VolunteerTask { Event = new Event { Id = eventId, Campaign = new Campaign { Locked = false }}}
                 });
                 await context.SaveChangesAsync();
             }

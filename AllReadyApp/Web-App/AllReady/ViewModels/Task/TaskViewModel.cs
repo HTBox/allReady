@@ -13,7 +13,7 @@ namespace AllReady.ViewModels.Task
         {
         }
 
-        public TaskViewModel(AllReadyTask task, string userId = null)
+        public TaskViewModel(VolunteerTask task, string userId = null)
         {
             Id = task.Id;
             Name = task.Name;
@@ -145,7 +145,7 @@ namespace AllReady.ViewModels.Task
             return $"{StartDateTime:dddd, MMMM dd, yyyy} at {StartDateTime:t} to {EndDateTime:dddd, MMMM dd, yyyy} at {EndDateTime:t}";
         }
 
-        public TaskViewModel(AllReadyTask task, bool isUserSignedupForTask) : this(task)
+        public TaskViewModel(VolunteerTask task, bool isUserSignedupForTask) : this(task)
         {
             IsUserSignedUpForTask = isUserSignedupForTask;
         }

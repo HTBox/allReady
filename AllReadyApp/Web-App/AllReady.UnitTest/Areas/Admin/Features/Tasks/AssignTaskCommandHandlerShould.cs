@@ -28,7 +28,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         public async Task AssignsVolunteersToTask()
         {
             var newVolunteer = new ApplicationUser { Id = "user1", Email = "user1@abc.com", PhoneNumber = "1234"};
-            var @task = new AllReadyTask { Id = 1 };
+            var @task = new VolunteerTask { Id = 1 };
             Context.Add(newVolunteer);
             Context.Add(@task);
             Context.SaveChanges();
@@ -45,7 +45,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task RemoveUsersThatAreNotInTheCurrentSignUpList()
         {
-            var @task = new AllReadyTask { Id = 1 };
+            var @task = new VolunteerTask { Id = 1 };
             Context.Add(new ApplicationUser {Id = "user2"});
             var previouslySignedupUser = new ApplicationUser
             {
@@ -66,7 +66,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task PublishTaskAssignedToVolunteersNotification()
         {
-            var @task = new AllReadyTask { Id = 1 };
+            var @task = new VolunteerTask { Id = 1 };
             var volunteer = new ApplicationUser
             {
                 Id = "user1",
@@ -92,7 +92,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task DoesNotPublishTaskAssignedNotificationToVolunteersPreviouslySignedUp()
         {
-            var @task = new AllReadyTask { Id = 1 };
+            var @task = new VolunteerTask { Id = 1 };
             var previouslySignedupUser = new ApplicationUser
             {
                 Id = "user1",

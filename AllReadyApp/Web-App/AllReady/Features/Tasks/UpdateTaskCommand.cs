@@ -5,6 +5,6 @@ namespace AllReady.Features.Tasks
 {
     public class UpdateTaskCommand : IAsyncRequest
     {
-        public AllReadyTask AllReadyTask { get; set; }
+        public VolunteerTask AllReadyTask { get; set; }
     }
 }

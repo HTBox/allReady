@@ -18,7 +18,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<int> Handle(EditTaskCommand message)
         {
-            var @task = await _context.Tasks.Include(t => t.RequiredSkills).SingleOrDefaultAsync(t => t.Id == message.Task.Id) ?? new AllReadyTask();
+            var @task = await _context.Tasks.Include(t => t.RequiredSkills).SingleOrDefaultAsync(t => t.Id == message.Task.Id) ?? new VolunteerTask();
 
             @task.Name = message.Task.Name;
             @task.Description = message.Task.Description;

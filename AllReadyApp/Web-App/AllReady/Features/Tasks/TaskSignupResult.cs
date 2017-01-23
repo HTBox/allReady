@@ -11,6 +11,6 @@ namespace AllReady.Features.Tasks
         public const string FAILURE_TASKNOTFOUND = "failure-tasknotfound";
 
         public string Status { get; set; }
-        public AllReadyTask Task { get; set; }
+        public VolunteerTask Task { get; set; }
     }
 }

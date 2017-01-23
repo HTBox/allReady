@@ -12,13 +12,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
     public class DetailsQueryHandlerShould : InMemoryContextTest
     {
-        private readonly AllReadyTask task;
+        private readonly VolunteerTask task;
         private readonly DetailsQuery message;
         private readonly DetailsQueryHandler sut;
 
         public DetailsQueryHandlerShould()
         {
-            task = new AllReadyTask
+            task = new VolunteerTask
             {
                 Id = 1,
                 Name = "TaskName",

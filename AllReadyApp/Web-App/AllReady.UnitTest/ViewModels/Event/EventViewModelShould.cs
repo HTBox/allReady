@@ -140,7 +140,7 @@ namespace AllReady.UnitTest.ViewModels.Event
         [Fact]
         public void SetTasksToListOfTaskViewModelsInAscendingOrderByStartDateTime_WhenEventsTasksAreNotNull()
         {
-            var @event = new Event { Tasks = new List<AllReadyTask> { new AllReadyTask { StartDateTime = DateTimeOffset.UtcNow.AddDays(2) }, new AllReadyTask { StartDateTime = DateTimeOffset.UtcNow.AddDays(1) } } };
+            var @event = new Event { Tasks = new List<VolunteerTask> { new VolunteerTask { StartDateTime = DateTimeOffset.UtcNow.AddDays(2) }, new VolunteerTask { StartDateTime = DateTimeOffset.UtcNow.AddDays(1) } } };
             var sut = new EventViewModel(@event);
 
             Assert.IsType<List<TaskViewModel>>(sut.Tasks);

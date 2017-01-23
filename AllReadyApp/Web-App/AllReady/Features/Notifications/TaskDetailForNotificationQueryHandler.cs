@@ -43,7 +43,7 @@ namespace AllReady.Features.Notifications
             return result;
         }
 
-        private async Task<AllReadyTask> GetTask(TaskDetailForNotificationQuery message)
+        private async Task<VolunteerTask> GetTask(TaskDetailForNotificationQuery message)
         {
             return await _context.Tasks.AsNoTracking()
                 .Include(a => a.Event).ThenInclude(e => e.Campaign).ThenInclude(c => c.CampaignContacts).ThenInclude(cc => cc.Contact)

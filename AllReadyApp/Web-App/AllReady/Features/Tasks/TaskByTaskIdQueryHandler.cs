@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskByTaskIdQueryHandler : IAsyncRequestHandler<TaskByTaskIdQuery, AllReadyTask>
+    public class TaskByTaskIdQueryHandler : IAsyncRequestHandler<TaskByTaskIdQuery, VolunteerTask>
     {
         private readonly AllReadyContext dataContext;
 
@@ -15,7 +15,7 @@ namespace AllReady.Features.Tasks
             this.dataContext = dataContext;
         }
 
-        public async Task<AllReadyTask> Handle(TaskByTaskIdQuery message)
+        public async Task<VolunteerTask> Handle(TaskByTaskIdQuery message)
         {
             return await dataContext.Tasks
                 .Include(x => x.Organization)

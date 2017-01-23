@@ -56,7 +56,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var @event = new Event { Id = 3 };
             var organization = new Organization { Id = 4 };
-            var @task = new AllReadyTask
+            var @task = new VolunteerTask
             {
                 Id = 2,
                 Name = "TaskName",

@@ -49,7 +49,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             return model;
         }
 
-        private async Task<AllReadyTask> GetTask(DetailsQuery message)
+        private async Task<VolunteerTask> GetTask(DetailsQuery message)
         {
             return await _context.Tasks
                 .AsNoTracking()

@@ -34,7 +34,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 Campaign = campaign
             };
 
-            var task1 = new AllReadyTask
+            var task1 = new VolunteerTask
             {
                 Id = 1,
                 Name = "Task 1",
@@ -42,7 +42,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 NumberOfVolunteersRequired = 22
             };
 
-            var task2 = new AllReadyTask
+            var task2 = new VolunteerTask
             {
                 Id = 2,
                 Name = "Task 2",

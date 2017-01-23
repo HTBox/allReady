@@ -52,7 +52,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             htb.Campaigns.Add(firePrev);            
             Context.Organizations.Add(htb);
             
-            var@task = new AllReadyTask
+            var@task = new VolunteerTask
             {
                 Event = queenAnne,
                 Description = "Description of a very important task",

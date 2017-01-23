@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AllReady.Models
 {
-    public class AllReadyTask
+    public class VolunteerTask
     {
         public int Id { get; set; }
         public string Name { get; set; }

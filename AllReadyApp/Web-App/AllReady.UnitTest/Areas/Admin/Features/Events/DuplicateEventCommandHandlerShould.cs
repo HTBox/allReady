@@ -219,9 +219,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                     PhoneNumber = "PhoneNumber",
                     Country = "Country"
                 },
-                Tasks = new List<AllReadyTask>
+                Tasks = new List<VolunteerTask>
                 {
-                    new AllReadyTask
+                    new VolunteerTask
                     {
                         StartDateTime = new DateTimeOffset(2016, 1, 1, 9, 0, 0, new TimeSpan()),
                         EndDateTime = new DateTimeOffset(2016, 1, 1, 17, 0, 0, new TimeSpan()),
@@ -236,7 +236,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                             new TaskSkill { Skill = skillTwo },
                         },
                     },
-                    new AllReadyTask
+                    new VolunteerTask
                     {
                         StartDateTime = new DateTimeOffset(2016, 1, 2, 10, 0, 0, new TimeSpan()),
                         EndDateTime = new DateTimeOffset(2016, 1, 2, 16, 0, 0, new TimeSpan()),

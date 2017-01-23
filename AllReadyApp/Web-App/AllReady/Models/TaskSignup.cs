@@ -8,7 +8,7 @@ namespace AllReady.Models
 
         public int TaskId { get; set; }
 
-        public AllReadyTask Task { get; set; }
+        public VolunteerTask Task { get; set; }
 
         public ApplicationUser User { get; set; }
 

@@ -17,10 +17,10 @@ namespace AllReady.UnitTest.Features.Tasks
             var options = this.CreateNewContextOptions();
 
             const int taskId = 1;
-            var message = new UpdateTaskCommand { AllReadyTask = new AllReadyTask {Id = taskId} };
+            var message = new UpdateTaskCommand { AllReadyTask = new VolunteerTask {Id = taskId} };
 
             using (var context = new AllReadyContext(options)) {
-                context.Tasks.Add(new AllReadyTask {
+                context.Tasks.Add(new VolunteerTask {
                     Id = taskId,
                     RequiredSkills = new List<TaskSkill> {
                         new TaskSkill()

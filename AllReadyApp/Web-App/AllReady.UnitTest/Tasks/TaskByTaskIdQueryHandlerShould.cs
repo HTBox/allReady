@@ -16,7 +16,7 @@ namespace AllReady.UnitTest.Tasks
             var message = new TaskByTaskIdQuery { TaskId = taskId };
 
             using (var context = new AllReadyContext(options)) {
-                context.Tasks.Add(new AllReadyTask {Id = taskId});
+                context.Tasks.Add(new VolunteerTask {Id = taskId});
                 await context.SaveChangesAsync();
             }
 

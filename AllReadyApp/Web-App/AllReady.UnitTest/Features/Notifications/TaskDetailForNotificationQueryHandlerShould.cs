@@ -17,7 +17,7 @@ namespace AllReady.UnitTest.Features.Notifications
         private Campaign _firePrev;
         private Event _queenAnne;
         private Contact _contact1;
-        private AllReadyTask _task1;
+        private VolunteerTask _task1;
 
         protected override void LoadTestData()
         {
@@ -72,10 +72,10 @@ namespace AllReady.UnitTest.Features.Notifications
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
                 RequiredSkills = new List<EventSkill>(),
-                Tasks = new List<AllReadyTask>()
+                Tasks = new List<VolunteerTask>()
             };
 
-            _task1 = new AllReadyTask
+            _task1 = new VolunteerTask
             {
                 Id = 1,
                 Event = _queenAnne,

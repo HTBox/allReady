@@ -23,7 +23,7 @@ namespace AllReady.UnitTest.Features.Notifications
         public async Task SendNotificationToVolunteersWithCorrectMessage()
         {
             const string expectedMessage = "You've been assigned a task from AllReady.";
-            var @task = new AllReadyTask { Id = 1 };
+            var @task = new VolunteerTask { Id = 1 };
             var volunteer = new ApplicationUser
             {
                 Id = "user1",
@@ -52,7 +52,7 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async Task DoesNotSendNotificationToUsersWhoHasntVerifiedPhoneNumber()
         {
-            var @task = new AllReadyTask { Id = 1 };
+            var @task = new VolunteerTask { Id = 1 };
             var volunteer = new ApplicationUser
             {
                 Id = "user1",
@@ -76,7 +76,7 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async Task DoesNotSendNotificationToUsersWhoHasntVerifiedEmail()
         {
-            var @task = new AllReadyTask { Id = 1 };
+            var @task = new VolunteerTask { Id = 1 };
             var volunteer = new ApplicationUser
             {
                 Id = "user1",

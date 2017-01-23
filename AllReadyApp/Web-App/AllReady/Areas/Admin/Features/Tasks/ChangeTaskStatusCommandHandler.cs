@@ -72,7 +72,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             return new TaskChangeResult { Status = "success", Task = @task };
         }
 
-        private async Task<AllReadyTask> GetTask(ChangeTaskStatusCommand message)
+        private async Task<VolunteerTask> GetTask(ChangeTaskStatusCommand message)
         {
             return await _context.Tasks
                 .Include(t => t.AssignedVolunteers).ThenInclude(ts => ts.User)
@@ -84,6 +84,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
     public class TaskChangeResult
     {
         public string Status { get; set; }
-        public AllReadyTask Task { get; set; }
+        public VolunteerTask Task { get; set; }
     }
 }

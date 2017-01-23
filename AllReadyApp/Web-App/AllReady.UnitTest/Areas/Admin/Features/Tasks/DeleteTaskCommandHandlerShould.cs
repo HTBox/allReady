@@ -12,7 +12,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
         public DeleteTaskCommandHandlerShould()
         {
-            Context.Tasks.Add(new AllReadyTask { Id = 1 });
+            Context.Tasks.Add(new VolunteerTask { Id = 1 });
             Context.SaveChanges();
         }
 

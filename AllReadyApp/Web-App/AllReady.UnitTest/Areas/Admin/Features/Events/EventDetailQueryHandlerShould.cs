@@ -64,7 +64,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 EventType = EventType.Rally
             };
 
-            var task1 = new AllReadyTask
+            var task1 = new VolunteerTask
             {
                 Event = rallyEvent,
                 Name = "Task1",

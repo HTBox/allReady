@@ -11,14 +11,14 @@ namespace AllReady.UnitTest.Features.Tasks
     {
         private readonly TasksByApplicationUserIdQuery message;
         private readonly TaskSignup task;
-        private readonly AllReadyTask alreadyTask;
+        private readonly VolunteerTask alreadyTask;
         private readonly TasksByApplicationUserIdQueryHandler sut;
 
 
         public TasksByApplicationUserIdQueryHandlerShould()
         {
             message = new TasksByApplicationUserIdQuery { ApplicationUserId = Guid.NewGuid().ToString() };
-            alreadyTask = new AllReadyTask { Name = "name" };
+            alreadyTask = new VolunteerTask { Name = "name" };
             task = new TaskSignup { User = new ApplicationUser { Id = message.ApplicationUserId }, Task = alreadyTask };
 
             Context.Add(alreadyTask);
@@ -47,7 +47,7 @@ namespace AllReady.UnitTest.Features.Tasks
         public async Task ReturnCorrectType()
         {
             var result = await sut.Handle(message);
-            Assert.IsType<AllReadyTask>(result.First());
+            Assert.IsType<VolunteerTask>(result.First());
         }
     }
 }

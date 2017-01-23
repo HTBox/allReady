@@ -73,8 +73,8 @@ namespace AllReady.UnitTest.Features.Tasks
             var campaignEvent = new Event { Id = 1, Name = "Some Event" };
             Context.Events.Add(campaignEvent);
 
-            Context.Tasks.Add(new AllReadyTask { Id = 1, Name = "Closed Task", EndDateTime = DateTime.UtcNow.AddDays(-100), Event = campaignEvent });
-            Context.Tasks.Add(new AllReadyTask { Id = 2, Name = "Open Task", EndDateTime = DateTime.UtcNow.AddDays(100), Event = campaignEvent });
+            Context.Tasks.Add(new VolunteerTask { Id = 1, Name = "Closed Task", EndDateTime = DateTime.UtcNow.AddDays(-100), Event = campaignEvent });
+            Context.Tasks.Add(new VolunteerTask { Id = 2, Name = "Open Task", EndDateTime = DateTime.UtcNow.AddDays(100), Event = campaignEvent });
 
             Context.SaveChanges();
         }

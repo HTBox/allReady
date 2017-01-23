@@ -9,12 +9,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
     public class DeleteQueryHandlerShould : InMemoryContextTest
     {
-        private readonly AllReadyTask task;
+        private readonly VolunteerTask task;
         private const int TaskId = 1;
 
         public DeleteQueryHandlerShould()
         {
-            task = new AllReadyTask
+            task = new VolunteerTask
             {
                 Id = 1,
                 Name = "TaskName",
@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             };
             Context.Tasks.Add(task);
 
-            var taskThatShouldNotBeReturnedFromQuery = new AllReadyTask { Id = 2 };
+            var taskThatShouldNotBeReturnedFromQuery = new VolunteerTask { Id = 2 };
             Context.Tasks.Add(taskThatShouldNotBeReturnedFromQuery);
             Context.SaveChanges();
         }

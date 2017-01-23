@@ -96,7 +96,7 @@ namespace AllReady.UnitTest.Features.Notifications
             Context.Events.Add(testEvent1);
             Context.Events.Add(testEvent2);
 
-            var testTask1 = new AllReadyTask
+            var testTask1 = new VolunteerTask
             {
                 Id = 7,
                 Event = testEvent1,
@@ -104,7 +104,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 // Required Skills?
             };
 
-            var testTask2 = new AllReadyTask
+            var testTask2 = new VolunteerTask
             {
                 Id = 9,
                 Event = testEvent2,

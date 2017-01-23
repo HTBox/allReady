@@ -34,7 +34,7 @@ namespace AllReady.Models
 
         public Location Location { get; set; }
 
-        public List<AllReadyTask> Tasks { get; set; } = new List<AllReadyTask>();
+        public List<VolunteerTask> Tasks { get; set; } = new List<VolunteerTask>();
 
         public ApplicationUser Organizer { get; set; }
 

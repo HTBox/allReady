@@ -100,7 +100,7 @@ namespace AllReady.UnitTest.Features.Event
             {
                 context.Users.Add(user);
                 context.TaskSignups.Add(new TaskSignup { Id = taskSignupId });
-                context.Tasks.Add(new AllReadyTask { Id = 1 });
+                context.Tasks.Add(new VolunteerTask { Id = 1 });
                 await context.SaveChangesAsync();
             }
 
