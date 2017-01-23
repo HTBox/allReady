@@ -19,8 +19,7 @@
   },
   "GetASmokeAlarmApiSettings": {
     "BaseAddress": "https://demo.getasmokealarm.org/",
-    "Token": "[getasmokealarmapisettingstoken]",
-    "RetryAttempts": 5
+    "Token": "[getasmokealarmapisettingstoken]"
   },
   "ApplicationInsights": {
     "InstrumentationKey": "[instrumentationkey]"
