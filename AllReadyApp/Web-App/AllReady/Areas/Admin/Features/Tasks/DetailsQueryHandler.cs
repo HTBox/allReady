@@ -49,7 +49,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     Id = a.Id,
                     Name = a.Name,
                     Description = a.Description,
-                    MimeType = a.MimeType,
+                    ContentType = a.ContentType,
                 }).ToList(),
             };
 

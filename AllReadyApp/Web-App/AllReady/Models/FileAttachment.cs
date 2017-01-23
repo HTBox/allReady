@@ -16,10 +16,10 @@
         public string Description { get; set; }
 
         /// <summary>MIME type of the file</summary>
-        public string MimeType { get; set; }
+        public string ContentType { get; set; }
 
-        /// <summary>The contents of the file</summary>
-        public FileAttachmentContent Content { get; set; }
+        /// <summary>URL to see or download the file contents</summary>
+        public string Url { get; set; }
 
         /// <summary>Reference to the task where this file is attached to</summary>
         public AllReadyTask Task { get; set; }

@@ -5,16 +5,19 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using AllReady.Extensions;
 using System.IO;
+using AllReady.Services;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class EditTaskCommandHandler : IAsyncRequestHandler<EditTaskCommand, int>
     {
         private readonly AllReadyContext _context;
+        private readonly IAttachmentService _attachmentService;
 
-        public EditTaskCommandHandler(AllReadyContext context)
+        public EditTaskCommandHandler(AllReadyContext context, IAttachmentService attachmentService)
         {
             _context = context;
+            _attachmentService = attachmentService;
         }
 
         public async Task<int> Handle(EditTaskCommand message)
@@ -49,8 +52,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             // Delete existing attachments
             if (message.Task.DeleteAttachments.Count > 0)
             {
-                var attachmentsToDelete = _context.Attachments.Include(a => a.Content).Where(a => a.Task.Id == @task.Id && message.Task.DeleteAttachments.Contains(a.Id)).ToList();
-                _context.RemoveRange(attachmentsToDelete.Select(a => a.Content));
+                var attachmentsToDelete = _context.Attachments.Where(a => a.Task.Id == @task.Id && message.Task.DeleteAttachments.Contains(a.Id)).ToList();
                 _context.RemoveRange(attachmentsToDelete);
             }
 
@@ -58,21 +60,16 @@ namespace AllReady.Areas.Admin.Features.Tasks
             if (message.Task.NewAttachment != null && !string.IsNullOrEmpty(message.Task.NewAttachment.FileName))
             {
                 var attachmentModel = message.Task.NewAttachment;
+                var attachmentUrl = await _attachmentService.UploadTaskAttachmentAsync(message.Task.Id, attachmentModel);
+
                 var attachment = new FileAttachment
                 {
                     Name = attachmentModel.FileName,
                     Description = message.Task.NewAttachmentDescription,
-                    MimeType = attachmentModel.ContentType,
-                    Content = new FileAttachmentContent { Bytes = new byte[attachmentModel.Length] },
+                    ContentType = attachmentModel.ContentType,
+                    Url = attachmentUrl,
                     Task = @task,
                 };
-
-                using (var fileStream = attachmentModel.OpenReadStream())
-                using (var ms = new MemoryStream())
-                {
-                    fileStream.CopyTo(ms);
-                    attachment.Content.Bytes = ms.ToArray();
-                }
 
                 _context.Add(attachment);
             }

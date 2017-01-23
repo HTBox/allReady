@@ -8,6 +8,7 @@ using Xunit;
 using System.Linq;
 using AllReady.Providers;
 using Moq;
+using AllReady.Services;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
@@ -38,7 +39,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Organizations.Add(organization);
             Context.SaveChanges();
 
-            var sut = new EditTaskCommandHandler(Context);
+            var mockAttachmentService = new Mock<IAttachmentService>();
+            var sut = new EditTaskCommandHandler(Context, mockAttachmentService.Object);
             var taskId = await sut.Handle(message);
             var result = Context.Tasks.Single(x => x.Id == taskId);
 
@@ -92,7 +94,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 }
             };
 
-            var sut = new EditTaskCommandHandler(Context);
+            var mockAttachmentService = new Mock<IAttachmentService>();
+            var sut = new EditTaskCommandHandler(Context, mockAttachmentService.Object);
             var taskId = await sut.Handle(message);
             var result = Context.Tasks.Single(x => x.Id == taskId);
 

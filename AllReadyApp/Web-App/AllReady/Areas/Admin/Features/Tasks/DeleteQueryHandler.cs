@@ -38,7 +38,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
                         Id = a.Id,
                         Name = a.Name,
                         Description = a.Description,
-                        MimeType = a.MimeType,
+                        ContentType = a.ContentType,
+                        Url = a.Url,
                     }).ToList(),
                 })
                 .SingleAsync(t => t.Id == message.TaskId);

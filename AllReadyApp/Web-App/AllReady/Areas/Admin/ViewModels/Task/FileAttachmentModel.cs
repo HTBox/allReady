@@ -17,12 +17,11 @@ namespace AllReady.Areas.Admin.ViewModels.Task
         public string Description { get; set; }
 
         /// <summary>MIME type of the file</summary>
-        public string MimeType { get; set; }
+        [Display(Name = "Attachment Type")]
+        public string ContentType { get; set; }
 
-        /// <summary>URL to download the file contents</summary>
-        public string DownloadUrl { get; set; }
-
-        /// <summary>File content</summary>
-        public byte[] Content { get; set; }
+        /// <summary>URL to see or download the file contents</summary>
+        [Display(Name = "Attachment URL")]
+        public string Url { get; set; }
     }
 }

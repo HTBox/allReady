@@ -19,12 +19,10 @@ namespace AllReady.Areas.Admin.Features.Tasks
         {
             var @task = _context.Tasks
                 .Include(t => t.Attachments)
-                .ThenInclude(a => a.Content)
                 .SingleOrDefault(c => c.Id == message.TaskId);
 
             if (@task != null)
             {
-                _context.AttachmentContents.RemoveRange(task.Attachments.Select(a => a.Content));
                 _context.Attachments.RemoveRange(task.Attachments);
                 _context.Tasks.Remove(@task);
                 await _context.SaveChangesAsync();

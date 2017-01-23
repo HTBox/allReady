@@ -34,7 +34,6 @@ namespace AllReady.Models
         public DbSet<Itinerary> Itineraries { get; set; }
         public DbSet<ItineraryRequest> ItineraryRequests { get; set; }
         public DbSet<FileAttachment> Attachments { get; set; }
-        public DbSet<FileAttachmentContent> AttachmentContents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -68,7 +67,6 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<Itinerary>());
             Map(modelBuilder.Entity<ItineraryRequest>());
             Map(modelBuilder.Entity<FileAttachment>());
-            Map(modelBuilder.Entity<FileAttachmentContent>());
         }
 
         private void Map(EntityTypeBuilder<Request> builder)
@@ -218,14 +216,8 @@ namespace AllReady.Models
         {
             builder.HasKey(a => a.Id);
             builder.HasOne(a => a.Task);
-            builder.HasOne(a => a.Content);
             builder.Property(a => a.Name).IsRequired();
-            builder.Property(a => a.MimeType).IsRequired();
-        }
-
-        public void Map(EntityTypeBuilder<FileAttachmentContent> builder)
-        {
-            builder.HasKey(a => a.Id);
+            builder.Property(a => a.ContentType).IsRequired();
         }
     }
 }
