@@ -2,7 +2,7 @@
 
 namespace AllReady.Models
 {
-    public enum TaskStatus
+    public enum VolunteerTaskStatus
     {
         [Display(Name = "Assigned")]
         Assigned = 0,

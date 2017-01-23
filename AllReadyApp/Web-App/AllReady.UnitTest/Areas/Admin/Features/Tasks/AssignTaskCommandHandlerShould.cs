@@ -8,7 +8,6 @@ using MediatR;
 using Moq;
 using Xunit;
 using System.Linq;
-using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
@@ -38,7 +37,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var taskSignup = Context.Tasks.Single(x => x.Id == @task.Id).AssignedVolunteers.Single();
             Assert.Equal(taskSignup.User.Id, newVolunteer.Id);
-            Assert.Equal(taskSignup.Status, TaskStatus.Assigned);
+            Assert.Equal(taskSignup.Status, VolunteerTaskStatus.Assigned);
             Assert.Equal(taskSignup.StatusDateTimeUtc, dateTimeUtcNow);
         }
 
@@ -53,7 +52,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 Email = "user1@abc.com",
                 PhoneNumber = "1234"
             };
-            @task.AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User =  previouslySignedupUser} };
+            @task.AssignedVolunteers = new List<VolunteerTaskSignup> { new VolunteerTaskSignup { User =  previouslySignedupUser} };
             Context.Add(@task);
             Context.SaveChanges();
 
@@ -102,7 +101,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 PhoneNumberConfirmed = true
             };
             Context.Add(previouslySignedupUser);
-            @task.AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User =  previouslySignedupUser } };
+            @task.AssignedVolunteers = new List<VolunteerTaskSignup> { new VolunteerTaskSignup { User =  previouslySignedupUser } };
             Context.Add(@task);
             Context.SaveChanges();
 

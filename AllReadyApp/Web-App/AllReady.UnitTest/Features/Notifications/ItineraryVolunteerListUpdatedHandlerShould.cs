@@ -13,11 +13,11 @@ namespace AllReady.UnitTest.Features.Notifications
     public class ItineraryVolunteerListUpdatedHandlerShould : InMemoryContextTest
     {
         private ApplicationUser _user;
-        private TaskSignup _taskSignup;
+        private VolunteerTaskSignup _taskSignup;
         private Itinerary _itinerary;
-        private TaskSignup _taskSignupNoContactPreferences;
+        private VolunteerTaskSignup _taskSignupNoContactPreferences;
         private DateTime _itineraryDate;
-        private TaskSignup _taskSignupNoContacts;
+        private VolunteerTaskSignup _taskSignupNoContacts;
 
         protected override void LoadTestData()
         {
@@ -27,19 +27,19 @@ namespace AllReady.UnitTest.Features.Notifications
                 Email = "johndoe@example.com"
             };
 
-            _taskSignup = new TaskSignup
+            _taskSignup = new VolunteerTaskSignup
             {
                 Id = 1,
                 User = _user
             };
 
-            _taskSignupNoContactPreferences = new TaskSignup
+            _taskSignupNoContactPreferences = new VolunteerTaskSignup
             {
                 Id = 2,
                 User = _user
             };
 
-            _taskSignupNoContacts = new TaskSignup
+            _taskSignupNoContacts = new VolunteerTaskSignup
             {
                 Id = 3,
                 User = new ApplicationUser()

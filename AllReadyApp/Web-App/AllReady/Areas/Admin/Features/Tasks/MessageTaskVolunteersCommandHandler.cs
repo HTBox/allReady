@@ -23,7 +23,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
         {
             var users = await _context.TaskSignups.AsNoTracking()
                 .Include(a => a.User)
-                .Where(a => a.Task.Id == message.Model.TaskId).ToListAsync();
+                .Where(a => a.VolunteerTask.Id == message.Model.TaskId).ToListAsync();
 
             // send all notifications to the queue
             var smsRecipients = new List<string>();

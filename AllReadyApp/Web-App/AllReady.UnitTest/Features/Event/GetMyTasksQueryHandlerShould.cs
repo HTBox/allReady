@@ -21,10 +21,10 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                context.TaskSignups.Add(new TaskSignup
+                context.TaskSignups.Add(new VolunteerTaskSignup
                 {
                     User = new ApplicationUser { Id = userId },
-                    Task = new VolunteerTask { Event = new Event { Id = eventId, Campaign = new Campaign { Locked = false }}}
+                    VolunteerTask = new VolunteerTask { Event = new Event { Id = eventId, Campaign = new Campaign { Locked = false }}}
                 });
                 await context.SaveChangesAsync();
             }

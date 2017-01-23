@@ -35,9 +35,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                     TimeZoneId = "Central Standard Time"
                 },
                 RequiredSkills = new List<TaskSkill> { new TaskSkill { SkillId = 4, TaskId = 1 } },
-                AssignedVolunteers = new List<TaskSignup>
+                AssignedVolunteers = new List<VolunteerTaskSignup>
                 {
-                    new TaskSignup
+                    new VolunteerTaskSignup
                     {
                         User = new ApplicationUser
                         {

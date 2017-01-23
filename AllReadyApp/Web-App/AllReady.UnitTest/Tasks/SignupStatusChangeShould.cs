@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.UnitTest.Tasks
 {
@@ -61,9 +60,9 @@ namespace AllReady.UnitTest.Tasks
                 Organization = htb
             };
 
-            newTask.AssignedVolunteers.Add(new TaskSignup
+            newTask.AssignedVolunteers.Add(new VolunteerTaskSignup
             {
-                Task = newTask,
+                VolunteerTask = newTask,
                 User = user1
             });
 
@@ -83,7 +82,7 @@ namespace AllReady.UnitTest.Tasks
             {
                 TaskId = @task.Id,
                 UserId = user.Id,
-                TaskStatus = TaskStatus.Accepted
+                TaskStatus = VolunteerTaskStatus.Accepted
             };
             var handler = new ChangeTaskStatusCommandHandler(Context, mediator.Object);
             await handler.Handle(command);

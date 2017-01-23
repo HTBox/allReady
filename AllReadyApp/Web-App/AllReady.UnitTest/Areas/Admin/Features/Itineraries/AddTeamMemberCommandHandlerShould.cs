@@ -52,7 +52,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Date = new DateTime(2016, 07, 01)
             };
 
-            var taskSignUp = new TaskSignup { Id = 1, ItineraryId = 2, TaskId = 1 };
+            var taskSignUp = new VolunteerTaskSignup { Id = 1, ItineraryId = 2, VolunteerTaskId = 1 };
 
             Context.Organizations.Add(htb);
             Context.Campaigns.Add(firePrev);

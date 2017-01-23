@@ -22,21 +22,21 @@ namespace AllReady.Features.Volunteers
         public async Task<MyEventsListerViewModel> Handle(GetMyEventsQuery message)
         {
             var taskSignups = await _context.TaskSignups.AsNoTracking()
-                .Include(rec => rec.Task).ThenInclude(rec => rec.Event).ThenInclude(rec => rec.Campaign).ThenInclude(rec => rec.ManagingOrganization)
+                .Include(rec => rec.VolunteerTask).ThenInclude(rec => rec.Event).ThenInclude(rec => rec.Campaign).ThenInclude(rec => rec.ManagingOrganization)
                 .Include(rec => rec.User)
                 .Where(rec => rec.User.Id == message.UserId)
                 .Select(rec => new
                 {
-                    EventId = rec.Task.Event.Id,
-                    EventName = rec.Task.Event.Name,
-                    EventStartDate = rec.Task.Event.StartDateTime,
-                    EventEndDate = rec.Task.Event.EndDateTime,
-                    TimeZone = rec.Task.Event.Campaign.TimeZoneId,
-                    TaskName = rec.Task.Name,
-                    TaskStartDate = rec.Task.StartDateTime,
-                    TaskEndDate = rec.Task.EndDateTime,
-                    CampaignName = rec.Task.Event.Campaign.Name,
-                    OrganizationName = rec.Task.Event.Campaign.ManagingOrganization.Name      
+                    EventId = rec.VolunteerTask.Event.Id,
+                    EventName = rec.VolunteerTask.Event.Name,
+                    EventStartDate = rec.VolunteerTask.Event.StartDateTime,
+                    EventEndDate = rec.VolunteerTask.Event.EndDateTime,
+                    TimeZone = rec.VolunteerTask.Event.Campaign.TimeZoneId,
+                    TaskName = rec.VolunteerTask.Name,
+                    TaskStartDate = rec.VolunteerTask.StartDateTime,
+                    TaskEndDate = rec.VolunteerTask.EndDateTime,
+                    CampaignName = rec.VolunteerTask.Event.Campaign.Name,
+                    OrganizationName = rec.VolunteerTask.Event.Campaign.ManagingOrganization.Name      
                 })
                 .ToListAsync();
 

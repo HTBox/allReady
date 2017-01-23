@@ -19,13 +19,13 @@ namespace AllReady.Features.Events
         public IEnumerable<TaskSignupViewModel> Handle(GetMyTasksQuery message)
         {
             var unfilteredTasks = this.dataContext.TaskSignups
-                .Include(ts => ts.Task)
+                .Include(ts => ts.VolunteerTask)
                 .ThenInclude(t => t.Event)
                 .ThenInclude(t => t.Campaign)
                 .Include(ts => ts.User)
                 .ToList();
 
-            var finalTasks = unfilteredTasks.Where(ts => ts.Task.Event.Id == message.EventId && ts.User.Id == message.UserId && !ts.Task.Event.Campaign.Locked)
+            var finalTasks = unfilteredTasks.Where(ts => ts.VolunteerTask.Event.Id == message.EventId && ts.User.Id == message.UserId && !ts.VolunteerTask.Event.Campaign.Locked)
                 .Select(t => new TaskSignupViewModel(t))
                 .ToList();
 

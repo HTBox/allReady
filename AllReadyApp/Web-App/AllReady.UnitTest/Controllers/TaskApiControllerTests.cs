@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 using DeleteTaskCommand = AllReady.Features.Tasks.DeleteTaskCommand;
-using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -573,7 +572,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task ChangeStatusInvokesSendAsyncWithCorrectTaskStatusChangeCommand()
         {
-            var model = new TaskChangeModel { TaskId = 1, UserId = "1", Status = TaskStatus.Accepted, StatusDescription = "statusDescription" };
+            var model = new TaskChangeModel { TaskId = 1, UserId = "1", Status = VolunteerTaskStatus.Accepted, StatusDescription = "statusDescription" };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ChangeTaskStatusCommand>())).ReturnsAsync(new TaskChangeResult());

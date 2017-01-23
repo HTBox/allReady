@@ -10,7 +10,7 @@ namespace AllReady.UnitTest.Features.Tasks
     public class TasksByApplicationUserIdQueryHandlerShould : InMemoryContextTest
     {
         private readonly TasksByApplicationUserIdQuery message;
-        private readonly TaskSignup task;
+        private readonly VolunteerTaskSignup task;
         private readonly VolunteerTask alreadyTask;
         private readonly TasksByApplicationUserIdQueryHandler sut;
 
@@ -19,7 +19,7 @@ namespace AllReady.UnitTest.Features.Tasks
         {
             message = new TasksByApplicationUserIdQuery { ApplicationUserId = Guid.NewGuid().ToString() };
             alreadyTask = new VolunteerTask { Name = "name" };
-            task = new TaskSignup { User = new ApplicationUser { Id = message.ApplicationUserId }, Task = alreadyTask };
+            task = new VolunteerTaskSignup { User = new ApplicationUser { Id = message.ApplicationUserId }, VolunteerTask = alreadyTask };
 
             Context.Add(alreadyTask);
             Context.Add(task);

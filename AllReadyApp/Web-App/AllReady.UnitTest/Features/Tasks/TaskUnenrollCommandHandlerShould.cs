@@ -61,7 +61,7 @@ namespace AllReady.UnitTest.Features.Tasks
             var @task = new VolunteerTask { Id = 1, Name = "Some Task", EndDateTime = DateTime.UtcNow.AddDays(100), Event = campaignEvent };
             Context.Tasks.Add(@task);
            
-            Context.TaskSignups.Add(new TaskSignup { Task = @task, User = user });
+            Context.TaskSignups.Add(new VolunteerTaskSignup { VolunteerTask = @task, User = user });
         
             Context.SaveChanges();
         }

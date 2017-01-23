@@ -53,11 +53,11 @@ namespace AllReady.Features.Tasks
             // If somehow the user has already been signed up for the task, don't sign them up again
             if (@task.AssignedVolunteers.All(taskSignup => taskSignup.User.Id != user.Id))
             {
-                @task.AssignedVolunteers.Add(new TaskSignup
+                @task.AssignedVolunteers.Add(new VolunteerTaskSignup
                 {
-                    Task = @task,
+                    VolunteerTask = @task,
                     User = user,
-                    Status = Models.TaskStatus.Accepted,
+                    Status = Models.VolunteerTaskStatus.Accepted,
                     StatusDateTimeUtc = DateTimeUtcNow(),
                     AdditionalInfo = model.AdditionalInfo
                 });

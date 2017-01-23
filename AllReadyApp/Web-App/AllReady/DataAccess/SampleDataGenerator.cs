@@ -7,7 +7,6 @@ using AllReady.Configuration;
 using AllReady.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.DataAccess
 {
@@ -51,7 +50,7 @@ namespace AllReady.DataAccess
             var organizationSkills = new List<Skill>();
             var locations = GetLocations();
             var users = new List<ApplicationUser>();
-            var taskSignups = new List<TaskSignup>();
+            var taskSignups = new List<VolunteerTaskSignup>();
             var events = new List<Event>();
             var eventSkills = new List<EventSkill>();
             var campaigns = new List<Campaign>();
@@ -448,7 +447,7 @@ namespace AllReady.DataAccess
             {
                 for (var j = 0; j < i; j++)
                 {
-                    taskSignups.Add(new TaskSignup { Task = task, User = users[j], Status = TaskStatus.Assigned });
+                    taskSignups.Add(new VolunteerTaskSignup { VolunteerTask = task, User = users[j], Status = VolunteerTaskStatus.Assigned });
                 }
 
                 i = (i + 1) % users.Count;

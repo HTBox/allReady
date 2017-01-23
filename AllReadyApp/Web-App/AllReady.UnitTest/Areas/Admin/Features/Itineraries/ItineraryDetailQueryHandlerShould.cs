@@ -64,11 +64,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Email = "text@example.com"
             };
 
-            var taskSignup = new TaskSignup
+            var taskSignup = new VolunteerTaskSignup
             {
                 Id = 1,
                 User = user,
-                Task = @task,
+                VolunteerTask = @task,
                 Itinerary = itinerary
             };
 

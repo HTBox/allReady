@@ -72,7 +72,7 @@ namespace AllReady.Models
         public Event Event { get; set; }
 
         public ICollection<ItineraryRequest> Requests { get; set; }
-        public ICollection<TaskSignup> TeamMembers { get; set; }
+        public ICollection<VolunteerTaskSignup> TeamMembers { get; set; }
 
         /// <summary>
         /// Gets the start address for the <see cref="Itinerary"/> if one has been set. If the <see cref="Itinerary"/> has been 

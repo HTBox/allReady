@@ -138,10 +138,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 UserName = "bgates@example.com"
             };
 
-            var taskSignup = new TaskSignup
+            var taskSignup = new VolunteerTaskSignup
             {
                 Itinerary = itinerary1,
-                Task = task1,
+                VolunteerTask = task1,
             };
             Context.Locations.Add(seattle);
             Context.Requests.AddRange(request1, request2, request3);

@@ -16,17 +16,17 @@ namespace AllReady.ViewModels.Event
 
         public TaskSignupViewModel() { }
 
-        public TaskSignupViewModel(TaskSignup taskSignup)
+        public TaskSignupViewModel(VolunteerTaskSignup taskSignup)
         {
             Id = taskSignup.Id;
             Status = taskSignup.Status.ToString();
             StatusDateTimeUtc = taskSignup.StatusDateTimeUtc;
             StatusDescription = taskSignup.StatusDescription;
 
-            if (taskSignup.Task != null)
+            if (taskSignup.VolunteerTask != null)
             {
-                TaskId = taskSignup.Task.Id;
-                TaskName = taskSignup.Task.Name;
+                TaskId = taskSignup.VolunteerTask.Id;
+                TaskName = taskSignup.VolunteerTask.Name;
             }
 
             if (taskSignup.User != null)

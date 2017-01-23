@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using Xunit;
-using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.UnitTest.Features.Notifications
 {
@@ -85,14 +84,14 @@ namespace AllReady.UnitTest.Features.Notifications
                 Organization = _htb
             };
 
-            _task1.AssignedVolunteers = new List<TaskSignup>
+            _task1.AssignedVolunteers = new List<VolunteerTaskSignup>
             {
-                new TaskSignup
+                new VolunteerTaskSignup
                 {
                     Id = 1,
                     User = _user1,
-                    Task = _task1,
-                    Status = TaskStatus.Assigned,
+                    VolunteerTask = _task1,
+                    Status = VolunteerTaskStatus.Assigned,
                     StatusDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime()
                 }
             };

@@ -20,9 +20,9 @@ namespace AllReady.Features.Tasks
         {
             return await _context.TaskSignups
                 .Include(x => x.User)
-                .Include(x => x.Task)
+                .Include(x => x.VolunteerTask)
                 .Where(x => x.User.Id == message.ApplicationUserId)
-                .Select(x => x.Task)
+                .Select(x => x.VolunteerTask)
                 .ToListAsync();
         }
     }

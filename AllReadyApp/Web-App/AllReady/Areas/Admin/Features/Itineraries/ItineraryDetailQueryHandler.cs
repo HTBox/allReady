@@ -30,7 +30,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 .Include(x => x.EndLocation)
                 .Include(x => x.Event).ThenInclude(x => x.Campaign)
                 .Include(x => x.Event.Campaign.ManagingOrganization)
-                .Include(x => x.TeamMembers).ThenInclude(x => x.Task)
+                .Include(x => x.TeamMembers).ThenInclude(x => x.VolunteerTask)
                 .Include(x => x.Requests).ThenInclude(x => x.Request)
                 .Where(a => a.Id == message.ItineraryId)
                 .Select(i => new ItineraryDetailsViewModel
@@ -50,7 +50,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     {
                         TaskSignupId = tm.Id,
                         VolunteerEmail = tm.User.Email,
-                        TaskName = tm.Task.Name,
+                        TaskName = tm.VolunteerTask.Name,
                         FullName = tm.User.Name
                     }).ToList(),
                     Requests = i.Requests.OrderBy(r => r.OrderIndex).Select(r => new RequestListViewModel

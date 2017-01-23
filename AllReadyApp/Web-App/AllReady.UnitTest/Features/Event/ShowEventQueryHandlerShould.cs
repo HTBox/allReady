@@ -230,9 +230,9 @@ namespace AllReady.UnitTest.Features.Event
                 Campaign = new Campaign { Locked = false },
                 Tasks = new List<VolunteerTask>
                 {
-                    new VolunteerTask { StartDateTime = new DateTimeOffset(2015, 8, 6, 12, 58, 05, new TimeSpan()), AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User = appUser } } },
-                    new VolunteerTask { StartDateTime = new DateTimeOffset(2016, 7, 31, 1, 15, 28, new TimeSpan()), AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User = appUser } }},
-                    new VolunteerTask { StartDateTime = new DateTimeOffset(2014, 2, 1, 5, 18, 27, new TimeSpan()), AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User = appUser } }},
+                    new VolunteerTask { StartDateTime = new DateTimeOffset(2015, 8, 6, 12, 58, 05, new TimeSpan()), AssignedVolunteers = new List<VolunteerTaskSignup> { new VolunteerTaskSignup { User = appUser } } },
+                    new VolunteerTask { StartDateTime = new DateTimeOffset(2016, 7, 31, 1, 15, 28, new TimeSpan()), AssignedVolunteers = new List<VolunteerTaskSignup> { new VolunteerTaskSignup { User = appUser } }},
+                    new VolunteerTask { StartDateTime = new DateTimeOffset(2014, 2, 1, 5, 18, 27, new TimeSpan()), AssignedVolunteers = new List<VolunteerTaskSignup> { new VolunteerTaskSignup { User = appUser } }},
                     new VolunteerTask { StartDateTime = new DateTimeOffset(2014, 12, 15, 17, 2, 18, new TimeSpan())},
                     new VolunteerTask { StartDateTime = new DateTimeOffset(2016, 12, 15, 17, 2, 18, new TimeSpan())},
                     new VolunteerTask { StartDateTime = new DateTimeOffset(2013, 12, 15, 17, 2, 18, new TimeSpan())},

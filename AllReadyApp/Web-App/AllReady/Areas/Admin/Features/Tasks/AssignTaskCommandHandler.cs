@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
@@ -27,7 +26,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
         {
             var @task = await _context.Tasks.SingleAsync(c => c.Id == message.TaskId);
 
-            var taskSignups = new List<TaskSignup>();
+            var taskSignups = new List<VolunteerTaskSignup>();
 
             //New Items, if not in collection add them, save that list for the pub-event
             foreach (var userId in message.UserIds)
@@ -36,12 +35,12 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 if (taskSignup != null) continue;
 
                 var user = await _context.Users.SingleAsync(u => u.Id == userId);
-                taskSignup = new TaskSignup
+                taskSignup = new VolunteerTaskSignup
                 {
-                    Task = @task,
+                    VolunteerTask = @task,
                     User = user,
                     AdditionalInfo = string.Empty,
-                    Status = TaskStatus.Assigned,
+                    Status = VolunteerTaskStatus.Assigned,
                     StatusDateTimeUtc = DateTimeUtcNow()
                 };
 

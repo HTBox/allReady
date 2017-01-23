@@ -25,15 +25,15 @@ namespace AllReady.Features.Notifications
         public async Task Handle(TaskSignupStatusChanged notification)
         {
             var taskSignup = await _context.TaskSignups
-                .Include(ts => ts.Task)
+                .Include(ts => ts.VolunteerTask)
                     .ThenInclude(t => t.Event).ThenInclude(a => a.Organizer)
-                .Include(ts => ts.Task)
+                .Include(ts => ts.VolunteerTask)
                     .ThenInclude(t => t.Event).ThenInclude(a => a.Campaign).ThenInclude(c => c.CampaignContacts).ThenInclude(cc => cc.Contact)
                 .Include(ts => ts.User)
                 .SingleAsync(ts => ts.Id == notification.SignupId);
 
             var volunteer = taskSignup.User;
-            var @task = taskSignup.Task;
+            var @task = taskSignup.VolunteerTask;
             var campaignEvent = @task.Event;
             var campaign = campaignEvent.Campaign;
 
@@ -42,7 +42,7 @@ namespace AllReady.Features.Notifications
 
             if (!string.IsNullOrWhiteSpace(adminEmail))
             {
-                var link = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Task/Details/{taskSignup.Task.Id}";
+                var link = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Task/Details/{taskSignup.VolunteerTask.Id}";
 
                 var message = $@"A volunteer's status has changed for a task.
                     Volunteer: {volunteer.Name} ({volunteer.Email})

@@ -60,8 +60,8 @@ namespace AllReady.UnitTest.Features.Event
             using (var context = new AllReadyContext(options))
             {
                 context.Users.Add(user);
-                context.TaskSignups.Add(new TaskSignup { Id = firstId });
-                context.TaskSignups.Add(new TaskSignup { Id = secondId });
+                context.TaskSignups.Add(new VolunteerTaskSignup { Id = firstId });
+                context.TaskSignups.Add(new VolunteerTaskSignup { Id = secondId });
                 await context.SaveChangesAsync();
             }
 
@@ -99,7 +99,7 @@ namespace AllReady.UnitTest.Features.Event
             using (var context = new AllReadyContext(options))
             {
                 context.Users.Add(user);
-                context.TaskSignups.Add(new TaskSignup { Id = taskSignupId });
+                context.TaskSignups.Add(new VolunteerTaskSignup { Id = taskSignupId });
                 context.Tasks.Add(new VolunteerTask { Id = 1 });
                 await context.SaveChangesAsync();
             }

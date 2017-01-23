@@ -7,7 +7,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
     {
         public int TaskId { get; set; }
         public string UserId { get; set; }
-        public TaskStatus TaskStatus { get; set; }
+        public VolunteerTaskStatus TaskStatus { get; set; }
         public string TaskStatusDescription { get; set; }
     }
 }

@@ -5,7 +5,6 @@ using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
@@ -38,22 +37,22 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             switch (message.TaskStatus)
             {
-                case TaskStatus.Assigned:
+                case VolunteerTaskStatus.Assigned:
                     break;
-                case TaskStatus.Accepted:
-                    if (taskSignup.Status != TaskStatus.Assigned && taskSignup.Status != TaskStatus.CanNotComplete && taskSignup.Status != TaskStatus.Completed) 
+                case VolunteerTaskStatus.Accepted:
+                    if (taskSignup.Status != VolunteerTaskStatus.Assigned && taskSignup.Status != VolunteerTaskStatus.CanNotComplete && taskSignup.Status != VolunteerTaskStatus.Completed) 
                         throw new ArgumentException("Task must be assigned before being accepted or undoing CanNotComplete or Completed");
                     break;
-                case TaskStatus.Rejected:
-                    if (taskSignup.Status != TaskStatus.Assigned)
+                case VolunteerTaskStatus.Rejected:
+                    if (taskSignup.Status != VolunteerTaskStatus.Assigned)
                         throw new ArgumentException("Task must be assigned before being rejected");
                     break;
-                case TaskStatus.Completed:
-                    if (taskSignup.Status != TaskStatus.Accepted && taskSignup.Status != TaskStatus.Assigned)
+                case VolunteerTaskStatus.Completed:
+                    if (taskSignup.Status != VolunteerTaskStatus.Accepted && taskSignup.Status != VolunteerTaskStatus.Assigned)
                         throw new ArgumentException("Task must be accepted before being completed");
                     break;
-                case TaskStatus.CanNotComplete:
-                    if (taskSignup.Status != TaskStatus.Accepted && taskSignup.Status != TaskStatus.Assigned)
+                case VolunteerTaskStatus.CanNotComplete:
+                    if (taskSignup.Status != VolunteerTaskStatus.Accepted && taskSignup.Status != VolunteerTaskStatus.Assigned)
                         throw new ArgumentException($"Task must be assigned or accepted before it can be marked as {message.TaskStatus}");
                     break;
                 default:

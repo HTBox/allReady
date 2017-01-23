@@ -24,8 +24,8 @@ namespace AllReady.Areas.Admin.Features.Events
             var users =
                 _context.TaskSignups.AsNoTracking()
                 .Include(a => a.User)
-                .Include(a => a.Task)
-                .Where(a => a.Task.EventId == message.ViewModel.EventId).ToList();
+                .Include(a => a.VolunteerTask)
+                .Where(a => a.VolunteerTask.EventId == message.ViewModel.EventId).ToList();
 
             // send all notifications to the queue
             var smsRecipients = new List<string>();

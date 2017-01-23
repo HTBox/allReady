@@ -225,10 +225,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                     {
                         StartDateTime = new DateTimeOffset(2016, 1, 1, 9, 0, 0, new TimeSpan()),
                         EndDateTime = new DateTimeOffset(2016, 1, 1, 17, 0, 0, new TimeSpan()),
-                        AssignedVolunteers = new List<TaskSignup>
+                        AssignedVolunteers = new List<VolunteerTaskSignup>
                         {
-                            new TaskSignup(),
-                            new TaskSignup()
+                            new VolunteerTaskSignup(),
+                            new VolunteerTaskSignup()
                         },
                         RequiredSkills = new List<TaskSkill>
                         {
@@ -240,10 +240,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                     {
                         StartDateTime = new DateTimeOffset(2016, 1, 2, 10, 0, 0, new TimeSpan()),
                         EndDateTime = new DateTimeOffset(2016, 1, 2, 16, 0, 0, new TimeSpan()),
-                        AssignedVolunteers = new List<TaskSignup>
+                        AssignedVolunteers = new List<VolunteerTaskSignup>
                         {
-                            new TaskSignup(),
-                            new TaskSignup()
+                            new VolunteerTaskSignup(),
+                            new VolunteerTaskSignup()
                         }
                     },
                 },

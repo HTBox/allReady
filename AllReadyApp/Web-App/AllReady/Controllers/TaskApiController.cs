@@ -286,14 +286,14 @@ namespace AllReady.Controllers
 
     public static class TaskSignupViewModelExtensions
     {
-        public static async Task<List<TaskSignup>> ToTaskSignups(this List<ViewModels.Event.TaskSignupViewModel> viewModels, VolunteerTask task, IMediator mediator)
+        public static async Task<List<VolunteerTaskSignup>> ToTaskSignups(this List<ViewModels.Event.TaskSignupViewModel> viewModels, VolunteerTask task, IMediator mediator)
         {
-            var taskSignups = new List<TaskSignup>();
+            var taskSignups = new List<VolunteerTaskSignup>();
             foreach (var viewModel in viewModels)
             {
-                taskSignups.Add(new TaskSignup
+                taskSignups.Add(new VolunteerTaskSignup
                 {
-                    Task = task,
+                    VolunteerTask = task,
                     User = await mediator.SendAsync(new UserByUserIdQuery { UserId = viewModel.UserId })
                 });
             }

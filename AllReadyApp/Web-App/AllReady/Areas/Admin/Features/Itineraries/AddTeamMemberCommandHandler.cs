@@ -46,7 +46,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                         
             if (matchedSignup)
             {
-                var taskSignup = new TaskSignup
+                var taskSignup = new VolunteerTaskSignup
                 {
                     Id = message.TaskSignupId,
                     ItineraryId = message.ItineraryId

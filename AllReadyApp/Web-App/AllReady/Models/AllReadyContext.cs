@@ -21,7 +21,7 @@ namespace AllReady.Models
         public DbSet<PostalCodeGeo> PostalCodes { get; set; }
         public DbSet<VolunteerTask> Tasks { get; set; }
         public DbSet<TaskSkill> TaskSkills { get; set; }
-        public DbSet<TaskSignup> TaskSignups { get; set; }
+        public DbSet<VolunteerTaskSignup> TaskSignups { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public virtual DbSet<Skill> Skills { get; set; }
         public DbSet<UserSkill> UserSkills { get; set; }
@@ -50,7 +50,7 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<EventSkill>());
             Map(modelBuilder.Entity<VolunteerTask>());
             Map(modelBuilder.Entity<TaskSkill>());
-            Map(modelBuilder.Entity<TaskSignup>());
+            Map(modelBuilder.Entity<VolunteerTaskSignup>());
             Map(modelBuilder.Entity<PostalCodeGeo>());
             Map(modelBuilder.Entity<Skill>());
             Map(modelBuilder.Entity<UserSkill>());
@@ -111,9 +111,9 @@ namespace AllReady.Models
             builder.HasKey(k => k.PostalCode);
         }
 
-        private void Map(EntityTypeBuilder<TaskSignup> builder)
+        private void Map(EntityTypeBuilder<VolunteerTaskSignup> builder)
         {
-            builder.HasOne(u => u.Task).WithMany(x => x.AssignedVolunteers).HasForeignKey(x => x.TaskId);
+            builder.HasOne(u => u.VolunteerTask).WithMany(x => x.AssignedVolunteers).HasForeignKey(x => x.VolunteerTaskId);
         }
 
         private void Map(EntityTypeBuilder<VolunteerTask> builder)
@@ -121,7 +121,7 @@ namespace AllReady.Models
             builder.HasOne(t => t.Event).WithMany(e => e.Tasks).HasForeignKey(t => t.EventId);
             builder.HasOne(t => t.Organization);
             builder.HasMany(t => t.AssignedVolunteers)
-                .WithOne(ts => ts.Task)
+                .WithOne(ts => ts.VolunteerTask)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(t => t.RequiredSkills).WithOne(ts => ts.Task);
             builder.Property(p => p.Name).IsRequired();

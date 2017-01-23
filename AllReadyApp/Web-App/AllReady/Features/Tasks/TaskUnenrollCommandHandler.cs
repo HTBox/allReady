@@ -20,8 +20,8 @@ namespace AllReady.Features.Tasks
         public async Task<TaskUnenrollResult> Handle(TaskUnenrollCommand message)
         {
             var taskSignUp = await _context.TaskSignups
-                .Include(rec => rec.Task).ThenInclude(rec => rec.Event)
-                .SingleOrDefaultAsync(a => a.User.Id == message.UserId && a.Task.Id == message.TaskId);
+                .Include(rec => rec.VolunteerTask).ThenInclude(rec => rec.Event)
+                .SingleOrDefaultAsync(a => a.User.Id == message.UserId && a.VolunteerTask.Id == message.TaskId);
 
             if (taskSignUp == null)
             {
@@ -32,9 +32,9 @@ namespace AllReady.Features.Tasks
 
             await _context.SaveChangesAsync();
 
-            await _mediator.PublishAsync(new UserUnenrolled { UserId = message.UserId, TaskId = taskSignUp.Task.Id });
+            await _mediator.PublishAsync(new UserUnenrolled { UserId = message.UserId, TaskId = taskSignUp.VolunteerTask.Id });
 
-            return new TaskUnenrollResult { Status = "success", Task = taskSignUp.Task };
+            return new TaskUnenrollResult { Status = "success", Task = taskSignUp.VolunteerTask };
         }
     }
 }

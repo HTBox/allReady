@@ -63,10 +63,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             queenAnne.Tasks.Add(@task);
             Context.Events.Add(queenAnne);
 
-            var taskSignups = new List<TaskSignup>
+            var taskSignups = new List<VolunteerTaskSignup>
             {
-                new TaskSignup { Task =@task, User = user1 },
-                new TaskSignup { Task =@task, User = user2 }
+                new VolunteerTaskSignup { VolunteerTask =@task, User = user1 },
+                new VolunteerTaskSignup { VolunteerTask =@task, User = user2 }
             };
             Context.TaskSignups.AddRange(taskSignups);
 

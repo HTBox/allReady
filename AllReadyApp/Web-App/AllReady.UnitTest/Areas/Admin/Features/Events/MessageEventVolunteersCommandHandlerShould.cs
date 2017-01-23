@@ -56,11 +56,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 Event = queenAnne,
             };
 
-            var taskSignup = new TaskSignup
+            var taskSignup = new VolunteerTaskSignup
             {
                 Id = 1,
                 User = user1,
-                Task = @task
+                VolunteerTask = @task
             };
 
             htb.Campaigns.Add(firePrev);            
