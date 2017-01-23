@@ -17,7 +17,7 @@ namespace AllReady.UnitTest.Features.Tasks
             var options = this.CreateNewContextOptions();
 
             const int taskId = 1;
-            var message = new UpdateTaskCommand { AllReadyTask = new VolunteerTask {Id = taskId} };
+            var message = new UpdateTaskCommand { VolunteerTask = new VolunteerTask {Id = taskId} };
 
             using (var context = new AllReadyContext(options)) {
                 context.Tasks.Add(new VolunteerTask {

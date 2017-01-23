@@ -38,13 +38,13 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Post([FromBody]TaskViewModel task)
         {
-            var allReadyTask = await ToModel(task, _mediator);
-            if (allReadyTask == null)
+            var volunteerTask = await ToModel(task, _mediator);
+            if (volunteerTask == null)
             {
                 return BadRequest("Should have found a matching event Id");
             }
 
-            var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask, _userManager);
+            var hasPermissions = _determineIfATaskIsEditable.For(User, volunteerTask, _userManager);
             if (!hasPermissions)
             {
                 return Unauthorized();
@@ -55,34 +55,34 @@ namespace AllReady.Controllers
                 return BadRequest();
             }
 
-            await _mediator.SendAsync(new AddTaskCommand { AllReadyTask = allReadyTask });
+            await _mediator.SendAsync(new AddTaskCommand { VolunteerTask = volunteerTask });
 
             //http://stackoverflow.com/questions/1860645/create-request-with-post-which-response-codes-200-or-201-and-content
-            return Created("", allReadyTask);
+            return Created("", volunteerTask);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody]TaskViewModel value)
         {
-            var allReadyTask = await GetTaskBy(id);
-            if (allReadyTask == null)
+            var volunteerTask = await GetTaskBy(id);
+            if (volunteerTask == null)
             {
                 return BadRequest();
             }
             
-            var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask, _userManager);
+            var hasPermissions = _determineIfATaskIsEditable.For(User, volunteerTask, _userManager);
             if (!hasPermissions)
             {
                 return Unauthorized();
             }
             
             // Changing all the potential properties that the VM could have modified.
-            allReadyTask.Name = value.Name;
-            allReadyTask.Description = value.Description;
-            allReadyTask.StartDateTime = value.StartDateTime.UtcDateTime;
-            allReadyTask.EndDateTime = value.EndDateTime.UtcDateTime;
+            volunteerTask.Name = value.Name;
+            volunteerTask.Description = value.Description;
+            volunteerTask.StartDateTime = value.StartDateTime.UtcDateTime;
+            volunteerTask.EndDateTime = value.EndDateTime.UtcDateTime;
 
-            await _mediator.SendAsync(new UpdateTaskCommand { AllReadyTask = allReadyTask });
+            await _mediator.SendAsync(new UpdateTaskCommand { VolunteerTask = volunteerTask });
 
             //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
             return NoContent();
@@ -91,19 +91,19 @@ namespace AllReady.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var allReadyTask = await GetTaskBy(id);
-            if (allReadyTask == null)
+            var volunteerTask = await GetTaskBy(id);
+            if (volunteerTask == null)
             {
                 return BadRequest();
             }
             
-            var hasPermissions = _determineIfATaskIsEditable.For(User, allReadyTask, _userManager);
+            var hasPermissions = _determineIfATaskIsEditable.For(User, volunteerTask, _userManager);
             if (!hasPermissions)
             {
                 return Unauthorized();
             }
             
-            await _mediator.SendAsync(new DeleteTaskCommand { TaskId = allReadyTask.Id });
+            await _mediator.SendAsync(new DeleteTaskCommand { TaskId = volunteerTask.Id });
 
             //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
             return Ok();
@@ -215,24 +215,24 @@ namespace AllReady.Controllers
             }
 
             var newTask = true;
-            VolunteerTask allReadyTask;
+            VolunteerTask volunteerTask;
             if (taskViewModel.Id == 0)
             {
-                allReadyTask = new VolunteerTask();
+                volunteerTask = new VolunteerTask();
             }
             else
             {
-                allReadyTask = await mediator.SendAsync(new TaskByTaskIdQuery { TaskId = taskViewModel.Id });
+                volunteerTask = await mediator.SendAsync(new TaskByTaskIdQuery { TaskId = taskViewModel.Id });
                 newTask = false;
             }
 
-            allReadyTask.Id = taskViewModel.Id;
-            allReadyTask.Description = taskViewModel.Description;
-            allReadyTask.Event = @event;
-            allReadyTask.EndDateTime = taskViewModel.EndDateTime.UtcDateTime;
-            allReadyTask.StartDateTime = taskViewModel.StartDateTime.UtcDateTime;
-            allReadyTask.Name = taskViewModel.Name;
-            allReadyTask.RequiredSkills = allReadyTask.RequiredSkills ?? new List<TaskSkill>();
+            volunteerTask.Id = taskViewModel.Id;
+            volunteerTask.Description = taskViewModel.Description;
+            volunteerTask.Event = @event;
+            volunteerTask.EndDateTime = taskViewModel.EndDateTime.UtcDateTime;
+            volunteerTask.StartDateTime = taskViewModel.StartDateTime.UtcDateTime;
+            volunteerTask.Name = taskViewModel.Name;
+            volunteerTask.RequiredSkills = volunteerTask.RequiredSkills ?? new List<TaskSkill>();
             taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();
             ////Remove old skills
             //dbtask.RequiredSkills.RemoveAll(ts => !taskViewModel.RequiredSkills.Any(s => ts.SkillId == s));
@@ -259,28 +259,28 @@ namespace AllReady.Controllers
             {
                 var assignedVolunteers = taskViewModel.AssignedVolunteers.ToList();
 
-                var taskUsersList = await assignedVolunteers.ToTaskSignups(allReadyTask, _mediator);
+                var taskUsersList = await assignedVolunteers.ToTaskSignups(volunteerTask, _mediator);
 
                 // We may be updating an existing task
-                if (newTask || allReadyTask.AssignedVolunteers.Count == 0)
+                if (newTask || volunteerTask.AssignedVolunteers.Count == 0)
                 {
-                    allReadyTask.AssignedVolunteers = taskUsersList;
+                    volunteerTask.AssignedVolunteers = taskUsersList;
                 }
                 else
                 {
                     // Can probably rewrite this more efficiently.
                     foreach (var taskUsers in taskUsersList)
                     {
-                        if (!(from entry in allReadyTask.AssignedVolunteers
+                        if (!(from entry in volunteerTask.AssignedVolunteers
                               where entry.User.Id == taskUsers.User.Id
                               select entry).Any())
                         {
-                            allReadyTask.AssignedVolunteers.Add(taskUsers);
+                            volunteerTask.AssignedVolunteers.Add(taskUsers);
                         }
                     }
                 }
             }
-            return allReadyTask;
+            return volunteerTask;
         }
     }
 

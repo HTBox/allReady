@@ -4,7 +4,7 @@ using Xunit;
 
 namespace AllReady.UnitTest.Models
 {
-    public class AllReadyTaskShould
+    public class VolunteerTaskShould
     {
         [Fact]
         public void IsClosed_ShouldBeTrue_IfEndDatePriorToCurrentDate()

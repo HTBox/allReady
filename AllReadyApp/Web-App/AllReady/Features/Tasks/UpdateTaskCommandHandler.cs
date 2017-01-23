@@ -15,13 +15,13 @@ namespace AllReady.Features.Tasks
         }
 
         protected override async Task HandleCore(UpdateTaskCommand message) {
-            var @task = message.AllReadyTask;
+            var @task = message.VolunteerTask;
             
             //First remove any skills that are no longer associated with this task
             var tsToRemove = dataContext.TaskSkills.Where(ts => ts.TaskId == @task.Id && (@task.RequiredSkills == null || !@task.RequiredSkills.Any(ts1 => ts1.SkillId == ts.SkillId)));
             dataContext.TaskSkills.RemoveRange(tsToRemove);
 
-            dataContext.Tasks.Update(message.AllReadyTask);
+            dataContext.Tasks.Update(message.VolunteerTask);
 
             await dataContext.SaveChangesAsync();
         }
