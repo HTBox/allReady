@@ -57,7 +57,7 @@
                         <ul>
                             @foreach (var attachment in Model.Attachments)
                             {
-                                <li><a href="@attachment.DownloadUrl">@attachment.Name</a>: @attachment.Description</li>
+                                <li><a href="@attachment.Url">@attachment.Name</a>: @attachment.Description</li>
                             }
                         </ul>
                     </dd>

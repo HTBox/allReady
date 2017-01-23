@@ -7,13 +7,16 @@ using Microsoft.Net.Http.Headers;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace AllReady.Services
 {
     public class AttachmentService : IAttachmentService
     {
         private const string ContainerName = "attachments";
-        public static string[] AllowedExtensions = new string[] { ".jpg", ".gif", ".bmp", ".pdf" };
+        private const int MaxAttachmentBytes = 2 * 1024 * 1024; // 2MB
+        private static readonly IList<string> AllowedExtensions = new List<string> { ".png", ".jpg", ".doc", ".docx", ".xls", ".xlsx", ".pdf" };
+
         private readonly AzureStorageSettings _options;
 
         public AttachmentService(IOptions<AzureStorageSettings> options)
@@ -54,42 +57,53 @@ namespace AllReady.Services
             var fileName = ContentDispositionHeaderValue.Parse(attachment.ContentDisposition).FileName.Trim('"').ToLower();
             Debug.WriteLine($"BlobPath={blobPath}, fileName={fileName}, attachment length={attachment.Length}");
 
-            if (AllowedExtensions.Any(ext => fileName.EndsWith(ext)))
+            if (!GetAllowedExtensions().Any(ext => fileName.EndsWith(ext)))
             {
-                var account = CloudStorageAccount.Parse(_options.AzureStorage);
-                var container = account.CreateCloudBlobClient().GetContainerReference(ContainerName);
-
-                //Create container if it doesn't exist wiht public access
-                await container.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Container, new BlobRequestOptions(), new OperationContext());
-
-                var blob = blobPath + "/" + fileName;
-                Debug.WriteLine("blob" + blob);
-
-                var blockBlob = container.GetBlockBlobReference(blob);
-
-                blockBlob.Properties.ContentType = attachment.ContentType;
-
-                using (var attachmentStream = attachment.OpenReadStream())
-                {
-                    //Option #1
-                    var contents = new byte[attachment.Length];
-
-                    for (var i = 0; i < attachment.Length; i++)
-                    {
-                        contents[i] = (byte)attachmentStream.ReadByte();
-                    }
-
-                    await blockBlob.UploadFromByteArrayAsync(contents, 0, (int)attachment.Length);
-
-                    //Option #2
-                    //await blockBlob.UploadFromStreamAsync(attachmentStream);
-                }
-
-                Debug.WriteLine("Attachment uploaded to URI: " + blockBlob.Uri);
-                return blockBlob.Uri.ToString();
+                throw new Exception("Invalid file extension: " + fileName + ". You can only upload attachments with the extensions: " + string.Join(", ", AllowedExtensions));
             }
 
-            throw new Exception("Invalid file extension: " + fileName + "You can only upload attachments with the extension: jpg, jpeg, gif, or png");
+            var account = CloudStorageAccount.Parse(_options.AzureStorage);
+            var container = account.CreateCloudBlobClient().GetContainerReference(ContainerName);
+
+            //Create container if it doesn't exist wiht public access
+            await container.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Container, new BlobRequestOptions(), new OperationContext());
+
+            var blob = blobPath + "/" + fileName;
+            Debug.WriteLine("blob" + blob);
+
+            var blockBlob = container.GetBlockBlobReference(blob);
+
+            blockBlob.Properties.ContentType = attachment.ContentType;
+
+            using (var attachmentStream = attachment.OpenReadStream())
+            {
+                //Option #1
+                var contents = new byte[attachment.Length];
+
+                for (var i = 0; i < attachment.Length; i++)
+                {
+                    contents[i] = (byte)attachmentStream.ReadByte();
+                }
+
+                await blockBlob.UploadFromByteArrayAsync(contents, 0, (int)attachment.Length);
+
+                //Option #2
+                //await blockBlob.UploadFromStreamAsync(attachmentStream);
+            }
+
+            Debug.WriteLine("Attachment uploaded to URI: " + blockBlob.Uri);
+            return blockBlob.Uri.ToString();
+
+        }
+
+        public IList<string> GetAllowedExtensions()
+        {
+            return AllowedExtensions;
+        }
+
+        public int GetMaxAttachmentBytes()
+        {
+            return MaxAttachmentBytes;
         }
     }
 }

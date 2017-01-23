@@ -120,7 +120,7 @@
                 <div data-bind="foreach: attachments">
                     <div class="form-inline">
                         <input type="checkbox" name="DeleteAttachments" data-bind="attr: { value: $data.Id }" />
-                        <a data-bind="attr: { href: DownloadUrl }, tooltip: { title: Description, placement: 'top' }" href="" target="_blank">
+                        <a data-bind="attr: { href: Url }, tooltip: { title: Description, placement: 'top' }" href="" target="_blank">
                             <span data-bind="text: Name"> </span>
                         </a>
                     </div>

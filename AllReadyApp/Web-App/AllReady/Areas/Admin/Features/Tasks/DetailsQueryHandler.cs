@@ -50,6 +50,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     Name = a.Name,
                     Description = a.Description,
                     ContentType = a.ContentType,
+                    Url = a.Url,
                 }).ToList(),
             };
 

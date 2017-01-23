@@ -6,24 +6,29 @@ using AllReady.Features.Events;
 using AllReady.Models;
 using MediatR;
 using System.IO;
+using AllReady.Services;
 
 namespace AllReady.Areas.Admin.ViewModels.Validators.Task
 {
     public class TaskEditViewModelValidator : ITaskEditViewModelValidator
     {
-        private static readonly IList<string> AllowedFileExtensions = new List<string> { ".png", ".jpg", ".doc", ".docx", ".xls", ".xlsx", ".pdf" };
-        private const int MaxAttachmentBytes = 2 * 1024 * 1024; // 2MB
-
         private readonly IMediator _mediator;
+        private readonly IAttachmentService _attachmentService;
 
-        public TaskEditViewModelValidator(IMediator mediator)
+        public TaskEditViewModelValidator(IMediator mediator, IAttachmentService attachmentService)
         {
             if (mediator == null)
             {
                 throw new ArgumentNullException(nameof(mediator));
             }
 
+            if (attachmentService == null)
+            {
+                throw new ArgumentNullException(nameof(attachmentService));
+            }
+
             _mediator = mediator;
+            _attachmentService = attachmentService;
         }
 
         public async Task<List<KeyValuePair<string, string>>> Validate(EditViewModel viewModel)
@@ -60,16 +65,18 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
                 }
 
                 // Rule - New attachment must have a maximum size
-                if (viewModel.NewAttachment.Length > MaxAttachmentBytes)
+                int maxBytes = _attachmentService.GetMaxAttachmentBytes();
+                if (viewModel.NewAttachment.Length > maxBytes)
                 {
-                    result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), "The attachment has an invalid extension. Allowed file types are :" + string.Join(", ", AllowedFileExtensions)));
+                    result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), string.Format("The attachment is too large. It should have a maximum of {0} bytes.", maxBytes)));
                 }
 
                 // Rule - Attachment must be a document or an image
                 string ext = Path.GetExtension(viewModel.NewAttachment.FileName).ToLower();
-                if (!AllowedFileExtensions.Contains(ext))
+                IList<string> allowedFileExtensions = _attachmentService.GetAllowedExtensions();
+                if (!allowedFileExtensions.Contains(ext))
                 {
-                    result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), "The attachment has an invalid extension. Allowed file types are :" + string.Join(", ", AllowedFileExtensions)));
+                    result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), "The attachment has an invalid extension. Allowed file types are :" + string.Join(", ", allowedFileExtensions)));
                 }
             }
 
