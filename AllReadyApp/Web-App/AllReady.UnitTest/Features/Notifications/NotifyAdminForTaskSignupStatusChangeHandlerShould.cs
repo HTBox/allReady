@@ -131,9 +131,9 @@ namespace AllReady.UnitTest.Features.Notifications
             mediator.Verify(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
         }
 
-        private static TaskSignup CreateTaskSignup(int taskSignupId, int taskId , string email, string firstName = null, string lastName = null, string userMail = null)
+        private static VolunteerTaskSignup CreateTaskSignup(int taskSignupId, int taskId , string email, string firstName = null, string lastName = null, string userMail = null)
         {
-            var taskSignup = new TaskSignup
+            var taskSignup = new VolunteerTaskSignup
             {
                 Id = taskSignupId,
                 User = new ApplicationUser
@@ -142,7 +142,7 @@ namespace AllReady.UnitTest.Features.Notifications
                     LastName = lastName,
                     Email = userMail
                 },
-                Task = new AllReadyTask
+                VolunteerTask = new VolunteerTask
                 {
                     Id = taskId,
                     Event = new AllReady.Models.Event
@@ -165,17 +165,17 @@ namespace AllReady.UnitTest.Features.Notifications
             return taskSignup;
         }
 
-        private static TaskSignup CreateTaskSignupWithoutCampaignContact(int taskSignupId, int taskId, string firstName = null, string lastName = null, string userMail = null)
+        private static VolunteerTaskSignup CreateTaskSignupWithoutCampaignContact(int taskSignupId, int taskId, string firstName = null, string lastName = null, string userMail = null)
         {
             var taskSignup = CreateTaskSignup(taskSignupId, taskId, null, firstName, lastName, userMail);
-            taskSignup.Task.Event.Campaign.CampaignContacts = new List<CampaignContact>();
+            taskSignup.VolunteerTask.Event.Campaign.CampaignContacts = new List<CampaignContact>();
             return taskSignup;
         }
 
-        private static TaskSignup CreateTaskSignupWithoutCampaignContacts(int taskSignupId, int taskId, string firstName = null, string lastName = null, string userMail = null)
+        private static VolunteerTaskSignup CreateTaskSignupWithoutCampaignContacts(int taskSignupId, int taskId, string firstName = null, string lastName = null, string userMail = null)
         {
             var taskSignup = CreateTaskSignup(taskSignupId, taskId, null, firstName, lastName, userMail);
-            taskSignup.Task.Event.Campaign = new Campaign();
+            taskSignup.VolunteerTask.Event.Campaign = new Campaign();
             return taskSignup;
         }
     }
