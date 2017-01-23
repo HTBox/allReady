@@ -22,8 +22,8 @@ namespace AllReady.UnitTest.Features.Tasks
             using (var context = new AllReadyContext(options)) {
                 context.Tasks.Add(new VolunteerTask {
                     Id = taskId,
-                    RequiredSkills = new List<TaskSkill> {
-                        new TaskSkill()
+                    RequiredSkills = new List<VolunteerTaskSkill> {
+                        new VolunteerTaskSkill()
                     }
                 });
                 await context.SaveChangesAsync();

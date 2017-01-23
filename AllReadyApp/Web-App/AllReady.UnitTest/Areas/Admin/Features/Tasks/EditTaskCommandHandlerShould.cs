@@ -27,7 +27,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                     OrganizationId = organization.Id,
                     TimeZoneId = "Central Standard Time",
                     NumberOfVolunteersRequired = 5,
-                    RequiredSkills = new List<TaskSkill> { new TaskSkill { SkillId = 3, Skill = new Skill { Id = 3, Name = "SkillName", Description = "SkillDescription" } } }
+                    RequiredSkills = new List<VolunteerTaskSkill> { new VolunteerTaskSkill { SkillId = 3, Skill = new Skill { Id = 3, Name = "SkillName", Description = "SkillDescription" } } }
                 }
             };
 
@@ -64,7 +64,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 Event = @event,
                 Organization = organization,
                 NumberOfVolunteersRequired = 5,
-                RequiredSkills = new List<TaskSkill> { new TaskSkill { SkillId = 5, Skill = new Skill { Id = 5, Name = "SkillName", Description = "SkillDescription" } } }
+                RequiredSkills = new List<VolunteerTaskSkill> { new VolunteerTaskSkill { SkillId = 5, Skill = new Skill { Id = 5, Name = "SkillName", Description = "SkillDescription" } } }
             };
 
             Context.Database.EnsureDeleted();
@@ -86,7 +86,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                     StartDateTime = DateTimeOffset.Now.AddDays(1),
                     EndDateTime = DateTimeOffset.Now.AddDays(2),
                     NumberOfVolunteersRequired = 6,
-                    RequiredSkills = new List<TaskSkill> { new TaskSkill { SkillId = 6, Skill = new Skill { Id = 6, Name = "SkillNameOnMessage", Description = "SkillDescriptionOnMessage" } } }
+                    RequiredSkills = new List<VolunteerTaskSkill> { new VolunteerTaskSkill { SkillId = 6, Skill = new Skill { Id = 6, Name = "SkillNameOnMessage", Description = "SkillDescriptionOnMessage" } } }
                 }
             };
 

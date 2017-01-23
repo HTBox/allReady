@@ -230,10 +230,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                             new VolunteerTaskSignup(),
                             new VolunteerTaskSignup()
                         },
-                        RequiredSkills = new List<TaskSkill>
+                        RequiredSkills = new List<VolunteerTaskSkill>
                         {
-                            new TaskSkill { Skill = skillOne },
-                            new TaskSkill { Skill = skillTwo },
+                            new VolunteerTaskSkill { Skill = skillOne },
+                            new VolunteerTaskSkill { Skill = skillTwo },
                         },
                     },
                     new VolunteerTask

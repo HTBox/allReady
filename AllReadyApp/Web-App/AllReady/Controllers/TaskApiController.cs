@@ -232,7 +232,7 @@ namespace AllReady.Controllers
             volunteerTask.EndDateTime = taskViewModel.EndDateTime.UtcDateTime;
             volunteerTask.StartDateTime = taskViewModel.StartDateTime.UtcDateTime;
             volunteerTask.Name = taskViewModel.Name;
-            volunteerTask.RequiredSkills = volunteerTask.RequiredSkills ?? new List<TaskSkill>();
+            volunteerTask.RequiredSkills = volunteerTask.RequiredSkills ?? new List<VolunteerTaskSkill>();
             taskViewModel.RequiredSkills = taskViewModel.RequiredSkills ?? new List<int>();
             ////Remove old skills
             //dbtask.RequiredSkills.RemoveAll(ts => !taskViewModel.RequiredSkills.Any(s => ts.SkillId == s));

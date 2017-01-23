@@ -18,7 +18,7 @@ namespace AllReady.Features.Tasks
             var @task = message.VolunteerTask;
             
             //First remove any skills that are no longer associated with this task
-            var tsToRemove = dataContext.TaskSkills.Where(ts => ts.TaskId == @task.Id && (@task.RequiredSkills == null || !@task.RequiredSkills.Any(ts1 => ts1.SkillId == ts.SkillId)));
+            var tsToRemove = dataContext.TaskSkills.Where(ts => ts.VolunteerTaskId == @task.Id && (@task.RequiredSkills == null || !@task.RequiredSkills.Any(ts1 => ts1.SkillId == ts.SkillId)));
             dataContext.TaskSkills.RemoveRange(tsToRemove);
 
             dataContext.Tasks.Update(message.VolunteerTask);

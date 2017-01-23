@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 StartDateTime = DateTimeOffset.Now,
                 EndDateTime = DateTimeOffset.Now,
                 NumberOfVolunteersRequired = 5,
-                RequiredSkills = new List<TaskSkill> { new TaskSkill { SkillId = 2, Skill = new Skill(), TaskId = 1 } },
+                RequiredSkills = new List<VolunteerTaskSkill> { new VolunteerTaskSkill { SkillId = 2, Skill = new Skill(), VolunteerTaskId = 1 } },
                 Event = new Event
                 {
                     Id = 3,

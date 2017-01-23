@@ -34,7 +34,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             if (@task.Id > 0)
             {
-                var taskSkillsToRemove = _context.TaskSkills.Where(ts => ts.TaskId == @task.Id && (message.Task.RequiredSkills == null || message.Task.RequiredSkills.All(ts1 => ts1.SkillId != ts.SkillId)));
+                var taskSkillsToRemove = _context.TaskSkills.Where(ts => ts.VolunteerTaskId == @task.Id && (message.Task.RequiredSkills == null || message.Task.RequiredSkills.All(ts1 => ts1.SkillId != ts.SkillId)));
                 _context.TaskSkills.RemoveRange(taskSkillsToRemove);
             }
 

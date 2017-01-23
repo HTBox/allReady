@@ -34,7 +34,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                     Campaign = new Campaign { Id = 3, Name = "CampaignName", TimeZoneId = "Central Standard Time" },
                     TimeZoneId = "Central Standard Time"
                 },
-                RequiredSkills = new List<TaskSkill> { new TaskSkill { SkillId = 4, TaskId = 1 } },
+                RequiredSkills = new List<VolunteerTaskSkill> { new VolunteerTaskSkill { SkillId = 4, VolunteerTaskId = 1 } },
                 AssignedVolunteers = new List<VolunteerTaskSignup>
                 {
                     new VolunteerTaskSignup

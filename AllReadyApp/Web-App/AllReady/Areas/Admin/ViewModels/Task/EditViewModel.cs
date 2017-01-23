@@ -44,7 +44,7 @@ namespace AllReady.Areas.Admin.ViewModels.Task
         [Range(1, int.MaxValue, ErrorMessage = "'Volunteers Required' must be greater than 0")]
         public int NumberOfVolunteersRequired { get; set; }
 
-        public List<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();
+        public List<VolunteerTaskSkill> RequiredSkills { get; set; } = new List<VolunteerTaskSkill>();
 
         //only used for update scenarios
         public List<VolunteerViewModel> AssignedVolunteers { get; set; } = new List<VolunteerViewModel>();

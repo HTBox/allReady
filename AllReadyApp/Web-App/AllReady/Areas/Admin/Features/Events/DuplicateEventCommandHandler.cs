@@ -96,9 +96,9 @@ namespace AllReady.Areas.Admin.Features.Events
             };
         }
 
-        private static IEnumerable<TaskSkill> CloneTaskRequiredSkills(VolunteerTask task)
+        private static IEnumerable<VolunteerTaskSkill> CloneTaskRequiredSkills(VolunteerTask task)
         {
-            return task.RequiredSkills.Select(taskSkill => new TaskSkill { SkillId = taskSkill.SkillId });
+            return task.RequiredSkills.Select(taskSkill => new VolunteerTaskSkill { SkillId = taskSkill.SkillId });
         }
 
         private void ApplyUpdates(Event @event, DuplicateEventViewModel updateModel)
