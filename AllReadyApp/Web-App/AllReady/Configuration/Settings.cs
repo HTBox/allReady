@@ -18,7 +18,6 @@ namespace AllReady
     {
         public string BaseAddress { get; set; }
         public string Token { get; set; }
-        public int RetryAttempts { get; set; }
     }
 
     public class DatabaseSettings
