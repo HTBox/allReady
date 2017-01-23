@@ -99,8 +99,8 @@
     "include": [
       "wwwroot",
       "**/*.cshtml",
-      "appsettings.json",
-      "web.config"
+      "web.config",
+      "config.json"
     ]
   },
 
