@@ -318,44 +318,6 @@ namespace AllReady.Migrations
                     b.ToTable("EventSkill");
                 });
 
-            modelBuilder.Entity("AllReady.Models.FileAttachment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("ContentId");
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("MimeType")
-                        .IsRequired();
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<int?>("TaskId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ContentId");
-
-                    b.HasIndex("TaskId");
-
-                    b.ToTable("FileAttachment");
-                });
-
-            modelBuilder.Entity("AllReady.Models.FileAttachmentContent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<byte[]>("Bytes");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FileAttachmentContent");
-                });
-
             modelBuilder.Entity("AllReady.Models.Itinerary", b =>
                 {
                     b.Property<int>("Id")
@@ -868,17 +830,6 @@ namespace AllReady.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("AllReady.Models.FileAttachment", b =>
-                {
-                    b.HasOne("AllReady.Models.FileAttachmentContent", "Content")
-                        .WithMany()
-                        .HasForeignKey("ContentId");
-
-                    b.HasOne("AllReady.Models.AllReadyTask", "Task")
-                        .WithMany("Attachments")
-                        .HasForeignKey("TaskId");
-                });
-
             modelBuilder.Entity("AllReady.Models.Itinerary", b =>
                 {
                     b.HasOne("AllReady.Models.Location", "EndLocation")
@@ -903,7 +854,7 @@ namespace AllReady.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("AllReady.Models.Request", "Request")
-                        .WithMany("Itineraries")
+                        .WithMany()
                         .HasForeignKey("RequestId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
