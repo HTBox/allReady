@@ -33,36 +33,32 @@ namespace AllReady.Services.Mapping.Routing
         {
             var requestIds = new List<Guid>();
 
-            if (!string.IsNullOrEmpty(_mappingSettings?.GoogleMapsApiKey))
+            try
             {
-                try
+                return await GetRetryPolicy().ExecuteAsync(async () =>
                 {
-                    return await GetRetryPolicy().ExecuteAsync(async () =>
+                    var googleResponse = await _httpClient.GetAsync(GenerateGoogleApiUrl(criteria));
+
+                    googleResponse.EnsureSuccessStatusCode();
+                        
+                    var content = await googleResponse.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<GoogleDirectionsResponse>(content);
+
+                    if (result.Status == GoogleDirectionsResponse.OkStatus)
                     {
-                        var googleResponse = await _httpClient.GetAsync(GenerateGoogleApiUrl(criteria));
+                        requestIds.AddRange(result.Routes.SelectMany(r => r.WaypointOrder).Select(waypointIndex => criteria.Waypoints[waypointIndex].RequestId));
 
-                        googleResponse.EnsureSuccessStatusCode();
+                        return new OptimizeRouteResult { RequestIds = requestIds, Distance = result.TotalDistance, Duration = result.TotalDuration };
+                    }
                         
-                        var content = await googleResponse.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<GoogleDirectionsResponse>(content);
-
-                        if (result.Status == GoogleDirectionsResponse.OkStatus)
-                        {
-                            requestIds.AddRange(result.Routes.SelectMany(r => r.WaypointOrder).Select(waypointIndex => criteria.Waypoints[waypointIndex].RequestId));
-
-                            return new OptimizeRouteResult { RequestIds = requestIds, Distance = result.TotalDistance, Duration = result.TotalDuration };
-                        }
-                        
-                        return null;
-                    });
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Unable to connect to Google API {ex}");
-                    // todo - handle other status codes and logging
-                }                
+                    return null;
+                });
             }
-
+            catch (Exception ex)
+            {
+                _logger.LogError($"Unable to connect to Google API {ex}");
+                // todo - handle other status codes and logging
+            }
             return null;
         }
 
