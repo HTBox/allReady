@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.Areas.Admin.Features.Itineraries
 {
@@ -20,18 +19,18 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
         public async Task<IEnumerable<SelectListItem>> Handle(PotentialItineraryTeamMembersQuery message)
         {
-            return await _context.TaskSignups
+            return await _context.VolunteerTaskSignups
                 .AsNoTracking()
-                .Include(x => x.Task).ThenInclude(x => x.Event)
+                .Include(x => x.VolunteerTask).ThenInclude(x => x.Event)
                 .Include(x => x.User)
                 .Include(x => x.Itinerary)
-                .Where(x => x.Task.EventId == message.EventId)
-                .Where(x => x.Status == TaskStatus.Accepted)
+                .Where(x => x.VolunteerTask.EventId == message.EventId)
+                .Where(x => x.Status == VolunteerTaskStatus.Accepted)
                 .Where(x => x.Itinerary == null)
-                .Where(x => x.Task.StartDateTime.Date == message.Date)
+                .Where(x => x.VolunteerTask.StartDateTime.Date == message.Date)
                 .Select(x => new SelectListItem
                 {
-                    Text = string.Concat(x.User.Email, " : ", x.Task.Name),
+                    Text = string.Concat(x.User.Email, " : ", x.VolunteerTask.Name),
                     Value = x.Id.ToString()
                 }).ToListAsync();
         }

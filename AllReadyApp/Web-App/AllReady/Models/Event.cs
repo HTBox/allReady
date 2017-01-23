@@ -34,7 +34,7 @@ namespace AllReady.Models
 
         public Location Location { get; set; }
 
-        public List<AllReadyTask> Tasks { get; set; } = new List<AllReadyTask>();
+        public List<VolunteerTask> VolunteerTasks { get; set; } = new List<VolunteerTask>();
 
         public ApplicationUser Organizer { get; set; }
 
@@ -54,9 +54,9 @@ namespace AllReady.Models
         [MaxLength(150)]
         public string Headline { get; set; }
         
-        public bool IsUserInAnyTask(string userId)
+        public bool IsUserInAnyVolunteerTask(string userId)
         {
-            return Tasks.Any(task => task.AssignedVolunteers.Any(av => av.User.Id == userId));
+            return VolunteerTasks.Any(task => task.AssignedVolunteers.Any(av => av.User.Id == userId));
         }
 
         public ICollection<Request> Requests { get; set; }

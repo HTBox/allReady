@@ -4,7 +4,7 @@ namespace AllReady.Features.Notifications
 {
     public class ItineraryVolunteerListUpdated : IAsyncNotification
     {
-        public int TaskSignupId { get; set; }
+        public int VolunteerTaskSignupId { get; set; }
         public int ItineraryId { get; set; }
         public UpdateType UpdateType { get; set; }
     }

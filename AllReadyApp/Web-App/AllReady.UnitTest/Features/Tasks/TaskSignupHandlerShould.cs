@@ -18,52 +18,52 @@ namespace AllReady.UnitTest.Features.Tasks
         public async Task Result_ShouldBe_ClosedTaskFailure_IfTaskIsClosed()
         {
             var mockMediator = new Mock<IMediator>();
-            var message = new TaskSignupCommand { TaskSignupModel = new TaskSignupViewModel { TaskId = 1, EventId = 1, UserId = "abc" } };
+            var message = new VolunteerTaskSignupCommand { TaskSignupModel = new VolunteerTaskSignupViewModel { VolunteerTaskId = 1, EventId = 1, UserId = "abc" } };
 
-            var sut = new TaskSignupCommandHandler(mockMediator.Object, Context);
+            var sut = new VolunteerTaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(TaskSignupResult.FAILURE_CLOSEDTASK, result.Status);
-            Assert.Equal(0, Context.TaskSignups.Count());
+            Assert.Equal(VolunteerTaskSignupResult.FAILURE_CLOSEDTASK, result.Status);
+            Assert.Equal(0, Context.VolunteerTaskSignups.Count());
         }
 
         [Fact]
         public async Task Result_ShouldBe_CampaignNotFound_IfCampaignIdDoesNotExist()
         {
             var mockMediator = new Mock<IMediator>();
-            var message = new TaskSignupCommand { TaskSignupModel = new TaskSignupViewModel { TaskId = 1, EventId = 100, UserId = "abc" } };
+            var message = new VolunteerTaskSignupCommand { TaskSignupModel = new VolunteerTaskSignupViewModel { VolunteerTaskId = 1, EventId = 100, UserId = "abc" } };
 
-            var sut = new TaskSignupCommandHandler(mockMediator.Object, Context);
+            var sut = new VolunteerTaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(TaskSignupResult.FAILURE_EVENTNOTFOUND, result.Status);
-            Assert.Equal(0, Context.TaskSignups.Count());
+            Assert.Equal(VolunteerTaskSignupResult.FAILURE_EVENTNOTFOUND, result.Status);
+            Assert.Equal(0, Context.VolunteerTaskSignups.Count());
         }
 
         [Fact]
         public async Task Result_ShouldBe_TaskNotFound_IfTaskIdDoesNotExist()
         {
             var mockMediator = new Mock<IMediator>();
-            var message = new TaskSignupCommand { TaskSignupModel = new TaskSignupViewModel { TaskId = 100, EventId = 1, UserId = "abc" } };
+            var message = new VolunteerTaskSignupCommand { TaskSignupModel = new VolunteerTaskSignupViewModel { VolunteerTaskId = 100, EventId = 1, UserId = "abc" } };
 
-            var sut = new TaskSignupCommandHandler(mockMediator.Object, Context);
+            var sut = new VolunteerTaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(TaskSignupResult.FAILURE_TASKNOTFOUND, result.Status);
-            Assert.Equal(0, Context.TaskSignups.Count());
+            Assert.Equal(VolunteerTaskSignupResult.FAILURE_TASKNOTFOUND, result.Status);
+            Assert.Equal(0, Context.VolunteerTaskSignups.Count());
         }
 
         [Fact]
         public async Task Result_ShouldBe_Success_IfTaskIsNotClosed()
         {
             var mockMediator = new Mock<IMediator>();
-            var message = new TaskSignupCommand { TaskSignupModel = new TaskSignupViewModel { TaskId = 2, EventId = 1, UserId = "abc" } };
+            var message = new VolunteerTaskSignupCommand { TaskSignupModel = new VolunteerTaskSignupViewModel { VolunteerTaskId = 2, EventId = 1, UserId = "abc" } };
 
-            var sut = new TaskSignupCommandHandler(mockMediator.Object, Context);
+            var sut = new VolunteerTaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(TaskSignupResult.SUCCESS, result.Status);
-            Assert.Equal(1, Context.TaskSignups.Count());
+            Assert.Equal(VolunteerTaskSignupResult.SUCCESS, result.Status);
+            Assert.Equal(1, Context.VolunteerTaskSignups.Count());
         }
 
         protected override void LoadTestData()
@@ -73,8 +73,8 @@ namespace AllReady.UnitTest.Features.Tasks
             var campaignEvent = new Event { Id = 1, Name = "Some Event" };
             Context.Events.Add(campaignEvent);
 
-            Context.Tasks.Add(new AllReadyTask { Id = 1, Name = "Closed Task", EndDateTime = DateTime.UtcNow.AddDays(-100), Event = campaignEvent });
-            Context.Tasks.Add(new AllReadyTask { Id = 2, Name = "Open Task", EndDateTime = DateTime.UtcNow.AddDays(100), Event = campaignEvent });
+            Context.VolunteerTasks.Add(new VolunteerTask { Id = 1, Name = "Closed Task", EndDateTime = DateTime.UtcNow.AddDays(-100), Event = campaignEvent });
+            Context.VolunteerTasks.Add(new VolunteerTask { Id = 2, Name = "Open Task", EndDateTime = DateTime.UtcNow.AddDays(100), Event = campaignEvent });
 
             Context.SaveChanges();
         }

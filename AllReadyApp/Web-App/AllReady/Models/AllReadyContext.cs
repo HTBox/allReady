@@ -19,9 +19,9 @@ namespace AllReady.Models
         public DbSet<EventSkill> EventSkills { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<PostalCodeGeo> PostalCodes { get; set; }
-        public DbSet<AllReadyTask> Tasks { get; set; }
-        public DbSet<TaskSkill> TaskSkills { get; set; }
-        public DbSet<TaskSignup> TaskSignups { get; set; }
+        public DbSet<VolunteerTask> VolunteerTasks { get; set; }
+        public DbSet<VolunteerTaskSkill> VolunteerTaskSkills { get; set; }
+        public DbSet<VolunteerTaskSignup> VolunteerTaskSignups { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public virtual DbSet<Skill> Skills { get; set; }
         public DbSet<UserSkill> UserSkills { get; set; }
@@ -48,9 +48,9 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<CampaignSponsors>());
             Map(modelBuilder.Entity<Event>());
             Map(modelBuilder.Entity<EventSkill>());
-            Map(modelBuilder.Entity<AllReadyTask>());
-            Map(modelBuilder.Entity<TaskSkill>());
-            Map(modelBuilder.Entity<TaskSignup>());
+            Map(modelBuilder.Entity<VolunteerTask>());
+            Map(modelBuilder.Entity<VolunteerTaskSkill>());
+            Map(modelBuilder.Entity<VolunteerTaskSignup>());
             Map(modelBuilder.Entity<PostalCodeGeo>());
             Map(modelBuilder.Entity<Skill>());
             Map(modelBuilder.Entity<UserSkill>());
@@ -111,32 +111,32 @@ namespace AllReady.Models
             builder.HasKey(k => k.PostalCode);
         }
 
-        private void Map(EntityTypeBuilder<TaskSignup> builder)
+        private void Map(EntityTypeBuilder<VolunteerTaskSignup> builder)
         {
-            builder.HasOne(u => u.Task).WithMany(x => x.AssignedVolunteers).HasForeignKey(x => x.TaskId);
+            builder.HasOne(u => u.VolunteerTask).WithMany(x => x.AssignedVolunteers).HasForeignKey(x => x.VolunteerTaskId);
         }
 
-        private void Map(EntityTypeBuilder<AllReadyTask> builder)
+        private void Map(EntityTypeBuilder<VolunteerTask> builder)
         {
-            builder.HasOne(t => t.Event).WithMany(e => e.Tasks).HasForeignKey(t => t.EventId);
+            builder.HasOne(t => t.Event).WithMany(e => e.VolunteerTasks).HasForeignKey(t => t.EventId);
             builder.HasOne(t => t.Organization);
             builder.HasMany(t => t.AssignedVolunteers)
-                .WithOne(ts => ts.Task)
+                .WithOne(ts => ts.VolunteerTask)
                 .OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(t => t.RequiredSkills).WithOne(ts => ts.Task);
+            builder.HasMany(t => t.RequiredSkills).WithOne(ts => ts.VolunteerTask);
             builder.Property(p => p.Name).IsRequired();
         }
 
-        private void Map(EntityTypeBuilder<TaskSkill> builder)
+        private void Map(EntityTypeBuilder<VolunteerTaskSkill> builder)
         {
-            builder.HasKey(acsk => new { acsk.TaskId, acsk.SkillId });
+            builder.HasKey(acsk => new { TaskId = acsk.VolunteerTaskId, acsk.SkillId });
         }
 
         private void Map(EntityTypeBuilder<Event> builder)
         {
             builder.HasOne(a => a.Campaign);
             builder.HasOne(a => a.Location);
-            builder.HasMany(a => a.Tasks)
+            builder.HasMany(a => a.VolunteerTasks)
                 .WithOne(t => t.Event)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(a => a.RequiredSkills).WithOne(acsk => acsk.Event);

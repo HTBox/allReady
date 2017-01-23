@@ -17,6 +17,6 @@ namespace AllReady.Areas.Admin.ViewModels.Site
         [Display(Name = "Events organized by user")]
         public IEnumerable<string> Events { get; set; }
         [Display(Name = "Tasks volunteered by user")]
-        public IEnumerable<string> Tasks { get; set; }
+        public IEnumerable<string> VolunteerTasks { get; set; }
     }
 }

@@ -37,7 +37,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             foreach(var signup in potentialTaskSignups)
             {
                 var id = int.Parse(signup.Value);
-                if (id == message.TaskSignupId)
+                if (id == message.VolunteerTaskSignupId)
                 {
                     matchedSignup = true;
                     break;
@@ -46,18 +46,18 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                         
             if (matchedSignup)
             {
-                var taskSignup = new TaskSignup
+                var volunteerTaskSignup = new VolunteerTaskSignup
                 {
-                    Id = message.TaskSignupId,
+                    Id = message.VolunteerTaskSignupId,
                     ItineraryId = message.ItineraryId
                 };
 
-                _context.TaskSignups.Attach(taskSignup);
-                _context.Entry(taskSignup).Property(x => x.ItineraryId).IsModified = true;
+                _context.VolunteerTaskSignups.Attach(volunteerTaskSignup);
+                _context.Entry(volunteerTaskSignup).Property(x => x.ItineraryId).IsModified = true;
                 await _context.SaveChangesAsync();
 
                 await _mediator
-                    .PublishAsync(new ItineraryVolunteerListUpdated { TaskSignupId = message.TaskSignupId, ItineraryId = message.ItineraryId, UpdateType = UpdateType.VolunteerAssigned });
+                    .PublishAsync(new ItineraryVolunteerListUpdated { VolunteerTaskSignupId = message.VolunteerTaskSignupId, ItineraryId = message.ItineraryId, UpdateType = UpdateType.VolunteerAssigned });
             }
 
             return true;

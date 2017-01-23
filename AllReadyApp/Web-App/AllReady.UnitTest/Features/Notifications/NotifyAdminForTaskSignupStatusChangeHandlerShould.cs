@@ -14,8 +14,8 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void PassANotifyVolunteersCommandToTheMediatorWhenEmailIsProvided()
         {
-            const int taskSignupId = 1001;
-            const int taskId = 12314;
+            const int volunteerTaskSignupId = 1001;
+            const int volunteerTaskId = 12314;
             const string email = "kmad@allready.com";
             const string userMail = "damk@allready.com";
 
@@ -24,14 +24,14 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new Mock<IOptions<GeneralSettings>>();
             options.Setup(o => o.Value).Returns(new GeneralSettings {SiteBaseUrl = "allready.com"});
 
-            var notification = new TaskSignupStatusChanged {SignupId = taskSignupId};
+            var notification = new VolunteerTaskSignupStatusChanged {SignupId = volunteerTaskSignupId};
 
             var context = Context;
-            var taskSignup = CreateTaskSignup(taskSignupId, taskId, email, userMail: userMail);
-            context.TaskSignups.Add(taskSignup);
+            var volunteerTaskSignup = CreateTaskSignup(volunteerTaskSignupId, volunteerTaskId, email, userMail: userMail);
+            context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             context.SaveChanges();
 
-            var target = new NotifyAdminForTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
+            var target = new NotifyAdminForVolunteerTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
             await target.Handle(notification);
 
             mediator.VerifyAll();
@@ -40,8 +40,8 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void UsesUserFirstAndLastNameAsSubjectWhenProvided()
         {
-            const int taskSignupId = 1001;
-            const int taskId = 12314;
+            const int volunteerTaskSignupId = 1001;
+            const int volunteerTaskId = 12314;
             const string email = "kmad@allready.com";
             const string firstName = "Simon";
             const string lastName = "Says";
@@ -52,13 +52,13 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new Mock<IOptions<GeneralSettings>>();
             options.Setup(o => o.Value).Returns(new GeneralSettings { SiteBaseUrl = "allready.com" });
 
-            var notification = new TaskSignupStatusChanged { SignupId = taskSignupId };
+            var notification = new VolunteerTaskSignupStatusChanged { SignupId = volunteerTaskSignupId };
 
-            var taskSignup = CreateTaskSignup(taskSignupId, taskId, email, firstName, lastName, userEmail);
-            Context.TaskSignups.Add(taskSignup);
+            var volunteerTaskSignup = CreateTaskSignup(volunteerTaskSignupId, volunteerTaskId, email, firstName, lastName, userEmail);
+            Context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             Context.SaveChanges();
 
-            var target = new NotifyAdminForTaskSignupStatusChangeHandler(Context, mediator.Object, options.Object);
+            var target = new NotifyAdminForVolunteerTaskSignupStatusChangeHandler(Context, mediator.Object, options.Object);
             await target.Handle(notification);
 
             mediator.Verify(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(y => y.ViewModel.Subject == $"{firstName} {lastName}")));
@@ -67,21 +67,21 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void NotPassANotifyVolunteersCommandToTheMediatorWhenEmailIsEmpty()
         {
-            const int taskSignupId = 1001;
-            const int taskId = 12314;
+            const int volunteerTaskSignupId = 1001;
+            const int volunteerTaskId = 12314;
             const string email = "";
 
             var mediator = new Mock<IMediator>();
             var options = new Mock<IOptions<GeneralSettings>>();
 
-            var notification = new TaskSignupStatusChanged { SignupId = taskSignupId };
+            var notification = new VolunteerTaskSignupStatusChanged { SignupId = volunteerTaskSignupId };
 
             var context = Context;
-            var taskSignup = CreateTaskSignup(taskSignupId, taskId, email);
-            context.TaskSignups.Add(taskSignup);
+            var volunteerTaskSignup = CreateTaskSignup(volunteerTaskSignupId, volunteerTaskId, email);
+            context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             context.SaveChanges();
 
-            var target = new NotifyAdminForTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
+            var target = new NotifyAdminForVolunteerTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
             await target.Handle(notification);
 
             mediator.Verify(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
@@ -90,20 +90,20 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void NotPassANotifyVolunteersCommandToTheMediatorWhenCampaignContactIsNull()
         {
-            const int taskSignupId = 1001;
-            const int taskId = 12314;
+            const int volunteerTaskSignupId = 1001;
+            const int volunteerTaskId = 12314;
 
             var mediator = new Mock<IMediator>();
             var options = new Mock<IOptions<GeneralSettings>>();
 
-            var notification = new TaskSignupStatusChanged { SignupId = taskSignupId };
+            var notification = new VolunteerTaskSignupStatusChanged { SignupId = volunteerTaskSignupId };
 
             var context = Context;
-            var taskSignup = CreateTaskSignupWithoutCampaignContact(taskSignupId, taskId);
-            context.TaskSignups.Add(taskSignup);
+            var volunteerTaskSignup = CreateTaskSignupWithoutCampaignContact(volunteerTaskSignupId, volunteerTaskId);
+            context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             context.SaveChanges();
 
-            var target = new NotifyAdminForTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
+            var target = new NotifyAdminForVolunteerTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
             await target.Handle(notification);
 
             mediator.Verify(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
@@ -112,39 +112,39 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void NotPassANotifyVolunteersCommandToTheMediatorWhenCampaignContactsIsNull()
         {
-            const int taskSignupId = 1001;
-            const int taskId = 12314;
+            const int volunteerTaskSignupId = 1001;
+            const int volunteerTaskId = 12314;
 
             var mediator = new Mock<IMediator>();
             var options = new Mock<IOptions<GeneralSettings>>();
 
-            var notification = new TaskSignupStatusChanged { SignupId = taskSignupId };
+            var notification = new VolunteerTaskSignupStatusChanged { SignupId = volunteerTaskSignupId };
 
             var context = Context;
-            var taskSignup = CreateTaskSignupWithoutCampaignContacts(taskSignupId, taskId);
-            context.TaskSignups.Add(taskSignup);
+            var volunteerTaskSignup = CreateTaskSignupWithoutCampaignContacts(volunteerTaskSignupId, volunteerTaskId);
+            context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             context.SaveChanges();
 
-            var target = new NotifyAdminForTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
+            var target = new NotifyAdminForVolunteerTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
             await target.Handle(notification);
 
             mediator.Verify(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
         }
 
-        private static TaskSignup CreateTaskSignup(int taskSignupId, int taskId , string email, string firstName = null, string lastName = null, string userMail = null)
+        private static VolunteerTaskSignup CreateTaskSignup(int volunteerTaskSignupId, int volunteerTaskId , string email, string firstName = null, string lastName = null, string userMail = null)
         {
-            var taskSignup = new TaskSignup
+            var volunteerTaskSignup = new VolunteerTaskSignup
             {
-                Id = taskSignupId,
+                Id = volunteerTaskSignupId,
                 User = new ApplicationUser
                 {
                     FirstName = firstName,
                     LastName = lastName,
                     Email = userMail
                 },
-                Task = new AllReadyTask
+                VolunteerTask = new VolunteerTask
                 {
-                    Id = taskId,
+                    Id = volunteerTaskId,
                     Event = new AllReady.Models.Event
                     {
                         Campaign = new Campaign
@@ -162,21 +162,21 @@ namespace AllReady.UnitTest.Features.Notifications
                 }
             };
 
-            return taskSignup;
+            return volunteerTaskSignup;
         }
 
-        private static TaskSignup CreateTaskSignupWithoutCampaignContact(int taskSignupId, int taskId, string firstName = null, string lastName = null, string userMail = null)
+        private static VolunteerTaskSignup CreateTaskSignupWithoutCampaignContact(int volunteerTaskSignupId, int volunteerTaskId, string firstName = null, string lastName = null, string userMail = null)
         {
-            var taskSignup = CreateTaskSignup(taskSignupId, taskId, null, firstName, lastName, userMail);
-            taskSignup.Task.Event.Campaign.CampaignContacts = new List<CampaignContact>();
-            return taskSignup;
+            var volunteerTaskSignup = CreateTaskSignup(volunteerTaskSignupId, volunteerTaskId, null, firstName, lastName, userMail);
+            volunteerTaskSignup.VolunteerTask.Event.Campaign.CampaignContacts = new List<CampaignContact>();
+            return volunteerTaskSignup;
         }
 
-        private static TaskSignup CreateTaskSignupWithoutCampaignContacts(int taskSignupId, int taskId, string firstName = null, string lastName = null, string userMail = null)
+        private static VolunteerTaskSignup CreateTaskSignupWithoutCampaignContacts(int volunteerTaskSignupId, int volunteerTaskId, string firstName = null, string lastName = null, string userMail = null)
         {
-            var taskSignup = CreateTaskSignup(taskSignupId, taskId, null, firstName, lastName, userMail);
-            taskSignup.Task.Event.Campaign = new Campaign();
-            return taskSignup;
+            var volunteerTaskSignup = CreateTaskSignup(volunteerTaskSignupId, volunteerTaskId, null, firstName, lastName, userMail);
+            volunteerTaskSignup.VolunteerTask.Event.Campaign = new Campaign();
+            return volunteerTaskSignup;
         }
     }
 }

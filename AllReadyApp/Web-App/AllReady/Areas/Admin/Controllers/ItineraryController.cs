@@ -201,7 +201,7 @@ namespace AllReady.Areas.Admin.Controllers
                 });
             }
 
-            var isSuccess = await _mediator.SendAsync(new AddTeamMemberCommand { ItineraryId = id, TaskSignupId = selectedTeamMember });
+            var isSuccess = await _mediator.SendAsync(new AddTeamMemberCommand { ItineraryId = id, VolunteerTaskSignupId = selectedTeamMember });
             if (!isSuccess)
             {
                 return Json(new
@@ -267,7 +267,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpGet]
         [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
-        public async Task<IActionResult> ConfirmRemoveTeamMember(int itineraryId, int taskSignupId)
+        public async Task<IActionResult> ConfirmRemoveTeamMember(int itineraryId, int volunteerTaskSignupId)
         {
             var orgId = await GetOrganizationIdBy(itineraryId);
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
@@ -275,7 +275,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var viewModel = await _mediator.SendAsync(new TaskSignupSummaryQuery { TaskSignupId = taskSignupId });
+            var viewModel = await _mediator.SendAsync(new VolunteerTaskSignupSummaryQuery { VolunteerTaskSignupId = volunteerTaskSignupId });
             if (viewModel == null)
             {
                 return NotFound();
@@ -291,14 +291,14 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
-        public async Task<IActionResult> RemoveTeamMember(TaskSignupSummaryViewModel viewModel)
+        public async Task<IActionResult> RemoveTeamMember(VolunteerTaskSignupSummaryViewModel viewModel)
         {
             if (!viewModel.UserIsOrgAdmin)
             {
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new RemoveTeamMemberCommand { TaskSignupId = viewModel.TaskSignupId });
+            await _mediator.SendAsync(new RemoveTeamMemberCommand { VolunteerTaskSignupId = viewModel.VolunteerTaskSignupId });
 
             return RedirectToAction(nameof(Details), new { id = viewModel.ItineraryId });
         }

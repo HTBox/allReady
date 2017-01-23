@@ -4,7 +4,7 @@ namespace AllReady.Areas.Admin.ViewModels.Task
 {
     public class MessageTaskVolunteersViewModel
     {
-        public int TaskId { get; set; }
+        public int VolunteerTaskId { get; set; }
 
         [Required]
         public string Subject { get; set; }

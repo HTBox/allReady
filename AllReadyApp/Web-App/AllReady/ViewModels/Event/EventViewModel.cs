@@ -44,11 +44,11 @@ namespace AllReady.ViewModels.Event
 
             ImageUrl = @event.ImageUrl;
 
-            Tasks = @event.Tasks != null
-                 ? new List<TaskViewModel>(@event.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
-                 : new List<TaskViewModel>();
+            Tasks = @event.VolunteerTasks!= null
+                 ? new List<VolunteerTaskViewModel>(@event.VolunteerTasks.Select(data => new VolunteerTaskViewModel(data)).OrderBy(task => task.StartDateTime))
+                 : new List<VolunteerTaskViewModel>();
 
-            SignupModel = new Shared.TaskSignupViewModel();
+            SignupModel = new Shared.VolunteerTaskSignupViewModel();
 
             //mgmccarthy: this check doesn't make much sense unless you explicitly set @event.RequiredSkills to null. If you look at the Event model, you'll see that RequireSkills is instaniated with
             //a new empty list: "public List<EventSkill> RequiredSkills { get; set; } = new List<EventSkill>();". I think this can go away?
@@ -72,12 +72,12 @@ namespace AllReady.ViewModels.Event
         public DateTimeOffset StartDateTime { get; set; }
         public DateTimeOffset EndDateTime { get; set; }
         public LocationViewModel Location { get; set; }
-        public List<TaskViewModel> Tasks { get; set; } = new List<TaskViewModel>();
-        public List<TaskViewModel> UserTasks { get; set; } = new List<TaskViewModel>();
+        public List<VolunteerTaskViewModel> Tasks { get; set; } = new List<VolunteerTaskViewModel>();
+        public List<VolunteerTaskViewModel> UserTasks { get; set; } = new List<VolunteerTaskViewModel>();
         public string UserId { get; set; }
         public List<SkillViewModel> RequiredSkills { get; set; }
         public List<SkillViewModel> UserSkills { get; set; }
-        public Shared.TaskSignupViewModel SignupModel { get; set; }
+        public Shared.VolunteerTaskSignupViewModel SignupModel { get; set; }
         public bool IsClosed { get; set; }
         public bool HasPrivacyPolicy { get; set; }
         public bool IsLimitVolunteers { get; set; } = true;

@@ -36,12 +36,12 @@ namespace AllReady.Areas.Admin.Features.Events
                 campaignEvent.IsAllowWaitList = message.Event.IsAllowWaitList;
                 campaignEvent.IsLimitVolunteers = message.Event.IsLimitVolunteers;
                 
-                // cascade values to all tasks associated with this event
-                foreach (var task in campaignEvent.Tasks)
+                // cascade values to all volunteerTasks associated with this event
+                foreach (var volunteerTask in campaignEvent.VolunteerTasks)
                 {
-                    task.IsLimitVolunteers = campaignEvent.IsLimitVolunteers;
-                    task.IsAllowWaitList = campaignEvent.IsAllowWaitList;
-                    _context.Update(task);
+                    volunteerTask.IsLimitVolunteers = campaignEvent.IsLimitVolunteers;
+                    volunteerTask.IsAllowWaitList = campaignEvent.IsAllowWaitList;
+                    _context.Update(volunteerTask);
                 }
             }
 
@@ -75,7 +75,7 @@ namespace AllReady.Areas.Admin.Features.Events
         {
             return await _context.Events
                 .Include(a => a.RequiredSkills)
-                .Include(a => a.Tasks)
+                .Include(a => a.VolunteerTasks)
                 .SingleOrDefaultAsync(c => c.Id == message.Event.Id);
         }
     }

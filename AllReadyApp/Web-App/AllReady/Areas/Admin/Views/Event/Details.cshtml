@@ -63,7 +63,7 @@
 <div class="row">
     <div class="col-md-12">
         <h3>Volunteer Summary</h3>
-        <p>@Model.VolunteersRequired @(Model.VolunteersRequired == 1 ? "volunteer is" : "volunteers are") required across @Model.TaskCount @(Model.TaskCount == 1 ? "task" : "tasks").</p>
+        <p>@Model.VolunteersRequired @(Model.VolunteersRequired == 1 ? "volunteer is" : "volunteers are") required across @Model.VolunteerTaskCount @(Model.VolunteerTaskCount == 1 ? "task" : "tasks").</p>
         <p>@Model.AcceptedVolunteers @(Model.AcceptedVolunteers == 1 ? "volunteer is" : "volunteers are") currently assigned and accepted. This event's volunteer requirement is @Model.VolunteerFulfilmentPercentage% fulfilled.</p>
     </div>
 </div>
@@ -115,7 +115,7 @@
     </div>
 </div>
 
-@Html.Partial("~/Areas/Admin/Views/Task/_List.cshtml", Model.Tasks)
+@Html.Partial("~/Areas/Admin/Views/Task/_List.cshtml", Model.VolunteerTasks)
 
 @if (Model.IsItineraryEvent)
 {

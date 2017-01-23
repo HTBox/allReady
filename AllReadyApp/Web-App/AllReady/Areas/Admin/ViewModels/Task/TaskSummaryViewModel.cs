@@ -40,7 +40,7 @@ namespace AllReady.Areas.Admin.ViewModels.Task
         [Display(Name = "End date")]
         public DateTimeOffset EndDateTime { get; set; }
 
-        public bool IsUserSignedUpForTask { get; set; }
+        public bool IsUserSignedUpForVolunteerTask { get; set; }
 
         [Display(Name = "Volunteers Required")]
         [Range(1, int.MaxValue, ErrorMessage = "'Volunteers Required' must be greater than 0")]
@@ -48,7 +48,7 @@ namespace AllReady.Areas.Admin.ViewModels.Task
 
         public List<VolunteerViewModel> AssignedVolunteers { get; set; } = new List<VolunteerViewModel>();
 
-        public List<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();
+        public List<VolunteerTaskSkill> RequiredSkills { get; set; } = new List<VolunteerTaskSkill>();
 
         public int AcceptedVolunteerCount => AssignedVolunteers?.Count(v => v.HasVolunteered) ?? 0;
 
