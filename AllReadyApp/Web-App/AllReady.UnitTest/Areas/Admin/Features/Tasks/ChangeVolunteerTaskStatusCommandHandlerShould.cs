@@ -12,16 +12,16 @@ using Shouldly;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
-    public class ChangeTaskStatusCommandHandlerShould : InMemoryContextTest
+    public class ChangeVolunteerTaskStatusCommandHandlerShould : InMemoryContextTest
     {
         private readonly Mock<IMediator> mediator;
-        private readonly ChangeTaskStatusCommandHandler commandHandler;
+        private readonly ChangeVolunteerTaskStatusCommandHandler commandHandler;
         private readonly DateTime dateTimeUtcNow = DateTime.UtcNow;
 
-        public ChangeTaskStatusCommandHandlerShould()
+        public ChangeVolunteerTaskStatusCommandHandlerShould()
         {
             mediator = new Mock<IMediator>();
-            commandHandler = new ChangeTaskStatusCommandHandler(Context, mediator.Object) { DateTimeUtcNow = () => dateTimeUtcNow };
+            commandHandler = new ChangeVolunteerTaskStatusCommandHandler(Context, mediator.Object) { DateTimeUtcNow = () => dateTimeUtcNow };
         }
 
         protected override void LoadTestData()
@@ -89,12 +89,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             await Context.SaveChangesAsync();
         }
 
-        protected ChangeTaskStatusCommand CreateCommand(VolunteerTaskStatus status, string description = "")
+        protected ChangeVolunteerTaskStatusCommand CreateCommand(VolunteerTaskStatus status, string description = "")
         {
             var user = Context.Users.First();
             var@task = Context.Tasks.First();
 
-            return new ChangeTaskStatusCommand
+            return new ChangeVolunteerTaskStatusCommand
             {
                 UserId = user.Id,
                 TaskId =@task.Id,
@@ -108,7 +108,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var@task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new ChangeTaskStatusCommand
+            var command = new ChangeVolunteerTaskStatusCommand
             {
                 TaskId =@task.Id,
                 UserId = user.Id,
@@ -130,7 +130,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var@task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new ChangeTaskStatusCommand
+            var command = new ChangeVolunteerTaskStatusCommand
             {
                 TaskId =@task.Id,
                 UserId = user.Id,
@@ -156,7 +156,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var@task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new ChangeTaskStatusCommand
+            var command = new ChangeVolunteerTaskStatusCommand
             {
                 TaskId =@task.Id,
                 UserId = user.Id,
@@ -183,7 +183,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var@task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new ChangeTaskStatusCommand
+            var command = new ChangeVolunteerTaskStatusCommand
             {
                 TaskId =@task.Id,
                 UserId = user.Id,
@@ -222,7 +222,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var @task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new ChangeTaskStatusCommand
+            var command = new ChangeVolunteerTaskStatusCommand
             {
                 TaskId = @task.Id,
                 UserId = user.Id,
@@ -280,7 +280,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var @task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new ChangeTaskStatusCommand
+            var command = new ChangeVolunteerTaskStatusCommand
             {
                 TaskId = @task.Id,
                 UserId = user.Id,
@@ -302,7 +302,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var @task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new ChangeTaskStatusCommand
+            var command = new ChangeVolunteerTaskStatusCommand
             {
                 TaskId = @task.Id,
                 UserId = user.Id,
@@ -354,7 +354,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var @task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new ChangeTaskStatusCommand
+            var command = new ChangeVolunteerTaskStatusCommand
             {
                 TaskId = @task.Id,
                 UserId = user.Id,
@@ -376,7 +376,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var user = Context.Users.First();
             var @task = Context.Tasks.First();
-            var command = new ChangeTaskStatusCommand
+            var command = new ChangeVolunteerTaskStatusCommand
             {
                 TaskId = @task.Id,
                 UserId = user.Id,

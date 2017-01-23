@@ -9,22 +9,22 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class AssignTaskCommandHandler : AsyncRequestHandler<AssignTaskCommand>
+    public class AssignVolunteerTaskCommandHandler : AsyncRequestHandler<AssignVolunteerTaskCommand>
     {
         private readonly AllReadyContext _context;
         private readonly IMediator _mediator;
         public Func<DateTime> 
             DateTimeUtcNow = () => DateTime.UtcNow;
 
-        public AssignTaskCommandHandler(AllReadyContext context, IMediator mediator)
+        public AssignVolunteerTaskCommandHandler(AllReadyContext context, IMediator mediator)
         {
             _context = context;
             _mediator = mediator;
         }
 
-        protected override async Task HandleCore(AssignTaskCommand message)
+        protected override async Task HandleCore(AssignVolunteerTaskCommand message)
         {
-            var @task = await _context.Tasks.SingleAsync(c => c.Id == message.TaskId);
+            var @task = await _context.Tasks.SingleAsync(c => c.Id == message.VolunteerTaskId);
 
             var taskSignups = new List<VolunteerTaskSignup>();
 
@@ -56,7 +56,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             await _mediator.PublishAsync(new TaskAssignedToVolunteersNotification
             {
-                TaskId = message.TaskId,
+                TaskId = message.VolunteerTaskId,
                 NewlyAssignedVolunteers = taskSignups.Select(x => x.User.Id).ToList()
             });
         }        

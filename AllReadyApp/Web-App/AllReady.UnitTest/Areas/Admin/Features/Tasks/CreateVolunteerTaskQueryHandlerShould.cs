@@ -7,13 +7,13 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
-    public class CreateTaskQueryHandlerShould : InMemoryContextTest
+    public class CreateVolunteerTaskQueryHandlerShould : InMemoryContextTest
     {
         private readonly Event @event;
-        private readonly CreateTaskQuery message;
-        private readonly CreateTaskQueryHandler sut;
+        private readonly CreateVolunteerTaskQuery message;
+        private readonly CreateVolunteerTaskQueryHandler sut;
 
-        public CreateTaskQueryHandlerShould()
+        public CreateVolunteerTaskQueryHandlerShould()
         {
             @event = new Event
             {
@@ -28,8 +28,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Add(@event);
             Context.SaveChanges();
 
-            message = new CreateTaskQuery { EventId = @event.Id };
-            sut = new CreateTaskQueryHandler(Context);
+            message = new CreateVolunteerTaskQuery { EventId = @event.Id };
+            sut = new CreateVolunteerTaskQueryHandler(Context);
         }
 
         [Fact]

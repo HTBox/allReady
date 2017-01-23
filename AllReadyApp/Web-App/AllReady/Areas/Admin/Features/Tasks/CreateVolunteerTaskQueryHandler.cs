@@ -7,16 +7,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class CreateTaskQueryHandler : IAsyncRequestHandler<CreateTaskQuery, EditViewModel>
+    public class CreateVolunteerTaskQueryHandler : IAsyncRequestHandler<CreateVolunteerTaskQuery, EditViewModel>
     {
         private readonly AllReadyContext context;
 
-        public CreateTaskQueryHandler(AllReadyContext context)
+        public CreateVolunteerTaskQueryHandler(AllReadyContext context)
         {
             this.context = context;
         }
 
-        public async Task<EditViewModel> Handle(CreateTaskQuery message)
+        public async Task<EditViewModel> Handle(CreateVolunteerTaskQuery message)
         {
             return await context.Events.AsNoTracking()
                 .Include(e => e.Location)

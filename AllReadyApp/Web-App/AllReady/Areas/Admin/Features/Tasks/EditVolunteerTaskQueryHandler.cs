@@ -7,16 +7,16 @@ using System.Linq;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class EditTaskQueryHandler : IAsyncRequestHandler<EditTaskQuery, EditViewModel>
+    public class EditVolunteerTaskQueryHandler : IAsyncRequestHandler<EditVolunteerTaskQuery, EditViewModel>
     {
         private AllReadyContext _context;
 
-        public EditTaskQueryHandler(AllReadyContext context)
+        public EditVolunteerTaskQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<EditViewModel> Handle(EditTaskQuery message)
+        public async Task<EditViewModel> Handle(EditVolunteerTaskQuery message)
         {
             return await _context.Tasks.AsNoTracking()
                 .Include(t => t.Event).ThenInclude(a => a.Campaign)

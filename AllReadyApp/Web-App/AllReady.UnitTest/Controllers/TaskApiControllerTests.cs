@@ -575,12 +575,12 @@ namespace AllReady.UnitTest.Controllers
             var model = new TaskChangeModel { TaskId = 1, UserId = "1", Status = VolunteerTaskStatus.Accepted, StatusDescription = "statusDescription" };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ChangeTaskStatusCommand>())).ReturnsAsync(new TaskChangeResult());
+            mediator.Setup(x => x.SendAsync(It.IsAny<ChangeVolunteerTaskStatusCommand>())).ReturnsAsync(new VolunteerTaskChangeResult());
 
             var sut = new TaskApiController(mediator.Object, null, null);
             await sut.ChangeStatus(model);
 
-            mediator.Verify(x => x.SendAsync(It.Is<ChangeTaskStatusCommand>(y => y.TaskId == model.TaskId && 
+            mediator.Verify(x => x.SendAsync(It.Is<ChangeVolunteerTaskStatusCommand>(y => y.TaskId == model.TaskId && 
                 y.TaskStatus == model.Status && 
                 y.TaskStatusDescription == model.StatusDescription && 
                 y.UserId == model.UserId)));
@@ -592,7 +592,7 @@ namespace AllReady.UnitTest.Controllers
             const string status = "status";
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ChangeTaskStatusCommand>())).ReturnsAsync(new TaskChangeResult { Status = status });
+            mediator.Setup(x => x.SendAsync(It.IsAny<ChangeVolunteerTaskStatusCommand>())).ReturnsAsync(new VolunteerTaskChangeResult { Status = status });
 
             var sut = new TaskApiController(mediator.Object, null, null);
             sut.SetDefaultHttpContext();
@@ -609,7 +609,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task ChangeStatusReturnsNullForTaskWhenResultTaskIsNull()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ChangeTaskStatusCommand>())).ReturnsAsync(new TaskChangeResult { Status = "status" });
+            mediator.Setup(x => x.SendAsync(It.IsAny<ChangeVolunteerTaskStatusCommand>())).ReturnsAsync(new VolunteerTaskChangeResult { Status = "status" });
 
             var sut = new TaskApiController(mediator.Object, null, null);
             sut.SetDefaultHttpContext();
@@ -625,7 +625,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task ChangeStatusReturnsTaskViewModelWhenResultTaskIsNotNull()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ChangeTaskStatusCommand>())).ReturnsAsync(new TaskChangeResult { Task = new VolunteerTask() });
+            mediator.Setup(x => x.SendAsync(It.IsAny<ChangeVolunteerTaskStatusCommand>())).ReturnsAsync(new VolunteerTaskChangeResult { Task = new VolunteerTask() });
 
             var sut = new TaskApiController(mediator.Object, null, null);
             sut.SetDefaultHttpContext();

@@ -3,8 +3,8 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class CreateTaskQuery : IAsyncRequest<EditViewModel>
+    public class EditVolunteerTaskQuery : IAsyncRequest<EditViewModel>
     {
-        public int EventId { get; set; }
+        public int TaskId { get; set; }
     }
 }

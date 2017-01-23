@@ -78,13 +78,13 @@ namespace AllReady.UnitTest.Tasks
 
             var @task = Context.Tasks.First();
             var user = Context.Users.First();
-            var command = new ChangeTaskStatusCommand
+            var command = new ChangeVolunteerTaskStatusCommand
             {
                 TaskId = @task.Id,
                 UserId = user.Id,
                 TaskStatus = VolunteerTaskStatus.Accepted
             };
-            var handler = new ChangeTaskStatusCommandHandler(Context, mediator.Object);
+            var handler = new ChangeVolunteerTaskStatusCommandHandler(Context, mediator.Object);
             await handler.Handle(command);
 
             var taskSignup = Context.TaskSignups.First();

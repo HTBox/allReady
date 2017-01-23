@@ -8,13 +8,13 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
-    public class EditTaskQueryHandlerShould : InMemoryContextTest
+    public class EditVolunteerTaskQueryHandlerShould : InMemoryContextTest
     {
-        private readonly EditTaskQuery message;
-        private readonly EditTaskQueryHandler sut;
+        private readonly EditVolunteerTaskQuery message;
+        private readonly EditVolunteerTaskQueryHandler sut;
         private readonly VolunteerTask task;
 
-        public EditTaskQueryHandlerShould()
+        public EditVolunteerTaskQueryHandlerShould()
         {
             task = new VolunteerTask
             {
@@ -45,8 +45,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Tasks.Add(task);
             Context.SaveChanges();
 
-            message = new EditTaskQuery { TaskId = task.Id };
-            sut = new EditTaskQueryHandler(Context);
+            message = new EditVolunteerTaskQuery { TaskId = task.Id };
+            sut = new EditVolunteerTaskQueryHandler(Context);
 
         }
 

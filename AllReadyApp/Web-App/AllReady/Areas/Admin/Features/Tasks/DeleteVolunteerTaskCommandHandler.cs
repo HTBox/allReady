@@ -5,16 +5,16 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class DeleteTaskCommandHandler : AsyncRequestHandler<DeleteTaskCommand>
+    public class DeleteVolunteerTaskCommandHandler : AsyncRequestHandler<DeleteVolunteerTaskCommand>
     {
         private AllReadyContext _context;
 
-        public DeleteTaskCommandHandler(AllReadyContext context)
+        public DeleteVolunteerTaskCommandHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        protected override async Task HandleCore(DeleteTaskCommand message)
+        protected override async Task HandleCore(DeleteVolunteerTaskCommand message)
         {
             var @task = _context.Tasks.SingleOrDefault(c => c.Id == message.TaskId);
 

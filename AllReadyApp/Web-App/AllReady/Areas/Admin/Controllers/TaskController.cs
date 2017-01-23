@@ -42,7 +42,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Task/Create/{eventId}")]
         public async Task<IActionResult> Create(int eventId)
         {
-            var viewModel = await _mediator.SendAsync(new CreateTaskQuery { EventId = eventId });
+            var viewModel = await _mediator.SendAsync(new CreateVolunteerTaskQuery { EventId = eventId });
             if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return Unauthorized();
@@ -59,7 +59,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Task/Edit/{id}")]
         public async Task<IActionResult> Edit(int id)
         {
-            var viewModel = await _mediator.SendAsync(new EditTaskQuery { TaskId = id });
+            var viewModel = await _mediator.SendAsync(new EditVolunteerTaskQuery { TaskId = id });
             if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return Unauthorized();
@@ -85,7 +85,7 @@ namespace AllReady.Areas.Admin.Controllers
                     return Unauthorized();
                 }
 
-                var taskId = await _mediator.SendAsync(new EditTaskCommand { Task = viewModel });
+                var taskId = await _mediator.SendAsync(new EditVolunteerTaskCommand { Task = viewModel });
 
                 return viewModel.Id == 0 ?
                     RedirectToAction(nameof(EventController.Details), "Event", new { id = viewModel.EventId }) :
@@ -119,7 +119,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new DeleteTaskCommand { TaskId = viewModel.Id });
+            await _mediator.SendAsync(new DeleteVolunteerTaskCommand { TaskId = viewModel.Id });
 
             return RedirectToAction(nameof(EventController.Details), "Event", new { id = viewModel.EventId });
         }
@@ -134,7 +134,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new AssignTaskCommand { TaskId = id, UserIds = userIds });
+            await _mediator.SendAsync(new AssignVolunteerTaskCommand { VolunteerTaskId = id, UserIds = userIds });
 
             return RedirectToRoute(new { controller = "Task", Area = "Admin", action = nameof(Details), id });
         }

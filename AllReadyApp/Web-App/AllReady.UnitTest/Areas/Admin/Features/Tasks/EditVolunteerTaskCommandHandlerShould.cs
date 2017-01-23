@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
-    public class EditTaskCommandHandlerShould : InMemoryContextTest
+    public class EditVolunteerTaskCommandHandlerShould : InMemoryContextTest
     {
         [Fact]
         public async Task CreateNewTaskSuccessfully()
@@ -17,7 +17,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             var @event = new Event { Id = 1, IsLimitVolunteers = true, IsAllowWaitList = false };
             var organization = new Organization { Id = 2 };
 
-            var message = new EditTaskCommand
+            var message = new EditVolunteerTaskCommand
             {
                 Task = new EditViewModel
                 {
@@ -36,7 +36,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Organizations.Add(organization);
             Context.SaveChanges();
 
-            var sut = new EditTaskCommandHandler(Context);
+            var sut = new EditVolunteerTaskCommandHandler(Context);
             var taskId = await sut.Handle(message);
             var result = Context.Tasks.Single(x => x.Id == taskId);
 
@@ -73,7 +73,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Tasks.Add(@task);
             Context.SaveChanges();
 
-            var message = new EditTaskCommand
+            var message = new EditVolunteerTaskCommand
             {
                 Task = new EditViewModel
                 {
@@ -90,7 +90,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 }
             };
 
-            var sut = new EditTaskCommandHandler(Context);
+            var sut = new EditVolunteerTaskCommandHandler(Context);
             var taskId = await sut.Handle(message);
             var result = Context.Tasks.Single(x => x.Id == taskId);
 

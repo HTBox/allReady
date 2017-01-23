@@ -7,16 +7,16 @@ using AllReady.Extensions;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class EditTaskCommandHandler : IAsyncRequestHandler<EditTaskCommand, int>
+    public class EditVolunteerTaskCommandHandler : IAsyncRequestHandler<EditVolunteerTaskCommand, int>
     {
         private readonly AllReadyContext _context;
 
-        public EditTaskCommandHandler(AllReadyContext context)
+        public EditVolunteerTaskCommandHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<int> Handle(EditTaskCommand message)
+        public async Task<int> Handle(EditVolunteerTaskCommand message)
         {
             var @task = await _context.Tasks.Include(t => t.RequiredSkills).SingleOrDefaultAsync(t => t.Id == message.Task.Id) ?? new VolunteerTask();
 

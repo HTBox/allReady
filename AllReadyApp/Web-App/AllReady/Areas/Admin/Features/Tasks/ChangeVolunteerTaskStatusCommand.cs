@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class ChangeTaskStatusCommand : IAsyncRequest<TaskChangeResult>
+    public class ChangeVolunteerTaskStatusCommand : IAsyncRequest<VolunteerTaskChangeResult>
     {
         public int TaskId { get; set; }
         public string UserId { get; set; }
