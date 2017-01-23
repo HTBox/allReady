@@ -12,7 +12,7 @@ namespace AllReady.Areas.Admin.Features.Requests
     {
         private readonly AllReadyContext _context;
 
-        public RequestListItemsQueryHandler(AllReadyContext context, IMediator mediator)
+        public RequestListItemsQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
@@ -44,12 +44,12 @@ namespace AllReady.Areas.Admin.Features.Requests
 
             if (message.Criteria.ItineraryId.HasValue)
             {
-                results = results.Where(r => r.Itineraries.Any(i => i.ItineraryId == message.Criteria.ItineraryId.Value));
+                results = results.Where(r => r.ItineraryId == message.Criteria.ItineraryId.Value);
             }
 
             if (message.Criteria.Status.HasValue)
             {
-                results = results.Where(r => r.Status == message.Criteria.Status); ;
+                results = results.Where(r => r.Status == message.Criteria.Status);
             }
 
             if (!string.IsNullOrEmpty(message.Criteria.Keywords))
@@ -59,6 +59,11 @@ namespace AllReady.Areas.Admin.Features.Requests
                             r.Address.Contains(message.Criteria.Keywords) ||
                             r.City.Contains(message.Criteria.Keywords) || 
                             r.Name.Contains(message.Criteria.Keywords));
+            }
+
+            if (message.Criteria.OrganizationId.HasValue)
+            {
+                results = results.Where(r => r.OrganizationId == message.Criteria.OrganizationId);
             }
 
             // todo: sgordon: date added filtering
@@ -73,7 +78,7 @@ namespace AllReady.Areas.Admin.Features.Requests
                 City = r.City,
                 Postcode = r.Zip,
                 Status = r.Status,
-                DateAdded = r.DateAdded
+                DateAdded = r.DateAdded,
             }).ToListAsync();
         }
     }

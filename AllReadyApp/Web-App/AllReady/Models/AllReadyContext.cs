@@ -75,6 +75,7 @@ namespace AllReady.Models
         {
             builder.HasKey(x => x.RequestId);
             builder.HasOne(r => r.Organization).WithMany(o => o.Requests).HasForeignKey(r => r.OrganizationId);
+            builder.HasOne(r => r.Itinerary);
         }
 
         private void Map(EntityTypeBuilder<CampaignImpact> builder)
@@ -210,6 +211,7 @@ namespace AllReady.Models
         public void Map(EntityTypeBuilder<ItineraryRequest> builder)
         {
             builder.HasKey(x => new { x.ItineraryId, x.RequestId });
+            builder.HasIndex(x => x.RequestId).IsUnique();
         }
 
         public void Map(EntityTypeBuilder<FileAttachment> builder)

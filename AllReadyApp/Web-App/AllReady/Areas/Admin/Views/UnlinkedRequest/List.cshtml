@@ -1,0 +1,42 @@
+@model IEnumerable<AllReady.Areas.Admin.ViewModels.UnlinkedRequests.UnlinkedRequestViewModel>
+
+@{ ViewBag.Title = "Unlinked Requests"; }
+<div class="row">
+    <div class="col-md-12">
+        <h2>
+            Unlinked Requests
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        @if (Model.Any())
+            {
+            <table class="table">
+                <tr>
+                    <th>Request Name</th>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>Postcode</th>
+                    <th>Date Added</th>
+                </tr>
+                @foreach (var req in Model)
+                {
+                    <tr>
+                        <td>@req.Name</td>
+                        <td>@req.Address</td>
+                        <td>@req.City</td>
+                        <td>@req.Zip</td>
+                        <td>@req.DateAdded</td>
+                    </tr>
+                }
+            </table>
+        }
+        else
+        {
+            <br />
+                <p>There are no requests to display</p>
+        }
+    </div>
+</div>

@@ -1,14 +1,15 @@
 ﻿using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Models;
-using AllReady.Providers;
 using Moq;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 using System.Linq;
-using Geocoding;
-using System.Collections.Generic;
+using AllReady.Services.Mapping;
+using AllReady.Services.Mapping.GeoCoding;
+using AllReady.Services.Mapping.GeoCoding.Models;
+using Shouldly;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Requests
 {
@@ -17,6 +18,29 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         private Request _existingRequest;
         protected override void LoadTestData()
         {
+            var org = new Organization
+            {
+                Id = 1,
+                Name = "testOrg",
+            };
+
+            Context.Organizations.Add(org);
+
+            var campaign = new Campaign
+            {
+                ManagingOrganization = org
+            };
+
+            Context.Campaigns.Add(campaign);
+
+            var @event = new Event
+            {
+                Id = 1,
+                Campaign = campaign
+            };
+
+            Context.Events.Add(@event);
+
             _existingRequest = new Request
             {
                 Address = "1234 Nowhereville",
@@ -63,7 +87,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         [Fact]
         public async Task NotUpdateGeocodeIfAddressDidntChangeWhenUpdatingExistingRequest()
         {
-            var mockGeocoder = new Mock<IGeocoder>();
+            var mockGeocoder = new Mock<IGeocodeService>();
 
             var handler = new EditRequestCommandHandler(Context, mockGeocoder.Object);
             await handler.Handle(new EditRequestCommand
@@ -71,17 +95,17 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
                 RequestModel = new EditRequestViewModel { Id = _existingRequest.RequestId, Address = _existingRequest.Address, City = _existingRequest.City, State = _existingRequest.State, Zip = _existingRequest.Zip }
             });
 
-            mockGeocoder.Verify(x => x.Geocode(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+            mockGeocoder.Verify(x => x.GetCoordinatesFromAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
         public async Task UpdateGeocodeWhenAddressChangedWhenUpdatingExistingRequest()
         {
-            var mockGeocoder = new Mock<IGeocoder>();
+            var mockGeocoder = new Mock<IGeocodeService>();
             string changedAddress = "4444 Changed Address Ln";
 
             // Because the Geocode method takes a set of strings as arguments, actually verify the arguments are passed in to the mock in the correct order.
-            mockGeocoder.Setup(g => g.Geocode(changedAddress, _existingRequest.City, _existingRequest.State, _existingRequest.Zip, It.IsAny<string>())).Returns(new List<Address>());
+            mockGeocoder.Setup(g => g.GetCoordinatesFromAddress(changedAddress, _existingRequest.City, _existingRequest.State, _existingRequest.Zip, It.IsAny<string>())).ReturnsAsync(new Coordinates(0,0));
 
             var handler = new EditRequestCommandHandler(Context, mockGeocoder.Object);
             await handler.Handle(new EditRequestCommand
@@ -89,7 +113,18 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
                 RequestModel = new EditRequestViewModel { Id = _existingRequest.RequestId, Address = changedAddress, City = _existingRequest.City, State = _existingRequest.State, Zip = _existingRequest.Zip }
             });
 
-            mockGeocoder.Verify(x => x.Geocode(changedAddress, _existingRequest.City, _existingRequest.State, _existingRequest.Zip, It.IsAny<string>()), Times.Once);
+            mockGeocoder.Verify(x => x.GetCoordinatesFromAddress(changedAddress, _existingRequest.City, _existingRequest.State, _existingRequest.Zip, It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task SetCorrectOrganizationId()
+        {
+            var handler = new EditRequestCommandHandler(Context, new NullObjectGeocoder());
+            var requestId = await handler.Handle(new EditRequestCommand { RequestModel = new EditRequestViewModel { EventId = 1 } });
+
+            var request = Context.Requests.FirstOrDefault(x => x.RequestId == requestId);
+
+            request.OrganizationId.ShouldBe(1);
         }
     }
 }

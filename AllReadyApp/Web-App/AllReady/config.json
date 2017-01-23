@@ -19,18 +19,14 @@
   },
   "GetASmokeAlarmApiSettings": {
     "BaseAddress": "https://demo.getasmokealarm.org/",
-    "Token": "[getasmokealarmapisettingstoken]",
-    "RetryAttempts": 5
+    "Token": "[getasmokealarmapisettingstoken]"
   },
   "ApplicationInsights": {
     "InstrumentationKey": "[instrumentationkey]"
   },
-  "Geocoding": {
-    "EnableGoogleGeocodingService": "false",
-    "GoogleGeocodingApiKey": "[geocodingapikey]"
-  },
   "Mapping": {
-    "GoogleDirectionsApiKey": "[directionsapikey]"
+    "EnableGoogleGeocodingService": "false",
+    "GoogleMapsApiKey": "[googlemapsapikey]"
   },
   "Data": {
     "DefaultConnection": {
@@ -54,9 +50,7 @@
     },
     "Twitter": {
       "ConsumerKey": "[twitterconsumerkey]",
-      "ConsumerSecret": "[twitterconsumersecret]",
-      "OAuthToken": "[twitteroauthtoken]",
-      "OAuthSecret": "[twitteroauthsecret]"
+      "ConsumerSecret": "[twitterconsumersecret]"
     },
     "MicrosoftAccount": {
       "ClientId": "[microsoftclientid]",
@@ -72,9 +66,23 @@
       "FromEmail": "[sendgridemailsender]"
     },
     "Twilio": {
+      "EnableTwilio": "false",
       "Sid": "[twiliosid]",
       "Token": "[twiliotoken]",
       "PhoneNo": "[twilionumber]"
     }
-  }
+  },  
+    "ApprovedRegions": {
+      "Enabled": true,
+      "Regions": ["IDMT",
+        "NDSD",
+        "KSNE",
+        "MINN",
+        "IOWA",
+        "WEMO",
+        "EAMO",
+        "WISC",
+        "CHNI",
+        "CSIL"]
+  } 
 }

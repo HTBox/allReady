@@ -13,7 +13,7 @@ namespace AllReady.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.1")
+                .HasAnnotation("ProductVersion", "1.0.2")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("AllReady.Models.AllReadyTask", b =>
@@ -368,7 +368,8 @@ namespace AllReady.Migrations
 
                     b.HasIndex("ItineraryId");
 
-                    b.HasIndex("RequestId");
+                    b.HasIndex("RequestId")
+                        .IsUnique();
 
                     b.ToTable("ItineraryRequest");
                 });
@@ -489,6 +490,8 @@ namespace AllReady.Migrations
 
                     b.Property<int?>("EventId");
 
+                    b.Property<int?>("ItineraryId");
+
                     b.Property<double>("Latitude");
 
                     b.Property<double>("Longitude");
@@ -576,7 +579,7 @@ namespace AllReady.Migrations
 
                     b.Property<int?>("ItineraryId");
 
-                    b.Property<string>("Status");
+                    b.Property<int>("Status");
 
                     b.Property<DateTime>("StatusDateTimeUtc");
 
@@ -854,8 +857,8 @@ namespace AllReady.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("AllReady.Models.Request", "Request")
-                        .WithMany()
-                        .HasForeignKey("RequestId")
+                        .WithOne("Itinerary")
+                        .HasForeignKey("AllReady.Models.ItineraryRequest", "RequestId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

@@ -63,10 +63,23 @@
 </pre>
 
 <form method="post" asp-action="Index" asp-controller="Import" asp-area="Admin" enctype="multipart/form-data">
+    @for (var i = 0; i < Model.Events.Count; i++)
+    {
+        @Html.HiddenFor(model => model.Events[i].Value)
+        @Html.HiddenFor(model => model.Events[i].Text)
+    }
+
+    Select an Event: 
+    <select asp-for="EventId" asp-items="@Model.Events" class="form-control">
+        <option value="0">-- Select --</option>
+    </select>
+
+    <p></p>
+
     <label class="btn btn-default btn-file">
         Browse <input type="file" name="file" style="display: none;" onchange="$('#upload-file-info').html($(this).val());">
     </label>
     <span class='label label-info label-lg' id="upload-file-info"></span>
-     
-    <p><input class="btn btn-success" type="submit" value="Upload" /></p>
+    <p></p>
+    <input class="btn btn-success" type="submit" value="Upload"/>
 </form>

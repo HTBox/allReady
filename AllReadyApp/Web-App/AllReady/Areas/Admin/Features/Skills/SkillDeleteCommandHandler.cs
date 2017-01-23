@@ -8,6 +8,7 @@ namespace AllReady.Areas.Admin.Features.Skills
     public class SkillDeleteCommandHandler : AsyncRequestHandler<SkillDeleteCommand>
     {
         private AllReadyContext _context;
+
         public SkillDeleteCommandHandler(AllReadyContext context)
         {
             _context = context;

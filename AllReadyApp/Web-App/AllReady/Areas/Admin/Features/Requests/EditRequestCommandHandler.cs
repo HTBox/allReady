@@ -3,18 +3,19 @@ using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Geocoding;
 using System.Linq;
 using AllReady.Extensions;
+using AllReady.Services.Mapping;
+using AllReady.Services.Mapping.GeoCoding;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {
     public class EditRequestCommandHandler : IAsyncRequestHandler<EditRequestCommand, Guid>
     {
         private readonly AllReadyContext _context;
-        private readonly IGeocoder _geocoder;
+        private readonly IGeocodeService _geocoder;
 
-        public EditRequestCommandHandler(AllReadyContext context, IGeocoder geocoder)
+        public EditRequestCommandHandler(AllReadyContext context, IGeocodeService geocoder)
         {
             _context = context;
             _geocoder = geocoder;
@@ -28,23 +29,29 @@ namespace AllReady.Areas.Admin.Features.Requests
 
             var addressChanged = DetermineIfAddressChanged(message, request);
 
+            var orgId = await _context.Events.AsNoTracking()
+             .Include(rec => rec.Campaign)
+             .Where(rec => rec.Id == message.RequestModel.EventId)
+             .Select(rec => rec.Campaign.ManagingOrganizationId)
+             .FirstOrDefaultAsync();
+            
             request.EventId = message.RequestModel.EventId;
+            request.OrganizationId = orgId;
             request.Address = message.RequestModel.Address;
             request.City = message.RequestModel.City;
             request.Name = message.RequestModel.Name;
             request.State = message.RequestModel.State;
             request.Zip = message.RequestModel.Zip;
             request.Email = message.RequestModel.Email;
-            request.Phone = message.RequestModel.Phone;
+            request.Phone = message.RequestModel.Phone;            
 
             //If lat/long not provided or we detect the address changed, then use geocoding API to get the lat/long
             if ((request.Latitude == 0 && request.Longitude == 0) || addressChanged)
             {
-                //Assume the first returned address is correct
-                var address = _geocoder.Geocode(request.Address, request.City, request.State, request.Zip, string.Empty)
-                    .FirstOrDefault();
-                request.Latitude = address?.Coordinates.Latitude ?? 0;
-                request.Longitude = address?.Coordinates.Longitude ?? 0;
+                var coordinates = await _geocoder.GetCoordinatesFromAddress(request.Address, request.City, request.State, request.Zip, string.Empty);
+
+                request.Latitude = coordinates?.Latitude ?? 0;
+                request.Longitude = coordinates?.Longitude ?? 0;
             }
 
             _context.AddOrUpdate(request);

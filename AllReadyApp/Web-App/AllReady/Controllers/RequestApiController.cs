@@ -6,12 +6,11 @@ using AllReady.Features.Requests;
 using AllReady.Hangfire.Jobs;
 using AllReady.ViewModels.Requests;
 using Hangfire;
+using AllReady.Features.Sms;
 
 namespace AllReady.Controllers
 {
-    //TODO mgmccarthy: use this route when token generation and TokenProtectedResource are sorted out
-    //[Route("api/request")]
-    [Route("api/requestapi")]
+    [Route("api/request")]
     [Produces("application/json")]
     public class RequestApiController : Controller
     {
@@ -38,15 +37,21 @@ namespace AllReady.Controllers
             {
                 return BadRequest();
             }
-
-            //TODO mgmccarthy: valiate the list of regions here for v1 launch that will allow us to determine if we can service the request or not
-            //this will be in the incoming field based on GASA's "assigned_rc_region" which is mapped to RequestApiViewModel.ProviderData on the incoming json request
-
+            
             //if we get here, the incoming request is already in our database with a matching ProviderId ("serial" field for getasmokealarm) and the request was sent with a status of "new"
             if (await mediator.SendAsync(new RequestExistsByProviderIdQuery { ProviderRequestId = viewModel.ProviderRequestId }))
             {
                 return BadRequest();
             }
+
+            // todo - stevejgordon - add code for converting country to country code
+            var validatePhoneNumberResult = await mediator.SendAsync(new ValidatePhoneNumberRequestCommand { PhoneNumber = viewModel.Phone, ValidateType = true });
+            if (!validatePhoneNumberResult.IsValid)
+            {
+                return BadRequest();
+            }
+
+            viewModel.Phone = validatePhoneNumberResult.PhoneNumberE164;
 
             //this returns control to the caller immediately so the client is not left locked while we figure out if we can service the request
             backgroundjobClient.Enqueue<IProcessApiRequests>(x => x.Process(viewModel));

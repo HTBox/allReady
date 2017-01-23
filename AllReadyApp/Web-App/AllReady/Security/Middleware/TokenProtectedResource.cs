@@ -10,8 +10,7 @@ namespace AllReady.Security.Middleware
     public static class TokenProtectedResourceExtensions
     {
         // extension method for easy wiring of middleware
-        public static IApplicationBuilder UseTokenProtection(
-            this IApplicationBuilder builder, TokenProtectedResourceOptions options)
+        public static IApplicationBuilder UseTokenProtection(this IApplicationBuilder builder, TokenProtectedResourceOptions options)
         {
             return builder.UseMiddleware<TokenProtectedResource>(options);
         }
@@ -43,7 +42,7 @@ namespace AllReady.Security.Middleware
                 var token = headers.FirstOrDefault(h => h.Key == "ApiToken").Value;
 
                 var user = await manager.FindByNameAsync(apiUser);
-                var authorized = await manager.VerifyUserTokenAsync(user, "Default", "api-request-injest", token);
+                var authorized = await manager.VerifyUserTokenAsync(user, "Default", TokenTypes.ApiKey, token);
 
                 if (!authorized)
                 {
@@ -54,6 +53,5 @@ namespace AllReady.Security.Middleware
 
             await _next(httpContext);
         }
-
     }
 }

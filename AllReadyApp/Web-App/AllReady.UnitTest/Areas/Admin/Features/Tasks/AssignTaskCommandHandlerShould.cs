@@ -8,7 +8,7 @@ using MediatR;
 using Moq;
 using Xunit;
 using System.Linq;
-using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
+using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
@@ -38,7 +38,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var taskSignup = Context.Tasks.Single(x => x.Id == @task.Id).AssignedVolunteers.Single();
             Assert.Equal(taskSignup.User.Id, newVolunteer.Id);
-            Assert.Equal(taskSignup.Status, TaskStatus.Assigned.ToString());
+            Assert.Equal(taskSignup.Status, TaskStatus.Assigned);
             Assert.Equal(taskSignup.StatusDateTimeUtc, dateTimeUtcNow);
         }
 

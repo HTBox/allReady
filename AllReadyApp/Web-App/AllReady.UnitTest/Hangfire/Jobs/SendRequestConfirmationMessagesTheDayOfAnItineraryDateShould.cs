@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using AllReady.Features.Requests;
 using AllReady.Hangfire.Jobs;
-using AllReady.Hangfire.MediatR;
 using AllReady.Models;
 using AllReady.Services;
 using MediatR;
@@ -105,7 +105,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         }
 
         [Fact]
-        public void SendSetRequstsToUnassignedCommandWithCorrectParameters_WhenRequestIdsMatchExistingRequests_AndThoseRequestsHaveAStatusOfPendingConfirmation_AndTodayIsNotTheSameDateAsTheItineraryDate()
+        public void PublishDayOfRequestConfirmationsSentWithCorrectParameters_WhenRequestIdsMatchExistingRequests_AndThoseRequestsHaveAStatusOfPendingConfirmation_AndTodayIsNotTheSameDateAsTheItineraryDate()
         {
             var dateTimeNow = DateTime.Today;
             var dateTimeNowUnspecified = DateTime.SpecifyKind(dateTimeNow, DateTimeKind.Unspecified);
@@ -129,7 +129,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             };
             sut.SendSms(requestIds, itinerary.Id);
 
-            mediator.Verify(x => x.Send(It.Is<SetRequestsToUnassignedCommand>(y => y.RequestIds.Contains(request.RequestId))));
+            mediator.Verify(x => x.Publish(It.Is<DayOfRequestConfirmationsSent>(y => y.RequestIds.Contains(request.RequestId))));
         }
     }
 }

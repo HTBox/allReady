@@ -15,8 +15,8 @@ namespace AllReady.Features.Tasks
 
         protected override async Task HandleCore(AddTaskCommand message)
         {
-            this.dataContext.Add(message.AllReadyTask);
-            await this.dataContext.SaveChangesAsync();
+            dataContext.Add(message.AllReadyTask);
+            await dataContext.SaveChangesAsync();
         }
     }
 }

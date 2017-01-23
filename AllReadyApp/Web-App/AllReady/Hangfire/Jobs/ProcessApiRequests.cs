@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Features.Requests;
 using AllReady.Models;
+using AllReady.Services.Mapping;
+using AllReady.Services.Mapping.GeoCoding;
 using AllReady.ViewModels.Requests;
-using Geocoding;
 using MediatR;
+using Microsoft.Extensions.Options;
 
 namespace AllReady.Hangfire.Jobs
 {
@@ -15,13 +18,15 @@ namespace AllReady.Hangfire.Jobs
 
         private readonly AllReadyContext context;
         private readonly IMediator mediator;
-        private readonly IGeocoder geocoder;
+        private readonly IGeocodeService geocoder;
+        private readonly ApprovedRegionsSettings approvedRegions;
 
-        public ProcessApiRequests(AllReadyContext context, IMediator mediator, IGeocoder geocoder)
+        public ProcessApiRequests(AllReadyContext context, IMediator mediator, IGeocodeService geocoder, IOptions<ApprovedRegionsSettings> approvedRegions)
         {
             this.context = context;
             this.mediator = mediator;
             this.geocoder = geocoder;
+            this.approvedRegions = approvedRegions.Value;
         }
 
         public void Process(RequestApiViewModel viewModel)
@@ -50,16 +55,27 @@ namespace AllReady.Hangfire.Jobs
                 };
 
                 //this is a web service call
-                var address = geocoder.Geocode(viewModel.Address, viewModel.City, viewModel.State, viewModel.Zip, string.Empty).FirstOrDefault();
-                request.Latitude = address?.Coordinates.Latitude ?? 0;
-                request.Longitude = address?.Coordinates.Longitude ?? 0;
+                var coordinates = geocoder.GetCoordinatesFromAddress(request.Address, request.City, request.State, request.Zip, string.Empty).Result;
+
+                request.Latitude = coordinates?.Latitude ?? 0;
+                request.Longitude = coordinates?.Longitude ?? 0;
 
                 context.Add(request);
                 context.SaveChanges();
 
-                mediator.Publish(new ApiRequestProcessedNotification { RequestId = request.RequestId });
-            }   
+                mediator.Publish(CreateApiRequestProcesssedNotification(request));
+            }
         }
+
+        private ApiRequestProcessedNotification CreateApiRequestProcesssedNotification(Request request)
+            => new ApiRequestProcessedNotification
+            {
+                RequestId = request.RequestId,
+                Acceptance = RequestIsFromApprovedRegion(request)
+            };
+
+        private bool RequestIsFromApprovedRegion(Request request)
+            => !approvedRegions.Enabled || approvedRegions.Regions.Contains(request.ProviderData);
     }
 
     public interface IProcessApiRequests

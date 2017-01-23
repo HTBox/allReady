@@ -5,7 +5,6 @@ using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus;
 
 namespace AllReady.Features.Tasks
 {
@@ -58,7 +57,7 @@ namespace AllReady.Features.Tasks
                 {
                     Task = @task,
                     User = user,
-                    Status = TaskStatus.Accepted.ToString(),
+                    Status = Models.TaskStatus.Accepted,
                     StatusDateTimeUtc = DateTimeUtcNow(),
                     AdditionalInfo = model.AdditionalInfo
                 });

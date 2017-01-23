@@ -4,6 +4,6 @@
     {
         public bool IsSelected { get; set; }
 
-        public string DateAddedString => DateAdded.ToShortDateString();
+        public string DateAddedString => DateAdded.ToString("D");
     }
 }

@@ -18,7 +18,7 @@ namespace AllReady.Providers.ExternalUserInformationProviders
             IProvideExternalUserInformation provider;
             if (!providers.TryGetValue(loginProvider, out provider))
             {
-                throw new ApplicationException($"could not find external user information provider for login provider: {loginProvider}");
+                throw new Exception($"could not find external user information provider for login provider: {loginProvider}");
             }
             return provider;
         }

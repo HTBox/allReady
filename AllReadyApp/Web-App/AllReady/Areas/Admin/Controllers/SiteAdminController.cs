@@ -129,7 +129,7 @@ namespace AllReady.Areas.Admin.Controllers
                 {
                     //mgmccarthy: there is no Login action method on the AdminController. The only login method I could find is on the AccountController. Not too sure what to do here
                     var callbackUrl = Url.Action(new UrlActionContext { Action = "Login", Controller = "Admin", Values = new { Email = user.Email }, Protocol = HttpContext.Request.Scheme });
-                    await _mediator.SendAsync(new SendAccountApprovalEmail { Email = user.Email, CallbackUrl = callbackUrl });
+                    await _mediator.SendAsync(new SendAccountApprovalEmailCommand { Email = user.Email, CallbackUrl = callbackUrl });
                 }
                 else
                 {
@@ -165,7 +165,7 @@ namespace AllReady.Areas.Admin.Controllers
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 //TODO: mgmccarthy: there is no ResetPassword action methd on the AdminController. Not too sure what to do here. Waiting for feeback via Issue #659
                 var callbackUrl = Url.Action(new UrlActionContext { Action = "ResetPassword", Controller = "Admin", Values = new { userId = user.Id, code = code }, Protocol = HttpContext.Request.Scheme });
-                await _mediator.SendAsync(new Features.Site.SendResetPasswordEmail { Email = user.Email, CallbackUrl = callbackUrl });
+                await _mediator.SendAsync(new Features.Site.SendResetPasswordEmailCommand { Email = user.Email, CallbackUrl = callbackUrl });
 
                 ViewBag.SuccessMessage = $"Sent password reset email for {user.UserName}.";
 

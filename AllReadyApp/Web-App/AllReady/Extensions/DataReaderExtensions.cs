@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 
 namespace AllReady.Extensions
 {
@@ -15,6 +16,7 @@ namespace AllReady.Extensions
                 var obj = Activator.CreateInstance<T>();
                 foreach (var prop in obj
                     .GetType()
+                    .GetTypeInfo()
                     .GetProperties()
                     .Where(prop => !Equals(dr[prop.Name], DBNull.Value)))
                 {

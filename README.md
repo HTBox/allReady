@@ -15,6 +15,13 @@ We are on the path to our first production v1.0 release in December 2016!  We ar
 
 More info to come after our [standups in late September](https://www.youtube.com/watch?v=PwAfLRf_nuQ)
 
+##.NET Core 1.0.x (LTS)
+As part of the work to support cross platform development, we have modified the allReady projects to support .NET Core.  This will allow development on Mac devices*. We are tracking the Long Term Support stream of .NET Core, currently 1.0.3.
+
+Existing and new developers will need to ensure they have the latest .NET Core SDK supporting the current release 1.0.x. We have added basic steps for developers to setup their device at https://github.com/HTBox/allReady/wiki/Developer-Setup
+
+More detailed setup information for new developers exists at https://github.com/HTBox/allReady/blob/master/docs/prerequisite_install_guide/prerequisite_install_guide.md
+
 ##Project overview
 allReady is focused on increasing awareness, efficiency and impact of preparedness campaigns delivered by humanitarian and disaster response organizations in local communities.  As community preparedness and resliency increases, the potential for impactful disasters (both large and small) is greatly decreased.  Though not as visible or emotionally salient as saving children from a burning building, preparedness activities like ensuring working smoke detectors in a community, follows the industry rule of thumb where an hour or dollar spent before a disaster is worth 15-30 afterwards.  The goal of allReady hinges on growing awareness of, and engaging communities and their volunteers in preparedness campaigns, and more aspirationally, to "put disaster response out of business" by preparing communities to be reslient to inevitable disasters. 
 
@@ -37,14 +44,6 @@ Thank you for considering supporting this open source project for humanitarian s
 
 ##Upcoming Code-A-Thons
 We're excited to have a number of code-a-thons in the coming months where contributors new and old can get together and contribute to allReady.
-
-**Monday, December 5th 2016 (5:00pm - 8:00pm)**   
-***Brighton, UK***   
-Evening code-a-thon by employees of [Madgex Ltd](http://www.madgex.com)
-
-**Saturday, December 10th 2016 (8:30am - 4:30pm)**     
-***London, Ontario, Canada***   
-London .NET Developers is hosting another full day Humanitarian Toolbox Hackathon. Sign up at [meetup.com](https://www.meetup.com/London-NET-Developers-Group/events/235394420/) 
 
 **Monday, January 16th 2017 - Tuesday, January 17th 2017**    
 ***London, UK***  

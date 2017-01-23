@@ -19,11 +19,11 @@ namespace AllReady.Features.Tasks
         public async Task<List<AllReadyTask>> Handle(TasksByApplicationUserIdQuery message)
         {
             return await _context.TaskSignups
-                        .Include(x => x.User)
-                        .Include(x => x.Task)
-                        .Where(x => x.User.Id == message.ApplicationUserId)
-                        .Select(x => x.Task)
-                        .ToListAsync();
+                .Include(x => x.User)
+                .Include(x => x.Task)
+                .Where(x => x.User.Id == message.ApplicationUserId)
+                .Select(x => x.Task)
+                .ToListAsync();
         }
     }
 }

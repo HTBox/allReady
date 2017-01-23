@@ -8,17 +8,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Linq;
+using AllReady.Areas.Admin.Features.Import;
 using AllReady.Areas.Admin.ViewModels.Import;
 using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Features.Requests;
+using AllReady.Security;
+using System.Threading.Tasks;
+using AllReady.Features.Sms;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    //assumptions made:
-    //this is an all or nothing operation, meaning that if one or more rows of the import fails, the entire import fails
-    //this is not an add or update operation. we only handle new requests (inserts) via this UI
     [Area("Admin")]
-    [Authorize("SiteAdmin")]
+    [Authorize("OrgAdmin")]
     public class ImportController : Controller
     {
         private readonly ILogger<ImportController> logger;
@@ -34,18 +35,35 @@ namespace AllReady.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            return View(new IndexViewModel());
+            var query = new IndexQuery();
+
+            if (User.IsOrganizationAdmin())
+            {
+                query.OrganizationId = User.GetOrganizationId();
+            }
+
+            var viewModel = mediator.Send(query);
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index(IndexViewModel viewModel)
+        public async Task<IActionResult> Index(IndexViewModel viewModel)
         {
             List<ImportRequestViewModel> importRequestViewModels;
+
+            if (viewModel.EventId == 0)
+            {
+                viewModel.ImportErrors.Add("please select an Event.");
+            }
 
             if (viewModel.File == null)
             {
                 viewModel.ImportErrors.Add("please select a file to upload.");
+            }
+
+            if (viewModel.ImportErrors.Count > 0)
+            {
                 return View(viewModel);
             }
 
@@ -71,22 +89,40 @@ namespace AllReady.Areas.Admin.Controllers
                         return View(viewModel);
                     }
 
-                    foreach (var reqeustToImport in importRequestViewModels)
+                    var invalidPhoneNumbers = new List<string>();
+                    foreach (var requestToImport in importRequestViewModels)
                     {
-                        var validationResults = new List<ValidationResult>();
-                        if (!Validator.TryValidateObject(reqeustToImport, new ValidationContext(reqeustToImport, null, null), validationResults, true))
+                        //validate incoming phone number on each request
+                        var validatePhoneNumberResult = await mediator.SendAsync(new ValidatePhoneNumberRequestCommand { PhoneNumber = requestToImport.Phone, ValidateType = true });
+                        if (!validatePhoneNumberResult.IsValid)
                         {
-                            var newValidationError = new IndexViewModel.ValidationError { ProviderRequestId = string.IsNullOrEmpty(reqeustToImport.Id) ? "id value is blank" : reqeustToImport.Id };
+                            invalidPhoneNumbers.Add(requestToImport.Phone);
+                        }
+                        else
+                        {
+                            requestToImport.Phone = validatePhoneNumberResult.PhoneNumberE164;
+                        }
+
+                        //run validations on attributes on viewmodel
+                        var validationResults = new List<ValidationResult>();
+                        if (!Validator.TryValidateObject(requestToImport, new ValidationContext(requestToImport, null, null), validationResults, true))
+                        {
+                            var newValidationError = new IndexViewModel.ValidationError { ProviderRequestId = string.IsNullOrEmpty(requestToImport.Id) ? "id value is blank" : requestToImport.Id };
                             newValidationError.Errors.AddRange(validationResults);
                             viewModel.ValidationErrors.Add(newValidationError);
                         }
+                    }
+
+                    if (invalidPhoneNumbers.Count > 0)
+                    {
+                        viewModel.ImportErrors.Add($"These phone numbers are not valid mobile numbers: {string.Join(", ", invalidPhoneNumbers)}");
                     }
                 }
             }
 
             if (viewModel.ImportErrors.Count == 0 && viewModel.ValidationErrors.Count == 0)
             {
-                mediator.Send(new ImportRequestsCommand { ImportRequestViewModels = importRequestViewModels.ToList() });
+                await mediator.SendAsync(new ImportRequestsCommand { EventId = viewModel.EventId, ImportRequestViewModels = importRequestViewModels.ToList() });
                 logger.LogInformation($"{User.Identity.Name} imported file {viewModel.File.Name}");
                 viewModel.ImportSuccess = true;
             }

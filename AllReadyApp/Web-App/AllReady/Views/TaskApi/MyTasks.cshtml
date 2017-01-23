@@ -1,11 +1,9 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@using AllReady.ViewModels.Task
-@model AllReady.ViewModels.Task.MyTasksResultsScreenViewModel
+﻿@model AllReady.ViewModels.Task.MyTasksResultsScreenViewModel
+
 @{
     ViewBag.Title = @Model.Title;
 }
+
 <div class="row">
     <div class="col-md-12">
         <h3>My Events</h3>
@@ -24,7 +22,7 @@
     @foreach (var task in Model.Items)
     {
         <tr>
-            <td><a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@task.EventId">@task.eventName</a></td>
+            <td><a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@task.EventId">@task.EventName</a></td>
             <td><a asp-controller="TaskApi" asp-action="ShowTask" asp-route-id="@task.Id">@task.Name</a></td>
             <td>@task.StartDateTime</td>
             <td>@task.EndDateTime</td>
@@ -32,4 +30,3 @@
         </tr>
     }
 </table>
-

@@ -113,8 +113,8 @@ namespace AllReady.UnitTest.Services
                 if (x == null | y == null)
                     return false;
                 return x.Id == y.Id 
-                    && x.Name.Equals(y.Name, StringComparison.InvariantCulture)
-                    && x.Description.Equals(y.Description, StringComparison.InvariantCulture);
+                    && x.Name.Equals(y.Name, StringComparison.Ordinal)
+                    && x.Description.Equals(y.Description, StringComparison.Ordinal);
             }
 
             public int GetHashCode(Skill obj)

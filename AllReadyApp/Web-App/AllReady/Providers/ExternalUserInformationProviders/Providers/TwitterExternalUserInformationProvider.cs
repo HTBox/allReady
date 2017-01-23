@@ -1,16 +1,17 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AllReady.Services.Twitter;
 using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.Providers.ExternalUserInformationProviders.Providers
 {
     public class TwitterExternalUserInformationProvider : IProvideExternalUserInformation
     {
-        private readonly ITwitterRepository twitterRepository;
+        private readonly ITwitterService _twitterService;
 
-        public TwitterExternalUserInformationProvider(ITwitterRepository twitterRepository)
+        public TwitterExternalUserInformationProvider(ITwitterService twitterService)
         {
-            this.twitterRepository = twitterRepository;
+            _twitterService = twitterService;
         }
 
         public async Task<ExternalUserInformation> GetExternalUserInformation(ExternalLoginInfo externalLoginInfo)
@@ -20,13 +21,10 @@ namespace AllReady.Providers.ExternalUserInformationProviders.Providers
             var userId = externalLoginInfo.Principal.FindFirstValue("urn:twitter:userid");
             var screenName = externalLoginInfo.Principal.FindFirstValue("urn:twitter:screenname");
 
-            var twitterAccount = await twitterRepository.GetTwitterAccount(userId, screenName);
+            var twitterUser = await _twitterService.GetTwitterAccount(userId, screenName);
 
-            if (twitterAccount != null && twitterAccount.User != null)
+            if (twitterUser != null)
             {
-                var twitterUser = twitterAccount.User;
-                externalUserInformation.Email = twitterUser.Email;
-
                 if (!string.IsNullOrEmpty(twitterUser.Name))
                 {
                     var array = twitterUser.Name.Split(' ');

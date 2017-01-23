@@ -13,5 +13,6 @@ namespace AllReady.Areas.Admin.ViewModels.Request
 
         public string Keywords { get; set; }
         public RequestStatus? Status { get; set; }
+        public int? OrganizationId { get; set; }
     }
 }
