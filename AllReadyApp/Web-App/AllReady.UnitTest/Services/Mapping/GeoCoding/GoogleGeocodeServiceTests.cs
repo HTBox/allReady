@@ -7,6 +7,7 @@ using System;
 using System.Net.Http;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using AllReady.Configuration;
 using Xunit;
 
 namespace AllReady.UnitTest.Services.Mapping.GeoCoding

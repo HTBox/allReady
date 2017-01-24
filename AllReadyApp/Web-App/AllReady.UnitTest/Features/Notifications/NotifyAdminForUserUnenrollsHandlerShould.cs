@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AllReady.Configuration;
 using Xunit;
 using Moq;
 using AllReady.Features.Notifications;
