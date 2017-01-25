@@ -40,16 +40,16 @@ namespace AllReady.Services.Mapping.Routing
         /// <summary>
         /// The start address for the optmized route
         /// </summary>
-        public string StartAddress { get; private set; }
+        public string StartAddress { get; set; }
 
         /// <summary>
         /// The end address for the optmized route
         /// </summary>
-        public string EndAddress { get; private set; }
+        public string EndAddress { get; set; }
 
         /// <summary>
         /// A list of waypoints to be optimized for the route
         /// </summary>
-        public List<OptimizeRouteWaypoint> Waypoints { get; private set; }
+        public List<OptimizeRouteWaypoint> Waypoints { get; set; }
     }
 }
