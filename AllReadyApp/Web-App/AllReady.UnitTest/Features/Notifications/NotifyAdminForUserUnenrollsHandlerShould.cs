@@ -29,10 +29,6 @@ namespace AllReady.UnitTest.Features.Notifications
                 .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
                 .ReturnsAsync(GetTaskDetailForNotificationModel(taskId, eventId));
 
-            // Setup action call
-            mediator.Setup(x => x.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-                .ReturnsAsync(new Unit());
-
             var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrollsHandler>>();
             var options = GetSettings();
             var notification = GetUserUnenrolls(taskId);
@@ -64,10 +60,6 @@ namespace AllReady.UnitTest.Features.Notifications
                 .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
                 .ReturnsAsync(GetTaskDetailForNotificationModel(taskId, eventId));
 
-            // Setup action call
-            mediator.Setup(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(n => !string.IsNullOrWhiteSpace(n.ViewModel.Subject))))
-                .ReturnsAsync(new Unit());
-
             var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrollsHandler>>();
             var options = GetSettings();
             var notification = GetUserUnenrolls(taskId);
@@ -97,10 +89,6 @@ namespace AllReady.UnitTest.Features.Notifications
             mediator
                 .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
                 .ReturnsAsync(taskDetail);
-
-            // Setup action call
-            mediator.Setup(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(n => n.ViewModel.EmailRecipients.Contains(expectedEmail))))
-                .ReturnsAsync(new Unit());
 
             var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrollsHandler>>();
             var options = GetSettings();
