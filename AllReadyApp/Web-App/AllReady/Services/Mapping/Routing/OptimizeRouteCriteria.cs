@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Encodings.Web;
 
 namespace AllReady.Services.Mapping.Routing
 {
@@ -31,8 +30,8 @@ namespace AllReady.Services.Mapping.Routing
             }
 
             // Ensure that all string values are URL encoded            
-            StartAddress = UrlEncoder.Default.Encode(startAddress);
-            EndAddress = UrlEncoder.Default.Encode(endAddress);
+            StartAddress = Uri.EscapeUriString(startAddress);
+            EndAddress = Uri.EscapeUriString(endAddress);
 
             Waypoints = waypoints;
         }
