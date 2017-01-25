@@ -88,7 +88,7 @@ namespace AllReady.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user, Url);
+                    return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user);
                 }
 
                 if (result.RequiresTwoFactor)
@@ -317,7 +317,7 @@ namespace AllReady.Controllers
             if (externalLoginSignInAsyncResult.Succeeded)
             {
                 var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = externalUserInformation.Email });
-                return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user, Url);
+                return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user);
             }
             
             // If the user does not have an account, then ask the user to create an account.
@@ -390,7 +390,7 @@ namespace AllReady.Controllers
                         await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
                         await _signInManager.SignInAsync(user, isPersistent: false);
 
-                        return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user, Url);
+                        return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user);
                     }
                 }
 
@@ -412,14 +412,21 @@ namespace AllReady.Controllers
 
     public interface IRedirectAccountControllerRequests
     {
-        IActionResult RedirectToLocal(string returnUrl, ApplicationUser user, IUrlHelper urlHelper);
+        IActionResult RedirectToLocal(string returnUrl, ApplicationUser user);
     }
 
     public class RedirectAccountControllerRequests : IRedirectAccountControllerRequests
     {
-        public IActionResult RedirectToLocal(string returnUrl, ApplicationUser user, IUrlHelper urlHelper)
+        private readonly IUrlHelper _urlHelper;
+
+        public RedirectAccountControllerRequests(IUrlHelper urlHelper)
         {
-            if (urlHelper.IsLocalUrl(returnUrl))
+            _urlHelper = urlHelper;
+        }
+
+        public IActionResult RedirectToLocal(string returnUrl, ApplicationUser user)
+        {
+            if (_urlHelper.IsLocalUrl(returnUrl))
             {
                 return new RedirectResult(returnUrl);
             }
