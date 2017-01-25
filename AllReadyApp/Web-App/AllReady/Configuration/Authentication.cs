@@ -67,7 +67,7 @@ namespace AllReady.Configuration
             }
 
             //Twitter doesn't automatically include email addresses, has to be enabled as a special permission
-            //once enabled then RetrieveUserDetails property includes name and email in claims returned by twitter middleware
+            //once enabled then RetrieveUserDetails property includes email in claims returned by twitter middleware
             if (configuration["Authentication:Twitter:ConsumerKey"] != null)
             {
                 var options = new TwitterOptions

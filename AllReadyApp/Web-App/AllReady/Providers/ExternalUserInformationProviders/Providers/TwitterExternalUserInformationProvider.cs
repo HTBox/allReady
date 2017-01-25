@@ -24,7 +24,7 @@ namespace AllReady.Providers.ExternalUserInformationProviders.Providers
 
             if (string.IsNullOrEmpty(email))
             {
-                _logger.LogError($"Failed to retrieve user email address for user {screenName} from Twitter, this could be due to either the setup of the app (ensure the app requests email address) or this user has a blank/unverified email in Twitter");
+                _logger.LogError($"Failed to retrieve user email address for user {screenName} from Twitter, this could be due to either the setup of the app (ensure the app requests email address permissions) or this user has a blank/unverified email in Twitter");
                 return externalUserInformation;
             }
 

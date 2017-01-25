@@ -14,7 +14,6 @@ namespace AllReady.UnitTest.Providers.ExternalUserInformationProviders.Providers
         [Fact]
         public async Task ReturnExternalUserInformationWithEmailPopulatedWhenEmailClaimIsPopulated()
         {
-          //  const string userId = "UserId";
             const string screenName = "ScreenName";
             const string emailAddress = "someone@emailaddress.com";
 
