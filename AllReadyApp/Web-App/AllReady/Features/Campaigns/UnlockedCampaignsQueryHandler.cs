@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Models;
 using AllReady.ViewModels.Campaign;
 using MediatR;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Campaigns
 {
-    public class UnlockedCampaignsQueryHandler : IRequestHandler<UnlockedCampaignsQuery, List<CampaignViewModel>>
+    public class UnlockedCampaignsQueryHandler : IAsyncRequestHandler<UnlockedCampaignsQuery, List<CampaignViewModel>>
     {
         private readonly AllReadyContext _context;
 
@@ -16,15 +17,14 @@ namespace AllReady.Features.Campaigns
             _context = context;
         }
 
-        public List<CampaignViewModel> Handle(UnlockedCampaignsQuery message)
+        public async Task<List<CampaignViewModel>> Handle(UnlockedCampaignsQuery message)
         {
-            return _context.Campaigns
-                   .Include(x => x.ManagingOrganization)
-                   .Include(x => x.Events)
-                   .Include(x => x.ParticipatingOrganizations)
-                   .Where(c => !c.Locked && c.Published)
-                   .ToViewModel()
-                   .ToList();
+            return await _context.Campaigns
+                .Include(x => x.ManagingOrganization)
+                .Include(x => x.Events)
+                .Include(x => x.ParticipatingOrganizations)
+                .Where(c => !c.Locked && c.Published)
+                .Select(campaign => campaign.ToViewModel()).ToListAsync();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using AllReady.Features.Campaigns;
 using AllReady.Models;
 using AllReady.ViewModels.Campaign;
@@ -9,7 +10,7 @@ namespace AllReady.UnitTest.Features.Campaigns
     public class UnlockedCampaignsQueryHandlerShould : InMemoryContextTest
     {
         [Fact]
-        public void ReturnTheCorrectData()
+        public async Task ReturnTheCorrectData()
         {
             var campaigns = new List<Campaign>
             {
@@ -21,16 +22,16 @@ namespace AllReady.UnitTest.Features.Campaigns
             Context.SaveChanges();
 
             var sut = new UnlockedCampaignsQueryHandler(Context);
-            var results = sut.Handle(new UnlockedCampaignsQuery());
+            var results = await sut.Handle(new UnlockedCampaignsQuery());
 
             Assert.Equal(campaigns[0].Id, results[0].Id);
         }
 
         [Fact]
-        public void ReturnTheCorrectViewModel()
+        public async Task ReturnTheCorrectViewModel()
         {
             var sut = new UnlockedCampaignsQueryHandler(Context);
-            var results = sut.Handle(new UnlockedCampaignsQuery());
+            var results = await sut.Handle(new UnlockedCampaignsQuery());
 
             Assert.IsType<List<CampaignViewModel>>(results);
         }
