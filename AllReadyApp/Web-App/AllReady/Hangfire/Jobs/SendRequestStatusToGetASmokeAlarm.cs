@@ -15,14 +15,17 @@ namespace AllReady.Hangfire.Jobs
         public SendRequestStatusToGetASmokeAlarm(IOptions<GetASmokeAlarmApiSettings> getASmokeAlarmApiSettings, IHttpClient httpClient)
         {
             _getASmokeAlarmApiSettings = getASmokeAlarmApiSettings.Value;
+            _httpClient = httpClient;
         }
 
         public void Send(string serial, string status, bool acceptance)
         {
-            var updateRequestMessage = new { acceptance, status };
-
+            var str = JsonConvert.SerializeObject(new { acceptance, status });
             var request = new HttpRequestMessage(HttpMethod.Post, $"{_getASmokeAlarmApiSettings.BaseAddress}admin/requests/status/{serial}");
-            request.Content = new StringContent(JsonConvert.SerializeObject(updateRequestMessage), Encoding.UTF8, "application/json");
+            request.Content = new StringContent(
+                JsonConvert.SerializeObject(new { acceptance, status }), 
+                Encoding.UTF8, 
+                "application/json");
             request.Headers.Authorization = AuthenticationHeaderValue.Parse(_getASmokeAlarmApiSettings.Token);
             var response = _httpClient.SendAsync(request).Result;
             response.EnsureSuccessStatusCode();

@@ -5,6 +5,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
@@ -26,13 +27,9 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         }
 
         [Fact]
-        public void SendJsonService()
+        public void SendsValidHttpRequestMessage()
         {
-            HttpRequestMessage requestMsg = null;
             var mockedHttpClient = new Mock<IHttpClient>();
-            mockedHttpClient.Setup(x => x.SendAsync(It.IsAny<HttpRequestMessage>()))
-                .ReturnsAsync(new HttpResponseMessage())
-                .Callback<HttpRequestMessage>(request => requestMsg = request);
             var sendRequestStatusToGetASmokeAlarm = new SendRequestStatusToGetASmokeAlarm(_getASmokeAlarmApiSettings, mockedHttpClient.Object);
             try
             {
@@ -40,11 +37,26 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             }
             catch { }
 
-            //mockedHttpClient.Verify(x => x.SendAsync(
-            //    It.Is<HttpRequestMessage>(request =>
-            //        request.RequestUri == new Uri("https://demo.getasmokealarm.org/admin/requests/status/request1")
-            //)));
+            mockedHttpClient.Verify(x => x.SendAsync(
+                It.Is<HttpRequestMessage>(request =>
+                    request.RequestUri == new Uri("https://demo.getasmokealarm.org/admin/requests/status/request1")
+                    && request.Headers.Authorization.Scheme == "someToken"
+                    && request.Content.ReadAsStringAsync().Result == "{\"acceptance\":false,\"status\":\"new\"}"
+                    && request.Content.Headers.ContentType.ToString() == "application/json; charset=utf-8"
+            )));
+        }
 
+        [Fact]
+        public void ThrowsException_WhenOnNonSuccessHttpStatus()
+        {
+            var mockedHttpClient = new Mock<IHttpClient>();
+            mockedHttpClient.Setup(x => x.SendAsync(It.IsAny<HttpRequestMessage>()))
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.BadRequest));
+            var sendRequestStatusToGetASmokeAlarm = new SendRequestStatusToGetASmokeAlarm(_getASmokeAlarmApiSettings, mockedHttpClient.Object);
+            
+            Assert.Throws<HttpRequestException>(
+                () => sendRequestStatusToGetASmokeAlarm.Send("request1", "new", false)
+            );            
         }
     }
 }
