@@ -6,14 +6,14 @@
 
 This repo contains the code for **allReady**, an open-source solution focused on increasing awareness, efficiency and impact of preparedness campaigns as they are delivered by humanitarian and disaster response organizations in local communities.
 
-+ [Upcoming Go Live Release on June 11th](#upcoming-go-live-release)
++ [Upcoming v.10 Release](#upcoming-v10-release)
 + [Project overview](#project-overview)
 + [How you can help](#how-you-can-help)
 
 ##Upcoming v1.0 Release
-We are on the path to our first production v1.0 release in December 2016!  We are tracking requirements in our [December Milestone](https://github.com/HTBox/allReady/milestone/15) and currently directing efforts to closing out issues in the interim [October Milestone](https://github.com/HTBox/allReady/milestone/16) starting with P1-P3 priority items that are currently being triaged and tagged.
+We are on the path to our first production v1.0 release!  We are tracking requirements in our [v1.0 Release Milestone](https://github.com/HTBox/allReady/milestone/15) and currently directing efforts to closing out issues starting with P1-P3 priority items that are currently being triaged and tagged.
 
-More info to come after our [standups in late September](https://www.youtube.com/watch?v=PwAfLRf_nuQ)
+More info to come in our [biweekly standups](https://www.youtube.com/channel/UCMHQ4xrqudcTtaXFw4Bw54Q/)
 
 ##.NET Core 1.0.x (LTS)
 As part of the work to support cross platform development, we have modified the allReady projects to support .NET Core.  This will allow development on Mac devices*. We are tracking the Long Term Support stream of .NET Core, currently 1.0.3.
@@ -27,7 +27,9 @@ allReady is focused on increasing awareness, efficiency and impact of preparedne
 
 To learn more about the need for allReady, the technologies involved and how the app came together, view the [project information](http://www.htbox.org/projects/allready) and [blog post](http://www.htbox.org/blog/allready-project-launched-at-visual-studio-2015-release-event) on the Humanitarian Toolbox website and watch the *[In the Code](https://channel9.msdn.com/Events/Visual-Studio/Visual-Studio-2015-Final-Release-Event/In-the-Code-App-Overview-and-Planning)* video series:
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/XVRfcSej1l0" frameborder="0" allowfullscreen></iframe>
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=XVRfcSej1l0
+" target="_blank"><img src="http://img.youtube.com/vi/XVRfcSej1l0/0.jpg" 
+alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
 
 The allReady project was jumpstarted by volunteers at Microsoft and has been turned over to [Humanitarian Toolbox](http://www.htbox.org/) to be maintained and improved by the technical community at large and ultimately deployed in support of organizations delivering preparedness campaigns everywhere.
 
@@ -41,10 +43,3 @@ To help make improvements to this project, you can just clone this repository an
 Also we have a guide on setting up git for open source projects like allReady that can help you get started making contributions.  You can find the [guide in our docs folder](https://github.com/HTBox/allReady/blob/master/docs/git/gitprocess.md) and it also reference a number of blog posts written with additional information on contributing to projects like ours.
 
 Thank you for considering supporting this open source project for humanitarian support.
-
-##Upcoming Code-A-Thons
-We're excited to have a number of code-a-thons in the coming months where contributors new and old can get together and contribute to allReady.
-
-**Monday, January 16th 2017 - Tuesday, January 17th 2017**    
-***London, UK***  
-Join Richard Campbell and Bill Wagner at the NDC London Humanitarian Toolbox 2-day workshop. Sign up at [ndc-london.com](http://ndc-london.com/workshop/humanitarian-toolbox/)
