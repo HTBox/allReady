@@ -20,7 +20,6 @@ namespace AllReady.Hangfire.Jobs
 
         public void Send(string serial, string status, bool acceptance)
         {
-            var str = JsonConvert.SerializeObject(new { acceptance, status });
             var request = new HttpRequestMessage(HttpMethod.Post, $"{_getASmokeAlarmApiSettings.BaseAddress}admin/requests/status/{serial}")
             {
                 Content = new StringContent( JsonConvert.SerializeObject(new { acceptance, status }), Encoding.UTF8, "application/json")
