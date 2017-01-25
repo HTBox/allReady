@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Services.Mapping.GeoCoding
 
             await sut.GetCoordinatesFromAddress(inputAddress);
 
-            url.ShouldBe(string.Concat("https://maps.googleapis.com/maps/api/geocode/json?address=", UrlEncoder.Default.Encode(inputAddress), "&key=", "123"));
+            url.ShouldBe(string.Concat("https://maps.googleapis.com/maps/api/geocode/json?address=", Uri.EscapeUriString(inputAddress), "&key=", "123"));
         }
 
         [Fact]
