@@ -16,7 +16,7 @@ namespace AllReady.Configuration
         {
             ctx.Response.Redirect("/Account/Login");
             ctx.HandleResponse();
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         internal static void ConfigureAuthentication(IApplicationBuilder app, IConfiguration configuration)

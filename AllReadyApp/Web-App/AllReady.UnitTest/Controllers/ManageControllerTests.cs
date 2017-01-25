@@ -19,7 +19,7 @@ namespace AllReady.UnitTest.Controllers
     public class ManageControllerTests
     {
         //delete this line when all unit tests using it have been completed
-        private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
+        private static readonly Task TaskCompletedTask = Task.CompletedTask;
 
         [Fact]
         public async Task IndexGetAddsCorrectMessageToViewDataWhenMessageEqualsChangePasswordSuccess()
@@ -378,49 +378,49 @@ namespace AllReady.UnitTest.Controllers
         public async Task UpdateUserProfileCompletenessSendsRemoveUserProfileIncompleteClaimCommandWithCorrectUserIdWhenUsersProfileIsComplete()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task UpdateUserProfileCompletenessInvokesRefreshSignInAsyncWithCorrectUserWhenUsersProfileIsComplete()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ResendEmailConfirmationInvokesFindByIdAsyncWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ResendEmailConfirmationInvokesGenerateEmailConfirmationTokenAsyncWithCorrectUser()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ResendEmailConfirmationInvokesUrlActionWithCorrectParameters()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ResendEmailConfirmationSendsSendConfirmAccountEmailAsyncWithCorrectData()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ResendEmailConfirmationRedirectsToCorrectAction()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -442,28 +442,28 @@ namespace AllReady.UnitTest.Controllers
         public async Task RemoveLoginSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task RemoveLoginInvokesRemoveLoginAsyncWithCorrectParametersWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task RemoveLoginInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndRemoveLoginSucceeds()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task RemoveLoginRedirectsToCorrectActionWithCorrectRouteValues()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -479,28 +479,28 @@ namespace AllReady.UnitTest.Controllers
         public async Task EnableTwoFactorAuthenticationSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task EnableTwoFactorAuthenticationInvokesSetTwoFactorEnabledAsyncWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task EnableTwoFactorAuthenticationInvokesSignInAsyncWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task EnableTwoFactorAuthenticationRedirectsToCorrectAction()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -517,28 +517,28 @@ namespace AllReady.UnitTest.Controllers
         public async Task DisableTwoFactorAuthenticationSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task DisableTwoFactorAuthenticationInvokesSetTwoFactorEnabledAsyncWithCorrectParametersWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task DisableTwoFactorAuthenticationInvokesSignInAsyncWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task DisableTwoFactorAuthenticationRedirectsToCorrectAction()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -565,56 +565,56 @@ namespace AllReady.UnitTest.Controllers
         public async Task ChangePasswordPostReturnsSameViewAndModelWhenModelStateIsInvalid()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangePasswordPostSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangePasswordPostInvokesChangePasswordAsyncWithCorrectParametersWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangePasswordPostInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPasswordWasChangedSuccessfully()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangePasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndPasswordWasChangedSuccessfully()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangePasswordPostAddsIdentityResultErrorsToModelStateErrorsWhenUserIsNotNullAndPasswordWasNotChangedSuccessfully()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangePasswordPostReturnsCorrectViewModelWhenUserIsNotNullAndPasswordWasNotChangedSuccessfully()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangePasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -641,98 +641,98 @@ namespace AllReady.UnitTest.Controllers
         public async Task ChangeEmailPostReturnsSameViewAndViewModelWhenModelStateIsInvalid()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangeEmailPostSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangeEmailPostInvokesCheckPasswordAsyncWithCorrectParametersWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangeEmailPostAddsCorrectErrorMessageToModelStateWhenChangePasswordIsUnsuccessful()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangeEmailPostReturnsCorrectVieModelWhenChangePasswordIsUnsuccessful()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangeEmailPostInvokesFindByEmailAsyncWithCorrectParametersWhenChangePasswordIsSuccessful()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangeEmailPostAddsCorrectErrorToModelStateWhenChangePasswordIsSuccessfulAndEmailCannotBeFound()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangeEmailPostReturnsCorrectViewModelWhenChangePasswordIsSuccessfulAndEmailCannotBeFound()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangeEmailPostInvokesUpdateAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangeEmailPostInvokesGenerateChangeEmailTokenAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangeEmailPostInvokesUrlActioncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangeEmailPostSendsSendNewEmailAddressConfirmationEmailAsyncWithCorrectDataWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangeEmailPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ChangeEmailPostRedirectsToTheCorrectActionWithTheCorrectRouteValuesWhenUserIsNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -749,49 +749,49 @@ namespace AllReady.UnitTest.Controllers
         public async Task ConfirmNewEmailReturnsErrorViewWhenTokenIsNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ConfirmNewEmailSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ConfirmNewEmailReturnsErrorViewWhenUserIsNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ConfirmNewEmailInvokesChangeEmailAsyncWithCorrectParametersWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ConfirmNewEmailInvokesSetUserNameAsyncWithCorrectParametersWhenUserIsNotNullAndSettingUserNameIsSuccessful()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ConfirmNewEmailInvokesUpdateAsyncWithCorrectParametersWhenUserIsNotNullAndSettingUserNameIsSuccessful()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ConfirmNewEmailRedirectsToCorrectActionWithCorrectRouteValues()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -803,28 +803,28 @@ namespace AllReady.UnitTest.Controllers
         public async Task ResendChangeEmailConfirmationSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ResendChangeEmailConfirmationReturnsErrorViewWhenUsersPendingNewEmailIsNullOrEmpty()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ResendChangesEmailConfirmationInvokesGenerateChangeEmailTokenAsyncWithCorrectParameters()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ResendChangesEmailConfirmationInvokesUrlActionWithCorrectParameters()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -832,14 +832,14 @@ namespace AllReady.UnitTest.Controllers
         public async Task ResendChangesEmailConfirmationSendsSendNewEmailAddressConfirmationEmailAsyncWithCorrectData()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ResendChangesEmailConfirmationRedirectsToCorrectAction()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -856,21 +856,21 @@ namespace AllReady.UnitTest.Controllers
         public async Task CancelChangeEmailSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task CancelChangeEmailInvokesUpdateAsyncWithCorrectParameters()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task CancelChangeEmailRedirectsToCorrectAction()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -897,56 +897,56 @@ namespace AllReady.UnitTest.Controllers
         public async Task SetPasswordPostReturnsSameViewAndViewModelWhenModelStateIsInvalid()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task SetPasswordPostSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task SetPasswordPostInvokesAddPasswordAsyncWithCorrectParametersWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task SetPasswordPostInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPasswordAddedSuccessfully()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task SetPasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndPasswordAddedSuccessfully()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task SetPasswordPostAddsCorrectErrorMessageToModelStateWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task SetPasswordPostReturnsCorrectViewModelWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task SetPasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -963,63 +963,63 @@ namespace AllReady.UnitTest.Controllers
         public async Task ManageLoginsAddsCorrectMessageToViewDataWhenMessageIdIsRemoveLoginSuccess()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ManageLoginsAddsCorrectMessageToViewDataWhenMessageIdIsAddLoginSuccess()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ManageLoginsAddsCorrectMessageToViewDataWhenMessageIdIsError()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ManageLoginsSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ManageLoginsReturnsErrorViewWhenUserIsNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ManageLoginsInvokesGetLoginsAsyncWithCorrectParametersWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ManageLoginsInvokesGetExternalAuthenticationSchemesWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ManageLoginsAddsCorrectValueToSHOW_REMOVE_BUTTONWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ManageLoginsReturnsCorrectViewModelWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -1056,49 +1056,49 @@ namespace AllReady.UnitTest.Controllers
         public async Task LinkLoginCallbackSendsUserByUserIdQueryWithCorrectUserId()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task LinkLoginCallbackReturnsErrorViewWhenUserIsNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task LinkLoginCallbackInvokesGetExternalLoginInfoAsyncWithCorrectUserIdWhenUserIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndExternalLoginInfoIsNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task LinkLoginCallbackInvokesAddLoginAsyncWithCorrectParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNull()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task ControllerHasAuthorizeAtttribute()
         {
             //delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
     }
 }
