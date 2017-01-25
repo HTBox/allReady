@@ -17,23 +17,23 @@ namespace AllReady.UnitTest.Controllers
     public class EventApiControllerTests
     {
         [Fact]
-        public void GetSendsEventsWithUnlockedCampaignsQuery()
+        public async Task GetSendsEventsWithUnlockedCampaignsQuery()
         {
             var mediator = new Mock<IMediator>();
             var sut = new EventApiController(mediator.Object);
-            sut.Get();
+            await sut.Get();
 
-            mediator.Verify(x => x.Send(It.IsAny<EventsWithUnlockedCampaignsQuery>()), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.IsAny<EventsWithUnlockedCampaignsQuery>()), Times.Once);
         }
 
         [Fact]
-        public void GetReturnsCorrectModel()
+        public async Task GetReturnsCorrectModel()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<EventsWithUnlockedCampaignsQuery>())).Returns(new List<EventViewModel>());
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventsWithUnlockedCampaignsQuery>())).ReturnsAsync(new List<EventViewModel>());
 
             var sut = new EventApiController(mediator.Object);
-            var results = sut.Get();
+            var results = await sut.Get();
 
             Assert.IsType<List<EventViewModel>>(results);
         }
@@ -70,18 +70,6 @@ namespace AllReady.UnitTest.Controllers
 
             Assert.IsType<EventViewModel>(result);
         }
-
-        //TODO: come back to these two tests until you hear back from Tony Surma about returning null instead of retruning HttpNotFound
-        //GetByIdReturnsNullWhenEventIsNotFoundById ???
-        //[Fact]
-        //public void GetByIdReturnsHttpNotFoundWhenEventIsNotFoundById()
-        //{
-        //    var controller = new EventApiController(Mock.Of<IAllReadyDataAccess>(), null)
-        //        .SetFakeUser("1");
-
-        //    var result = controller.Get(It.IsAny<int>());
-        //    Assert.IsType<NotFoundResult>(result);
-        //}
 
         [Fact]
         public void GetByIdHasHttpGetAttributeWithCorrectTemplate()
@@ -122,45 +110,45 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void GetEventsByDateRangeSendsEventByDateRangeQueryWithCorrectDates()
+        public async Task GetEventsByDateRangeSendsEventByDateRangeQueryWithCorrectDates()
         {
             var may = new DateTimeOffset(2016, 5, 1, 0, 0, 0, new TimeSpan());
             var june = new DateTimeOffset(2016, 6, 1, 0, 0, 0, new TimeSpan());
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<EventByDateRangeQuery>())).Returns(new List<EventViewModel>());
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventByDateRangeQuery>())).ReturnsAsync(new List<EventViewModel>());
 
             var sut = new EventApiController(mediator.Object);
-            sut.GetEventsByDateRange(may, june);
+            await sut.GetEventsByDateRange(may, june);
 
-            mediator.Verify(x => x.Send(It.Is<EventByDateRangeQuery>(y => y.StartDate == may && y.EndDate == june)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<EventByDateRangeQuery>(y => y.StartDate == may && y.EndDate == june)), Times.Once);
         }
 
 
         [Fact]
-        public void GetEventsByDateRangeReturnsNoContentWhenEventsIsNull()
+        public async Task GetEventsByDateRangeReturnsNoContentWhenEventsIsNull()
         {
             var may = new DateTimeOffset(2016, 5, 1, 0, 0, 0, new TimeSpan());
             var june = new DateTimeOffset(2016, 6, 1, 0, 0, 0, new TimeSpan());
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<EventByDateRangeQuery>())).Returns((List<EventViewModel>)null);
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventByDateRangeQuery>())).ReturnsAsync((List<EventViewModel>)null);
 
             var sut = new EventApiController(mediator.Object);
-            var result = sut.GetEventsByDateRange(may, june);
+            var result = await sut.GetEventsByDateRange(may, june);
 
             Assert.IsType<NoContentResult>(result);
         }
 
 
         [Fact]
-        public void GetEventsByDateRangeReturnsJsonWhenEventsIsNotNull()
+        public async Task GetEventsByDateRangeReturnsJsonWhenEventsIsNotNull()
         {
             var may = new DateTimeOffset(2016, 5, 1, 0, 0, 0, new TimeSpan());
             var june = new DateTimeOffset(2016, 6, 1, 0, 0, 0, new TimeSpan());
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<EventByDateRangeQuery>())).Returns(new List<EventViewModel>());
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventByDateRangeQuery>())).ReturnsAsync(new List<EventViewModel>());
 
             var sut = new EventApiController(mediator.Object);
-            var result = sut.GetEventsByDateRange(may, june);
+            var result = await sut.GetEventsByDateRange(may, june);
 
             Assert.IsType<JsonResult>(result);
         }
