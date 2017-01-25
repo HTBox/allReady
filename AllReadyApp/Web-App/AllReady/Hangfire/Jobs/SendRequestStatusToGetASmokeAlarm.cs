@@ -21,11 +21,10 @@ namespace AllReady.Hangfire.Jobs
         public void Send(string serial, string status, bool acceptance)
         {
             var str = JsonConvert.SerializeObject(new { acceptance, status });
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{_getASmokeAlarmApiSettings.BaseAddress}admin/requests/status/{serial}");
-            request.Content = new StringContent(
-                JsonConvert.SerializeObject(new { acceptance, status }), 
-                Encoding.UTF8, 
-                "application/json");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{_getASmokeAlarmApiSettings.BaseAddress}admin/requests/status/{serial}")
+            {
+                Content = new StringContent( JsonConvert.SerializeObject(new { acceptance, status }), Encoding.UTF8, "application/json")
+            };
             request.Headers.Authorization = AuthenticationHeaderValue.Parse(_getASmokeAlarmApiSettings.Token);
             var response = _httpClient.SendAsync(request).Result;
             response.EnsureSuccessStatusCode();

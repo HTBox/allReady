@@ -3,11 +3,8 @@ using AllReady.Services;
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace AllReady.UnitTest.Hangfire.Jobs
@@ -55,7 +52,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             var sendRequestStatusToGetASmokeAlarm = new SendRequestStatusToGetASmokeAlarm(_getASmokeAlarmApiSettings, mockedHttpClient.Object);
             
             Assert.Throws<HttpRequestException>(
-                () => sendRequestStatusToGetASmokeAlarm.Send("request1", "new", false)
+                () => sendRequestStatusToGetASmokeAlarm.Send(It.IsAny<string>(), It.IsAny<string>(), false)
             );            
         }
     }
