@@ -52,7 +52,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             var sendRequestStatusToGetASmokeAlarm = new SendRequestStatusToGetASmokeAlarm(_getASmokeAlarmApiSettings, mockedHttpClient.Object);
             
             Assert.Throws<HttpRequestException>(
-                () => sendRequestStatusToGetASmokeAlarm.Send(It.IsAny<string>(), It.IsAny<string>(), false)
+                () => sendRequestStatusToGetASmokeAlarm.Send(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())
             );            
         }
     }
