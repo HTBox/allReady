@@ -43,7 +43,7 @@ namespace AllReady.Configuration
             services.AddSingleton<ICsvFactory, CsvFactory>();
             services.AddTransient<SampleDataGenerator>();
             services.AddSingleton<IHttpClient, StaticHttpClient>();
-            services.AddSingleton<ITwitterService, TwitterService>();
+           
 
             if (configuration["Mapping:EnableGoogleGeocodingService"] == "true")
             {
