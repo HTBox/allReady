@@ -6,7 +6,7 @@
 
 This repo contains the code for **allReady**, an open-source solution focused on increasing awareness, efficiency and impact of preparedness campaigns as they are delivered by humanitarian and disaster response organizations in local communities.
 
-+ [Upcoming v.10 Release](#upcoming-v10-release)
++ [Upcoming v1.0 Release](#upcoming-v10-release)
 + [Project overview](#project-overview)
 + [How you can help](#how-you-can-help)
 
