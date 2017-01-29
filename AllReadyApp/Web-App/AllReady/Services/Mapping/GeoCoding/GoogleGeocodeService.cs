@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using AllReady.Services.Mapping.GeoCoding.Models;
 using AllReady.Services.Mapping.GeoCoding.Models.Google;
@@ -30,7 +30,7 @@ namespace AllReady.Services.Mapping.GeoCoding
         /// <inheritdoc />
         public async Task<Coordinates> GetCoordinatesFromAddress(string address)
         {
-            var requestUrl = GenerateGoogleAPIUrl(address);
+            var requestUrl = GenerateGoogleApiUrl(address);
 
             return await ProcessRequest(requestUrl);
         }
@@ -112,10 +112,10 @@ namespace AllReady.Services.Mapping.GeoCoding
             return null;
         }
 
-        private string GenerateGoogleAPIUrl(string address)
+        private string GenerateGoogleApiUrl(string address)
         {
             var requestUrl = new StringBuilder("https://maps.googleapis.com/maps/api/geocode/json?address=");
-            requestUrl.Append(UrlEncoder.Default.Encode(address));
+            requestUrl.Append(Uri.EscapeUriString(address));
 
             requestUrl.Append("&key=").Append(_mappingSettings.GoogleMapsApiKey);
 
