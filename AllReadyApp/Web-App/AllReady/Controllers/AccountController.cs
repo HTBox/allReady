@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
+using AllReady.Configuration;
 using AllReady.Features.Login;
 using AllReady.Features.Manage;
 using AllReady.Models;

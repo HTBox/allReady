@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Configuration;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

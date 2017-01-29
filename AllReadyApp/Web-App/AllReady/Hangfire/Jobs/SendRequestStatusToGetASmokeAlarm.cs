@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
+using AllReady.Configuration;
 using Microsoft.Extensions.Options;
 using AllReady.Services;
 using Newtonsoft.Json;
@@ -28,6 +29,14 @@ namespace AllReady.Hangfire.Jobs
             var response = _httpClient.SendAsync(request).Result;
             response.EnsureSuccessStatusCode();
         }
+    }
+    
+    public static class GasaStatus
+    {
+        public static string New = "new";
+        public static string InProgress = "in progress";
+        public static string Installed = "";
+        public static string Canceled = "canceled";
     }
 
     public interface ISendRequestStatusToGetASmokeAlarm

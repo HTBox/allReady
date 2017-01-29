@@ -31,19 +31,19 @@ namespace AllReady.Areas.Admin.Features.Requests
                     switch (notification.NewStatus)
                     {
                         case RequestStatus.Completed:
-                            gasaStatus = "installed";
+                            gasaStatus = GasaStatus.Installed;
                             acceptance = true;
                             break;
                         case RequestStatus.Canceled:
-                            gasaStatus = "canceled";
+                            gasaStatus = GasaStatus.Canceled;
                             acceptance = true;
                             break;
                         case RequestStatus.Assigned:
-                            gasaStatus = "in progress";
+                            gasaStatus = GasaStatus.InProgress;
                             acceptance = true;
                             break;
                         case RequestStatus.Unassigned:
-                            gasaStatus = "new";
+                            gasaStatus = GasaStatus.New;
                             break;
                     }
 

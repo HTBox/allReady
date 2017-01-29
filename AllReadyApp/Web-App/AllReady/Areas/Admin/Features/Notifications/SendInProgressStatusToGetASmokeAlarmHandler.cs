@@ -22,7 +22,7 @@ namespace AllReady.Areas.Admin.Features.Notifications
         public async Task Handle(RequestsAssignedToItinerary notification)
         {
             var providerRequestIds = await context.Requests.Where(x => notification.RequestIds.Contains(x.RequestId) && x.Source == RequestSource.Api).Select(x => x.ProviderRequestId).ToListAsync();
-            providerRequestIds.ForEach(providerRequestId => backgroundJobClient.Enqueue<ISendRequestStatusToGetASmokeAlarm>(x => x.Send(providerRequestId, "in progress", true)));
+            providerRequestIds.ForEach(providerRequestId => backgroundJobClient.Enqueue<ISendRequestStatusToGetASmokeAlarm>(x => x.Send(providerRequestId, GasaStatus.InProgress, true)));
         }
     }
 }

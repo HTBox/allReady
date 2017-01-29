@@ -7,6 +7,7 @@ using Moq;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
 using System.Text;
+using AllReady.Configuration;
 using AllReady.Services.Mapping.Routing;
 using AllReady.Services;
 
@@ -19,15 +20,13 @@ namespace AllReady.UnitTest.Services.Routing
         private readonly Guid _requestId2 = new Guid("aa14b9ba-8ed4-428f-9413-f69d2b832795");
         private readonly Guid _requestId3 = new Guid("f89630db-d3f4-47ae-870a-3a2b8bc3afc1");
 
-
-
         public GoogleOptimizeRouteServiceShould()
         {
             _optimiseRouteCriteria = new OptimizeRouteCriteria(
                 "24 Sussex Drive Ottawa ON",
                 "200 Sussex Drive Ottawa ON",
-                new List<OptimizeRouteWaypoint>()
-                    {
+                new List<OptimizeRouteWaypoint>
+                {
                         new OptimizeRouteWaypoint(45.4, -75, _requestId1),
                         new OptimizeRouteWaypoint(46, -75, _requestId2),
                         new OptimizeRouteWaypoint(46.1, -75, _requestId3)
@@ -37,13 +36,10 @@ namespace AllReady.UnitTest.Services.Routing
         [Fact]
         public async Task ReturnsOptimisedRoutes()
         {
-            var mappingSettings = new MappingSettings() { GoogleMapsApiKey = "somekey" };
+            var mappingSettings = new MappingSettings { GoogleMapsApiKey = "somekey" };
             var mockedHttpClient = new Mock<IHttpClient>();
 
-            var service = new GoogleOptimizeRouteService(
-                Options.Create(mappingSettings),
-                Mock.Of<ILogger<GoogleOptimizeRouteService>>(),
-                mockedHttpClient.Object);
+            var service = new GoogleOptimizeRouteService(Options.Create(mappingSettings), Mock.Of<ILogger<GoogleOptimizeRouteService>>(), mockedHttpClient.Object);
 
             var mockedHttpResponse = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
             {
@@ -68,8 +64,8 @@ namespace AllReady.UnitTest.Services.Routing
         [Fact]
         public async Task GeneratesCorrectApiCall()
         {
-            string expectedApiCall = "https://maps.googleapis.com/maps/api/directions/json?origin=24%20Sussex%20Drive%20Ottawa%20ON&destination=200%20Sussex%20Drive%20Ottawa%20ON&waypoints=optimize:true|45.4,-75|46,-75|46.1,-75&key=somekey";
-            var mappingSettings = new MappingSettings() { GoogleMapsApiKey = "somekey" };
+            const string expectedApiCall = "https://maps.googleapis.com/maps/api/directions/json?origin=24%20Sussex%20Drive%20Ottawa%20ON&destination=200%20Sussex%20Drive%20Ottawa%20ON&waypoints=optimize:true|45.4,-75|46,-75|46.1,-75&key=somekey";
+            var mappingSettings = new MappingSettings { GoogleMapsApiKey = "somekey" };
             var mockedHttpClient = new Mock<IHttpClient>();
             var service = new GoogleOptimizeRouteService(
                 Options.Create(mappingSettings),
@@ -84,14 +80,10 @@ namespace AllReady.UnitTest.Services.Routing
         [Fact]
         public async Task ReturnNull_WhenNon200Returned()
         {
-            var mappingSettings = new MappingSettings() { GoogleMapsApiKey = "some key" };
+            var mappingSettings = new MappingSettings { GoogleMapsApiKey = "some key" };
             var mockedHttpClient = new Mock<IHttpClient>();
-            mockedHttpClient.Setup(x => x.GetAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)));
-            var service = new GoogleOptimizeRouteService(
-                Options.Create(mappingSettings),
-                Mock.Of<ILogger<GoogleOptimizeRouteService>>(),
-                mockedHttpClient.Object);
+            mockedHttpClient.Setup(x => x.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)));
+            var service = new GoogleOptimizeRouteService(Options.Create(mappingSettings), Mock.Of<ILogger<GoogleOptimizeRouteService>>(), mockedHttpClient.Object);
 
             var result = await service.OptimizeRoute(_optimiseRouteCriteria);
 
@@ -101,23 +93,17 @@ namespace AllReady.UnitTest.Services.Routing
         [Fact]
         public async Task LogsException_WhenAnExceptionIsThrown()
         {
-            var mappingSettings = new MappingSettings() { GoogleMapsApiKey = "some key" };
+            var mappingSettings = new MappingSettings { GoogleMapsApiKey = "some key" };
             var mockedLogger = new Mock<ILogger<GoogleOptimizeRouteService>>();
             var mockedHttpClient = new Mock<IHttpClient>();
             mockedHttpClient.Setup(x => x.GetAsync(It.IsAny<string>())).Throws(new TaskCanceledException());
-            var service = new GoogleOptimizeRouteService(
-                Options.Create(mappingSettings),
-                mockedLogger.Object,
-                mockedHttpClient.Object);
+            var service = new GoogleOptimizeRouteService( Options.Create(mappingSettings), mockedLogger.Object, mockedHttpClient.Object);
 
-            var result = await service.OptimizeRoute(_optimiseRouteCriteria);
+            await service.OptimizeRoute(_optimiseRouteCriteria);
             mockedLogger.Verify(x => x.Log(It.Is<LogLevel>(y => y == LogLevel.Error),
                 It.IsAny<EventId>(), It.IsAny<object>(),
                 It.IsAny<Exception>(),
                 It.IsAny<Func<object, Exception, string>>()), Times.AtLeastOnce);
-        }
-
-
-        
+        }   
     }
 }

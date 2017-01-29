@@ -12,6 +12,7 @@ using AllReady.UnitTest.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Routing;
 using System.Security.Claims;
+using AllReady.Configuration;
 using AllReady.Extensions;
 using AllReady.Features.Login;
 using AllReady.Features.Manage;

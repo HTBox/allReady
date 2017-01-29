@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using System;
 using System.Threading.Tasks;
+using AllReady.Configuration;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Notifications

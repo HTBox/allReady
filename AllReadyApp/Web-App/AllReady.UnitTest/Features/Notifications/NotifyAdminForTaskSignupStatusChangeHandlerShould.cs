@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using AllReady.Configuration;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
