@@ -2,40 +2,33 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Services.Twitter;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace AllReady.Providers.ExternalUserInformationProviders.Providers
 {
     public class TwitterExternalUserInformationProvider : IProvideExternalUserInformation
-    {
-        private readonly ITwitterService _twitterService;
+    {      
+        private readonly ILogger _logger;
 
-        public TwitterExternalUserInformationProvider(ITwitterService twitterService)
+        public TwitterExternalUserInformationProvider(ILogger<TwitterExternalUserInformationProvider> logger)
         {
-            _twitterService = twitterService;
+            _logger = logger;
         }
 
         public async Task<ExternalUserInformation> GetExternalUserInformation(ExternalLoginInfo externalLoginInfo)
         {
             var externalUserInformation = new ExternalUserInformation();
 
-            var userId = externalLoginInfo.Principal.FindFirstValue("urn:twitter:userid");
             var screenName = externalLoginInfo.Principal.FindFirstValue("urn:twitter:screenname");
+            var email = externalLoginInfo.Principal.FindFirstValue(@"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
 
-            var twitterUser = await _twitterService.GetTwitterAccount(userId, screenName);
-
-            if (twitterUser != null)
+            if (string.IsNullOrEmpty(email))
             {
-                if (!string.IsNullOrEmpty(twitterUser.Name))
-                {
-                    var array = twitterUser.Name.Split(' ');
-                    if (array.Length > 1)
-                    {
-                        externalUserInformation.FirstName = array[0];
-                        externalUserInformation.LastName = array[1];
-                    }
-                }
+                _logger.LogError($"Failed to retrieve user email address for user {screenName} from Twitter, this could be due to either the setup of the app (ensure the app requests email address permissions) or this user has a blank/unverified email in Twitter");
+                return externalUserInformation;
             }
 
+            externalUserInformation.Email = email;
             return externalUserInformation;
         }
     }

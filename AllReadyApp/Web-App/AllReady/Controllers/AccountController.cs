@@ -316,6 +316,9 @@ namespace AllReady.Controllers
 
             if (externalLoginSignInAsyncResult.Succeeded)
             {
+                if (string.IsNullOrEmpty(externalUserInformation.Email))
+                   return View("Error");
+
                 var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = externalUserInformation.Email });
                 return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user);
             }
