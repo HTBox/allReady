@@ -217,7 +217,6 @@ namespace AllReady.Models
             builder.HasKey(a => a.Id);
             builder.HasOne(a => a.Task);
             builder.Property(a => a.Name).IsRequired();
-            builder.Property(a => a.ContentType).IsRequired();
         }
     }
 }

@@ -44,12 +44,11 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     PhoneNumber = ts.User.PhoneNumber,
                     AssociatedSkills = ts.User.AssociatedSkills,
                 }).ToList(),
-                Attachments = task.Attachments.Select(a => new FileAttachmentModel
+                Attachments = task.Attachments.Select(a => new FileAttachment
                 {
                     Id = a.Id,
                     Name = a.Name,
                     Description = a.Description,
-                    ContentType = a.ContentType,
                     Url = a.Url,
                 }).ToList(),
             };

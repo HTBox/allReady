@@ -44,6 +44,6 @@ namespace AllReady.Areas.Admin.ViewModels.Task
         public List<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();
 
         /// <summary>List of file attachments</summary>
-        public List<FileAttachmentModel> Attachments { get; set; } = new List<FileAttachmentModel>();
+        public List<FileAttachment> Attachments { get; set; } = new List<FileAttachment>();
     }
 }

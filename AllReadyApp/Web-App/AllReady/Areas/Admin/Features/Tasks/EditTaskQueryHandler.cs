@@ -37,12 +37,11 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     CampaignName = task.Event.Campaign.Name,
                     OrganizationId = task.Event.Campaign.ManagingOrganizationId,
                     TimeZoneId = task.Event.TimeZoneId,
-                    Attachments = task.Attachments.Select(a => new FileAttachmentModel
+                    Attachments = task.Attachments.Select(a => new FileAttachment
                     {
                         Id = a.Id,
                         Name = a.Name,
                         Description = a.Description,
-                        ContentType = a.ContentType,
                         Url = a.Url,
                     }).ToList(),
 

@@ -39,7 +39,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Organizations.Add(organization);
             Context.SaveChanges();
 
-            var mockAttachmentService = new Mock<IAttachmentService>();
+            var mockAttachmentService = new Mock<ITaskAttachmentService>();
             var sut = new EditTaskCommandHandler(Context, mockAttachmentService.Object);
             var taskId = await sut.Handle(message);
             var result = Context.Tasks.Single(x => x.Id == taskId);
@@ -94,7 +94,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 }
             };
 
-            var mockAttachmentService = new Mock<IAttachmentService>();
+            var mockAttachmentService = new Mock<ITaskAttachmentService>();
             var sut = new EditTaskCommandHandler(Context, mockAttachmentService.Object);
             var taskId = await sut.Handle(message);
             var result = Context.Tasks.Single(x => x.Id == taskId);

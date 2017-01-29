@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace AllReady.Services
 {
-    public class AttachmentService : IAttachmentService
+    public class TaskAttachmentService : ITaskAttachmentService
     {
         private const string ContainerName = "attachments";
         private const int MaxAttachmentBytes = 2 * 1024 * 1024; // 2MB
@@ -19,7 +19,7 @@ namespace AllReady.Services
 
         private readonly AzureStorageSettings _options;
 
-        public AttachmentService(IOptions<AzureStorageSettings> options)
+        public TaskAttachmentService(IOptions<AzureStorageSettings> options)
         {
             _options = options.Value;
         }
@@ -33,13 +33,13 @@ namespace AllReady.Services
         /// <param name="organizationId">int ID</param>
         /// <param name="attachment">a attachment from Microsoft.AspNet.Http</param>
         /// <returns>URL to the uploaded file</returns>
-        public async Task<string> UploadTaskAttachmentAsync(int taskId, IFormFile attachment)
+        public async Task<string> UploadAsync(int taskId, IFormFile attachment)
         {
             var blobPath = "task/" + taskId.ToString();
-            return await UploadAttachmentAsync(blobPath, attachment);
+            return await UploadAsync(blobPath, attachment);
         }
 
-        public async Task DeleteAttachmentAsync(string attachmentUrl)
+        public async Task DeleteAsync(string attachmentUrl)
         {
             var blobContainer = CloudStorageAccount.Parse(_options.AzureStorage)
                 .CreateCloudBlobClient()
@@ -51,17 +51,12 @@ namespace AllReady.Services
             await blockBlob.DeleteAsync();
         }
 
-        public async Task<string> UploadAttachmentAsync(string blobPath, IFormFile attachment)
+        private async Task<string> UploadAsync(string blobPath, IFormFile attachment)
         {
             //Get filename
             var fileName = ContentDispositionHeaderValue.Parse(attachment.ContentDisposition).FileName.Trim('"').ToLower();
             Debug.WriteLine($"BlobPath={blobPath}, fileName={fileName}, attachment length={attachment.Length}");
-
-            if (!GetAllowedExtensions().Any(ext => fileName.EndsWith(ext)))
-            {
-                throw new Exception("Invalid file extension: " + fileName + ". You can only upload attachments with the extensions: " + string.Join(", ", AllowedExtensions));
-            }
-
+          
             var account = CloudStorageAccount.Parse(_options.AzureStorage);
             var container = account.CreateCloudBlobClient().GetContainerReference(ContainerName);
 
@@ -93,17 +88,6 @@ namespace AllReady.Services
 
             Debug.WriteLine("Attachment uploaded to URI: " + blockBlob.Uri);
             return blockBlob.Uri.ToString();
-
-        }
-
-        public IList<string> GetAllowedExtensions()
-        {
-            return AllowedExtensions;
-        }
-
-        public int GetMaxAttachmentBytes()
-        {
-            return MaxAttachmentBytes;
         }
     }
 }

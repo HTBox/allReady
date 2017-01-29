@@ -63,7 +63,7 @@ namespace AllReady.Areas.Admin.ViewModels.Task
         public IFormFile NewAttachment { get; set; }
 
         /// <summary>List of current file attachments</summary>
-        public List<FileAttachmentModel> Attachments { get; set; } = new List<FileAttachmentModel>();
+        public List<FileAttachment> Attachments { get; set; } = new List<FileAttachment>();
 
         /// <summary>List of attachment IDs to delete</summary>
         [Display(Name = "Attachments to Delete")]

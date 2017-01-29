@@ -33,12 +33,11 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     Name = task.Name,
                     StartDateTime = task.StartDateTime,
                     EndDateTime = task.EndDateTime,
-                    Attachments = task.Attachments.Select(a => new FileAttachmentModel
+                    Attachments = task.Attachments.Select(a => new FileAttachment
                     {
                         Id = a.Id,
                         Name = a.Name,
                         Description = a.Description,
-                        ContentType = a.ContentType,
                         Url = a.Url,
                     }).ToList(),
                 })

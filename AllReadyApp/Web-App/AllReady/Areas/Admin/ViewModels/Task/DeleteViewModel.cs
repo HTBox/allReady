@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AllReady.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -35,6 +36,6 @@ namespace AllReady.Areas.Admin.ViewModels.Task
 
         /// <summary>List of file attachments</summary>
         [Display(Name = "Attachments")]
-        public List<FileAttachmentModel> Attachments { get; set; } = new List<FileAttachmentModel>();
+        public List<FileAttachment> Attachments { get; set; } = new List<FileAttachment>();
     }
 }

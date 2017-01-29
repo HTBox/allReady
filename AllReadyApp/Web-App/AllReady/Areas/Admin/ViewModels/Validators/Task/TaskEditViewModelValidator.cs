@@ -13,22 +13,13 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
     public class TaskEditViewModelValidator : ITaskEditViewModelValidator
     {
         private readonly IMediator _mediator;
-        private readonly IAttachmentService _attachmentService;
 
-        public TaskEditViewModelValidator(IMediator mediator, IAttachmentService attachmentService)
+        // list of executable extensions (same extensions as blocked by Gmail)
+        private readonly HashSet<string> ForbiddenExtensions = new HashSet<string> { ".ade", ".adp", ".bat", ".chm", ".cmd", ".com", ".cpl", ".exe", ".hta", ".ins", ".isp", ".jar", ".jse", ".lib", ".lnk", ".mde", ".msc", ".msp", ".mst", ".pif", ".scr", ".sct", ".shb", ".sys", ".vb", ".vbe", ".vbs", ".vxd", ".wsc", ".wsf", ".wsh" };
+
+        public TaskEditViewModelValidator(IMediator mediator)
         {
-            if (mediator == null)
-            {
-                throw new ArgumentNullException(nameof(mediator));
-            }
-
-            if (attachmentService == null)
-            {
-                throw new ArgumentNullException(nameof(attachmentService));
-            }
-
             _mediator = mediator;
-            _attachmentService = attachmentService;
         }
 
         public async Task<List<KeyValuePair<string, string>>> Validate(EditViewModel viewModel)
@@ -54,29 +45,21 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
             {
                 result.Add(new KeyValuePair<string, string>(nameof(viewModel.EndDateTime), $"The end date of this task cannot be after the end date of the event {parentEvent.EndDateTime:g}"));
             }
-            
+
             // Rule - Attachments are optional
-            if (viewModel.NewAttachment != null && !string.IsNullOrEmpty(viewModel.NewAttachment.FileName))
+            if (!string.IsNullOrEmpty(viewModel.NewAttachment?.FileName))
             {
                 // Rule - New attachment must have content
                 if (viewModel.NewAttachment == null || viewModel.NewAttachment.Length == 0)
                 {
                     result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), "The attachment is empty"));
                 }
-
-                // Rule - New attachment must have a maximum size
-                int maxBytes = _attachmentService.GetMaxAttachmentBytes();
-                if (viewModel.NewAttachment.Length > maxBytes)
-                {
-                    result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), string.Format("The attachment is too large. It should have a maximum of {0} bytes.", maxBytes)));
-                }
-
-                // Rule - Attachment must be a document or an image
+                
+                // Rule - Attachment must not be executable
                 string ext = Path.GetExtension(viewModel.NewAttachment.FileName).ToLower();
-                IList<string> allowedFileExtensions = _attachmentService.GetAllowedExtensions();
-                if (!allowedFileExtensions.Contains(ext))
+                if (ForbiddenExtensions.Contains(ext))
                 {
-                    result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), "The attachment has an invalid extension. Allowed file types are :" + string.Join(", ", allowedFileExtensions)));
+                    result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), "The attachment has an invalid extension. Allowed file types are :" + string.Join(", ", ForbiddenExtensions)));
                 }
             }
 
