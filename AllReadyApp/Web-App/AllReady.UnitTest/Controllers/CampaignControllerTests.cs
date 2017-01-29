@@ -17,20 +17,20 @@ namespace AllReady.UnitTest.Controllers
     public class CampaignControllerTests
     {
         [Fact]
-        public void IndexSendsCampaignIndexQuery()
+        public async Task IndexSendsCampaignIndexQuery()
         {
             var mockMediator = new Mock<IMediator>();
             var sut = new CampaignController(mockMediator.Object);
-            sut.Index();
+            await sut.Index();
 
-            mockMediator.Verify(m => m.Send(It.IsAny<UnlockedCampaignsQuery>()), Times.Once);
+            mockMediator.Verify(m => m.SendAsync(It.IsAny<UnlockedCampaignsQuery>()), Times.Once);
         }
 
         [Fact]
-        public void IndexReturnsAView()
+        public async Task IndexReturnsAView()
         {
             var sut = new CampaignController(Mock.Of<IMediator>());
-            var result = sut.Index();
+            var result = await sut.Index();
 
             Assert.IsType<ViewResult>(result);
         }
@@ -174,26 +174,26 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void GetReturnsTheCorrectViewModel()
+        public async Task GetReturnsTheCorrectViewModel()
         {
             var mockedMediator = new Mock<IMediator>();
-            mockedMediator.Setup(m => m.Send(It.IsAny<UnlockedCampaignsQuery>())).Returns(new List<CampaignViewModel>());
+            mockedMediator.Setup(m => m.SendAsync(It.IsAny<UnlockedCampaignsQuery>())).ReturnsAsync(new List<CampaignViewModel>());
 
             var sut = new CampaignController(mockedMediator.Object);
-            var result = sut.Get();
+            var result = await sut.Get();
 
             Assert.IsType<List<CampaignViewModel>>(result);
         }
 
         [Fact]
-        public void GetSendsCampaignGetQuery()
+        public async Task GetSendsCampaignGetQuery()
         {
             var mockedMediator = new Mock<IMediator>();
 
             var sut = new CampaignController(mockedMediator.Object);
-            sut.Get();
+            await sut.Get();
 
-            mockedMediator.Verify(m => m.Send(It.IsAny<UnlockedCampaignsQuery>()), Times.Once);
+            mockedMediator.Verify(m => m.SendAsync(It.IsAny<UnlockedCampaignsQuery>()), Times.Once);
         }
 
         [Fact]

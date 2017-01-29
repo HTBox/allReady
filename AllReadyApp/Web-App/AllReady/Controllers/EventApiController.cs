@@ -22,9 +22,9 @@ namespace AllReady.Controllers
 
         // GET: api/values
         [HttpGet]
-        public IEnumerable<EventViewModel> Get()
+        public async Task<IEnumerable<EventViewModel>> Get()
         {
-            return _mediator.Send(new EventsWithUnlockedCampaignsQuery());
+            return await _mediator.SendAsync(new EventsWithUnlockedCampaignsQuery());
         }
 
         //orginial code
@@ -46,9 +46,9 @@ namespace AllReady.Controllers
         //orginial code
         [HttpGet("{start}/{end}")]
         [Produces("application/json", Type = typeof(EventViewModel))]
-        public ActionResult GetEventsByDateRange(DateTimeOffset start, DateTimeOffset end)
+        public async Task<IActionResult> GetEventsByDateRange(DateTimeOffset start, DateTimeOffset end)
         {
-            var events = _mediator.Send(new EventByDateRangeQuery { EndDate = end, StartDate = start });
+            var events = await _mediator.SendAsync(new EventByDateRangeQuery { EndDate = end, StartDate = start });
             if (events == null)
             {
                 return NoContent();

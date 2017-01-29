@@ -4,7 +4,6 @@ using AllReady.Models;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Moq;
-using Shouldly;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Notifications
@@ -20,8 +19,6 @@ namespace AllReady.UnitTest.Features.Notifications
             const string userMail = "damk@allready.com";
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-                .ReturnsAsync(new Unit());
 
             var options = new Mock<IOptions<GeneralSettings>>();
             options.Setup(o => o.Value).Returns(new GeneralSettings {SiteBaseUrl = "allready.com"});
@@ -50,26 +47,20 @@ namespace AllReady.UnitTest.Features.Notifications
             const string userEmail = "damk@allready.com";
 
             var mediator = new Mock<IMediator>();
-            NotifyVolunteersViewModel viewModel = null;
-            mediator.Setup(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()))
-                .ReturnsAsync(new Unit())
-                .Callback<IAsyncRequest>(request => viewModel = ((NotifyVolunteersCommand)request).ViewModel);
 
             var options = new Mock<IOptions<GeneralSettings>>();
             options.Setup(o => o.Value).Returns(new GeneralSettings { SiteBaseUrl = "allready.com" });
 
             var notification = new TaskSignupStatusChanged { SignupId = taskSignupId };
 
-            var context = Context;
             var taskSignup = CreateTaskSignup(taskSignupId, taskId, email, firstName, lastName, userEmail);
-            context.TaskSignups.Add(taskSignup);
-            context.SaveChanges();
+            Context.TaskSignups.Add(taskSignup);
+            Context.SaveChanges();
 
-            var target = new NotifyAdminForTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
+            var target = new NotifyAdminForTaskSignupStatusChangeHandler(Context, mediator.Object, options.Object);
             await target.Handle(notification);
 
-            mediator.VerifyAll();
-            viewModel.Subject.ShouldBe($"{firstName} {lastName}");
+            mediator.Verify(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(y => y.ViewModel.Subject == $"{firstName} {lastName}")));
         }
 
         [Fact]
