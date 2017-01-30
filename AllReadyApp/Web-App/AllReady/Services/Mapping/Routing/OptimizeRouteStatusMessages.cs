@@ -7,7 +7,7 @@ namespace AllReady.Services.Mapping.Routing
     public static class OptimizeRouteStatusMessages
     {
         /// <summary>
-        /// A general failure message when a speciifc cause cannot be / should not be provided to the end user
+        /// A general failure message when a specific cause cannot be / should not be provided to the end user
         /// </summary>
         public static string GeneralOptimizeFailure = "Unable to optimize route";
 
@@ -20,5 +20,10 @@ namespace AllReady.Services.Mapping.Routing
         /// Indicates that the optimization process completed and the request order was updated
         /// </summary>
         public static string OptimizeSucess = "Route optimized";
+
+        /// <summary>
+        /// Indicates that the optimization process completed but no waypoints where included
+        /// </summary>
+        public static string ZeroResults = "Unable to find one or more of the request addresses";
     }
 }

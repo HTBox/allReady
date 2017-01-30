@@ -44,7 +44,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
             if (itinerary.HasAddresses)
             {
-                var waypoints = requests.Select(req => new OptimizeRouteWaypoint(req.Request.Longitude, req.Request.Latitude, req.RequestId)).ToList();
+                var waypoints = requests.Select(req => new OptimizeRouteWaypoint(req.Request.Latitude, req.Request.Longitude, req.RequestId)).ToList();
 
                 var optimizeResult = await _optimizeRouteService.OptimizeRoute(new OptimizeRouteCriteria(itinerary.StartAddress, itinerary.EndAddress, waypoints));
 

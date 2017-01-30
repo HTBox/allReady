@@ -48,11 +48,14 @@ namespace AllReady.Services.Mapping.Routing
                     if (result.Status == GoogleDirectionsResponse.OkStatus)
                     {
                         requestIds.AddRange(result.Routes.SelectMany(r => r.WaypointOrder).Select(waypointIndex => criteria.Waypoints[waypointIndex].RequestId));
-
                         return new OptimizeRouteResult { RequestIds = requestIds, Distance = result.TotalDistance, Duration = result.TotalDuration };
                     }
-                        
-                    return null;
+                    else if (result.Status == GoogleDirectionsResponse.NoResultsStatus || result.Status == GoogleDirectionsResponse.NotFound)
+                    {
+                        return OptimizeRouteResult.FailedOptimizeRouteResult(OptimizeRouteStatusMessages.ZeroResults);
+                    }
+
+                    return OptimizeRouteResult.FailedOptimizeRouteResult(OptimizeRouteStatusMessages.GeneralOptimizeFailure);
                 });
             }
             catch (Exception ex)
@@ -60,7 +63,8 @@ namespace AllReady.Services.Mapping.Routing
                 _logger.LogError($"Unable to connect to Google API {ex}");
                 // todo - handle other status codes and logging
             }
-            return null;
+
+            return OptimizeRouteResult.FailedOptimizeRouteResult(OptimizeRouteStatusMessages.GeneralOptimizeFailure);
         }
 
         private Policy GetRetryPolicy()
