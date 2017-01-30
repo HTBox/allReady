@@ -1,4 +1,5 @@
-@model IEnumerable<AllReady.Areas.Admin.ViewModels.UnlinkedRequests.UnlinkedRequestViewModel>
+@using AllReady.Services
+@model AllReady.Areas.Admin.ViewModels.UnlinkedRequests.UnlinkedRequestViewModel
 
 @{ ViewBag.Title = "Unlinked Requests"; }
 <div class="row">
@@ -8,35 +9,58 @@
         </h2>
     </div>
 </div>
-
-<div class="row">
-    <div class="col-md-12">
-        @if (Model.Any())
-            {
-            <table class="table">
-                <tr>
-                    <th>Request Name</th>
-                    <th>Address</th>
-                    <th>City</th>
-                    <th>Postcode</th>
-                    <th>Date Added</th>
-                </tr>
-                @foreach (var req in Model)
-                {
-                    <tr>
-                        <td>@req.Name</td>
-                        <td>@req.Address</td>
-                        <td>@req.City</td>
-                        <td>@req.Zip</td>
-                        <td>@req.DateAdded</td>
-                    </tr>
-                }
-            </table>
-        }
-        else
-        {
-            <br />
-                <p>There are no requests to display</p>
-        }
+<form asp-area="Admin" asp-controller="UnlinkedRequest" asp-action="AddRequests">
+    <div class="form-group">
+        Select an Event:
+        <div class="row">
+            <div class="col-md-2">
+                <select asp-for="EventId" asp-items="@Model.Events" class="form-control">
+                    <option value="0">-- Select --</option>
+                </select>
+                <span asp-validation-for="EventId" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary submit-form">Add Selected Requests</button>
+                <a asp-action="List" asp-controller="UnlinkedRequest" asp-area="Admin" class="btn btn-default">Cancel</a>
+            </div>
+        </div>
     </div>
-</div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <span asp-validation-for="Requests" class="text-danger"></span>
+            @if (Model.Requests.Any())
+            {
+                <table class="table">
+                    <tr>
+                        <th></th>
+                        <th>Request Name</th>
+                        <th>Address</th>
+                        <th>City</th>
+                        <th>Postcode</th>
+                        <th>Date Added</th>
+                    </tr>
+                    @for (var i = 0; i < Model.Requests.Count(); i++)
+                    {
+                        <tr>
+                            <td>
+                                @Html.HiddenFor(model => model.Requests[i].Id)
+                                @Html.CheckBoxFor(model => model.Requests[i].IsSelected)
+                            </td>
+                            <td>@Model.Requests[i].Name</td>
+                            <td>@Model.Requests[i].Address</td>
+                            <td>@Model.Requests[i].City</td>
+                            <td>@Model.Requests[i].Postcode</td>
+                            <td>@Model.Requests[i].DateAdded</td>
+                        </tr>
+                    }
+                </table>
+            }
+            else
+            {
+                <br/>
+                <p>There are no requests to display</p>
+            }
+        </div>
+    </div>
+</form>
