@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using AllReady.Configuration;
 using MediatR;
 using Microsoft.Extensions.Options;
 

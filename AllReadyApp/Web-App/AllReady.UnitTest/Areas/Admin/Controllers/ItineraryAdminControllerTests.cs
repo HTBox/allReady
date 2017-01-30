@@ -28,9 +28,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
     public class ItineraryAdminControllerTests
     {
-        //delete this line when all unit tests using it have been completed
-        private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
-
         [Fact]
         public void ControllerHasAreaAtttributeWithTheCorrectAreaName()
         {

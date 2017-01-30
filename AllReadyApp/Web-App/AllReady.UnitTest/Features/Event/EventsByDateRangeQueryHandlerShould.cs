@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Features.Events;
 using Xunit;
 
@@ -23,7 +24,7 @@ namespace AllReady.UnitTest.Features.Event
         }
 
         [Fact]
-        public void FiltersEventsCorrectly()
+        public async Task FiltersEventsCorrectly()
         {
             var may = new DateTimeOffset(2016, 5, 1, 0, 0, 0, new TimeSpan());
             var june = new DateTimeOffset(2016, 6, 1, 0, 0, 0, new TimeSpan());
@@ -34,7 +35,8 @@ namespace AllReady.UnitTest.Features.Event
             Context.SaveChanges();
 
             var sut = new EventByDateRangeQueryHandler(Context);
-            var result = sut.Handle(new EventByDateRangeQuery { StartDate = may, EndDate = june }).ToArray();
+            var eventViewModel = await sut.Handle(new EventByDateRangeQuery { StartDate = may, EndDate = june });
+            var result = eventViewModel.ToArray();
 
             Context.Events.RemoveRange(events);
             Context.SaveChanges();

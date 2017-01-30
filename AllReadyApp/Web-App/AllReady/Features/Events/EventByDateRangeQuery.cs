@@ -5,7 +5,7 @@ using MediatR;
 
 namespace AllReady.Features.Events
 {
-    public class EventByDateRangeQuery : IRequest<IEnumerable<EventViewModel>>
+    public class EventByDateRangeQuery : IAsyncRequest<IEnumerable<EventViewModel>>
     {
         public DateTimeOffset EndDate { get; set; }
         public DateTimeOffset StartDate { get; set; }

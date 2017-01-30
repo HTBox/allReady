@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
+using AllReady.Configuration;
 using AllReady.Features.Admin;
 using AllReady.Features.Manage;
 using AllReady.Models;

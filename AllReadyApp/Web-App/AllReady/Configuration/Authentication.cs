@@ -16,7 +16,7 @@ namespace AllReady.Configuration
         {
             ctx.Response.Redirect("/Account/Login");
             ctx.HandleResponse();
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         internal static void ConfigureAuthentication(IApplicationBuilder app, IConfiguration configuration)
@@ -66,14 +66,15 @@ namespace AllReady.Configuration
                 app.UseMicrosoftAccountAuthentication(options);
             }
 
-            //http://www.bigbrainintelligence.com/Post/get-users-email-address-from-twitter-oauth-ap
+            //Twitter doesn't automatically include email addresses, has to be enabled as a special permission
+            //once enabled then RetrieveUserDetails property includes email in claims returned by twitter middleware
             if (configuration["Authentication:Twitter:ConsumerKey"] != null)
             {
                 var options = new TwitterOptions
                 {
                     ConsumerKey = configuration["Authentication:Twitter:ConsumerKey"],
-                    ConsumerSecret = configuration["Authentication:Twitter:ConsumerSecret"]
-                    ,
+                    ConsumerSecret = configuration["Authentication:Twitter:ConsumerSecret"],
+                    RetrieveUserDetails = true,
                     Events = new TwitterEvents()
                     {
 

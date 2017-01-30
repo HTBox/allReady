@@ -21,9 +21,9 @@ namespace AllReady.Controllers
 
         [HttpGet]
         [Route("~/[controller]")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var unlockedCampaigns = GetUnlockedCampaigns();
+            var unlockedCampaigns = await GetUnlockedCampaigns();
             return View(unlockedCampaigns);
         }
 
@@ -57,9 +57,9 @@ namespace AllReady.Controllers
 
         // GET: api/values
         [HttpGet]
-        public IEnumerable<CampaignViewModel> Get()
+        public async Task<IEnumerable<CampaignViewModel>> Get()
         {
-            return GetUnlockedCampaigns();
+            return await GetUnlockedCampaigns();
         }
 
         // GET api/values/5
@@ -75,9 +75,9 @@ namespace AllReady.Controllers
             return Json(campaign.ToViewModel());
         }
 
-        private List<CampaignViewModel> GetUnlockedCampaigns()
+        private async Task<List<CampaignViewModel>> GetUnlockedCampaigns()
         {
-            return _mediator.Send(new UnlockedCampaignsQuery());
+            return await _mediator.SendAsync(new UnlockedCampaignsQuery());
         }
 
         private async Task<Campaign> GetCampaign(int campaignId)

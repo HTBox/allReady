@@ -19,8 +19,10 @@ using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace AllReady.Configuration
 {
@@ -31,6 +33,8 @@ namespace AllReady.Configuration
             // todo: move these to a proper autofac module
             // Register application services.
             services.AddSingleton(x => configuration);
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddTransient<IUrlHelper>(x => new UrlHelper(x.GetService<IActionContextAccessor>().ActionContext));
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
@@ -43,7 +47,7 @@ namespace AllReady.Configuration
             services.AddSingleton<ICsvFactory, CsvFactory>();
             services.AddTransient<SampleDataGenerator>();
             services.AddSingleton<IHttpClient, StaticHttpClient>();
-            services.AddSingleton<ITwitterService, TwitterService>();
+           
 
             if (configuration["Mapping:EnableGoogleGeocodingService"] == "true")
             {
