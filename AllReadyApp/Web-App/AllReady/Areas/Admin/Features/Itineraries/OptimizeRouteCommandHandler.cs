@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Linq;
 using AllReady.Services.Mapping.Routing;
+using Microsoft.Extensions.Caching.Memory;
+using AllReady.Caching;
 
 namespace AllReady.Areas.Admin.Features.Itineraries
 {
@@ -16,73 +18,107 @@ namespace AllReady.Areas.Admin.Features.Itineraries
     {
         private readonly AllReadyContext _context;
         private readonly IOptimizeRouteService _optimizeRouteService;
+        private readonly IMemoryCache _cache;
 
-        public OptimizeRouteCommandHandler(AllReadyContext context, IOptimizeRouteService optimizeRouteService)
+        public OptimizeRouteCommandHandler(AllReadyContext context, IOptimizeRouteService optimizeRouteService, IMemoryCache memoryCache)
         {
             _context = context;
             _optimizeRouteService = optimizeRouteService;
+            _cache = memoryCache;
         }
 
         /// <summary>
-        /// Will try to reorder requests based on an optimized route from a 3rd party service. The new order will be persisted to the database
+        /// Reorders requests based on an optimized route from a 3rd party service. The new order will be persisted to the database
         /// </summary>
         /// <param name="message"></param>
         protected override async Task HandleCore(OptimizeRouteCommand message)
         {
-            var requests = await _context.ItineraryRequests
-                .Include(rec => rec.Request)
-                .Include(rec => rec.Itinerary).ThenInclude(i => i.StartLocation)
-                .Include(rec => rec.Itinerary).ThenInclude(i => i.EndLocation)
-                .Where(rec => rec.ItineraryId == message.ItineraryId)
-                .ToListAsync();
+            var requests = await GetRequests(message.ItineraryId);
 
-            if (!requests.Any()) return;
+            if (!requests.Any())
+            {
+                return;
+            }
 
             var itinerary = requests.First().Itinerary;
 
-            if (!string.IsNullOrWhiteSpace(itinerary?.StartLocation?.FullAddress))
+            if (itinerary.HasAddresses)
             {
-                var startAddress = itinerary.StartLocation.FullAddress;
-                var endAddress = itinerary.EndLocation?.FullAddress;
+                var waypoints = requests.Select(req => new OptimizeRouteWaypoint(req.Request.Latitude, req.Request.Longitude, req.RequestId)).ToList();
 
-                if (itinerary.UseStartAddressAsEndAddress)
+                var optimizeResult = await _optimizeRouteService.OptimizeRoute(new OptimizeRouteCriteria(itinerary.StartAddress, itinerary.EndAddress, waypoints));
+
+                if (!optimizeResult.Status.IsSuccess)
                 {
-                    endAddress = startAddress;
+                    SetOptimizeCache(message.UserId, message.ItineraryId, optimizeResult.Status);
                 }
-
-                if (!string.IsNullOrWhiteSpace(endAddress))
+                else if (ValidateOptimizedRequests(waypoints, optimizeResult.RequestIds))
                 {
-                    var waypoints = requests.Select(req => new OptimizeRouteWaypoint(req.Request.Latitude, req.Request.Longitude, req.RequestId)).ToList();
+                    var originalRequestIds = waypoints.Select(x => x.RequestId);
 
-                    var optimizeResult = await _optimizeRouteService.OptimizeRoute(new OptimizeRouteCriteria(startAddress, endAddress, waypoints));
-
-                    if (optimizeResult?.RequestIds != null && optimizeResult.RequestIds.Count == waypoints.Count && ValidateOptimizedRequests(waypoints, optimizeResult.RequestIds))
+                    if (originalRequestIds.SequenceEqual(optimizeResult.RequestIds))
                     {
-                        for (var i = 0; i < waypoints.Count; i++)
-                        {
-                            var itineraryRequest = requests.SingleOrDefault(r => r.RequestId == optimizeResult.RequestIds[i]);
-
-                            if (itineraryRequest != null)
-                            {
-                                itineraryRequest.OrderIndex = i + 1;
-                            }
-                        }
-
-                        await _context.SaveChangesAsync();
+                        SetOptimizeCache(message.UserId, message.ItineraryId, new OptimizeRouteResultStatus { StatusMessage = OptimizeRouteStatusMessages.AlreadyOptimized });
+                    }
+                    else
+                    {
+                        await ReOrderRequests(waypoints, requests, optimizeResult);
+                        SetOptimizeCache(message.UserId, message.ItineraryId, new OptimizeRouteResultStatus { StatusMessage = OptimizeRouteStatusMessages.OptimizeSucess });
                     }
                 }
-            }            
+                else
+                {
+                    SetOptimizeCache(message.UserId, message.ItineraryId, OptimizeRouteResult.FailedOptimizeRouteResult(OptimizeRouteStatusMessages.GeneralOptimizeFailure).Status);
+                }
+            }
+        }
+
+        private async Task ReOrderRequests(List<OptimizeRouteWaypoint> waypoints, List<ItineraryRequest> requests, OptimizeRouteResult optimizeResult)
+        {
+            for (var i = 0; i < waypoints.Count; i++)
+            {
+                var itineraryRequest = requests.SingleOrDefault(r => r.RequestId == optimizeResult.RequestIds[i]);
+
+                if (itineraryRequest != null)
+                {
+                    itineraryRequest.OrderIndex = i + 1;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task<List<ItineraryRequest>> GetRequests(int itineraryId)
+        {
+            // todo - we can be more specific about the fields we query for
+            return await _context.ItineraryRequests
+                .Include(rec => rec.Request)
+                .Include(rec => rec.Itinerary).ThenInclude(i => i.StartLocation)
+                .Include(rec => rec.Itinerary).ThenInclude(i => i.EndLocation)
+                .Where(rec => rec.ItineraryId == itineraryId)
+                .ToListAsync();
+        }
+
+        private void SetOptimizeCache(string userId, int itineraryId, OptimizeRouteResultStatus message)
+        {
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var cacheEntryOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(1));
+
+                _cache.Set(CacheKeyBuilder.BuildOptimizeRouteCacheKey(userId, itineraryId), message, cacheEntryOptions);
+            }
         }
 
         /// <summary>
-        /// Validated that the request ids in both lists are the same (ignores order)
+        /// Validates that the request ids in both lists are the same (ignores order)
         /// </summary>
         /// <param name="waypoints"></param>
         /// <param name="optimizedRequestIds"></param>
         /// <returns></returns>
         private static bool ValidateOptimizedRequests(IEnumerable<OptimizeRouteWaypoint> waypoints, IEnumerable<Guid> optimizedRequestIds)
         {
-            return waypoints.Select(x => x.RequestId).Except(optimizedRequestIds).ToList().Count == 0;
+            return optimizedRequestIds.Count() == waypoints.Count() &&
+                waypoints.Select(x => x.RequestId).Except(optimizedRequestIds).ToList().Count == 0;
         }
     }
 }
