@@ -292,7 +292,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(model)).ReturnsAsync(new List<KeyValuePair<string, string>>()).Verifiable();
 
-            var sut = new TaskController(null, validator.Object);
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
+
+            var sut = new TaskController(null, validator.Object) { Url = urlHelper.Object };
             sut.AddModelStateError();
 
             await sut.Edit(model);
@@ -310,8 +313,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             validator.Setup(x => x.Validate(It.IsAny<EditViewModel>()))
                 .ReturnsAsync(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>(errorKey, errorValue) });
 
-            var sut = new TaskController(null, validator.Object);
-            await sut.Edit(new EditViewModel());
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
+
+            var sut = new TaskController(null, validator.Object) { Url = urlHelper.Object };
+            await sut.Edit(new EditViewModel() { EventId = 1, Id = 1 });
 
             var modelStateErrorCollection = sut.ModelState.GetErrorMessagesByKey(errorKey);
             Assert.Equal(modelStateErrorCollection.Single().ErrorMessage, errorValue);
@@ -325,8 +331,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var validator = new Mock<ITaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<EditViewModel>()))
                 .ReturnsAsync(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("key", "value") });
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
-            var sut = new TaskController(Mock.Of<IMediator>(), validator.Object);
+            var sut = new TaskController(Mock.Of<IMediator>(), validator.Object) { Url = urlHelper.Object };
             var result = await sut.Edit(model) as ViewResult;
             var modelResult = result.ViewData.Model as EditViewModel;
 

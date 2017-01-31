@@ -92,6 +92,7 @@ namespace AllReady.Areas.Admin.Controllers
                     RedirectToAction(nameof(Details), "Task", new { id = taskId });
             }
 
+            viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(Details), Controller = "Task", Values = new { eventId = viewModel.EventId, id = viewModel.Id, area = "Admin" } });
             return View(viewModel);
         }
 
