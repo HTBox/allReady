@@ -21,7 +21,7 @@ namespace AllReady.UnitTest.Controllers
 
             var actionResult = await sut.Index(new Guid());
 
-            // Assert
+            //  Assert
             Assert.IsType(typeof(NotFoundResult),actionResult);
         }
 
