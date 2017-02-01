@@ -13,7 +13,7 @@ namespace AllReady.UnitTest.Controllers
     public class RequestStatusControllerTests
     {
         [Fact]
-        public async void NonMatchingRequestId_IndexReturnsNotFoundView() {
+        public async Task NonMatchingRequestId_IndexReturnsNotFoundView() {
 
             var mockMediator = new Mock<IMediator>();
 
