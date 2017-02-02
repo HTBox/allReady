@@ -25,12 +25,12 @@ var renderRequestsMap = function(divIdForMap, requestData) {
 
 var getGeoCoordinates = function (address1, address2, city, state, postalCode, country, callbackFunction) {
     var lookupAddress = "";
-    lookupAddress = lookupAddress + (address1 != undefined || address1 != null ? " " + address1 : null);
-    lookupAddress = lookupAddress + (address2 != undefined || address2 != null ? " " + address2 : null);
-    lookupAddress = lookupAddress + (city != undefined || city != null ? " " + city : null);
-    lookupAddress = lookupAddress + (state != undefined || state != null ? " " + state : null);
-    lookupAddress = lookupAddress + (postalCode != undefined || postalCode != null ? " " + postalCode : null);
-    lookupAddress = lookupAddress + (country != undefined || country != null ? " " + country : null);
+    lookupAddress = lookupAddress + (address1 != undefined || address1 != null ? " " + address1 : "");
+    lookupAddress = lookupAddress + (address2 != undefined || address2 != null ? " " + address2 : "");
+    lookupAddress = lookupAddress + (city != undefined || city != null ? ", " + city : "");
+    lookupAddress = lookupAddress + (state != undefined || state != null ? " " + state : "");
+    lookupAddress = lookupAddress + (postalCode != undefined || postalCode != null ? " " + postalCode : "");
+    lookupAddress = lookupAddress + (country != undefined || country != null ? " " + country : "");
     if (lookupAddress.trim() == "") {
         return;
     }
@@ -42,14 +42,17 @@ var getGeoCoordinates = function (address1, address2, city, state, postalCode, c
         url: geocodeRequest,
         dataType: "jsonp",
         jsonp: "jsonp",
-        success: function (result) {
-            var geoCoordinates = {
-                latitude: result.resourceSets[0].resources[0].geocodePoints[0].coordinates[0],
-                longitude: result.resourceSets[0].resources[0].geocodePoints[0].coordinates[1]
-            };
+        success: function(result) {
+            var geoCoordinates = { latitude: 0, longitude: 0 };
+            if (result.resourceSets[0].estimatedTotal > 0) {
+                geoCoordinates = {
+                    latitude: result.resourceSets[0].resources[0].geocodePoints[0].coordinates[0],
+                    longitude: result.resourceSets[0].resources[0].geocodePoints[0].coordinates[1]
+                };
+            }
             callbackFunction(geoCoordinates);
         },
-        error: function (e) {
+        error: function(e) {
             alert(e.statusText);
         }
     });
@@ -87,9 +90,9 @@ function addRequestPins(bingMap, requestData) {
     bingMap.setView({ bounds: rect, padding: 80 });
 }
 
-function setMapCenterAndZoom(bingMap, microsoftMapsLocations) {
+function setMapCenterAndZoom(bingMap, microsoftMapsLocations, zoom) {
     var options = bingMap.getOptions();
-    options.zoom = 10;
+    options.zoom = zoom || 10;
     if (microsoftMapsLocations.length === 1) {
         options.center = microsoftMapsLocations[0];
     } else if(microsoftMapsLocations.length > 1) {
