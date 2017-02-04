@@ -16,7 +16,7 @@ namespace AllReady.Areas.Admin.ViewModels.Request
             Map(r => r.Address).Name("address");
             Map(r => r.City).Name("city");
             Map(r => r.State).Name("state");
-            Map(r => r.Zip).Name("zip");
+            Map(r => r.PostalCode).Name("zip");
             Map(r => r.Phone).Name("phone");
             Map(r => r.Email).Name("email");
             Map(r => r.ProviderData).Name("region");

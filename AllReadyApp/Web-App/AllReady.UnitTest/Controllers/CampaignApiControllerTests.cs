@@ -45,16 +45,16 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void GetCampaignsByPostalCodeSendsEventsByPostalCodeQueryWithCorrectPostalCodeAndDistance()
         {
-            const string zip = "zip";
+            const string postalCode = "postecode";
             const int miles = 1;
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventsByPostalCodeQuery>())).Returns(new List<Event>());
 
             var sut = new CampaignApiController(mediator.Object);
-            sut.GetCampaignsByPostalCode(zip, miles);
+            sut.GetCampaignsByPostalCode(postalCode, miles);
 
-            mediator.Verify(x => x.Send(It.Is<EventsByPostalCodeQuery>(y => y.PostalCode == zip && y.Distance == miles)));
+            mediator.Verify(x => x.Send(It.Is<EventsByPostalCodeQuery>(y => y.PostalCode == postalCode && y.Distance == miles)));
         }
         
         [Fact]

@@ -55,7 +55,7 @@ namespace AllReady.Areas.Admin.Features.Requests
             if (!string.IsNullOrEmpty(message.Criteria.Keywords))
             {
                 results = results.Where(r => 
-                            r.Zip.Contains(message.Criteria.Keywords) || 
+                            r.PostalCode.Contains(message.Criteria.Keywords) || 
                             r.Address.Contains(message.Criteria.Keywords) ||
                             r.City.Contains(message.Criteria.Keywords) || 
                             r.Name.Contains(message.Criteria.Keywords));
@@ -76,7 +76,7 @@ namespace AllReady.Areas.Admin.Features.Requests
                 Latitude = r.Latitude,
                 Longitude = r.Longitude,
                 City = r.City,
-                Postcode = r.Zip,
+                Postcode = r.PostalCode,
                 Status = r.Status,
                 DateAdded = r.DateAdded,
             }).ToListAsync();

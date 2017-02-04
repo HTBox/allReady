@@ -156,16 +156,16 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void GetEventsByPostalCodeSendsEventsByPostalCodeQueryWithCorrectPostalCodeAndDistance()
         {
-            const string zip = "zip";
+            const string postalCode = "postalcode";
             const int miles = 100;
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventsByPostalCodeQuery>())).Returns(new List<Event>());
 
             var sut = new EventApiController(mediator.Object);
-            sut.GetEventsByPostalCode(zip, miles);
+            sut.GetEventsByPostalCode(postalCode, miles);
 
-            mediator.Verify(x => x.Send(It.Is<EventsByPostalCodeQuery>(y => y.PostalCode == zip && y.Distance == miles)), Times.Once);
+            mediator.Verify(x => x.Send(It.Is<EventsByPostalCodeQuery>(y => y.PostalCode == postalCode && y.Distance == miles)), Times.Once);
         }
 
         [Fact]

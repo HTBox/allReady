@@ -225,7 +225,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(result.ValidationErrors[0].Errors[1].ErrorMessage, "The Address field is required.");
             Assert.Equal(result.ValidationErrors[0].Errors[2].ErrorMessage, "The City field is required.");
             Assert.Equal(result.ValidationErrors[0].Errors[3].ErrorMessage, "The State field is required.");
-            Assert.Equal(result.ValidationErrors[0].Errors[4].ErrorMessage, "The Zip field is required.");
+            Assert.Equal(result.ValidationErrors[0].Errors[4].ErrorMessage, "The PostalCode field is required.");
             Assert.Equal(result.ValidationErrors[0].Errors[5].ErrorMessage, "The Phone field is required.");
             Assert.Equal(result.ValidationErrors[0].Errors[6].ErrorMessage, "Invalid Email Address");
         }
@@ -235,7 +235,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var importRequestViewModels = new List<ImportRequestViewModel>
             {
-                new ImportRequestViewModel { Id =  "Id", Name = "Name", Address = "Address", City = "City", Email = "email@email.com", Phone = "111-111-1111", State = "State", Zip = "Zip" }
+                new ImportRequestViewModel { Id =  "Id", Name = "Name", Address = "Address", City = "City", Email = "email@email.com", Phone = "111-111-1111", State = "State", PostalCode = "PostalCode" }
             };
 
             Mock<IFormFile> iFormFile;
@@ -261,7 +261,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 y.ImportRequestViewModels[0].Email == importRequestViewModels[0].Email &&
                 y.ImportRequestViewModels[0].Phone == importRequestViewModels[0].Phone &&
                 y.ImportRequestViewModels[0].State == importRequestViewModels[0].State &&
-                y.ImportRequestViewModels[0].Zip == importRequestViewModels[0].Zip &&
+                y.ImportRequestViewModels[0].PostalCode == importRequestViewModels[0].PostalCode &&
                 y.ImportRequestViewModels[0].Longitude == 0 &&
                 y.ImportRequestViewModels[0].Latitude == 0 &&
                 y.ImportRequestViewModels[0].ProviderData == null)), Times.Once);
@@ -275,7 +275,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var importRequestViewModels = new List<ImportRequestViewModel>
             {
-                new ImportRequestViewModel { Id =  "Id", Name = "Name", Address = "Address", City = "City", Email = "email@email.com", Phone = "111-111-1111", State = "State", Zip = "Zip" }
+                new ImportRequestViewModel { Id =  "Id", Name = "Name", Address = "Address", City = "City", Email = "email@email.com", Phone = "111-111-1111", State = "State", PostalCode = "PostalCode" }
             };
 
             Mock<IFormFile> iFormFile;
@@ -304,7 +304,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var importRequestViewModels = new List<ImportRequestViewModel>
             {
-                new ImportRequestViewModel { Id =  "Id", Name = "Name", Address = "Address", City = "City", Email = "email@email.com", Phone = "111-111-1111", State = "State", Zip = "Zip" }
+                new ImportRequestViewModel { Id =  "Id", Name = "Name", Address = "Address", City = "City", Email = "email@email.com", Phone = "111-111-1111", State = "State", PostalCode = "PostalCode" }
             };
 
             Mock<IFormFile> iFormFile;

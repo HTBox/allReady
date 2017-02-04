@@ -40,7 +40,7 @@ namespace AllReady.Areas.Admin.Features.Requests
             request.City = message.RequestModel.City;
             request.Name = message.RequestModel.Name;
             request.State = message.RequestModel.State;
-            request.Zip = message.RequestModel.Zip;
+            request.PostalCode = message.RequestModel.PostalCode;
             request.Email = message.RequestModel.Email;
             request.Phone = message.RequestModel.Phone;
             request.Latitude = message.RequestModel.Latitude;
@@ -49,7 +49,7 @@ namespace AllReady.Areas.Admin.Features.Requests
             //If lat/long not provided and we detect the address changed, then use geocoding API to get the lat/long
             if (request.Latitude == 0 && request.Longitude == 0 && addressChanged)
             {
-                var coordinates = await _geocoder.GetCoordinatesFromAddress(request.Address, request.City, request.State, request.Zip, string.Empty);
+                var coordinates = await _geocoder.GetCoordinatesFromAddress(request.Address, request.City, request.State, request.PostalCode, string.Empty);
 
                 request.Latitude = coordinates?.Latitude ?? 0;
                 request.Longitude = coordinates?.Longitude ?? 0;
@@ -67,7 +67,7 @@ namespace AllReady.Areas.Admin.Features.Requests
             return request.Address  != message.RequestModel.Address
                 || request.City     != message.RequestModel.City
                 || request.State    != message.RequestModel.State
-                || request.Zip      != message.RequestModel.Zip;
+                || request.PostalCode      != message.RequestModel.PostalCode;
         }
     }
 }
