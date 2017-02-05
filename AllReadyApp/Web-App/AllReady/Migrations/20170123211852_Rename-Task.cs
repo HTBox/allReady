@@ -53,7 +53,7 @@ namespace AllReady.Migrations
                     Status = table.Column<int>(nullable: false),
                     StatusDateTimeUtc = table.Column<DateTime>(nullable: false),
                     StatusDescription = table.Column<string>(nullable: true),
-                    UserId = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: true, maxLength: 450),
                     VolunteerTaskId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -138,6 +138,21 @@ namespace AllReady.Migrations
                 table: "VolunteerTaskSkill",
                 column: "VolunteerTaskId");
 
+            migrationBuilder.Sql(@"SET IDENTITY_INSERT [VolunteerTask] ON
+INSERT INTO [dbo].[VolunteerTask]([Id],[Description],[EndDateTime],[EventId],[IsAllowWaitList],[IsLimitVolunteers],[Name],[NumberOfVolunteersRequired],[OrganizationId],[StartDateTime])
+SELECT [Id],[Description],[EndDateTime],[EventId],[IsAllowWaitList],[IsLimitVolunteers],[Name],[NumberOfVolunteersRequired],[OrganizationId],[StartDateTime]
+FROM [dbo].[AllReadyTask]
+SET IDENTITY_INSERT [VolunteerTask] OFF");
+
+            migrationBuilder.Sql(@"SET IDENTITY_INSERT [VolunteerTaskSignup] ON
+INSERT INTO [dbo].[VolunteerTaskSignup] ([Id],[AdditionalInfo],[ItineraryId],[Status],[StatusDateTimeUtc],[StatusDescription],[VolunteerTaskId],[UserId])
+SELECT [Id],[AdditionalInfo],[ItineraryId],[Status],[StatusDateTimeUtc],[StatusDescription],[TaskId],[UserId]
+FROM [dbo].[TaskSignup]
+SET IDENTITY_INSERT [VolunteerTaskSignup] OFF");
+
+            migrationBuilder.Sql(@"INSERT INTO [dbo].[VolunteerTaskSkill]([VolunteerTaskId],[SkillId])
+SELECT [TaskId],[SkillId]
+FROM [dbo].[TaskSkill]");
 
             migrationBuilder.DropTable(
                 name: "TaskSignup");
@@ -196,7 +211,7 @@ namespace AllReady.Migrations
                     StatusDateTimeUtc = table.Column<DateTime>(nullable: false),
                     StatusDescription = table.Column<string>(nullable: true),
                     TaskId = table.Column<int>(nullable: false),
-                    UserId = table.Column<string>(nullable: true)
+                    UserId = table.Column<string>(nullable: true, maxLength: 450)
                 },
                 constraints: table =>
                 {
@@ -279,7 +294,23 @@ namespace AllReady.Migrations
                 name: "IX_TaskSkill_TaskId",
                 table: "TaskSkill",
                 column: "TaskId");
-            
+
+            migrationBuilder.Sql(@"SET IDENTITY_INSERT [AllReadyTask] ON
+INSERT INTO [dbo].[AllReadyTask]([Id],[Description],[EndDateTime],[EventId],[IsAllowWaitList],[IsLimitVolunteers],[Name],[NumberOfVolunteersRequired],[OrganizationId],[StartDateTime])
+SELECT [Id],[Description],[EndDateTime],[EventId],[IsAllowWaitList],[IsLimitVolunteers],[Name],[NumberOfVolunteersRequired],[OrganizationId],[StartDateTime]
+FROM [dbo].[VolunteerTask]
+SET IDENTITY_INSERT [AllReadyTask] OFF");
+
+            migrationBuilder.Sql(@"SET IDENTITY_INSERT [TaskSignup] ON
+INSERT INTO [dbo].[TaskSignup] ([Id],[AdditionalInfo],[ItineraryId],[Status],[StatusDateTimeUtc],[StatusDescription],[TaskId],[UserId])
+SELECT [Id],[AdditionalInfo],[ItineraryId],[Status],[StatusDateTimeUtc],[StatusDescription],[VolunteerTaskId],[UserId]
+FROM [dbo].[VolunteerTaskSignup]
+SET IDENTITY_INSERT [TaskSignup] OFF");
+
+            migrationBuilder.Sql(@"INSERT INTO [dbo].[TaskSkill]([TaskId],[SkillId])
+SELECT [VolunteerTaskId],[SkillId]
+FROM [dbo].[VolunteerTaskSkill]");
+
             migrationBuilder.DropTable(
                 name: "VolunteerTaskSignup");
 
