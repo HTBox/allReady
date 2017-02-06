@@ -16,28 +16,6 @@ namespace AllReady.Migrations
         {
             migrationBuilder.RenameColumn("PostalCode", "Request", "Zip");
         }
-        //protected override void Up(MigrationBuilder migrationBuilder)
-        //{
-        //    migrationBuilder.DropColumn(
-        //        name: "Zip",
-        //        table: "Request");
-
-        //    migrationBuilder.AddColumn<string>(
-        //        name: "PostalCode",
-        //        table: "Request",
-        //        nullable: true);
-        //}
-
-        //protected override void Down(MigrationBuilder migrationBuilder)
-        //{
-        //    migrationBuilder.DropColumn(
-        //        name: "PostalCode",
-        //        table: "Request");
-
-        //    migrationBuilder.AddColumn<string>(
-        //        name: "Zip",
-        //        table: "Request",
-        //        nullable: true);
-        //}
+       
     }
 }
