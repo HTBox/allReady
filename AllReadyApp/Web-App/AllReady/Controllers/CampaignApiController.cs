@@ -19,11 +19,11 @@ namespace AllReady.Controllers
         }
 
         [Route("search")]
-        public IEnumerable<EventViewModel> GetCampaignsByPostalCode(string zip, int miles)
+        public IEnumerable<EventViewModel> GetCampaignsByPostalCode(string postalCode, int miles)
         {
             var model = new List<EventViewModel>();
 
-            var campaigns = mediator.Send(new EventsByPostalCodeQuery { PostalCode = zip, Distance =  miles})
+            var campaigns = mediator.Send(new EventsByPostalCodeQuery { PostalCode = postalCode, Distance =  miles})
                 .Select(x => x.Campaign)
                 .Distinct();
 

@@ -469,6 +469,8 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Phone");
 
+                    b.Property<string>("PostalCode");
+
                     b.Property<string>("ProviderData");
 
                     b.Property<string>("ProviderRequestId");
@@ -478,8 +480,6 @@ namespace AllReady.Migrations
                     b.Property<string>("State");
 
                     b.Property<int>("Status");
-
-                    b.Property<string>("Zip");
 
                     b.HasKey("RequestId");
 

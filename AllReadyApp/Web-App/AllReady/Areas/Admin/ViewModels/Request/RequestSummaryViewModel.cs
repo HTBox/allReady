@@ -6,7 +6,7 @@ namespace AllReady.Areas.Admin.ViewModels.Request
     {
         public string State { get; set; }
 
-        public string Zip { get; set; }
+        public string PostalCode { get; set; }
 
         public bool UserIsOrgAdmin { get; set; }
 

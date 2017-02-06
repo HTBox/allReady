@@ -50,7 +50,7 @@
             setMapCenterAndZoom(map, []);
         }
 
-        $("#Address, #City, #State, #Zip").on("change", function () {
+        $("#Address, #City, #State, #PostalCode").on("change", function () {
             var address = getAddress();
             if (!isAddressEmpty(address)) {
                 lookupAddress(address);
@@ -73,7 +73,7 @@
             address1: $("#Address").val(),
             city: $("#City").val(),
             state: $("#State").val(),
-            postalCode: $("#Zip").val()
+            postalCode: $("#PostalCode").val()
         };
     }
 
