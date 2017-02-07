@@ -64,7 +64,7 @@ namespace AllReady.Areas.Admin.Controllers
 
                 if (eventSummary == null || eventSummary.OrganizationId != organizationId.Value)
                 {
-                    return BadRequest("Selected event doesn't belong to the current users organization Id");
+                    return Unauthorized();
                 }
 
                 await _mediator.SendAsync(new AddRequestsToEventCommand

@@ -214,7 +214,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async void AddReqeustsReturnsBadRequest_WhenEventDoesNotBelongToCurrentOrgId()
+        public async void AddReqeustsReturnsUnauthorizedResult_WhenEventDoesNotBelongToCurrentOrgId()
         {
             var model = BuildValidModel();
             var mediator = new Mock<IMediator>();
@@ -232,7 +232,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             sut.MakeUserAnOrgAdmin(OrganizationId.ToString());
 
             var result = await sut.AddRequests(model);
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsType<UnauthorizedResult>(result);
         }
         
 
