@@ -12,7 +12,7 @@ using AllReady.ViewModels.Shared;
 using AllReady.ViewModels.Task;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using DeleteTaskCommand = AllReady.Features.Tasks.DeleteTaskCommand;
+using DeleteVolunteerTaskCommand = AllReady.Features.Tasks.DeleteVolunteerTaskCommand;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using AllReady.Features.Events;
@@ -55,7 +55,7 @@ namespace AllReady.Controllers
                 return BadRequest();
             }
 
-            await _mediator.SendAsync(new AddTaskCommand { VolunteerTask = volunteerTask });
+            await _mediator.SendAsync(new AddVolunteerTaskCommand { VolunteerTask = volunteerTask });
 
             //http://stackoverflow.com/questions/1860645/create-request-with-post-which-response-codes-200-or-201-and-content
             return Created("", volunteerTask);
@@ -82,7 +82,7 @@ namespace AllReady.Controllers
             volunteerTask.StartDateTime = value.StartDateTime.UtcDateTime;
             volunteerTask.EndDateTime = value.EndDateTime.UtcDateTime;
 
-            await _mediator.SendAsync(new UpdateTaskCommand { VolunteerTask = volunteerTask });
+            await _mediator.SendAsync(new UpdateVolunteerTaskCommand { VolunteerTask = volunteerTask });
 
             //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
             return NoContent();
@@ -103,7 +103,7 @@ namespace AllReady.Controllers
                 return Unauthorized();
             }
             
-            await _mediator.SendAsync(new DeleteTaskCommand { TaskId = volunteerTask.Id });
+            await _mediator.SendAsync(new DeleteVolunteerTaskCommand { TaskId = volunteerTask.Id });
 
             //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
             return Ok();
@@ -128,32 +128,32 @@ namespace AllReady.Controllers
                 return Json(new { errors = ModelState.GetErrorMessages() });
             }
 
-            var result = await _mediator.SendAsync(new TaskSignupCommand { TaskSignupModel = signupModel });
+            var result = await _mediator.SendAsync(new VolunteerTaskSignupCommand { TaskSignupModel = signupModel });
 
             switch (result.Status)
             {
-            case TaskSignupResult.SUCCESS:
+            case VolunteerTaskSignupResult.SUCCESS:
               return Json(new
               {
                 isSuccess = true,
                 task = result.Task == null ? null : new TaskViewModel(result.Task, signupModel.UserId)
               });
 
-            case TaskSignupResult.FAILURE_CLOSEDTASK:
+            case VolunteerTaskSignupResult.FAILURE_CLOSEDTASK:
               return Json(new
               {
                 isSuccess = false,
                 errors = new[] { "Signup failed - Task is closed" },
               });
 
-            case TaskSignupResult.FAILURE_EVENTNOTFOUND:
+            case VolunteerTaskSignupResult.FAILURE_EVENTNOTFOUND:
               return Json(new
               {
                 isSuccess = false,
                 errors = new[] { "Signup failed - The event could not be found" },
               });
 
-            case TaskSignupResult.FAILURE_TASKNOTFOUND:
+            case VolunteerTaskSignupResult.FAILURE_TASKNOTFOUND:
               return Json(new
               {
                 isSuccess = false,
@@ -176,7 +176,7 @@ namespace AllReady.Controllers
         {
             var userId = _userManager.GetUserId(User);
 
-            var result = await _mediator.SendAsync(new TaskUnenrollCommand { TaskId = id, UserId = userId });
+            var result = await _mediator.SendAsync(new VolunteerTaskUnenrollCommand { TaskId = id, UserId = userId });
 
             return Json(new
             {
@@ -203,7 +203,7 @@ namespace AllReady.Controllers
 
         private async Task<VolunteerTask> GetTaskBy(int taskId)
         {
-            return await _mediator.SendAsync(new TaskByTaskIdQuery { TaskId = taskId });
+            return await _mediator.SendAsync(new VolunteerTaskByVolunteerTaskIdQuery { TaskId = taskId });
         }
 
         private async Task<VolunteerTask> ToModel(TaskViewModel taskViewModel, IMediator mediator)
@@ -222,7 +222,7 @@ namespace AllReady.Controllers
             }
             else
             {
-                volunteerTask = await mediator.SendAsync(new TaskByTaskIdQuery { TaskId = taskViewModel.Id });
+                volunteerTask = await mediator.SendAsync(new VolunteerTaskByVolunteerTaskIdQuery { TaskId = taskViewModel.Id });
                 newTask = false;
             }
 

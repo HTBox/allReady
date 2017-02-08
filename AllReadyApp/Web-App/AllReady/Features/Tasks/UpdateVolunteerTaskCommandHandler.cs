@@ -5,16 +5,16 @@ using MediatR;
 
 namespace AllReady.Features.Tasks
 {
-    public class UpdateTaskCommandHandler : AsyncRequestHandler<UpdateTaskCommand>
+    public class UpdateVolunteerTaskCommandHandler : AsyncRequestHandler<UpdateVolunteerTaskCommand>
     {
         private readonly AllReadyContext dataContext;
 
-        public UpdateTaskCommandHandler(AllReadyContext dataContext)
+        public UpdateVolunteerTaskCommandHandler(AllReadyContext dataContext)
         {
             this.dataContext = dataContext;
         }
 
-        protected override async Task HandleCore(UpdateTaskCommand message) {
+        protected override async Task HandleCore(UpdateVolunteerTaskCommand message) {
             var @task = message.VolunteerTask;
             
             //First remove any skills that are no longer associated with this task

@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskByTaskIdQueryHandler : IAsyncRequestHandler<TaskByTaskIdQuery, VolunteerTask>
+    public class VolunteerTaskByVolunteerTaskIdQueryHandler : IAsyncRequestHandler<VolunteerTaskByVolunteerTaskIdQuery, VolunteerTask>
     {
         private readonly AllReadyContext dataContext;
 
-        public TaskByTaskIdQueryHandler(AllReadyContext dataContext)
+        public VolunteerTaskByVolunteerTaskIdQueryHandler(AllReadyContext dataContext)
         {
             this.dataContext = dataContext;
         }
 
-        public async Task<VolunteerTask> Handle(TaskByTaskIdQuery message)
+        public async Task<VolunteerTask> Handle(VolunteerTaskByVolunteerTaskIdQuery message)
         {
             return await dataContext.Tasks
                 .Include(x => x.Organization)

@@ -13,7 +13,7 @@ namespace AllReady.UnitTest.Tasks
             var options = this.CreateNewContextOptions();
 
             const int taskId = 1;
-            var message = new TaskByTaskIdQuery { TaskId = taskId };
+            var message = new VolunteerTaskByVolunteerTaskIdQuery { TaskId = taskId };
 
             using (var context = new AllReadyContext(options)) {
                 context.Tasks.Add(new VolunteerTask {Id = taskId});
@@ -21,7 +21,7 @@ namespace AllReady.UnitTest.Tasks
             }
 
             using (var context = new AllReadyContext(options)) {
-                var sut = new TaskByTaskIdQueryHandler(context);
+                var sut = new VolunteerTaskByVolunteerTaskIdQueryHandler(context);
                 var @task = await sut.Handle(message);
 
                 Assert.Equal(@task.Id, taskId);

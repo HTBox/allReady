@@ -50,7 +50,7 @@ namespace AllReady.Areas.Admin.Controllers
             var user = await _mediator.SendAsync(new UserQuery { UserId = userId });
             var campaigns = await _mediator.SendAsync(new CampaignByApplicationUserIdQuery() { ApplicationUserId = userId });
             var events = await _mediator.SendAsync(new EventsByApplicationUserIdQuery() { ApplicationUserId = userId });
-            var tasks = await _mediator.SendAsync(new TasksByApplicationUserIdQuery() { ApplicationUserId = userId });
+            var tasks = await _mediator.SendAsync(new VolunteerTasksByApplicationUserIdQuery() { ApplicationUserId = userId });
             
             var viewModel = new DeleteUserViewModel
             {

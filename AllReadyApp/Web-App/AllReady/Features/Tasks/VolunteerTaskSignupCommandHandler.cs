@@ -8,19 +8,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskSignupCommandHandler : IAsyncRequestHandler<TaskSignupCommand, TaskSignupResult>
+    public class VolunteerTaskSignupCommandHandler : IAsyncRequestHandler<VolunteerTaskSignupCommand, VolunteerTaskSignupResult>
     {
         private readonly IMediator _mediator;
         private readonly AllReadyContext _context;
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        public TaskSignupCommandHandler(IMediator mediator, AllReadyContext context)
+        public VolunteerTaskSignupCommandHandler(IMediator mediator, AllReadyContext context)
         {
             _mediator = mediator;
             _context = context;
         }
 
-        public async Task<TaskSignupResult> Handle(TaskSignupCommand message)
+        public async Task<VolunteerTaskSignupResult> Handle(VolunteerTaskSignupCommand message)
         {
             var model = message.TaskSignupModel;
 
@@ -36,18 +36,18 @@ namespace AllReady.Features.Tasks
 
             if (@event == null)
             {
-                return new TaskSignupResult { Status = TaskSignupResult.FAILURE_EVENTNOTFOUND };
+                return new VolunteerTaskSignupResult { Status = VolunteerTaskSignupResult.FAILURE_EVENTNOTFOUND };
             }
 
             var @task = @event.Tasks.SingleOrDefault(t => t.Id == model.TaskId);
             if (@task == null)
             {
-                return new TaskSignupResult { Status = TaskSignupResult.FAILURE_TASKNOTFOUND };
+                return new VolunteerTaskSignupResult { Status = VolunteerTaskSignupResult.FAILURE_TASKNOTFOUND };
             }
 
             if (@task.IsClosed)
             {
-                return new TaskSignupResult { Status = TaskSignupResult.FAILURE_CLOSEDTASK };
+                return new VolunteerTaskSignupResult { Status = VolunteerTaskSignupResult.FAILURE_CLOSEDTASK };
             }
 
             // If somehow the user has already been signed up for the task, don't sign them up again
@@ -80,7 +80,7 @@ namespace AllReady.Features.Tasks
             //Notify admins of a new volunteer
             await _mediator.PublishAsync(new VolunteerSignedUpNotification { UserId = model.UserId, TaskId = @task.Id });
 
-            return new TaskSignupResult {Status = "success", Task = @task};
+            return new VolunteerTaskSignupResult {Status = "success", Task = @task};
         }
     }
 }

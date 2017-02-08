@@ -17,9 +17,9 @@ namespace AllReady.UnitTest.Features.Tasks
         public async Task Result_ShouldBe_Success_IfTaskSignupExists()
         {
             var mockMediator = new Mock<IMediator>();
-            var message = new TaskUnenrollCommand { TaskId = 1, UserId = "abc" };
+            var message = new VolunteerTaskUnenrollCommand { TaskId = 1, UserId = "abc" };
 
-            var sut = new TaskUnenrollCommandHandler(mockMediator.Object, Context);
+            var sut = new VolunteerTaskUnenrollCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
             Assert.Equal("success", result.Status);
@@ -30,9 +30,9 @@ namespace AllReady.UnitTest.Features.Tasks
         public async Task Result_ShouldBe_Failure_IfTaskIdDoesNotExist()
         {
             var mockMediator = new Mock<IMediator>();
-            var message = new TaskUnenrollCommand { TaskId = 100, UserId = "abc" };
+            var message = new VolunteerTaskUnenrollCommand { TaskId = 100, UserId = "abc" };
 
-            var sut = new TaskUnenrollCommandHandler(mockMediator.Object, Context);
+            var sut = new VolunteerTaskUnenrollCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
             Assert.Equal("failure", result.Status);
@@ -42,9 +42,9 @@ namespace AllReady.UnitTest.Features.Tasks
         public async Task TaskSignUp_ShouldBe_Deleted()
         {
             var mockMediator = new Mock<IMediator>();
-            var message = new TaskUnenrollCommand { TaskId = 1, UserId = "abc" };
+            var message = new VolunteerTaskUnenrollCommand { TaskId = 1, UserId = "abc" };
 
-            var sut = new TaskUnenrollCommandHandler(mockMediator.Object, Context);
+            var sut = new VolunteerTaskUnenrollCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
             Assert.Equal(0, Context.TaskSignups.Count());

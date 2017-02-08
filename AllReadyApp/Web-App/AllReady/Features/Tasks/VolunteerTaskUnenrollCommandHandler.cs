@@ -6,18 +6,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskUnenrollCommandHandler : IAsyncRequestHandler<TaskUnenrollCommand, TaskUnenrollResult>
+    public class VolunteerTaskUnenrollCommandHandler : IAsyncRequestHandler<VolunteerTaskUnenrollCommand, VolunteerTaskUnenrollResult>
     {
         private readonly IMediator _mediator;
         private readonly AllReadyContext _context;
 
-        public TaskUnenrollCommandHandler(IMediator mediator, AllReadyContext context)
+        public VolunteerTaskUnenrollCommandHandler(IMediator mediator, AllReadyContext context)
         {
             _mediator = mediator;
             _context = context;
         }
 
-        public async Task<TaskUnenrollResult> Handle(TaskUnenrollCommand message)
+        public async Task<VolunteerTaskUnenrollResult> Handle(VolunteerTaskUnenrollCommand message)
         {
             var taskSignUp = await _context.TaskSignups
                 .Include(rec => rec.VolunteerTask).ThenInclude(rec => rec.Event)
@@ -25,7 +25,7 @@ namespace AllReady.Features.Tasks
 
             if (taskSignUp == null)
             {
-                return new TaskUnenrollResult { Status = "failure" };
+                return new VolunteerTaskUnenrollResult { Status = "failure" };
             }
 
             _context.TaskSignups.Remove(taskSignUp);
@@ -34,7 +34,7 @@ namespace AllReady.Features.Tasks
 
             await _mediator.PublishAsync(new UserUnenrolled { UserId = message.UserId, TaskId = taskSignUp.VolunteerTask.Id });
 
-            return new TaskUnenrollResult { Status = "success", Task = taskSignUp.VolunteerTask };
+            return new VolunteerTaskUnenrollResult { Status = "success", Task = taskSignUp.VolunteerTask };
         }
     }
 }

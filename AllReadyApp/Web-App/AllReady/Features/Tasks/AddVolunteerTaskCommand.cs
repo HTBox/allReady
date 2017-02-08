@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Features.Tasks
 {
-    public class AddTaskCommand : IAsyncRequest
+    public class AddVolunteerTaskCommand : IAsyncRequest
     {
         public VolunteerTask VolunteerTask { get; set; }
     }

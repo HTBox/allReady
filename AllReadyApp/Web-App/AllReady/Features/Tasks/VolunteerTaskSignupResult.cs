@@ -2,7 +2,7 @@ using AllReady.Models;
 
 namespace AllReady.Features.Tasks
 {
-    public class TaskSignupResult
+    public class VolunteerTaskSignupResult
     {
         // TODO - Move to enum
         public const string FAILURE_CLOSEDTASK = "failure-taskclosed";

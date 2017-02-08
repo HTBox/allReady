@@ -7,16 +7,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Tasks
 {
-    public class TasksByApplicationUserIdQueryHandler : IAsyncRequestHandler<TasksByApplicationUserIdQuery, List<VolunteerTask>>
+    public class VolunteerTasksByApplicationUserIdQueryHandler : IAsyncRequestHandler<VolunteerTasksByApplicationUserIdQuery, List<VolunteerTask>>
     {
         private readonly AllReadyContext _context;
 
-        public TasksByApplicationUserIdQueryHandler(AllReadyContext context)
+        public VolunteerTasksByApplicationUserIdQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<List<VolunteerTask>> Handle(TasksByApplicationUserIdQuery message)
+        public async Task<List<VolunteerTask>> Handle(VolunteerTasksByApplicationUserIdQuery message)
         {
             return await _context.TaskSignups
                 .Include(x => x.User)

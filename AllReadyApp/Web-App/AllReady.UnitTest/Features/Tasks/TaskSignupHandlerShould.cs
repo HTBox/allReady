@@ -18,12 +18,12 @@ namespace AllReady.UnitTest.Features.Tasks
         public async Task Result_ShouldBe_ClosedTaskFailure_IfTaskIsClosed()
         {
             var mockMediator = new Mock<IMediator>();
-            var message = new TaskSignupCommand { TaskSignupModel = new TaskSignupViewModel { TaskId = 1, EventId = 1, UserId = "abc" } };
+            var message = new VolunteerTaskSignupCommand { TaskSignupModel = new TaskSignupViewModel { TaskId = 1, EventId = 1, UserId = "abc" } };
 
-            var sut = new TaskSignupCommandHandler(mockMediator.Object, Context);
+            var sut = new VolunteerTaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(TaskSignupResult.FAILURE_CLOSEDTASK, result.Status);
+            Assert.Equal(VolunteerTaskSignupResult.FAILURE_CLOSEDTASK, result.Status);
             Assert.Equal(0, Context.TaskSignups.Count());
         }
 
@@ -31,12 +31,12 @@ namespace AllReady.UnitTest.Features.Tasks
         public async Task Result_ShouldBe_CampaignNotFound_IfCampaignIdDoesNotExist()
         {
             var mockMediator = new Mock<IMediator>();
-            var message = new TaskSignupCommand { TaskSignupModel = new TaskSignupViewModel { TaskId = 1, EventId = 100, UserId = "abc" } };
+            var message = new VolunteerTaskSignupCommand { TaskSignupModel = new TaskSignupViewModel { TaskId = 1, EventId = 100, UserId = "abc" } };
 
-            var sut = new TaskSignupCommandHandler(mockMediator.Object, Context);
+            var sut = new VolunteerTaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(TaskSignupResult.FAILURE_EVENTNOTFOUND, result.Status);
+            Assert.Equal(VolunteerTaskSignupResult.FAILURE_EVENTNOTFOUND, result.Status);
             Assert.Equal(0, Context.TaskSignups.Count());
         }
 
@@ -44,12 +44,12 @@ namespace AllReady.UnitTest.Features.Tasks
         public async Task Result_ShouldBe_TaskNotFound_IfTaskIdDoesNotExist()
         {
             var mockMediator = new Mock<IMediator>();
-            var message = new TaskSignupCommand { TaskSignupModel = new TaskSignupViewModel { TaskId = 100, EventId = 1, UserId = "abc" } };
+            var message = new VolunteerTaskSignupCommand { TaskSignupModel = new TaskSignupViewModel { TaskId = 100, EventId = 1, UserId = "abc" } };
 
-            var sut = new TaskSignupCommandHandler(mockMediator.Object, Context);
+            var sut = new VolunteerTaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(TaskSignupResult.FAILURE_TASKNOTFOUND, result.Status);
+            Assert.Equal(VolunteerTaskSignupResult.FAILURE_TASKNOTFOUND, result.Status);
             Assert.Equal(0, Context.TaskSignups.Count());
         }
 
@@ -57,12 +57,12 @@ namespace AllReady.UnitTest.Features.Tasks
         public async Task Result_ShouldBe_Success_IfTaskIsNotClosed()
         {
             var mockMediator = new Mock<IMediator>();
-            var message = new TaskSignupCommand { TaskSignupModel = new TaskSignupViewModel { TaskId = 2, EventId = 1, UserId = "abc" } };
+            var message = new VolunteerTaskSignupCommand { TaskSignupModel = new TaskSignupViewModel { TaskId = 2, EventId = 1, UserId = "abc" } };
 
-            var sut = new TaskSignupCommandHandler(mockMediator.Object, Context);
+            var sut = new VolunteerTaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(TaskSignupResult.SUCCESS, result.Status);
+            Assert.Equal(VolunteerTaskSignupResult.SUCCESS, result.Status);
             Assert.Equal(1, Context.TaskSignups.Count());
         }
 

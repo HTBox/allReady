@@ -15,8 +15,8 @@ namespace AllReady.UnitTest.Features.Tasks
             var options = this.CreateNewContextOptions();
 
             using (var context = new AllReadyContext(options)) {
-                var sut = new AddTaskCommandHandler(context);
-                var message = new AddTaskCommand { VolunteerTask = new VolunteerTask() };
+                var sut = new AddVolunteerTaskCommandHandler(context);
+                var message = new AddVolunteerTaskCommand { VolunteerTask = new VolunteerTask() };
                 await sut.Handle(message);
             }
 

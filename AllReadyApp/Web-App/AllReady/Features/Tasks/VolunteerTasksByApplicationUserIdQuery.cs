@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Features.Tasks
 {
-    public class TasksByApplicationUserIdQuery : IAsyncRequest<List<Models.VolunteerTask>>
+    public class VolunteerTasksByApplicationUserIdQuery : IAsyncRequest<List<Models.VolunteerTask>>
     {
         public string ApplicationUserId { get; set; }
     }
