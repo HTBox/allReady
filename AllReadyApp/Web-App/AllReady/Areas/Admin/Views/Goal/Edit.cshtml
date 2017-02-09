@@ -1,0 +1,156 @@
+﻿@using System.Threading.Tasks
+@model AllReady.Areas.Admin.ViewModels.Goal.GoalEditViewModel
+@inject AllReady.Services.ISelectListService SelectListService
+
+
+@{
+    //TODO: Need a better way of identifying Create vs Edit. Suggest not binding directly to model class, create view model instead
+    var isEdit = Model.Id != 0;
+    string actionTitle;
+    string cancelUrl;
+    if (isEdit)
+    {
+        ViewBag.Title = $"Edit Goal";
+        actionTitle = "Save";
+        cancelUrl = Url.Action("Details", "Event", new { id = Model.Id, area = "Admin" });
+    }
+    else
+    {
+        ViewBag.Title = "Create Goal";
+        actionTitle = "Create";
+        cancelUrl = Url.Action("Details", "Campaign", new { id = Model.CampaignId, area = "Admin" });
+    }
+}
+
+@section styles{
+    @if (isEdit)
+    {
+        <link href="~/css/Admin/Event/Edit.css" rel="stylesheet" />
+    }
+}
+
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
+            @if (isEdit)
+            {
+                <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.TextualImpactGoal</a></li>
+                <li>Edit</li>
+            }
+            else
+            {
+                <li>Create New Goal</li>
+            }
+
+        </ol>
+    </div>
+</div>
+
+<h2>@ViewBag.Title</h2>
+
+
+
+<form asp-controller="Goal" asp-area="Admin" method="post" enctype="multipart/form-data">
+
+    <div class="form-horizontal row">
+        <hr />
+        <div class="form-horizontal col-lg-6 pull-left">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            @if (isEdit)
+            {
+                <input type="hidden" asp-for="Id" />
+            }
+            <input asp-for="CampaignId" type="hidden" />
+            <input asp-for="CampaignName" type="hidden" />
+            <input asp-for="OrganizationId" type="hidden" />
+            <input asp-for="OrganizationName" type="hidden" />
+            <div class="form-group">
+                <label asp-for="TextualImpactGoal" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    <input asp-for="TextualImpactGoal" class="form-control" />
+                    <span asp-validation-for="TextualImpactGoal" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="form-group">
+                <label class="col-md-2 control-label">Display Impact Goal</label>
+                <div class="form-horizontal">
+                    <input type="checkbox" asp-for="Display" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label">Campaign Impact Goal</label>
+                <div class="form-horizontal">
+                    <input type="text" asp-for="TextualImpactGoal" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label">Impact Type</label>
+                <div class="form-horizontal">
+                    @Html.DropDownListFor(model => model.ImpactType, SelectListService.GetCampaignImpactTypes(), htmlAttributes: new { @class = "form-control" })
+                </div>
+            </div>
+            <div id="numericImpactSection">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Current Impact Level</label>
+                    <div class="form-horizontal">
+                        <input type="text" asp-for="CurrentImpactLevel" class="form-control" />
+                        <span class="help-block">
+                            <em>
+                                This value is the current number of x achieved to reach the Numeric Impact Goal value.<br />
+                                Ideally less than or equal to Numeric Impact Goal, but there may be certain scenarios where it's greater.
+                            </em>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Numeric Impact Goal</label>
+                    <div class="form-horizontal">
+                        <input type="text" asp-for="NumericImpactGoal" class="form-control" />
+                        <span class="help-block">
+                            <em>This value is the number of x to reach the goal.</em>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <button type="submit" value="@actionTitle" class="btn btn-default submit-form" data-bind="enable: requiredSkills.isValid">@actionTitle</button>
+            <a href="@cancelUrl" class="btn btn-default">Cancel</a>
+        </div>
+    </div>
+</form>
+
+
+@section scripts {
+    @*<script src="~/js/eventmap.js"></script>*@
+    @if (isEdit)
+    {
+        <script src="~/lib/system.js/dist/system.js"></script>
+
+        <script>
+            SystemJS.config({
+                baseURL: '/js/Admin/Event/Edit',
+                defaultJSExtensions: true
+            });
+
+            SystemJS.import('Main');
+        </script>
+    }
+
+    <script type="text/javascript">
+
+    </script>
+}
+
