@@ -30,8 +30,8 @@ namespace AllReady.Features.Tasks
 
             var @event = await _context.Events
                 .Include(a => a.RequiredSkills)
-                .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(s => s.Skill)
-                .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(t => t.User)
+                .Include(a => a.VolunteerTasks).ThenInclude(t => t.RequiredSkills).ThenInclude(s => s.Skill)
+                .Include(a => a.VolunteerTasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(t => t.User)
                 .SingleOrDefaultAsync(a => a.Id == model.EventId);
 
             if (@event == null)
@@ -39,23 +39,23 @@ namespace AllReady.Features.Tasks
                 return new VolunteerTaskSignupResult { Status = VolunteerTaskSignupResult.FAILURE_EVENTNOTFOUND };
             }
 
-            var @task = @event.Tasks.SingleOrDefault(t => t.Id == model.TaskId);
-            if (@task == null)
+            var volunteerTask = @event.VolunteerTasks.SingleOrDefault(t => t.Id == model.VolunteerTaskId);
+            if (volunteerTask == null)
             {
                 return new VolunteerTaskSignupResult { Status = VolunteerTaskSignupResult.FAILURE_TASKNOTFOUND };
             }
 
-            if (@task.IsClosed)
+            if (volunteerTask.IsClosed)
             {
                 return new VolunteerTaskSignupResult { Status = VolunteerTaskSignupResult.FAILURE_CLOSEDTASK };
             }
 
             // If somehow the user has already been signed up for the task, don't sign them up again
-            if (@task.AssignedVolunteers.All(taskSignup => taskSignup.User.Id != user.Id))
+            if (volunteerTask.AssignedVolunteers.All(volunteerTaskSignup => volunteerTaskSignup.User.Id != user.Id))
             {
-                @task.AssignedVolunteers.Add(new VolunteerTaskSignup
+                volunteerTask.AssignedVolunteers.Add(new VolunteerTaskSignup
                 {
-                    VolunteerTask = @task,
+                    VolunteerTask = volunteerTask,
                     User = user,
                     Status = Models.VolunteerTaskStatus.Accepted,
                     StatusDateTimeUtc = DateTimeUtcNow(),
@@ -66,7 +66,7 @@ namespace AllReady.Features.Tasks
             //Add selected new skills (if any) to the current user
             if (model.AddSkillIds.Count > 0)
             {
-                var skillsToAdd = @task.RequiredSkills
+                var skillsToAdd = volunteerTask.RequiredSkills
                     .Where(taskSkill => model.AddSkillIds.Contains(taskSkill.SkillId))
                     .Select(taskSkill => new UserSkill { SkillId = taskSkill.SkillId, UserId = user.Id });
 
@@ -78,9 +78,9 @@ namespace AllReady.Features.Tasks
             await _context.SaveChangesAsync();
 
             //Notify admins of a new volunteer
-            await _mediator.PublishAsync(new VolunteerSignedUpNotification { UserId = model.UserId, TaskId = @task.Id });
+            await _mediator.PublishAsync(new VolunteerSignedUpNotification { UserId = model.UserId, VolunteerTaskId = volunteerTask.Id });
 
-            return new VolunteerTaskSignupResult {Status = "success", Task = @task};
+            return new VolunteerTaskSignupResult {Status = "success", VolunteerTask = volunteerTask};
         }
     }
 }

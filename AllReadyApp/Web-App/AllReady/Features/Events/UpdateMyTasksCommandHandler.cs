@@ -20,15 +20,15 @@ namespace AllReady.Features.Events
         {
             var currentUser = dbContext.Users.SingleOrDefault(u => u.Id == command.UserId);
 
-            foreach (var taskSignupViewModel in command.TaskSignups)
+            foreach (var volunteerTaskSignupViewModel in command.VolunteerTaskSignups)
             {
                 dbContext.TaskSignups.Update(new VolunteerTaskSignup
                 {
-                    Id = taskSignupViewModel.Id,
+                    Id = volunteerTaskSignupViewModel.Id,
                     StatusDateTimeUtc = DateTimeUtcNow(),
-                    StatusDescription = taskSignupViewModel.StatusDescription,
-                    Status = (Models.VolunteerTaskStatus)Enum.Parse(typeof(Models.VolunteerTaskStatus), taskSignupViewModel.Status),
-                    VolunteerTask = new VolunteerTask { Id = taskSignupViewModel.TaskId },
+                    StatusDescription = volunteerTaskSignupViewModel.StatusDescription,
+                    Status = (Models.VolunteerTaskStatus)Enum.Parse(typeof(Models.VolunteerTaskStatus), volunteerTaskSignupViewModel.Status),
+                    VolunteerTask = new VolunteerTask { Id = volunteerTaskSignupViewModel.VolunteerTaskId },
                     User = currentUser
                 });
                 await dbContext.SaveChangesAsync();

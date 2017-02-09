@@ -5,9 +5,9 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class ChangeVolunteerTaskStatusCommand : IAsyncRequest<VolunteerTaskChangeResult>
     {
-        public int TaskId { get; set; }
+        public int VolunteerTaskId { get; set; }
         public string UserId { get; set; }
-        public VolunteerTaskStatus TaskStatus { get; set; }
-        public string TaskStatusDescription { get; set; }
+        public VolunteerTaskStatus VolunteerTaskStatus { get; set; }
+        public string VolunteerTaskStatusDescription { get; set; }
     }
 }

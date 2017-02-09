@@ -76,19 +76,19 @@ namespace AllReady.UnitTest.Tasks
         {
             var mediator = new Mock<IMediator>();
 
-            var @task = Context.Tasks.First();
+            var volunteerTask = Context.Tasks.First();
             var user = Context.Users.First();
             var command = new ChangeVolunteerTaskStatusCommand
             {
-                TaskId = @task.Id,
+                VolunteerTaskId = volunteerTask.Id,
                 UserId = user.Id,
-                TaskStatus = VolunteerTaskStatus.Accepted
+                VolunteerTaskStatus = VolunteerTaskStatus.Accepted
             };
             var handler = new ChangeVolunteerTaskStatusCommandHandler(Context, mediator.Object);
             await handler.Handle(command);
 
-            var taskSignup = Context.TaskSignups.First();
-            mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
+            var volunteerTaskSignup = Context.TaskSignups.First();
+            mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == volunteerTaskSignup.Id)), Times.Once());
         }
     }
 }

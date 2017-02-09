@@ -33,7 +33,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     StartDateTime = task.StartDateTime,
                     EndDateTime = task.EndDateTime,
                 })
-                .SingleAsync(t => t.Id == message.TaskId);
+                .SingleAsync(t => t.Id == message.VolunteerTaskId);
         }
     }
 }

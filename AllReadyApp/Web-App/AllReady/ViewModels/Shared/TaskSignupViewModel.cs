@@ -7,7 +7,7 @@ namespace AllReady.ViewModels.Shared
     {
         public int EventId { get; set; }
 
-        public int TaskId { get; set; }
+        public int VolunteerTaskId { get; set; }
 
         public string UserId { get; set; }
 

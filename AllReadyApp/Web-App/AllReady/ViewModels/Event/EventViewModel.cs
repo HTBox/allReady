@@ -44,8 +44,8 @@ namespace AllReady.ViewModels.Event
 
             ImageUrl = @event.ImageUrl;
 
-            Tasks = @event.Tasks != null
-                 ? new List<TaskViewModel>(@event.Tasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
+            Tasks = @event.VolunteerTasks!= null
+                 ? new List<TaskViewModel>(@event.VolunteerTasks.Select(data => new TaskViewModel(data)).OrderBy(task => task.StartDateTime))
                  : new List<TaskViewModel>();
 
             SignupModel = new Shared.TaskSignupViewModel();

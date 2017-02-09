@@ -48,9 +48,9 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     UseStartAddressAsEndAddress = i.UseStartAddressAsEndAddress,
                     TeamMembers = i.TeamMembers.Select(tm => new TeamListViewModel
                     {
-                        TaskSignupId = tm.Id,
+                        VolunteerTaskSignupId = tm.Id,
                         VolunteerEmail = tm.User.Email,
-                        TaskName = tm.VolunteerTask.Name,
+                        VolunteerTaskName = tm.VolunteerTask.Name,
                         FullName = tm.User.Name
                     }).ToList(),
                     Requests = i.Requests.OrderBy(r => r.OrderIndex).Select(r => new RequestListViewModel

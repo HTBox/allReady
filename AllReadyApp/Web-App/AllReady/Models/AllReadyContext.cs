@@ -118,7 +118,7 @@ namespace AllReady.Models
 
         private void Map(EntityTypeBuilder<VolunteerTask> builder)
         {
-            builder.HasOne(t => t.Event).WithMany(e => e.Tasks).HasForeignKey(t => t.EventId);
+            builder.HasOne(t => t.Event).WithMany(e => e.VolunteerTasks).HasForeignKey(t => t.EventId);
             builder.HasOne(t => t.Organization);
             builder.HasMany(t => t.AssignedVolunteers)
                 .WithOne(ts => ts.VolunteerTask)
@@ -136,7 +136,7 @@ namespace AllReady.Models
         {
             builder.HasOne(a => a.Campaign);
             builder.HasOne(a => a.Location);
-            builder.HasMany(a => a.Tasks)
+            builder.HasMany(a => a.VolunteerTasks)
                 .WithOne(t => t.Event)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(a => a.RequiredSkills).WithOne(acsk => acsk.Event);

@@ -67,7 +67,7 @@ namespace AllReady.UnitTest.Features.Notifications
             mockGeneralSettings.SetupGet(m => m.Value).Returns(new GeneralSettings { SiteBaseUrl = string.Empty });
 
             var handler = new ItineraryVolunteerListUpdatedHandler(Context, mockMediator.Object, mockGeneralSettings.Object);
-            await handler.Handle(new ItineraryVolunteerListUpdated { TaskSignupId = 1, ItineraryId = 1 });
+            await handler.Handle(new ItineraryVolunteerListUpdated { VolunteerTaskSignupId = 1, ItineraryId = 1 });
 
             mockMediator.Verify(m => m.SendAsync(It.Is<NotifyVolunteersCommand>(command =>
                 command.ViewModel.SmsRecipients.Count == 1 &&
@@ -85,7 +85,7 @@ namespace AllReady.UnitTest.Features.Notifications
             mockGeneralSettings.SetupGet(m => m.Value).Returns(new GeneralSettings { SiteBaseUrl = "http://localhost/" });
 
             var handler = new ItineraryVolunteerListUpdatedHandler(Context, mockMediator.Object, mockGeneralSettings.Object);
-            await handler.Handle(new ItineraryVolunteerListUpdated { TaskSignupId = 1, ItineraryId = 1, UpdateType = UpdateType.VolunteerAssigned });
+            await handler.Handle(new ItineraryVolunteerListUpdated { VolunteerTaskSignupId = 1, ItineraryId = 1, UpdateType = UpdateType.VolunteerAssigned });
 
             mockMediator.Verify(m => m.SendAsync(It.Is<NotifyVolunteersCommand>(command =>
                 string.Equals(command.ViewModel.SmsMessage, $"You’ve been assigned to a team for {_itineraryDate} http://localhost/v") &&
@@ -102,7 +102,7 @@ namespace AllReady.UnitTest.Features.Notifications
             mockGeneralSettings.SetupGet(m => m.Value).Returns(new GeneralSettings { SiteBaseUrl = "http://localhost/" });
 
             var handler = new ItineraryVolunteerListUpdatedHandler(Context, mockMediator.Object, mockGeneralSettings.Object);
-            await handler.Handle(new ItineraryVolunteerListUpdated { TaskSignupId = 1, ItineraryId = 1, UpdateType = UpdateType.VolnteerUnassigned });
+            await handler.Handle(new ItineraryVolunteerListUpdated { VolunteerTaskSignupId = 1, ItineraryId = 1, UpdateType = UpdateType.VolnteerUnassigned });
 
             mockMediator.Verify(m => m.SendAsync(It.Is<NotifyVolunteersCommand>(command =>
                 string.Equals(command.ViewModel.SmsMessage, $"You’ve been unassigned from a team for {_itineraryDate} http://localhost/v") &&

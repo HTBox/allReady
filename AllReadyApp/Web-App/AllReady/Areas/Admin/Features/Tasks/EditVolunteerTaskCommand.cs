@@ -5,6 +5,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class EditVolunteerTaskCommand : IAsyncRequest<int>
     {
-        public EditViewModel Task { get; set; }
+        public EditViewModel VolunteerTask { get; set; }
     }
 }

@@ -5,6 +5,6 @@ namespace AllReady.Features.Tasks
 {
     public class VolunteerTaskByVolunteerTaskIdQuery : IAsyncRequest<VolunteerTask>
     {
-        public int TaskId { get; set; }
+        public int VolunteerTaskId { get; set; }
     }
 }

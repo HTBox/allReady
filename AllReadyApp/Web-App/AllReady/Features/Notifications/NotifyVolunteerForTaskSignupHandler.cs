@@ -20,24 +20,24 @@ namespace AllReady.Features.Notifications
 
         public async Task Handle(VolunteerSignedUpNotification notification)
         {
-            var taskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQuery { TaskId = notification.TaskId, UserId = notification.UserId });
+            var volunteerTaskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQuery { VolunteerTaskId = notification.VolunteerTaskId, UserId = notification.UserId });
 
-            var emailRecipient = taskInfo?.Volunteer.Email;
+            var emailRecipient = volunteerTaskInfo?.Volunteer.Email;
 
             if (string.IsNullOrWhiteSpace(emailRecipient))
             {
                 return;
             }
 
-            var eventLink = $"View event: {_options.Value.SiteBaseUrl}/Event/Details/{taskInfo.EventId}";
+            var eventLink = $"View event: {_options.Value.SiteBaseUrl}/Event/Details/{volunteerTaskInfo.EventId}";
             const string subject = "allReady Task Enrollment Confirmation";
 
             var message = new StringBuilder();
             message.AppendLine("This is to confirm that you have volunteered to participate in the following task:");
             message.AppendLine();
-            message.AppendLine($"   Campaign: {taskInfo.CampaignName}");
-            message.AppendLine($"   Event: {taskInfo.EventName} ({eventLink})");
-            message.AppendLine($"   Task: {taskInfo.TaskName}");
+            message.AppendLine($"   Campaign: {volunteerTaskInfo.CampaignName}");
+            message.AppendLine($"   Event: {volunteerTaskInfo.EventName} ({eventLink})");
+            message.AppendLine($"   Task: {volunteerTaskInfo.VolunteerTaskName}");
             message.AppendLine();
             message.AppendLine("Thanks for volunteering. Your help is appreciated.");
 

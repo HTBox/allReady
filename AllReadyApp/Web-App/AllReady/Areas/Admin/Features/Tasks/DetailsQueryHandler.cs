@@ -19,23 +19,23 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<DetailsViewModel> Handle(DetailsQuery message)
         {
-            var @task = await GetTask(message);
+            var volunteerTask = await GetTask(message);
 
             var model = new DetailsViewModel
             {
-                Id = @task.Id,
-                Name = @task.Name,
-                Description = @task.Description,
-                StartDateTime = @task.StartDateTime,
-                EndDateTime = @task.EndDateTime,
-                NumberOfVolunteersRequired = @task.NumberOfVolunteersRequired,
-                EventId = @task.Event.Id,
-                EventName = @task.Event.Name,
-                CampaignId = @task.Event.CampaignId,
-                CampaignName = @task.Event.Campaign.Name,
-                TimeZoneId = @task.Event.TimeZoneId,
-                RequiredSkills = @task.RequiredSkills,
-                AssignedVolunteers = @task.AssignedVolunteers.Select(ts => new VolunteerViewModel
+                Id = volunteerTask.Id,
+                Name = volunteerTask.Name,
+                Description = volunteerTask.Description,
+                StartDateTime = volunteerTask.StartDateTime,
+                EndDateTime = volunteerTask.EndDateTime,
+                NumberOfVolunteersRequired = volunteerTask.NumberOfVolunteersRequired,
+                EventId = volunteerTask.Event.Id,
+                EventName = volunteerTask.Event.Name,
+                CampaignId = volunteerTask.Event.CampaignId,
+                CampaignName = volunteerTask.Event.Campaign.Name,
+                TimeZoneId = volunteerTask.Event.TimeZoneId,
+                RequiredSkills = volunteerTask.RequiredSkills,
+                AssignedVolunteers = volunteerTask.AssignedVolunteers.Select(ts => new VolunteerViewModel
                 {
                     UserId = ts.User.Id,
                     UserName = ts.User.UserName,
@@ -57,7 +57,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 .Include(t => t.Event.Campaign)
                 .Include(t => t.AssignedVolunteers).ThenInclude(ts => ts.User).ThenInclude(u => u.AssociatedSkills).ThenInclude(s => s.Skill).ThenInclude(s => s.ParentSkill).ThenInclude(s => s.ParentSkill)
                 .Include(t => t.RequiredSkills).ThenInclude(ts => ts.Skill).ThenInclude(s => s.ParentSkill).ThenInclude(s => s.ParentSkill)
-                .SingleOrDefaultAsync(t => t.Id == message.TaskId);
+                .SingleOrDefaultAsync(t => t.Id == message.VolunteerTaskId);
         }
     }
 }

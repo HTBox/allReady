@@ -23,7 +23,7 @@ namespace AllReady.Features.Tasks
                 .Include(x => x.Event.Campaign)
                 .Include(x => x.AssignedVolunteers).ThenInclude(v => v.User)
                 .Include(x => x.RequiredSkills)
-                .Where(t => t.Id == message.TaskId)
+                .Where(t => t.Id == message.VolunteerTaskId)
                 .SingleOrDefaultAsync();
         }
     }

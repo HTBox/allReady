@@ -33,31 +33,31 @@ namespace AllReady.Features.Notifications
             // don't let problem with notification keep us from continuing
             try
             {
-                var taskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQuery { TaskId = notification.TaskId, UserId = notification.UserId });
+                var volunteerTaskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQuery { VolunteerTaskId = notification.VolunteerTaskId, UserId = notification.UserId });
 
-                var campaignContact = taskInfo.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
+                var campaignContact = volunteerTaskInfo.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
                 var adminEmail = campaignContact?.Contact?.Email;
                 if (string.IsNullOrWhiteSpace(adminEmail))
                 {
                     return;
                 }
 
-                var eventLink = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Event/Details/{taskInfo.EventId}";
+                var eventLink = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Event/Details/{volunteerTaskInfo.EventId}";
 
-                var @task = await _context.Tasks.SingleOrDefaultAsync(t => t.Id == notification.TaskId);
-                if (@task == null)
+                var volunteerTask = await _context.Tasks.SingleOrDefaultAsync(t => t.Id == notification.VolunteerTaskId);
+                if (volunteerTask == null)
                 {
                     return;
                 }
 
-                var taskLink = $"View task: http://{_options.Value.SiteBaseUrl}/Admin/task/Details/{@task.Id}";
-                var taskSignup = @task.AssignedVolunteers.FirstOrDefault(t => t.User.Id == taskInfo.Volunteer.Id);
+                var volunteerTaskLink = $"View task: http://{_options.Value.SiteBaseUrl}/Admin/task/Details/{volunteerTask.Id}";
+                var volunteerTaskSignup = volunteerTask.AssignedVolunteers.FirstOrDefault(t => t.User.Id == volunteerTaskInfo.Volunteer.Id);
 
                 //set for task signup
-                var volunteerEmail = taskInfo.Volunteer.Email;
-                var volunteerPhoneNumber = taskInfo.Volunteer.PhoneNumber;
-                var volunteerComments = !string.IsNullOrWhiteSpace(taskSignup?.AdditionalInfo) ? taskSignup.AdditionalInfo : string.Empty;
-                var remainingRequiredVolunteersPhrase = $"{@task.NumberOfUsersSignedUp}/{@task.NumberOfVolunteersRequired}";
+                var volunteerEmail = volunteerTaskInfo.Volunteer.Email;
+                var volunteerPhoneNumber = volunteerTaskInfo.Volunteer.PhoneNumber;
+                var volunteerComments = !string.IsNullOrWhiteSpace(volunteerTaskSignup?.AdditionalInfo) ? volunteerTaskSignup.AdditionalInfo : string.Empty;
+                var remainingRequiredVolunteersPhrase = $"{volunteerTask.NumberOfUsersSignedUp}/{volunteerTask.NumberOfVolunteersRequired}";
                 const string typeOfSignupPhrase = "a task";
 
                 var subject = $"A volunteer has signed up for {typeOfSignupPhrase}";
@@ -65,17 +65,17 @@ namespace AllReady.Features.Notifications
                 var message = new StringBuilder();
                 message.AppendLine($"A volunteer has signed up for {typeOfSignupPhrase}:");
                 message.AppendLine();
-                message.AppendLine($"   Campaign: {taskInfo.CampaignName}");
-                message.AppendLine($"   Event: {taskInfo.EventName} ({eventLink})");
-                message.AppendLine($"   Task: {@task.Name} ({taskLink})");
+                message.AppendLine($"   Campaign: {volunteerTaskInfo.CampaignName}");
+                message.AppendLine($"   Event: {volunteerTaskInfo.EventName} ({eventLink})");
+                message.AppendLine($"   Task: {volunteerTask.Name} ({volunteerTaskLink})");
                 message.AppendLine($"   Remaining/Required Volunteers: {remainingRequiredVolunteersPhrase}");
                 message.AppendLine();
-                message.AppendLine($"   Volunteer Name: {taskInfo.Volunteer.Name}");
+                message.AppendLine($"   Volunteer Name: {volunteerTaskInfo.Volunteer.Name}");
                 message.AppendLine($"   Volunteer Email: {volunteerEmail}");
                 message.AppendLine($"   Volunteer PhoneNumber: {volunteerPhoneNumber}");
                 message.AppendLine($"   Volunteer Comments: {volunteerComments}");
                 message.AppendLine();
-                message.AppendLine(GetTaskSkillsInfo(@task, taskInfo.Volunteer));
+                message.AppendLine(GetTaskSkillsInfo(volunteerTask, volunteerTaskInfo.Volunteer));
 
                 var command = new NotifyVolunteersCommand
                 {

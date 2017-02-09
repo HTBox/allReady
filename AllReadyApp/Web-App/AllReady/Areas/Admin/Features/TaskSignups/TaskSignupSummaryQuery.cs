@@ -5,6 +5,6 @@ namespace AllReady.Areas.Admin.Features.TaskSignups
 {
     public class TaskSignupSummaryQuery : IAsyncRequest<TaskSignupSummaryViewModel>
     {
-        public int TaskSignupId { get; set; }
+        public int VolunteerTaskSignupId { get; set; }
     }
 }

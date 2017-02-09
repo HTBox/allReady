@@ -45,7 +45,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Tasks.Add(task);
             Context.SaveChanges();
 
-            message = new EditVolunteerTaskQuery { TaskId = task.Id };
+            message = new EditVolunteerTaskQuery { VolunteerTaskId = task.Id };
             sut = new EditVolunteerTaskQueryHandler(Context);
 
         }

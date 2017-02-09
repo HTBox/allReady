@@ -21,7 +21,7 @@ namespace AllReady.Features.Volunteers
         
         public async Task<MyEventsListerViewModel> Handle(GetMyEventsQuery message)
         {
-            var taskSignups = await _context.TaskSignups.AsNoTracking()
+            var volunteerTaskSignups = await _context.TaskSignups.AsNoTracking()
                 .Include(rec => rec.VolunteerTask).ThenInclude(rec => rec.Event).ThenInclude(rec => rec.Campaign).ThenInclude(rec => rec.ManagingOrganization)
                 .Include(rec => rec.User)
                 .Where(rec => rec.User.Id == message.UserId)
@@ -42,7 +42,7 @@ namespace AllReady.Features.Volunteers
 
             var results = new List<MyEventsListerItem>();
 
-            foreach (var rec in taskSignups.GroupBy(t => t.EventId))
+            foreach (var rec in volunteerTaskSignups.GroupBy(t => t.EventId))
             {
                 var eventItem = new MyEventsListerItem
                 {
@@ -60,7 +60,7 @@ namespace AllReady.Features.Volunteers
 
             foreach(var campaignEvent in results)
             {
-                var signups = taskSignups.Where(t => t.EventId == campaignEvent.EventId);
+                var signups = volunteerTaskSignups.Where(t => t.EventId == campaignEvent.EventId);
 
                 foreach(var signup in signups)
                 {

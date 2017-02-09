@@ -19,7 +19,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var message = new EditVolunteerTaskCommand
             {
-                Task = new EditViewModel
+                VolunteerTask = new EditViewModel
                 {
                     Name = "TaskName",
                     Description = "TaskDescription",
@@ -37,18 +37,18 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.SaveChanges();
 
             var sut = new EditVolunteerTaskCommandHandler(Context);
-            var taskId = await sut.Handle(message);
-            var result = Context.Tasks.Single(x => x.Id == taskId);
+            var volunteerTaskId = await sut.Handle(message);
+            var result = Context.Tasks.Single(x => x.Id == volunteerTaskId);
 
-            Assert.True(taskId > 0);
-            Assert.Equal(result.Name, message.Task.Name);
-            Assert.Equal(result.Description, message.Task.Description);
+            Assert.True(volunteerTaskId > 0);
+            Assert.Equal(result.Name, message.VolunteerTask.Name);
+            Assert.Equal(result.Description, message.VolunteerTask.Description);
             Assert.Equal(result.Event, @event);
             Assert.Equal(result.Organization, organization);
-            Assert.Equal(result.NumberOfVolunteersRequired, message.Task.NumberOfVolunteersRequired);
+            Assert.Equal(result.NumberOfVolunteersRequired, message.VolunteerTask.NumberOfVolunteersRequired);
             Assert.Equal(result.IsLimitVolunteers, @event.IsLimitVolunteers);
             Assert.Equal(result.IsAllowWaitList, @event.IsAllowWaitList);
-            Assert.Equal(result.RequiredSkills, message.Task.RequiredSkills);
+            Assert.Equal(result.RequiredSkills, message.VolunteerTask.RequiredSkills);
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var @event = new Event { Id = 3 };
             var organization = new Organization { Id = 4 };
-            var @task = new VolunteerTask
+            var volunteerTask = new VolunteerTask
             {
                 Id = 2,
                 Name = "TaskName",
@@ -70,14 +70,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Database.EnsureDeleted();
             Context.Events.Add(@event);
             Context.Organizations.Add(organization);
-            Context.Tasks.Add(@task);
+            Context.Tasks.Add(volunteerTask);
             Context.SaveChanges();
 
             var message = new EditVolunteerTaskCommand
             {
-                Task = new EditViewModel
+                VolunteerTask = new EditViewModel
                 {
-                    Id = @task.Id,
+                    Id = volunteerTask.Id,
                     Name = "TaskNameUpdated",
                     Description = "TaskDescriptionUpdated",
                     EventId = @event.Id,
@@ -91,19 +91,19 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             };
 
             var sut = new EditVolunteerTaskCommandHandler(Context);
-            var taskId = await sut.Handle(message);
-            var result = Context.Tasks.Single(x => x.Id == taskId);
+            var volunteerTaskId = await sut.Handle(message);
+            var result = Context.Tasks.Single(x => x.Id == volunteerTaskId);
 
             //can't test start and end date as they're tied to static classes
-            Assert.Equal(taskId, message.Task.Id);
-            Assert.Equal(result.Name, message.Task.Name);
-            Assert.Equal(result.Description, message.Task.Description);
+            Assert.Equal(volunteerTaskId, message.VolunteerTask.Id);
+            Assert.Equal(result.Name, message.VolunteerTask.Name);
+            Assert.Equal(result.Description, message.VolunteerTask.Description);
             Assert.Equal(result.Event, @event);
             Assert.Equal(result.Organization, organization);
-            Assert.Equal(result.NumberOfVolunteersRequired, message.Task.NumberOfVolunteersRequired);
+            Assert.Equal(result.NumberOfVolunteersRequired, message.VolunteerTask.NumberOfVolunteersRequired);
             Assert.Equal(result.IsLimitVolunteers, @event.IsLimitVolunteers);
             Assert.Equal(result.IsAllowWaitList, @event.IsAllowWaitList);
-            Assert.Equal(result.RequiredSkills, message.Task.RequiredSkills);
+            Assert.Equal(result.RequiredSkills, message.VolunteerTask.RequiredSkills);
         }
     }
 }

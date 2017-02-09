@@ -37,7 +37,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     OrganizationId = task.Event.Campaign.ManagingOrganizationId,
                     TimeZoneId = task.Event.TimeZoneId
                 })
-                .SingleAsync(t => t.Id == message.TaskId);
+                .SingleAsync(t => t.Id == message.VolunteerTaskId);
         }
     }
 }

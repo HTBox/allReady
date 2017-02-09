@@ -19,9 +19,9 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         public LocationEditViewModel Location { get; set; }
 
         /// <summary>
-        /// A list of the tasks currently associated with the event being displayed
+        /// A list of the volunteerTasks currently associated with the event being displayed
         /// </summary>
-        public IList<TaskSummaryViewModel> Tasks { get; set; } = new List<TaskSummaryViewModel>();
+        public IList<TaskSummaryViewModel> VolunteerTasks { get; set; } = new List<TaskSummaryViewModel>();
 
         /// <summary>		
         /// A list of the skills required from volunteers of the event being displayed		
@@ -176,12 +176,12 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         public ItineraryEditViewModel NewItinerary { get; set; } = new ItineraryEditViewModel();
 
         /// <summary>
-        /// The number of volunteers required across all tasks for the event
+        /// The number of volunteers required across all volunteerTasks for the event
         /// </summary>
         public int VolunteersRequired { get; set; }
 
         /// <summary>
-        /// The number of volunteers assigned to any of the event's tasks (in accepted status)
+        /// The number of volunteers assigned to any of the event's volunteerTasks (in accepted status)
         /// </summary>
         public int AcceptedVolunteers { get; set; }
 
@@ -204,9 +204,9 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         }
 
         /// <summary>
-        /// The number of tasks assigned to the event
+        /// The number of volunteerTasks assigned to the event
         /// </summary>
-        public int TaskCount => Tasks.Count;
+        public int VolunteerTaskCount => VolunteerTasks.Count;
 
         public string ItinerariesDetailsUrl { get; set; }
     }

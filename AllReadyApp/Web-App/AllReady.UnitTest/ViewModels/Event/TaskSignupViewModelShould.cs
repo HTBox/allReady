@@ -9,19 +9,19 @@ namespace AllReady.UnitTest.ViewModels.Event
         [Fact]
         public void SetTaskIdAndTaskName_WhenTaskSignupsTaskIsNotNull()
         {
-            var taskSignup = new VolunteerTaskSignup { VolunteerTask = new VolunteerTask { Id = 1, Name = "TaskName" } };
-            var sut = new TaskSignupViewModel(taskSignup);
-            Assert.Equal(sut.TaskId, taskSignup.VolunteerTask.Id);
-            Assert.Equal(sut.TaskName, taskSignup.VolunteerTask.Name);
+            var volunteerTaskSignup = new VolunteerTaskSignup { VolunteerTask = new VolunteerTask { Id = 1, Name = "TaskName" } };
+            var sut = new TaskSignupViewModel(volunteerTaskSignup);
+            Assert.Equal(sut.VolunteerTaskId, volunteerTaskSignup.VolunteerTask.Id);
+            Assert.Equal(sut.VolunteerTaskName, volunteerTaskSignup.VolunteerTask.Name);
         }
 
         [Fact]
         public void SetUserIdAndUserName_WhenTaskSignupsUserIsNotNull()
         {
-            var taskSignup = new VolunteerTaskSignup { User = new ApplicationUser { Id = "1", UserName = "userName"} };
-            var sut = new TaskSignupViewModel(taskSignup);
-            Assert.Equal(sut.UserId, taskSignup.User.Id);
-            Assert.Equal(sut.UserName, taskSignup.User.UserName);
+            var volunteerTaskSignup = new VolunteerTaskSignup { User = new ApplicationUser { Id = "1", UserName = "userName"} };
+            var sut = new TaskSignupViewModel(volunteerTaskSignup);
+            Assert.Equal(sut.UserId, volunteerTaskSignup.User.Id);
+            Assert.Equal(sut.UserName, volunteerTaskSignup.User.UserName);
         }
     }
 }

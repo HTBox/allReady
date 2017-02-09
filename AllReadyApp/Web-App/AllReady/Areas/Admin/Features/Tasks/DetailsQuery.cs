@@ -5,6 +5,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
 {
     public class DetailsQuery : IAsyncRequest<DetailsViewModel>
     {
-        public int TaskId { get; set; }
+        public int VolunteerTaskId { get; set; }
     }
 }

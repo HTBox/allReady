@@ -19,7 +19,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var notification = new UserUnenrolled
             {
                 UserId = "user1@example.com",
-                TaskId = 111
+                VolunteerTaskId = 111
             };
 
             var mockMediator = new Mock<IMediator>();
@@ -28,7 +28,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var handler = new NotifyVolunteerForTaskUnenrollHandler(mockMediator.Object, null);
             await handler.Handle(notification);
 
-            mockMediator.Verify(x => x.SendAsync(It.Is<TaskDetailForNotificationQuery>(n => n.TaskId == notification.TaskId && n.UserId == notification.UserId)), Times.Once);
+            mockMediator.Verify(x => x.SendAsync(It.Is<TaskDetailForNotificationQuery>(n => n.VolunteerTaskId == notification.VolunteerTaskId && n.UserId == notification.UserId)), Times.Once);
         }
 
         [Fact]
@@ -151,20 +151,20 @@ namespace AllReady.UnitTest.Features.Notifications
             var userId = "user1@example.com";
 
             var siteBaseUrl = $"http://www.htbox.org";
-            var taskId = 111;
+            var volunteerTaskId = 111;
             var eventId = 111;
             var campaignName = "Compaign1";
             var eventName = "Event1";
-            var taskName = "Task1";
+            var volunteerTaskName = "Task1";
 
             var eventLink = $"View event: {siteBaseUrl}Event/Details/{eventId}";
 
             var message = new StringBuilder();
-            message.AppendLine($"This is to confirm that you have elected to un-enroll from the following task:");
+            message.AppendLine($"This is to confirm that you have elected to un-enroll from the following volunteerTask:");
             message.AppendLine();
             message.AppendLine($"   Campaign: {campaignName}");
             message.AppendLine($"   Event: {eventName} ({eventLink})");
-            message.AppendLine($"   Task: {taskName}");
+            message.AppendLine($"   Task: {volunteerTaskName}");
             message.AppendLine();
             message.AppendLine("Thanks for letting us know that you will not be participating.");
 
@@ -172,8 +172,8 @@ namespace AllReady.UnitTest.Features.Notifications
 
             var model = new TaskDetailForNotificationModel
             {
-                TaskId = taskId,
-                TaskName = taskName,
+                VolunteerTaskId = volunteerTaskId,
+                VolunteerTaskName = volunteerTaskName,
                 EventId = eventId,
                 EventName = eventName,
                 CampaignName = campaignName,

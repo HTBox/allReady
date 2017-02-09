@@ -17,20 +17,20 @@ namespace AllReady.UnitTest.Features.Tasks
         public async Task Result_ShouldBe_Success_IfTaskSignupExists()
         {
             var mockMediator = new Mock<IMediator>();
-            var message = new VolunteerTaskUnenrollCommand { TaskId = 1, UserId = "abc" };
+            var message = new VolunteerTaskUnenrollCommand { VolunteerTaskId = 1, UserId = "abc" };
 
             var sut = new VolunteerTaskUnenrollCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
             Assert.Equal("success", result.Status);
-            Assert.NotNull(result.Task);
+            Assert.NotNull(result.VolunteerTask);
         }
 
         [Fact]
         public async Task Result_ShouldBe_Failure_IfTaskIdDoesNotExist()
         {
             var mockMediator = new Mock<IMediator>();
-            var message = new VolunteerTaskUnenrollCommand { TaskId = 100, UserId = "abc" };
+            var message = new VolunteerTaskUnenrollCommand { VolunteerTaskId = 100, UserId = "abc" };
 
             var sut = new VolunteerTaskUnenrollCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
@@ -42,7 +42,7 @@ namespace AllReady.UnitTest.Features.Tasks
         public async Task TaskSignUp_ShouldBe_Deleted()
         {
             var mockMediator = new Mock<IMediator>();
-            var message = new VolunteerTaskUnenrollCommand { TaskId = 1, UserId = "abc" };
+            var message = new VolunteerTaskUnenrollCommand { VolunteerTaskId = 1, UserId = "abc" };
 
             var sut = new VolunteerTaskUnenrollCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
@@ -58,10 +58,10 @@ namespace AllReady.UnitTest.Features.Tasks
             var campaignEvent = new Event { Id = 1, Name = "Some Event" };
             Context.Events.Add(campaignEvent);
 
-            var @task = new VolunteerTask { Id = 1, Name = "Some Task", EndDateTime = DateTime.UtcNow.AddDays(100), Event = campaignEvent };
-            Context.Tasks.Add(@task);
+            var volunteerTask = new VolunteerTask { Id = 1, Name = "Some Task", EndDateTime = DateTime.UtcNow.AddDays(100), Event = campaignEvent };
+            Context.Tasks.Add(volunteerTask);
            
-            Context.TaskSignups.Add(new VolunteerTaskSignup { VolunteerTask = @task, User = user });
+            Context.TaskSignups.Add(new VolunteerTaskSignup { VolunteerTask = volunteerTask, User = user });
         
             Context.SaveChanges();
         }

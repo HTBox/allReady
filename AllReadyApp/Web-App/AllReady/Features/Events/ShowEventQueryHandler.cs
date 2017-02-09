@@ -25,8 +25,8 @@ namespace AllReady.Features.Events
                 .Include(a => a.Location)
                 .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
                 .Include(a => a.RequiredSkills).ThenInclude(rs => rs.Skill).ThenInclude(s => s.ParentSkill)
-                .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(tu => tu.User)
-                .Include(a => a.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
+                .Include(a => a.VolunteerTasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(tu => tu.User)
+                .Include(a => a.VolunteerTasks).ThenInclude(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
                 .SingleOrDefaultAsync(a => a.Id == message.EventId);
 
             if (@event == null || @event.Campaign.Locked)
@@ -45,10 +45,10 @@ namespace AllReady.Features.Events
                 eventViewModel.UserId = message.UserId;
                 eventViewModel.UserSkills = applicationUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
 
-                var assignedTasks = @event.Tasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == message.UserId)).ToList();
+                var assignedTasks = @event.VolunteerTasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == message.UserId)).ToList();
                 eventViewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, message.UserId)).OrderBy(task => task.StartDateTime));
 
-                var unassignedTasks = @event.Tasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != message.UserId)).ToList();
+                var unassignedTasks = @event.VolunteerTasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != message.UserId)).ToList();
                 eventViewModel.Tasks = new List<TaskViewModel>(unassignedTasks.Select(data => new TaskViewModel(data, message.UserId)).OrderBy(task => task.StartDateTime));
             }
 

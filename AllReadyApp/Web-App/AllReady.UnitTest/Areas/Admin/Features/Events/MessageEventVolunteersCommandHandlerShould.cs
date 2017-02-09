@@ -49,25 +49,25 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true };
             Context.Users.Add(user2);
 
-            var @task = new VolunteerTask
+            var volunteerTask = new VolunteerTask
             {
                 Id = 1,
                 Name = "Task 1",
                 Event = queenAnne,
             };
 
-            var taskSignup = new VolunteerTaskSignup
+            var volunteerTaskSignup = new VolunteerTaskSignup
             {
                 Id = 1,
                 User = user1,
-                VolunteerTask = @task
+                VolunteerTask = volunteerTask
             };
 
             htb.Campaigns.Add(firePrev);            
             Context.Organizations.Add(htb);
             Context.Events.Add(queenAnne);
-            Context.Tasks.Add(@task);
-            Context.TaskSignups.Add(taskSignup);
+            Context.Tasks.Add(volunteerTask);
+            Context.TaskSignups.Add(volunteerTaskSignup);
 
             Context.SaveChanges();
         }

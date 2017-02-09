@@ -24,40 +24,40 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         protected override async Task HandleCore(AssignVolunteerTaskCommand message)
         {
-            var @task = await _context.Tasks.SingleAsync(c => c.Id == message.VolunteerTaskId);
+            var volunteerTask = await _context.Tasks.SingleAsync(c => c.Id == message.VolunteerTaskId);
 
-            var taskSignups = new List<VolunteerTaskSignup>();
+            var volunteerTaskSignups = new List<VolunteerTaskSignup>();
 
             //New Items, if not in collection add them, save that list for the pub-event
             foreach (var userId in message.UserIds)
             {
-                var taskSignup = @task.AssignedVolunteers.SingleOrDefault(a => a.User.Id == userId);
-                if (taskSignup != null) continue;
+                var volunteerTaskSignup = volunteerTask.AssignedVolunteers.SingleOrDefault(a => a.User.Id == userId);
+                if (volunteerTaskSignup != null) continue;
 
                 var user = await _context.Users.SingleAsync(u => u.Id == userId);
-                taskSignup = new VolunteerTaskSignup
+                volunteerTaskSignup = new VolunteerTaskSignup
                 {
-                    VolunteerTask = @task,
+                    VolunteerTask = volunteerTask,
                     User = user,
                     AdditionalInfo = string.Empty,
                     Status = VolunteerTaskStatus.Assigned,
                     StatusDateTimeUtc = DateTimeUtcNow()
                 };
 
-                @task.AssignedVolunteers.Add(taskSignup);
-                taskSignups.Add(taskSignup);
+                volunteerTask.AssignedVolunteers.Add(volunteerTaskSignup);
+                volunteerTaskSignups.Add(volunteerTaskSignup);
             }
 
             //Remove task signups where the the user id is not included in the current list of assigned user id's
-            var taskSignupsToRemove = @task.AssignedVolunteers.Where(taskSignup => message.UserIds.All(uid => uid != taskSignup.User.Id)).ToList();
-            taskSignupsToRemove.ForEach(taskSignup => @task.AssignedVolunteers.Remove(taskSignup));
+            var volunteerTaskSignupsToRemove = volunteerTask.AssignedVolunteers.Where(volunteerTaskSignup => message.UserIds.All(uid => uid != volunteerTaskSignup.User.Id)).ToList();
+            volunteerTaskSignupsToRemove.ForEach(volunteerTaskSignup => volunteerTask.AssignedVolunteers.Remove(volunteerTaskSignup));
 
             await _context.SaveChangesAsync();
 
             await _mediator.PublishAsync(new TaskAssignedToVolunteersNotification
             {
-                TaskId = message.VolunteerTaskId,
-                NewlyAssignedVolunteers = taskSignups.Select(x => x.User.Id).ToList()
+                VolunteerTaskId = message.VolunteerTaskId,
+                NewlyAssignedVolunteers = volunteerTaskSignups.Select(x => x.User.Id).ToList()
             });
         }        
     }

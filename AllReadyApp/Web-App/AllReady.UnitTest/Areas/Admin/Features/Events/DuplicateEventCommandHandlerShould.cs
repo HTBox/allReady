@@ -82,7 +82,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         {
             var eventId = await DuplicateEvent(new DuplicateEventViewModel { Id = EventToDuplicateId });
             var @event = await GetEvent(eventId);
-            var sut = @event.Tasks.OrderBy(t => t.Id).ToList();
+            var sut = @event.VolunteerTasks.OrderBy(t => t.Id).ToList();
 
             Assert.Equal(2, sut.Count());
             Assert.Equal(3, sut[0].Id);
@@ -103,7 +103,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
 
             var eventId = await DuplicateEvent(duplicateEventModel);
             var @event = await GetEvent(eventId);
-            var sut = @event.Tasks.OrderBy(t => t.StartDateTime).ToList();
+            var sut = @event.VolunteerTasks.OrderBy(t => t.StartDateTime).ToList();
 
             Assert.Equal(new DateTimeOffset(2016, 2, 1, 9, 0, 0, new TimeSpan()), sut[0].StartDateTime);
             Assert.Equal(new DateTimeOffset(2016, 2, 2, 10, 0, 0, new TimeSpan()), sut[1].StartDateTime);
@@ -123,7 +123,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
 
             var eventId = await DuplicateEvent(duplicateEventModel);
             var @event = await GetEvent(eventId);
-            var sut = @event.Tasks.OrderBy(t => t.StartDateTime).ToList();
+            var sut = @event.VolunteerTasks.OrderBy(t => t.StartDateTime).ToList();
 
             Assert.Equal(new TimeSpan(8, 0, 0), sut[0].EndDateTime - sut[0].StartDateTime);
             Assert.Equal(new TimeSpan(6, 0, 0), sut[1].EndDateTime - sut[1].StartDateTime);
@@ -143,7 +143,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
 
             var eventId = await DuplicateEvent(duplicateEventModel);
             var @event = await GetEvent(eventId);
-            var sut = @event.Tasks.OrderBy(t => t.StartDateTime).ToList();
+            var sut = @event.VolunteerTasks.OrderBy(t => t.StartDateTime).ToList();
 
             Assert.Equal(0, sut[0].AssignedVolunteers.Count());
             Assert.Equal(0, sut[1].AssignedVolunteers.Count());
@@ -154,7 +154,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         {
             var eventId = await DuplicateEvent(new DuplicateEventViewModel { Id = EventToDuplicateId });
             var @event = await GetEvent(eventId);
-            var sut = @event.Tasks.OrderBy(t => t.StartDateTime).ToList();
+            var sut = @event.VolunteerTasks.OrderBy(t => t.StartDateTime).ToList();
 
             Assert.Equal(2, sut[0].RequiredSkills.Count());
             Assert.Equal("Skill One", sut[0].RequiredSkills.OrderBy(ts => ts.Skill.Name).ToList()[0].Skill.Name);
@@ -180,7 +180,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 .AsNoTracking()
                 .Include(e => e.Campaign)
                 .Include(e => e.Location)
-                .Include(e => e.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
+                .Include(e => e.VolunteerTasks).ThenInclude(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
                 .Include(e => e.Organizer)
                 .Include(e => e.RequiredSkills).ThenInclude(es => es.Skill)
                 .SingleAsync(e => e.Id == eventId);
@@ -219,7 +219,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                     PhoneNumber = "PhoneNumber",
                     Country = "Country"
                 },
-                Tasks = new List<VolunteerTask>
+                VolunteerTasks = new List<VolunteerTask>
                 {
                     new VolunteerTask
                     {

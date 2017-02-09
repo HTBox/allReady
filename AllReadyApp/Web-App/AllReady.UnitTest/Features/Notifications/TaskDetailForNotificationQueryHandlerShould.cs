@@ -71,7 +71,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
                 RequiredSkills = new List<EventSkill>(),
-                Tasks = new List<VolunteerTask>()
+                VolunteerTasks = new List<VolunteerTask>()
             };
 
             _task1 = new VolunteerTask
@@ -96,7 +96,7 @@ namespace AllReady.UnitTest.Features.Notifications
                 }
             };
 
-            _queenAnne.Tasks.Add(_task1);
+            _queenAnne.VolunteerTasks.Add(_task1);
             Context.Users.Add(_user1);
             Context.Contacts.Add(_contact1);
             Context.Organizations.Add(_htb);
@@ -107,7 +107,7 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async Task EventDoesNotExist()
         {
-            var query = new TaskDetailForNotificationQuery { TaskId = 999, UserId = _user1.Id };
+            var query = new TaskDetailForNotificationQuery { VolunteerTaskId = 999, UserId = _user1.Id };
             var handler = new TaskDetailForNotificationQueryHandler(Context);
 
             var result = await handler.Handle(query);

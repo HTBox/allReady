@@ -2,7 +2,7 @@
 {
     public class TaskSignupSummaryViewModel
     {
-        public int TaskSignupId { get; set; }
+        public int VolunteerTaskSignupId { get; set; }
 
         public string VolunteerName { get; set; }
 

@@ -40,7 +40,7 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
                 result.Add(new KeyValuePair<string, string>(nameof(viewModel.EndDateTime), $"The end date of this task cannot be after the end date of the event {parentEvent.EndDateTime:g}"));
             }
 
-            // Rule - Itinerary tasks must start and end on same calendar day
+            // Rule - Itinerary volunteerTasks must start and end on same calendar day
             if (parentEvent.EventType == EventType.Itinerary)
             {
                 if (viewModel.StartDateTime.Date != viewModel.EndDateTime.Date)

@@ -103,7 +103,7 @@ namespace AllReady.Controllers
                 return Unauthorized();
             }
             
-            await _mediator.SendAsync(new DeleteVolunteerTaskCommand { TaskId = volunteerTask.Id });
+            await _mediator.SendAsync(new DeleteVolunteerTaskCommand { VolunteerTaskId = volunteerTask.Id });
 
             //http://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
             return Ok();
@@ -136,7 +136,7 @@ namespace AllReady.Controllers
               return Json(new
               {
                 isSuccess = true,
-                task = result.Task == null ? null : new TaskViewModel(result.Task, signupModel.UserId)
+                task = result.VolunteerTask == null ? null : new TaskViewModel(result.VolunteerTask, signupModel.UserId)
               });
 
             case VolunteerTaskSignupResult.FAILURE_CLOSEDTASK:
@@ -176,12 +176,12 @@ namespace AllReady.Controllers
         {
             var userId = _userManager.GetUserId(User);
 
-            var result = await _mediator.SendAsync(new VolunteerTaskUnenrollCommand { TaskId = id, UserId = userId });
+            var result = await _mediator.SendAsync(new VolunteerTaskUnenrollCommand { VolunteerTaskId = id, UserId = userId });
 
             return Json(new
             {
                 result.Status,
-                Task = result.Task == null ? null : new TaskViewModel(result.Task, userId)
+                Task = result.VolunteerTask == null ? null : new TaskViewModel(result.VolunteerTask, userId)
             });
         }
 
@@ -192,18 +192,18 @@ namespace AllReady.Controllers
         [Authorize]
         public async Task<JsonResult> ChangeStatus(TaskChangeModel model)
         {
-            var result = await _mediator.SendAsync(new ChangeVolunteerTaskStatusCommand { TaskStatus = model.Status, TaskId = model.TaskId, UserId = model.UserId, TaskStatusDescription = model.StatusDescription });
-            return Json(new { result.Status, Task = result.Task == null ? null : new TaskViewModel(result.Task, model.UserId) });
+            var result = await _mediator.SendAsync(new ChangeVolunteerTaskStatusCommand { VolunteerTaskStatus = model.Status, VolunteerTaskId = model.VolunteerTaskId, UserId = model.UserId, VolunteerTaskStatusDescription = model.StatusDescription });
+            return Json(new { result.Status, Task = result.VolunteerTask == null ? null : new TaskViewModel(result.VolunteerTask, model.UserId) });
         }
 
-        private async Task<bool> TaskExists(int taskId)
+        private async Task<bool> TaskExists(int volunteerTaskId)
         {
-            return await GetTaskBy(taskId) != null;
+            return await GetTaskBy(volunteerTaskId) != null;
         }
 
-        private async Task<VolunteerTask> GetTaskBy(int taskId)
+        private async Task<VolunteerTask> GetTaskBy(int volunteerTaskId)
         {
-            return await _mediator.SendAsync(new VolunteerTaskByVolunteerTaskIdQuery { TaskId = taskId });
+            return await _mediator.SendAsync(new VolunteerTaskByVolunteerTaskIdQuery { VolunteerTaskId = volunteerTaskId });
         }
 
         private async Task<VolunteerTask> ToModel(TaskViewModel taskViewModel, IMediator mediator)
@@ -222,7 +222,7 @@ namespace AllReady.Controllers
             }
             else
             {
-                volunteerTask = await mediator.SendAsync(new VolunteerTaskByVolunteerTaskIdQuery { TaskId = taskViewModel.Id });
+                volunteerTask = await mediator.SendAsync(new VolunteerTaskByVolunteerTaskIdQuery { VolunteerTaskId = taskViewModel.Id });
                 newTask = false;
             }
 
@@ -259,23 +259,23 @@ namespace AllReady.Controllers
             {
                 var assignedVolunteers = taskViewModel.AssignedVolunteers.ToList();
 
-                var taskUsersList = await assignedVolunteers.ToTaskSignups(volunteerTask, _mediator);
+                var volunteerTaskUsersList = await assignedVolunteers.ToTaskSignups(volunteerTask, _mediator);
 
                 // We may be updating an existing task
                 if (newTask || volunteerTask.AssignedVolunteers.Count == 0)
                 {
-                    volunteerTask.AssignedVolunteers = taskUsersList;
+                    volunteerTask.AssignedVolunteers = volunteerTaskUsersList;
                 }
                 else
                 {
                     // Can probably rewrite this more efficiently.
-                    foreach (var taskUsers in taskUsersList)
+                    foreach (var volunteerTaskUsers in volunteerTaskUsersList)
                     {
                         if (!(from entry in volunteerTask.AssignedVolunteers
-                              where entry.User.Id == taskUsers.User.Id
+                              where entry.User.Id == volunteerTaskUsers.User.Id
                               select entry).Any())
                         {
-                            volunteerTask.AssignedVolunteers.Add(taskUsers);
+                            volunteerTask.AssignedVolunteers.Add(volunteerTaskUsers);
                         }
                     }
                 }
@@ -288,17 +288,17 @@ namespace AllReady.Controllers
     {
         public static async Task<List<VolunteerTaskSignup>> ToTaskSignups(this List<ViewModels.Event.TaskSignupViewModel> viewModels, VolunteerTask task, IMediator mediator)
         {
-            var taskSignups = new List<VolunteerTaskSignup>();
+            var volunteerTaskSignups = new List<VolunteerTaskSignup>();
             foreach (var viewModel in viewModels)
             {
-                taskSignups.Add(new VolunteerTaskSignup
+                volunteerTaskSignups.Add(new VolunteerTaskSignup
                 {
                     VolunteerTask = task,
                     User = await mediator.SendAsync(new UserByUserIdQuery { UserId = viewModel.UserId })
                 });
             }
 
-            return taskSignups;
+            return volunteerTaskSignups;
         }
     }
 

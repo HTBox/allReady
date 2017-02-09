@@ -9,30 +9,30 @@ namespace AllReady.ViewModels.Event
         public string Status { get; set; }
         public DateTime StatusDateTimeUtc { get; set; }
         public string StatusDescription { get; set; }
-        public int TaskId { get; set; }
-        public string TaskName { get; set; }
+        public int VolunteerTaskId { get; set; }
+        public string VolunteerTaskName { get; set; }
         public string UserId { get; set; }
         public string UserName { get; set; }
 
         public TaskSignupViewModel() { }
 
-        public TaskSignupViewModel(VolunteerTaskSignup taskSignup)
+        public TaskSignupViewModel(VolunteerTaskSignup volunteerTaskSignup)
         {
-            Id = taskSignup.Id;
-            Status = taskSignup.Status.ToString();
-            StatusDateTimeUtc = taskSignup.StatusDateTimeUtc;
-            StatusDescription = taskSignup.StatusDescription;
+            Id = volunteerTaskSignup.Id;
+            Status = volunteerTaskSignup.Status.ToString();
+            StatusDateTimeUtc = volunteerTaskSignup.StatusDateTimeUtc;
+            StatusDescription = volunteerTaskSignup.StatusDescription;
 
-            if (taskSignup.VolunteerTask != null)
+            if (volunteerTaskSignup.VolunteerTask != null)
             {
-                TaskId = taskSignup.VolunteerTask.Id;
-                TaskName = taskSignup.VolunteerTask.Name;
+                VolunteerTaskId = volunteerTaskSignup.VolunteerTask.Id;
+                VolunteerTaskName = volunteerTaskSignup.VolunteerTask.Name;
             }
 
-            if (taskSignup.User != null)
+            if (volunteerTaskSignup.User != null)
             {
-                UserId = taskSignup.User.Id;
-                UserName = taskSignup.User.UserName;
+                UserId = volunteerTaskSignup.User.Id;
+                UserName = volunteerTaskSignup.User.UserName;
             }
         }
     }

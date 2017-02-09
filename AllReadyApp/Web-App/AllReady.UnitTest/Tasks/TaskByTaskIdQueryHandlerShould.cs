@@ -12,19 +12,19 @@ namespace AllReady.UnitTest.Tasks
         public async Task WhenHandlingTaskByTaskIdQueryGetTaskIsInvokedWithCorrectTaskId() {
             var options = this.CreateNewContextOptions();
 
-            const int taskId = 1;
-            var message = new VolunteerTaskByVolunteerTaskIdQuery { TaskId = taskId };
+            const int volunteerTaskId = 1;
+            var message = new VolunteerTaskByVolunteerTaskIdQuery { VolunteerTaskId = volunteerTaskId };
 
             using (var context = new AllReadyContext(options)) {
-                context.Tasks.Add(new VolunteerTask {Id = taskId});
+                context.Tasks.Add(new VolunteerTask {Id = volunteerTaskId});
                 await context.SaveChangesAsync();
             }
 
             using (var context = new AllReadyContext(options)) {
                 var sut = new VolunteerTaskByVolunteerTaskIdQueryHandler(context);
-                var @task = await sut.Handle(message);
+                var volunteerTask = await sut.Handle(message);
 
-                Assert.Equal(@task.Id, taskId);
+                Assert.Equal(volunteerTask.Id, volunteerTaskId);
             }
         }
     }

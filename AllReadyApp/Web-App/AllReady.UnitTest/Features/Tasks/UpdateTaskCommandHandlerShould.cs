@@ -16,12 +16,12 @@ namespace AllReady.UnitTest.Features.Tasks
         {
             var options = this.CreateNewContextOptions();
 
-            const int taskId = 1;
-            var message = new UpdateVolunteerTaskCommand { VolunteerTask = new VolunteerTask {Id = taskId} };
+            const int volunteerTaskId = 1;
+            var message = new UpdateVolunteerTaskCommand { VolunteerTask = new VolunteerTask {Id = volunteerTaskId} };
 
             using (var context = new AllReadyContext(options)) {
                 context.Tasks.Add(new VolunteerTask {
-                    Id = taskId,
+                    Id = volunteerTaskId,
                     RequiredSkills = new List<VolunteerTaskSkill> {
                         new VolunteerTaskSkill()
                     }
@@ -35,9 +35,9 @@ namespace AllReady.UnitTest.Features.Tasks
             }
 
             using (var context = new AllReadyContext(options)) {
-                var @task = context.Tasks.Include(t => t.RequiredSkills).FirstOrDefault(t => t.Id == taskId);
-                Assert.NotNull(@task);
-                Assert.Equal(@task.RequiredSkills.Count, 0);
+                var volunteerTask = context.Tasks.Include(t => t.RequiredSkills).FirstOrDefault(t => t.Id == volunteerTaskId);
+                Assert.NotNull(volunteerTask);
+                Assert.Equal(volunteerTask.RequiredSkills.Count, 0);
             }
         }
     }

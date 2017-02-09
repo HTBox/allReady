@@ -8,7 +8,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
     public class DeleteVolunteerTaskCommandHandlerShould : InMemoryContextTest
     {
-        private const int TaskId = 1;
+        private const int VolunteerTaskId = 1;
 
         public DeleteVolunteerTaskCommandHandlerShould()
         {
@@ -20,8 +20,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         public async Task DeleteVolunteerTask()
         {
             var sut = new DeleteVolunteerTaskCommandHandler(Context);
-            await sut.Handle(new DeleteVolunteerTaskCommand { TaskId = TaskId });
-            Assert.False(Context.Tasks.Any(t => t.Id == TaskId));
+            await sut.Handle(new DeleteVolunteerTaskCommand { VolunteerTaskId = VolunteerTaskId });
+            Assert.False(Context.Tasks.Any(t => t.Id == VolunteerTaskId));
         }
     }
 }

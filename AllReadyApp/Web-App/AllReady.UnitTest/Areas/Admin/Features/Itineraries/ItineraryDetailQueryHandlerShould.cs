@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Date = new DateTime(2016, 07, 01)
             };
 
-            var @task = new VolunteerTask
+            var volunteerTask = new VolunteerTask
             {
                 Id = 1,
                 Event = queenAnne,
@@ -64,11 +64,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Email = "text@example.com"
             };
 
-            var taskSignup = new VolunteerTaskSignup
+            var volunteerTaskSignup = new VolunteerTaskSignup
             {
                 Id = 1,
                 User = user,
-                VolunteerTask = @task,
+                VolunteerTask = volunteerTask,
                 Itinerary = itinerary
             };
 
@@ -90,11 +90,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Context.Campaigns.Add(firePrev);
             Context.Events.Add(queenAnne);
             Context.Itineraries.Add(itinerary);
-            Context.Tasks.Add(@task);
+            Context.Tasks.Add(volunteerTask);
             Context.Users.Add(user);
             Context.Requests.Add(request);
             Context.ItineraryRequests.Add(itineraryReq);
-            Context.TaskSignups.Add(taskSignup);
+            Context.TaskSignups.Add(volunteerTaskSignup);
             Context.SaveChanges();
         }
 

@@ -16,7 +16,7 @@ namespace AllReady.Features.Tasks
 
         protected override async Task HandleCore(DeleteVolunteerTaskCommand message)
         {
-            var toDelete = dataContext.Tasks.SingleOrDefault(t => t.Id == message.TaskId);
+            var toDelete = dataContext.Tasks.SingleOrDefault(t => t.Id == message.VolunteerTaskId);
 
             if (toDelete != null)
             {
