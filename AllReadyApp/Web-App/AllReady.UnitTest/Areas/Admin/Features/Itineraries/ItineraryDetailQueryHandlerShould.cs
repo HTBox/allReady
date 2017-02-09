@@ -90,11 +90,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Context.Campaigns.Add(firePrev);
             Context.Events.Add(queenAnne);
             Context.Itineraries.Add(itinerary);
-            Context.Tasks.Add(volunteerTask);
+            Context.VolunteerTasks.Add(volunteerTask);
             Context.Users.Add(user);
             Context.Requests.Add(request);
             Context.ItineraryRequests.Add(itineraryReq);
-            Context.TaskSignups.Add(volunteerTaskSignup);
+            Context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             Context.SaveChanges();
         }
 

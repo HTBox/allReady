@@ -22,7 +22,7 @@ namespace AllReady.Features.Notifications
 
         public async Task Handle(ItineraryVolunteerListUpdated notification)
         {
-            var volunteerTaskSignup = await _context.TaskSignups
+            var volunteerTaskSignup = await _context.VolunteerTaskSignups
                 .AsNoTracking()
                 .Include(x => x.User)
                 .SingleAsync(ts => ts.Id == notification.VolunteerTaskSignupId);

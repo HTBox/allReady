@@ -24,7 +24,7 @@ namespace AllReady.Features.Notifications
 
         public async Task Handle(TaskSignupStatusChanged notification)
         {
-            var volunteerTaskSignup = await _context.TaskSignups
+            var volunteerTaskSignup = await _context.VolunteerTaskSignups
                 .Include(ts => ts.VolunteerTask)
                     .ThenInclude(t => t.Event).ThenInclude(a => a.Organizer)
                 .Include(ts => ts.VolunteerTask)

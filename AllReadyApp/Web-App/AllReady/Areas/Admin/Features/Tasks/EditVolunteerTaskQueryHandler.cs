@@ -18,7 +18,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<EditViewModel> Handle(EditVolunteerTaskQuery message)
         {
-            return await _context.Tasks.AsNoTracking()
+            return await _context.VolunteerTasks.AsNoTracking()
                 .Include(t => t.Event).ThenInclude(a => a.Campaign)
                 .Include(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
                 .Select(task => new EditViewModel

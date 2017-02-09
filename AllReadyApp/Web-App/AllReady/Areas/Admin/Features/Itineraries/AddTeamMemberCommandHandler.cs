@@ -52,7 +52,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     ItineraryId = message.ItineraryId
                 };
 
-                _context.TaskSignups.Attach(volunteerTaskSignup);
+                _context.VolunteerTaskSignups.Attach(volunteerTaskSignup);
                 _context.Entry(volunteerTaskSignup).Property(x => x.ItineraryId).IsModified = true;
                 await _context.SaveChangesAsync();
 

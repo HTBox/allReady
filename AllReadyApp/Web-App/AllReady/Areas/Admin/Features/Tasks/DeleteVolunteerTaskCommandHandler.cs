@@ -16,11 +16,11 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         protected override async Task HandleCore(DeleteVolunteerTaskCommand message)
         {
-            var volunteerTask = _context.Tasks.SingleOrDefault(c => c.Id == message.VolunteerTaskId);
+            var volunteerTask = _context.VolunteerTasks.SingleOrDefault(c => c.Id == message.VolunteerTaskId);
 
             if (volunteerTask != null)
             {
-                _context.Tasks.Remove(volunteerTask);
+                _context.VolunteerTasks.Remove(volunteerTask);
                 await _context.SaveChangesAsync();
             }
         }

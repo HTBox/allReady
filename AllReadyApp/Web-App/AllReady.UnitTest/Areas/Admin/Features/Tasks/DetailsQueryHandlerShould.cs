@@ -52,7 +52,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 }
             };
 
-            Context.Tasks.Add(task);
+            Context.VolunteerTasks.Add(task);
             Context.SaveChanges();
 
             message = new DetailsQuery { VolunteerTaskId = task.Id };

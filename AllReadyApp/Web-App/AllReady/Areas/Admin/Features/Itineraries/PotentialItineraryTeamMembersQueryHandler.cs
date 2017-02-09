@@ -19,7 +19,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
         public async Task<IEnumerable<SelectListItem>> Handle(PotentialItineraryTeamMembersQuery message)
         {
-            return await _context.TaskSignups
+            return await _context.VolunteerTaskSignups
                 .AsNoTracking()
                 .Include(x => x.VolunteerTask).ThenInclude(x => x.Event)
                 .Include(x => x.User)

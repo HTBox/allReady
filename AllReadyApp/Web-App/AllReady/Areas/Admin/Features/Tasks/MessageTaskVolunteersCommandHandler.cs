@@ -21,7 +21,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         protected override async Task HandleCore(MessageTaskVolunteersCommand message)
         {
-            var users = await _context.TaskSignups.AsNoTracking()
+            var users = await _context.VolunteerTaskSignups.AsNoTracking()
                 .Include(a => a.User)
                 .Where(a => a.VolunteerTask.Id == message.Model.VolunteerTaskId).ToListAsync();
 

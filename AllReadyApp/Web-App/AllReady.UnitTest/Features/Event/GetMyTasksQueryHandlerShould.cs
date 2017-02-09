@@ -21,7 +21,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                context.TaskSignups.Add(new VolunteerTaskSignup
+                context.VolunteerTaskSignups.Add(new VolunteerTaskSignup
                 {
                     User = new ApplicationUser { Id = userId },
                     VolunteerTask = new VolunteerTask { Event = new Event { Id = eventId, Campaign = new Campaign { Locked = false }}}

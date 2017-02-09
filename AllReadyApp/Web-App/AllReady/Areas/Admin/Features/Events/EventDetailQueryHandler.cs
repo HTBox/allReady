@@ -128,9 +128,9 @@ namespace AllReady.Areas.Admin.Features.Events
                     result.CompletedRequests + 
                     result.CanceledRequests;
 
-                result.VolunteersRequired = await _context.Tasks.Where(rec => rec.EventId == result.Id).SumAsync(rec => rec.NumberOfVolunteersRequired);
+                result.VolunteersRequired = await _context.VolunteerTasks.Where(rec => rec.EventId == result.Id).SumAsync(rec => rec.NumberOfVolunteersRequired);
 
-                var acceptedVolunteers = await _context.Tasks
+                var acceptedVolunteers = await _context.VolunteerTasks
                     .AsNoTracking()
                     .Include(rec => rec.AssignedVolunteers)
                     .Where(rec => rec.EventId == result.Id)

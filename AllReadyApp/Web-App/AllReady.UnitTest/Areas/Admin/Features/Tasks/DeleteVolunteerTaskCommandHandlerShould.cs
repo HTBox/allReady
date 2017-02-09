@@ -12,7 +12,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
         public DeleteVolunteerTaskCommandHandlerShould()
         {
-            Context.Tasks.Add(new VolunteerTask { Id = 1 });
+            Context.VolunteerTasks.Add(new VolunteerTask { Id = 1 });
             Context.SaveChanges();
         }
 
@@ -21,7 +21,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var sut = new DeleteVolunteerTaskCommandHandler(Context);
             await sut.Handle(new DeleteVolunteerTaskCommand { VolunteerTaskId = VolunteerTaskId });
-            Assert.False(Context.Tasks.Any(t => t.Id == VolunteerTaskId));
+            Assert.False(Context.VolunteerTasks.Any(t => t.Id == VolunteerTaskId));
         }
     }
 }

@@ -19,7 +19,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
         public async Task<bool> Handle(RemoveTeamMemberCommand message)
         {
-            var volunteerTaskSignup = await _context.TaskSignups
+            var volunteerTaskSignup = await _context.VolunteerTaskSignups
                 .FirstOrDefaultAsync(x => x.Id == message.VolunteerTaskSignupId);
 
             if (volunteerTaskSignup == null)

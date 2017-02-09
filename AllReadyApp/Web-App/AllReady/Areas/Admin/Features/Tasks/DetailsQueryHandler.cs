@@ -51,7 +51,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         private async Task<VolunteerTask> GetTask(DetailsQuery message)
         {
-            return await _context.Tasks
+            return await _context.VolunteerTasks
                 .AsNoTracking()
                 .Include(t => t.Event)
                 .Include(t => t.Event.Campaign)

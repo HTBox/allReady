@@ -21,7 +21,7 @@ namespace AllReady.Features.Volunteers
         
         public async Task<MyEventsListerViewModel> Handle(GetMyEventsQuery message)
         {
-            var volunteerTaskSignups = await _context.TaskSignups.AsNoTracking()
+            var volunteerTaskSignups = await _context.VolunteerTaskSignups.AsNoTracking()
                 .Include(rec => rec.VolunteerTask).ThenInclude(rec => rec.Event).ThenInclude(rec => rec.Campaign).ThenInclude(rec => rec.ManagingOrganization)
                 .Include(rec => rec.User)
                 .Where(rec => rec.User.Id == message.UserId)

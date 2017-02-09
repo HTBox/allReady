@@ -18,7 +18,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<int> Handle(EditVolunteerTaskCommand message)
         {
-            var volunteerTask = await _context.Tasks.Include(t => t.RequiredSkills).SingleOrDefaultAsync(t => t.Id == message.VolunteerTask.Id) ?? new VolunteerTask();
+            var volunteerTask = await _context.VolunteerTasks.Include(t => t.RequiredSkills).SingleOrDefaultAsync(t => t.Id == message.VolunteerTask.Id) ?? new VolunteerTask();
 
             volunteerTask.Name = message.VolunteerTask.Name;
             volunteerTask.Description = message.VolunteerTask.Description;
@@ -34,8 +34,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             if (volunteerTask.Id > 0)
             {
-                var volunteerTaskSkillsToRemove = _context.TaskSkills.Where(ts => ts.VolunteerTaskId == volunteerTask.Id && (message.VolunteerTask.RequiredSkills == null || message.VolunteerTask.RequiredSkills.All(ts1 => ts1.SkillId != ts.SkillId)));
-                _context.TaskSkills.RemoveRange(volunteerTaskSkillsToRemove);
+                var volunteerTaskSkillsToRemove = _context.VolunteerTaskSkills.Where(ts => ts.VolunteerTaskId == volunteerTask.Id && (message.VolunteerTask.RequiredSkills == null || message.VolunteerTask.RequiredSkills.All(ts1 => ts1.SkillId != ts.SkillId)));
+                _context.VolunteerTaskSkills.RemoveRange(volunteerTaskSkillsToRemove);
             }
 
             if (message.VolunteerTask.RequiredSkills != null)

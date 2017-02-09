@@ -52,9 +52,9 @@ namespace AllReady.UnitTest.Features.Notifications
             };
 
             Context.Users.Add(_user);
-            Context.TaskSignups.Add(_taskSignup);
-            Context.TaskSignups.Add(_taskSignupNoContactPreferences);
-            Context.TaskSignups.Add(_taskSignupNoContacts);
+            Context.VolunteerTaskSignups.Add(_taskSignup);
+            Context.VolunteerTaskSignups.Add(_taskSignupNoContactPreferences);
+            Context.VolunteerTaskSignups.Add(_taskSignupNoContacts);
             Context.Itineraries.Add(_itinerary);
             Context.SaveChanges();
         }

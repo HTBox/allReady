@@ -66,8 +66,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             htb.Campaigns.Add(firePrev);            
             Context.Organizations.Add(htb);
             Context.Events.Add(queenAnne);
-            Context.Tasks.Add(volunteerTask);
-            Context.TaskSignups.Add(volunteerTaskSignup);
+            Context.VolunteerTasks.Add(volunteerTask);
+            Context.VolunteerTaskSignups.Add(volunteerTaskSignup);
 
             Context.SaveChanges();
         }

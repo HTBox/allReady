@@ -38,7 +38,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var sut = new EditVolunteerTaskCommandHandler(Context);
             var volunteerTaskId = await sut.Handle(message);
-            var result = Context.Tasks.Single(x => x.Id == volunteerTaskId);
+            var result = Context.VolunteerTasks.Single(x => x.Id == volunteerTaskId);
 
             Assert.True(volunteerTaskId > 0);
             Assert.Equal(result.Name, message.VolunteerTask.Name);
@@ -70,7 +70,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Database.EnsureDeleted();
             Context.Events.Add(@event);
             Context.Organizations.Add(organization);
-            Context.Tasks.Add(volunteerTask);
+            Context.VolunteerTasks.Add(volunteerTask);
             Context.SaveChanges();
 
             var message = new EditVolunteerTaskCommand
@@ -92,7 +92,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var sut = new EditVolunteerTaskCommandHandler(Context);
             var volunteerTaskId = await sut.Handle(message);
-            var result = Context.Tasks.Single(x => x.Id == volunteerTaskId);
+            var result = Context.VolunteerTasks.Single(x => x.Id == volunteerTaskId);
 
             //can't test start and end date as they're tied to static classes
             Assert.Equal(volunteerTaskId, message.VolunteerTask.Id);

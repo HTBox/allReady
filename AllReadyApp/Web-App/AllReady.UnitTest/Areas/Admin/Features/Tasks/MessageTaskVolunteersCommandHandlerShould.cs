@@ -68,7 +68,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 new VolunteerTaskSignup { VolunteerTask = volunteerTask, User = user1 },
                 new VolunteerTaskSignup { VolunteerTask = volunteerTask, User = user2 }
             };
-            Context.TaskSignups.AddRange(volunteerTaskSignups);
+            Context.VolunteerTaskSignups.AddRange(volunteerTaskSignups);
 
             Context.SaveChanges();
         }

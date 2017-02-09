@@ -21,7 +21,7 @@ namespace AllReady.UnitTest.Features.Tasks
             }
 
             using (var context = new AllReadyContext(options)) {
-                var volunteerTasks = context.Tasks.Count();
+                var volunteerTasks = context.VolunteerTasks.Count();
                 Assert.Equal(volunteerTasks, 1);
             }
         }

@@ -44,7 +44,7 @@ namespace AllReady.Features.Notifications
 
                 var eventLink = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Event/Details/{volunteerTaskInfo.EventId}";
 
-                var volunteerTask = await _context.Tasks.SingleOrDefaultAsync(t => t.Id == notification.VolunteerTaskId);
+                var volunteerTask = await _context.VolunteerTasks.SingleOrDefaultAsync(t => t.Id == notification.VolunteerTaskId);
                 if (volunteerTask == null)
                 {
                     return;

@@ -22,10 +22,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 EndDateTime = new DateTimeOffset().UtcDateTime,
                 Event = new Event { Id = 2, Name = "EventName", CampaignId = 3, Campaign = new Campaign { ManagingOrganizationId = 4, Name = "Campaign Name" } }
             };
-            Context.Tasks.Add(volunteerTask);
+            Context.VolunteerTasks.Add(volunteerTask);
 
             var volunteerTaskThatShouldNotBeReturnedFromQuery = new VolunteerTask { Id = 2 };
-            Context.Tasks.Add(volunteerTaskThatShouldNotBeReturnedFromQuery);
+            Context.VolunteerTasks.Add(volunteerTaskThatShouldNotBeReturnedFromQuery);
             Context.SaveChanges();
         }
 

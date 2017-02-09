@@ -73,7 +73,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
       private async Task<VolunteerTask> GetTask(ChangeVolunteerTaskStatusCommand message)
       {
-         return await _context.Tasks
+         return await _context.VolunteerTasks
             .Include(t => t.AssignedVolunteers).ThenInclude(ts => ts.User)
             .Include(t => t.RequiredSkills).ThenInclude(s => s.Skill)
             .SingleOrDefaultAsync(c => c.Id == message.VolunteerTaskId);

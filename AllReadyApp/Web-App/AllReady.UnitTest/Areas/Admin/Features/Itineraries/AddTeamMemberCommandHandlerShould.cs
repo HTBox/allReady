@@ -58,7 +58,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Context.Campaigns.Add(firePrev);
             Context.Events.Add(queenAnne);
             Context.Itineraries.Add(itinerary);
-            Context.TaskSignups.Add(volunteerTaskSignUp);
+            Context.VolunteerTaskSignups.Add(volunteerTaskSignUp);
 
             Context.SaveChanges();
         }
@@ -131,7 +131,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<PotentialItineraryTeamMembersQuery>())).ReturnsAsync(potentialTaskSignups);
 
-            var volunteerTaskSignUp = Context.TaskSignups.Single(t => t.Id == 1);
+            var volunteerTaskSignUp = Context.VolunteerTaskSignups.Single(t => t.Id == 1);
             Context.Entry(volunteerTaskSignUp).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
 
             var handler = new AddTeamMemberCommandHandler(Context, mockMediator.Object);

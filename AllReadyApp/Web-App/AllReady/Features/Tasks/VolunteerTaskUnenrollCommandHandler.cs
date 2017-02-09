@@ -19,7 +19,7 @@ namespace AllReady.Features.Tasks
 
         public async Task<VolunteerTaskUnenrollResult> Handle(VolunteerTaskUnenrollCommand message)
         {
-            var volunteerTaskSignup = await _context.TaskSignups
+            var volunteerTaskSignup = await _context.VolunteerTaskSignups
                 .Include(rec => rec.VolunteerTask).ThenInclude(rec => rec.Event)
                 .SingleOrDefaultAsync(a => a.User.Id == message.UserId && a.VolunteerTask.Id == message.VolunteerTaskId);
 
@@ -28,7 +28,7 @@ namespace AllReady.Features.Tasks
                 return new VolunteerTaskUnenrollResult { Status = "failure" };
             }
 
-            _context.TaskSignups.Remove(volunteerTaskSignup);
+            _context.VolunteerTaskSignups.Remove(volunteerTaskSignup);
 
             await _context.SaveChangesAsync();
 

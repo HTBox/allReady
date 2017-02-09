@@ -66,7 +66,7 @@ namespace AllReady.UnitTest.Tasks
                 User = user1
             });
 
-            Context.Tasks.Add(newTask);
+            Context.VolunteerTasks.Add(newTask);
 
             Context.SaveChanges();
         }
@@ -76,7 +76,7 @@ namespace AllReady.UnitTest.Tasks
         {
             var mediator = new Mock<IMediator>();
 
-            var volunteerTask = Context.Tasks.First();
+            var volunteerTask = Context.VolunteerTasks.First();
             var user = Context.Users.First();
             var command = new ChangeVolunteerTaskStatusCommand
             {
@@ -87,7 +87,7 @@ namespace AllReady.UnitTest.Tasks
             var handler = new ChangeVolunteerTaskStatusCommandHandler(Context, mediator.Object);
             await handler.Handle(command);
 
-            var volunteerTaskSignup = Context.TaskSignups.First();
+            var volunteerTaskSignup = Context.VolunteerTaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == volunteerTaskSignup.Id)), Times.Once());
         }
     }

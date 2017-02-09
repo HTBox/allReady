@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Models;
@@ -18,7 +18,7 @@ namespace AllReady.Features.Tasks
 
         public async Task<List<VolunteerTask>> Handle(VolunteerTasksByApplicationUserIdQuery message)
         {
-            return await _context.TaskSignups
+            return await _context.VolunteerTaskSignups
                 .Include(x => x.User)
                 .Include(x => x.VolunteerTask)
                 .Where(x => x.User.Id == message.ApplicationUserId)

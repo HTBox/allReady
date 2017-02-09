@@ -22,7 +22,7 @@ namespace AllReady.Areas.Admin.Features.Events
         protected override async Task HandleCore(MessageEventVolunteersCommand message)
         {
             var users =
-                _context.TaskSignups.AsNoTracking()
+                _context.VolunteerTaskSignups.AsNoTracking()
                 .Include(a => a.User)
                 .Include(a => a.VolunteerTask)
                 .Where(a => a.VolunteerTask.EventId == message.ViewModel.EventId).ToList();

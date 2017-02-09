@@ -45,7 +45,7 @@ namespace AllReady.Features.Notifications
 
         private async Task<VolunteerTask> GetTask(TaskDetailForNotificationQuery message)
         {
-            return await _context.Tasks.AsNoTracking()
+            return await _context.VolunteerTasks.AsNoTracking()
                 .Include(a => a.Event).ThenInclude(e => e.Campaign).ThenInclude(c => c.CampaignContacts).ThenInclude(cc => cc.Contact)
                 .Include(a => a.AssignedVolunteers).ThenInclude(a => a.User)
                 .SingleOrDefaultAsync(a => a.Id == message.VolunteerTaskId);

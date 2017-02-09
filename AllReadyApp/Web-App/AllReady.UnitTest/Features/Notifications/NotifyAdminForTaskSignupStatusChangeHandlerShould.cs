@@ -28,7 +28,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             var context = Context;
             var volunteerTaskSignup = CreateTaskSignup(volunteerTaskSignupId, volunteerTaskId, email, userMail: userMail);
-            context.TaskSignups.Add(volunteerTaskSignup);
+            context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             context.SaveChanges();
 
             var target = new NotifyAdminForTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
@@ -55,7 +55,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var notification = new TaskSignupStatusChanged { SignupId = volunteerTaskSignupId };
 
             var volunteerTaskSignup = CreateTaskSignup(volunteerTaskSignupId, volunteerTaskId, email, firstName, lastName, userEmail);
-            Context.TaskSignups.Add(volunteerTaskSignup);
+            Context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             Context.SaveChanges();
 
             var target = new NotifyAdminForTaskSignupStatusChangeHandler(Context, mediator.Object, options.Object);
@@ -78,7 +78,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             var context = Context;
             var volunteerTaskSignup = CreateTaskSignup(volunteerTaskSignupId, volunteerTaskId, email);
-            context.TaskSignups.Add(volunteerTaskSignup);
+            context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             context.SaveChanges();
 
             var target = new NotifyAdminForTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
@@ -100,7 +100,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             var context = Context;
             var volunteerTaskSignup = CreateTaskSignupWithoutCampaignContact(volunteerTaskSignupId, volunteerTaskId);
-            context.TaskSignups.Add(volunteerTaskSignup);
+            context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             context.SaveChanges();
 
             var target = new NotifyAdminForTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
@@ -122,7 +122,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             var context = Context;
             var volunteerTaskSignup = CreateTaskSignupWithoutCampaignContacts(volunteerTaskSignupId, volunteerTaskId);
-            context.TaskSignups.Add(volunteerTaskSignup);
+            context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             context.SaveChanges();
 
             var target = new NotifyAdminForTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);

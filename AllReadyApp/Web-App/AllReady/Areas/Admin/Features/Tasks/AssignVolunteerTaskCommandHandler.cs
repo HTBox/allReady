@@ -24,7 +24,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         protected override async Task HandleCore(AssignVolunteerTaskCommand message)
         {
-            var volunteerTask = await _context.Tasks.SingleAsync(c => c.Id == message.VolunteerTaskId);
+            var volunteerTask = await _context.VolunteerTasks.SingleAsync(c => c.Id == message.VolunteerTaskId);
 
             var volunteerTaskSignups = new List<VolunteerTaskSignup>();
 

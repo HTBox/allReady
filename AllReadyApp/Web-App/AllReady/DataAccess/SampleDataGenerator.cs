@@ -31,7 +31,7 @@ namespace AllReady.DataAccess
             // Avoid polluting the database if there's already something in there.
             if (_context.Locations.Any() ||
                 _context.Organizations.Any() ||
-                _context.Tasks.Any() ||
+                _context.VolunteerTasks.Any() ||
                 _context.Campaigns.Any() ||
                 _context.Events.Any() ||
                 _context.EventSkills.Any() ||
@@ -413,7 +413,7 @@ namespace AllReady.DataAccess
             _context.EventSkills.AddRange(eventSkills);
             _context.Locations.AddRange(locations);
             _context.Organizations.AddRange(organizations);
-            _context.Tasks.AddRange(volunteerTasks);
+            _context.VolunteerTasks.AddRange(volunteerTasks);
             _context.Campaigns.AddRange(campaigns);
             _context.Events.AddRange(events);
             _context.Resources.AddRange(resources);
@@ -452,7 +452,7 @@ namespace AllReady.DataAccess
 
                 i = (i + 1) % users.Count;
             }
-            _context.TaskSignups.AddRange(volunteerTaskSignups);
+            _context.VolunteerTaskSignups.AddRange(volunteerTaskSignups);
             #endregion
 
             #region OrganizationContacts

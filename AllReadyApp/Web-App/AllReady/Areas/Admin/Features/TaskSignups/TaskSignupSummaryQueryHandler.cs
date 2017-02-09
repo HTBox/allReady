@@ -18,7 +18,7 @@ namespace AllReady.Areas.Admin.Features.TaskSignups
 
         public async Task<TaskSignupSummaryViewModel> Handle(TaskSignupSummaryQuery message)
         {
-            return await _context.TaskSignups.AsNoTracking()
+            return await _context.VolunteerTaskSignups.AsNoTracking()
                 .Include(x => x.User)
                 .Where(x => x.Id == message.VolunteerTaskSignupId)
                 .Select( x =>

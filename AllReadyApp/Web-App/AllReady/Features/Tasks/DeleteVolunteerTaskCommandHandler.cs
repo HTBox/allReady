@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
@@ -16,11 +16,11 @@ namespace AllReady.Features.Tasks
 
         protected override async Task HandleCore(DeleteVolunteerTaskCommand message)
         {
-            var toDelete = dataContext.Tasks.SingleOrDefault(t => t.Id == message.VolunteerTaskId);
+            var toDelete = dataContext.VolunteerTasks.SingleOrDefault(t => t.Id == message.VolunteerTaskId);
 
             if (toDelete != null)
             {
-                dataContext.Tasks.Remove(toDelete);
+                dataContext.VolunteerTasks.Remove(toDelete);
                 await dataContext.SaveChangesAsync();
             }
         }

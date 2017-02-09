@@ -112,8 +112,8 @@ namespace AllReady.UnitTest.Features.Notifications
                 // Required Skills?
             };
 
-            Context.Tasks.Add(testTask1);
-            Context.Tasks.Add(testTask2);
+            Context.VolunteerTasks.Add(testTask1);
+            Context.VolunteerTasks.Add(testTask2);
 
             Context.SaveChanges();
         }
@@ -148,7 +148,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var notification = new VolunteerSignedUpNotification
             {
                 UserId = Context.Users.First().Id,
-                VolunteerTaskId = Context.Tasks.First().Id
+                VolunteerTaskId = Context.VolunteerTasks.First().Id
             };
 
             var target = new NotifyAdminForSignupHandler(Context, mediator.Object, options, null);
@@ -193,7 +193,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var notification = new VolunteerSignedUpNotification
             {
                 UserId = Context.Users.First().Id,
-                VolunteerTaskId = Context.Tasks.First().Id
+                VolunteerTaskId = Context.VolunteerTasks.First().Id
             };
 
             var target = new NotifyAdminForSignupHandler(Context, mediator.Object, options, null);
@@ -234,7 +234,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var notification = new VolunteerSignedUpNotification
             {
                 UserId = Context.Users.First().Id,
-                VolunteerTaskId = Context.Tasks.First().Id
+                VolunteerTaskId = Context.VolunteerTasks.First().Id
             };
 
             var target = new NotifyAdminForSignupHandler(Context, mediator.Object, options, null);
@@ -264,7 +264,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var notification = new VolunteerSignedUpNotification
             {
                 UserId = Context.Users.First().Id,
-                VolunteerTaskId = Context.Tasks.First().Id
+                VolunteerTaskId = Context.VolunteerTasks.First().Id
             };
 
             var target = new NotifyAdminForSignupHandler(Context, mediator.Object, options, logger.Object);
@@ -298,7 +298,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var notification = new VolunteerSignedUpNotification
             {
                 UserId = Context.Users.First().Id,
-                VolunteerTaskId = Context.Tasks.First().Id
+                VolunteerTaskId = Context.VolunteerTasks.First().Id
             };
 
             var target = new NotifyAdminForSignupHandler(Context, mediator.Object, options, logger.Object);
@@ -327,7 +327,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var notification = new VolunteerSignedUpNotification
             {
                 UserId = Context.Users.First().Id,
-                VolunteerTaskId = Context.Tasks.First().Id
+                VolunteerTaskId = Context.VolunteerTasks.First().Id
             };
 
             var target = new NotifyAdminForSignupHandler(Context, mediator.Object, options, logger.Object);
@@ -355,7 +355,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var notification = new VolunteerSignedUpNotification
             {
                 UserId = Context.Users.First().Id,
-                VolunteerTaskId = Context.Tasks.Skip(1).First().Id
+                VolunteerTaskId = Context.VolunteerTasks.Skip(1).First().Id
             };
 
             var target = new NotifyAdminForSignupHandler(Context, mediator.Object, options, logger);

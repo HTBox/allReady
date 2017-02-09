@@ -18,7 +18,7 @@ namespace AllReady.Features.Events
 
         public IEnumerable<TaskSignupViewModel> Handle(GetMyTasksQuery message)
         {
-            var unfilteredTasks = this.dataContext.TaskSignups
+            var unfilteredTasks = this.dataContext.VolunteerTaskSignups
                 .Include(ts => ts.VolunteerTask)
                 .ThenInclude(t => t.Event)
                 .ThenInclude(t => t.Campaign)

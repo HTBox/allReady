@@ -18,10 +18,10 @@ namespace AllReady.Features.Tasks
             var volunteerTask = message.VolunteerTask;
             
             //First remove any skills that are no longer associated with this task
-            var tsToRemove = dataContext.TaskSkills.Where(ts => ts.VolunteerTaskId == volunteerTask.Id && (volunteerTask.RequiredSkills == null || !volunteerTask.RequiredSkills.Any(ts1 => ts1.SkillId == ts.SkillId)));
-            dataContext.TaskSkills.RemoveRange(tsToRemove);
+            var tsToRemove = dataContext.VolunteerTaskSkills.Where(ts => ts.VolunteerTaskId == volunteerTask.Id && (volunteerTask.RequiredSkills == null || !volunteerTask.RequiredSkills.Any(ts1 => ts1.SkillId == ts.SkillId)));
+            dataContext.VolunteerTaskSkills.RemoveRange(tsToRemove);
 
-            dataContext.Tasks.Update(message.VolunteerTask);
+            dataContext.VolunteerTasks.Update(message.VolunteerTask);
 
             await dataContext.SaveChangesAsync();
         }

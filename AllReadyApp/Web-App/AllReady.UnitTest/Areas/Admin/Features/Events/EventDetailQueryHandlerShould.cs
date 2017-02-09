@@ -151,8 +151,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Context.Events.Add(queenAnne);
             Context.Events.Add(rallyEvent);
             Context.Users.Add(user1);
-            Context.Tasks.Add(volunteerTask1);
-            Context.TaskSignups.Add(volunteerTaskSignup);
+            Context.VolunteerTasks.Add(volunteerTask1);
+            Context.VolunteerTaskSignups.Add(volunteerTaskSignup);
 
             Context.SaveChanges();
         }

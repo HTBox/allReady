@@ -47,7 +47,7 @@ namespace AllReady.UnitTest.Features.Tasks
             var sut = new VolunteerTaskUnenrollCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(0, Context.TaskSignups.Count());
+            Assert.Equal(0, Context.VolunteerTaskSignups.Count());
         }
 
         protected override void LoadTestData()
@@ -59,9 +59,9 @@ namespace AllReady.UnitTest.Features.Tasks
             Context.Events.Add(campaignEvent);
 
             var volunteerTask = new VolunteerTask { Id = 1, Name = "Some Task", EndDateTime = DateTime.UtcNow.AddDays(100), Event = campaignEvent };
-            Context.Tasks.Add(volunteerTask);
+            Context.VolunteerTasks.Add(volunteerTask);
            
-            Context.TaskSignups.Add(new VolunteerTaskSignup { VolunteerTask = volunteerTask, User = user });
+            Context.VolunteerTaskSignups.Add(new VolunteerTaskSignup { VolunteerTask = volunteerTask, User = user });
         
             Context.SaveChanges();
         }

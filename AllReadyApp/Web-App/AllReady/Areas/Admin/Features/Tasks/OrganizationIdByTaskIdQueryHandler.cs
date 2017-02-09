@@ -16,7 +16,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<int> Handle(OrganizationIdByTaskIdQuery message)
         {
-            var volunteerTask = await _context.Tasks
+            var volunteerTask = await _context.VolunteerTasks
                 .AsNoTracking()
                 .Include(t => t.Organization)
                 .SingleAsync(t => t.Id == message.VolunteerTaskId);

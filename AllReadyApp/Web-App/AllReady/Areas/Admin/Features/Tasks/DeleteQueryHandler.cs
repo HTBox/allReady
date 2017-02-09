@@ -18,7 +18,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<DeleteViewModel> Handle(DeleteQuery message)
         {
-            return await _context.Tasks
+            return await _context.VolunteerTasks
                 .AsNoTracking()
                 .Include(t => t.Event.Campaign)
                 .Select(task => new DeleteViewModel

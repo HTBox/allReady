@@ -19,9 +19,9 @@ namespace AllReady.Models
         public DbSet<EventSkill> EventSkills { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<PostalCodeGeo> PostalCodes { get; set; }
-        public DbSet<VolunteerTask> Tasks { get; set; }
-        public DbSet<VolunteerTaskSkill> TaskSkills { get; set; }
-        public DbSet<VolunteerTaskSignup> TaskSignups { get; set; }
+        public DbSet<VolunteerTask> VolunteerTasks { get; set; }
+        public DbSet<VolunteerTaskSkill> VolunteerTaskSkills { get; set; }
+        public DbSet<VolunteerTaskSignup> VolunteerTaskSignups { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public virtual DbSet<Skill> Skills { get; set; }
         public DbSet<UserSkill> UserSkills { get; set; }

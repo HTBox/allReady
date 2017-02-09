@@ -77,14 +77,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 User = user1
             });
 
-            Context.Tasks.Add(newTask);
+            Context.VolunteerTasks.Add(newTask);
 
             Context.SaveChanges();
         }
 
         protected async Task InitStatus(VolunteerTaskStatus status)
         {
-            var volunteerTaskSignup = Context.TaskSignups.First();
+            var volunteerTaskSignup = Context.VolunteerTaskSignups.First();
             volunteerTaskSignup.Status = status;
             await Context.SaveChangesAsync();
         }
@@ -92,7 +92,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         protected ChangeVolunteerTaskStatusCommand CreateCommand(VolunteerTaskStatus status, string description = "")
         {
             var user = Context.Users.First();
-            var volunteerTask = Context.Tasks.First();
+            var volunteerTask = Context.VolunteerTasks.First();
 
             return new ChangeVolunteerTaskStatusCommand
             {
@@ -106,7 +106,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerAssignedTask()
         {
-            var volunteerTask = Context.Tasks.First();
+            var volunteerTask = Context.VolunteerTasks.First();
             var user = Context.Users.First();
             var command = new ChangeVolunteerTaskStatusCommand
             {
@@ -117,7 +117,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             };
             await commandHandler.Handle(command);
 
-            var volunteerTaskSignup = Context.TaskSignups.First();
+            var volunteerTaskSignup = Context.VolunteerTaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == volunteerTaskSignup.Id)), Times.Once());
             volunteerTaskSignup.Status.ShouldBe(command.VolunteerTaskStatus);
             volunteerTaskSignup.VolunteerTask.Id.ShouldBe(command.VolunteerTaskId);
@@ -128,7 +128,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerAcceptsTaskFromAssignedStatus()
         {
-            var volunteerTask = Context.Tasks.First();
+            var volunteerTask = Context.VolunteerTasks.First();
             var user = Context.Users.First();
             var command = new ChangeVolunteerTaskStatusCommand
             {
@@ -139,7 +139,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             };
             await commandHandler.Handle(command);
 
-            var volunteerTaskSignup = Context.TaskSignups.First();
+            var volunteerTaskSignup = Context.VolunteerTaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == volunteerTaskSignup.Id)), Times.Once());
             volunteerTaskSignup.Status.ShouldBe(command.VolunteerTaskStatus);
             volunteerTaskSignup.VolunteerTask.Id.ShouldBe(command.VolunteerTaskId);
@@ -150,11 +150,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerAcceptsTaskFromCanNotCompleteStatus()
         {
-            var volunteerTaskSignup = Context.TaskSignups.First();
+            var volunteerTaskSignup = Context.VolunteerTaskSignups.First();
             volunteerTaskSignup.Status = VolunteerTaskStatus.CanNotComplete;
             await Context.SaveChangesAsync();
 
-            var volunteerTask = Context.Tasks.First();
+            var volunteerTask = Context.VolunteerTasks.First();
             var user = Context.Users.First();
             var command = new ChangeVolunteerTaskStatusCommand
             {
@@ -166,7 +166,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             await commandHandler.Handle(command);
 
-            volunteerTaskSignup = Context.TaskSignups.First();
+            volunteerTaskSignup = Context.VolunteerTaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == volunteerTaskSignup.Id)), Times.Once());
             volunteerTaskSignup.Status.ShouldBe(command.VolunteerTaskStatus);
             volunteerTaskSignup.VolunteerTask.Id.ShouldBe(command.VolunteerTaskId);
@@ -177,11 +177,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerAcceptsTaskFromCompletedStatus()
         {
-            var volunteerTaskSignup = Context.TaskSignups.First();
+            var volunteerTaskSignup = Context.VolunteerTaskSignups.First();
             volunteerTaskSignup.Status = VolunteerTaskStatus.Completed;
             await Context.SaveChangesAsync();
 
-            var volunteerTask = Context.Tasks.First();
+            var volunteerTask = Context.VolunteerTasks.First();
             var user = Context.Users.First();
             var command = new ChangeVolunteerTaskStatusCommand
             {
@@ -193,7 +193,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             await commandHandler.Handle(command);
 
-            volunteerTaskSignup = Context.TaskSignups.First();
+            volunteerTaskSignup = Context.VolunteerTaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == volunteerTaskSignup.Id)), Times.Once());
             volunteerTaskSignup.Status.ShouldBe(command.VolunteerTaskStatus);
             volunteerTaskSignup.User.Id.ShouldBe(command.UserId);
@@ -220,7 +220,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerRejectsTask()
         {
-            var volunteerTask = Context.Tasks.First();
+            var volunteerTask = Context.VolunteerTasks.First();
             var user = Context.Users.First();
             var command = new ChangeVolunteerTaskStatusCommand
             {
@@ -231,7 +231,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             };
             await commandHandler.Handle(command);
 
-            var volunteerTaskSignup = Context.TaskSignups.First();
+            var volunteerTaskSignup = Context.VolunteerTaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifiyCommand => notifiyCommand.SignupId == volunteerTaskSignup.Id)), Times.Once());
             volunteerTaskSignup.Status.ShouldBe(command.VolunteerTaskStatus);
             volunteerTaskSignup.VolunteerTask.Id.ShouldBe(command.VolunteerTaskId);
@@ -274,11 +274,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerCompletesTaskFromAcceptedStatus()
         {
-            var volunteerTaskSignup = Context.TaskSignups.First();
+            var volunteerTaskSignup = Context.VolunteerTaskSignups.First();
             volunteerTaskSignup.Status = VolunteerTaskStatus.Accepted;
             await Context.SaveChangesAsync();
 
-            var volunteerTask = Context.Tasks.First();
+            var volunteerTask = Context.VolunteerTasks.First();
             var user = Context.Users.First();
             var command = new ChangeVolunteerTaskStatusCommand
             {
@@ -289,7 +289,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             };
             await commandHandler.Handle(command);
 
-            volunteerTaskSignup = Context.TaskSignups.First();
+            volunteerTaskSignup = Context.VolunteerTaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == volunteerTaskSignup.Id)), Times.Once());
             volunteerTaskSignup.Status.ShouldBe(command.VolunteerTaskStatus);
             volunteerTaskSignup.VolunteerTask.Id.ShouldBe(command.VolunteerTaskId);
@@ -300,7 +300,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerCompletesTaskFromAssignedStatus()
         {
-            var volunteerTask = Context.Tasks.First();
+            var volunteerTask = Context.VolunteerTasks.First();
             var user = Context.Users.First();
             var command = new ChangeVolunteerTaskStatusCommand
             {
@@ -312,7 +312,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             await commandHandler.Handle(command);
 
-            var volunteerTaskSignup = Context.TaskSignups.First();
+            var volunteerTaskSignup = Context.VolunteerTaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == volunteerTaskSignup.Id)), Times.Once());
             volunteerTaskSignup.Status.ShouldBe(command.VolunteerTaskStatus);
             volunteerTaskSignup.VolunteerTask.Id.ShouldBe(command.VolunteerTaskId);
@@ -348,11 +348,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         [Fact]
         public async Task VolunteerCannotCompleteTaskFromAcceptedStatus()
         {
-            var volunteerTaskSignup = Context.TaskSignups.First();
+            var volunteerTaskSignup = Context.VolunteerTaskSignups.First();
             volunteerTaskSignup.Status = VolunteerTaskStatus.Accepted;
             await Context.SaveChangesAsync();
 
-            var volunteerTask = Context.Tasks.First();
+            var volunteerTask = Context.VolunteerTasks.First();
             var user = Context.Users.First();
             var command = new ChangeVolunteerTaskStatusCommand
             {
@@ -363,7 +363,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             };
             await commandHandler.Handle(command);
 
-            volunteerTaskSignup = Context.TaskSignups.First();
+            volunteerTaskSignup = Context.VolunteerTaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == volunteerTaskSignup.Id)), Times.Once());
             volunteerTaskSignup.Status.ShouldBe(command.VolunteerTaskStatus);
             volunteerTaskSignup.User.Id.ShouldBe(command.UserId);
@@ -375,7 +375,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         public async Task VolunteerCannotCompleteTaskFromAssignedStatus()
         {
             var user = Context.Users.First();
-            var volunteerTask = Context.Tasks.First();
+            var volunteerTask = Context.VolunteerTasks.First();
             var command = new ChangeVolunteerTaskStatusCommand
             {
                 VolunteerTaskId = volunteerTask.Id,
@@ -386,7 +386,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             await commandHandler.Handle(command);
 
-            var volunteerTaskSignup = Context.TaskSignups.First();
+            var volunteerTaskSignup = Context.VolunteerTaskSignups.First();
             mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == volunteerTaskSignup.Id)), Times.Once());
             volunteerTaskSignup.Status.ShouldBe(command.VolunteerTaskStatus);
             volunteerTaskSignup.User.Id.ShouldBe(command.UserId);

@@ -22,7 +22,7 @@ namespace AllReady.Features.Events
 
             foreach (var volunteerTaskSignupViewModel in command.VolunteerTaskSignups)
             {
-                dbContext.TaskSignups.Update(new VolunteerTaskSignup
+                dbContext.VolunteerTaskSignups.Update(new VolunteerTaskSignup
                 {
                     Id = volunteerTaskSignupViewModel.Id,
                     StatusDateTimeUtc = DateTimeUtcNow(),

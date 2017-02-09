@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Features.Tasks
             var result = await sut.Handle(message);
 
             Assert.Equal(VolunteerTaskSignupResult.FAILURE_CLOSEDTASK, result.Status);
-            Assert.Equal(0, Context.TaskSignups.Count());
+            Assert.Equal(0, Context.VolunteerTaskSignups.Count());
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace AllReady.UnitTest.Features.Tasks
             var result = await sut.Handle(message);
 
             Assert.Equal(VolunteerTaskSignupResult.FAILURE_EVENTNOTFOUND, result.Status);
-            Assert.Equal(0, Context.TaskSignups.Count());
+            Assert.Equal(0, Context.VolunteerTaskSignups.Count());
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace AllReady.UnitTest.Features.Tasks
             var result = await sut.Handle(message);
 
             Assert.Equal(VolunteerTaskSignupResult.FAILURE_TASKNOTFOUND, result.Status);
-            Assert.Equal(0, Context.TaskSignups.Count());
+            Assert.Equal(0, Context.VolunteerTaskSignups.Count());
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace AllReady.UnitTest.Features.Tasks
             var result = await sut.Handle(message);
 
             Assert.Equal(VolunteerTaskSignupResult.SUCCESS, result.Status);
-            Assert.Equal(1, Context.TaskSignups.Count());
+            Assert.Equal(1, Context.VolunteerTaskSignups.Count());
         }
 
         protected override void LoadTestData()
@@ -73,8 +73,8 @@ namespace AllReady.UnitTest.Features.Tasks
             var campaignEvent = new Event { Id = 1, Name = "Some Event" };
             Context.Events.Add(campaignEvent);
 
-            Context.Tasks.Add(new VolunteerTask { Id = 1, Name = "Closed Task", EndDateTime = DateTime.UtcNow.AddDays(-100), Event = campaignEvent });
-            Context.Tasks.Add(new VolunteerTask { Id = 2, Name = "Open Task", EndDateTime = DateTime.UtcNow.AddDays(100), Event = campaignEvent });
+            Context.VolunteerTasks.Add(new VolunteerTask { Id = 1, Name = "Closed Task", EndDateTime = DateTime.UtcNow.AddDays(-100), Event = campaignEvent });
+            Context.VolunteerTasks.Add(new VolunteerTask { Id = 2, Name = "Open Task", EndDateTime = DateTime.UtcNow.AddDays(100), Event = campaignEvent });
 
             Context.SaveChanges();
         }

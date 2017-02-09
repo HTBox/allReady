@@ -15,8 +15,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             volunteerTask = new VolunteerTask { Id = VolunteerTaskId, Organization = new Organization { Id = OrganizationId } };
 
-            Context.Tasks.Add(volunteerTask);
-            Context.Tasks.Add(new VolunteerTask { Id = 2 });
+            Context.VolunteerTasks.Add(volunteerTask);
+            Context.VolunteerTasks.Add(new VolunteerTask { Id = 2 });
             Context.SaveChanges();
         }
 

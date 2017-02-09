@@ -1,4 +1,4 @@
-﻿using AllReady.Models;
+using AllReady.Models;
 using MediatR;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +17,7 @@ namespace AllReady.Features.Tasks
 
         public async Task<VolunteerTask> Handle(VolunteerTaskByVolunteerTaskIdQuery message)
         {
-            return await dataContext.Tasks
+            return await dataContext.VolunteerTasks
                 .Include(x => x.Organization)
                 .Include(x => x.Event)
                 .Include(x => x.Event.Campaign)
